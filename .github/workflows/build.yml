@@ -23,6 +23,8 @@ jobs:
     env:
       MWCC_ROOT: /mwccarm
       MWCC_WRAPPER: wibo
+      # wibo disagrees with Windows on a few switch-heavy functions; Wine does not.
+      MWCC_FALLBACK: wine
     steps:
       - uses: actions/checkout@v4
 

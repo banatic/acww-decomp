@@ -15,13 +15,22 @@ owns the repository. Keep the package private.
 
 ```dockerfile
 FROM ubuntu:24.04
-RUN apt-get update && apt-get install -y --no-install-recommends python3 ca-certificates \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN dpkg --add-architecture i386 && apt-get update \
+    && apt-get install -y --no-install-recommends python3 git ca-certificates wine wine32:i386 \
     && rm -rf /var/lib/apt/lists/*
 # wibo runs the Windows compiler on Linux: https://github.com/decompals/wibo/releases
 COPY wibo /usr/local/bin/wibo
+RUN chmod +x /usr/local/bin/wibo
 COPY mwccarm/ /mwccarm/
 COPY baserom.nds /extract/adm-kr.nds
+ENV WINEDEBUG=-all
+RUN wine /mwccarm/1.2/base/mwccarm.exe -help >/dev/null 2>&1 || true
 ```
+
+The workflow compiles with wibo, which is fast, and recompiles any function that does not
+match with Wine (`MWCC_FALLBACK`): on a few functions with large `switch` statements wibo's
+output differs from the Windows compiler's, and Wine's does not.
 
 with this layout next to the Dockerfile:
 

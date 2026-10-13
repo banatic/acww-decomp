@@ -109,6 +109,17 @@ class Checker:
         return img[off:off + n] if 0 <= off and off + n <= len(img) else b""
 
     def check(self, path: pathlib.Path) -> dict:
+        res = self._check(path)
+        # wibo and the Windows compiler disagree on a handful of switch-heavy functions;
+        # Wine agrees with Windows. MWCC_FALLBACK (e.g. "wine") recompiles a BYTES failure
+        # with it, so CI judges the code and not the emulator. A real mismatch still fails.
+        fallback = os.environ.get("MWCC_FALLBACK")
+        if res["status"] == "bytes" and fallback:
+            res = self._check(path, wrapper=fallback, force=True)
+        return res
+
+    def _check(self, path: pathlib.Path, wrapper: str | None = None,
+               force: bool = False) -> dict:
         src = C.parse_source(path)
         rel = path.relative_to(C.ROOT).as_posix()
         if src is None:
@@ -124,7 +135,7 @@ class Checker:
             res["renamed"] = sym.name
         target = self.rom(src.module, src.address, src.size)
 
-        obj, log = C.compile_source(src)
+        obj, log = C.compile_source(src, wrapper=wrapper, force=force)
         if obj is None:
             return {**res, "status": "bytes", "why": "does not compile: "
                     + (log.strip().splitlines() or ["?"])[-1][:160]}

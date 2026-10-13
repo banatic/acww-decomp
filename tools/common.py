@@ -260,9 +260,11 @@ def included_files(path: pathlib.Path) -> list[pathlib.Path]:
     return sorted(seen)
 
 
-def compile_source(src: Source) -> tuple[bytes | None, str]:
+def compile_source(src: Source, wrapper: str | None = None,
+                   force: bool = False) -> tuple[bytes | None, str]:
     """(object bytes, compiler output). Objects are cached by source, every header it
-    includes, flags and compiler drop, so editing a header recompiles its users."""
+    includes, flags and compiler drop, so editing a header recompiles its users.
+    `wrapper` overrides MWCC_WRAPPER for this compile; `force` ignores the cache."""
     exe = MWCC_ROOT / src.drop / "mwccarm.exe"
     if not exe.exists():
         raise SystemExit(f"mwccarm not found at {exe} (set MWCC_ROOT; see INSTALL.md)")
@@ -275,13 +277,14 @@ def compile_source(src: Source) -> tuple[bytes | None, str]:
     rel = src.path.resolve().relative_to(ROOT)
     obj = OBJ_DIR / rel.with_suffix(".o")
     stamp = obj.with_suffix(".key")
-    if obj.exists() and stamp.exists() and stamp.read_text() == key:
+    if not force and obj.exists() and stamp.exists() and stamp.read_text() == key:
         return obj.read_bytes(), ""
     obj.parent.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, LM_LICENSE_FILE=str(MWCC_ROOT / "license.dat"))
-    # MWCC_WRAPPER (e.g. "wibo") runs the Windows compiler on another host; it does not
-    # change the output, so it is not part of the cache key.
-    wrapper = shlex.split(os.environ.get("MWCC_WRAPPER", ""))
+    # MWCC_WRAPPER (e.g. "wibo") runs the Windows compiler on another host. It is meant not to
+    # change the output, so it is not part of the cache key; see verify.py for the few
+    # functions where wibo and Windows disagree.
+    cmd = shlex.split(os.environ.get("MWCC_WRAPPER", "") if wrapper is None else wrapper)
     # Compile in, and into, a small private directory, then move the object into place: under
     # wibo the compiler scans the directories it works in, and writing straight into an object
     # directory with thousands of files made each compile take seconds.
@@ -289,7 +292,7 @@ def compile_source(src: Source) -> tuple[bytes | None, str]:
     work.mkdir(parents=True, exist_ok=True)
     tmp = work / "out.o"
     tmp.unlink(missing_ok=True)
-    p = subprocess.run([*wrapper, str(exe), *flags, "-c", str(src.path), "-o", str(tmp)],
+    p = subprocess.run([*cmd, str(exe), *flags, "-c", str(src.path), "-o", str(tmp)],
                        capture_output=True, env=env, cwd=work, timeout=300)
     log = (p.stdout + p.stderr).decode("utf-8", "replace")
     if p.returncode != 0 or not tmp.exists():
