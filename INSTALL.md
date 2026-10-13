@@ -26,6 +26,5 @@ Other tools:
 
 - `tools/lint.py`: checks that need neither the ROM nor the compiler; CI runs it.
 - `tools/report.py`: writes the objdiff-format progress report that decomp.dev reads.
-- `tools/progress_map.py`: draws `docs/progress.svg` locally from the last `verify.py` run.
 - `tools/quality.py`: lists sources that still need cleaning up.
 - `tools/rename_symbol.py`: renames a symbol in the table and every source.

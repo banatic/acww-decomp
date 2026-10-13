@@ -23,10 +23,10 @@ purpose (a redundant mask, a dead branch) carries a `FAKEMATCH` comment explaini
 
 | | Game code (`src/`) | With the libraries |
 |---|---:|---:|
-| Functions | 25,245 | 29,328 |
-| BYTES | 25,245 | 29,328 |
-| LINK | 25,245 | 29,328 |
-| `FAKEMATCH` | 32 | |
+| Functions | 25,247 | 29,330 |
+| BYTES | 25,247 | 29,330 |
+| LINK | 25,247 | 29,330 |
+| `FAKEMATCH` | 28 | |
 
 With the libraries present, all 153 module images relink to the ROM's SHA-1. Without them
 (this repository), library functions are taken from the ROM and counted as not decompiled.
