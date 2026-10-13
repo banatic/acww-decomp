@@ -2,33 +2,43 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the volatile reads give the two loads of the item id and the empty if keeps the object pointer of the second call loaded after r0 and r1; inline pointer helpers give the loads but not the call order */
+#include "types.h"
 
-extern void func_0202e118(void *dst, unsigned int src);
-extern void func_02022bbc(void *p, int n, void *data);
-extern void func_0202bd40(void *p, int n, int val, void *ptr);
-extern unsigned char data_020c8d28[];
-struct UnkStruct_02022938 {
-    unsigned char pad_00[0x100];
-    unsigned int unk_100;
-};
-int func_02022938(struct UnkStruct_02022938 *obj)
+#define ITEM_NONE 0xfff1
+
+typedef struct {
+    u8 pad_00[0x830];
+    u8 *name;
+} Player;
+
+typedef struct {
+    u8 pad_00[0x100];
+    Player *player;
+} UnkStruct_02022938;
+
+extern void func_0202e118(u16 *item, Player *player);
+extern void func_02022bbc(UnkStruct_02022938 *self, int n, const void *data);
+extern void func_0202bd40(UnkStruct_02022938 *self, int n, u8 *name);
+extern const u8 data_020c8d28[];
+
+static inline BOOL ItemIsNone(const u16 *item)
 {
-    unsigned char *ptr2;
-    unsigned short result;
-    unsigned short b;
-    unsigned short a;
-    func_0202e118(&result, obj->unk_100);
-    b = *((volatile unsigned short *) (&result));
-    a = *((volatile unsigned short *) ((0, &result)));
-    if ((a == 0xfff1) || ((b >= 0x1380) && (b <= 0x139f))) {
-        ptr2 = ((unsigned char *) obj) + 0x100;
-        func_02022bbc(obj, 3, data_020c8d28);
-        if (((!obj) && (!obj)) && (!obj)) {
-        }
-        func_0202bd40(obj, 5, *((int *) ((*((unsigned char **) ptr2)) + 0x830)),
-                      *((void **) (((unsigned char *) obj) + 0x100)));
-        ptr2 = ((unsigned char *) obj) + 0x100;
+    return *item == ITEM_NONE;
+}
+
+static inline BOOL ItemIsSpecial(const u16 *item)
+{
+    return *item >= 0x1380 && *item <= 0x139f;
+}
+
+int func_02022938(UnkStruct_02022938 *self)
+{
+    u16 item;
+
+    func_0202e118(&item, self->player);
+    if (ItemIsNone(&item) || ItemIsSpecial(&item)) {
+        func_02022bbc(self, 3, data_020c8d28);
+        func_0202bd40(self, 5, self->player->name);
         return 1;
     }
     return 0;

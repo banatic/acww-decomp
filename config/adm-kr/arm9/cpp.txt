@@ -406,3 +406,9 @@ _ZN13Base_020b8b8813func_020b8744Ev kind:function(thumb) addr:0x020b8744
 _ZN13Base_020b8b8813func_020b87acEv kind:function(thumb) addr:0x020b87ac
 _ZN12Obj_020e86ec13func_020c3b8cEPv kind:function(thumb) addr:0x020c3b8c
 _ZN13Base_020c3b9813func_020c3c08EPv kind:function(thumb) addr:0x020c3c08
+__sinit___sinit_020c5e30.cpp kind:function(thumb) addr:0x020c5e30
+_ZN13Slot_02082c00D1Ev kind:function(thumb) addr:0x02082bfc
+_ZN13Slot_02082c00C1Ev kind:function(thumb) addr:0x02082c00
+_ZN13Slot_02082bf0D1Ev kind:function(thumb) addr:0x02082bec
+_ZN13Slot_02082bf0C1Ev kind:function(thumb) addr:0x02082bf0
+_ZN14Store_021d1d4cD1Ev kind:function(thumb) addr:0x02082bc0

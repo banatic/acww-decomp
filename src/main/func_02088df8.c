@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the empty if on gfx_o adds the 4-byte stack slot that puts the base/cnt spills at their offsets; without it every spill sits 4 bytes lower */
+/* FAKEMATCH: the empty short-circuit if leaves a block join inside the else arm, which takes gfx_o out of the if/else-merge spill group (prio_o and pal_o keep slots 8 and 0xc) and gives it its declaration-order slot 0x30; without it gfx_o joins that group at slot 8 and every other spill moves up 4 bytes; ternaries, inline selectors, extra defs, scopes, C++ and foldable range checks all keep it in the group */
 
 #include "types.h"
 

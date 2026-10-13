@@ -2,8 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the empty if on len keeps the copy end a + sz + 5 in its register across the func_02073574 call setup */
-
 #include "types.h"
 
 typedef struct UnkStruct_020739d0 {
@@ -55,7 +53,6 @@ void func_020739d0(UnkStruct_020739d0 *self)
     int t;
     int a;
     int b;
-    int d;
 
     pass = 2;
     g = data_020ccf94;
@@ -100,10 +97,8 @@ void func_020739d0(UnkStruct_020739d0 *self)
                     b = func_02073590(self);
                     b += a;
                     MI_CpuCopy8(p - 5, b, sz + 5);
-                    d = a + (sz + 5);
-                    if (!len && !len) {
-                    }
-                    func_02073574(self, d);
+                    a += sz + 5;
+                    func_02073574(self, a);
                 } else {
                     if (func_020a7278() == 0 && t == 6) {
                         goto skip;

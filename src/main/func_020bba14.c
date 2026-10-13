@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the empty if keeps the data_020d2364 index load before the hr1 * 32 stack store; without it the store comes first */
+/* FAKEMATCH: the empty if is a block boundary after the layout index load; without it the load is folded into the row-pointer temp and the hour and period scalings (hr1 * 32, ap1 * 4) are hoisted above it; inline helpers, locals, pointer types, C++ and earlier load positions all keep that order */
 
 #include "types.h"
 
