@@ -11,6 +11,7 @@ import re
 import shlex
 import struct
 import subprocess
+import threading
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config" / "adm-kr" / "arm9"
@@ -281,14 +282,19 @@ def compile_source(src: Source) -> tuple[bytes | None, str]:
     # MWCC_WRAPPER (e.g. "wibo") runs the Windows compiler on another host; it does not
     # change the output, so it is not part of the cache key.
     wrapper = shlex.split(os.environ.get("MWCC_WRAPPER", ""))
-    # Run in an empty directory: under wibo every start-up scans the working directory, and an
-    # object directory with thousands of files made each compile take seconds.
-    WORK_DIR.mkdir(parents=True, exist_ok=True)
-    p = subprocess.run([*wrapper, str(exe), *flags, "-c", str(src.path), "-o", str(obj)],
-                       capture_output=True, env=env, cwd=WORK_DIR, timeout=300)
+    # Compile in, and into, a small private directory, then move the object into place: under
+    # wibo the compiler scans the directories it works in, and writing straight into an object
+    # directory with thousands of files made each compile take seconds.
+    work = WORK_DIR / f"{os.getpid()}-{threading.get_ident()}"
+    work.mkdir(parents=True, exist_ok=True)
+    tmp = work / "out.o"
+    tmp.unlink(missing_ok=True)
+    p = subprocess.run([*wrapper, str(exe), *flags, "-c", str(src.path), "-o", str(tmp)],
+                       capture_output=True, env=env, cwd=work, timeout=300)
     log = (p.stdout + p.stderr).decode("utf-8", "replace")
-    if p.returncode != 0 or not obj.exists():
+    if p.returncode != 0 or not tmp.exists():
         return None, log
+    os.replace(tmp, obj)
     stamp.write_text(key)
     return obj.read_bytes(), log
 
