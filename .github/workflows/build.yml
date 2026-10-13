@@ -25,6 +25,8 @@ jobs:
       MWCC_WRAPPER: wibo
       # wibo disagrees with Windows on a few switch-heavy functions; Wine does not.
       MWCC_FALLBACK: wine
+      # The image's Wine prefix; Actions points HOME at a directory Wine refuses to use.
+      WINEPREFIX: /root/.wine
     steps:
       - uses: actions/checkout@v4
 
