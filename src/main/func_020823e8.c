@@ -2,8 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the repeated type test keeps the case-14 code before the case-13 code; a switch or a single test reorders the blocks */
-
 extern void *func_0207cec0(void *base, int val);
 extern void *func_0208150c(void *ptr);
 extern int func_0200364c(void *ptr);
@@ -16,18 +14,20 @@ int func_020823e8(unsigned short *p)
     int low12 = v & 0xfff;
     int type = (v & 0xf000) >> 12;
     int result = 5;
-    if (type != 13) {
-        if (((v & 0xf000) >> 12) == 14) {
+    switch (type) {
+        case 14: {
             void *r = func_0207cec0((void *) data_021e5a2c, low12);
             if (r) {
-                void *r2 = func_0208150c(r);
-                result = func_0200364c(r2);
+                result = func_0200364c(func_0208150c(r));
             }
+            break;
         }
-    } else {
-        void *r = func_020824d0(p);
-        if (r) {
-            result = *(((unsigned char *) r) + 1);
+        case 13: {
+            void *r = func_020824d0(p);
+            if (r) {
+                result = *(((unsigned char *) r) + 1);
+            }
+            break;
         }
     }
     return result;

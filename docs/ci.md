@@ -1,6 +1,6 @@
 # CI
 
-Two workflows (`build.yml` runs only when started by hand until its image exists):
+Two workflows run on every push to `main`:
 
 - `lint.yml` needs nothing private and runs on any fork.
 - `build.yml` extracts, verifies, relinks and uploads `build/adm-kr/report.json` as the artifact

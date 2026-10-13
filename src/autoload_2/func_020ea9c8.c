@@ -2,8 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the identity inline on z makes the z load come before the x load; the plain expression loads x first */
-
 extern void func_020eacf8(long long value);
 
 typedef struct {
@@ -12,15 +10,10 @@ typedef struct {
     int z;
 } Vec3;
 
-inline long long widen(int x)
-{
-    return (long long) x;
-}
-
 void func_020ea9c8(Vec3 *v)
 {
-    int z = v->z;
     int x = v->x;
+    int z = v->z;
 
-    func_020eacf8(widen(z) * z + (long long) x * x);
+    func_020eacf8((long long) x * x + (long long) z * z);
 }

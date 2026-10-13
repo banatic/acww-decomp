@@ -2,23 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the identity inline on b makes the b load come before the a load; the plain expression loads a first */
-
 struct S_020ea970 {
     int a;
     int pad_04;
     int b;
 };
 
-inline long long widen(int x)
-{
-    return (long long) x;
-}
-
 long long func_020ea970(struct S_020ea970 *p)
 {
-    int b = p->b;
     int a = p->a;
+    int b = p->b;
 
-    return (widen(b) * b + (long long) a * a) >> 12;
+    return ((long long) a * a + (long long) b * b) >> 12;
 }

@@ -2,8 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the first word is copied through the struct and the next two through a pointer to it; plain field copies and a struct copy change the size */
-
 extern void func_ov068_0226cfd4(void *p);
 extern int func_02096190(int p);
 extern void func_02019c20(void *p, int a, int b, int c, int d, int e);
@@ -31,13 +29,11 @@ extern unsigned char data_021fbee8[];
 
 int func_ov068_0226983c(UnkStruct_0226983c *p0, UnkStruct_0226983c_2 *p1)
 {
-    int *ptr;
     int *src;
     func_ov068_0226cfd4(p1);
     p0->unk_E4 = func_02096190(4);
-    ptr = &p1->unk_5C;
-    p0->unk_E8 = p1->unk_5C;
-    src = ptr;
+    src = &p1->unk_5C;
+    p0->unk_E8 = src[0];
     p0->unk_EC = src[1];
     p0->unk_F0 = src[2];
     func_02019c20(((char *) p1) + 0x564, 1, 0xDF, 1, data_020c80f8, 0);

@@ -2,8 +2,10 @@
 # (see docs/ci.md). Uploads the progress report that decomp.dev reads.
 name: build
 
-# Manual until the private build image exists (docs/ci.md); then add `push: branches: [main]`.
+# Not on pull requests: workflows from forks cannot read the private image.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -24,6 +26,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Compiled objects, keyed by every source and header; a run only recompiles what changed.
+      - uses: actions/cache@v4
+        with:
+          path: build/adm-kr/obj
+          key: obj-${{ hashFiles('src/**', 'include/**', 'libs/**') }}
+          restore-keys: obj-
+
       - name: Prepare
         run: cp /extract/*.nds extract/
 
@@ -31,7 +40,7 @@ jobs:
         run: python3 tools/extract.py
 
       - name: Verify
-        run: python3 tools/verify.py
+        run: python3 tools/verify.py --workers "$(nproc)"
 
       - name: Relink
         run: python3 tools/relink.py
