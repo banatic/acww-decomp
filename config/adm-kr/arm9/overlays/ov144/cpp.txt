@@ -1,0 +1,14 @@
+_ZN18Obj_ov144_0229b3f819func_ov144_0229a83cEv kind:function(thumb) addr:0x0229a83c
+_ZN18Obj_ov144_0229b3f819func_ov144_0229a868Ev kind:function(thumb) addr:0x0229a868
+_ZN18Obj_ov144_0229b3f819func_ov144_0229a894Ev kind:function(thumb) addr:0x0229a894
+_ZN18Obj_ov144_0229b3f819func_ov144_0229a948Ev kind:function(thumb) addr:0x0229a948
+_ZN18Obj_ov144_0229b3f819func_ov144_0229a9b0Ev kind:function(thumb) addr:0x0229a9b0
+_ZN18Obj_ov144_0229b3f819func_ov144_0229a9d4Ev kind:function(thumb) addr:0x0229a9d4
+_ZN18Obj_ov144_0229b3f819func_ov144_0229aa08Ev kind:function(thumb) addr:0x0229aa08
+_ZN18Obj_ov144_0229b3f819func_ov144_0229aa30Ev kind:function(thumb) addr:0x0229aa30
+_ZN18Obj_ov144_0229b3f819func_ov144_0229aa70Ev kind:function(thumb) addr:0x0229aa70
+_ZN18Obj_ov144_0229b3f819func_ov144_0229aabcEv kind:function(thumb) addr:0x0229aabc
+_ZN18Obj_ov144_0229b3f819func_ov144_0229ab20Ev kind:function(thumb) addr:0x0229ab20
+_ZN18Obj_ov144_0229b3f819func_ov144_0229ab54Ev kind:function(thumb) addr:0x0229ab54
+_ZN18Obj_ov144_0229b3f819func_ov144_0229ab88Ev kind:function(thumb) addr:0x0229ab88
+_ZN18Obj_ov144_0229b3f819func_ov144_0229b02cEv kind:function(thumb) addr:0x0229b02c

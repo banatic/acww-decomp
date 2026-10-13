@@ -1,0 +1,14 @@
+/* func_ov106_0229c458 @ 0x0229c458, 0x24 bytes, Thumb, module ov106
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_ov002_02208098(char *p, int n);
+extern void func_0208f0c4(void *p, int n);
+extern int RtcSendPxiCommand(int cmd);
+
+void func_ov106_0229c458(char *param)
+{
+    func_ov002_02208098(param, 0x22);
+    func_0208f0c4(param + 0x2b3c, 2);
+    RtcSendPxiCommand(0x29);
+}

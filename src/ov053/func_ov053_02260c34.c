@@ -1,0 +1,71 @@
+/* func_ov053_02260c34 @ 0x02260c34, 0xbc bytes, Thumb, module ov053
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_020984e8(unsigned char *self);
+extern const int *func_02095794(int);
+extern void func_0204f818(int *a, int *b, const int *c);
+extern int func_02014868(void *ptr);
+extern void func_0203b144(void);
+extern void func_02095ab0(void *dst, int val, int size);
+extern void *DWCi_GsMalloc(unsigned int size);
+extern void func_0203e020(unsigned char *self);
+extern void func_ov053_02261524(unsigned char *self, int param);
+
+extern const int data_ov053_022617d4[3];
+
+int func_ov053_02260c34(unsigned char *self)
+{
+    int z[4];
+    int data[3];
+    int gdata[3];
+    int tmp[3];
+    int a, b, c;
+
+    func_020984e8(self);
+    {
+        const int *p = func_02095794(4);
+        data[0] = p[0];
+        data[1] = p[1];
+        data[2] = p[2];
+    }
+    z[0] = 0;
+    z[1] = 0;
+    z[2] = 0;
+    z[3] = 0;
+
+    a = data_ov053_022617d4[0];
+    gdata[0] = a;
+    b = data_ov053_022617d4[1];
+    gdata[1] = b;
+    c = data_ov053_022617d4[2];
+    gdata[2] = c;
+
+    func_0204f818(&z[2], &z[3], gdata);
+    func_0204f818(&z[0], &z[1], data);
+
+    switch (self[0x718]) {
+        case 0:
+            if (func_02014868(self + 0x618) == 0) {
+                func_0203b144();
+                self[0x718] = 1;
+            }
+            break;
+        case 1:
+            tmp[0] = a;
+            tmp[1] = b;
+            tmp[2] = c;
+            func_02095ab0(tmp, 0x266, 4);
+            self[0x718] = 2;
+            break;
+        case 2:
+            if (DWCi_GsMalloc(4) == 0) {
+                func_0203e020(self);
+                func_ov053_02261524(self, 4);
+            }
+            break;
+        default:
+            break;
+    }
+    return 1;
+}

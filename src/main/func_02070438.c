@@ -1,0 +1,9 @@
+/* func_02070438 @ 0x02070438, 0xc bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern int func_02070490(int value);
+int func_02070438(unsigned char *data)
+{
+    return func_02070490(*data - 0x12);
+}

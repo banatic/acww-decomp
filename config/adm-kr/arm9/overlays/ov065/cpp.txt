@@ -1,0 +1,11 @@
+DWCca_cybertrust_globalsign kind:data(any) addr:0x0229324c
+DWCca_cybertrust_baltimore kind:data(any) addr:0x02293398
+DWCca_cybertrust_gteglroot kind:data(any) addr:0x022934e8
+DWCca_cybertrust_gteroot kind:data(any) addr:0x022935d0
+DWCca_nas_self kind:data(any) addr:0x02293694
+DWCca_thawte_premiumserver kind:data(any) addr:0x0229377c
+DWCca_thawte_server kind:data(any) addr:0x0229389c
+DWCac_verisign_c3pcag2v2 kind:data(any) addr:0x022939b4
+DWCca_verisign_c3pcag3v2 kind:data(any) addr:0x02293ae0
+DWCca_verisign_pca3ssg4 kind:data(any) addr:0x02293c94
+DWCca_verisign_secureserver kind:data(any) addr:0x02293d70

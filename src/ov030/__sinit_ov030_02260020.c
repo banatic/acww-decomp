@@ -1,0 +1,12 @@
+/* __sinit_ov030_02260020 @ 0x02260020, 0x14 bytes, Thumb, module ov030
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern int data_ov004_02256914;
+extern int data_ov030_0226006c;
+
+void __sinit_ov030_02260020(void)
+{
+    *(unsigned char *) ((char *) ((int) &data_ov030_0226006c) + (1)) =
+        *(unsigned char *) ((char *) ((int) &data_ov004_02256914) + (0));
+}

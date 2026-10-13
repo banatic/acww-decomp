@@ -1,0 +1,5 @@
+func_ov056_02260420 kind:function(thumb,size=0x2c) addr:0x02260420
+func_ov056_0226044c kind:function(thumb,size=0x20) addr:0x0226044c
+func_ov056_0226046c kind:function(thumb,size=0x28) addr:0x0226046c
+data_ov056_022604a0 kind:data(any) addr:0x022604a0 ambiguous
+data_ov056_022604b0 kind:data(any) addr:0x022604b0

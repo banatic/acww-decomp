@@ -1,0 +1,83 @@
+# Base ROM and anything derived from it
+*.nds
+*.sav
+*.bin
+extract/*
+!extract/README.md
+build/
+
+# Library code (NitroSDK, NitroSystem, NitroDWC, NitroWiFi, GameSpy, MSL, runtime) is not
+# distributed; see libs/README.md
+libs/*
+!libs/README.md
+
+# Compiler (not redistributable)
+tools/mwccarm/
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor and assistant settings
+.vscode/
+.idea/
+.zed/
+.claude/
+.cursor/
+.gemini/
+.codex/
+.windsurf/
+.codeium/
+.continue/
+.copilot/
+.cline/
+.roo/
+.kilocode/
+.amazonq/
+.junie/
+.kiro/
+.augment/
+.tabnine/
+.cody/
+.openhands/
+.goose/
+.trae/
+.qwen/
+.opencode/
+.crush/
+.grok/
+.hermes/
+.freebuff/
+.specstory/
+.aider*
+.mcp.json
+.cursorrules
+.cursorignore
+.cursorindexingignore
+.windsurfrules
+.clinerules
+.roomodes
+.rooignore
+.augmentignore
+.goosehints
+.tabnine_root
+.continuerc.json
+opencode.json
+AGENTS.md
+AGENT.md
+CLAUDE.md
+CLAUDE.local.md
+GEMINI.md
+QWEN.md
+CRUSH.md
+WARP.md
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+.github/chatmodes/
+
+# Scratch
+scratch/
+scratchpad/
+.agent_scratch/
+.probe/

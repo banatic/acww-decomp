@@ -1,0 +1,13 @@
+/* func_ov135_0229c8b4 @ 0x0229c8b4, 0x16 bytes, Thumb, module ov135
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_ov135_0229c738(void);
+extern void func_ov002_02208098(int, int);
+
+void func_ov135_0229c8b4(int param)
+{
+    int r4 = param;
+    func_ov135_0229c738();
+    func_ov002_02208098(r4, 3);
+}

@@ -1,0 +1,18 @@
+/* func_ov068_02269028 @ 0x02269028, 0x44 bytes, Thumb, module ov068
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern int func_02019e00(void *);
+extern int func_02019de8(void *);
+extern void func_02019c6c(void *, int, unsigned short);
+extern unsigned short data_020c80f8;
+
+void func_ov068_02269028(void *a0, char *a1)
+{
+    if (func_02019e00(a1 + 0x564) == 3) {
+        if (func_02019de8(a1 + 0x564) != 0) {
+            func_02019c6c(a1 + 0x564, 1, data_020c80f8);
+            ((unsigned char *) a0)[0x1c] = 1;
+        }
+    }
+}

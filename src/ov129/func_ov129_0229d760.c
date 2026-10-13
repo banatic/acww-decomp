@@ -1,0 +1,8 @@
+/* func_ov129_0229d760 @ 0x0229d760, 0x4 bytes, Thumb, module ov129
+ * mwccarm 1.2/base -O4,s
+ */
+
+int func_ov129_0229d760(void)
+{
+    return 1;
+}

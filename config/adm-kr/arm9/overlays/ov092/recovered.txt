@@ -1,0 +1,22 @@
+# Recovered function boundaries -- functions ds-decomp's analysis missed (found from call
+# targets and literal-pool references). Same format as symbols.txt; tools/common.py merges
+# these rows, ignoring any that overlap a symbols.txt function. Every row here has a source
+# that byte-matches at exactly this size, which is the evidence for the boundary.
+func_ov092_02298f20 kind:function(thumb,size=0x18,recovered,ev=extent+pool) addr:0x02298f20
+func_ov092_02298f38 kind:function(thumb,size=0x20,recovered,ev=pool) addr:0x02298f38
+func_ov092_02298f58 kind:function(thumb,size=0x2,recovered,ev=bl) addr:0x02298f58
+func_ov092_02298f5c kind:function(thumb,size=0x110,recovered,ev=bl) addr:0x02298f5c
+func_ov092_0229906c kind:function(thumb,size=0x18,recovered,ev=pool) addr:0x0229906c
+func_ov092_02299084 kind:function(thumb,size=0x212,recovered,ev=pool) addr:0x02299084
+func_ov092_02299298 kind:function(thumb,size=0x2,recovered,ev=pool) addr:0x02299298
+func_ov092_0229929c kind:function(thumb,size=0x86,recovered,ev=hole) addr:0x0229929c
+func_ov092_02299324 kind:function(thumb,size=0x5c,recovered,ev=hole) addr:0x02299324
+func_ov092_02299380 kind:function(thumb,size=0x10,recovered,ev=pool) addr:0x02299380
+func_ov092_02299390 kind:function(thumb,size=0x4,recovered,ev=pool) addr:0x02299390
+func_ov092_02299394 kind:function(thumb,size=0x4,recovered,ev=pool) addr:0x02299394
+func_ov092_02299398 kind:function(thumb,size=0x68,recovered,ev=pool) addr:0x02299398
+func_ov092_02299400 kind:function(thumb,size=0x5c,recovered,ev=pool) addr:0x02299400
+func_ov092_0229945c kind:function(thumb,size=0x4,recovered,ev=pool) addr:0x0229945c
+func_ov092_02299460 kind:function(thumb,size=0x1e,recovered,ev=pool) addr:0x02299460
+func_ov092_02299480 kind:function(thumb,size=0x1e,recovered,ev=pool) addr:0x02299480
+func_ov092_022994a0 kind:function(thumb,size=0x24,recovered,ev=pool) addr:0x022994a0

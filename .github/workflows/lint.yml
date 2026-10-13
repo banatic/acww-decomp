@@ -1,0 +1,29 @@
+# ROM-free checks only. Matching needs the base ROM and the proprietary compiler, neither of
+# which may ever reach a public runner; run `tools/verify.py` locally for that.
+name: lint
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Python syntax
+        run: python -m compileall -q tools
+      - name: Headers, symbol table, forbidden files
+        run: python tools/lint.py
+      - name: Formatting
+        run: |
+          pip install clang-format==22.1.8
+          git ls-files -z 'src/*.c' 'src/*.cpp' 'libs/*.c' 'libs/*.cpp' 'include/*.h' \
+            | xargs -0 clang-format --dry-run --Werror

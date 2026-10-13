@@ -1,0 +1,11 @@
+/* func_02097e28 @ 0x02097e28, 0x10 bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_02066694(void *param);
+
+void *func_02097e28(void *param)
+{
+    func_02066694(param);
+    return param;
+}

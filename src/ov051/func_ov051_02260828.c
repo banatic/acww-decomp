@@ -1,0 +1,44 @@
+/* func_ov051_02260828 @ 0x02260828, 0x8c bytes, Thumb, module ov051
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_020984e8(void);
+extern int func_02099870(void);
+extern void func_020950c8(int, int);
+extern int func_020a12c0(void);
+extern void func_0206844c(unsigned int, unsigned char *, int);
+extern int data_ov051_022615c0;
+
+struct UnkStruct_02260828 {
+    unsigned char pad_00[0x40];
+    unsigned int unk_40;
+};
+
+extern unsigned char func_ov051_022605e8(struct UnkStruct_02260828 *, int);
+
+void func_ov051_02260828(struct UnkStruct_02260828 *self, int which)
+{
+    unsigned char buf[3];
+
+    switch (which) {
+        case 0:
+            func_020984e8();
+            func_020950c8(func_02099870(), 0);
+            if (func_020a12c0()) {
+                buf[0] = func_ov051_022605e8(self, 0x19);
+                func_0206844c(self->unk_40, buf, data_ov051_022615c0);
+            } else {
+                buf[1] = func_ov051_022605e8(self, 0xf);
+                func_0206844c(self->unk_40, &buf[1], data_ov051_022615c0);
+            }
+            break;
+        case 1:
+            func_020984e8();
+            func_020950c8(func_02099870(), 1);
+            buf[2] = 0xe;
+            func_0206844c(self->unk_40, &buf[2], data_ov051_022615c0);
+            break;
+        default:
+            break;
+    }
+}

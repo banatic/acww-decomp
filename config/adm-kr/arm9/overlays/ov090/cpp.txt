@@ -1,0 +1,4 @@
+_ZN18Obj_ov090_0229982019func_ov090_02299258Ev kind:function(thumb) addr:0x02299258
+_ZN18Obj_ov090_0229982019func_ov090_0229926cEv kind:function(thumb) addr:0x0229926c
+_ZN18Obj_ov090_0229982019func_ov090_02299348Ev kind:function(thumb) addr:0x02299348
+_ZN18Obj_ov090_0229982019func_ov090_02299470Ev kind:function(thumb) addr:0x02299470

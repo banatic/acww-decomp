@@ -1,0 +1,46 @@
+# Full build: needs the base ROM and the compiler, which live only in a private container image
+# (see docs/ci.md). Uploads the progress report that decomp.dev reads.
+name: build
+
+# Manual until the private build image exists (docs/ci.md); then add `push: branches: [main]`.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/${{ github.repository_owner }}/acww-build:main
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    env:
+      MWCC_ROOT: /mwccarm
+      MWCC_WRAPPER: wibo
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare
+        run: cp /extract/*.nds extract/
+
+      - name: Extract
+        run: python3 tools/extract.py
+
+      - name: Verify
+        run: python3 tools/verify.py
+
+      - name: Relink
+        run: python3 tools/relink.py
+
+      - name: Report
+        run: python3 tools/report.py
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: adm-kr_report
+          path: build/adm-kr/report.json

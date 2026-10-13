@@ -1,0 +1,12 @@
+/* func_020c3d78 @ 0x020c3d78, 0x34 bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern unsigned short data_020c80f8;
+extern void func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
+
+int func_020c3d78(int a)
+{
+    func_02019d0c(a + 0x564, 0, 1, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
+    return 1;
+}

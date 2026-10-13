@@ -1,0 +1,14 @@
+/* func_020a01b4 @ 0x020a01b4, 0x20 bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_02077b9c(void *);
+extern void func_02077b70(void *, void *);
+extern unsigned char data_021d11c4[];
+extern unsigned char SDK_OVERLAY_ov066_ID;
+
+void func_020a01b4(void)
+{
+    func_02077b9c(data_021d11c4);
+    func_02077b70(data_021d11c4, &SDK_OVERLAY_ov066_ID);
+}

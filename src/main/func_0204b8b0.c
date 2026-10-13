@@ -1,0 +1,10 @@
+/* func_0204b8b0 @ 0x0204b8b0, 0xc bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_0204b48c(int a, int b, int c);
+
+void func_0204b8b0(int a)
+{
+    func_0204b48c(a, 0x2f, 0x56);
+}

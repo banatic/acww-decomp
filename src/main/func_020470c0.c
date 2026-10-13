@@ -1,0 +1,20 @@
+/* func_020470c0 @ 0x020470c0, 0x54 bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_0204a370(unsigned int, int, int, int);
+extern int func_02047114(int);
+extern void func_02048cb8(int, int, int, int, int, void (*)(void), int);
+extern void func_02048e34(void);
+extern unsigned char data_021c7a08[];
+
+extern unsigned char data_021c79c4[];
+
+void func_020470c0(int a0, int a1, int a2)
+{
+    func_0204a370((unsigned int) data_021c79c4, a1, a2, 3);
+    if ((int) ((unsigned char *) data_021c7a08 + a2 * 0x90)[0x88] < 4) {
+        int x = func_02047114(a0);
+        func_02048cb8(a0, a1, a2 + 1, 4, x, func_02048e34, 0);
+    }
+}

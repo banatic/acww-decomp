@@ -1,0 +1,103 @@
+/* __sinit_ov004_0224ebd8 @ 0x0224ebd8, 0x20c bytes, Thumb, module ov004
+ * mwccarm 1.2/base -O4,s
+ */
+
+struct UnkStruct_0224ebd8 {
+    int a;
+    int b;
+};
+extern unsigned char data_ov004_022588d4[4];
+extern unsigned char data_ov004_022588c4[4];
+extern unsigned char data_ov004_022588cc[4];
+extern unsigned char data_ov004_022588c0[4];
+extern unsigned char data_ov004_022588bc[4];
+extern unsigned char data_ov004_022588d0[4];
+extern struct UnkStruct_0224ebd8 data_ov004_022588d8[30];
+extern struct UnkStruct_0224ebd8 data_ov004_0225587c;
+extern struct UnkStruct_0224ebd8 data_ov004_02255874;
+extern struct UnkStruct_0224ebd8 data_ov004_02255854;
+extern struct UnkStruct_0224ebd8 data_ov004_0225585c;
+extern struct UnkStruct_0224ebd8 data_ov004_0225586c;
+extern struct UnkStruct_0224ebd8 data_ov004_02255884;
+extern struct UnkStruct_0224ebd8 data_ov004_02255894;
+extern struct UnkStruct_0224ebd8 data_ov004_0225589c;
+extern struct UnkStruct_0224ebd8 data_ov004_0225583c;
+extern struct UnkStruct_0224ebd8 data_ov004_02255834;
+extern struct UnkStruct_0224ebd8 data_ov004_0225582c;
+extern struct UnkStruct_0224ebd8 data_ov004_022557c4;
+extern struct UnkStruct_0224ebd8 data_ov004_0225581c;
+extern struct UnkStruct_0224ebd8 data_ov004_02255814;
+extern struct UnkStruct_0224ebd8 data_ov004_022557dc;
+extern struct UnkStruct_0224ebd8 data_ov004_022557e4;
+extern struct UnkStruct_0224ebd8 data_ov004_022557f4;
+extern struct UnkStruct_0224ebd8 data_ov004_022557fc;
+extern struct UnkStruct_0224ebd8 data_ov004_0225580c;
+extern struct UnkStruct_0224ebd8 data_ov004_02255844;
+extern struct UnkStruct_0224ebd8 data_ov004_0225584c;
+extern struct UnkStruct_0224ebd8 data_ov004_02255864;
+extern struct UnkStruct_0224ebd8 data_ov004_0225588c;
+extern struct UnkStruct_0224ebd8 data_ov004_022558a4;
+extern struct UnkStruct_0224ebd8 data_ov004_022557bc;
+extern struct UnkStruct_0224ebd8 data_ov004_022557cc;
+extern struct UnkStruct_0224ebd8 data_ov004_022557d4;
+extern struct UnkStruct_0224ebd8 data_ov004_022557ec;
+extern struct UnkStruct_0224ebd8 data_ov004_02255804;
+extern struct UnkStruct_0224ebd8 data_ov004_02255824;
+
+void __sinit_ov004_0224ebd8(void)
+{
+    data_ov004_022588d4[0] = 0x1f;
+    data_ov004_022588d4[1] = 0x14;
+    data_ov004_022588d4[2] = 0x14;
+    data_ov004_022588d4[3] = 0x1f;
+    data_ov004_022588c4[0] = 0x14;
+    data_ov004_022588c4[1] = 0x14;
+    data_ov004_022588c4[2] = 0x1f;
+    data_ov004_022588c4[3] = 0x1f;
+    data_ov004_022588cc[0] = 0x1f;
+    data_ov004_022588cc[1] = 0x1f;
+    data_ov004_022588cc[2] = 0x14;
+    data_ov004_022588cc[3] = 0x1f;
+    data_ov004_022588c0[0] = 0x14;
+    data_ov004_022588c0[1] = 0x1f;
+    data_ov004_022588c0[2] = 0x14;
+    data_ov004_022588c0[3] = 0x1f;
+    data_ov004_022588bc[0] = 0x14;
+    data_ov004_022588bc[1] = 0x1f;
+    data_ov004_022588bc[2] = 0x1f;
+    data_ov004_022588bc[3] = 0x1f;
+    data_ov004_022588d0[0] = 0x14;
+    data_ov004_022588d0[1] = 0x18;
+    data_ov004_022588d0[2] = 0x18;
+    data_ov004_022588d0[3] = 0x1f;
+    data_ov004_022588d8[0] = data_ov004_0225587c;
+    data_ov004_022588d8[1] = data_ov004_02255874;
+    data_ov004_022588d8[2] = data_ov004_02255854;
+    data_ov004_022588d8[3] = data_ov004_0225585c;
+    data_ov004_022588d8[4] = data_ov004_0225586c;
+    data_ov004_022588d8[5] = data_ov004_02255884;
+    data_ov004_022588d8[6] = data_ov004_02255894;
+    data_ov004_022588d8[7] = data_ov004_0225589c;
+    data_ov004_022588d8[8] = data_ov004_0225583c;
+    data_ov004_022588d8[9] = data_ov004_02255834;
+    data_ov004_022588d8[10] = data_ov004_0225582c;
+    data_ov004_022588d8[11] = data_ov004_022557c4;
+    data_ov004_022588d8[12] = data_ov004_0225581c;
+    data_ov004_022588d8[13] = data_ov004_02255814;
+    data_ov004_022588d8[14] = data_ov004_022557dc;
+    data_ov004_022588d8[15] = data_ov004_022557e4;
+    data_ov004_022588d8[16] = data_ov004_022557f4;
+    data_ov004_022588d8[17] = data_ov004_022557fc;
+    data_ov004_022588d8[18] = data_ov004_0225580c;
+    data_ov004_022588d8[19] = data_ov004_02255844;
+    data_ov004_022588d8[20] = data_ov004_0225584c;
+    data_ov004_022588d8[21] = data_ov004_02255864;
+    data_ov004_022588d8[22] = data_ov004_0225588c;
+    data_ov004_022588d8[23] = data_ov004_022558a4;
+    data_ov004_022588d8[24] = data_ov004_022557bc;
+    data_ov004_022588d8[25] = data_ov004_022557cc;
+    data_ov004_022588d8[26] = data_ov004_022557d4;
+    data_ov004_022588d8[27] = data_ov004_022557ec;
+    data_ov004_022588d8[28] = data_ov004_02255804;
+    data_ov004_022588d8[29] = data_ov004_02255824;
+}

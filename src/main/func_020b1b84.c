@@ -1,0 +1,76 @@
+/* func_020b1b84 @ 0x020b1b84, 0xf0 bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern int func_020b1c74(void);
+extern int func_01ffcb28(int);
+extern int func_020eace4(int);
+extern int func_0205c0d4(int);
+extern int func_020b1c78(int);
+extern int OS_SetIrqFunction(int, void (*)(void));
+extern void func_01ffcc30(void);
+extern int OS_EnableIrqMask(int);
+extern int OS_EnableInterrupts(int, int);
+extern int GX_VBlankIntr(int);
+extern int GX_HBlankIntr(int);
+extern int func_02050b78(int);
+extern int func_02037f74(int);
+extern int func_02077b70(void *, int);
+extern int func_02077b9c(void *);
+extern char data_021d11c4[];
+extern char data_020e3134[];
+extern int func_020b93e8(void);
+extern int func_020edb98(int);
+extern int GXS_BeginLoadOBJExtPltt(int, int);
+extern int func_020540e4(int);
+extern int func_02004b70(int);
+extern int func_020e906c(int);
+extern int func_0209dfc0(void);
+extern int func_02046620(int);
+extern int func_02038998(int);
+extern int func_0209a200(void);
+extern int func_02061530(int);
+extern int func_0206e6c0(void);
+extern int func_0209dae8(int);
+
+extern char SDK_OVERLAY_ov069_ID;
+extern char SDK_OVERLAY_ov068_ID;
+
+extern void *data_021fd044;
+
+void func_020b1b84(void)
+{
+    func_020b1c78(func_0205c0d4(func_020eace4(func_01ffcb28(func_020b1c74()))));
+
+    OS_SetIrqFunction(2, func_01ffcc30);
+    OS_EnableIrqMask(3);
+
+    (void) *(volatile unsigned short *) 0x04000208;
+    *(volatile unsigned short *) 0x04000208 = 1;
+    OS_EnableInterrupts(1, 0x04000208);
+
+    GX_VBlankIntr(1);
+    func_02037f74(func_02050b78(GX_HBlankIntr(1)));
+
+    func_02077b70(data_021d11c4, (int) &SDK_OVERLAY_ov069_ID);
+    func_02077b9c(data_021d11c4);
+
+    func_020edb98(func_020b93e8());
+
+    func_020e906c(func_02004b70(func_020540e4(GXS_BeginLoadOBJExtPltt(0x13fc8, 0))));
+
+    func_02038998(func_02046620(func_0209dfc0()));
+
+    data_021fd044 = data_020e3134;
+
+    func_02061530(func_0209a200());
+
+    *(volatile unsigned int *) 0x040004c8 = 0x296a5800;
+    *(volatile unsigned int *) 0x040004cc = 0x7fff;
+    *(volatile unsigned int *) 0x040004c0 = 0x7fff;
+    *(volatile unsigned int *) 0x040004c4 = 0;
+
+    func_0209dae8(func_0206e6c0());
+
+    func_02077b70(data_021d11c4, (int) &SDK_OVERLAY_ov068_ID);
+}

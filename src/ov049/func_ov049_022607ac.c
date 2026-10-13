@@ -1,0 +1,148 @@
+/* func_ov049_022607ac @ 0x022607ac, 0x2b8 bytes, Thumb, module ov049
+ * mwccarm 1.2/base -O4,s
+ */
+
+#include "types.h"
+
+struct VT2;
+struct UnkStruct_022607ac_2 {
+    struct VT2 *vt;
+};
+struct VT2 {
+    void (*fn[8])(struct UnkStruct_022607ac_2 *);
+};
+
+struct UnkStruct_022607ac_3 {
+    u8 pad_00[0x560];
+    u8 unk_560;
+    u8 pad_561[0x658 - 0x561];
+    struct UnkStruct_022607ac_2 unk_658;
+};
+
+struct UnkStruct_022607ac {
+    u8 pad_00[0x64];
+    int unk_64;
+};
+extern struct UnkStruct_022607ac *data_020ccf94;
+
+extern void func_0201c054(struct UnkStruct_022607ac_3 *self, int a, int b, int c);
+extern int func_0201c0e0(struct UnkStruct_022607ac_3 *self);
+extern int func_0201c014(struct UnkStruct_022607ac_3 *self);
+extern int func_0201c040(struct UnkStruct_022607ac_3 *self, int *a, int *b);
+extern int func_0201c2a4(struct UnkStruct_022607ac_3 *self, int a);
+extern void func_ov049_02262a94(struct UnkStruct_022607ac_3 *self, int a);
+extern void func_02016108(struct UnkStruct_022607ac_2 *s, int a);
+extern int func_ov049_02262084(struct UnkStruct_022607ac_2 *s);
+extern void func_ov049_0226208c(struct UnkStruct_022607ac_2 *s, int a);
+extern int func_020a7278(void);
+extern int func_02073d90(struct UnkStruct_022607ac *g);
+extern short *func_0209d358(int a, int b);
+extern void func_0201b6e4(struct UnkStruct_022607ac_3 *self, int sel, int v);
+
+void func_ov049_022607ac(struct UnkStruct_022607ac_3 *self, int sel, int v)
+{
+    switch (sel) {
+        case 3:
+            self->unk_560 = (u8) v;
+            if (v != 4) {
+                func_0201c054(self, 1, data_020ccf94->unk_64, v);
+                func_ov049_02262a94(self, 0xc);
+            } else if (func_0201c0e0(self) != 0) {
+                int k = data_020ccf94->unk_64;
+                func_0201c054(self, 1, k, k);
+                func_ov049_02262a94(self, 0xc);
+            }
+            break;
+        case 1:
+            self->unk_560 = (u8) v;
+            if (v != 4 && v != data_020ccf94->unk_64) {
+                func_0201c054(self, 1, v, v);
+                func_ov049_02262a94(self, 9);
+            } else {
+                if (func_0201c0e0(self) != 0) {
+                    struct UnkStruct_022607ac *g = data_020ccf94;
+                    int k = g->unk_64;
+                    func_0201c054(self, 1, k, k);
+                    if (func_ov049_02262084(&self->unk_658) == 1 || func_ov049_02262084(&self->unk_658) == 0) {
+                        self->unk_658.vt->fn[2](&self->unk_658);
+                        func_02016108(&self->unk_658, func_0201c2a4(self, 4));
+                        func_ov049_02262a94(self, 4);
+                    } else if (func_ov049_02262084(&self->unk_658) == 3) {
+                        self->unk_658.vt->fn[2](&self->unk_658);
+                        func_02016108(&self->unk_658, func_0201c2a4(self, 4));
+                        func_ov049_02262a94(self, 5);
+                    } else if (func_02073d90(g) != 0 || *func_0209d358(0, 0x4a) != 0) {
+                        self->unk_658.vt->fn[2](&self->unk_658);
+                        func_02016108(&self->unk_658, func_0201c2a4(self, 4));
+                        func_ov049_02262a94(self, 4);
+                    } else {
+                        func_ov049_02262a94(self, 0xd);
+                    }
+                }
+            }
+            break;
+        case 0:
+            self->unk_560 = (u8) v;
+            if (v != 4 && v != data_020ccf94->unk_64) {
+                func_0201c054(self, 1, v, v);
+                func_ov049_02262a94(self, 9);
+            } else {
+                if (func_0201c0e0(self) != 0) {
+                    int k = data_020ccf94->unk_64;
+                    func_0201c054(self, 1, k, k);
+                    self->unk_658.vt->fn[2](&self->unk_658);
+                    func_02016108(&self->unk_658, func_0201c2a4(self, 4));
+                    func_ov049_0226208c(&self->unk_658, 2);
+                    func_ov049_02262a94(self, 4);
+                }
+            }
+            break;
+        case 8:
+            if (v == 4) {
+                if (func_020a7278() != 0) {
+                    struct UnkStruct_022607ac *g = data_020ccf94;
+                    func_0201c054(self, 1, g->unk_64, 4);
+                    if (func_02073d90(g) != 0 || *func_0209d358(0, 0x4a) != 0) {
+                        func_ov049_02262a94(self, 0xa);
+                    } else {
+                        if (func_ov049_02262084(&self->unk_658) == 3) {
+                            break;
+                        }
+                        func_ov049_02262a94(self, 1);
+                    }
+                } else {
+                    func_0201c054(self, 1, 4, data_020ccf94->unk_64);
+                    func_ov049_02262a94(self, 8);
+                }
+            }
+            break;
+        case 4: {
+            int a;
+            int b;
+            if (func_0201c014(self) == 0) {
+                break;
+            }
+            if (func_0201c0e0(self) == 0) {
+                break;
+            }
+            a = 4;
+            b = 4;
+            if (func_0201c040(self, &a, &b) == 0) {
+                break;
+            }
+            if (v != 4) {
+                if (v == b) {
+                    goto ok;
+                }
+            }
+            if (v != 4) {
+                break;
+            }
+        ok:
+            func_0201c054(self, 1, data_020ccf94->unk_64, 4);
+            func_ov049_02262a94(self, 0xa);
+            break;
+        }
+    }
+    func_0201b6e4(self, sel, v);
+}

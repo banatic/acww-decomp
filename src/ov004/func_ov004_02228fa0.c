@@ -1,0 +1,12 @@
+/* func_ov004_02228fa0 @ 0x02228fa0, 0x1c bytes, Thumb, module ov004
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern void func_020779b8(char *p, int a1, int a2, int a3);
+extern int func_02077910(char *p, int a3);
+
+int func_ov004_02228fa0(char *p, int a1, int a2, int a3)
+{
+    func_020779b8(p, a1, a2, a3);
+    return func_02077910(p + 5, a3);
+}

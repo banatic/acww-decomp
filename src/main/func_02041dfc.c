@@ -1,0 +1,5 @@
+/* func_02041dfc @ 0x02041dfc, 0x2 bytes, Thumb, module main
+ * mwccarm 1.2/base -O4,s
+ */
+
+void func_02041dfc(void) {}

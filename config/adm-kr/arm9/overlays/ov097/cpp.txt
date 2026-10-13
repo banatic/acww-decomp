@@ -1,0 +1,2 @@
+_ZN18Obj_ov096_022a23e819func_ov097_022a2954Ev kind:function(thumb) addr:0x022a2954
+_ZN18Obj_ov096_022a23e819func_ov097_022a29e4Ev kind:function(thumb) addr:0x022a29e4

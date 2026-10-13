@@ -1,0 +1,40 @@
+/* func_ov132_0229b888 @ 0x0229b888, 0x7c bytes, Thumb, module ov132
+ * mwccarm 1.2/base -O4,s
+ */
+
+extern char *func_ov002_02207f80(int);
+extern void func_ov002_0220830c(void);
+extern void func_ov002_02209ccc(void *);
+extern void func_ov002_0220b008(void *);
+extern void func_02138d6c(void *, int, int, void (*)(void), void (*)(void));
+extern void func_02070be8(void);
+extern void func_02070c08(void);
+extern void func_020b9cfc(void *);
+extern void func_ov002_0220ba24(void *);
+extern int data_ov132_0229b990;
+
+char *func_ov132_0229b888(void)
+{
+    char *p;
+
+    p = func_ov002_02207f80(0x1508);
+    if (p != 0) {
+        char *it;
+        char *end;
+
+        func_ov002_0220830c();
+        *(void **) p = (void *) &data_ov132_0229b990;
+        func_ov002_02209ccc(p + 0x94);
+        func_ov002_0220b008(p + 0xf8);
+        func_02138d6c(p + 0x2c4, 2, 0x6c, func_02070c08, func_02070be8);
+
+        it = p + 0x39c;
+        end = p + 0x3e4;
+        do {
+            func_020b9cfc(it);
+            it += 0x24;
+        } while (it != end);
+        func_ov002_0220ba24(end);
+    }
+    return p;
+}
