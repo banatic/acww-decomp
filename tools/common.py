@@ -23,6 +23,7 @@ INCLUDE = ROOT / "include"
 BUILD = ROOT / "build" / "adm-kr"
 ROM_DIR = BUILD / "rom"
 OBJ_DIR = BUILD / "obj"
+WORK_DIR = BUILD / "mwcc-cwd"
 
 # mwccarm is proprietary and never committed. INSTALL.md says where to put it.
 MWCC_ROOT = pathlib.Path(os.environ.get("MWCC_ROOT", ROOT / "tools" / "mwccarm"))
@@ -280,8 +281,11 @@ def compile_source(src: Source) -> tuple[bytes | None, str]:
     # MWCC_WRAPPER (e.g. "wibo") runs the Windows compiler on another host; it does not
     # change the output, so it is not part of the cache key.
     wrapper = shlex.split(os.environ.get("MWCC_WRAPPER", ""))
+    # Run in an empty directory: under wibo every start-up scans the working directory, and an
+    # object directory with thousands of files made each compile take seconds.
+    WORK_DIR.mkdir(parents=True, exist_ok=True)
     p = subprocess.run([*wrapper, str(exe), *flags, "-c", str(src.path), "-o", str(obj)],
-                       capture_output=True, env=env, cwd=obj.parent, timeout=300)
+                       capture_output=True, env=env, cwd=WORK_DIR, timeout=300)
     log = (p.stdout + p.stderr).decode("utf-8", "replace")
     if p.returncode != 0 or not obj.exists():
         return None, log
