@@ -3,10 +3,10 @@
 Two workflows run on every push to `main`:
 
 - `lint.yml` needs nothing private and runs on any fork.
-- `build.yml` extracts, verifies, relinks and uploads `build/adm-kr/report.json` as the artifact
-  `adm-kr_report`, which [decomp.dev](https://decomp.dev) reads to draw the progress map and
-  badges. It runs inside a **private** container image that holds the base ROM and the
-  compiler, so neither ever appears in the repository or in a public image.
+- `build.yml` extracts, verifies, relinks and uploads `build/adm-kr/report.json` (objdiff
+  report format) as the artifact `adm-kr_report`. It runs inside a **private** container image
+  that holds the base ROM and the compiler, so neither ever appears in the repository or in a
+  public image.
 
 ## The build image
 
@@ -55,11 +55,3 @@ Then, on GitHub, open the package's settings, keep its visibility private, and u
 Workflows triggered from forks cannot read the package, so `build.yml` fails on pull requests
 from forks; `lint.yml` still runs there.
 
-## decomp.dev
-
-Once a `build` run on `main` has uploaded `adm-kr_report`, sign in at decomp.dev with GitHub and
-add the repository. The progress map can then be embedded with
-
-```markdown
-[![Progress](https://decomp.dev/<owner>/<repo>.svg?w=512&h=256)](https://decomp.dev/<owner>/<repo>)
-```

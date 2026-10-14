@@ -1,37 +1,36 @@
 Animal Crossing: Wild World (Korea)
 ===================================
 
-[![Build Status]][actions] [![Progress]][decomp.dev]
+[![Build Status]][actions]
 
 [Build Status]: https://github.com/banatic/acww-decomp/actions/workflows/build.yml/badge.svg
 [actions]: https://github.com/banatic/acww-decomp/actions/workflows/build.yml
-[Progress]: https://decomp.dev/banatic/acww-decomp.svg?mode=shield&measure=code&category=game&label=Game%20code
-[decomp.dev]: https://decomp.dev/banatic/acww-decomp
 
-A matching decompilation of the ARM9 code of *Animal Crossing: Wild World*, Korean release
-(`ADMK`). It does not contain any game assets, code or disassembly; you need your own copy of
-the game to build it.
+A decompilation of the ARM9 code of *Animal Crossing: Wild World*, Korean release (`ADMK`).
+It does not contain any game assets, code or disassembly; you need your own copy of the game
+to build it.
 
 > [!IMPORTANT]
 > **This repository contains the game's own code only.** The libraries the game links
 > against (NitroSDK, NitroSystem, NitroDWC, NitroWiFi, the GameSpy SDK, the Metrowerks C
-> library and runtime: 4,083 functions, about 590 KB) are not included, and show as not
-> decompiled on the map below. With them, every one of the 29,330 ARM9 functions compiles to
-> the ROM's exact bytes. Library versions are listed in [libs/README.md](libs/README.md).
+> library and runtime: 4,083 functions, about 590 KB) are not included. Library versions are
+> listed in [libs/README.md](libs/README.md).
 
-[![Progress map](https://decomp.dev/banatic/acww-decomp.svg?w=768&h=384)](https://decomp.dev/banatic/acww-decomp)
+## Status
 
-All 25,247 game functions are C or C++ that compile with the original compiler to the ROM's
-exact bytes, and the code links to the ROM's call targets and pointers. The data sections are
-still taken from the ROM.
+Each of the 25,247 game functions has a C or C++ source that compiles with the original
+compiler to the ROM's exact bytes, and whose calls and pointers resolve to the ROM's targets.
+The sources are still one file per function, and the data sections still come from the ROM.
+Work in progress: linking the whole program with the original linker, and regrouping the
+functions into their original source files. [docs/verification.md](docs/verification.md)
+describes what is checked and what is not yet.
 
 The target ROM:
 
 - `ADMK` (Korea), SHA-1 `1fffd601d3439e37cd934e72d08e487a93fc449b`
 
-Setup instructions are in [INSTALL.md](INSTALL.md), contribution guidelines in
-[CONTRIBUTING.md](CONTRIBUTING.md), and how matches are checked in
-[docs/verification.md](docs/verification.md).
+Setup instructions are in [INSTALL.md](INSTALL.md) and contribution guidelines in
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 Thanks to [ds-decomp](https://github.com/AetiasHax/ds-decomp),
 [objdiff](https://github.com/encounter/objdiff), and the
