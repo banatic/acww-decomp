@@ -289,7 +289,9 @@ def step(what: str, t0: list[float] = [time.monotonic()]) -> None:
 
 def run(cmd: list[str], log: str) -> None:
     step(log.removesuffix(".log"))
-    p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace")
+    # mwldarm checks the same license file as the compiler
+    env = dict(os.environ, LM_LICENSE_FILE=str(C.MWCC_ROOT / "license.dat"))
+    p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace", env=env)
     (LINK / log).write_text(p.stdout + p.stderr, newline="\n")
     if p.returncode != 0:
         tail = [line for line in (p.stdout + p.stderr).splitlines()
