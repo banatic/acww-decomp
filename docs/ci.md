@@ -3,7 +3,7 @@
 Two workflows run on every push to `main`:
 
 - `lint.yml` needs nothing private and runs on any fork.
-- `build.yml` extracts, verifies, relinks and uploads `build/adm-kr/report.json` (objdiff
+- `build.yml` extracts, verifies, links the whole program and uploads `build/adm-kr/report.json` (objdiff
   report format) as the artifact `adm-kr_report`. It runs inside a **private** container image
   that holds the base ROM and the compiler, so neither ever appears in the repository or in a
   public image.

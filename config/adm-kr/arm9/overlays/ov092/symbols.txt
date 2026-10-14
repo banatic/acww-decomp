@@ -3,17 +3,6 @@ func_ov092_02298f38 kind:function(thumb,size=0x20) addr:0x02298f38
 func_ov092_02298f58 kind:function(thumb,size=0x2) addr:0x02298f58
 func_ov092_02298f5c kind:function(thumb,size=0x110) addr:0x02298f5c
 func_ov092_0229906c kind:function(thumb,size=0x18) addr:0x0229906c
-data_ov092_02299085 kind:data(any) addr:0x02299085
-data_ov092_02299299 kind:data(any) addr:0x02299299
-data_ov092_02299381 kind:data(any) addr:0x02299381
-data_ov092_02299391 kind:data(any) addr:0x02299391
-data_ov092_02299395 kind:data(any) addr:0x02299395
-data_ov092_02299399 kind:data(any) addr:0x02299399
-data_ov092_02299401 kind:data(any) addr:0x02299401
-data_ov092_0229945d kind:data(any) addr:0x0229945d
-data_ov092_02299461 kind:data(any) addr:0x02299461
-data_ov092_02299481 kind:data(any) addr:0x02299481
-data_ov092_022994a1 kind:data(any) addr:0x022994a1
 data_ov092_022994e0 kind:data(any) addr:0x022994e0 ambiguous
 data_ov092_022994e8 kind:data(any) addr:0x022994e8
 data_ov092_022994f0 kind:data(any) addr:0x022994f0
@@ -23,3 +12,16 @@ data_ov092_02299580 kind:bss addr:0x02299580
 data_ov092_02299584 kind:bss addr:0x02299584
 data_ov092_02299588 kind:bss addr:0x02299588
 data_ov092_02299590 kind:bss addr:0x02299590
+func_ov092_02299084 kind:function(thumb,size=0x212) addr:0x02299084
+func_ov092_02299298 kind:function(thumb,size=0x2) addr:0x02299298
+func_ov092_0229929c kind:function(thumb,size=0x86) addr:0x0229929c
+func_ov092_02299324 kind:function(thumb,size=0x5c) addr:0x02299324
+func_ov092_02299380 kind:function(thumb,size=0x10) addr:0x02299380
+func_ov092_02299390 kind:function(thumb,size=0x4) addr:0x02299390
+func_ov092_02299394 kind:function(thumb,size=0x4) addr:0x02299394
+func_ov092_02299398 kind:function(thumb,size=0x68) addr:0x02299398
+func_ov092_02299400 kind:function(thumb,size=0x5c) addr:0x02299400
+func_ov092_0229945c kind:function(thumb,size=0x4) addr:0x0229945c
+func_ov092_02299460 kind:function(thumb,size=0x1e) addr:0x02299460
+func_ov092_02299480 kind:function(thumb,size=0x1e) addr:0x02299480
+func_ov092_022994a0 kind:function(thumb,size=0x24) addr:0x022994a0

@@ -35,7 +35,7 @@ from:0x0229f052 kind:thumb_call to:0x0229ce84 module:overlays(95,103)
 from:0x0229f066 kind:thumb_call to:0x0229bee4 module:overlays(95,129)
 from:0x0229f06e kind:thumb_call to:0x0229f504 module:overlay(111)
 from:0x0229f078 kind:thumb_call to:0x0229bed8 module:overlay(95)
-from:0x0229f08c kind:load to:0x0229bf7d module:overlays(94,95,119,133,134,147)
+from:0x0229f08c kind:load to:0x0229bf7d module:overlays(94,95,119,134,147)
 from:0x0229f09a kind:thumb_call to:0x0229c22c module:overlays(95,96)
 from:0x0229f0ac kind:thumb_call to:0x0220a0ec module:none
 from:0x0229f0be kind:thumb_call to:0x02208098 module:overlay(2)

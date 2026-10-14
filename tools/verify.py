@@ -131,7 +131,7 @@ class Checker:
         if sym is None or sym.size != src.size:
             return {**res, "status": "error",
                     "why": "header does not match a function in the symbol table"}
-        if sym.name != src.name:
+        if sym.name != src.object_symbol:
             res["renamed"] = sym.name
         target = self.rom(src.module, src.address, src.size)
 

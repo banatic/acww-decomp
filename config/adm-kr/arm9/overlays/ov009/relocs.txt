@@ -587,7 +587,7 @@ from:0x022659a4 kind:load to:0x022656bd module:overlay(9)
 from:0x022659a8 kind:load to:0x02066975 module:main
 from:0x022659ac kind:load to:0x020668c1 module:main
 from:0x022659b0 kind:load to:0x020668bd module:main
-from:0x022659b4 kind:load to:0x0221ba91 module:overlays(3,4)
+from:0x022659b4 kind:load to:0x0221ba91 module:overlay(3)
 from:0x022659b8 kind:load to:0x020668b5 module:main
 from:0x022659bc kind:load to:0x020668b1 module:main
 from:0x022659c0 kind:load to:0x020668ad module:main

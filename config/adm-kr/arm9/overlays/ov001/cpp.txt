@@ -1,5 +1,0 @@
-DWCi_SETTINGlGetDnsS kind:function(arm) addr:0x02225b64
-DWCi_SETTINGlGetDnsP kind:function(arm) addr:0x02225bb4
-DWCi_SETTINGlGetGateway kind:function(arm) addr:0x02225c04
-DWCi_SETTINGlGetNetMask kind:function(arm) addr:0x02225c54
-DWCi_SETTINGlGetIp kind:function(arm) addr:0x02225c9c

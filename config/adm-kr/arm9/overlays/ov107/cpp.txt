@@ -1,6 +1,0 @@
-_ZN18Obj_ov107_0229e3b819func_ov107_0229dcdcEv kind:function(thumb) addr:0x0229dcdc
-_ZN18Obj_ov107_0229e3b819func_ov107_0229dd28Ev kind:function(thumb) addr:0x0229dd28
-_ZN18Obj_ov107_0229e3b819func_ov107_0229dd88Ev kind:function(thumb) addr:0x0229dd88
-_ZN18Obj_ov107_0229e3b819func_ov107_0229ddc4Ev kind:function(thumb) addr:0x0229ddc4
-_ZN18Obj_ov107_0229e3b819func_ov107_0229de54Ev kind:function(thumb) addr:0x0229de54
-_ZN18Obj_ov107_0229e3b819func_ov107_0229e048Ev kind:function(thumb) addr:0x0229e048

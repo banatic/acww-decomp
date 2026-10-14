@@ -20,7 +20,7 @@ import common as C  # noqa: E402
 
 def table_files(module: str) -> list[pathlib.Path]:
     d = C.config_dir(module)
-    return [p for p in (d / "symbols.txt", d / "recovered.txt") if p.exists()]
+    return [p for p in (d / "symbols.txt",) if p.exists()]
 
 
 def main() -> None:

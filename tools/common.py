@@ -86,32 +86,24 @@ def _read_symbols(path: pathlib.Path, module: str, recovered: bool) -> list[Symb
 
 
 class SymbolTable:
-    """Every symbol of every module, plus the recovered function boundaries.
-
-    `recovered.txt` holds function boundaries that dsd's analysis missed (most of ov004,
-    whose C++ code dsd classified as data). A recovered row is used only where it overlaps
-    no real symbol.
-    """
+    """Every symbol of every module, as dsd reads them from symbols.txt. A function's name
+    is the one its source emits: the plain name for C, the mangled name for C++."""
 
     def __init__(self, mods: dict[str, dict]):
         self.by_module: dict[str, list[Symbol]] = {}
         for mod in mods:
-            real = _read_symbols(config_dir(mod) / "symbols.txt", mod, False)
-            spans = sorted((s.address, s.address + s.size) for s in real
-                           if s.kind == "function" and s.size)
-            rec = []
-            for s in _read_symbols(config_dir(mod) / "recovered.txt", mod, True):
-                if s.kind != "function" or not s.size:
-                    continue
-                if any(a < s.address + s.size and s.address < b for a, b in spans):
-                    continue
-                rec.append(s)
-            # cpp*.txt: C++ (mangled) names for functions and data that already have a row.
-            # They only add names; sizes are dropped so counts and boundaries are unchanged.
-            cpp = [dataclasses.replace(s, size=0)
-                   for p in sorted(config_dir(mod).glob("cpp*.txt"))
-                   for s in _read_symbols(p, mod, False)]
-            self.by_module[mod] = real + rec + cpp
+            self.by_module[mod] = _read_symbols(config_dir(mod) / "symbols.txt", mod, False)
+        # aliases.txt: a second name some sources still use for a symbol. It resolves to the
+        # same address, with size 0 so counts and boundaries are unchanged.
+        by_name = {s.name: s for syms in self.by_module.values() for s in syms}
+        alias_file = CONFIG / "aliases.txt"
+        if alias_file.exists():
+            for line in alias_file.read_text().splitlines():
+                if line.strip() and not line.startswith("#"):
+                    alias, canon = line.split()
+                    if canon in by_name:
+                        s = by_name[canon]
+                        self.by_module[s.module].append(dataclasses.replace(s, name=alias, size=0))
         # Linker-script symbols (NitroSDK's .lcf defines SDK_IRQ_STACKSIZE, the arena bounds,
         # ...): absolute values in no module. SDK code takes their addresses, so the ROM
         # holds each value as a plain, unrelocated word. Resolved like any unique name.
@@ -234,6 +226,10 @@ def compile_flags(src: Source) -> list[str]:
     # drop are per translation unit and come from the file's header.
     flags = ["-proc", "arm946e", src.opt, "-lang", src.lang, "-char", "signed",
              "-enum", "int", "-interworking", "-i", str(INCLUDE / "msl"), "-i", str(INCLUDE)]
+    # The ROM's exception index lists only runtime-library functions, so the game was
+    # built without exception tables.
+    if SRC in src.path.resolve().parents:
+        flags += ["-Cpp_exceptions", "off"]
     if src.thumb:
         flags.append("-thumb")
     return flags

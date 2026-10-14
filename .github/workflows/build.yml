@@ -1,5 +1,6 @@
 # Full build: needs the base ROM and the compiler, which live only in a private container image
-# (see docs/ci.md). Uploads the progress report that decomp.dev reads.
+# (see docs/ci.md). Verifies every function, links the program with the original linker, and
+# uploads the progress report.
 name: build
 
 # Not on pull requests: workflows from forks cannot read the private image.
@@ -46,8 +47,15 @@ jobs:
       - name: Verify
         run: python3 tools/verify.py --workers "$(nproc)"
 
-      - name: Relink
-        run: python3 tools/relink.py
+      - name: Get dsd
+        run: |
+          mkdir -p build/tools
+          python3 -c "import urllib.request as u; u.urlretrieve('https://github.com/AetiasHax/ds-decomp/releases/download/v0.12.1/dsd-linux-x86_64', 'build/tools/dsd')"
+          echo "256edde804dd8e5d7bc4c0e4187f85244ee4cd1f42bb427502e01fda6af43ceb  build/tools/dsd" | sha256sum -c
+          chmod +x build/tools/dsd
+
+      - name: Link
+        run: python3 tools/link.py
 
       - name: Report
         run: python3 tools/report.py

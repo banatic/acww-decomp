@@ -1,4 +1,0 @@
-_ZN18Obj_ov071_0227a27819func_ov071_022797d8Ev kind:function(thumb) addr:0x022797d8
-_ZN18Obj_ov071_0227a27819func_ov071_022798f8Ev kind:function(thumb) addr:0x022798f8
-_ZN18Obj_ov071_0227a27819func_ov071_022799c0Ev kind:function(thumb) addr:0x022799c0
-_ZN18Obj_ov071_0227a27819func_ov071_02279a78Ev kind:function(thumb) addr:0x02279a78

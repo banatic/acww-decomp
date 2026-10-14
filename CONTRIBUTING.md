@@ -41,16 +41,19 @@ functions: `Obj_<address>` in main and the autoloads, `Obj_ov<NNN>_<address>` in
 `include/cpp/<module>/<Class>.h`. Member functions keep the name of the function they are:
 `Obj_ov128_0229cbc0::func_ov128_0229c700()`.
 
-The symbol table names functions in C. The C++ name of a function or vtable goes in
-`config/adm-kr/arm9/<module>/cpp.txt`, one row per name, exactly as mwcc mangles it (copy it
-from the compiled object, never write it by hand):
+The symbol table (`config/adm-kr/arm9/<module>/symbols.txt`) names each function the way its
+source emits it: the plain name for C, the mangled name for C++, exactly as mwcc mangles it
+(copy it from the compiled object, never write it by hand):
 
 ```
-_ZN18Obj_ov128_0229cbc019func_ov128_0229c700Ev kind:function(thumb) addr:0x0229c700
+_ZN18Obj_ov128_0229cbc019func_ov128_0229c700Ev kind:function(thumb,size=0x24) addr:0x0229c700
 ```
 
 A source that defines a member function says which symbol it emits on the third header line:
-` * compiler-emitted symbol: <mangled name>`.
+` * compiler-emitted symbol: <mangled name>`. Every use of a function must use that same name.
+`config/adm-kr/arm9/aliases.txt` lists the names some sources still use instead (mostly C++
+names, from vtables, of functions still defined in C); those sources cannot be linked yet, and
+the list only shrinks.
 
 ## Fake matches
 

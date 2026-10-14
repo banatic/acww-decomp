@@ -9,6 +9,8 @@
   `MWCC_ROOT`. A few library functions also need the `1.2/sp2` and `1.2/sp2p3` drops. On
   Linux and macOS, install [wibo](https://github.com/decompals/wibo) and set
   `MWCC_WRAPPER=wibo`.
+- [ds-decomp](https://github.com/AetiasHax/ds-decomp) `dsd` v0.12.1 for the whole-program
+  link: put the release binary at `build/tools/dsd` (`dsd.exe` on Windows) or set `DSD`.
 
 ## Building
 
@@ -16,7 +18,7 @@
 cp /path/to/game.nds extract/
 python tools/extract.py      # checks the SHA-1 and splits the ARM9 modules into build/
 python tools/verify.py       # compiles everything and checks it against the ROM
-python tools/relink.py       # rebuilds each module and compares SHA-1s
+python tools/link.py         # links the program with the original linker, compares modules
 ```
 
 Objects are cached, so later runs only recompile what changed. To check part of the tree, pass
