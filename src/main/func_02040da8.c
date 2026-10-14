@@ -3,7 +3,7 @@
  */
 
 extern void func_0209e474(void *);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern void func_02040a10(void *obj);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int len);
 extern void func_0203fea0(void *dst, void *src);
@@ -31,7 +31,7 @@ void func_02040da8(void *obj)
 
     a.unk_00 = 0;
     a.w1 = 0;
-    n = MB_GetBeaconRecvStatus();
+    n = func_0209ded0();
     func_0209e474(&a);
     func_02040a10(obj);
     MI_CpuCopy8(&a, b, 8);

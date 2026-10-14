@@ -151,8 +151,10 @@ static int run_test(const DiffTestEntry *entry)
         memcpy(cpu.r, args, sizeof(args));
         cpu.r[13] = STACK_TOP;
         CallWatch watch = {t->address & ~1u, (t->address & ~1u) + entry->size, 0};
-        cpu.hook_at = watch_calls;
-        cpu.hook_user = &watch;
+        if (!t->follow_calls) {
+            cpu.hook_at = watch_calls;
+            cpu.hook_user = &watch;
+        }
         enum ArmStop stop = arm_call(&cpu, t->address, MAX_STEPS);
         if (stop != ARM_RETURNED) {
             printf("%s case %d: the reference stopped (%d) at %08x", t->name, n, (int) stop, cpu.stop_pc);

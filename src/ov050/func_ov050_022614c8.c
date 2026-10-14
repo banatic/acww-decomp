@@ -5,7 +5,7 @@
 extern void func_020984e8(void);
 extern int func_0202e9fc(void);
 extern int func_020ada14(void);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern int func_020874c4(const void *p);
 extern void func_02015fb0(void *a, int b, int c, int d, int e, int f);
 extern unsigned char data_021f3b0c;
@@ -32,7 +32,7 @@ void func_ov050_022614c8(struct UnkStruct_022614c8 *obj, int val)
             }
             break;
         case 2:
-            if (MB_GetBeaconRecvStatus() != 0) {
+            if (func_0209ded0() != 0) {
                 int r = func_020874c4(&data_021f3b0c);
                 func_02015fb0(obj, r, 1, 3, 0, 0);
                 obj->unk_D0 = 0x16;

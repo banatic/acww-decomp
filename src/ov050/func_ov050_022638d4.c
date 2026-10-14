@@ -29,7 +29,7 @@ extern int func_0206fc6c(void);
 extern u16 *func_0206faf0(void);
 extern int func_0204c878(u16 *p);
 extern int func_020984e8(void);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern int func_020874c4(char *p);
 extern void func_02015fb0(UnkStruct_022638d4 *self, int a, int b, int c, int d, int e);
 extern int func_ov050_02260510(void *h);
@@ -88,7 +88,7 @@ void func_ov050_022638d4(UnkStruct_022638d4 *self)
                     ok = 1;
                 }
                 if (ok > 0) {
-                    if (MB_GetBeaconRecvStatus() == 0) {
+                    if (func_0209ded0() == 0) {
                         flagB = 1;
                     } else {
                         mul = func_020874c4(data_021f3b0c);

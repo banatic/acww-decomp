@@ -10,12 +10,12 @@ typedef struct {
     int d;
 } UnkStruct_0209df7c;
 
-extern UnkStruct_0209df7c cardi_common__autoload_3_021dc744;
+extern UnkStruct_0209df7c data_021dc744;
 
 void func_0209df7c(unsigned char *dst)
 {
-    dst[0] = cardi_common__autoload_3_021dc744.c;
-    dst[1] = cardi_common__autoload_3_021dc744.d;
-    dst[2] = cardi_common__autoload_3_021dc744.b;
-    dst[3] = cardi_common__autoload_3_021dc744.a;
+    dst[0] = data_021dc744.c;
+    dst[1] = data_021dc744.d;
+    dst[2] = data_021dc744.b;
+    dst[3] = data_021dc744.a;
 }

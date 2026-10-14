@@ -3,7 +3,7 @@
  */
 
 extern void func_0209e474(void);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern void func_0209e140(int, int);
 extern void func_0209e29c(int, int);
 
@@ -11,10 +11,10 @@ void func_02040b6c(int a0, int a1)
 {
     func_0209e474();
     if (a1 == 1) {
-        int s = MB_GetBeaconRecvStatus() + 1;
+        int s = func_0209ded0() + 1;
         func_0209e140(a0, s);
     } else {
-        int s = 7 - MB_GetBeaconRecvStatus();
+        int s = 7 - func_0209ded0();
         func_0209e29c(a0, s);
     }
 }

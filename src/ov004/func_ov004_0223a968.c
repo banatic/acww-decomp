@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0223a968;
 
 extern UnkStruct_0223a968 data_ov004_02247cf4[];
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern void func_0209def4(void *buf);
 
 int func_ov004_0223a968(void)
@@ -19,7 +19,7 @@ int func_ov004_0223a968(void)
     int i;
     unsigned short key;
 
-    e = &data_ov004_02247cf4[MB_GetBeaconRecvStatus()];
+    e = &data_ov004_02247cf4[func_0209ded0()];
     func_0209def4(buf);
     i = e->n - 1;
     key = *(unsigned short *) buf;

@@ -1,0 +1,3 @@
+# Functions whose Native and Reference differ on states the check generates, with the reason.
+# One per line: <DS address> <reason>. tools/diffcheck.py --native counts these apart from
+# unexplained differences; the list only shrinks.

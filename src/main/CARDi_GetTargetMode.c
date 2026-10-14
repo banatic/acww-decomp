@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int cardi_common__autoload_3_021dc744;
+extern int data_021dc744;
 
 int CARDi_GetTargetMode(void)
 {
-    return *(int *) ((char *) ((int) &cardi_common__autoload_3_021dc744) + (24));
+    return *(int *) ((char *) ((int) &data_021dc744) + (24));
 }

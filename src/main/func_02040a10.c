@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned char MB_GetBeaconRecvStatus(unsigned char *param);
+extern unsigned char func_0209ded0(unsigned char *param);
 extern unsigned char *func_02040980(unsigned char *param);
 extern void func_020409e8(unsigned char *param);
 
@@ -13,7 +13,7 @@ void func_02040a10(unsigned char *param)
     unsigned char b2;
     unsigned char b13;
 
-    val = MB_GetBeaconRecvStatus(param);
+    val = func_0209ded0(param);
     p = func_02040980(param);
     if (p != 0) {
         b2 = p[2];

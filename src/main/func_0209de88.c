@@ -4,7 +4,7 @@
 
 extern void func_0209df64(void *);
 extern int func_0209dcdc(void *, void *);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 int func_0209de88(char p1, char p2, char p3)
 {
     char arr[4];
@@ -22,6 +22,6 @@ int func_0209de88(char p1, char p2, char p3)
     if (x < 0) {
         rem = 7 - rem;
     }
-    x = MB_GetBeaconRecvStatus();
+    x = func_0209ded0();
     return (x + rem) % 7;
 }

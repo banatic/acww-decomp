@@ -19,7 +19,7 @@ extern void func_020984e8(int x);
 extern void func_ov050_02263640(UnkStruct_02260f28 *self, int arg);
 extern int func_0202e9fc(void);
 extern int func_020ada14(void);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern int func_020874c4(void *ptr);
 extern void func_02015fb0(UnkStruct_02260f28 *self, int a, int b, int c, int d, int e);
 extern int func_ov050_02260510(void *p);
@@ -65,7 +65,7 @@ void func_ov050_02260f28(UnkStruct_02260f28 *self)
             }
             break;
         case 2:
-            if (MB_GetBeaconRecvStatus()) {
+            if (func_0209ded0()) {
                 int ret = func_020874c4(gp);
                 func_02015fb0(self, ret, 1, 3, 0, 0);
                 self->unk_D0 = 0x16;

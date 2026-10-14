@@ -28,7 +28,7 @@ typedef struct {
 extern u32 data_021c7584;
 
 extern void func_0209e474(UnkStruct_02040c90 *);
-extern u32 MB_GetBeaconRecvStatus(void);
+extern u32 func_0209ded0(void);
 extern void func_0209e314(UnkStruct_02040c90 *, UnkStruct_02040c90 *);
 extern UnkStruct_02040c90_4 *func_020409c8(UnkStruct_02040c90_3 *, u32);
 extern void func_0204101c(UnkStruct_02040c90_3 *);
@@ -61,7 +61,7 @@ void func_02040c90(UnkStruct_02040c90_3 *a0, int a1)
     s1.q = 0;
     s2.q = 0;
     func_0209e474(&s1);
-    t0 = MB_GetBeaconRecvStatus();
+    t0 = func_0209ded0();
     data_021c7584 = s1.b[2];
     func_0209e314(&s1, &s2);
     if (a0->unk_34 == 0 || a0->unk_34 != s2.q || a1) {

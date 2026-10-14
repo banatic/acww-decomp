@@ -1,6 +1,6 @@
 /* The function-level differential check: a Clean function against the ROM's code.
  *
- * Each check (tests/clean/*.c) says where the function is, how to call the Clean version with
+ * Each check (in tests/clean/) says where the function is, how to call the Clean version with
  * the four argument registers, and how to make an entry state: it writes the arguments and
  * whatever memory the function reads. The checker runs the ROM's code in the interpreter and
  * the Clean version natively from the same state and compares the return value and every
@@ -45,8 +45,23 @@ typedef struct DiffTest {
      * of r0 are compared */
     int return_bits;
     int return_signed;
+    /* nonzero: the reference runs the functions it calls too (the Clean version calls its own
+     * Clean callees), so the whole call tree is compared; otherwise a call stops the check */
+    int follow_calls;
     void (*generate)(DiffRng *rng, uint32_t args[4]);
     uint32_t (*run_clean)(const uint32_t args[4]);
 } DiffTest;
+
+/* One check: `symbol` is the function's symbol, `address` its DS address (bit 0 set for Thumb),
+ * `bits_` the width of its result (0 for void), `follow_` whether calls are followed. */
+#define DIFF_CHECK(symbol, module_, address_, bits_, follow_, gen_, run_)                                                     \
+    const DiffTest diff_test_##symbol = {.address = (address_),                                                               \
+                                         .module = (module_),                                                                 \
+                                         .name = #symbol,                                                                     \
+                                         .cases = 3000,                                                                       \
+                                         .return_bits = (bits_),                                                              \
+                                         .follow_calls = (follow_),                                                           \
+                                         .generate = (gen_),                                                                  \
+                                         .run_clean = (run_)};
 
 #endif

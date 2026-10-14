@@ -10,7 +10,7 @@ typedef struct {
 } UnkStruct_02086ee8;
 
 extern int func_020644cc(int n);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern int func_020e8b0c(int v, int lo, int hi);
 extern int func_020af028(void *p);
 extern char data_021f395c[];
@@ -25,7 +25,7 @@ void func_02086ee8(UnkStruct_02086ee8 *s)
     x = func_020644cc(0x64);
     y = func_020644cc(0x64);
     z = func_020644cc(0x64);
-    m = MB_GetBeaconRecvStatus();
+    m = func_0209ded0();
     switch (m) {
         case 6:
             if (func_020e8b0c(x, 0, 0x4a) != 0) {

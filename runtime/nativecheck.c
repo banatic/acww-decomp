@@ -179,7 +179,17 @@ static uint32_t typed_arg(DiffRng *rng, int kind)
     }
 }
 
-enum Outcome { SAME, DIFFERENT, CALLS, NO_STATE };
+static int is_known(uint32_t address)
+{
+    for (uint32_t i = 0; i < native_known_count; i++) {
+        if (native_known[i] == address) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+enum Outcome { SAME, DIFFERENT, CALLS, NO_STATE, KNOWN };
 
 static enum Outcome check(const NativeFunction *f, int cases, const MemorySnapshot *loaded, FILE *log)
 {
@@ -274,7 +284,7 @@ int main(int argc, char **argv)
     if (log == NULL) {
         log = stdout;
     }
-    int counts[4] = {0, 0, 0, 0};
+    int counts[5] = {0, 0, 0, 0, 0};
     int skipped_returns = 0;
     for (uint32_t m = 0; m < native_module_count; m++) {
         int any = 0;
@@ -304,7 +314,11 @@ int main(int argc, char **argv)
                 loaded = memory_snapshot();
                 any = 1;
             }
-            counts[check(f, cases, loaded, log)]++;
+            enum Outcome outcome = check(f, cases, loaded, log);
+            if (outcome == DIFFERENT && is_known(f->address & ~1u)) {
+                outcome = KNOWN;
+            }
+            counts[outcome]++;
         }
         if (loaded) {
             memory_restore(loaded);
@@ -317,6 +331,7 @@ int main(int argc, char **argv)
     printf("functions that call nothing: %d agree, %d differ (%s), %d without a "
            "state the reference finishes\n",
            counts[SAME], counts[DIFFERENT], argv[2], counts[NO_STATE]);
+    printf("explained in tests/native/known.txt: %d\n", counts[KNOWN]);
     printf("not checked here: %d call other functions, %d return a float or a structure\n", counts[CALLS], skipped_returns);
     return counts[DIFFERENT] ? 1 : 0;
 }

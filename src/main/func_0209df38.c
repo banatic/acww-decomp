@@ -3,12 +3,12 @@
  */
 
 extern unsigned int data_021dc754[3];
-extern unsigned int cardi_common__autoload_3_021dc744[3];
+extern unsigned int data_021dc744[3];
 
 void func_0209df38(unsigned char *p)
 {
     unsigned int *const b = data_021dc754;
-    unsigned int *a = cardi_common__autoload_3_021dc744;
+    unsigned int *a = data_021dc744;
 
     *(unsigned int *) p = 0;
     *(unsigned int *) (p + 4) = 0;

@@ -1157,7 +1157,7 @@ data_021dc6dc kind:bss addr:0x021dc6dc
 data_021dc6e8 kind:bss addr:0x021dc6e8
 data_021dc70c kind:bss addr:0x021dc70c
 data_021dc740 kind:bss addr:0x021dc740
-cardi_common__autoload_3_021dc744 kind:bss addr:0x021dc744
+data_021dc744 kind:bss addr:0x021dc744
 data_021dc754 kind:bss addr:0x021dc754
 data_021dc760 kind:bss addr:0x021dc760
 data_021dc764 kind:bss addr:0x021dc764

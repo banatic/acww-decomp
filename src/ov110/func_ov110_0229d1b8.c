@@ -10,7 +10,7 @@ extern int func_ov110_0229d0b8(void *a, void *b);
 extern int func_ov094_02299a54(void);
 extern int func_ov094_02299b04(int id);
 extern int func_0206fca4(void);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 
 int func_ov110_0229d1b8(void *a, void *b)
 {
@@ -57,7 +57,7 @@ int func_ov110_0229d1b8(void *a, void *b)
                 return 1;
             }
         }
-            if (MB_GetBeaconRecvStatus() == 0) {
+            if (func_0209ded0() == 0) {
                 unsigned int ok = 0;
                 u16 hi = id;
                 u16 lo = id;

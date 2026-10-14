@@ -19,7 +19,7 @@ typedef struct {
 extern Cfg data_021dc7a8;
 extern void func_0209e474(Date *d);
 extern void MI_CpuCopy8(const void *src, void *dst, int len);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern void func_0209e29c(Date *d, int n);
 extern void func_0209e140(Date *d, int n);
 extern int func_02040a90(Key k);
@@ -53,7 +53,7 @@ void func_02040e44(void *a, int *b, int *c, Date *d)
     w.t2.hi = 0;
     func_0209e474(&w.t2);
     MI_CpuCopy8(&w.t2, &w.t1, 8);
-    diff = k - MB_GetBeaconRecvStatus();
+    diff = k - func_0209ded0();
     if (diff >= 0) {
         func_0209e29c(&w.t1, diff);
     } else {

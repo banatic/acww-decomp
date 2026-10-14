@@ -3,7 +3,7 @@
  */
 
 extern void func_0209e474(void *p);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 int func_020874c4(unsigned char *arg)
 {
     int flag = 0;
@@ -19,7 +19,7 @@ int func_020874c4(unsigned char *arg)
     if (((unsigned char *) local)[2] >= 12) {
         flag++;
     }
-    status = MB_GetBeaconRecvStatus();
+    status = func_0209ded0();
     index = (status << 1) + flag;
     c = (arg + index)[10];
     if (c != 0) {

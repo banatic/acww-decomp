@@ -26,4 +26,8 @@ typedef struct NativeParams {
 extern const NativeParams native_param_kinds[];
 extern const uint32_t native_param_kinds_count;
 
+/* Functions whose differences are explained in tests/native/known.txt (sorted). */
+extern const uint32_t native_known[];
+extern const uint32_t native_known_count;
+
 #endif

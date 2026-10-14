@@ -25,6 +25,7 @@ import common as C  # noqa: E402
 OUT = C.BUILD / "runtime"
 RUNTIME = C.ROOT / "runtime"
 TEST = re.compile(r"^const DiffTest (diff_test_\w+) = \{(.*?)^\};", re.M | re.S)
+CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+)", re.M)
 FIELD = re.compile(r"\.(address|module)\s*=\s*([^,]+),")
 
 
@@ -54,6 +55,12 @@ def generate() -> list[pathlib.Path]:
             if fn is None:
                 raise SystemExit(f"{path}: no function at {address:#010x} in {module}")
             rows.append((m.group(1), fn.size))
+        for m in CHECK.finditer(path.read_text()):
+            name, module, address = m.group(1), m.group(2), int(m.group(3), 16)
+            fn = syms.function(module, address)
+            if fn is None:
+                raise SystemExit(f"{path}: no function at {address:#010x} in {module}")
+            rows.append((f"diff_test_{name}", fn.size))
     table = ['#include "diffcheck.h"', "",
              "typedef struct DiffTestEntry {", "    const DiffTest *test;", "    uint32_t size;",
              "} DiffTestEntry;", ""]
@@ -68,12 +75,59 @@ def generate() -> list[pathlib.Path]:
     return sources + [tab]
 
 
+def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
+    """An object placing every name the Clean code uses from the game (`data_...`, a function
+    it calls) at its DS address, the way tools/native.py does for Native code."""
+    windows = os.name == "nt"
+    tool = "C:/Program Files/LLVM/bin/llvm-nm.exe" if windows else "nm"
+    prefix = "_" if windows else ""
+    defined, undefined = set(), set()
+    for obj in objects:
+        for line in subprocess.run([tool, str(obj)], capture_output=True, text=True).stdout.splitlines():
+            parts = line.split()
+            if len(parts) == 2 and parts[0] == "U":
+                undefined.add(parts[1])
+            elif len(parts) == 3 and parts[1] in "TDBRC":
+                defined.add(parts[2])
+    syms = C.SymbolTable(C.modules())
+    rows = []
+    for host in sorted(undefined - defined):
+        name = host[len(prefix):] if host.startswith(prefix) else host
+        addrs = {s.address | (1 if s.kind == "function" and s.thumb else 0) for s in syms.by_name.get(name, [])}
+        if len(addrs) == 1:
+            rows.append(f"\t.globl {host}\n\t.set {host}, 0x{addrs.pop():08x}\n")
+    if not rows:
+        return None
+    src = OUT / "clean_names.s"
+    src.write_text("".join(rows), newline="\n")
+    obj = OUT / "clean_names.o"
+    target = (["C:/Program Files/LLVM/bin/clang.exe", "--target=i686-pc-windows-gnu"] if windows else ["gcc", "-m32"])
+    p = subprocess.run([*target, "-c", str(src), "-o", str(obj)], capture_output=True, text=True)
+    if p.returncode != 0:
+        raise SystemExit(p.stdout + p.stderr)
+    return obj
+
+
 def build(sources: list[pathlib.Path]) -> pathlib.Path:
     exe = OUT / ("diffcheck.exe" if os.name == "nt" else "diffcheck")
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing",
              f"-I{RUNTIME}", f"-I{C.INCLUDE}"]
-    p = subprocess.run([*compiler(), *flags, *map(str, sources), "-o", str(exe)],
-                       capture_output=True, text=True)
+    if os.name != "nt":
+        flags += ["-fno-pic", "-fno-pie"]
+    clean = [s for s in sources if C.ROOT / "clean" in s.parents]
+    objects = []
+    for src in clean:
+        obj = OUT / "clean" / src.relative_to(C.ROOT / "clean").with_suffix(".o")
+        obj.parent.mkdir(parents=True, exist_ok=True)
+        p = subprocess.run([*compiler(), *flags, "-c", str(src), "-o", str(obj)], capture_output=True, text=True)
+        if p.returncode != 0:
+            raise SystemExit(p.stdout + p.stderr)
+        objects.append(obj)
+    names = game_names(objects)
+    rest = [s for s in sources if s not in clean]
+    link = ["-Wl,/SAFESEH:NO"] if os.name == "nt" else ["-no-pie"]
+    p = subprocess.run([*compiler(), *flags, *map(str, rest), *map(str, objects), *([str(names)] if names else []),
+                        *link, "-o", str(exe)], capture_output=True, text=True)
     if p.returncode != 0:
         raise SystemExit(p.stdout + p.stderr)
     return exe
@@ -155,9 +209,20 @@ def param_table() -> pathlib.Path:
             packed |= 1 << 31
         rows.append((src.address, f"    {{0x{src.address:08x}u, {len(kinds)}u, 0x{packed:08x}u}},"))
     rows = [row for _, row in sorted(rows)]  # sorted by address: the check searches it
+    known = []
+    for line in (C.ROOT / "tests" / "native" / "known.txt").read_text().splitlines():
+        if line.strip() and not line.startswith("#"):
+            address, reason = line.split(None, 1)
+            if not reason.strip():
+                raise SystemExit(f"tests/native/known.txt: {address} has no reason")
+            known.append(int(address, 16) & ~1)
+    rows.append("")
     out = OUT / "native_params.c"
     out.write_text("\n".join(["#include \"native_params.h\"", "", "const NativeParams native_param_kinds[] = {",
-                              *rows, "};", f"const uint32_t native_param_kinds_count = {len(rows)};", ""]),
+                              *rows, "};", f"const uint32_t native_param_kinds_count = {len(rows) - 1};",
+                              "const uint32_t native_known[] = {"
+                              + ", ".join(f"0x{a:08x}u" for a in sorted(known) or [0]) + "};",
+                              f"const uint32_t native_known_count = {len(known)};", ""]),
                    newline="\n")
     return out
 

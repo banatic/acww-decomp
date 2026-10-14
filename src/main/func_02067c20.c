@@ -15,7 +15,7 @@ struct UnkStruct_02067c20 {
 extern int func_0209dee8(struct UnkStruct_02067c20 *);
 extern void func_0209df94(short *);
 extern void func_0209def4(short *);
-extern int MB_GetBeaconRecvStatus(void);
+extern int func_0209ded0(void);
 extern int CARDi_GetTargetMode(void);
 extern int func_0209dcac(void);
 
@@ -24,7 +24,7 @@ void func_02067c20(struct UnkStruct_02067c20 *self)
     self->unk_1A64 = func_0209dee8(self);
     func_0209df94(&self->unk_1A68);
     func_0209def4(&self->unk_1A6A);
-    self->unk_1A6C = MB_GetBeaconRecvStatus();
+    self->unk_1A6C = func_0209ded0();
     self->unk_1A70 = CARDi_GetTargetMode();
     self->unk_1A74 = func_0209dcac();
 }

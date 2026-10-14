@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int cardi_common__autoload_3_021dc744;
+extern int data_021dc744;
 
 int func_0209dee8(void)
 {
-    return cardi_common__autoload_3_021dc744;
+    return data_021dc744;
 }

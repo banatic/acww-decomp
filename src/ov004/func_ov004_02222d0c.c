@@ -23,7 +23,7 @@ extern Choice data_ov004_022476f8[];
 extern void *data_ov004_02254338[];
 extern unsigned func_ov004_02222b3c(void *);
 extern int func_02073d90(void *), func_020a12e8(void), func_0202ea40(void *, void *, int), func_0202ea80(int, int),
-    MB_GetBeaconRecvStatus(void), func_020644cc(int);
+    func_0209ded0(void), func_020644cc(int);
 extern short *func_0209d358(int, int);
 extern void func_0202ea28(void *, void *), func_020160d8(void *, void *);
 extern void *func_02082644(int);
@@ -45,7 +45,7 @@ void func_ov004_02222d0c(u8 *self, Output *out)
         func_0202ea28(P(self, 0xb0), packed);
     } else if (!func_0202ea80(0x10, 1)) {
         if (kind >= 12) {
-            out->message = data_ov004_022476d4[MB_GetBeaconRecvStatus()];
+            out->message = data_ov004_022476d4[func_0209ded0()];
         } else {
             out->message = data_ov004_022476f8[kind].base;
         }

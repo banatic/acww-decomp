@@ -11,7 +11,7 @@ typedef union {
 
 extern void func_0209df94(void *);
 extern void func_0209def4(void *);
-extern u32 MB_GetBeaconRecvStatus(void);
+extern u32 func_0209ded0(void);
 
 typedef struct {
     u8 pad_00[0x48];
@@ -29,7 +29,7 @@ void func_0208d4a4(UnkStruct_0208d4a4 *self)
 
     func_0209df94(&v[0]);
     func_0209def4(&v[1]);
-    s = MB_GetBeaconRecvStatus();
+    s = func_0209ded0();
 
     if (v[0].w != self->unk_60.w) {
         if (v[0].b[1] != self->unk_60.b[1]) {
