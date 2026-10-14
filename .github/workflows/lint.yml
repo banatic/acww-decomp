@@ -26,4 +26,5 @@ jobs:
         run: |
           pip install clang-format==22.1.8
           git ls-files -z 'src/*.c' 'src/*.cpp' 'libs/*.c' 'libs/*.cpp' 'include/*.h' \
+            'runtime/*.c' 'runtime/*.h' 'clean/*.c' 'clean/*.h' 'tests/*.c' \
             | xargs -0 clang-format --dry-run --Werror

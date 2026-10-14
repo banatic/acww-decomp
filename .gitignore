@@ -81,3 +81,9 @@ scratch/
 scratchpad/
 .agent_scratch/
 .probe/
+
+# Leftovers of editing
+*.orig
+*.rej
+*.bak
+*~

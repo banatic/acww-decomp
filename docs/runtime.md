@@ -87,7 +87,8 @@ written down as `REQUIRES:`. Clean is never bent just to pass a test.
 
 Each milestone is done when all of its checks pass in CI.
 
-**M1: Reference and Clean, one function at a time.**
+**M1: Reference and Clean, one function at a time.** Done: `runtime/` (interpreter, memory, loader,
+the check), `tools/diffcheck.py`, and the first Clean function in `clean/main/slots.c`.
 - `runtime/` builds as a 32-bit program on Windows (clang) and Linux (gcc), with main RAM, the
   TCMs and the ARM9 modules loaded at their DS addresses.
 - The interpreter runs ARM and Thumb code: any function the ROM has, called with given registers
