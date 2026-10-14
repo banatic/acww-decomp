@@ -18,6 +18,16 @@ to build it.
 
 ## Status
 
+![Progress](docs/progress.svg)
+
+Every function moves through these levels:
+
+- **Reference**: only the ROM's own code.
+- **Native**: a C or C++ source that compiles with the original compiler to the ROM's bytes.
+- **Native, linked**: the whole program, linked with the original linker, reproduces the module
+  byte for byte.
+- **Clean**: a readable implementation that behaves like the reference in a differential test.
+
 Each of the 25,247 game functions has a C or C++ source that compiles with the original
 compiler to the ROM's exact bytes, and whose calls and pointers resolve to the ROM's targets.
 The sources are still one file per function, and the data sections still come from the ROM.
