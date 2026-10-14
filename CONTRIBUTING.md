@@ -66,3 +66,24 @@ after the header:
 
 Replacing a `FAKEMATCH` with a natural source that still verifies is always welcome;
 `python tools/quality.py` lists the files that need the most work.
+
+## Clean code
+
+`clean/` holds readable versions of game functions (see [docs/runtime.md](docs/runtime.md)).
+A Clean function has the same interface as the original (the same parameters and result, so
+the runtime can call either), and the same behaviour by the contract in docs/runtime.md; its
+body, names and types are free.
+
+- Group functions by subsystem, one file per subsystem: `clean/<module>/<subsystem>.c` with a
+  header beside it. Say above each function which game function it is (`/* func_0209dcdc */`).
+- Name things by what the code shows they do. When the purpose is not known, keep the name
+  neutral (`Calendar_PeriodA`) rather than guessing.
+- Keep the game's odd behaviour and mark it: `QUIRK:` for something unusual but intended,
+  `BUG:` for a defect kept as it is, `HW:` for an order the hardware needs, `REQUIRES:` for a
+  precondition the game always meets.
+- Read the game's data by its symbol (`extern const u16 data_020d1b04[19];`); the build places
+  it at its DS address.
+- Every Clean function needs a check in `tests/clean/<module>/<subsystem>.c`:
+  `DIFF_CHECK(<symbol>, "<module>", <address> | <1 for Thumb>, <result bits>, <follow calls>,
+  <generator>, <caller>)`. The generator writes entry states the game can produce (valid dates,
+  real object layouts), not arbitrary bytes. `python tools/diffcheck.py` must pass.
