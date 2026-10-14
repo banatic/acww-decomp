@@ -339,6 +339,10 @@ def main() -> None:
     entries, why = choose(plans, planner.chk.mods)
     linked = sorted(f for es in entries.values() for f, _ in es)
     write_config(entries)
+    # where each source's own data lands in the ROM, for the runtime's checks (tools/native.py)
+    (C.BUILD / "placement.json").write_text(json.dumps(
+        {r["file"]: [s for s in r["sections"] if s[0] != ".text" and s[3] is not None]
+         for r in plans if "sections" in r}) + "\n", newline="\n")
     (LINK / "left-out.txt").write_text("".join(f"{n:6} {k}\n" for k, n in why.most_common()),
                                        newline="\n")
     link()

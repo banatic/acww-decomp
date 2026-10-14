@@ -23,10 +23,20 @@
  *     lowest register, the written-back value otherwise (ARM ARM A4.1.97: UNPREDICTABLE in the
  *     second case; this is what the ARM9 does). LDM with the base in the list keeps the loaded
  *     value.
- *   - There is no SPSR: MRS of the SPSR reads the CPSR, MSR of the SPSR is ignored, and
- *     data-processing with S and Rd == r15 writes r15 without touching the CPSR. The ^ form of
- *     LDM/STM behaves as the plain form. The mode bits are stored and never acted on.
- *   - CP15 is absent: MCR is ignored, MRC reads zero. Other coprocessors are undefined.
+ *   - The seven processor modes have their banked registers and SPSRs (ARM ARM A2.3, A2.5):
+ *     cpu->r is always the current mode's view and the others' registers wait in the banks.
+ *     A mode change (MSR, an exception, a CPSR restore) swaps r13 and r14, r8-r14 for FIQ.
+ *     A CPSR restore (data-processing with S and Rd == r15, LDM with ^ and r15) in user or
+ *     system mode, which have no SPSR, is UNPREDICTABLE; here it leaves the CPSR alone.
+ *   - An MSR that writes the mode bits with a value that is not a mode (the game's crt0 never
+ *     does) is UNPREDICTABLE; here such a value banks like user mode.
+ *   - Exceptions are entered through arm_enter_exception; IRQs are taken between instructions
+ *     when irq_line is set and CPSR I clear. SWI and undefined instructions stop the run
+ *     instead of vectoring (the BIOS is in C, see bios.c), but a caller can vector them.
+ *   - CP15 is a register file: MCR stores, MRC reads back, c0 is the ARM946E-S identification,
+ *     c7 operations are cache maintenance (ignored) and "wait for interrupt" (ARM_HALT). The
+ *     coprocessor is privileged: user mode gets the undefined instruction. Other coprocessors
+ *     are undefined.
  */
 #include "arm.h"
 
@@ -35,6 +45,169 @@
 #include "memory.h"
 
 enum { CONTINUE = -1 };
+
+/* Modes and banks --------------------------------------------------------------------------- */
+
+/* The bank arrays and SPSR of a mode other than user/system, or NULL for those two. */
+static uint32_t *bank_of(ArmCpu *cpu, uint32_t mode, uint32_t **spsr)
+{
+    switch (mode & ARM_MODE_MASK) {
+        case ARM_MODE_FIQ:
+            *spsr = &cpu->spsr_fiq;
+            return cpu->bank_fiq;
+        case ARM_MODE_IRQ:
+            *spsr = &cpu->spsr_irq;
+            return cpu->bank_irq;
+        case ARM_MODE_SVC:
+            *spsr = &cpu->spsr_svc;
+            return cpu->bank_svc;
+        case ARM_MODE_ABORT:
+            *spsr = &cpu->spsr_abt;
+            return cpu->bank_abt;
+        case ARM_MODE_UNDEFINED:
+            *spsr = &cpu->spsr_und;
+            return cpu->bank_und;
+        default: /* user, system, and values that are not a mode */
+            *spsr = NULL;
+            return NULL;
+    }
+}
+
+static int is_fiq(uint32_t mode)
+{
+    return (mode & ARM_MODE_MASK) == ARM_MODE_FIQ;
+}
+
+/* The modes with an SPSR are the five that have a bank. */
+static int has_spsr(ArmCpu *cpu, uint32_t mode)
+{
+    uint32_t *spsr;
+    return bank_of(cpu, mode, &spsr) != NULL;
+}
+
+/* Parks the current mode's registers in its bank and brings in `mode`'s (ARM ARM A2.3: r13,
+ * r14 and the SPSR per mode; FIQ also r8-r12). user and system share one set. */
+static void switch_mode(ArmCpu *cpu, uint32_t mode)
+{
+    uint32_t from = cpu->cpsr & ARM_MODE_MASK, to = mode & ARM_MODE_MASK;
+    uint32_t *from_spsr, *to_spsr;
+    uint32_t *from_bank = bank_of(cpu, from, &from_spsr);
+    uint32_t *to_bank = bank_of(cpu, to, &to_spsr);
+    if (from == to || (from_bank == NULL && to_bank == NULL)) {
+        return;
+    }
+    /* Leave: user/system park r13 and r14 in bank_usr, which keeps them for as long as another
+       mode runs; a mode with a bank parks its own there, and FIQ also gives r8-r12 back to
+       user, whose copies it displaced on entry. */
+    if (from_bank == NULL) {
+        cpu->bank_usr[5] = cpu->r[13];
+        cpu->bank_usr[6] = cpu->r[14];
+    } else if (is_fiq(from)) {
+        memcpy(cpu->bank_fiq, cpu->r + 8, 7 * sizeof(uint32_t));
+        memcpy(cpu->r + 8, cpu->bank_usr, 5 * sizeof(uint32_t));
+    } else {
+        from_bank[0] = cpu->r[13];
+        from_bank[1] = cpu->r[14];
+    }
+    if (from_spsr != NULL) {
+        *from_spsr = cpu->spsr;
+    }
+    /* Enter: the mirror image. r8-r12 are user's whenever FIQ is not running. */
+    if (to_bank == NULL) {
+        cpu->r[13] = cpu->bank_usr[5];
+        cpu->r[14] = cpu->bank_usr[6];
+    } else if (is_fiq(to)) {
+        memcpy(cpu->bank_usr, cpu->r + 8, 5 * sizeof(uint32_t));
+        memcpy(cpu->r + 8, cpu->bank_fiq, 7 * sizeof(uint32_t));
+    } else {
+        cpu->r[13] = to_bank[0];
+        cpu->r[14] = to_bank[1];
+    }
+    if (to_spsr != NULL) {
+        cpu->spsr = *to_spsr;
+    }
+}
+
+void arm_set_cpsr(ArmCpu *cpu, uint32_t cpsr)
+{
+    switch_mode(cpu, cpsr);
+    cpu->cpsr = cpsr;
+}
+
+/* The user-mode register `index` (8-14) as seen from the current mode: cpu->r when the
+ * current mode shares it, else the parked copy (for LDM/STM with ^, ARM ARM A4.1.21, A4.1.98). */
+static uint32_t *user_register(ArmCpu *cpu, uint32_t index)
+{
+    uint32_t mode = cpu->cpsr & ARM_MODE_MASK;
+    if (index < 8 || mode == ARM_MODE_USER || mode == ARM_MODE_SYSTEM || mode < ARM_MODE_USER) {
+        return cpu->r + index;
+    }
+    if (index >= 13 || is_fiq(mode)) {
+        return cpu->bank_usr + (index - 8);
+    }
+    return cpu->r + index;
+}
+
+uint32_t arm_banked_get(const ArmCpu *cpu, uint32_t mode, int index)
+{
+    ArmCpu *c = (ArmCpu *) cpu;
+    uint32_t current = cpu->cpsr & ARM_MODE_MASK;
+    uint32_t *spsr;
+    mode &= ARM_MODE_MASK;
+    if (mode == ARM_MODE_SYSTEM) {
+        mode = ARM_MODE_USER;
+    }
+    if (current == ARM_MODE_SYSTEM) {
+        current = ARM_MODE_USER;
+    }
+    if (mode == current) {
+        return cpu->r[index];
+    }
+    uint32_t *bank = bank_of(c, mode, &spsr);
+    if (bank == NULL) {
+        return *user_register(c, (uint32_t) index);
+    }
+    if (is_fiq(mode)) {
+        return bank[index - 8];
+    }
+    return index >= 13 ? bank[index - 13] : *user_register(c, (uint32_t) index);
+}
+
+void arm_banked_set(ArmCpu *cpu, uint32_t mode, int index, uint32_t value)
+{
+    uint32_t current = cpu->cpsr & ARM_MODE_MASK;
+    uint32_t *spsr;
+    mode &= ARM_MODE_MASK;
+    if (mode == ARM_MODE_SYSTEM) {
+        mode = ARM_MODE_USER;
+    }
+    if (current == ARM_MODE_SYSTEM) {
+        current = ARM_MODE_USER;
+    }
+    if (mode == current) {
+        cpu->r[index] = value;
+        return;
+    }
+    uint32_t *bank = bank_of(cpu, mode, &spsr);
+    if (bank == NULL) {
+        *user_register(cpu, (uint32_t) index) = value;
+    } else if (is_fiq(mode)) {
+        bank[index - 8] = value;
+    } else if (index >= 13) {
+        bank[index - 13] = value;
+    } else {
+        *user_register(cpu, (uint32_t) index) = value; /* r8-r12 are user's outside FIQ */
+    }
+}
+
+/* Restores the CPSR from the SPSR: the S-bit forms with Rd == r15 and LDM with ^ and r15. In
+ * user and system mode there is none (UNPREDICTABLE); the CPSR is left alone. */
+static void restore_cpsr(ArmCpu *cpu)
+{
+    if (has_spsr(cpu, cpu->cpsr)) {
+        arm_set_cpsr(cpu, cpu->spsr);
+    }
+}
 
 /* Memory --------------------------------------------------------------------------------- */
 
@@ -426,6 +599,13 @@ static int jump_interworking(ArmCpu *cpu, uint32_t target)
     return jump(cpu, target & ~3u);
 }
 
+/* A jump after a CPSR restore: the state comes from the restored T bit, not from the address
+ * (ARM ARM A4.1.35 "if S == 1 and Rd == R15", A4.1.22 LDM(3)). */
+static int jump_in_state(ArmCpu *cpu, uint32_t target)
+{
+    return jump(cpu, (cpu->cpsr & ARM_CPSR_T) ? target & ~1u : target & ~3u);
+}
+
 /* ARM state ------------------------------------------------------------------------------ */
 
 /* An operand read of r15 sees the instruction address + 8. */
@@ -461,8 +641,9 @@ static int arm_data_processing(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     uint32_t result;
     int writes_rd = 1;
 
-    /* With Rd == r15 the flags are not set (that would be the SPSR copy, see the file comment),
-     * so the flag-setting helpers run only for s && rd != 15. */
+    /* With Rd == r15 the flags are not set: S there means "CPSR = SPSR" after the result
+     * (ARM ARM A4.1.35 and the others), done below. The flag-setting helpers run only for
+     * s && rd != 15. */
     int flags = s && rd != 15;
     uint32_t c_in = (cpu->cpsr >> 29) & 1;
 
@@ -529,6 +710,11 @@ static int arm_data_processing(ArmCpu *cpu, uint32_t pc, uint32_t instr)
         return CONTINUE;
     }
     if (rd == 15) {
+        if (s) {
+            /* the exception return: "subs pc, lr, #4", "movs pc, lr" */
+            restore_cpsr(cpu);
+            return jump_in_state(cpu, result);
+        }
         return jump(cpu, result & ~3u);
     }
     cpu->r[rd] = result;
@@ -769,7 +955,12 @@ static void block_addresses(uint32_t instr, uint32_t base, uint32_t count, uint3
     }
 }
 
-/* LDM/STM for ARM, and Thumb's PUSH/POP/LDMIA/STMIA, which pass an equivalent ARM encoding. */
+/* LDM/STM for ARM, and Thumb's PUSH/POP/LDMIA/STMIA, which pass an equivalent ARM encoding.
+ * The S bit (^) with r15 in an LDM list restores the CPSR from the SPSR (ARM ARM A4.1.22,
+ * LDM(3)); without r15 it transfers the user-mode registers (A4.1.21 LDM(2), A4.1.98 STM(2)).
+ * Writeback with those is UNPREDICTABLE in the ARM ARM; the ARM946E-S writes the base back in
+ * the current mode's register, and the SDK's OS_IrqHandler_ThreadSwitch ("stmib r0!, {...}^",
+ * then r0 again) relies on it. */
 static int arm_block_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
 {
     uint32_t rn = (instr >> 16) & 15;
@@ -777,6 +968,8 @@ static int arm_block_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     uint32_t base = cpu->r[rn];
     uint32_t start, writeback;
     int write_back = (instr >> 21) & 1;
+    int s = (instr >> 22) & 1;
+    int user_bank = s && !(list & (1u << 15));
     block_addresses(instr, base, count_bits(list), &start, &writeback);
 
     if (instr & (1u << 20)) {
@@ -790,9 +983,10 @@ static int arm_block_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
             if (!read_word(cpu, address, &value)) {
                 return ARM_BAD_ADDRESS;
             }
-            cpu->r[i] = value;
-            if (i == rn) {
-                base_loaded = 1;
+            uint32_t *target = user_bank ? user_register(cpu, i) : cpu->r + i;
+            *target = value;
+            if (target == cpu->r + rn) {
+                base_loaded = 1; /* a user-bank copy of a banked base is another register */
             }
             address += 4;
         }
@@ -806,6 +1000,10 @@ static int arm_block_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
             cpu->r[rn] = writeback;
         }
         if (loads_pc) {
+            if (s) {
+                restore_cpsr(cpu);
+                return jump_in_state(cpu, new_pc);
+            }
             return jump_interworking(cpu, new_pc);
         }
         return CONTINUE;
@@ -822,6 +1020,8 @@ static int arm_block_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
             value = pc + 12;
         } else if (i == rn && write_back && !first) {
             value = writeback;
+        } else if (user_bank) {
+            value = *user_register(cpu, i);
         } else {
             value = cpu->r[i];
         }
@@ -837,18 +1037,38 @@ static int arm_block_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     return CONTINUE;
 }
 
-/* The CPSR fields MSR may write: flags (f) and control (c). The x and s fields are reserved
- * on ARMv5, and the T bit is left alone since changing it through MSR is UNPREDICTABLE. */
-static void write_cpsr(ArmCpu *cpu, uint32_t instr, uint32_t value)
+/* MSR: the fields it may write are flags (f) and control (c); the x and s fields hold no
+ * defined bits on ARMv5. Bit 22 selects the SPSR, whose T bit is written like any other (that
+ * is how OS_LoadContext resumes a Thumb thread); the CPSR's T bit is left alone since changing
+ * it through MSR is UNPREDICTABLE (ARM ARM A4.1.39). In user mode the control field of the
+ * CPSR is not written, and there is no SPSR to write. */
+static void write_status(ArmCpu *cpu, uint32_t instr, uint32_t value)
 {
     uint32_t mask = 0;
+    int privileged = (cpu->cpsr & ARM_MODE_MASK) != ARM_MODE_USER;
     if (instr & (1u << 19)) {
         mask |= 0xff000000u;
     }
-    if (instr & (1u << 16)) {
-        mask |= 0xffu & ~ARM_CPSR_T;
+    if ((instr & (1u << 16)) && privileged) {
+        mask |= 0xffu;
     }
-    cpu->cpsr = (cpu->cpsr & ~mask) | (value & mask);
+    if (instr & (1u << 22)) {
+        if (has_spsr(cpu, cpu->cpsr)) {
+            cpu->spsr = (cpu->spsr & ~mask) | (value & mask);
+        }
+        return;
+    }
+    mask &= ~ARM_CPSR_T;
+    arm_set_cpsr(cpu, (cpu->cpsr & ~mask) | (value & mask));
+}
+
+/* MRS: the CPSR, or the SPSR (which reads as the CPSR where there is none: UNPREDICTABLE). */
+static uint32_t read_status(ArmCpu *cpu, uint32_t instr)
+{
+    if ((instr & (1u << 22)) && has_spsr(cpu, cpu->cpsr)) {
+        return cpu->spsr;
+    }
+    return cpu->cpsr;
 }
 
 /* The instructions that share the data-processing space with S == 0 for TST/TEQ/CMP/CMN:
@@ -862,9 +1082,7 @@ static int arm_miscellaneous(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     if (instr & (1u << 25)) {
         /* MSR with an immediate operand */
         if (op & 1) {
-            if (!(instr & (1u << 22))) {
-                write_cpsr(cpu, instr, rotate_right(instr & 0xff, (instr >> 7) & 0x1e));
-            }
+            write_status(cpu, instr, rotate_right(instr & 0xff, (instr >> 7) & 0x1e));
             return CONTINUE;
         }
         return ARM_UNDEFINED;
@@ -873,11 +1091,9 @@ static int arm_miscellaneous(ArmCpu *cpu, uint32_t pc, uint32_t instr)
     switch ((instr >> 4) & 15) {
         case 0x0:
             if (op & 1) {
-                if (!(instr & (1u << 22))) {
-                    write_cpsr(cpu, instr, cpu->r[rm]);
-                }
+                write_status(cpu, instr, cpu->r[rm]);
             } else {
-                cpu->r[rd] = cpu->cpsr;
+                cpu->r[rd] = read_status(cpu, instr);
             }
             return CONTINUE;
         case 0x1:
@@ -917,6 +1133,63 @@ static int arm_miscellaneous(ArmCpu *cpu, uint32_t pc, uint32_t instr)
             return arm_dsp_multiply(cpu, instr);
         default:
             return ARM_UNDEFINED;
+    }
+}
+
+/* CP15 ------------------------------------------------------------------------------------- */
+
+uint32_t arm_cp15_get(const ArmCpu *cpu, int crn, int crm, int op2)
+{
+    if (crn == 0) {
+        /* identification (ARM946E-S TRM 2.3.1, 2.3.2): ID code, cache type, TCM size */
+        switch (op2) {
+            case 1:
+                return 0x0f0d2112u;
+            case 2:
+                return 0x00140180u;
+            default:
+                return 0x41059461u;
+        }
+    }
+    if (crm < 0 || crm >= 8 || op2 < 0 || op2 >= 8 || crn < 0 || crn >= 16) {
+        return 0;
+    }
+    return cpu->cp15[crn][crm][op2];
+}
+
+/* MCR / MRC. Only cp15 exists, and only to privileged modes (ARM ARM A4.1.32: the coprocessor
+ * may refuse, which the ARM946E-S does for user mode by taking the undefined instruction). An
+ * MRC into r15 sets the flags from the value's top four bits. */
+static int arm_coprocessor_transfer(ArmCpu *cpu, uint32_t pc, uint32_t instr)
+{
+    int crn = (instr >> 16) & 15, crm = instr & 15, op2 = (instr >> 5) & 7;
+    uint32_t rd = (instr >> 12) & 15;
+    if (((instr >> 8) & 15) != 15 || (cpu->cpsr & ARM_MODE_MASK) == ARM_MODE_USER) {
+        return ARM_UNDEFINED;
+    }
+    if (instr & (1u << 20)) {
+        uint32_t value = arm_cp15_get(cpu, crn, crm, op2);
+        if (rd == 15) {
+            cpu->cpsr = (cpu->cpsr & 0x0fffffffu) | (value & 0xf0000000u);
+        } else {
+            cpu->r[rd] = value;
+        }
+        return CONTINUE;
+    }
+    uint32_t value = ARM_REG(rd);
+    switch (crn) {
+        case 0: /* read-only */
+            return CONTINUE;
+        case 7: /* cache and write buffer operations (TRM 2.3.8); c7, c0, 4 waits for an interrupt */
+            if (crm == 0 && op2 == 4) {
+                return ARM_HALT;
+            }
+            return CONTINUE;
+        default:
+            if (crm < 8) {
+                cpu->cp15[crn][crm][op2] = value;
+            }
+            return CONTINUE;
     }
 }
 
@@ -1001,17 +1274,10 @@ static int arm_execute(ArmCpu *cpu, uint32_t pc, uint32_t instr)
                 cpu->swi = instr & 0xffffffu;
                 return ARM_SWI;
             }
-            if ((instr & 0x10u) && ((instr >> 8) & 15) == 15) {
-                /* MCR / MRC on cp15: ignored; a read gives zero (r15 as Rd would set flags) */
-                if (instr & (1u << 20)) {
-                    uint32_t rd = (instr >> 12) & 15;
-                    if (rd != 15) {
-                        cpu->r[rd] = 0;
-                    }
-                }
-                return CONTINUE;
+            if (instr & 0x10u) {
+                return arm_coprocessor_transfer(cpu, pc, instr);
             }
-            return ARM_UNDEFINED;
+            return ARM_UNDEFINED; /* CDP: no coprocessor has data operations */
     }
 }
 
@@ -1375,6 +1641,17 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
             cpu->stop_pc = pc;
             return ARM_STEP_LIMIT;
         }
+        if (cpu->irq_line && !(cpu->cpsr & ARM_CPSR_I)) {
+            /* The interrupt is taken before this instruction, which the handler returns to.
+               The vector is a branch target: a hook there runs as for any branch. */
+            arm_enter_exception(cpu, ARM_EXC_IRQ);
+            cpu->irq_taken++;
+            result = jump(cpu, cpu->r[15]);
+            if (result != CONTINUE) {
+                return (enum ArmStop) result;
+            }
+            pc = cpu->r[15];
+        }
         if (cpu->cpsr & ARM_CPSR_T) {
             uint32_t instr;
             if (!read_half(cpu, pc, &instr)) {
@@ -1402,6 +1679,7 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
                 /* jump() recorded the target as stop_pc and set r15 */
                 break;
             case ARM_SWI:
+            case ARM_HALT:
                 /* r15 already points after the instruction, where a handler would return */
                 cpu->stop_pc = pc;
                 break;
@@ -1419,6 +1697,52 @@ void arm_init(ArmCpu *cpu)
 {
     memset(cpu, 0, sizeof(*cpu));
     cpu->cpsr = ARM_MODE_SYSTEM;
+    cpu->cp15[1][0][0] = ARM_CP15_CONTROL_RESET;
+}
+
+/* Exception entry (ARM ARM A2.6.2 to A2.6.8): each saves the CPSR in the new mode's SPSR, the
+ * return address in its r14, enters the mode in ARM state with IRQs disabled (FIQ and reset
+ * also disable FIQs) and branches to the vector. */
+void arm_enter_exception(ArmCpu *cpu, enum ArmException exception)
+{
+    static const uint8_t modes[8] = {ARM_MODE_SVC,   ARM_MODE_UNDEFINED, ARM_MODE_SVC, ARM_MODE_ABORT,
+                                     ARM_MODE_ABORT, ARM_MODE_SVC,       ARM_MODE_IRQ, ARM_MODE_FIQ};
+    uint32_t old = cpu->cpsr;
+    uint32_t pc = cpu->r[15];
+    uint32_t lr;
+    switch (exception) {
+        case ARM_EXC_UNDEFINED:
+            lr = pc + ((old & ARM_CPSR_T) ? 2 : 4);
+            break;
+        case ARM_EXC_SWI:
+            lr = pc;
+            break;
+        case ARM_EXC_DATA_ABORT:
+            lr = pc + 8;
+            break;
+        default: /* prefetch abort, IRQ, FIQ; reset's is UNPREDICTABLE */
+            lr = pc + 4;
+            break;
+    }
+    uint32_t cpsr = (old & ~(ARM_MODE_MASK | ARM_CPSR_T)) | modes[exception & 7] | ARM_CPSR_I;
+    if (exception == ARM_EXC_FIQ || exception == ARM_EXC_RESET) {
+        cpsr |= ARM_CPSR_F;
+    }
+    arm_set_cpsr(cpu, cpsr);
+    cpu->spsr = old;
+    cpu->r[14] = lr;
+    uint32_t base = (cpu->cp15[1][0][0] & ARM_CP15_CONTROL_HIGH_VECTORS) ? ARM_HIGH_VECTORS : 0;
+    cpu->r[15] = base + 4 * (uint32_t) exception;
+}
+
+int arm_raise_irq(ArmCpu *cpu)
+{
+    if (cpu->cpsr & ARM_CPSR_I) {
+        return 0;
+    }
+    arm_enter_exception(cpu, ARM_EXC_IRQ);
+    cpu->irq_taken++;
+    return 1;
 }
 
 enum ArmStop arm_call(ArmCpu *cpu, uint32_t address, uint64_t max_steps)

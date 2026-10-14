@@ -1,0 +1,15 @@
+# The boot to the title screen, then START pressed three times (format: runtime/input.h).
+# Run with a pinned clock so the frames repeat exactly:
+#   python tools/run.py 0 1300 --input runtime/recordings/title-start.txt \
+#       --rtc "2005-11-23 12:00:00" --png build/frames --frames 0-1300/50 --hash build/frames/hashes.txt
+# The Nintendo logo fades in at frame 127 and out by 338; the title opens from 594 and its
+# logo is complete by about 800. The first START (900) brings up the greeting on the lower
+# screen; the greeting waits for A or a touch, so the later presses change nothing, which
+# the frames show too. Each press holds START for 6 frames.
+0 - -
+900 START -
+906 - -
+1000 START -
+1006 - -
+1100 START -
+1106 - -

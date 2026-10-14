@@ -3,6 +3,7 @@ code on generated entry states (see docs/runtime.md and runtime/diffcheck.h).
 
     python tools/diffcheck.py               # every check
     python tools/diffcheck.py func_02039444 # some
+    python tools/diffcheck.py --native      # Native against Reference (tools/native.py first)
 
 Needs a C compiler that targets 32-bit x86: clang on Windows (CC, default
 "C:/Program Files/LLVM/bin/clang.exe"), gcc with -m32 elsewhere.
@@ -92,8 +93,46 @@ def unit_tests() -> None:
         raise SystemExit(p.stdout + p.stderr)
 
 
+def build_native() -> pathlib.Path:
+    """runtime/nativecheck.c with every Native object (tools/native.py must have run)."""
+    native = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
+    if not (native / "natives.s").exists():
+        raise SystemExit("run `python tools/native.py` first")
+    exe = OUT / ("nativecheck.exe" if os.name == "nt" else "nativecheck")
+    asm = []
+    assembly = [native / "natives.s", native / "absolute.s"]
+    if os.name == "nt":
+        assembly.append(RUNTIME / "native_rt_win.s")
+    for src in assembly:
+        name = src.name
+        obj = OUT / name.replace(".s", ".o")
+        target = (["C:/Program Files/LLVM/bin/clang.exe", "--target=i686-pc-windows-gnu"]
+                  if os.name == "nt" else ["gcc", "-m32"])
+        p = subprocess.run([*target, "-c", str(src), "-o", str(obj)], capture_output=True, text=True)
+        if p.returncode != 0:
+            raise SystemExit(p.stdout + p.stderr)
+        asm.append(obj)
+    srcs = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "host.c", "native_rt.c", "nativecheck.c")]
+    flags = ["-std=c11", "-O2", "-Wall", "-Wextra", f"-I{RUNTIME}"]
+    # Classes split one function per file define their destructors and vtable in several
+    # objects, identically; the linker keeps the first.
+    link = (["-Wl,/SAFESEH:NO", "-Wl,/FORCE:MULTIPLE", "-Wl,/DYNAMICBASE:NO", "-Wl,/FIXED"] if os.name == "nt"
+            else ["-no-pie", "-Wl,--allow-multiple-definition"])
+    p = subprocess.run([*compiler(), *flags, *map(str, srcs), *map(str, asm), f"@{native / 'objects.txt'}",
+                        *link, "-o", str(exe)], capture_output=True, text=True)
+    if p.returncode != 0:
+        raise SystemExit((p.stdout + p.stderr)[-4000:])
+    return exe
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
+    if sys.argv[1:2] == ["--native"]:
+        generate()
+        exe = build_native()
+        log = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux") / "differences.txt"
+        p = subprocess.run([str(exe), str(OUT / "modules.txt"), str(log), *sys.argv[2:]], cwd=C.ROOT)
+        sys.exit(p.returncode)
     unit_tests()
     exe = build(generate())
     p = subprocess.run([str(exe), str(OUT / "modules.txt"), *sys.argv[1:]])

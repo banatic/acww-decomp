@@ -128,6 +128,11 @@ void memory_diff(const MemorySnapshot *before, uint32_t skip_lo, uint32_t skip_h
         const uint8_t *now = (const uint8_t *) (uintptr_t) regions[i].base;
         uint32_t n = regions[i].size;
         for (uint32_t off = 0; off < n;) {
+            /* most of memory is unchanged: skip equal blocks quickly */
+            if ((off & 0x3ffu) == 0 && off + 0x400 <= n && memcmp(was + off, now + off, 0x400) == 0) {
+                off += 0x400;
+                continue;
+            }
             uint32_t address = regions[i].base + off;
             if (was[off] == now[off] || (address >= skip_lo && address < skip_hi)) {
                 off++;

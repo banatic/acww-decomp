@@ -927,11 +927,12 @@ static void test_arm_system(void)
     CHECK_EQ(cpu.r[4], 0xf00000d3u);
     CHECK_EQ(cpu.cpsr, 0);
 
+    /* A cache operation stores nothing; c1 reads the control register's reset value. */
     begin("mcr mrc on cp15");
     cpu.r[0] = 0x55;
     ARM(0xee070f15u,  /* mcr p15, 0, r0, c7, c5, 0 */
         0xee110f10u); /* mrc p15, 0, r0, c1, c0, 0 */
-    CHECK_EQ(cpu.r[0], 0);
+    CHECK_EQ(cpu.r[0], ARM_CP15_CONTROL_RESET);
 
     begin("swi stops after the instruction");
     CHECK_EQ(ARM(0xef00000eu, 0xe3a00001u), ARM_SWI);
@@ -1484,6 +1485,470 @@ static void test_hooks(void)
     CHECK_EQ(cpu.r[15], CODE + 0x40);
 }
 
+/* Processor modes ------------------------------------------------------------------------- */
+
+#define MODE (cpu.cpsr & ARM_MODE_MASK)
+
+static void test_modes(void)
+{
+    begin("msr cpsr_c switches the banked r13 r14");
+    CHECK_EQ(ARM(0xe1a0400eu,  /* mov r4, lr */
+                 0xe321f0d2u,  /* msr cpsr_c, #0xd2: IRQ */
+                 0xe3a0dc01u,  /* mov sp, #0x100 */
+                 0xe3a0ec02u,  /* mov lr, #0x200 */
+                 0xe321f0dfu,  /* msr cpsr_c, #0xdf: system */
+                 0xe1a0100du,  /* mov r1, sp */
+                 0xe1a0200eu,  /* mov r2, lr */
+                 0xe321f0d2u,  /* msr cpsr_c, #0xd2 */
+                 0xe1a0300du,  /* mov r3, sp */
+                 0xe321f01fu,  /* msr cpsr_c, #0x1f */
+                 0xe12fff14u), /* bx r4 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[1], STACK_TOP);
+    CHECK_EQ(cpu.r[2], ARM_RETURN_ADDRESS);
+    CHECK_EQ(cpu.r[3], 0x100);
+    CHECK_EQ(cpu.r[13], STACK_TOP);
+    CHECK_EQ(MODE, ARM_MODE_SYSTEM);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 13), 0x100);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 14), 0x200);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_SVC, 13), 0);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 13), STACK_TOP);
+
+    begin("user and system share their registers");
+    CHECK_EQ(ARM(0xe321f010u,  /* msr cpsr_c, #0x10: user */
+                 0xe1a0100du), /* mov r1, sp */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[1], STACK_TOP);
+    CHECK_EQ(MODE, ARM_MODE_USER);
+
+    begin("fiq banks r8-r14 and gives r8-r12 back");
+    cpu.r[8] = 0x88;
+    cpu.r[12] = 0xcc;
+    CHECK_EQ(ARM(0xe1a0400eu,  /* mov r4, lr */
+                 0xe321f0d1u,  /* msr cpsr_c, #0xd1: FIQ */
+                 0xe1a00008u,  /* mov r0, r8 */
+                 0xe3a08008u,  /* mov r8, #8 */
+                 0xe3a0c00cu,  /* mov r12, #12 */
+                 0xe321f0d2u,  /* msr cpsr_c, #0xd2: FIQ to IRQ directly */
+                 0xe1a09008u,  /* mov r9, r8 */
+                 0xe321f0dfu,  /* msr cpsr_c, #0xdf */
+                 0xe12fff14u), /* bx r4 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 0);
+    CHECK_EQ(cpu.r[9], 0x88);
+    CHECK_EQ(cpu.r[8], 0x88);
+    CHECK_EQ(cpu.r[12], 0xcc);
+    CHECK_EQ(cpu.r[13], STACK_TOP);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_FIQ, 8), 8);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_FIQ, 12), 12);
+    arm_set_cpsr(&cpu, ARM_MODE_FIQ | ARM_CPSR_I | ARM_CPSR_F);
+    CHECK_EQ(cpu.r[8], 8);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 8), 0x88);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_SVC, 12), 0xcc);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_SYSTEM, 13), STACK_TOP);
+    arm_banked_set(&cpu, ARM_MODE_USER, 10, 0xaa);
+    arm_banked_set(&cpu, ARM_MODE_IRQ, 14, 0x1414);
+    arm_set_cpsr(&cpu, ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.r[10], 0xaa);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 14), 0x1414);
+
+    begin("each mode has its spsr");
+    cpu.r[2] = 0x20000030u | ARM_MODE_SYSTEM;
+    CHECK_EQ(ARM(0xe1a0400eu,  /* mov r4, lr */
+                 0xe321f0d2u,  /* msr cpsr_c, #0xd2 */
+                 0xe16ff002u,  /* msr spsr_fsxc, r2 */
+                 0xe321f0d3u,  /* msr cpsr_c, #0xd3 */
+                 0xe368f20fu,  /* msr spsr_f, #0xf0000000 */
+                 0xe361f01fu,  /* msr spsr_c, #0x1f */
+                 0xe14f1000u,  /* mrs r1, spsr */
+                 0xe321f0d2u,  /* msr cpsr_c, #0xd2 */
+                 0xe14f0000u,  /* mrs r0, spsr */
+                 0xe321f0dfu,  /* msr cpsr_c, #0xdf */
+                 0xe12fff14u), /* bx r4 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 0x20000030u | ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.r[1], 0xf0000000u | ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.spsr_irq, cpu.r[0]);
+    CHECK_EQ(cpu.spsr_svc, cpu.r[1]);
+
+    /* UNPREDICTABLE in the ARM ARM (A4.1.38, A4.1.39); arm.c's choice */
+    begin("system mode has no spsr");
+    cpu.r[2] = 0x12345678u;
+    CHECK_EQ(ARM(0xe16ff002u,  /* msr spsr_fsxc, r2: ignored */
+                 0xe14f0000u), /* mrs r0, spsr: reads the cpsr */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], ARM_MODE_SYSTEM);
+
+    begin("msr in user mode writes only the flags");
+    cpu.r[2] = 0x800000d3u;
+    CHECK_EQ(ARM(0xe321f010u,  /* msr cpsr_c, #0x10 */
+                 0xe12ff002u), /* msr cpsr_fsxc, r2 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.cpsr, 0x80000000u | ARM_MODE_USER);
+
+    begin("msr leaves the cpsr T bit");
+    cpu.r[2] = ARM_CPSR_T | ARM_MODE_SYSTEM;
+    CHECK_EQ(ARM(0xe12ff002u,  /* msr cpsr_fsxc, r2 */
+                 0xe3a00007u), /* mov r0, #7: still ARM */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 7);
+    CHECK_EQ(cpu.cpsr & ARM_CPSR_T, 0);
+
+    begin("movs pc, lr in system mode keeps the cpsr");
+    cpu.cpsr |= C;
+    CHECK_EQ(ARM(0xe1b0f00eu), ARM_RETURNED); /* movs pc, lr */
+    CHECK_EQ(cpu.cpsr, C | ARM_MODE_SYSTEM);
+}
+
+/* Exceptions ------------------------------------------------------------------------------ */
+
+static void test_exceptions(void)
+{
+    begin("irq entry and subs pc, lr, #4 to Thumb");
+    *half(CODE + 0x40) = 0x2001; /* movs r0, #1 */
+    *half(CODE + 0x42) = 0x4770; /* bx lr */
+    *word(CODE) = 0xe25ef004u;   /* subs pc, lr, #4 */
+    cpu.r[14] = ARM_RETURN_ADDRESS;
+    cpu.cpsr = C | ARM_CPSR_T | ARM_MODE_SYSTEM;
+    cpu.r[15] = CODE + 0x40;
+    arm_enter_exception(&cpu, ARM_EXC_IRQ);
+    CHECK_EQ(cpu.cpsr, C | ARM_CPSR_I | ARM_MODE_IRQ);
+    CHECK_EQ(cpu.spsr, C | ARM_CPSR_T | ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.r[14], CODE + 0x44);
+    CHECK_EQ(cpu.r[15], 0xffff0018u);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 14), ARM_RETURN_ADDRESS);
+    cpu.r[15] = CODE;
+    CHECK_EQ(arm_run(&cpu, ARM_RETURN_ADDRESS, 100), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 1);
+    CHECK_EQ(MODE, ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.cpsr & ARM_CPSR_I, 0);
+    CHECK_EQ(cpu.r[13], STACK_TOP);
+
+    begin("fiq entry masks both and uses the fiq vector");
+    cpu.r[15] = CODE + 8;
+    arm_enter_exception(&cpu, ARM_EXC_FIQ);
+    CHECK_EQ(cpu.cpsr, ARM_CPSR_I | ARM_CPSR_F | ARM_MODE_FIQ);
+    CHECK_EQ(cpu.r[14], CODE + 12);
+    CHECK_EQ(cpu.r[15], 0xffff001cu);
+
+    begin("abort return addresses");
+    cpu.r[15] = CODE;
+    arm_enter_exception(&cpu, ARM_EXC_DATA_ABORT);
+    CHECK_EQ(MODE, ARM_MODE_ABORT);
+    CHECK_EQ(cpu.r[14], CODE + 8);
+    CHECK_EQ(cpu.r[15], 0xffff0010u);
+    cpu.r[15] = CODE;
+    arm_enter_exception(&cpu, ARM_EXC_PREFETCH_ABORT);
+    CHECK_EQ(cpu.r[14], CODE + 4);
+    CHECK_EQ(cpu.spsr, ARM_CPSR_I | ARM_MODE_ABORT); /* the abort mode's own CPSR */
+    CHECK_EQ(cpu.r[15], 0xffff000cu);
+
+    begin("undefined in Thumb with low vectors");
+    CHECK_EQ(ARM(0xee111f10u,  /* mrc p15, 0, r1, c1, c0, 0 */
+                 0xe3c11a02u,  /* bic r1, r1, #0x2000: V off */
+                 0xee011f10u), /* mcr p15, 0, r1, c1, c0, 0 */
+             ARM_RETURNED);
+    CHECK_EQ(THUMB(0xde00), ARM_UNDEFINED);
+    CHECK_EQ(cpu.r[15], CODE);
+    arm_enter_exception(&cpu, ARM_EXC_UNDEFINED);
+    CHECK_EQ(cpu.cpsr, ARM_CPSR_I | ARM_MODE_UNDEFINED);
+    CHECK_EQ(cpu.spsr, ARM_CPSR_T | ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.r[14], CODE + 2);
+    CHECK_EQ(cpu.r[15], 4);
+
+    begin("swi entry and movs pc, lr");
+    *word(CODE + 0x80) = 0xe1b0f00eu; /* movs pc, lr */
+    cpu.cpsr |= Z;
+    CHECK_EQ(ARM(0xef050000u,  /* swi 0x50000 */
+                 0xe3a00007u), /* mov r0, #7 */
+             ARM_SWI);
+    arm_enter_exception(&cpu, ARM_EXC_SWI);
+    CHECK_EQ(cpu.cpsr, Z | ARM_CPSR_I | ARM_MODE_SVC);
+    CHECK_EQ(cpu.r[14], CODE + 4);
+    CHECK_EQ(cpu.r[15], 0xffff0008u);
+    cpu.r[15] = CODE + 0x80;
+    CHECK_EQ(arm_run(&cpu, ARM_RETURN_ADDRESS, 100), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 7);
+    CHECK_EQ(cpu.cpsr, Z | ARM_MODE_SYSTEM);
+
+    begin("Thumb swi entry and movs pc, lr");
+    *word(CODE + 0x80) = 0xe1b0f00eu;
+    CHECK_EQ(THUMB(0xdf05, 0x2007), ARM_SWI); /* swi 5; movs r0, #7 */
+    CHECK_EQ(cpu.swi, 5);
+    arm_enter_exception(&cpu, ARM_EXC_SWI);
+    CHECK_EQ(cpu.r[14], CODE + 2);
+    CHECK_EQ(cpu.cpsr & ARM_CPSR_T, 0);
+    cpu.r[15] = CODE + 0x80;
+    CHECK_EQ(arm_run(&cpu, ARM_RETURN_ADDRESS, 100), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 7);
+    CHECK_EQ(MODE, ARM_MODE_SYSTEM);
+
+    begin("ldm ^ with pc restores the cpsr");
+    *half(CODE + 0x40) = 0x3001;      /* adds r0, #1 */
+    *half(CODE + 0x42) = 0x4770;      /* bx lr */
+    *word(CODE + 0x80) = 0xe8fd8001u; /* ldmfd sp!, {r0, pc}^ */
+    *word(DATA) = 0x77;
+    *word(DATA + 4) = CODE + 0x40; /* bit 0 clear: the state comes from the SPSR */
+    arm_set_cpsr(&cpu, ARM_CPSR_I | ARM_MODE_IRQ);
+    cpu.spsr = ARM_CPSR_T | ARM_MODE_SYSTEM;
+    cpu.r[13] = DATA;
+    arm_banked_set(&cpu, ARM_MODE_USER, 14, ARM_RETURN_ADDRESS);
+    cpu.r[15] = CODE + 0x80;
+    CHECK_EQ(arm_run(&cpu, ARM_RETURN_ADDRESS, 100), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 0x78);
+    CHECK_EQ(MODE, ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.r[13], STACK_TOP);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 13), DATA + 8);
+
+    begin("ldm stm ^ without pc use the user registers");
+    arm_set_cpsr(&cpu, ARM_CPSR_I | ARM_MODE_IRQ);
+    cpu.r[13] = 0xaaaa;
+    cpu.r[14] = 0xbbbb;
+    arm_banked_set(&cpu, ARM_MODE_USER, 13, 0x1111);
+    arm_banked_set(&cpu, ARM_MODE_USER, 14, 0x2222);
+    cpu.r[0] = DATA;
+    cpu.r[1] = DATA + 0x10;
+    *word(DATA + 0x10) = 0x3333;
+    *word(DATA + 0x14) = 0x4444;
+    *word(CODE) = 0xe8c06000u;     /* stmia r0, {sp, lr}^ */
+    *word(CODE + 4) = 0xe8d16000u; /* ldmia r1, {sp, lr}^ */
+    cpu.r[15] = CODE;
+    CHECK_EQ(arm_run(&cpu, CODE + 8, 10), ARM_RETURNED);
+    CHECK_EQ(*word(DATA), 0x1111);
+    CHECK_EQ(*word(DATA + 4), 0x2222);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 13), 0x3333);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 14), 0x4444);
+    CHECK_EQ(cpu.r[13], 0xaaaa);
+    CHECK_EQ(cpu.r[14], 0xbbbb);
+
+    begin("stm ^ from fiq stores the user r8-r14");
+    cpu.r[8] = 0x8;
+    cpu.r[12] = 0xc;
+    arm_set_cpsr(&cpu, ARM_CPSR_I | ARM_CPSR_F | ARM_MODE_FIQ);
+    cpu.r[8] = 0xf8;
+    cpu.r[12] = 0xfc;
+    cpu.r[0] = DATA;
+    *word(CODE) = 0xe8c07f00u; /* stmia r0, {r8-r14}^ */
+    cpu.r[15] = CODE;
+    CHECK_EQ(arm_run(&cpu, CODE + 4, 10), ARM_RETURNED);
+    CHECK_EQ(*word(DATA), 0x8);
+    CHECK_EQ(*word(DATA + 0x10), 0xc);
+    CHECK_EQ(*word(DATA + 0x14), STACK_TOP);
+    CHECK_EQ(cpu.r[8], 0xf8);
+
+    /* OS_IrqHandler_ThreadSwitch saves a thread with "stmib r0!, {r2-r14}^" and loads one with
+       "ldmib r1!, {r0-r14}^": writeback with ^ is UNPREDICTABLE in the ARM ARM (A4.1.98 STM(2),
+       A4.1.21 LDM(2)); the ARM946E-S writes the current mode's base register. */
+    begin("stmib ldmib ^ with writeback, as the SDK's thread switch");
+    arm_set_cpsr(&cpu, ARM_CPSR_I | ARM_MODE_IRQ);
+    cpu.r[13] = 0xaaaa;
+    arm_banked_set(&cpu, ARM_MODE_USER, 13, 0x1313);
+    arm_banked_set(&cpu, ARM_MODE_USER, 14, 0x1414);
+    cpu.r[0] = DATA;
+    cpu.r[1] = DATA + 0x80;
+    for (uint32_t i = 0; i < 15; i++) {
+        *word(DATA + 0x84 + 4 * i) = 0x100 + i;
+    }
+    *word(CODE) = 0xe9e07ffcu;     /* stmib r0!, {r2-r14}^ */
+    *word(CODE + 4) = 0xe9f17fffu; /* ldmib r1!, {r0-r14}^ */
+    cpu.r[15] = CODE;
+    CHECK_EQ(arm_run(&cpu, CODE + 4, 10), ARM_RETURNED);
+    CHECK_EQ(*word(DATA + 4 * 12), 0x1313); /* r13 is the 12th of r2-r14, at r0 + 4 + 4 * 11 */
+    CHECK_EQ(*word(DATA + 4 * 13), 0x1414);
+    CHECK_EQ(cpu.r[0], DATA + 4 * 13);
+    CHECK_EQ(arm_run(&cpu, CODE + 8, 10), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 0x100);
+    CHECK_EQ(cpu.r[1], 0x101); /* loaded: the base is in the list */
+    CHECK_EQ(cpu.r[12], 0x10c);
+    CHECK_EQ(cpu.r[13], 0xaaaa);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 13), 0x10d);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_USER, 14), 0x10e);
+}
+
+/* Interrupts ------------------------------------------------------------------------------- */
+
+/* A vector page and two I/O registers for the interrupt tests: the IRQ vector loads its
+ * handler address from the next word ("ldr pc, [pc, #-4]"); a write to IRQ_ACK lowers the
+ * interrupt line, a write to IRQ_RAISE raises it. */
+#define IRQ_HANDLER (CODE + 0xc0)
+#define IRQ_ACK 0x04000214u
+#define IRQ_RAISE 0x04000210u
+
+static int vector_read(void *user, uint32_t address, int size, uint32_t *value)
+{
+    (void) user;
+    (void) size;
+    if (address == 0xffff0018u) {
+        *value = 0xe51ff004u;
+        return 1;
+    }
+    if (address == 0xffff001cu) {
+        *value = IRQ_HANDLER;
+        return 1;
+    }
+    return 0;
+}
+
+static int line_write(void *user, uint32_t address, int size, uint32_t value)
+{
+    (void) size;
+    (void) value;
+    ArmCpu *c = user;
+    if (address == IRQ_ACK) {
+        c->irq_line = 0;
+        return 1;
+    }
+    if (address == IRQ_RAISE) {
+        c->irq_line = 1;
+        return 1;
+    }
+    return 0;
+}
+
+/* The handler counts in r5, acknowledges through r7 and returns to the interrupted
+ * instruction. */
+static void begin_irq(const char *name)
+{
+    begin(name);
+    cpu.io_read = vector_read;
+    cpu.io_write = line_write;
+    cpu.io_user = &cpu;
+    cpu.r[7] = IRQ_ACK;
+    *word(IRQ_HANDLER) = 0xe2855001u;     /* add r5, r5, #1 */
+    *word(IRQ_HANDLER + 4) = 0xe5876000u; /* str r6, [r7] */
+    *word(IRQ_HANDLER + 8) = 0xe25ef004u; /* subs pc, lr, #4 */
+}
+
+static void test_interrupts(void)
+{
+    begin_irq("irq taken before the next instruction");
+    cpu.irq_line = 1;
+    CHECK_EQ(ARM(0xe2800001u, 0xe2800001u, 0xe2800001u, 0xe2800001u), ARM_RETURNED); /* add r0, r0, #1 */
+    CHECK_EQ(cpu.r[0], 4);
+    CHECK_EQ(cpu.r[5], 1);
+    CHECK_EQ(cpu.irq_taken, 1);
+    CHECK_EQ(cpu.irq_line, 0);
+    CHECK_EQ(cpu.cpsr, ARM_MODE_SYSTEM);
+    CHECK_EQ(cpu.spsr_irq, ARM_MODE_SYSTEM);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 14), CODE + 4);
+
+    begin_irq("irq masked by cpsr I until msr clears it");
+    cpu.cpsr |= ARM_CPSR_I;
+    cpu.irq_line = 1;
+    CHECK_EQ(ARM(0xe2800001u,  /* add r0, r0, #1 */
+                 0xe321f01fu,  /* msr cpsr_c, #0x1f */
+                 0xe2800001u,  /* add r0, r0, #1: interrupted */
+                 0xe2800001u), /* add r0, r0, #1 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 3);
+    CHECK_EQ(cpu.r[5], 1);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 14), CODE + 12);
+    CHECK_EQ(cpu.spsr_irq, ARM_MODE_SYSTEM);
+
+    begin_irq("irq line ignored while I is set");
+    cpu.cpsr |= ARM_CPSR_I;
+    cpu.irq_line = 1;
+    CHECK_EQ(ARM(0xe2800001u, 0xe2800001u), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 2);
+    CHECK_EQ(cpu.r[5], 0);
+    CHECK_EQ(cpu.irq_taken, 0);
+    CHECK_EQ(cpu.irq_line, 1);
+
+    begin_irq("irq raised by a store interrupts Thumb code");
+    cpu.r[1] = IRQ_RAISE;
+    CHECK_EQ(THUMB(0x2001,  /* movs r0, #1 */
+                   0x6008,  /* str r0, [r1]: raises the line */
+                   0x3001,  /* adds r0, #1: interrupted */
+                   0x3001), /* adds r0, #1 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 3);
+    CHECK_EQ(cpu.r[5], 1);
+    CHECK_EQ(cpu.spsr_irq, ARM_CPSR_T | ARM_MODE_SYSTEM);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 14), CODE + 8);
+
+    begin_irq("an irq taken at a hooked vector");
+    cpu.hook_at = hook_at;
+    hooked_address = 0xffff0018u;
+    hook_mode = 0;
+    hook_calls = 0;
+    cpu.irq_line = 1;
+    CHECK_EQ(ARM(0xe2800001u), ARM_HOOK_STOP);
+    CHECK_EQ(hook_calls, 1);
+    CHECK_EQ(cpu.stop_pc, 0xffff0018u);
+    CHECK_EQ(MODE, ARM_MODE_IRQ);
+
+    begin_irq("arm_raise_irq");
+    cpu.cpsr |= ARM_CPSR_I;
+    cpu.r[15] = CODE;
+    CHECK_EQ(arm_raise_irq(&cpu), 0);
+    CHECK_EQ(cpu.r[15], CODE);
+    cpu.cpsr &= ~ARM_CPSR_I;
+    CHECK_EQ(arm_raise_irq(&cpu), 1);
+    CHECK_EQ(cpu.r[15], 0xffff0018u);
+    CHECK_EQ(cpu.irq_taken, 1);
+    CHECK_EQ(MODE, ARM_MODE_IRQ);
+}
+
+/* CP15 ------------------------------------------------------------------------------------- */
+
+static void test_cp15(void)
+{
+    begin("cp15 registers read back");
+    cpu.r[0] = 0x027e000au;
+    CHECK_EQ(ARM(0xee090f11u,  /* mcr p15, 0, r0, c9, c1, 0: DTCM region */
+                 0xee191f11u,  /* mrc p15, 0, r1, c9, c1, 0 */
+                 0xee060f11u,  /* mcr p15, 0, r0, c6, c1, 0: protection region 1 */
+                 0xee162f11u), /* mrc p15, 0, r2, c6, c1, 0 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[1], 0x027e000au);
+    CHECK_EQ(cpu.r[2], 0x027e000au);
+    CHECK_EQ(arm_cp15_get(&cpu, 9, 1, 0), 0x027e000au);
+    CHECK_EQ(arm_cp15_get(&cpu, 9, 1, 1), 0);
+    CHECK_EQ(arm_cp15_get(&cpu, 1, 0, 0), ARM_CP15_CONTROL_RESET);
+
+    begin("cp15 c0 is the read-only identification");
+    cpu.r[0] = 0x1234;
+    CHECK_EQ(ARM(0xee000f10u,  /* mcr p15, 0, r0, c0, c0, 0 */
+                 0xee101f10u,  /* mrc p15, 0, r1, c0, c0, 0 */
+                 0xee102f30u), /* mrc p15, 0, r2, c0, c0, 1 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[1], 0x41059461u);
+    CHECK_EQ(cpu.r[2], 0x0f0d2112u);
+
+    begin("mrc into r15 sets the flags");
+    cpu.r[0] = 0xa0000000u | ARM_CP15_CONTROL_RESET;
+    cpu.cpsr |= Z;
+    CHECK_EQ(ARM(0xee010f10u,  /* mcr p15, 0, r0, c1, c0, 0 */
+                 0xee11ff10u), /* mrc p15, 0, r15, c1, c0, 0 */
+             ARM_RETURNED);
+    CHECK_EQ(FLAGS, N | C);
+
+    begin("cp15 in user mode and other coprocessors are undefined");
+    CHECK_EQ(ARM(0xee010e10u), ARM_UNDEFINED); /* mcr p14, 0, r0, c1, c0, 0 */
+    CHECK_EQ(ARM(0xe321f010u,                  /* msr cpsr_c, #0x10 */
+                 0xee191f11u),                 /* mrc p15, 0, r1, c9, c1, 0 */
+             ARM_UNDEFINED);
+    CHECK_EQ(cpu.stop_pc, CODE + 4);
+
+    begin("drain write buffer continues");
+    CHECK_EQ(ARM(0xee070f9au,  /* mcr p15, 0, r0, c7, c10, 4 */
+                 0xe3a00007u), /* mov r0, #7 */
+             ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 7);
+
+    begin_irq("wait for interrupt halts, then the irq is taken");
+    CHECK_EQ(ARM(0xee070f90u,  /* mcr p15, 0, r0, c7, c0, 4 */
+                 0xe3a00007u), /* mov r0, #7 */
+             ARM_HALT);
+    CHECK_EQ(cpu.stop_pc, CODE);
+    CHECK_EQ(cpu.r[15], CODE + 4);
+    cpu.irq_line = 1;
+    CHECK_EQ(arm_run(&cpu, ARM_RETURN_ADDRESS, 100), ARM_RETURNED);
+    CHECK_EQ(cpu.r[0], 7);
+    CHECK_EQ(cpu.r[5], 1);
+    CHECK_EQ(arm_banked_get(&cpu, ARM_MODE_IRQ, 14), CODE + 8);
+}
+
 /* ROM functions --------------------------------------------------------------------------- */
 
 static int load_module(const char *dir, const char *name, uint32_t base)
@@ -1702,6 +2167,10 @@ int main(int argc, char **argv)
     test_thumb_memory();
     test_thumb_branches();
     test_hooks();
+    test_modes();
+    test_exceptions();
+    test_interrupts();
+    test_cp15();
     test_rom(rom_dir);
 
     printf("%d checks, %d failures\n", checks, failures);

@@ -97,14 +97,22 @@ the check), `tools/diffcheck.py`, and the first Clean function in `clean/main/sl
   entry states and compares the contract above.
 - At least one Clean function is registered and passes.
 
-**M2: Native on the PC.**
+**M2: Native on the PC.** In progress: `tools/native.py` compiles 25,242 of the 25,247 sources
+for 32-bit x86 and points their references at the game's memory (`tools/objrewrite.py`);
+`python tools/diffcheck.py --native` runs every function that calls nothing as Native against
+its Reference on random states (6,232 agree, 39 differ: shifts by 32 or more and unaligned
+loads, which random states produce and the game may not).
 - Every game source compiles for 32-bit x86 (clang and gcc), with the differences behind
   `AVOID_UB`.
 - Every function that calls nothing (a leaf) runs as Native against its Reference in the
   differential check; the ones that differ are listed with the reason (an interpreter bug,
   undefined behaviour, or a source to fix) until none are left.
 
-**M3: The game starts, as Reference.**
+**M3: The game starts, as Reference.** Done: `tools/run.py` boots the ROM's own code (the
+interpreter with banked registers and exceptions, `runtime/io.c` for the hardware, the 2D and 3D
+engines in `gpu2d.c` and `gpu3d.c`, the ARM7 side at its protocol in `arm7.c`) to the title;
+`runtime/recordings/title-start.txt` gives the same 1,300 frames on every run and host, which
+CI checks against `title-start.sha1`.
 - The hardware layer (interrupts, timers, DMA, the file system from the ROM, 2D and 3D graphics
   at native resolution, input) runs the game's own boot code to the title screen.
 - A recorded input sequence reaches the same title-screen frames on every run.

@@ -64,6 +64,11 @@ jobs:
           apt-get update -qq && apt-get install -y -qq --no-install-recommends gcc-multilib >/dev/null
           python3 tools/diffcheck.py
 
+      - name: Run to the title
+        run: |
+          python3 tools/run.py 0 1300 --input runtime/recordings/title-start.txt             --rtc "2005-11-23 12:00:00" --hash build/adm-kr/title-start.txt | tee build/adm-kr/run.log
+          grep -q "sequence sha1 $(cat runtime/recordings/title-start.sha1)" build/adm-kr/run.log
+
       - name: Report
         run: python3 tools/report.py
 
