@@ -11,7 +11,6 @@ uint64_t host_invoke(const void *fn, const uint32_t *args, int count, int thisca
 
 /* Runs host_invoke, but returns nonzero instead of crashing when the code faults (an access to
  * memory the process does not have); *fault is then the faulting data address, if known. */
-int host_guarded_invoke(const void *fn, const uint32_t *args, int count, int thiscall, uint64_t *result,
-                        uint32_t *fault);
+int host_guarded_invoke(const void *fn, const uint32_t *args, int count, int thiscall, uint64_t *result, uint32_t *fault);
 
 #endif

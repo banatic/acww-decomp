@@ -93,6 +93,75 @@ def unit_tests() -> None:
         raise SystemExit(p.stdout + p.stderr)
 
 
+# What each parameter of a Native function is, so the check can give it a value of its type
+# (runtime/nativecheck.c): mwccarm's callers widen 8- and 16-bit arguments, and a random word
+# where the game passes a pointer or a small number would test inputs the game never makes.
+PARAM_WORD, PARAM_U8, PARAM_S8, PARAM_U16, PARAM_S16, PARAM_POINTER, PARAM_UNKNOWN = 0, 1, 2, 3, 4, 5, 7
+COMMENT = re.compile(r"/\*.*?\*/|//[^\n]*", re.S)
+PARAM_WORDS = {"int", "long", "unsigned", "signed", "u32", "s32", "BOOL", "float", "f32", "fx32", "size_t"}
+
+
+def param_kind(text: str) -> int:
+    words = text.replace("*", " * ").replace("&", " & ").replace("[", " [ ").split()
+    words = [w for w in words if w not in ("const", "volatile", "struct", "enum", "register")]
+    if "*" in words or "&" in words or "[" in words or "(" in text:
+        return PARAM_POINTER
+    if len(words) > 1 and words[-1] not in PARAM_WORDS | {"char", "short", "u8", "s8", "u16", "s16"}:
+        words = words[:-1]  # drop the parameter's name
+    if words in (["u8"], ["unsigned", "char"]):
+        return PARAM_U8
+    if words in (["s8"], ["char"], ["signed", "char"]):
+        return PARAM_S8
+    if words in (["u16"], ["unsigned", "short"], ["unsigned", "short", "int"]):
+        return PARAM_U16
+    if words in (["s16"], ["short"], ["signed", "short"], ["short", "int"]):
+        return PARAM_S16
+    if words and all(w in PARAM_WORDS for w in words) and words.count("long") < 2:
+        return PARAM_WORD
+    return PARAM_UNKNOWN  # a structure by value, a 64-bit value, or a type this does not know
+
+
+def param_table() -> pathlib.Path:
+    """build/adm-kr/runtime/native_params.c: for every game function, its parameters' kinds,
+    three bits each, `this` first for a member; bit 31 when they are not all known."""
+    rows = []
+    for path in C.all_sources():
+        if C.SRC not in path.parents:
+            continue
+        src = C.parse_source(path)
+        text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
+        m = re.search(r"(?:^|[;}])\s*((?:[\w<>]+[\s\*&]+)+?)((?:\w+::)?)" + re.escape(src.name)
+                      + r"\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)\s*(?:const\s*)?\{", text, re.M)
+        if not m:
+            continue
+        params = " ".join(m.group(3).split())
+        parts, depth, cur = [], 0, ""
+        for ch in params:
+            depth += ch == "("
+            depth -= ch == ")"
+            if ch == "," and depth == 0:
+                parts.append(cur)
+                cur = ""
+            else:
+                cur += ch
+        if cur.strip() and cur.strip() != "void":
+            parts.append(cur)
+        kinds = ([PARAM_POINTER] if m.group(2) and "static" not in m.group(1).split() else [])
+        kinds += [param_kind(p) for p in parts]
+        packed = 0
+        for i, k in enumerate(kinds[:10]):
+            packed |= k << (3 * i)
+        if len(kinds) > 10 or PARAM_UNKNOWN in kinds:
+            packed |= 1 << 31
+        rows.append((src.address, f"    {{0x{src.address:08x}u, {len(kinds)}u, 0x{packed:08x}u}},"))
+    rows = [row for _, row in sorted(rows)]  # sorted by address: the check searches it
+    out = OUT / "native_params.c"
+    out.write_text("\n".join(["#include \"native_params.h\"", "", "const NativeParams native_param_kinds[] = {",
+                              *rows, "};", f"const uint32_t native_param_kinds_count = {len(rows)};", ""]),
+                   newline="\n")
+    return out
+
+
 def build_native() -> pathlib.Path:
     """runtime/nativecheck.c with every Native object (tools/native.py must have run)."""
     native = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
@@ -113,6 +182,7 @@ def build_native() -> pathlib.Path:
             raise SystemExit(p.stdout + p.stderr)
         asm.append(obj)
     srcs = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "host.c", "native_rt.c", "nativecheck.c")]
+    srcs.append(param_table())
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", f"-I{RUNTIME}"]
     # Classes split one function per file define their destructors and vtable in several
     # objects, identically; the linker keeps the first.

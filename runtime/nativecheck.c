@@ -18,6 +18,7 @@
 #include "host.h"
 #include "loader.h"
 #include "memory.h"
+#include "native_params.h"
 #include "native_table.h"
 
 #define STACK_TOP 0x027e3f00u
@@ -25,7 +26,7 @@
 #define MAX_STEPS 2000000u
 #define MAX_WRITES 64
 #define RANDOM_BYTES 0x1000u
-#define MAX_ARGS 8
+#define MAX_ARGS 16
 
 typedef struct Effects {
     uint64_t ret;
@@ -144,12 +145,46 @@ static uint32_t random_arg(DiffRng *rng)
     }
 }
 
+/* The parameters' kinds of the function at `address`, or NULL (native_param_kinds is sorted). */
+static const NativeParams *params_of(uint32_t address)
+{
+    uint32_t lo = 0, hi = native_param_kinds_count;
+    while (lo < hi) {
+        uint32_t mid = (lo + hi) / 2;
+        if (native_param_kinds[mid].address < address) {
+            lo = mid + 1;
+        } else {
+            hi = mid;
+        }
+    }
+    return lo < native_param_kinds_count && native_param_kinds[lo].address == address ? &native_param_kinds[lo] : NULL;
+}
+
+/* A value of the parameter's kind: as mwccarm's callers pass it, widened to 32 bits. */
+static uint32_t typed_arg(DiffRng *rng, int kind)
+{
+    switch (kind) {
+        case PARAM_U8:
+            return diff_rand(rng) & 0xff;
+        case PARAM_S8:
+            return (uint32_t) (int32_t) (int8_t) diff_rand(rng);
+        case PARAM_U16:
+            return diff_rand(rng) & 0xffff;
+        case PARAM_S16:
+            return (uint32_t) (int32_t) (int16_t) diff_rand(rng);
+        case PARAM_POINTER:
+            return DIFF_SCRATCH + (diff_rand(rng) % (RANDOM_BYTES / 2) & ~3u);
+        default:
+            return random_arg(rng);
+    }
+}
+
 enum Outcome { SAME, DIFFERENT, CALLS, NO_STATE };
 
 static enum Outcome check(const NativeFunction *f, int cases, const MemorySnapshot *loaded, FILE *log)
 {
     DiffRng rng = {0x2545f491u ^ f->address};
-    /* Always eight words: a structure or 64-bit value passed by value takes several, laid
+    /* Always sixteen words: a structure or 64-bit value passed by value takes several, laid
      * out the same way in r0-r3 and on the DS stack as on the PC's stack, and host_invoke
      * puts the stack pointer back however many the callee expected. */
     int nargs = MAX_ARGS;
@@ -164,6 +199,12 @@ static enum Outcome check(const NativeFunction *f, int cases, const MemorySnapsh
         uint32_t args[MAX_ARGS];
         for (int i = 0; i < MAX_ARGS; i++) {
             args[i] = random_arg(&rng);
+        }
+        const NativeParams *kinds = params_of(f->address & ~1u);
+        if (kinds && !(kinds->kinds >> 31)) {
+            for (uint32_t i = 0; i < kinds->count && i < MAX_ARGS; i++) {
+                args[i] = typed_arg(&rng, (int) ((kinds->kinds >> (3 * i)) & 7));
+            }
         }
         /* arguments past the fourth are on the stack */
         uint32_t sp = STACK_TOP - 4 * MAX_ARGS;
@@ -276,7 +317,6 @@ int main(int argc, char **argv)
     printf("functions that call nothing: %d agree, %d differ (%s), %d without a "
            "state the reference finishes\n",
            counts[SAME], counts[DIFFERENT], argv[2], counts[NO_STATE]);
-    printf("not checked here: %d call other functions, %d return a float or a structure\n", counts[CALLS],
-           skipped_returns);
+    printf("not checked here: %d call other functions, %d return a float or a structure\n", counts[CALLS], skipped_returns);
     return counts[DIFFERENT] ? 1 : 0;
 }

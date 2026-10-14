@@ -37,9 +37,21 @@ extern const uint32_t native_private_count;
 extern const char *const native_module_names[];
 extern const uint32_t native_module_count;
 
-static inline int native_return(const NativeFunction *f) { return (int) (f->info & 15); }
-static inline int native_params(const NativeFunction *f) { return (int) ((f->info >> 4) & 15); }
-static inline int native_member(const NativeFunction *f) { return (int) ((f->info >> 8) & 1); }
-static inline const char *native_module(const NativeFunction *f) { return native_module_names[f->info >> 16]; }
+static inline int native_return(const NativeFunction *f)
+{
+    return (int) (f->info & 15);
+}
+static inline int native_params(const NativeFunction *f)
+{
+    return (int) ((f->info >> 4) & 15);
+}
+static inline int native_member(const NativeFunction *f)
+{
+    return (int) ((f->info >> 8) & 1);
+}
+static inline const char *native_module(const NativeFunction *f)
+{
+    return native_module_names[f->info >> 16];
+}
 
 #endif

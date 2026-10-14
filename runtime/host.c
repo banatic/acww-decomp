@@ -58,8 +58,7 @@ static LONG CALLBACK on_fault(EXCEPTION_POINTERS *info)
     longjmp(*jump, 1);
 }
 
-int host_guarded_invoke(const void *fn, const uint32_t *args, int count, int thiscall, uint64_t *result,
-                        uint32_t *fault)
+int host_guarded_invoke(const void *fn, const uint32_t *args, int count, int thiscall, uint64_t *result, uint32_t *fault)
 {
     static void *handler;
     if (handler == NULL) {
@@ -95,8 +94,7 @@ static void on_fault(int sig, siginfo_t *info, void *context)
     siglongjmp(*jump, 1);
 }
 
-int host_guarded_invoke(const void *fn, const uint32_t *args, int count, int thiscall, uint64_t *result,
-                        uint32_t *fault)
+int host_guarded_invoke(const void *fn, const uint32_t *args, int count, int thiscall, uint64_t *result, uint32_t *fault)
 {
     static int installed;
     if (!installed) {
