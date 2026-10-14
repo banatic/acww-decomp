@@ -36,6 +36,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import time
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
@@ -281,7 +282,13 @@ def write_config(entries: dict[str, list]) -> None:
         dl.write_text(dl.read_text().rstrip("\n") + "\n\n" + "\n".join(lines), newline="\n")
 
 
+def step(what: str, t0: list[float] = [time.monotonic()]) -> None:
+    now = time.monotonic()
+    print(f"  {now - t0[0]:6.0f}s  {what}", flush=True)
+
+
 def run(cmd: list[str], log: str) -> None:
+    step(log.removesuffix(".log"))
     p = subprocess.run(cmd, cwd=C.ROOT, capture_output=True, text=True, errors="replace")
     (LINK / log).write_text(p.stdout + p.stderr, newline="\n")
     if p.returncode != 0:
@@ -311,7 +318,9 @@ def link() -> None:
         shutil.rmtree(out)
     out.mkdir(parents=True)
     ld = C.MWCC_ROOT / "1.2" / "base" / "mwldarm.exe"
-    wrapper = shlex.split(os.environ.get("MWCC_WRAPPER", ""))
+    # LD_WRAPPER runs the Windows linker elsewhere (default: MWCC_WRAPPER). wibo is slow here:
+    # it scans the directories it opens files in, and the object tree has thousands of files.
+    wrapper = shlex.split(os.environ.get("LD_WRAPPER", os.environ.get("MWCC_WRAPPER", "")))
     # -nodead: every gap object is reachable only through the ROM's own tables
     run([*wrapper, str(ld), "-proc", "arm946e", "-nodead", "-nostdlib", "-interworking",
          "-map", "closure,unused", "-m", "Entry", f"@{obj / 'objects.txt'}", str(lcf),
@@ -324,12 +333,14 @@ def main() -> None:
     paths = [p for p in C.all_sources() if C.SRC in p.parents]
     with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
         plans = [r for r in pool.map(planner.plan, paths) if r]
+    step(f"planned {len(plans)} sources")
     entries, why = choose(plans, planner.chk.mods)
     linked = sorted(f for es in entries.values() for f, _ in es)
     write_config(entries)
     (LINK / "left-out.txt").write_text("".join(f"{n:6} {k}\n" for k, n in why.most_common()),
                                        newline="\n")
     link()
+    step("done")
     (C.BUILD / "linked.json").write_text(json.dumps(linked, indent=0) + "\n", newline="\n")
     print(f"{len(linked)} of {len(paths)} sources linked; every module matches the ROM")
     for k, n in why.most_common():
