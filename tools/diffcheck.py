@@ -227,6 +227,10 @@ def param_table() -> pathlib.Path:
     return out
 
 
+# Names Native objects use that runtime/native_rt.c defines (C names, without the COFF "_").
+RUNTIME_NAMES = {"__cxa_guard_acquire", "__cxa_guard_release", "__cxa_guard_abort"}
+
+
 def build_native() -> pathlib.Path:
     """runtime/nativecheck.c with every Native object (tools/native.py must have run)."""
     native = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
@@ -234,7 +238,14 @@ def build_native() -> pathlib.Path:
         raise SystemExit("run `python tools/native.py` first")
     exe = OUT / ("nativecheck.exe" if os.name == "nt" else "nativecheck")
     asm = []
-    assembly = [native / "natives.s", native / "absolute.s"]
+    # absolute.s places every name the symbol table does not know at 0; the ones
+    # runtime/native_rt.c defines must come from there instead.
+    prefix = "_" if os.name == "nt" else ""
+    provided = {prefix + n for n in RUNTIME_NAMES}
+    absolute = OUT / "absolute.s"
+    absolute.write_text("".join(line for line in (native / "absolute.s").read_text().splitlines(keepends=True)
+                                if line.split()[1].rstrip(",") not in provided), newline="\n")
+    assembly = [native / "natives.s", absolute]
     if os.name == "nt":
         assembly.append(RUNTIME / "native_rt_win.s")
     for src in assembly:

@@ -23,3 +23,22 @@ int64_t __moddi3(int64_t a, int64_t b)
 {
     return a % b;
 }
+
+/* A C++ function-local static with a dynamic initializer is guarded by these (the Itanium C++
+ * ABI); Native code runs on one thread, so the guard's first byte is all they need. */
+int __cxa_guard_acquire(uint64_t *guard);
+void __cxa_guard_release(uint64_t *guard);
+void __cxa_guard_abort(uint64_t *guard);
+
+int __cxa_guard_acquire(uint64_t *guard)
+{
+    return *(uint8_t *) guard == 0;
+}
+void __cxa_guard_release(uint64_t *guard)
+{
+    *(uint8_t *) guard = 1;
+}
+void __cxa_guard_abort(uint64_t *guard)
+{
+    (void) guard;
+}

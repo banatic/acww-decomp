@@ -2,10 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov003_0220f57c(int *out, int a, int b, int c)
+typedef struct {
+    int x, y, z;
+} Vec;
+
+void func_ov003_0220f57c(int *out, Vec v)
 {
-    int *p = &a;
-    out[0] = p[0];
-    out[1] = p[1];
-    out[2] = p[2];
+    out[0] = v.x;
+    out[1] = v.y;
+    out[2] = v.z;
 }

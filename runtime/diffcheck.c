@@ -23,7 +23,7 @@ extern const DiffTestEntry diff_tests[];
 extern const int diff_test_count;
 
 /* The checked function runs on a stack at the top of DTCM, as the game's own threads do. */
-#define STACK_TOP 0x027e3f00u
+#define STACK_TOP DIFF_STACK_ARGS
 #define STACK_SIZE 0x1000u
 #define MAX_STEPS 10000000u
 #define MAX_WRITES 256
@@ -167,13 +167,13 @@ static int run_test(const DiffTestEntry *entry)
             break;
         }
         ref.ret = keep_return(t, cpu.r[0]);
-        memory_diff(entry_state, STACK_TOP - STACK_SIZE, STACK_TOP, record_write, &ref);
+        memory_diff(entry_state, STACK_TOP - STACK_SIZE, STACK_TOP + DIFF_STACK_ARGS_SIZE, record_write, &ref);
 
         /* Clean */
         memory_restore(entry_state);
         Effects clean = {0};
         clean.ret = keep_return(t, t->run_clean(args));
-        memory_diff(entry_state, STACK_TOP - STACK_SIZE, STACK_TOP, record_write, &clean);
+        memory_diff(entry_state, STACK_TOP - STACK_SIZE, STACK_TOP + DIFF_STACK_ARGS_SIZE, record_write, &clean);
         memory_snapshot_free(entry_state);
 
         if (!same(&ref, &clean)) {

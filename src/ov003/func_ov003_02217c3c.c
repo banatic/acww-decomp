@@ -13,11 +13,10 @@ struct UnkStruct_02217c3c {
 
 void func_ov003_02217c3c(struct UnkStruct_02217c3c *out, int a, int b, int c, int d, short e, int f)
 {
-    int *p = (int *) &d - 4;
     out->a = a;
     out->unk_12 = (char) b;
     out->b = c;
     out->c = d;
-    out->e = *((short *) ((char *) p + 20));
+    out->e = e;
     out->d = f;
 }

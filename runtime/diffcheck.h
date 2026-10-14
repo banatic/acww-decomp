@@ -32,6 +32,12 @@ static inline int32_t diff_range(DiffRng *rng, int32_t lo, int32_t hi)
     return lo + (int32_t) (diff_rand(rng) % (uint32_t) (hi - lo + 1));
 }
 
+/* The checked function's stack pointer on entry: its fifth and later arguments are here, as
+ * the caller leaves them. The area below (its frame) and the arguments themselves, which
+ * belong to the call, are not compared. */
+#define DIFF_STACK_ARGS 0x027e3f00u
+#define DIFF_STACK_ARGS_SIZE 0x40u
+
 /* Free main RAM the checks may build their inputs in: above everything the modules load. */
 #define DIFF_SCRATCH 0x023e0000u
 #define DIFF_SCRATCH_SIZE 0x00010000u
