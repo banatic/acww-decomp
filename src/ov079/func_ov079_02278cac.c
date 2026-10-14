@@ -16,7 +16,7 @@ typedef struct {
     int some;
 } ObjT;
 
-extern PairT data_0213dd98;
+extern PairT __ptmf_null;
 extern void func_0201612c(void *p);
 
 void func_ov079_02278cac(ObjT *s)
@@ -25,7 +25,7 @@ void func_ov079_02278cac(ObjT *s)
     func_0201612c(s);
     s->some = -1;
     s->flag = 0xfff1;
-    tmp = data_0213dd98;
+    tmp = __ptmf_null;
     s->p1 = tmp;
     s->p2 = tmp;
 }

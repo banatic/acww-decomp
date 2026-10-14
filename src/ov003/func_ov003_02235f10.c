@@ -3,10 +3,10 @@
  */
 
 extern void func_ov003_02235f2c(void);
-extern void func_02138c48(void *a, int b, int c, void (*d)(void));
+extern void __cxa_vec_cleanup(void *a, int b, int c, void (*d)(void));
 
 void *func_ov003_02235f10(void *self)
 {
-    func_02138c48(self, 0x10, 0x22, func_ov003_02235f2c);
+    __cxa_vec_cleanup(self, 0x10, 0x22, func_ov003_02235f2c);
     return self;
 }

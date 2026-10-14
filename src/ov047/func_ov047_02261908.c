@@ -7,7 +7,7 @@ struct Pair {
     int a;
     int b;
 };
-extern struct Pair data_0213dd98;
+extern struct Pair __ptmf_null;
 
 struct UnkStruct_02261908 {
     char pad_00[0xb8];
@@ -24,7 +24,7 @@ void func_ov047_02261908(struct UnkStruct_02261908 *self)
     func_0201612c(self);
     self->flag = -1;
     self->shortVal = 0xfff1;
-    p = data_0213dd98;
+    p = __ptmf_null;
     self->pair1 = p;
     self->pair2 = p;
 }

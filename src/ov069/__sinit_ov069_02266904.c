@@ -51,7 +51,7 @@ extern UnkStruct_02266904 data_ov069_02267ba8;
 extern UnkStruct_02266904 data_ov069_02267cf0;
 extern UnkStruct_02266904 data_ov069_02267b90;
 extern UnkStruct_02266904 data_ov069_02267c40;
-extern const UnkStruct_02266904 data_0213dd98;
+extern const UnkStruct_02266904 __ptmf_null;
 extern UnkStruct_02266904 data_ov069_02267b98;
 extern UnkStruct_02266904 data_ov069_02267bc0;
 extern UnkStruct_02266904 data_ov069_02267f48;
@@ -302,7 +302,7 @@ void __sinit_ov069_02266904(void)
     data_ov069_02268a0c[1] = data_ov069_02267cf0;
     data_ov069_02268a0c[2] = data_ov069_02267b90;
     data_ov069_02268a0c[3] = data_ov069_02267c40;
-    t1 = data_0213dd98;
+    t1 = __ptmf_null;
     data_ov069_02268a0c[4] = t1;
     data_ov069_02268a0c[5] = t1;
     data_ov069_02268a0c[6] = data_ov069_02267b98;

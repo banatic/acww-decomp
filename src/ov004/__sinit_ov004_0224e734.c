@@ -7,7 +7,7 @@ struct UnkStruct_0224e734 {
     int b;
 };
 extern int data_ov004_02254618[];
-extern int data_0213dd98[];
+extern int __ptmf_null[];
 extern int data_ov004_022545a4[];
 extern int data_ov004_02254544[];
 extern int data_ov004_0225451c[];
@@ -31,7 +31,7 @@ extern int data_ov004_02254554[];
 
 int __sinit_ov004_0224e734(void)
 {
-    ((struct UnkStruct_0224e734 *) data_ov004_02254618)[0] = *(const struct UnkStruct_0224e734 *) data_0213dd98;
+    ((struct UnkStruct_0224e734 *) data_ov004_02254618)[0] = *(const struct UnkStruct_0224e734 *) __ptmf_null;
     *(struct UnkStruct_0224e734 *) ((char *) ((int) data_ov004_02254618) + (12)) =
         *(const struct UnkStruct_0224e734 *) data_ov004_022545a4;
     ((struct UnkStruct_0224e734 *) data_ov004_02254618)[3] = *(const struct UnkStruct_0224e734 *) data_ov004_02254544;

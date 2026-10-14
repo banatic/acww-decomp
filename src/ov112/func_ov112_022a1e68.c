@@ -16,7 +16,7 @@ extern void *func_ov002_02207f80(int size);
 extern void func_ov002_0220830c(void *self);
 extern void func_ov002_0220ba24(void *self);
 extern void func_020b9cfc(void *self);
-extern void func_02138d6c(void *self, int a, int b, Callback cb1, Callback cb2);
+extern void __cxa_vec_ctor(void *self, int a, int b, Callback cb1, Callback cb2);
 extern void func_ov002_0220a5fc(void *self);
 extern void func_ov002_0220b008(void *self);
 extern void func_ov002_02209ccc(void *self);
@@ -55,8 +55,8 @@ void *func_ov112_022a1e68(void)
         p++;
     } while (p != q);
 
-    func_02138d6c(q, 2, 0x6c, func_02070c08, func_02070be8);
-    func_02138d6c((char *) self + 0x3fac, 6, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(q, 2, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor((char *) self + 0x3fac, 6, 0x6c, func_02070c08, func_02070be8);
     func_ov002_0220a5fc((char *) self + 0x4234);
     func_ov002_0220b008((char *) self + 0x427c);
     func_ov002_02209ccc((char *) self + 0x4448);

@@ -9,14 +9,14 @@ class UnkStruct_0201d140 {
     char pad_00[0xb8];
     Pmf pmf;
 };
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 extern "C" int func_0201d198(UnkStruct_0201d140 *, void *);
 extern "C" void func_0201d140(UnkStruct_0201d140 *self, void *arg)
 {
     if (!func_0201d198(self, arg)) {
         if (self->pmf) {
             (self->*(self->pmf))(arg);
-            self->pmf = data_0213dd98;
+            self->pmf = __ptmf_null;
         }
     }
 }

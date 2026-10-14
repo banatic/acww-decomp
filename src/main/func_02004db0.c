@@ -6,7 +6,7 @@ extern void *data_020d82b4;
 extern void *data_020d832c;
 extern void *data_020d8414;
 extern void func_0200e91c(void);
-extern void func_02138c48(void *list, int count, int size, void *ctor);
+extern void __cxa_vec_cleanup(void *list, int count, int size, void *ctor);
 extern void func_0201a790(void *p);
 extern void func_020f5914(void *p);
 extern void func_020f5400(void *p);
@@ -35,7 +35,7 @@ void *func_02004db0(char *self)
 {
     *(void **) (self + 0) = &data_020d82b4;
     *(void **) (self + 0xec) = &data_020d832c;
-    func_02138c48(self + 0x934, 0x1e, 0x1c, (void *) func_0200e91c);
+    __cxa_vec_cleanup(self + 0x934, 0x1e, 0x1c, (void *) func_0200e91c);
     func_0201a790(self + 0x90c);
     *(void **) (self + 0x880) = &data_020d8414;
     func_020f5914(self + 0x880);

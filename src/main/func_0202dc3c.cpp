@@ -6,7 +6,7 @@ union UnkStruct_0202dc3c {
     double d;
     int i[2];
 };
-extern UnkStruct_0202dc3c data_0213dd98;
+extern UnkStruct_0202dc3c __ptmf_null;
 
 struct UnkStruct_0202dc3c_2 {
     unsigned char pad_00[0x18];
@@ -67,9 +67,9 @@ extern "C" void func_0202dc3c(UnkStruct_0202dc3c_4 *self, void *arg1, unsigned i
     if (arg2 < 0x11) {
         func_0202da88(self, &data_021c283c[arg2]);
     }
-    self->unk_C8 = data_0213dd98;
-    self->unk_D0 = data_0213dd98;
-    self->unk_D8 = t = data_0213dd98;
+    self->unk_C8 = __ptmf_null;
+    self->unk_D0 = __ptmf_null;
+    self->unk_D8 = t = __ptmf_null;
     self->unk_E0 = t;
     self->unk_E8 = t;
     self->unk_F0 = t;
@@ -92,7 +92,7 @@ extern "C" void func_0202dc3c(UnkStruct_0202dc3c_4 *self, void *arg1, unsigned i
     self->unk_160 = 0;
     self->unk_164 = 0;
     self->unk_168 = 0;
-    self->unk_16C = t2 = data_0213dd98;
+    self->unk_16C = t2 = __ptmf_null;
     self->unk_174 = t2;
     self->unk_17C = t2;
     self->unk_184 = t2;

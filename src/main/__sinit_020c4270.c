@@ -32,7 +32,7 @@ extern UnkStruct_020c4270 data_021c1a94[8];
 extern UnkStruct_020c4270 data_021c172c, data_021c1734, data_021c173c, data_021c1744;
 
 extern UnkStruct_020c4270 data_020d85cc, data_020d87fc, data_020d8b74, data_020d87bc, data_020d878c, data_020d879c;
-extern UnkStruct_020c4270 data_020d86bc, data_020d8534, data_0213dd98, data_020d8544, data_020d855c, data_020d8564,
+extern UnkStruct_020c4270 data_020d86bc, data_020d8534, __ptmf_null, data_020d8544, data_020d855c, data_020d8564,
     data_020d8924, data_020d87c4, data_020d87cc, data_020d87d4, data_020d8b94, data_020d86d4;
 extern UnkStruct_020c4270 data_020d8bc4, data_020d8bbc, data_020d8bb4, data_020d8bac, data_020d8ba4, data_020d8b9c,
     data_020d898c, data_020d8b8c, data_020d8b84, data_020d8b7c, data_020d89bc, data_020d8b6c;
@@ -90,7 +90,7 @@ void __sinit_020c4270(void)
 
     data_021c1ad4[0] = data_020d86bc;
     data_021c1ad4[1] = data_020d8534;
-    t = data_0213dd98;
+    t = __ptmf_null;
     data_021c1ad4[2] = t;
     data_021c1ad4[3] = data_020d8544;
     data_021c1ad4[4] = data_020d855c;

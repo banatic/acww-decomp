@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void __register_global_object(int, void *, void *);
 extern struct {
     unsigned char f0;
@@ -72,6 +72,6 @@ void __sinit_ov009_022656f4(void)
     data_ov009_02265b38.f1 = 24;
     data_ov009_02265b38.f2 = 24;
     data_ov009_02265b38.f3 = 31;
-    func_02138d6c((void *) &data_ov009_02265cb4, 34, 80, (void *) &func_ov009_02265634, (void *) &func_ov009_02265630);
+    __cxa_vec_ctor((void *) &data_ov009_02265cb4, 34, 80, (void *) &func_ov009_02265634, (void *) &func_ov009_02265630);
     __register_global_object(0, (void *) &func_ov009_0226569c, (void *) &data_ov009_02265b48);
 }

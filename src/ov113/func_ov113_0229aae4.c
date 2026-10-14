@@ -5,7 +5,7 @@
 extern void *func_ov002_02207f80(unsigned int size);
 extern void func_ov002_0220830c(void *p);
 extern void func_020b9cfc(void *p);
-extern void func_02138d6c(void *ptr, int a, int b, void (*c)(void), void (*d)(void));
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*c)(void), void (*d)(void));
 extern void func_02070be8(void);
 extern void func_02070c08(void);
 extern void func_ov002_02209c78(void *p);
@@ -32,8 +32,8 @@ void *func_ov113_0229aae4(void)
             func_020b9cfc(q);
             q += 0x24;
         } while (q != end);
-        func_02138d6c(end, 4, 0x6c, func_02070c08, func_02070be8);
-        func_02138d6c(p + 0x2898, 6, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(end, 4, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(p + 0x2898, 6, 0x6c, func_02070c08, func_02070be8);
         func_ov002_02209c78(p + 0x2b20);
     }
     return p;

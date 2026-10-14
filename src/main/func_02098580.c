@@ -3,10 +3,10 @@
  */
 
 extern void func_02099ad0(void);
-extern void func_02138c48(int, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(int, int, int, void (*)(void));
 
 int func_02098580(int arg)
 {
-    func_02138c48(arg, 3, 0x249C, func_02099ad0);
+    __cxa_vec_cleanup(arg, 3, 0x249C, func_02099ad0);
     return arg;
 }

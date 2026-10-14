@@ -4,7 +4,7 @@
 
 extern void func_0209d2b8(void *);
 extern void func_020ee660(void *);
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void func_ov004_02239c40(void *);
 extern void func_020b82d0();
 extern void func_020b82ec();
@@ -20,9 +20,9 @@ void *func_ov004_02239d34(char *self)
     func_020ee660(self);
     *(void **) (self) = &data_020da13c;
     *(void **) (self) = &data_ov004_02255ebc;
-    func_02138d6c(self + 0x50, 0x5, 0x64, (void *) func_ov004_02239da8, (void *) func_ov004_02239c5c);
+    __cxa_vec_ctor(self + 0x50, 0x5, 0x64, (void *) func_ov004_02239da8, (void *) func_ov004_02239c5c);
     func_ov004_02239c40(self + 0x244);
-    func_02138d6c(self + 0x2a8, 0x2, 0x2a8, (void *) func_020b82ec, (void *) func_020b82d0);
+    __cxa_vec_ctor(self + 0x2a8, 0x2, 0x2a8, (void *) func_020b82ec, (void *) func_020b82d0);
     func_0209d2b8(self + 0x7f8);
     return self;
 }

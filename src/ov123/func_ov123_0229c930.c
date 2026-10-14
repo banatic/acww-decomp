@@ -4,7 +4,7 @@
 
 extern void *func_ov002_02207f80(int size);
 extern void func_ov002_0220830c(void);
-extern void func_02138d6c(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
 extern void func_020b9af4(void *ptr);
 extern void func_ov002_02209ccc(void *ptr);
 extern void func_ov002_0220b008(void *ptr);
@@ -23,7 +23,7 @@ void *func_ov123_0229c930(void)
     if (p != 0) {
         func_ov002_0220830c();
         ((void **) p)[0] = (void *) data_ov123_0229d024;
-        func_02138d6c((char *) p + 0xb8, 1, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor((char *) p + 0xb8, 1, 0x6c, func_02070c08, func_02070be8);
         ptr = (char *) p + 0x124;
         end = (char *) p + 0x1cc;
         do {

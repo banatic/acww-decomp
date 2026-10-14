@@ -16,14 +16,14 @@ extern void func_ov094_0229a2d0(void *);
 extern void func_ov094_0229bc30(void *);
 extern void func_ov094_0229afe0(void *);
 extern void func_ov002_0220826c(void *);
-extern void func_02138c48(void *, int, int, void (*)(void *));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 
 void *func_ov104_0229c180(void *self)
 {
     *(void **) self = (void *) &data_ov104_0229f6d0;
     func_ov002_0220afdc((char *) self + 0x41b4);
-    func_02138c48((char *) self + 0x37b4, 0xa, 0x100, func_02066688);
-    func_02138c48((char *) self + 0x2db4, 0xa, 0x100, func_02066688);
+    __cxa_vec_cleanup((char *) self + 0x37b4, 0xa, 0x100, func_02066688);
+    __cxa_vec_cleanup((char *) self + 0x2db4, 0xa, 0x100, func_02066688);
     func_ov002_0220b464((char *) self + 0x2d3c);
     func_0206e35c((char *) self + 0x2a14);
     func_ov002_0220ba0c((char *) self + 0x28f8);

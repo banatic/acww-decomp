@@ -11,7 +11,7 @@ typedef struct {
     char b;
 } UnkStruct_02237af4_2;
 
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void __register_global_object(void *, void *, void *);
 extern void func_ov003_02228f8c(void *);
 extern void func_ov003_0222c418(void *, int);
@@ -95,17 +95,17 @@ void __sinit_ov003_02237af4(void)
 {
     int v;
 
-    func_02138d6c(&data_ov003_0225f76c, 6, 0x24c, &func_ov003_0222902c, &func_ov003_02228fe8);
+    __cxa_vec_ctor(&data_ov003_0225f76c, 6, 0x24c, &func_ov003_0222902c, &func_ov003_02228fe8);
     __register_global_object(0, &func_ov003_0222c494, &data_ov003_0225f0c4);
     func_ov003_02228f8c(&data_ov003_0225f220);
     __register_global_object(&data_ov003_0225f220, &func_ov003_02228f54, &data_ov003_0225f0d0);
-    func_02138d6c(&data_ov003_0225f4dc, 4, 164, &func_ov003_02228ed4, &func_ov003_02228ec4);
+    __cxa_vec_ctor(&data_ov003_0225f4dc, 4, 164, &func_ov003_02228ed4, &func_ov003_02228ec4);
     __register_global_object(0, &func_ov003_0222c474, &data_ov003_0225f0dc);
     v = data_021c80bc;
     data_ov003_0225f0bc.unk_00 = v;
     func_ov003_0222c418(&data_ov003_0225f0b4, v);
     __register_global_object(&data_ov003_0225f0b4, &func_ov003_0222c414, &data_ov003_0225f0e8);
-    func_02138d6c(&data_ov003_0225f35c, 4, 96, &func_ov003_0222c3e0, &func_ov003_0222c3d0);
+    __cxa_vec_ctor(&data_ov003_0225f35c, 4, 96, &func_ov003_0222c3e0, &func_ov003_0222c3d0);
     __register_global_object(0, &func_ov003_0222c454, &data_ov003_0225f0f4);
 
     data_ov003_0225f100.unk_00 = data_ov003_0223bee0;

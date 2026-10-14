@@ -17,6 +17,7 @@ class Obj_ov048_02264298 {
 
     // dispatchers and helpers
     int func_ov048_02262db0();
+    void func_ov048_02262bb8();
 
     char pad_04[0xe71 - 0x04];
     unsigned char unk_E71; // step of the setup sequence

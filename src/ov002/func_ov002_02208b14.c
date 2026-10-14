@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02209324_unk(void *self);
-extern int func_ov002_02209318_unk(void *self);
+extern int func_ov002_02209324(void *self);
+extern int func_ov002_02209318(void *self);
 
 struct UnkStruct_02208b14 {
     unsigned char pad_00[8];
@@ -24,8 +24,8 @@ int func_ov002_02208b14(struct UnkStruct_02208b14 *self, int a, int b, int c)
 
     r7 = -self->unk_08;
     r4 = -self->unk_0C;
-    w = r7 + func_ov002_02209324_unk(self);
-    v = r4 + func_ov002_02209318_unk(self);
+    w = r7 + func_ov002_02209324(self);
+    v = r4 + func_ov002_02209318(self);
     if (r7 > a || w < a) {
         return c;
     }

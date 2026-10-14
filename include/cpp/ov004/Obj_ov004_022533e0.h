@@ -23,6 +23,8 @@ struct Obj_ov004_022533e0 : public Base_0203f080, public Base_02066994 {
     int func_ov004_0221b3ac();
     void func_ov004_0221b4b0();
     int func_ov004_0221b4e0();
+    // update: runs the state handlers, then draws the model unless hidden
+    int func_ov004_0221bce0();
 
     char pad_130[0x4];
     int unk_134;

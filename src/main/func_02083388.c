@@ -5,7 +5,7 @@
 extern void func_02083ca8(void *ptr, int n);
 extern void func_020833d4(void);
 extern void func_020833ec(void);
-extern void func_02138d6c(void *ptr, int a, int b, void (*cb1)(void), void (*cb2)(void));
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*cb1)(void), void (*cb2)(void));
 extern int data_020e1b38;
 
 typedef struct {
@@ -22,6 +22,6 @@ void *func_02083388(void *self)
     func_02083ca8(self, 5);
     s->unk_00 = &data_020e1b38;
     cb2 = func_020833d4;
-    func_02138d6c(s->buffer, 5, 2, func_020833ec, cb2);
+    __cxa_vec_ctor(s->buffer, 5, 2, func_020833ec, cb2);
     return self;
 }

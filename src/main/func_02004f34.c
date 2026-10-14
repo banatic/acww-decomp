@@ -115,7 +115,7 @@ extern void func_020f5430(void *);
 extern void func_020f55cc(void *);
 extern void func_0200e91c(void);
 extern void func_0200e92c(void);
-extern void func_02138d6c(void *, int, int, void (*)(void), void (*)(void));
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void), void (*)(void));
 extern int data_020d82b4;
 extern int data_020d832c;
 
@@ -162,7 +162,7 @@ UnkStruct_02004f34 *func_02004f34(UnkStruct_02004f34 *s)
     s->unk_8FC = 0;
     s->unk_900 = 0;
     func_0201a794(&s->unk_90C);
-    func_02138d6c(&s->unk_934, 0x1e, 0x1c, func_0200e92c, func_0200e91c);
+    __cxa_vec_ctor(&s->unk_934, 0x1e, 0x1c, func_0200e92c, func_0200e91c);
     s->unk_800 = 4;
     s->unk_704 = 0xa1;
     s->unk_708 = 0x144;

@@ -4,7 +4,7 @@
 
 extern void *func_ov002_02207f80(int size);
 extern void func_ov002_0220830c(void);
-extern void func_02138d6c(void *base, int count, int size, void (*ctor)(void *), void (*dtor)(void *));
+extern void __cxa_vec_ctor(void *base, int count, int size, void (*ctor)(void *), void (*dtor)(void *));
 extern void func_ov002_02209ccc(void *p);
 extern void func_ov002_0220b008(void *p);
 extern void func_020b9cfc(void *p);
@@ -23,7 +23,7 @@ void *func_ov133_0229c70c(void)
 
         func_ov002_0220830c();
         *(void **) p = &data_ov133_0229c908;
-        func_02138d6c(p + 0xb0, 1, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(p + 0xb0, 1, 0x6c, func_02070c08, func_02070be8);
         func_ov002_02209ccc(p + 0x11c);
         func_ov002_0220b008(p + 0x180);
         q = p + 0x34c;

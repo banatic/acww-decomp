@@ -48,7 +48,7 @@ struct UnkStruct_0220c934_2 {
 
 extern "C" void func_020110c4(unsigned short *, UnkStruct_0220c934_2 *);
 extern "C" UnkStruct_0220c934 *func_02082618(int, int);
-extern "C" UnkStruct_0220c934 *func_ov003_02236204_unk(int);
+extern "C" UnkStruct_0220c934 *func_ov003_02236204(int);
 
 extern "C" int func_ov003_0220c934(UnkStruct_0220c934_2 *self)
 {
@@ -92,7 +92,7 @@ extern "C" int func_ov003_0220c934(UnkStruct_0220c934_2 *self)
             break;
         case 0x11:
         case 0x12:
-            p = func_ov003_02236204_unk(b);
+            p = func_ov003_02236204(b);
             if (p != 0) {
                 t2 = 0;
                 wv2 = w;

@@ -23,10 +23,10 @@ typedef struct {
 } RoomObject;
 
 extern int func_020961a8(int k);
-extern void func_ov004_0220fefc_unk(RoomObject *self, UnkStruct_0220cb68 *out);
-extern int func_ov004_0223c5a4_unk(UnkStruct_0220cb68 *v);
+extern void func_ov004_0220fefc(RoomObject *self, UnkStruct_0220cb68 *out);
+extern int func_ov004_0223c5a4(UnkStruct_0220cb68 *v);
 extern short func_0204bc50(int a, int b);
-extern int func_ov004_02233ba8_unk(short *h, UnkStruct_0220cb68 *v);
+extern int func_ov004_02233ba8(short *h, UnkStruct_0220cb68 *v);
 
 int func_ov004_0220cb68(RoomObject *self)
 {
@@ -44,12 +44,12 @@ int func_ov004_0220cb68(RoomObject *self)
         UnkStruct_0220cb68 local3;
         short h;
 
-        func_ov004_0220fefc_unk(self, &local);
+        func_ov004_0220fefc(self, &local);
 
         if (self->unk_288 == 0) {
             local.y = 0;
         } else {
-            local.y = func_ov004_0223c5a4_unk(&local);
+            local.y = func_ov004_0223c5a4(&local);
         }
         local.y = local.y + 0x800;
 
@@ -59,7 +59,7 @@ int func_ov004_0220cb68(RoomObject *self)
         local3.y = local.y;
         local3.z = local.z;
 
-        return func_ov004_02233ba8_unk(&h, &local3);
+        return func_ov004_02233ba8(&h, &local3);
     }
     return 1;
 }

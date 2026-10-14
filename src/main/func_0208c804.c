@@ -5,7 +5,7 @@
 extern unsigned char data_020e2250;
 extern void func_0208c668(void *);
 extern void func_0208af00(void *);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 extern void func_0208a1f4(void);
 
 typedef struct {
@@ -20,7 +20,7 @@ void *func_0208c804(void *arg)
 
     obj->unk_00 = &data_020e2250;
     func_0208c668(obj);
-    func_02138c48(&obj->unk_0C, 9, 20, func_0208a1f4);
+    __cxa_vec_cleanup(&obj->unk_0C, 9, 20, func_0208a1f4);
     func_0208af00(obj);
     return obj;
 }

@@ -21,7 +21,7 @@ typedef struct {
 } El2;
 
 extern void __register_global_object(void *, void *, void *);
-extern void func_02138d6c(void *, int, int, void *, int);
+extern void __cxa_vec_ctor(void *, int, int, void *, int);
 extern void func_0204b160(void *);
 
 extern unsigned char data_021c779c;
@@ -60,5 +60,5 @@ void __sinit_020c51b8(void)
         r->unk_18 = 0;
         r++;
     } while (r != data_021c7c48 + 3);
-    func_02138d6c((void *) &data_021c77c0, 0x18, 8, (void *) &func_020012e0, 0);
+    __cxa_vec_ctor((void *) &data_021c77c0, 0x18, 8, (void *) &func_020012e0, 0);
 }

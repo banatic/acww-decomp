@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02138d6c(void *, int, int, void (*)(), void (*)());
+extern void __cxa_vec_ctor(void *, int, int, void (*)(), void (*)());
 extern void func_020325b8(void *);
 extern char data_020da1b4;
 extern void func_020012dc();
@@ -20,8 +20,8 @@ typedef struct {
 Func02032564Ctx *func_02032564(Func02032564Ctx *p)
 {
     p->unk_00 = &data_020da1b4;
-    func_02138d6c(p->unk_30, 4, 12, func_020012e8, func_020012dc);
-    func_02138d6c(p->unk_60, 4, 8, func_02032550, func_0202f2f0);
+    __cxa_vec_ctor(p->unk_30, 4, 12, func_020012e8, func_020012dc);
+    __cxa_vec_ctor(p->unk_60, 4, 8, func_02032550, func_0202f2f0);
     func_020325b8(p);
     return p;
 }

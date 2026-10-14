@@ -79,7 +79,7 @@ extern struct {
 } data_ov046_02261fb0;
 extern struct {
     UnkStruct_02261cac f0;
-} data_0213dd98;
+} __ptmf_null;
 extern struct {
     UnkStruct_02261cac f0;
 } data_ov046_02261fa8;
@@ -118,6 +118,6 @@ void __sinit_ov046_02261cac(void)
     data_ov046_0226248c.f28 = data_ov046_02261fc0.f0;
     data_ov046_0226248c.f30 = data_ov046_02261fb8.f0;
     data_ov046_0226248c.f38 = data_ov046_02261fb0.f0;
-    data_ov046_0226248c.f40 = data_0213dd98.f0;
+    data_ov046_0226248c.f40 = __ptmf_null.f0;
     data_ov046_0226248c.f48 = data_ov046_02261fa8.f0;
 }

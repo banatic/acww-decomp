@@ -4,8 +4,8 @@
 
 extern void *func_020e895c(void *, int, unsigned int);
 extern void func_ov004_0220ccf8(void *obj, int arg);
-extern void func_ov004_0220fefc_unk(void *obj, void *arg);
-extern void func_ov004_0220e61c_unk(void *obj, void *arg);
+extern void func_ov004_0220fefc(void *obj, void *arg);
+extern void func_ov004_0220e61c(void *obj, void *arg);
 
 typedef struct {
     unsigned int unk_00;
@@ -31,8 +31,8 @@ void func_ov004_0220c5cc(RoomObject *obj)
     } else {
         if (obj->unk_770 == 1) {
             char local[16];
-            func_ov004_0220fefc_unk(obj, local);
-            func_ov004_0220e61c_unk(obj, local);
+            func_ov004_0220fefc(obj, local);
+            func_ov004_0220e61c(obj, local);
         }
     }
     obj->unk_770++;

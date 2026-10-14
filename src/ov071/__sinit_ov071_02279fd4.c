@@ -14,7 +14,7 @@ typedef struct {
 extern s16 data_020c80f0;
 extern u16 data_ov071_0227a340;
 
-extern Pair data_ov071_0227a120, data_ov071_0227a118, data_ov071_0227a100, data_ov071_0227a178, data_0213dd98,
+extern Pair data_ov071_0227a120, data_ov071_0227a118, data_ov071_0227a100, data_ov071_0227a178, __ptmf_null,
     data_ov071_0227a108, data_ov071_0227a110, data_ov071_0227a128, data_ov071_0227a160, data_ov071_0227a138,
     data_ov071_0227a140, data_ov071_0227a148;
 extern Pair data_ov071_0227a3a4[12];
@@ -44,7 +44,7 @@ void __sinit_ov071_02279fd4(void)
     data_ov071_0227a3a4[1] = data_ov071_0227a118;
     data_ov071_0227a3a4[2] = data_ov071_0227a100;
     data_ov071_0227a3a4[3] = data_ov071_0227a178;
-    data_ov071_0227a3a4[4] = data_0213dd98;
+    data_ov071_0227a3a4[4] = __ptmf_null;
     data_ov071_0227a3a4[5] = data_ov071_0227a108;
     data_ov071_0227a3a4[6] = data_ov071_0227a110;
     data_ov071_0227a3a4[7] = data_ov071_0227a128;

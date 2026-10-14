@@ -8,12 +8,12 @@ class UnkStruct_02278fa8 {
     void (UnkStruct_02278fa8::*pmf)();
 };
 
-extern void (UnkStruct_02278fa8::*data_0213dd98)();
+extern void (UnkStruct_02278fa8::*__ptmf_null)();
 
 extern "C" void func_ov076_02278fa8(UnkStruct_02278fa8 *self)
 {
     if (self->pmf) {
         (self->*self->pmf)();
-        self->pmf = data_0213dd98;
+        self->pmf = __ptmf_null;
     }
 }

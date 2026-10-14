@@ -7,10 +7,10 @@ typedef struct {
     int a;
     int b;
 } Pair;
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 
 void func_ov050_0226366c(void *this)
 {
     func_0201612c(this);
-    *(Pair *) ((char *) this + 0xb8) = data_0213dd98;
+    *(Pair *) ((char *) this + 0xb8) = __ptmf_null;
 }

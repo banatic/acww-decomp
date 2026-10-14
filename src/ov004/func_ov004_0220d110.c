@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void func_ov004_0220d258();
 extern void func_ov004_0220d268();
 
@@ -12,7 +12,7 @@ void *func_ov004_0220d110(char *self)
 {
     // DECLS
     // ENDDECLS
-    func_02138d6c(self, 0x3, 0x1c, (void *) func_ov004_0220d268, (void *) func_ov004_0220d258);
+    __cxa_vec_ctor(self, 0x3, 0x1c, (void *) func_ov004_0220d268, (void *) func_ov004_0220d258);
     *(u8 *) (self + 0x54) = 0x0;
     return self;
 }

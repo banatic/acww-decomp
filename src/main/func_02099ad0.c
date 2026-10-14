@@ -17,7 +17,7 @@ extern void func_0209ade4(unsigned char *);
 extern void func_02097e18(unsigned char *);
 extern void func_0203d388(unsigned char *);
 extern void func_0203cfa0(unsigned char *);
-extern void func_02138c48(unsigned char *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(unsigned char *, int, int, void (*)(void));
 extern void func_020051b0(void);
 extern void func_02066688(void);
 extern void func_02072ce8(unsigned char *);
@@ -39,8 +39,8 @@ void *func_02099ad0(unsigned char *self)
     func_02097e18(self + 0x1d3c);
     func_0203d388(self + 0x1d3b);
     func_0203cfa0(self + 0x1c18);
-    func_02138c48(self + 0x1bf2, 15, 2, func_020051b0);
-    func_02138c48(self + 0x11a8, 10, 256, func_02066688);
+    __cxa_vec_cleanup(self + 0x1bf2, 15, 2, func_020051b0);
+    __cxa_vec_cleanup(self + 0x11a8, 10, 256, func_02066688);
     func_02072ce8(self);
     return self;
 }

@@ -7,7 +7,7 @@ typedef struct {
 } UnkStruct_020c5d3c;
 extern void func_020817a8(void *);
 extern void __register_global_object(void *, void *, void *);
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void func_02078d68(void *);
 extern void func_02078c78(void *);
 extern void func_02078bb0(void *);
@@ -60,7 +60,7 @@ void __sinit_020c5d3c(void)
     data_021d1330.f10 = data_020e1898.f0;
     data_021d1330.f18 = data_020e18b0.f0;
     data_021d1330.f20 = data_020e18a0.f0;
-    func_02138d6c((void *) &data_021d13e4, 8, 44, (void *) &func_020795c8, (void *) &func_020795a8);
+    __cxa_vec_ctor((void *) &data_021d13e4, 8, 44, (void *) &func_020795c8, (void *) &func_020795a8);
     __register_global_object((void *) &data_021d13e4, (void *) &func_02082528, (void *) &data_021d1274);
     func_02078d68((void *) &data_021d12dc);
     __register_global_object((void *) &data_021d12dc, (void *) &func_02078d64, (void *) &data_021d128c);

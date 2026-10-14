@@ -3,7 +3,7 @@
  */
 
 extern char data_ov110_0229ecb8;
-extern void func_02138c48(char *ptr, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(char *ptr, int a, int b, void (*cb)(void));
 extern void func_ov002_0220ba0c(char *ptr);
 extern void func_ov002_02209ac8(char *ptr);
 extern void func_ov002_02209cb4(char *ptr);
@@ -18,7 +18,7 @@ extern void func_02070be8(void);
 char *func_ov110_0229c180(char *p)
 {
     *(unsigned int *) p = (unsigned int) &data_ov110_0229ecb8;
-    func_02138c48(p + 0x2854, 2, 0x6c, func_02070be8);
+    __cxa_vec_cleanup(p + 0x2854, 2, 0x6c, func_02070be8);
     func_ov002_0220ba0c(p + 0x2738);
     func_ov002_02209ac8(p + 0x2344);
     func_ov002_02209cb4(p + 0x22e0);

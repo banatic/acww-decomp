@@ -9,7 +9,7 @@ typedef struct {
 } Three;
 extern void *FX_MulFunc(int, int);
 extern void __register_global_object(void *, void *, void *);
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void func_02033894(void *);
 extern void func_02033c48(void *);
 extern void func_02032f94(void *);
@@ -43,7 +43,7 @@ void __sinit_020c4af0(void)
     data_021c31a0.unk_08 = 0x1000;
     __register_global_object((void *) (&data_021c31a0), (void *) (&func_020012dc), (void *) (&data_021c3194));
     p = (void *) (&data_021c31e8);
-    func_02138d6c((void *) (&data_021c31ec), 8, 0x138, (void *) (&func_02034824), (void *) (&func_02034804));
+    __cxa_vec_ctor((void *) (&data_021c31ec), 8, 0x138, (void *) (&func_02034824), (void *) (&func_02034804));
     func_02033894((void *) (&data_021c3bac));
     func_02033c48((void *) (((char *) p) + 0xe48));
     func_02032f94((void *) (((char *) p) + 0x184c));

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02138c48(void *obj, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(void *obj, int a, int b, void (*cb)(void));
 extern void func_ov052_02261128(void *obj);
 extern void func_0202ee5c(void *obj);
 extern void func_020edf54(void *obj);
@@ -20,7 +20,7 @@ typedef struct UnkStruct_0226045c {
 UnkStruct_0226045c *func_ov052_0226045c(UnkStruct_0226045c *self)
 {
     self->unk_00 = &data_ov052_02261f40;
-    func_02138c48(&self->unk_720, 3, 2, func_020051b0);
+    __cxa_vec_cleanup(&self->unk_720, 3, 2, func_020051b0);
     func_ov052_02261128(&self->unk_658);
     func_0202ee5c(self);
     func_020edf54(self);

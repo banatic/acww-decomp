@@ -12,7 +12,7 @@ extern void func_ov002_02207e40(void *p);
 extern void func_ov002_02209e44(void *p);
 extern void func_ov002_02209ccc(void *p);
 extern void func_ov002_0220ba24(void *p);
-extern void func_02138d6c(void *p, int a, int b, void (*c)(void), void (*d)(void));
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*c)(void), void (*d)(void));
 extern void func_02070be8(void);
 extern void func_02070c08(void);
 extern unsigned char data_ov102_0229ea60;
@@ -44,7 +44,7 @@ void *func_ov102_0229e8b0(void)
         func_ov002_02209ccc(p + 0x2274);
         func_ov002_0220ba24(p + 0x22d8);
 
-        func_02138d6c(p + 0x23f4, 2, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(p + 0x23f4, 2, 0x6c, func_02070c08, func_02070be8);
     }
 
     return p;

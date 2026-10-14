@@ -3,7 +3,7 @@
  */
 
 extern void func_ov002_0220afdc(void *);
-extern void func_02138c48(void *p, int a, int b, void (*cb)(void *));
+extern void __cxa_vec_cleanup(void *p, int a, int b, void (*cb)(void *));
 extern void func_02066688(void *);
 extern void func_ov002_0220b464(void *);
 extern void func_0206e35c(void *);
@@ -23,7 +23,7 @@ void *func_ov105_0229c24c(void *self)
 {
     *(void **) self = &data_ov105_0229fad0;
     func_ov002_0220afdc((unsigned char *) self + 0x5fb8);
-    func_02138c48((unsigned char *) self + 0x2db8, 0x32, 0x100, func_02066688);
+    __cxa_vec_cleanup((unsigned char *) self + 0x2db8, 0x32, 0x100, func_02066688);
     func_ov002_0220b464((unsigned char *) self + 0x2d40);
     func_0206e35c((unsigned char *) self + 0x2a18);
     func_ov002_0220ba0c((unsigned char *) self + 0x28fc);

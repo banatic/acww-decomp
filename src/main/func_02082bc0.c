@@ -4,11 +4,11 @@
 
 extern void func_02082bec(void);
 extern void func_02082bfc(void);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 
 void *func_02082bc0(void *arg)
 {
-    func_02138c48((char *) arg + 0x40, 4, 8, func_02082bec);
-    func_02138c48(arg, 8, 8, func_02082bfc);
+    __cxa_vec_cleanup((char *) arg + 0x40, 4, 8, func_02082bec);
+    __cxa_vec_cleanup(arg, 8, 8, func_02082bfc);
     return arg;
 }

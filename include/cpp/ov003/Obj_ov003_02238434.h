@@ -15,6 +15,11 @@ class Obj_ov003_02238434 : public Obj_ov009_022658dc {
     int func_ov003_0221b808();
     int func_ov003_0221b8b8(int state);
 
+    // state changes; 0x4c and 0x70 are primary vtable slots
+    void func_ov003_0221b80c();
+    void func_ov003_0221b944(int event);
+    int func_ov003_0221b9d0();
+
     int state_2b4;
 };
 

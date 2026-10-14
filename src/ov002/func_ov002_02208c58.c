@@ -5,7 +5,7 @@
 extern void func_ov002_022089ec(void *a, void *b, unsigned char c);
 extern void func_ov002_02208a0c(void *a, int b);
 extern void func_ov002_02208a04(void *a, int b);
-extern void func_ov002_022092e0_unk(void *a);
+extern void func_ov002_022092e0(void *a);
 
 void func_ov002_02208c58(void *a, const unsigned char *b, int c)
 {
@@ -33,5 +33,5 @@ void func_ov002_02208c58(void *a, const unsigned char *b, int c)
         func_ov002_02208a04(a, 0x20);
     }
     ((unsigned char *) a)[0x1c] = count;
-    func_ov002_022092e0_unk(a);
+    func_ov002_022092e0(a);
 }

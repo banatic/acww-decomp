@@ -15,7 +15,7 @@ extern void func_ov002_02209b14(void *p);
 extern void func_ov002_0220ba24(void *p);
 extern void func_02070be8(void);
 extern void func_02070c08(void);
-extern void func_02138d6c(void *p, int a, int b, void (*c)(void), void (*d)(void));
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*c)(void), void (*d)(void));
 extern int data_ov110_0229ecb8;
 
 void *func_ov110_0229eaf0(void)
@@ -47,7 +47,7 @@ void *func_ov110_0229eaf0(void)
     func_ov002_02209ccc(self + 0x22e0);
     func_ov002_02209b14(self + 0x2344);
     func_ov002_0220ba24(self + 0x2738);
-    func_02138d6c(self + 0x2854, 2, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(self + 0x2854, 2, 0x6c, func_02070c08, func_02070be8);
 
 done:
     return self;

@@ -3,7 +3,7 @@
  */
 
 extern void func_0205577c(void *ptr);
-extern void func_02138d6c(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
 extern void func_020565b0(void);
 extern void func_020565c8(void);
 
@@ -19,7 +19,7 @@ typedef struct {
 UnkStruct_0221f3b0 *func_ov003_0221f3b0(UnkStruct_0221f3b0 *obj)
 {
     func_0205577c(&obj->unk_04);
-    func_02138d6c(&obj->unk_A8, 2, 0x20, func_020565c8, func_020565b0);
+    __cxa_vec_ctor(&obj->unk_A8, 2, 0x20, func_020565c8, func_020565b0);
     obj->unk_00 = 0;
     obj->unk_A0 = 0;
     obj->unk_A4 = 0;

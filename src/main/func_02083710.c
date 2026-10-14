@@ -4,7 +4,7 @@
 
 extern int data_020e1ae4;
 extern void func_020837d0(void);
-extern void func_02138c48(void *ptr, int a, int b, void (*callback)(void));
+extern void __cxa_vec_cleanup(void *ptr, int a, int b, void (*callback)(void));
 extern void func_02083c78(void *ptr);
 extern void func_020edb3c(void *ptr);
 
@@ -17,7 +17,7 @@ typedef struct UnkStruct_02083710 {
 UnkStruct_02083710 *func_02083710(UnkStruct_02083710 *this)
 {
     this->unk_00 = &data_020e1ae4;
-    func_02138c48(&this->unk_08, 5, 2, func_020837d0);
+    __cxa_vec_cleanup(&this->unk_08, 5, 2, func_020837d0);
     func_02083c78(this);
     func_020edb3c(this);
     return this;

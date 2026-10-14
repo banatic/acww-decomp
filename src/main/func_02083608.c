@@ -14,7 +14,7 @@ void *func_02083608(void *self)
     *((void **) self) = (void *) data_020e1ac8;
     {
         void (*cb)(void) = func_02083654;
-        func_02138d6c((char *) self + 8, 5, 8, func_0208366c, cb);
+        __cxa_vec_ctor((char *) self + 8, 5, 8, func_0208366c, cb);
     }
     return self;
 }

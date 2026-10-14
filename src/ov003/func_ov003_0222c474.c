@@ -3,9 +3,9 @@
  */
 
 extern char data_ov003_0225f4dc[];
-void func_02138c48(void *p, int n, int sz, void (*dtor)(void *));
+void __cxa_vec_cleanup(void *p, int n, int sz, void (*dtor)(void *));
 void func_ov003_02228ec4(void *p);
 void func_ov003_0222c474(void)
 {
-    func_02138c48(data_ov003_0225f4dc, 4, 0xa4, func_ov003_02228ec4);
+    __cxa_vec_cleanup(data_ov003_0225f4dc, 4, 0xa4, func_ov003_02228ec4);
 }

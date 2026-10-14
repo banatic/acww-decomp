@@ -17,6 +17,8 @@ class Obj_ov068_02277f3c : public Obj_ov004_02254b28 {
     int func_ov068_02274f08();
     int func_ov068_02274eec();
     int func_ov068_02274f84(unsigned int mode);
+    // update: runs the mode handler, then fades the model
+    int func_ov068_0227507c();
 };
 
 #endif

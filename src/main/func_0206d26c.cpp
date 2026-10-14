@@ -6,22 +6,22 @@
 typedef void (Base_0206d26c::*Pmf)();
 
 // 0x0213dd98: an 8-byte member-pointer object in BSS.
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 
 extern "C" void func_0206d26c(Base_0206d26c *self)
 {
     static Pmf tbl[] = {
         &Base_0206d26c::func_0206cd28,
         &Base_0206d26c::func_0206cd10,
-        data_0213dd98,
-        data_0213dd98,
-        data_0213dd98,
-        data_0213dd98,
+        __ptmf_null,
+        __ptmf_null,
+        __ptmf_null,
+        __ptmf_null,
         &Base_0206d26c::func_0206ccf8,
         &Base_0206d26c::func_0206cce0,
         &Base_0206d26c::func_0206ccc8,
-        data_0213dd98,
-        data_0213dd98,
+        __ptmf_null,
+        __ptmf_null,
     };
     Pmf p = tbl[self->unk_38];
     (self->*p)();

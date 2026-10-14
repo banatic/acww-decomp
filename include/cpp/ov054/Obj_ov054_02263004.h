@@ -10,7 +10,7 @@ class Obj_ov054_02263004 {
     virtual void func_ov054_02260d9c(unsigned int arg);
 
     // runs the handler for the current page and step
-    void func_ov054_022608ac();
+    void func_ov054_022608ac(unsigned int arg);
 
     // per-step handlers (tables at 0x02262f3c)
     void func_ov054_022607b8();

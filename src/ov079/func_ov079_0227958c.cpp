@@ -5,7 +5,7 @@
 class UnkStruct_0227958c;
 typedef void (UnkStruct_0227958c::*PMF)();
 
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 
 class UnkStruct_0227958c {
   public:
@@ -19,7 +19,7 @@ extern "C" void func_ov079_0227958c(UnkStruct_0227958c *obj)
     PMF temp;
     if (obj->pmf1) {
         (obj->*obj->pmf1)();
-        temp = data_0213dd98;
+        temp = __ptmf_null;
         obj->pmf1 = temp;
         if (obj->pmf2) {
             obj->pmf1 = obj->pmf2;

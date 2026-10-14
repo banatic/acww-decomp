@@ -13,7 +13,7 @@ extern void func_0201cbbc(void *);
 
 extern unsigned int data_020c814c;
 extern unsigned short data_020c80f8;
-extern unsigned int data_0213dd98[2];
+extern unsigned int __ptmf_null[2];
 
 extern unsigned char data_021fbee8[];
 
@@ -27,7 +27,7 @@ int func_ov068_0226bb3c(void *self, void *other)
     func_02019c6c((char *) other + 0x564, 1, data_020c80f8);
     *(unsigned int *) ((char *) self + 0x20) = 0;
 
-    tmp = *(unsigned long long *) &data_0213dd98;
+    tmp = *(unsigned long long *) &__ptmf_null;
     *(unsigned int *) ((char *) other + 0x8b0) = (unsigned int) tmp;
     *(unsigned int *) ((char *) other + 0x8b4) = (unsigned int) (tmp >> 32);
 

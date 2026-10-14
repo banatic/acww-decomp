@@ -5,11 +5,11 @@
 extern void func_0209bd80(void);
 extern void func_02003750(void);
 extern void func_02003780(void);
-extern void func_02138d6c(void *, int, int, void (*)(void), void (*)(void));
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void), void (*)(void));
 
 void *func_0209b5b8(void *param)
 {
     func_0209bd80();
-    func_02138d6c((char *) param + 12, 2, 16, func_02003780, func_02003750);
+    __cxa_vec_ctor((char *) param + 12, 2, 16, func_02003780, func_02003750);
     return param;
 }

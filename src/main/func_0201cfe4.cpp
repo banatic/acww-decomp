@@ -5,7 +5,7 @@
 class UnkStruct_0201cfe4;
 typedef void (UnkStruct_0201cfe4::*PMF)(void *);
 
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 extern unsigned char data_021f43f8;
 extern unsigned char data_021f43e8;
 
@@ -56,7 +56,7 @@ extern "C" void func_0201cfe4(UnkStruct_0201cfe4 *self, void *arg)
         } else if (id == data_021f43e8) {
             if (self->pmf_c8) {
                 (self->*self->pmf_c8)(arg);
-                self->pmf_c8 = data_0213dd98;
+                self->pmf_c8 = __ptmf_null;
             }
         }
     }

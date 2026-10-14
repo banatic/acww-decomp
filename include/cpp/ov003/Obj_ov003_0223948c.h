@@ -19,6 +19,12 @@ class Obj_ov003_0223948c : public Obj_ov009_022658dc {
     int func_ov003_0221e424();
     int func_ov003_0221e580(int state);
 
+    // state changes; func_ov003_0221e6f0 is primary vtable slot 0x4c
+    void func_ov003_0221e438();
+    int func_ov003_0221e460();
+    void func_ov003_0221e488();
+    void func_ov003_0221e6f0(int event);
+
     int state_2b4;
     Obj_020dd154 unk_2b8;
     Member_020b7f60 unk_2d8;

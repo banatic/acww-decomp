@@ -7,7 +7,7 @@ typedef struct {
 } Entry;
 
 extern Entry data_021c2114[17];
-extern Entry data_0213dd98;
+extern Entry __ptmf_null;
 extern Entry data_020d8fd8;
 extern Entry data_020d8fb0;
 extern Entry data_020d8ee0;
@@ -22,7 +22,7 @@ typedef int (*Fn)(void *);
 int func_0201d198(void *self, unsigned int idx)
 {
     if ((data_021c1d04 & 1) == 0) {
-        Entry def = data_0213dd98;
+        Entry def = __ptmf_null;
         data_021c2114[0] = def;
         data_021c2114[1] = data_020d8fd8;
         data_021c2114[2] = def;

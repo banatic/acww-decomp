@@ -52,9 +52,16 @@ class Obj_ov068_02277750 : public Obj_ov009_022658dc {
     int func_ov068_02272104();
     int func_ov068_02272a7c(int state);
 
+    // primary vtable slots 0x18 (update) and 0x70
+    int func_ov068_02272e2c();
+    int func_ov068_02272e50();
+
     int state_2b4;
-    char pad_2b8[0x2dd - 0x2b8];
+    char pad_2b8[0x2cc - 0x2b8];
+    Vec_0203f080 unk_2cc;
+    char pad_2d8[0x2dd - 0x2d8];
     unsigned char unk_2dd;
+    unsigned char unk_2de;
 };
 
 #endif

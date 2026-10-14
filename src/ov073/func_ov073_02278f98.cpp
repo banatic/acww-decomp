@@ -7,7 +7,7 @@ struct UnkStruct_02278f98 {
     void (UnkStruct_02278f98::*pmf)();
 };
 
-extern void (UnkStruct_02278f98::*data_0213dd98)();
+extern void (UnkStruct_02278f98::*__ptmf_null)();
 
 extern "C" void func_ov073_02278f98(UnkStruct_02278f98 *self)
 {
@@ -15,5 +15,5 @@ extern "C" void func_ov073_02278f98(UnkStruct_02278f98 *self)
         return;
     }
     (self->*self->pmf)();
-    self->pmf = data_0213dd98;
+    self->pmf = __ptmf_null;
 }

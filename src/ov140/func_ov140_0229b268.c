@@ -10,7 +10,7 @@ extern void func_ov002_0220b008(char *);
 extern void func_020b9cfc(char *);
 extern void func_02070be8(void);
 extern void func_02070c08(void);
-extern void func_02138d6c(char *, int, int, void (*)(void), void (*)(void));
+extern void __cxa_vec_ctor(char *, int, int, void (*)(void), void (*)(void));
 extern char data_ov140_0229b404;
 
 void *func_ov140_0229b268(void)
@@ -23,7 +23,7 @@ void *func_ov140_0229b268(void)
         func_ov002_02209ccc((char *) r4 + 0x128c);
         func_ov002_0220b008((char *) r4 + 0x12f0);
         func_020b9cfc((char *) r4 + 0x14bc);
-        func_02138d6c((char *) r4 + 0x1abc, 3, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor((char *) r4 + 0x1abc, 3, 0x6c, func_02070c08, func_02070be8);
     }
     return r4;
 }

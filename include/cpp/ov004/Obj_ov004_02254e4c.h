@@ -14,6 +14,8 @@ struct Obj_ov004_02254e4c : public Obj_ov004_02254b28, public Base_02066994 {
     void func_ov004_0222cf18();
     void func_ov004_0222cfbc();
     void func_ov004_0222d0bc();
+    // update: runs the state handlers between the two helpers
+    int func_ov004_0222d774();
 };
 
 #endif

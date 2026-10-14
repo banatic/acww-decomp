@@ -3,12 +3,12 @@
  */
 
 extern void func_0209bd7c(void *ptr);
-extern void func_02138c48(void *ptr, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(void *ptr, int a, int b, void (*cb)(void));
 extern void func_02003750(void);
 
 unsigned char *func_0209b594(unsigned char *ptr)
 {
-    func_02138c48(ptr + 12, 2, 16, func_02003750);
+    __cxa_vec_cleanup(ptr + 12, 2, 16, func_02003750);
     func_0209bd7c(ptr);
     return ptr;
 }

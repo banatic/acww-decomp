@@ -5,7 +5,7 @@
 extern void func_02083ca8(void *, int);
 extern void func_02083910(void);
 extern void func_02083928(void);
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 
 extern unsigned char data_020e1b1c[];
 
@@ -13,6 +13,6 @@ void *func_020838c4(void *param)
 {
     func_02083ca8(param, 4);
     *(void **) param = (void *) data_020e1b1c;
-    func_02138d6c((void *) ((char *) param + 8), 4, 8, (void *) func_02083928, (void *) func_02083910);
+    __cxa_vec_ctor((void *) ((char *) param + 8), 4, 8, (void *) func_02083928, (void *) func_02083910);
     return param;
 }

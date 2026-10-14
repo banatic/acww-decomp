@@ -9,7 +9,7 @@ extern void func_02032c64();
 extern void func_02055210();
 extern void func_02089b04();
 extern void func_0209d11c();
-extern void func_02138d6c();
+extern void __cxa_vec_ctor();
 extern void func_0209d34c();
 extern void func_0209d0a4();
 extern void func_020012e8();
@@ -26,7 +26,7 @@ void *func_ov003_0222d57c(char *self)
     func_0209d11c(self + 0x130);
     *(void **) (self + 0x174) = &data_0213efe8;
     *(void **) (self + 0x174) = &data_0213f020;
-    func_02138d6c(self + 0x1ec, 0x2, 0xc, (void *) func_020012e8, (void *) func_020012dc);
+    __cxa_vec_ctor(self + 0x1ec, 0x2, 0xc, (void *) func_020012e8, (void *) func_020012dc);
     func_0209d34c(self + 0x230);
     func_0209d0a4(self + 0x130);
     *(u8 *) (self + 0x251) = 0x13;

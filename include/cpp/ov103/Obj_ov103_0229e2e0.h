@@ -38,6 +38,10 @@ class Obj_ov103_0229e2e0 : public Obj_ov002_0220bb24 {
 
     void func_ov103_0229dd60();
     void func_ov103_0229c680();
+    // starts the animation, then func_ov103_0229c680
+    void func_ov103_0229c868();
+    // update: runs the handlers between the two frame helpers
+    int func_ov103_0229dd44();
 
     char pad_94[0x2274 - 0x94];
     AnimState unk_2274;

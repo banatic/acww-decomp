@@ -10,12 +10,12 @@ class UnkStruct_02279204 {
     Pmf a;
     Pmf b;
 };
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 extern "C" void func_ov082_02279204(UnkStruct_02279204 *self)
 {
     if (self->a) {
         (self->*(self->a))();
-        Pmf t = data_0213dd98;
+        Pmf t = __ptmf_null;
         self->a = t;
         if (self->b) {
             self->a = self->b;

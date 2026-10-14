@@ -9,13 +9,13 @@ class UnkStruct_022791c0 {
     void (UnkStruct_022791c0::*pmf1)();
 };
 
-extern void (UnkStruct_022791c0::*data_0213dd98)();
+extern void (UnkStruct_022791c0::*__ptmf_null)();
 
 extern "C" void func_ov081_022791c0(UnkStruct_022791c0 *self)
 {
     if (self->pmf0) {
         (self->*self->pmf0)();
-        void (UnkStruct_022791c0::*g)() = data_0213dd98;
+        void (UnkStruct_022791c0::*g)() = __ptmf_null;
         self->pmf0 = g;
         if (self->pmf1) {
             self->pmf0 = self->pmf1;

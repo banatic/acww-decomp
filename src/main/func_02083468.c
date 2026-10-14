@@ -9,7 +9,7 @@ typedef struct {
 } UnkStruct_02083468;
 
 extern char data_020e1a90;
-extern void func_02138c48(void *addr, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(void *addr, int a, int b, void (*cb)(void));
 extern void func_02083c78(void *obj);
 extern void func_020edb3c(void *obj);
 extern void func_02083514(void);
@@ -18,7 +18,7 @@ void *func_02083468(void *obj_ptr)
 {
     UnkStruct_02083468 *obj = (UnkStruct_02083468 *) obj_ptr;
     obj->data = &data_020e1a90;
-    func_02138c48(&obj->buffer, 5, 2, &func_02083514);
+    __cxa_vec_cleanup(&obj->buffer, 5, 2, &func_02083514);
     func_02083c78(obj);
     func_020edb3c(obj);
     return obj;

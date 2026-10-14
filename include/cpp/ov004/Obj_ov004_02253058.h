@@ -42,6 +42,8 @@ struct Obj_ov004_02253058 : public RoomObject {
     int func_ov004_02217eb8();
     void func_ov004_02217f2c();
     int func_ov004_02218100();
+    // update: checks the placed items, then runs the state handlers
+    int func_ov004_0221860c();
 
     char pad_844[0x1a];
     unsigned char unk_85e;

@@ -15,11 +15,11 @@ typedef struct {
 
 extern void func_0201612c(UnkStruct_022612a0 *self);
 extern int func_020b1580(void);
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 
 void func_ov046_022612a0(UnkStruct_022612a0 *self)
 {
     func_0201612c(self);
-    self->pair = data_0213dd98;
+    self->pair = __ptmf_null;
     self->c0 = func_020b1580();
 }

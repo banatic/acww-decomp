@@ -11,7 +11,7 @@ extern int data_ov076_022796c8[];
 extern int data_ov076_022796d8[];
 extern int data_ov076_022796d0[];
 extern int data_ov076_022796a8[];
-extern int data_0213dd98[];
+extern int __ptmf_null[];
 extern int data_ov076_022796c0[];
 extern int data_ov076_022796b8[];
 extern int data_ov076_02279680[];
@@ -26,7 +26,7 @@ int __sinit_ov076_022795ac(void)
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[1] = *(const struct UnkStruct_022795ac *) data_ov076_022796d8;
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[2] = *(const struct UnkStruct_022795ac *) data_ov076_022796d0;
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[3] = *(const struct UnkStruct_022795ac *) data_ov076_022796a8;
-    ((struct UnkStruct_022795ac *) data_ov076_0227988c)[4] = *(const struct UnkStruct_022795ac *) data_0213dd98;
+    ((struct UnkStruct_022795ac *) data_ov076_0227988c)[4] = *(const struct UnkStruct_022795ac *) __ptmf_null;
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[5] = *(const struct UnkStruct_022795ac *) data_ov076_022796c0;
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[6] = *(const struct UnkStruct_022795ac *) data_ov076_022796b8;
     ((struct UnkStruct_022795ac *) data_ov076_0227988c)[7] = *(const struct UnkStruct_022795ac *) data_ov076_02279680;

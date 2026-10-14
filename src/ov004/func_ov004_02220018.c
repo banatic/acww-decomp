@@ -4,12 +4,12 @@
 
 #include "types.h"
 
-extern void func_ov004_0220fde0_unk(void *);
+extern void func_ov004_0220fde0(void *);
 extern int func_02053be0(void);
 
 void func_ov004_02220018(u8 *self, void *a)
 {
-    func_ov004_0220fde0_unk(a);
+    func_ov004_0220fde0(a);
     switch (func_02053be0()) {
         case 0:
             *(int *) (self + 0xad8) = 0x3000;

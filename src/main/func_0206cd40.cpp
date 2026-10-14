@@ -4,10 +4,10 @@
 
 #include "cpp/main/Base_0206cd40.h"
 typedef void (Base_0206cd40::*Pmf)();
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 extern "C" void func_0206cd40(Base_0206cd40 *self)
 {
-    static Pmf tbl[] = {data_0213dd98, data_0213dd98, &Base_0206cd40::func_0206c3b8};
+    static Pmf tbl[] = {__ptmf_null, __ptmf_null, &Base_0206cd40::func_0206c3b8};
     Pmf p = tbl[self->unk_38];
     if (p) {
         (self->*p)();

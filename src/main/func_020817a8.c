@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_02138d6c(void *obj, int size, int count, void (*cb1)(void), void (*cb2)(void));
+extern void __cxa_vec_ctor(void *obj, int size, int count, void (*cb1)(void), void (*cb2)(void));
 extern void func_02081f18(void);
 extern void func_02081f30(void);
 extern void func_02072dbc(void *);
@@ -33,13 +33,13 @@ struct UnkStruct_020817a8 {
 
 void *func_020817a8(struct UnkStruct_020817a8 *p)
 {
-    func_02138d6c(p, 8, 0x80, func_02081f30, func_02081f18);
+    __cxa_vec_ctor(p, 8, 0x80, func_02081f30, func_02081f18);
     func_02072dbc((char *) p + 0x400);
     func_02066694((char *) p + 0x634);
     func_0209b634((char *) p + 0x734);
-    func_02138d6c((char *) p + 0x78c, 10, 2, func_02034ce0, func_020051b0);
+    __cxa_vec_ctor((char *) p + 0x78c, 10, 2, func_02034ce0, func_020051b0);
     func_02003780((char *) p + 0x7a0);
-    func_02138d6c((char *) p + 0x7b0, 4, 2, func_02034ce0, func_020051b0);
+    __cxa_vec_ctor((char *) p + 0x7b0, 4, 2, func_02034ce0, func_020051b0);
     func_020642fc((char *) p + 0x7b8);
     func_02081fa0(&p->unk_7CE);
     p->unk_7D2 = 0xfff1;

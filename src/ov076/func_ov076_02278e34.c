@@ -14,10 +14,10 @@ struct UnkStruct_02278e34 {
     struct Pair pair;
 };
 
-extern struct Pair data_0213dd98;
+extern struct Pair __ptmf_null;
 
 void func_ov076_02278e34(struct UnkStruct_02278e34 *p)
 {
     func_0201612c(p);
-    p->pair = data_0213dd98;
+    p->pair = __ptmf_null;
 }

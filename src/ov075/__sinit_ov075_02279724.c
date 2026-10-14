@@ -21,7 +21,7 @@ typedef struct {
 extern UnkStruct_02279724 data_ov075_02279acc, data_ov075_02279ad4, data_ov075_02279ad0, data_ov075_02279ac4,
     data_ov075_02279ac8, data_ov075_02279ac0;
 extern UnkStruct_02279724_4 data_ov075_02279930;
-extern UnkStruct_02279724_2 data_0213dd98;
+extern UnkStruct_02279724_2 __ptmf_null;
 extern UnkStruct_02279724_2 data_ov075_022798c0;
 extern UnkStruct_02279724_2 data_ov075_02279b08[12];
 extern UnkStruct_02279724_2 data_ov075_022798d8, data_ov075_022798e0, data_ov075_022798f0, data_ov075_022798f8,
@@ -61,7 +61,7 @@ void __sinit_ov075_02279724(void)
     data_ov075_02279ac0.b = 0x18;
     data_ov075_02279ac0.c = 0x18;
     data_ov075_02279ac0.d = 0x1f;
-    data_ov075_02279930.unk_00 = data_0213dd98;
+    data_ov075_02279930.unk_00 = __ptmf_null;
     data_ov075_02279930.unk_0C = data_ov075_022798c0;
     data_ov075_02279b08[0] = data_ov075_022798d8;
     data_ov075_02279b08[1] = data_ov075_022798e0;

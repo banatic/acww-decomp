@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern __arm void func_02138c48(char *p, int a, int b, void (*f)(void));
+extern __arm void __cxa_vec_cleanup(char *p, int a, int b, void (*f)(void));
 extern void func_ov002_0220ba0c(char *p);
 extern void func_ov002_02209cb4(char *p);
 extern void func_020a887c(char *p);
@@ -21,7 +21,7 @@ char *func_ov111_0229eea0(char *obj)
     *(void **) (obj + 0x3d08) = (void *) data_ov111_022a0ff0;
     func_020a887c(obj + 0x3d08);
     func_0203a3ec(obj + 0x3cd4);
-    func_02138c48(obj + 0x23fc, 2, 0x6c, func_02070be8);
+    __cxa_vec_cleanup(obj + 0x23fc, 2, 0x6c, func_02070be8);
     func_ov002_0220826c(obj);
     return obj;
 }

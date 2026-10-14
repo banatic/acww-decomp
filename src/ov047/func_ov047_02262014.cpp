@@ -12,13 +12,13 @@ class UnkStruct_02262014 {
 
 typedef void (UnkStruct_02262014::*PMF)();
 
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 
 extern "C" void func_ov047_02262014(UnkStruct_02262014 *self)
 {
     if (self->cb) {
         (self->*self->cb)();
-        PMF tmp = data_0213dd98;
+        PMF tmp = __ptmf_null;
         self->cb = tmp;
         if (self->pending) {
             self->cb = self->pending;

@@ -22,8 +22,8 @@ extern void func_020638d4(u16 *out, int *inp, int v1, void *v2, int a5, int a6, 
 extern int func_02063f40(int i);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
-extern void func_02138d6c(void *, int, int, void (*)(void), void (*)(void));
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void), void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 extern void func_020051b0(void);
 extern void func_02034ce0(void);
 }
@@ -51,7 +51,7 @@ extern "C" void func_020630bc(u16 *out, int p1, void *p2)
     flags[0] = data_020de640[0];
     flags[1] = data_020de640[1];
     flags[2] = data_020de640[2];
-    func_02138d6c(w, 9, 2, func_02034ce0, func_020051b0);
+    __cxa_vec_ctor(w, 9, 2, func_02034ce0, func_020051b0);
 
     func_02063ccc(t0, 0, 1);
     func_020638d4(&v0, t0, p1, p2, 1, 1, 0);
@@ -151,7 +151,7 @@ extern "C" void func_020630bc(u16 *out, int p1, void *p2)
                 }
                 if (m == pick2) {
                     *out = *e;
-                    func_02138c48(w, 9, 2, func_020051b0);
+                    __cxa_vec_cleanup(w, 9, 2, func_020051b0);
                     func_02063e8c(&rngbuf);
                     return;
                 }
@@ -160,6 +160,6 @@ extern "C" void func_020630bc(u16 *out, int p1, void *p2)
         }
     }
     *out = 0xfff1;
-    func_02138c48(w, 9, 2, func_020051b0);
+    __cxa_vec_cleanup(w, 9, 2, func_020051b0);
     func_02063e8c(&rngbuf);
 }

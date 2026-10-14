@@ -10,7 +10,9 @@ class Obj_ov068_02277dc0 {
 
     void func_ov068_02274334();
     void func_ov068_02274314();
-    void func_ov068_02274358();
+    void func_ov068_02274358(void *arg);
+    // runs func_ov068_02274358 once the owner's step reaches 7
+    void func_ov068_022743ec(void *arg);
 
     char pad_04[0x1e - 0x4];
     unsigned char state_1e;

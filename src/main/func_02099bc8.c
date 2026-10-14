@@ -3,7 +3,7 @@
  */
 
 extern void func_02072d14(void *);
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void func_02066688(void);
 extern void func_02066694(void);
 extern void func_020051b0(void);
@@ -31,8 +31,8 @@ void *func_02099bc8(void *p)
 
     func_02072d14(p);
     sub = (char *) p + 0x11a8;
-    func_02138d6c(sub, 0xa, 0x100, (void *) func_02066694, (void *) func_02066688);
-    func_02138d6c((char *) sub + 0xa4a, 0xf, 2, (void *) func_02034ce0, (void *) func_020051b0);
+    __cxa_vec_ctor(sub, 0xa, 0x100, (void *) func_02066694, (void *) func_02066688);
+    __cxa_vec_ctor((char *) sub + 0xa4a, 0xf, 2, (void *) func_02034ce0, (void *) func_020051b0);
     func_0203cfa4((char *) p + 0x1c18);
     func_0203d38c((char *) p + 0x1d3b);
     func_02097e28((char *) p + 0x1d3c);

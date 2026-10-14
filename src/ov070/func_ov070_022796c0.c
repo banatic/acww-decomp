@@ -3,14 +3,14 @@
  */
 
 extern void func_0202eb20(void *);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 extern void func_020051b0(void);
 extern char data_ov070_02279dbc[];
 
 void *func_ov070_022796c0(void *self)
 {
     *(void **) self = &data_ov070_02279dbc;
-    func_02138c48((char *) self + 0xc4, 3, 2, func_020051b0);
+    __cxa_vec_cleanup((char *) self + 0xc4, 3, 2, func_020051b0);
     func_0202eb20(self);
     return self;
 }

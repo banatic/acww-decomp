@@ -3,12 +3,12 @@
  */
 
 extern void func_ov002_0220b3a4(void *);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 extern void func_02070be8(void);
 
 void *func_ov124_0229f43c(void *p)
 {
     func_ov002_0220b3a4((char *) p + 0x6c);
-    func_02138c48(p, 1, 0x6c, func_02070be8);
+    __cxa_vec_cleanup(p, 1, 0x6c, func_02070be8);
     return p;
 }

@@ -65,6 +65,12 @@ class Obj_ov009_022658dc : public Base_0203f080, public Base_02066994 {
     int func_ov009_02263548();
     int func_ov009_022639a0(int state);
 
+    // primary vtable slots 0x00 (init) and 0x1c (update), and the event handler
+    // the derived classes' slot 0x4c falls back to
+    int func_ov009_0226523c();
+    int func_ov009_02265144();
+    void func_ov009_022633ac(unsigned int event, int arg);
+
     // mode handlers, indexed by state_134
     void func_ov009_02263fbc();
     void func_ov009_02263de8();

@@ -6,7 +6,7 @@ typedef struct Pair {
     int a;
     int b;
 } Pair;
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 typedef struct UnkStruct_0202dac0 {
     char pad_00[0xb0];
     Pair arr[3];
@@ -15,8 +15,8 @@ typedef struct UnkStruct_0202dac0 {
 void func_0202dac0(UnkStruct_0202dac0 *p)
 {
     Pair tmp;
-    p->arr[0] = data_0213dd98;
-    tmp = data_0213dd98;
+    p->arr[0] = __ptmf_null;
+    tmp = __ptmf_null;
     p->arr[1] = tmp;
     p->arr[2] = tmp;
 }

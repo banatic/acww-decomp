@@ -9,7 +9,7 @@ typedef struct {
     unsigned int unk_04;
 } Pair;
 
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 
 struct ObjStruct {
     char pad_00[0xb8];
@@ -19,5 +19,5 @@ struct ObjStruct {
 void func_ov073_02278e58(struct ObjStruct *obj)
 {
     func_0201612c(obj);
-    obj->sub = data_0213dd98;
+    obj->sub = __ptmf_null;
 }

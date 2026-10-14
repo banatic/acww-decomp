@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02138d6c(void *, int, int, void *, int);
+extern void __cxa_vec_ctor(void *, int, int, void *, int);
 extern unsigned char data_021c72e8;
 extern void func_0203f598(void);
 
 void __sinit_020c50f8(void)
 {
-    func_02138d6c((void *) &data_021c72e8, 15, 28, (void *) &func_0203f598, 0);
+    __cxa_vec_ctor((void *) &data_021c72e8, 15, 28, (void *) &func_0203f598, 0);
 }

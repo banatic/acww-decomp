@@ -14,11 +14,11 @@ typedef struct {
     Pair pair;
 } Dest;
 
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 
 int func_ov068_022759d0(Dest *dst)
 {
-    dst->pair = data_0213dd98;
+    dst->pair = __ptmf_null;
     dst->flag = 1;
     return 1;
 }

@@ -116,6 +116,8 @@ class Obj_ov096_022a23e8 : public Obj_ov002_0220bb24 {
     void func_ov096_022a1a0c();
     void func_ov096_022a13f0();
     void func_ov096_022a13b4();
+    // update: runs the handlers between the two frame helpers
+    int func_ov096_022a19e0();
 
     char pad_94[0xbb - 0x94];
     unsigned char unk_BB;

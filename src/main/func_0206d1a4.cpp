@@ -10,7 +10,7 @@ class UnkStruct_0206d1a4 {
 
 typedef void (UnkStruct_0206d1a4::*PMF)();
 
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 extern PMF data_020de86c;
 extern PMF data_020deb64;
 extern PMF data_021cdeec[16];
@@ -21,7 +21,7 @@ extern "C" void func_0206d1a4(UnkStruct_0206d1a4 *self)
 {
     PMF pmf;
     if ((data_021cda48 & 1) == 0) {
-        PMF def = data_0213dd98;
+        PMF def = __ptmf_null;
         data_021cdeec[0] = def;
         data_021cdeec[1] = def;
         data_021cdeec[2] = def;

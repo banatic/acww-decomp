@@ -16,7 +16,7 @@ class UnkStruct_020a7b34 {
     void m4();
 };
 
-extern void (UnkStruct_020a7b34::*data_0213dd98)();
+extern void (UnkStruct_020a7b34::*__ptmf_null)();
 extern void (UnkStruct_020a7b34::*data_020e3cf4)();
 extern void (UnkStruct_020a7b34::*data_020e3d04)();
 extern void (UnkStruct_020a7b34::*data_020e3ce4)();
@@ -24,8 +24,7 @@ extern void (UnkStruct_020a7b34::*data_020e3ce4)();
 extern "C" void func_020a7b34(UnkStruct_020a7b34 *self, unsigned int arg)
 {
     self->unk_3C = arg;
-    static void (UnkStruct_020a7b34::*table[5])() = {data_0213dd98, data_020e3cf4, data_0213dd98, data_020e3d04,
-                                                     data_020e3ce4};
+    static void (UnkStruct_020a7b34::*table[5])() = {__ptmf_null, data_020e3cf4, __ptmf_null, data_020e3d04, data_020e3ce4};
     void (UnkStruct_020a7b34::*pmf)() = table[self->unk_24];
     if (pmf) {
         (self->*pmf)();

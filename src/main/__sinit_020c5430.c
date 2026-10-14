@@ -57,7 +57,7 @@ extern struct B021c9460 {
     UnkStruct_020c5430 unk_170;
     UnkStruct_020c5430 unk_178;
 } data_021c9460;
-extern UnkStruct_020c5430 data_0213dd98;
+extern UnkStruct_020c5430 __ptmf_null;
 extern UnkStruct_020c5430 data_020dd1e4;
 extern UnkStruct_020c5430 data_020dd28c;
 extern UnkStruct_020c5430 data_020dd224;
@@ -146,7 +146,7 @@ void __sinit_020c5430(void)
     UnkStruct_020c5430 t1;
     int v;
 
-    t1 = data_0213dd98;
+    t1 = __ptmf_null;
     data_021c9460.unk_00 = t1;
     data_021c9460.unk_08 = t1;
     data_021c9460.unk_10 = t1;

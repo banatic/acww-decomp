@@ -16,7 +16,7 @@ class UnkStruct_020b517c {
 
 typedef void (UnkStruct_020b517c::*PMF)();
 
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 extern PMF data_020e5134;
 extern PMF data_020e513c;
 extern PMF data_020e5174;
@@ -34,7 +34,7 @@ extern "C" void func_020b517c(UnkStruct_020b517c *self)
     func_020a8764((char *) self + 0x28);
     unsigned int a = self->unk_28;
     unsigned int b = self->unk_2C;
-    PMF pmf = data_0213dd98;
+    PMF pmf = __ptmf_null;
 
     if (a == 0 && b == 2) {
         pmf = data_020e5134;

@@ -3,7 +3,7 @@
  */
 
 extern void func_020b9af4(void *);
-extern void func_02138d6c(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
 extern void func_02070be8(void);
 extern void func_02070c08(void);
 
@@ -15,6 +15,6 @@ void *func_ov094_0229a2ec(void *base)
         func_020b9af4(p);
         p += 0x38;
     } while (p != end);
-    func_02138d6c(end, 2, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(end, 2, 0x6c, func_02070c08, func_02070be8);
     return base;
 }

@@ -58,7 +58,7 @@ extern struct B02279bd8 {
     UnkStruct_022798b4 unk_30;
     UnkStruct_022798b4 unk_38;
 } data_ov072_02279bd8;
-extern UnkStruct_022798b4 data_0213dd98;
+extern UnkStruct_022798b4 __ptmf_null;
 extern UnkStruct_022798b4 data_ov072_022799c0;
 extern UnkStruct_022798b4 data_ov072_022799d0;
 extern UnkStruct_022798b4 data_ov072_022799d8;
@@ -94,7 +94,7 @@ void __sinit_ov072_022798b4(void)
     data_ov072_02279bc8.unk_01 = 24;
     data_ov072_02279bc8.unk_02 = 24;
     data_ov072_02279bc8.unk_03 = 31;
-    data_ov072_02279a24.unk_00 = data_0213dd98;
+    data_ov072_02279a24.unk_00 = __ptmf_null;
     data_ov072_02279a24.unk_0C = data_ov072_022799c0;
     data_ov072_02279bd8.unk_00 = data_ov072_022799d0;
     data_ov072_02279bd8.unk_08 = data_ov072_022799d8;
@@ -102,6 +102,6 @@ void __sinit_ov072_022798b4(void)
     data_ov072_02279bd8.unk_18 = data_ov072_022799e8;
     data_ov072_02279bd8.unk_20 = data_ov072_022799f0;
     data_ov072_02279bd8.unk_28 = data_ov072_022799f8;
-    data_ov072_02279bd8.unk_30 = data_0213dd98;
+    data_ov072_02279bd8.unk_30 = __ptmf_null;
     data_ov072_02279bd8.unk_38 = data_ov072_022799c8;
 }

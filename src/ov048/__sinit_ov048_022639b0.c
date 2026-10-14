@@ -92,7 +92,7 @@ extern struct B022647a8 {
     UnkStruct_022639b0 unk_110;
     UnkStruct_022639b0 unk_118;
 } data_ov048_022647a8;
-extern UnkStruct_022639b0 data_0213dd98;
+extern UnkStruct_022639b0 __ptmf_null;
 extern UnkStruct_022639b0 data_ov048_02263eec;
 extern UnkStruct_022639b0 data_ov048_02263dc4;
 extern UnkStruct_022639b0 data_ov048_02263e04;
@@ -154,7 +154,7 @@ extern UnkStruct_022639b0 data_ov048_02263fe4;
 
 void __sinit_ov048_022639b0(void)
 {
-    data_ov048_02264344.unk_00 = data_0213dd98;
+    data_ov048_02264344.unk_00 = __ptmf_null;
     data_ov048_02264344.unk_0C = data_ov048_02263eec;
     data_ov048_02264344.unk_18 = data_ov048_02263dc4;
     data_ov048_02264344.unk_24 = data_ov048_02263e04;

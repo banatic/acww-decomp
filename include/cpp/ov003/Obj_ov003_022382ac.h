@@ -39,6 +39,9 @@ class Obj_ov003_022382ac : public Base_0203f080, public Base_02066994 {
     void func_ov003_02219e64();
     void func_ov003_02219f88();
 
+    // update, primary vtable slot 0x18: runs both machines for one frame
+    unsigned int func_ov003_0221b320();
+
     char pad_130[0x4];
     Obj_020dd03c unk_134;
     Obj_020dd03c unk_1d0;

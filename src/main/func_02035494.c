@@ -10,7 +10,7 @@ extern void func_02036864(void *);
 extern void func_020369d0(void *);
 extern void func_02037450(void *);
 extern void func_02036510(void *);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 extern void func_020374cc(void);
 
 void *func_02035494(void *param)
@@ -23,6 +23,6 @@ void *func_02035494(void *param)
     func_020369d0((char *) param + 0x264);
     func_02037450((char *) param + 0x24C);
     func_02036510((char *) param + 0x1C4);
-    func_02138c48(param, 0x10, 0x1C, func_020374cc);
+    __cxa_vec_cleanup(param, 0x10, 0x1C, func_020374cc);
     return param;
 }

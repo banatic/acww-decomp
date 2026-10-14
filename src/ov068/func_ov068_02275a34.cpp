@@ -3,7 +3,7 @@
  */
 
 extern "C" {
-extern unsigned int data_0213dd98[2];
+extern unsigned int __ptmf_null[2];
 void func_02030864(int);
 void func_0205ba64(void *);
 void *func_0205b91c(void *, void *);
@@ -61,7 +61,7 @@ extern "C" int func_ov068_02275a34(UnkStruct_02275a34 *self)
     unsigned char tmp[0x18];
     void *p;
 
-    *(double *) &self->unk_A44 = *(double *) data_0213dd98;
+    *(double *) &self->unk_A44 = *(double *) __ptmf_null;
     self->unk_510 = 0;
     func_02030864(0);
 

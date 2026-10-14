@@ -34,7 +34,7 @@ extern char data_021c222c;
 extern struct {
     u32 a;
     u32 b;
-} data_0213dd98;
+} __ptmf_null;
 
 class UnkStruct_0201e21c_3 {
   public:
@@ -77,7 +77,7 @@ extern "C" void func_0201e21c(UnkStruct_0201e21c_3 *self)
         func_020155cc(self);
 
         {
-            volatile u32 *vp = (volatile u32 *) &data_0213dd98;
+            volatile u32 *vp = (volatile u32 *) &__ptmf_null;
             u32 ga = vp[0];
             u32 gb = vp[1];
             self->unk_F0 = ga;

@@ -7,7 +7,7 @@ extern void func_ov002_0220afdc(void *p);
 extern void func_ov002_0220a5e4(void *p);
 extern void func_ov002_02209cb4(void *p);
 extern void func_ov002_0220826c(void *p);
-extern void func_02138c48(void *p, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(void *p, int a, int b, void (*cb)(void));
 extern void func_02070be8(void);
 extern unsigned char data_ov144_0229b3f8;
 
@@ -29,7 +29,7 @@ void *func_ov144_022995a0(UnkStruct_022995a0 *self)
 {
     self->vtbl = &data_ov144_0229b3f8;
     func_ov002_0220ba0c(&self->sub_750);
-    func_02138c48(&self->sub_33c, 9, 0x6c, func_02070be8);
+    __cxa_vec_cleanup(&self->sub_33c, 9, 0x6c, func_02070be8);
     func_ov002_0220afdc(&self->sub_170);
     func_ov002_0220a5e4(&self->sub_128);
     func_ov002_02209cb4(&self->sub_c4);

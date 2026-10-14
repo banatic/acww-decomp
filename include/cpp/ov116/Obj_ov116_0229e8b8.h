@@ -30,6 +30,8 @@ class Obj_ov116_0229e8b8 : public Obj_ov002_0220bb24 {
     int func_ov116_0229e168();
     int func_ov116_0229e1f0();
     int func_ov116_0229e228();
+    // update: runs the handlers between the two frame helpers
+    int func_ov116_0229e5bc();
 };
 
 #endif

@@ -20,7 +20,7 @@ extern void func_02031288(void *a, void *b, void *c, int d, int e, void *f, int 
 extern void func_ov003_0221b064(void *self, int a, int b);
 extern void func_0200451c(void *p);
 extern void func_0203edd0(void *self);
-extern void func_ov003_02236254_unk(void *self);
+extern void func_ov003_02236254(void *self);
 
 void func_ov003_0221b414(char *self)
 {
@@ -83,5 +83,5 @@ void func_ov003_0221b414(char *self)
     func_ov003_0221b064(self, 0, 0);
     func_0200451c(self + 0x328);
     func_0203edd0(self);
-    func_ov003_02236254_unk(self);
+    func_ov003_02236254(self);
 }

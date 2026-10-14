@@ -17,7 +17,7 @@ extern UnkStruct_0227985c data_ov073_02279bc4, data_ov073_02279bd8, data_ov073_0
     data_ov073_02279bc0, data_ov073_02279bc8;
 extern UnkStruct_0227985c_2 data_ov073_02279c14[10];
 extern UnkStruct_0227985c_2 data_ov073_022799c8, data_ov073_022799e0;
-extern UnkStruct_0227985c_2 data_0213dd98;
+extern UnkStruct_0227985c_2 __ptmf_null;
 extern UnkStruct_0227985c_2 data_ov073_022799e8, data_ov073_022799f0, data_ov073_022799f8, data_ov073_02279a00,
     data_ov073_02279a08, data_ov073_022799d8, data_ov073_022799d0;
 extern UnkStruct_0227985c_3 data_ov073_02279bfc[2];
@@ -56,7 +56,7 @@ void __sinit_ov073_0227985c(void)
     data_ov073_02279bc8.d = 0x1f;
     data_ov073_02279c14[0] = data_ov073_022799c8;
     data_ov073_02279c14[1] = data_ov073_022799e0;
-    data_ov073_02279c14[2] = data_0213dd98;
+    data_ov073_02279c14[2] = __ptmf_null;
     data_ov073_02279c14[3] = data_ov073_022799e8;
     data_ov073_02279c14[4] = data_ov073_022799f0;
     data_ov073_02279c14[5] = data_ov073_022799f8;

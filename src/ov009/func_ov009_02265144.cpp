@@ -1,9 +1,13 @@
 /* func_ov009_02265144 @ 0x02265144, 0xf8 bytes, Thumb, module ov009
  * mwccarm 1.2/base -O4,s
+ * compiler-emitted symbol: _ZN18Obj_ov009_022658dc19func_ov009_02265144Ev
  */
 
+#include "cpp/ov009/Obj_ov009_022658dc.h"
 #include "types.h"
 
+// The object as this update sees it: slots by index, fields the class header
+// knows only as padding inside its member objects.
 struct UnkStruct_02265144 {
     virtual void v0();
     virtual void v1();
@@ -66,14 +70,14 @@ extern "C" int func_0204bc64(u16 *p);
 extern "C" int func_020b312c(u16 a);
 extern "C" void func_ov009_022630b4(UnkStruct_02265144 *self);
 extern "C" int func_020b65c4(void);
-extern "C" void func_ov009_022638d0(UnkStruct_02265144 *self);
 extern "C" void func_ov009_022643f4(UnkStruct_02265144 *self);
 extern "C" void func_020b3328(int *p, int a, int b, int c);
 extern "C" void func_020b3340(int *p, int a);
 extern "C" void func_ov009_02264718(UnkStruct_02265144 *self);
 
-extern "C" int func_ov009_02265144(UnkStruct_02265144 *self)
+int Obj_ov009_022658dc::func_ov009_02265144()
 {
+    UnkStruct_02265144 *self = (UnkStruct_02265144 *) this;
     u16 *p;
     u16 tmp;
     int r;
@@ -101,7 +105,7 @@ extern "C" int func_ov009_02265144(UnkStruct_02265144 *self)
     }
     func_ov009_022630b4(self);
     if (func_020b65c4() != 0x2c) {
-        func_ov009_022638d0(self);
+        ((Obj_ov009_022658dc *) self)->func_ov009_022638d0();
     }
     self->f74();
     if (func_020b65c4() != 0x2c) {

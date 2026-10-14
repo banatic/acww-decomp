@@ -4,9 +4,9 @@
 
 extern char data_021c519c[];
 extern void func_020051b0(void);
-extern void func_02138c48(void *a, int b, int c, void (*d)(void));
+extern void __cxa_vec_cleanup(void *a, int b, int c, void (*d)(void));
 
 void func_02034cc0(void)
 {
-    func_02138c48(data_021c519c, 0x33, 2, func_020051b0);
+    __cxa_vec_cleanup(data_021c519c, 0x33, 2, func_020051b0);
 }

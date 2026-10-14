@@ -56,23 +56,23 @@ class UnkStruct_0220c7e0 {
 };
 
 extern "C" void func_020eaca0(void *, void *, void *);
-extern "C" void func_ov004_0220d594_unk(void *, void *);
-extern "C" void func_ov004_0220ee90_unk(void *, void *, int);
-extern "C" int func_ov004_0223b22c_unk(void);
-extern "C" int func_ov004_0223b080_unk(int, void *, void *, short);
-extern "C" void func_ov004_0220e674_unk(void *, int);
+extern "C" void func_ov004_0220d594(void *, void *);
+extern "C" void func_ov004_0220ee90(void *, void *, int);
+extern "C" int func_ov004_0223b22c(void);
+extern "C" int func_ov004_0223b080(int, void *, void *, short);
+extern "C" void func_ov004_0220e674(void *, int);
 
 extern "C" int func_ov004_0220c7e0(UnkStruct_0220c7e0 *self)
 {
     char buf[16];
     func_020eaca0(buf, &self->unk_170, &self->unk_5C);
-    func_ov004_0220d594_unk(&self->unk_18C, self);
-    func_ov004_0220ee90_unk(self, buf, 0);
+    func_ov004_0220d594(&self->unk_18C, self);
+    func_ov004_0220ee90(self, buf, 0);
 
-    int cond = func_ov004_0223b22c_unk();
-    if (cond != 0 && func_ov004_0223b080_unk(cond, &self->unk_250, &self->unk_5C, self->unk_16C) != 0) {
+    int cond = func_ov004_0223b22c();
+    if (cond != 0 && func_ov004_0223b080(cond, &self->unk_250, &self->unk_5C, self->unk_16C) != 0) {
         self->call_target(1);
-        func_ov004_0220e674_unk(self, 0);
+        func_ov004_0220e674(self, 0);
         return 1;
     } else {
         return 0;

@@ -20,6 +20,8 @@ class Obj_ov131_0229b8f0 : public Obj_ov002_0220bb24 {
 
     // dispatchers and helpers
     void func_ov131_0229b644();
+    // update: runs the handlers between the two frame helpers
+    int func_ov131_0229b628();
 };
 
 #endif

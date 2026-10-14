@@ -5,7 +5,7 @@
 extern void func_02055ce8(void);
 extern void func_02055cf4(void);
 extern void func_020ba01c(void *ptr);
-extern void func_02138d6c(void *arg1, int arg2, int arg3, void (*arg4)(void), void (*arg5)(void));
+extern void __cxa_vec_ctor(void *arg1, int arg2, int arg3, void (*arg4)(void), void (*arg5)(void));
 
 struct SubElem {
     char data[0x1c];
@@ -29,7 +29,7 @@ struct UnkStruct_0205e678 *func_0205e678(struct UnkStruct_0205e678 *self)
     struct SubElem *p, *end;
     int i;
 
-    func_02138d6c((char *) self + 0x10, 8, 0x14, func_02055cf4, func_02055ce8);
+    __cxa_vec_ctor((char *) self + 0x10, 8, 0x14, func_02055cf4, func_02055ce8);
 
     p = &self->sub[0];
     end = &self->sub[8];

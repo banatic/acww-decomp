@@ -86,9 +86,12 @@ class Obj_ov068_022771c0 {
     int func_ov068_0226a3e0(int arg);
     int func_ov068_0226a260(int arg);
     void func_ov068_02269b88(int arg);
+    void func_ov068_02269c88(int arg);
 
     char pad_04[0x1c - 0x4];
     unsigned char state_1c;
+    char pad_1d[3];
+    int unk_20;
 };
 
 #endif

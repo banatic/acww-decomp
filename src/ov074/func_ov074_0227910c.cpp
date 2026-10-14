@@ -13,12 +13,12 @@ class UnkStruct_0227910c_2 : public UnkStruct_0227910c {
     void (UnkStruct_0227910c::*pmf)();
 };
 
-extern void (UnkStruct_0227910c::*data_0213dd98)();
+extern void (UnkStruct_0227910c::*__ptmf_null)();
 
 extern "C" void func_ov074_0227910c(UnkStruct_0227910c_2 *obj)
 {
     if (obj->pmf) {
         (obj->*obj->pmf)();
-        obj->pmf = data_0213dd98;
+        obj->pmf = __ptmf_null;
     }
 }

@@ -1,12 +1,13 @@
 /* func_ov009_0226523c @ 0x0226523c, 0x15c bytes, Thumb, module ov009
  * mwccarm 1.2/base -O4,s
+ * compiler-emitted symbol: _ZN18Obj_ov009_022658dc19func_ov009_0226523cEv
  */
 
+#include "cpp/ov009/Obj_ov009_022658dc.h"
 #include "types.h"
 
-struct UnkStruct_0226523c;
-typedef struct UnkStruct_0226523c UnkStruct_0226523c;
-
+// The object as this initialiser sees it: slots by index, fields the class
+// header knows only as padding inside its member objects.
 struct UnkStruct_0226523c {
     virtual int v0();
     virtual int v1();
@@ -94,11 +95,11 @@ extern "C" void func_ov009_02264618(UnkStruct_0226523c *self, void *p);
 extern "C" void func_ov009_02264444(UnkStruct_0226523c *self, void *p);
 extern "C" void *func_ov009_02264884(UnkStruct_0226523c *self);
 extern "C" int func_ov009_0226321c(UnkStruct_0226523c *self, void *p, int p2);
-extern "C" void func_ov009_022639a0(UnkStruct_0226523c *self, int p1);
 extern "C" void func_ov009_022655c4(void);
 
-extern "C" int func_ov009_0226523c(UnkStruct_0226523c *self)
+int Obj_ov009_022658dc::func_ov009_0226523c()
 {
+    UnkStruct_0226523c *self = (UnkStruct_0226523c *) this;
     int r4, r6, r7;
     u16 val;
     void *p;
@@ -153,7 +154,7 @@ extern "C" int func_ov009_0226523c(UnkStruct_0226523c *self)
     }
 
     r4 = self->v28();
-    func_ov009_022639a0(self, 0);
+    ((Obj_ov009_022658dc *) self)->func_ov009_022639a0(0);
 
     return r4;
 }

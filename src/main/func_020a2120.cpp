@@ -10,7 +10,7 @@ class UnkStruct_020a2120 {
 };
 
 typedef int (UnkStruct_020a2120::*PMF)(void *);
-extern PMF data_020e38a8, data_020e3918, data_020e3930, data_020e3968, data_020e39d8, data_020e3a60, data_0213dd98;
+extern PMF data_020e38a8, data_020e3918, data_020e3930, data_020e3968, data_020e39d8, data_020e3a60, __ptmf_null;
 
 extern "C" int func_020a2120(UnkStruct_020a2120 *self, void *arg)
 {
@@ -24,7 +24,7 @@ extern "C" int func_020a2120(UnkStruct_020a2120 *self, void *arg)
         table[3] = data_020e3968;
         table[4] = data_020e39d8;
         table[5] = data_020e3a60;
-        table[6] = data_0213dd98;
+        table[6] = __ptmf_null;
         guard |= 1;
     }
 

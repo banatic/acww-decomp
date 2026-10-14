@@ -4,7 +4,7 @@
 
 extern void func_ov002_0220a5fc(void *p);
 extern void func_020b9cfc(void *p);
-extern void func_02138d6c(void *p, int a, int b, void (*cb1)(void), void (*cb2)(void));
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void), void (*cb2)(void));
 extern void func_02070be8(void);
 extern void func_02070c08(void);
 
@@ -31,7 +31,7 @@ void *func_ov134_0229bed4(UnkStruct_0229bed4 *self)
     self->zeros[5] = 0;
     self->zeros[6] = 0;
     self->zeros[7] = 0;
-    func_02138d6c(self->subD8, 0x11, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(self->subD8, 0x11, 0x6c, func_02070c08, func_02070be8);
     func_020b9cfc(&self->unk_804);
     func_020b9cfc(&self->unk_828);
     func_020b9cfc(&self->unk_84C);

@@ -3,13 +3,13 @@
  */
 
 extern void func_02055210(void *);
-extern void func_02138d6c(void *, int, int, void (*)(void), void (*)(void));
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void), void (*)(void));
 extern void func_020565b0(void);
 extern void func_020565c8(void);
 
 void *func_020911dc(void *ptr)
 {
     func_02055210((char *) ptr + 0x24);
-    func_02138d6c((char *) ptr + 0xe8, 3, 0x20, func_020565c8, func_020565b0);
+    __cxa_vec_ctor((char *) ptr + 0xe8, 3, 0x20, func_020565c8, func_020565b0);
     return ptr;
 }

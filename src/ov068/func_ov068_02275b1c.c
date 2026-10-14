@@ -25,7 +25,7 @@ typedef struct {
 
 extern int data_020ca0e4;
 extern int data_020ca0e8;
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 extern void func_0201aff4(void *, int);
 
 int func_ov068_02275b1c(UnkStruct_02275b1c_2 *p)
@@ -37,7 +37,7 @@ int func_ov068_02275b1c(UnkStruct_02275b1c_2 *p)
     h->b = -0x8000;
     p->unk_8E = h->b;
     func_0201aff4(p->sub, -32768);
-    p->a44 = data_0213dd98;
+    p->a44 = __ptmf_null;
     *((char *) p + 0x510) = 0;
     return 1;
 }

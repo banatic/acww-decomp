@@ -9,7 +9,7 @@ extern void func_020780b8(void *);
 extern void func_ov002_02209cb4(void *);
 extern void func_ov002_0220afdc(void *);
 extern void func_ov002_0220a5e4(void *);
-extern void func_02138c48(void *, int, int, void *);
+extern void __cxa_vec_cleanup(void *, int, int, void *);
 extern void func_ov002_0220ba0c(void *);
 extern void func_ov002_0220826c(void *);
 
@@ -36,8 +36,8 @@ void *func_ov112_0229eea0(struct UnkStruct_0229eea0 *self)
     func_ov002_02209cb4(&self->unk_4448);
     func_ov002_0220afdc(&self->unk_427C);
     func_ov002_0220a5e4(&self->unk_4234);
-    func_02138c48(&self->unk_3FAC, 6, 0x6c, (void *) func_02070be8);
-    func_02138c48(&self->unk_26D4, 2, 0x6c, (void *) func_02070be8);
+    __cxa_vec_cleanup(&self->unk_3FAC, 6, 0x6c, (void *) func_02070be8);
+    __cxa_vec_cleanup(&self->unk_26D4, 2, 0x6c, (void *) func_02070be8);
     func_ov002_0220ba0c(&self->unk_244);
     func_ov002_0220826c(self);
     return self;

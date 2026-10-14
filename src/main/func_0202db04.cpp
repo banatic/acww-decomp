@@ -9,11 +9,11 @@ class UnkStruct_0202db04 {
     char pad_00[0xe8];
     Pmf pmf;
 };
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 extern "C" void func_0202db04(UnkStruct_0202db04 *self)
 {
     if (self->pmf) {
         (self->*(self->pmf))();
-        self->pmf = data_0213dd98;
+        self->pmf = __ptmf_null;
     }
 }

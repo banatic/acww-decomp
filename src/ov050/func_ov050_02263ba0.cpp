@@ -10,12 +10,12 @@ struct UnkStruct_02263ba0 {
     Pmf pmf;
 };
 
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 
 extern "C" void func_ov050_02263ba0(UnkStruct_02263ba0 *obj)
 {
     if (obj->pmf) {
         (obj->*(obj->pmf))();
-        obj->pmf = data_0213dd98;
+        obj->pmf = __ptmf_null;
     }
 }

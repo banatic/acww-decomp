@@ -1,6 +1,9 @@
 /* func_ov147_02299d58 @ 0x02299d58, 0xd0 bytes, Thumb, module ov147
  * mwccarm 1.2/base -O4,s
+ * compiler-emitted symbol: _ZN18Obj_ov147_0229aa2819func_ov147_02299d58Ev
  */
+
+#include "cpp/ov147/Obj_ov147_0229aa28.h"
 
 extern "C" {
 extern int func_ov147_0229a614(void *);
@@ -9,7 +12,6 @@ extern void func_020a8164(void *, const void *);
 extern int func_0209f150(const void *, int);
 extern int func_ov147_02299320(void *);
 extern void func_02068340(void *, void *);
-extern void func_ov147_02299fc8(void *, int);
 extern void *data_ov147_0229a8b0;
 extern const char data_ov147_0229abe0[];
 extern const char data_021dc7a8[];
@@ -39,8 +41,9 @@ struct Res {
     int unk_08;
 };
 
-extern "C" void func_ov147_02299d58(UnkStruct_02299d58_2 *obj)
+void Obj_ov147_0229aa28::func_ov147_02299d58()
 {
+    UnkStruct_02299d58_2 *obj = (UnkStruct_02299d58_2 *) this;
     Res *r;
 
     if (func_ov147_0229a614(&obj->unk_B0) != 0) {
@@ -62,6 +65,6 @@ extern "C" void func_ov147_02299d58(UnkStruct_02299d58_2 *obj)
         }
         func_02068340(r, &obj->sub);
         r->unk_08 = 1;
-        func_ov147_02299fc8(obj, 2);
+        ((Obj_ov147_0229aa28 *) obj)->func_ov147_02299fc8(2);
     }
 }

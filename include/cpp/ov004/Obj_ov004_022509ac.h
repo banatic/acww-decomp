@@ -8,6 +8,9 @@
 struct Obj_ov004_022509ac : public RoomObject {
     virtual ~Obj_ov004_022509ac();
 
+    // update entry: runs the state handler dispatch below, then returns 1
+    int func_ov004_02212264();
+
     // state handlers, dispatched through tables in func_ov004_0221215c, func_ov004_022121c8
     void func_ov004_0221215c();
     void func_ov004_0221206c();

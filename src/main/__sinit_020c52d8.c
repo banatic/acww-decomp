@@ -6,7 +6,7 @@ typedef struct {
     short unk_00;
     short unk_02;
 } UnkStruct_020c52d8;
-extern void func_02138d6c(void *, int, int, void *, void *);
+extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void __register_global_object(void *, void *, void *);
 extern void func_020530d4(void *);
 extern UnkStruct_020c52d8 data_021c874c;
@@ -40,13 +40,13 @@ extern unsigned char data_021c8774;
 void __sinit_020c52d8(void)
 {
     UnkStruct_020c52d8 *p;
-    func_02138d6c((void *) &data_021c89fc, 8, 72, (void *) &func_020530d4, (void *) &func_020530b0);
+    __cxa_vec_ctor((void *) &data_021c89fc, 8, 72, (void *) &func_020530d4, (void *) &func_020530b0);
     __register_global_object(0, (void *) &func_020534cc, (void *) &data_021c8780);
-    func_02138d6c((void *) &data_021c884c, 6, 72, (void *) &func_020530d4, (void *) &func_020530b0);
+    __cxa_vec_ctor((void *) &data_021c884c, 6, 72, (void *) &func_020530d4, (void *) &func_020530b0);
     __register_global_object(0, (void *) &func_020534ac, (void *) &data_021c8798);
     func_020530d4((void *) &data_021c87b4);
     __register_global_object((void *) &data_021c87b4, (void *) &func_020530b0, (void *) &data_021c878c);
-    func_02138d6c((void *) &data_021c87fc, 4, 20, (void *) &func_0205349c, (void *) &func_02053498);
+    __cxa_vec_ctor((void *) &data_021c87fc, 4, 20, (void *) &func_0205349c, (void *) &func_02053498);
     __register_global_object((void *) &data_021c87fc, (void *) &func_0205347c, (void *) &data_021c8774);
     data_021c874c.unk_00 = 0;
     data_021c874c.unk_02 = 0;

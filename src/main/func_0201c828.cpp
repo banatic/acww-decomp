@@ -10,14 +10,14 @@ class UnkStruct_0201c828 {
     void (UnkStruct_0201c828::*pmf)(int);
 };
 
-extern void (UnkStruct_0201c828::*data_0213dd98)(int);
+extern void (UnkStruct_0201c828::*__ptmf_null)(int);
 extern "C" int func_020164a0(int, int);
 extern "C" int func_0201c8fc(UnkStruct_0201c828 *, int, int);
 
 extern "C" void func_0201c828(UnkStruct_0201c828 *self, int arg, int arg2)
 {
     if (arg2 != self->state && self->state != 5) {
-        self->pmf = data_0213dd98;
+        self->pmf = __ptmf_null;
         self->state = 5;
     } else if (self->pmf == 0) {
         switch (func_020164a0(arg + 0x334, 0) - 0xe5) {

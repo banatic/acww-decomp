@@ -24,6 +24,11 @@ class Obj_ov003_02238010 : public Base_0203f080, public Base_02066994 {
     int func_ov003_0220bf48();
     int func_ov003_0220c064(int state);
 
+    // vtable slots 0x00, 0x18 and 0x4c of the primary vtable
+    int func_ov003_0220c1e4();
+    int func_ov003_0220c1a8();
+    void func_ov003_0220c0f0(int event);
+
     char pad_130[0x4];
     int state_134;
     Member_020b7f60 unk_138;

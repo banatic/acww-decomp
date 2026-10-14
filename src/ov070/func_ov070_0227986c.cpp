@@ -8,12 +8,12 @@ class ClassName {
     void (ClassName::*pmf)();
 };
 
-extern void (ClassName::*data_0213dd98)();
+extern void (ClassName::*__ptmf_null)();
 
 extern "C" void func_ov070_0227986c(ClassName *obj)
 {
     if (obj->pmf != 0) {
         (obj->*obj->pmf)();
-        obj->pmf = data_0213dd98;
+        obj->pmf = __ptmf_null;
     }
 }

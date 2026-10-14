@@ -21,7 +21,14 @@ void func_020a8164(Base_02066994 &recv, const char *name);
 void func_02066954(Base_02066994 &recv, int arg, int mode);
 void func_02068340(Manager *manager, Base_02066994 *recv);
 void func_02082438(Obj_020e2f6c *out, unsigned short *id);
+Obj_020e2f6c *func_02094fd4(Obj_020e2f6c *obj);
+Obj_020e2f6c *func_02094fbc(Obj_020e2f6c *obj);
 }
+
+// stack storage for one Obj_020e2f6c (vtable pointer plus 0x1c bytes)
+struct Storage_020e2f6c {
+    int words[8];
+};
 
 int Obj_ov068_02277750::func_ov068_022726d4()
 {
@@ -37,11 +44,13 @@ int Obj_ov068_02277750::func_ov068_022726d4()
     unk_1E = ready;
     func_02068340(manager, this);
     manager->unk_08 = 1;
-    Obj_020e2f6c obj;
+    Storage_020e2f6c obj;
+    func_02094fd4((Obj_020e2f6c *) &obj);
     unsigned short id[2];
     id[1] = 0xd014;
-    func_02082438(&obj, &id[1]);
-    Obj_020e2f6c *p = &obj;
+    func_02082438((Obj_020e2f6c *) &obj, &id[1]);
+    Obj_020e2f6c *p = (Obj_020e2f6c *) &obj;
     func_02066954(*this, p->vfunc_0c(), 0);
+    func_02094fbc((Obj_020e2f6c *) &obj);
     return 1;
 }

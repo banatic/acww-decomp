@@ -33,6 +33,8 @@ struct Obj_ov004_022553d8 : public Obj_ov004_02254b28, public Base_02066994 {
     void func_ov004_0222f818();
     void func_ov004_0222f854();
     void func_ov004_0222f8cc();
+    // update: runs both handler tables, then draws the model
+    int func_ov004_0222fae4();
 
     char pad_2d4[0x4];
     Member_020324c4 unk_2d8;

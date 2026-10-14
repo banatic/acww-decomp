@@ -1,10 +1,12 @@
 /* func_ov068_02269c88 @ 0x02269c88, 0x34c bytes, Thumb, module ov068
  * mwccarm 1.2/base -O4,s
+ * compiler-emitted symbol: _ZN18Obj_ov068_022771c019func_ov068_02269c88Ei
  */
 
+#include "cpp/ov068/Obj_ov068_022771c0.h"
 #include "types.h"
 
-typedef struct SomeState SomeState;
+typedef Obj_ov068_022771c0 SomeState;
 
 class Object {
   public:
@@ -58,13 +60,6 @@ class Object {
     virtual int v47();
 };
 
-struct SomeState {
-    u8 pad_00[0x1c];
-    u8 unk_1C;
-    u8 pad_1D[0x20 - 0x1d];
-    int unk_20;
-};
-
 extern "C" {
 extern Object *func_0201ce50(Object *obj);
 extern int func_ov068_0226c0e0(SomeState *self, Object *obj);
@@ -84,7 +79,6 @@ extern int func_02019de8(void *p);
 extern int func_02019e00(void *p);
 extern int func_02019df8(void *p);
 extern int func_020984e8(void);
-extern void func_ov068_02269b88(SomeState *self, Object *obj);
 extern int func_020644cc(int n);
 extern void func_ov068_0226ad44(SomeState *self, Object *obj, void *data, int a, int b, int c);
 extern void func_02019c90(void *p, int a, int b, int c);
@@ -108,8 +102,10 @@ inline void talk(Object *obj)
     }
 }
 
-void func_ov068_02269c88(SomeState *self, Object *obj)
+void Obj_ov068_022771c0::func_ov068_02269c88(int arg)
 {
+    SomeState *self = this;
+    Object *obj = (Object *) arg;
     Object *other;
     int a;
     int flagA;
@@ -134,7 +130,7 @@ void func_ov068_02269c88(SomeState *self, Object *obj)
         if (other != 0) {
             func_0202e194(other);
         }
-        self->unk_1C = 3;
+        self->state_1c = 3;
         return;
     }
 
@@ -143,7 +139,7 @@ void func_ov068_02269c88(SomeState *self, Object *obj)
         if (other != 0) {
             func_0202e194(other);
         }
-        self->unk_1C = 3;
+        self->state_1c = 3;
         func_ov068_0226ad78(self, obj, 2, 1, 1);
         if (other == 0) {
             return;
@@ -157,7 +153,7 @@ void func_ov068_02269c88(SomeState *self, Object *obj)
         if (other != 0) {
             func_0202e194(other);
         }
-        self->unk_1C = 3;
+        self->state_1c = 3;
         return;
     }
 
@@ -183,10 +179,10 @@ void func_ov068_02269c88(SomeState *self, Object *obj)
                     func_ov068_0226ad44(self, obj, data_ov068_02276740, 4, 2, 1);
                     func_ov068_0226ad44(self, other, data_ov068_02276740, 4, 2, 1);
                 }
-                self->unk_1C = 3;
+                self->state_1c = 3;
                 return;
             }
-            func_ov068_02269b88(self, obj);
+            func_ov068_02269b88((int) obj);
             return;
         }
         talk(obj);

@@ -12,7 +12,7 @@ extern void func_02070be8(void);
 extern void func_ov002_0220ba0c(void *);
 extern void func_ov002_0220826c(void *);
 extern void func_ov002_02207f6c(void *);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 
 void *func_ov112_0229ef2c(void *obj)
 {
@@ -22,8 +22,8 @@ void *func_ov112_0229ef2c(void *obj)
     func_ov002_02209cb4((char *) obj + 0x4448);
     func_ov002_0220afdc((char *) obj + 0x427c);
     func_ov002_0220a5e4((char *) obj + 0x4234);
-    func_02138c48((char *) obj + 0x3fac, 6, 0x6c, func_02070be8);
-    func_02138c48((char *) obj + 0x26d4, 2, 0x6c, func_02070be8);
+    __cxa_vec_cleanup((char *) obj + 0x3fac, 6, 0x6c, func_02070be8);
+    __cxa_vec_cleanup((char *) obj + 0x26d4, 2, 0x6c, func_02070be8);
     func_ov002_0220ba0c((char *) obj + 0x244);
     func_ov002_0220826c(obj);
     func_ov002_02207f6c(obj);

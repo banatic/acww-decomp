@@ -5,7 +5,7 @@
 extern unsigned char data_ov078_02279a9c[];
 extern void func_0202eb20(void *);
 extern void func_020051b0(void);
-extern void func_02138c48(void *, int, int, void (*)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
 
 typedef struct {
     unsigned char *unk_00;
@@ -17,7 +17,7 @@ UnkStruct_02278fe4 *func_ov078_02278fe4(UnkStruct_02278fe4 *p)
 {
     int n = 2;
     p->unk_00 = data_ov078_02279a9c;
-    func_02138c48(p->sub, n, n, func_020051b0);
+    __cxa_vec_cleanup(p->sub, n, n, func_020051b0);
     func_0202eb20(p);
     return p;
 }

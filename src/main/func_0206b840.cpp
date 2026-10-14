@@ -11,7 +11,7 @@ struct UnkStruct_0206b840 {
 
 extern PMF data_020ded94, data_020ded8c, data_020de9cc, data_020ded7c, data_020ded74, data_020ded6c, data_020ded64,
     data_020ded5c, data_020de9b4, data_020ded4c, data_020de9ac, data_020ded3c;
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 extern PMF data_020de99c;
 
 extern "C" void func_0206b840(UnkStruct_0206b840 *obj)
@@ -22,7 +22,7 @@ extern "C" void func_0206b840(UnkStruct_0206b840 *obj)
     int idx;
 
     idx = obj->unk_38;
-    f = data_0213dd98;
+    f = __ptmf_null;
     if (idx == 0xff) {
         f = data_020de99c;
     } else if (idx < 12) {

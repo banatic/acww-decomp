@@ -6,7 +6,7 @@ extern char data_020e1ac8;
 extern void func_02083654(void);
 extern void func_02083c78(void *obj);
 extern void func_020edb3c(void *obj);
-extern void func_02138c48(void *obj, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(void *obj, int a, int b, void (*cb)(void));
 
 typedef struct {
     void *vtable;
@@ -17,7 +17,7 @@ typedef struct {
 void *func_020835a8(Object *obj)
 {
     obj->vtable = &data_020e1ac8;
-    func_02138c48(&obj->sub_obj, 5, 8, func_02083654);
+    __cxa_vec_cleanup(&obj->sub_obj, 5, 8, func_02083654);
     func_02083c78(obj);
     func_020edb3c(obj);
     return obj;

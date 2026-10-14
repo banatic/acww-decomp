@@ -6,11 +6,11 @@ struct UnkStruct_02261590 {
     char pad_00[0xB8];
     void (UnkStruct_02261590::*pmf)();
 };
-extern void (UnkStruct_02261590::*data_0213dd98)();
+extern void (UnkStruct_02261590::*__ptmf_null)();
 extern "C" void func_ov046_02261590(UnkStruct_02261590 *self)
 {
     if (self->pmf != 0) {
         (self->*self->pmf)();
-        self->pmf = data_0213dd98;
+        self->pmf = __ptmf_null;
     }
 }

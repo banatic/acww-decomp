@@ -10,7 +10,7 @@ extern void func_0206da80(void *p);
 extern void func_ov002_02209cb4(void *p);
 extern void func_ov002_0220a5e4(void *p);
 extern void func_0206e35c(void *p);
-extern void func_02138c48(void *p, int a, int b, void *fp);
+extern void __cxa_vec_cleanup(void *p, int a, int b, void *fp);
 extern void func_ov002_0220826c(void *p);
 extern void func_02070be8(void);
 extern char data_ov122_022a2738;
@@ -26,7 +26,7 @@ void *func_ov122_0229eea0(void *param)
     func_ov002_02209cb4((void *) ((char *) param + 0x4058));
     func_ov002_0220a5e4((void *) ((char *) param + 0x4010));
     func_0206e35c((void *) ((char *) param + 0x3ce8));
-    func_02138c48((void *) ((char *) param + 0x2410), 2, 0x6c, (void *) &func_02070be8);
+    __cxa_vec_cleanup((void *) ((char *) param + 0x2410), 2, 0x6c, (void *) &func_02070be8);
     func_ov002_0220826c(param);
     return param;
 }

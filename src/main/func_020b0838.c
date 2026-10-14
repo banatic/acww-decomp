@@ -4,10 +4,10 @@
 
 extern void func_020b0a80();
 extern void func_020b0a84();
-extern void func_02138d6c(void *a, int b, int c, void (*d)(), void (*e)());
+extern void __cxa_vec_ctor(void *a, int b, int c, void (*d)(), void (*e)());
 
 void *func_020b0838(void *arg)
 {
-    func_02138d6c(arg, 3, 6, func_020b0a84, func_020b0a80);
+    __cxa_vec_ctor(arg, 3, 6, func_020b0a84, func_020b0a80);
     return arg;
 }

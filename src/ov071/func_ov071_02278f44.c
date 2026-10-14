@@ -13,14 +13,14 @@ typedef struct {
     Pair p2;
 } UnkStruct_02278f44;
 
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 extern void func_0201612c(void *);
 
 void func_ov071_02278f44(UnkStruct_02278f44 *self)
 {
     func_0201612c(self);
     {
-        Pair v = data_0213dd98;
+        Pair v = __ptmf_null;
         self->p1 = v;
         self->p2 = v;
     }

@@ -13,6 +13,8 @@ struct Obj_ov004_02252e00 : public RoomObject {
     int func_ov004_02219ed8();
     void func_ov004_02219f00();
     int func_ov004_02219f28();
+    // update: runs the state handlers
+    int func_ov004_0221a064();
 
     unsigned char unk_844;
 };

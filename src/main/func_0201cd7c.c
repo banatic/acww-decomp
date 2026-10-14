@@ -17,7 +17,7 @@ struct UnkStruct_0201cd7c {
     char unk_59;
     char unk_5A;
 };
-extern Pair data_0213dd98;
+extern Pair __ptmf_null;
 extern void func_0201ccc0(struct UnkStruct_0201cd7c *p);
 void func_0201cd7c(struct UnkStruct_0201cd7c *p)
 {
@@ -25,7 +25,7 @@ void func_0201cd7c(struct UnkStruct_0201cd7c *p)
     p->unk_40 = 5;
     p->unk_44 = 5;
     p->unk_48 = 0;
-    p->pair = data_0213dd98;
+    p->pair = __ptmf_null;
     func_0201ccc0(p);
     p->unk_58 = 0;
     p->unk_5A = 0;

@@ -24,7 +24,7 @@ union PMFUnion {
     } raw;
 };
 
-extern PMFUnion data_0213dd98;
+extern PMFUnion __ptmf_null;
 extern PMFUnion data_020da924;
 extern PMFUnion data_020da934;
 extern PMFUnion data_020da92c;
@@ -33,7 +33,7 @@ extern "C" void func_0203dc28(UnkStruct_0203dc28 *self)
 {
     func_020a8764(&self->sub);
     int type = self->sub;
-    PMFUnion pmf = data_0213dd98;
+    PMFUnion pmf = __ptmf_null;
     if (type == 4 && func_020a835c(&self->sub) != 0) {
         pmf = data_020da924;
     } else if (type == 0) {

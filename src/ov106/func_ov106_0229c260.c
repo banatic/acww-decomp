@@ -17,7 +17,7 @@ extern void func_ov094_0229bc30(void *);
 extern void func_ov094_0229afe0(void *);
 extern void func_ov002_0220826c(void *);
 extern void func_ov002_02207f6c(void *);
-extern void func_02138c48(void *, int, int, void (*)(void *));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 
 void *func_ov106_0229c260(void *self)
 {
@@ -26,8 +26,8 @@ void *func_ov106_0229c260(void *self)
     func_02066688(p + 0x4280);
     func_02066688(p + 0x4180);
     func_ov002_0220afdc(p + 0x3fb4);
-    func_02138c48(p + 0x35b4, 10, 0x100, func_02066688);
-    func_02138c48(p + 0x2bb4, 10, 0x100, func_02066688);
+    __cxa_vec_cleanup(p + 0x35b4, 10, 0x100, func_02066688);
+    __cxa_vec_cleanup(p + 0x2bb4, 10, 0x100, func_02066688);
     func_ov002_0220b464(p + 0x2b3c);
     func_0206e35c(p + 0x2814);
     func_ov002_0220ba0c(p + 0x26f8);

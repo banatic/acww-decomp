@@ -28,6 +28,8 @@ struct Obj_ov004_02254fc8 : public Obj_ov004_02254b28, public Base_02066994 {
     int func_ov004_0222e5a0();
     void func_ov004_0222e5a4();
     int func_ov004_0222e644();
+    // update: advances the animations, runs the state handlers, keeps the sounds alive
+    int func_ov004_0222ec34();
 
     char pad_2d4[0xc28];
     int unk_efc;

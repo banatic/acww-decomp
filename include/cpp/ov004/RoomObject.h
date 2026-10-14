@@ -31,6 +31,9 @@ struct RoomObject : public Base_0203f080, public Base_02066994 {
     virtual void vfunc_6c();
     virtual void vfunc_70(int a, int b);
 
+    // update entry: runs the state handler dispatch below, then returns 1
+    int func_ov004_02210abc();
+
     // state handlers, dispatched through tables in func_ov004_0220cc28, func_ov004_0220ccf8
     void func_ov004_0220cc28();
     void func_ov004_0220c560();

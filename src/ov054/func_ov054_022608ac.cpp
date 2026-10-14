@@ -1,6 +1,6 @@
 /* func_ov054_022608ac @ 0x022608ac, 0x1dc bytes, Thumb, module ov054
  * mwccarm 1.2/base -O4,s
- * compiler-emitted symbol: _ZN18Obj_ov054_0226300419func_ov054_022608acEv
+ * compiler-emitted symbol: _ZN18Obj_ov054_0226300419func_ov054_022608acEj
  */
 
 #include "cpp/ov054/Obj_ov054_02263004.h"
@@ -14,7 +14,8 @@ extern PMF *data_ov054_02262f3c[];
 extern "C" void func_020160b4(S *self);
 extern "C" int func_020ab504(void);
 
-void Obj_ov054_02263004::func_ov054_022608ac()
+// The result code of the caller is handed on but never read here.
+void Obj_ov054_02263004::func_ov054_022608ac(unsigned int arg)
 {
     int n;
 

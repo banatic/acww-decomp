@@ -35,6 +35,8 @@ struct Obj_ov004_02253674 {
     int func_ov004_0221c410();
     void func_ov004_0221c494();
     int func_ov004_0221c6d4();
+    // update: runs the state handlers
+    int func_ov004_0221d210();
 
     char pad_4[0x894];
     int unk_898;

@@ -32,7 +32,7 @@ typedef struct {
 extern int data_021f6ccc;
 extern UnkStruct_020bd3b4 data_021f6ed0[];
 extern UnkStruct_020bd3b4 data_021f6f50[];
-extern UnkStruct_020bd3b4 data_0213dd98;
+extern UnkStruct_020bd3b4 __ptmf_null;
 extern UnkStruct_020bd3b4 data_020e5a20;
 extern UnkStruct_020bd3b4 data_020e5ad0;
 extern UnkStruct_020bd3b4 data_020e59d0;
@@ -147,7 +147,7 @@ endcheck:
     }
     if ((data_021f6ccc & 1) == 0) {
         d = data_021f6ed0;
-        d[0] = data_0213dd98;
+        d[0] = __ptmf_null;
         d[1] = data_020e5a20;
         d[2] = data_020e5ad0;
         d[3] = data_020e59d0;

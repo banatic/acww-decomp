@@ -39,7 +39,7 @@ extern struct B020e3504 {
     UnkStruct_020c63bc unk_BC;
 } data_020e3504;
 extern UnkStruct_020c63bc data_020e3498;
-extern UnkStruct_020c63bc data_0213dd98;
+extern UnkStruct_020c63bc __ptmf_null;
 extern UnkStruct_020c63bc data_020e34a0;
 extern UnkStruct_020c63bc data_020e34a8;
 extern UnkStruct_020c63bc data_020e34c0;
@@ -50,7 +50,7 @@ void __sinit_020c63bc(void)
     UnkStruct_020c63bc t1;
 
     data_020e3504.unk_00 = data_020e3498;
-    t1 = data_0213dd98;
+    t1 = __ptmf_null;
     data_020e3504.unk_08 = t1;
     data_020e3504.unk_14 = t1;
     data_020e3504.unk_1C = t1;

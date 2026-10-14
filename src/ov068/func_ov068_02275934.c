@@ -7,7 +7,7 @@
 extern volatile struct {
     u32 a;
     u32 b;
-} data_0213dd98;
+} __ptmf_null;
 
 typedef struct {
     char pad_00[0x5c];
@@ -35,8 +35,8 @@ int func_ov068_02275934(UnkStruct_02275934 *self)
     self->unk_A78 = self->unk_64;
     self->unk_A78 -= 0x2000;
 
-    a = data_0213dd98.a;
-    b = data_0213dd98.b;
+    a = __ptmf_null.a;
+    b = __ptmf_null.b;
     self->unk_A44 = a;
     self->unk_A48 = b;
 

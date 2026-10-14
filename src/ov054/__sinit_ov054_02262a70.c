@@ -11,7 +11,7 @@ typedef struct E12 {
     int x;
 } E12;
 
-extern UnkStruct_02262a70 data_0213dd98, data_ov054_02262d18, data_ov054_02262de0, data_ov054_02262de8, data_ov054_02262dc8,
+extern UnkStruct_02262a70 __ptmf_null, data_ov054_02262d18, data_ov054_02262de0, data_ov054_02262de8, data_ov054_02262dc8,
     data_ov054_02262dc0, data_ov054_02262d08, data_ov054_02262d10, data_ov054_02262e48, data_ov054_02262ed0,
     data_ov054_02262e00, data_ov054_02262ee0, data_ov054_02262cf8, data_ov054_02262d20, data_ov054_02262da0,
     data_ov054_02262d40, data_ov054_02262d48, data_ov054_02262d90, data_ov054_02262ed8, data_ov054_02262d70,
@@ -24,7 +24,7 @@ extern UnkStruct_02262a70 data_ov054_022632dc[24];
 
 void __sinit_ov054_02262a70(void)
 {
-    data_ov054_02263140[0].unk_00 = data_0213dd98;
+    data_ov054_02263140[0].unk_00 = __ptmf_null;
     data_ov054_02263140[1].unk_00 = data_ov054_02262d18;
     data_ov054_02263140[2].unk_00 = data_ov054_02262de0;
     data_ov054_02263140[3].unk_00 = data_ov054_02262de8;

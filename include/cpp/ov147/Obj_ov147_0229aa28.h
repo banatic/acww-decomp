@@ -17,6 +17,11 @@ class Obj_ov147_0229aa28 : public Obj_020da13c {
 
     void func_ov147_02299fc8(int index);
     int func_ov147_0229a090();
+    // state entries and updates from the {enter, update} table
+    void func_ov147_02299d20();
+    void func_ov147_02299d58();
+    void func_ov147_02299e5c();
+    int func_ov147_0229a110();
 };
 
 #endif

@@ -33,6 +33,8 @@ class Obj_ov143_0229b1c0 : public Obj_ov002_0220bb24 {
 
     void func_ov143_0229ac10();
     int func_ov143_0229acf8();
+    // update: runs the handlers between the two frame helpers
+    int func_ov143_0229abf4();
 };
 
 #endif

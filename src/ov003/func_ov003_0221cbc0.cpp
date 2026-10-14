@@ -6,13 +6,14 @@
 #include "cpp/ov003/Obj_ov003_02238c54.h"
 
 extern "C" {
+void func_02056ffc(Obj_020dd184 *p);
 void func_0209e474(void *out);
 void RtcSendPxiCommand(int command);
 }
 
 void Obj_ov003_02238c54::func_ov003_0221cbc0()
 {
-    unk_2b4.func_02056ffc();
+    func_02056ffc(&unk_2b4);
     *unk_2b4.unk_18 = unk_2b4.unk_08;
     unsigned int local[2];
     local[0] = 0;

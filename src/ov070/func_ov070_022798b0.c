@@ -9,7 +9,7 @@ struct Pair {
     unsigned int w1;
 };
 
-extern struct Pair data_0213dd98;
+extern struct Pair __ptmf_null;
 
 struct UnkStruct_022798b0 {
     char pad_00[0xb8];
@@ -19,5 +19,5 @@ struct UnkStruct_022798b0 {
 void func_ov070_022798b0(struct UnkStruct_022798b0 *self)
 {
     func_0201612c(self);
-    self->sub = data_0213dd98;
+    self->sub = __ptmf_null;
 }

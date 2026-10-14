@@ -20,7 +20,7 @@ extern void func_0206e388(void *);
 extern void func_ov002_0220b47c(void *);
 extern void func_ov002_0220b008(void *);
 extern void func_02066688(void);
-extern void func_02138d6c(void *, int, int, Handler, Handler);
+extern void __cxa_vec_ctor(void *, int, int, Handler, Handler);
 
 extern char data_ov104_0229f6d0;
 
@@ -59,8 +59,8 @@ void *func_ov104_0229f460(void)
     func_0206e388((char *) obj + 0x2a14);
     func_ov002_0220b47c((char *) obj + 0x2d3c);
 
-    func_02138d6c((char *) obj + 0x2db4, 0xa, 0x100, (Handler) func_02066694, (Handler) func_02066688);
-    func_02138d6c((char *) obj + 0x37b4, 0xa, 0x100, (Handler) func_02066694, (Handler) func_02066688);
+    __cxa_vec_ctor((char *) obj + 0x2db4, 0xa, 0x100, (Handler) func_02066694, (Handler) func_02066688);
+    __cxa_vec_ctor((char *) obj + 0x37b4, 0xa, 0x100, (Handler) func_02066694, (Handler) func_02066688);
 
     func_ov002_0220b008((char *) obj + 0x41b4);
 

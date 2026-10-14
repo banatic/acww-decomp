@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_0223b22c_unk(void *);
-extern int func_ov004_0223b004_unk(int, void *, void *);
+extern int func_ov004_0223b22c(void *);
+extern int func_ov004_0223b004(int, void *, void *);
 extern void func_ov004_0220ccf8(void *, int);
-extern void func_ov004_0220d4ec_unk(void *, void *);
+extern void func_ov004_0220d4ec(void *, void *);
 
 typedef struct {
     char pad_00[0x5c];
@@ -25,15 +25,15 @@ typedef struct {
 void func_ov004_0220c774(UnkStruct_0220c774 *self)
 {
     int ret;
-    ret = func_ov004_0223b22c_unk(self);
+    ret = func_ov004_0223b22c(self);
     if (ret) {
         int buffer[3];
-        if (func_ov004_0223b004_unk(ret, &self->unk_250, buffer)) {
+        if (func_ov004_0223b004(ret, &self->unk_250, buffer)) {
             self->unk_5C = self->unk_170;
             self->unk_60 = self->unk_174;
             self->unk_64 = self->unk_178;
             func_ov004_0220ccf8(self, 1);
-            func_ov004_0220d4ec_unk(&self->unk_18C, self);
+            func_ov004_0220d4ec(&self->unk_18C, self);
         } else {
             self->unk_5C = buffer[0];
             self->unk_60 = buffer[1];

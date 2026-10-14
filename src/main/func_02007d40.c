@@ -16,7 +16,7 @@ typedef struct {
 
 extern unsigned int data_021bfffc;
 extern Entry data_021c0018[147];
-extern Entry data_0213dd98;
+extern Entry __ptmf_null;
 extern Entry data_020d8264;
 extern Entry data_020d826c;
 extern Entry data_020d8244;
@@ -87,7 +87,7 @@ void func_02007d40(UnkStruct_02007d40 *p, int arg)
         data_021c0018[0] = data_020d8264;
         data_021c0018[1] = data_020d826c;
         data_021c0018[2] = data_020d8244;
-        d = data_0213dd98;
+        d = __ptmf_null;
         data_021c0018[3] = d;
         data_021c0018[4] = data_020d823c;
         data_021c0018[5] = d;

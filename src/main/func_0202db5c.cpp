@@ -10,12 +10,12 @@ class UnkStruct_0202db5c {
     Pmf a;
     Pmf b;
 };
-extern Pmf data_0213dd98;
+extern Pmf __ptmf_null;
 extern "C" void func_0202db5c(UnkStruct_0202db5c *self)
 {
     if (self->a) {
         (self->*(self->a))();
-        Pmf t = data_0213dd98;
+        Pmf t = __ptmf_null;
         self->a = t;
         if (self->b) {
             self->a = self->b;

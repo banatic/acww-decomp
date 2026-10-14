@@ -21,7 +21,7 @@ extern char data_021dc7a8[];
 extern u8 data_021f43e8;
 extern PMF *data_ov147_0229a9fc[];
 
-extern PMF data_0213dd98;
+extern PMF __ptmf_null;
 extern PMF data_ov147_0229a8f4;
 extern PMF data_ov147_0229a904;
 extern PMF data_ov147_0229a924;
@@ -59,10 +59,10 @@ void func_ov147_0229942c(UnkStruct_0229942c_2 *self)
     b = func_02098880(data_021dc7bc);
     c = func_0209f180(data_021dc7a8);
     {
-        static PMF t0[4] = {data_0213dd98, data_ov147_0229a8f4, data_0213dd98, data_ov147_0229a904};
-        static PMF t1[4] = {data_ov147_0229a924, data_ov147_0229a92c, data_0213dd98, data_ov147_0229a93c};
-        static PMF t2[4] = {data_ov147_0229a944, data_ov147_0229a964, data_0213dd98, data_ov147_0229a984};
-        static PMF t3[5] = {data_ov147_0229a8ec, data_0213dd98, data_ov147_0229a90c, data_0213dd98, data_ov147_0229a914};
+        static PMF t0[4] = {__ptmf_null, data_ov147_0229a8f4, __ptmf_null, data_ov147_0229a904};
+        static PMF t1[4] = {data_ov147_0229a924, data_ov147_0229a92c, __ptmf_null, data_ov147_0229a93c};
+        static PMF t2[4] = {data_ov147_0229a944, data_ov147_0229a964, __ptmf_null, data_ov147_0229a984};
+        static PMF t3[5] = {data_ov147_0229a8ec, __ptmf_null, data_ov147_0229a90c, __ptmf_null, data_ov147_0229a914};
     }
     idx = 3;
     switch (self->unk_1E) {

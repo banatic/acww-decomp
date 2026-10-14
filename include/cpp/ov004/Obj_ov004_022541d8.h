@@ -23,6 +23,8 @@ struct Obj_ov004_022541d8 {
     int func_ov004_02221dd8();
     void func_ov004_02221e0c();
     int func_ov004_02222098();
+    // update: runs the state handlers, then the part at 0x83c
+    int func_ov004_0222287c();
 
     char pad_4[0x898];
     int unk_89c;
