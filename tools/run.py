@@ -81,6 +81,7 @@ RUNTIME = C.ROOT / "runtime"
 ROM = C.ROOT / "extract" / "adm-kr.nds"
 NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
 KEPT = RUNTIME / "native-reference.txt"
+HELPERS = RUNTIME / "compiler-helpers.txt"
 # DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
@@ -309,6 +310,20 @@ def kept_reference() -> dict[str, str]:
     return out
 
 
+def compiler_helpers(found: dict[tuple[str, int], str]) -> set[tuple[str, int]]:
+    """The compiler helpers' (module, address): those `found` in the library sources, which are
+    not distributed (libs/README.md), kept in HELPERS for a checkout without them."""
+    if found:
+        HELPERS.write_text("".join(f"{mod} {addr:08x} {name}\n" for (mod, addr), name in sorted(found.items())),
+                           newline="\n")
+        return set(found)
+    out = set()
+    for line in HELPERS.read_text().splitlines() if HELPERS.exists() else []:
+        mod, addr, _name = line.split()
+        out.add((mod, int(addr, 16)))
+    return out
+
+
 def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     """Every function of every module with the letter runtime/native_run.c reads: N, C, R, H
     or -. With `clean`, every function with a Clean version is N."""
@@ -324,16 +339,15 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     # every source's parameter count (with `this`), libraries' too: the Native run compares
     # the arguments of the calls Native code makes into the ROM's code
     params: dict[tuple[str, int], int] = {}
-    helpers = set()
+    helpers: dict[tuple[str, int], str] = {}
     for path in C.all_sources():
         src = C.parse_source(path)
         if src:
             _kind, count, member, _floating = native_build.signature(path, src.name)
             params[(src.module, src.address)] = count + int(member) if _kind != native_build.RET_SKIP or count else -1
-        if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
-            src = C.parse_source(path)
-            if src:
-                helpers.add((src.module, src.address))
+        if src and (C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES)):
+            helpers[(src.module, src.address)] = src.name
+    helpers = compiler_helpers(helpers)
     wanted: set[str] | None = None
     if policy not in ("all", "leaf", "none"):
         wanted = {w.split()[0] for w in pathlib.Path(policy).read_text().splitlines()

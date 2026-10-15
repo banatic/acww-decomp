@@ -20,6 +20,7 @@ which hold C functions as well as members. Elsewhere gcc -m32.
 
 from __future__ import annotations
 
+import collections
 import concurrent.futures as cf
 import hashlib
 import json
@@ -32,6 +33,7 @@ import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
+import protos  # noqa: E402
 import objrewrite  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
@@ -75,6 +77,9 @@ def flags_for(path: pathlib.Path) -> list[str]:
     # no position-independent code: references must be plain relocations tools/objrewrite.py
     # can point at the game's memory
     pic = [] if WINDOWS else ["-fno-pic", "-fno-pie"]
+    # no stack canaries (Ubuntu's gcc adds them by default): the ROM's code has none, and some
+    # of it writes past a local array, harmlessly on the DS and in the PC's frame alike
+    pic += ["-fno-stack-protector"]
     # structures as the DS lays them out (runtime/native.h): GCC's bit-fields on Windows too
     layout = ["-mno-ms-bitfields"] if WINDOWS else []
     relax = RELAX if "clang" in " ".join(compiler()) else []  # gcc only warns about these
@@ -180,6 +185,18 @@ def signature(path: pathlib.Path, name: str) -> tuple[int, int, bool, int]:
 
 ASM_FUNCTION = re.compile(r"^\s*asm\s+[\w\s\*]*\w+\s*\(", re.M)
 STRUCT_TYPE = re.compile(r"\}\s*(\w+)\s*;|\bstruct\s+(\w+)\s*\{")
+
+
+PMF_TYPEDEF = re.compile(r"\(\s*(?:\w+\s*::\s*)+\*\s*(\w+)\s*\)")
+
+
+def pmf_names(path: pathlib.Path, text: str) -> list[str]:
+    """The member-function pointer types (typedef'd in the headers `path` includes) that its
+    text names: a source that calls through a table of them has no `::*` of its own."""
+    names = set()
+    for header in C.included_files(path):
+        names |= set(PMF_TYPEDEF.findall(COMMENT.sub(" ", header.read_text(encoding="utf-8", errors="replace"))))
+    return sorted(n for n in names if re.search(r"\b" + re.escape(n) + r"\b", text))
 
 
 def struct_results(text: str) -> list[str]:
@@ -340,6 +357,14 @@ def main() -> None:
     # call on an object (not a pointer) that the PC's compiler makes directly, to a method the
     # ROM only reaches through the vtable.
     nowhere = {h for h, a in absolute if a == 0}
+    # A caller that declares a function with fewer parameters than its definition leaves the
+    # rest to whatever r1-r3 hold, which on the DS are often the caller's own arguments passed
+    # on; one that uses the result of a function defined void reads whatever r0 holds. The PC
+    # passes and returns neither.
+    short: dict[str, list[str]] = collections.defaultdict(list)
+    for rel, callee, n, dn, ret, dret, _drel in protos.disagreements():
+        if (n is not None and dn is not None and n < dn) or (ret and not dret):
+            short[rel].append(callee)
     keep = []
     for (path, _), names in zip(objects, per_object):
         name = C.parse_source(path).object_symbol
@@ -358,9 +383,13 @@ def main() -> None:
         elif by_value:
             keep.append(f"{name} calls {' '.join(by_value)}, which returns a structure by value: mwccarm passes "
                         "a pointer to the result in r0, the PC's compiler returns a small one in registers\n")
-        elif "::*" in text:
+        elif "::*" in text or "->*" in text or pmf_names(path, text):
             keep.append(f"{name} uses member-function pointers, which mwccarm lays out in 12 bytes and the PC "
                         "(Itanium C++ ABI) in 8\n")
+        elif short.get(path.relative_to(C.ROOT).as_posix()):
+            keep.append(f"{name} declares {' '.join(sorted(set(short[path.relative_to(C.ROOT).as_posix()])))} with "
+                        "fewer parameters than their definitions or a result they do not return, which the DS "
+                        "passes in registers and the PC does not" + chr(10))
         elif vts:
             keep.append(f"{name} installs a vtable the ROM has at no known address ({' '.join(vts)})\n")
         elif zero:
