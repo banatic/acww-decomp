@@ -100,8 +100,9 @@ the check), `tools/diffcheck.py`, and the first Clean function in `clean/main/sl
 **M2: Native on the PC.** In progress: `tools/native.py` compiles 25,242 of the 25,247 sources
 for 32-bit x86 and points their references at the game's memory (`tools/objrewrite.py`);
 `python tools/diffcheck.py --native` runs every function that calls nothing as Native against
-its Reference on random states (6,232 agree, 39 differ: shifts by 32 or more and unaligned
-loads, which random states produce and the game may not).
+its Reference on random states (6,340 agree; 34 differ, each listed with its reason in
+`tests/native/known.txt`: shifts by 32 or more and unaligned loads, which random states produce
+and the game may not).
 - Every game source compiles for 32-bit x86 (clang and gcc), with the differences behind
   `AVOID_UB`.
 - Every function that calls nothing (a leaf) runs as Native against its Reference in the
@@ -117,7 +118,17 @@ CI checks against `title-start.sha1`.
   at native resolution, input) runs the game's own boot code to the title screen.
 - A recorded input sequence reaches the same title-screen frames on every run.
 
-**M4: The game starts, as Native.**
+**M4: The game starts, as Native.** In progress: on Windows,
+`tools/run.py ... --native=all --expect runtime/recordings/title-start.sha1` runs 23,885
+functions as Native and gives the Reference's 1,300 frames, with RAM at six points equal apart
+from words that hold PC addresses (function pointers and stack addresses the PC code keeps).
+`runtime/native_run.c` dispatches between the two: Reference code calling a Native function, a
+Native function calling the ROM's code through the interpreter (`native_tramp.S`), and a trace of
+the Reference run's crossings that gives Native code the Reference's timing. 1,326 functions stay
+Reference: those `tools/native.py` finds by reading the sources (member function pointers,
+virtual calls with no known address, calls to a function's middle), and those listed with a
+reason in `runtime/native-reference.txt` (hardware access, calls with fewer arguments than the
+callee takes, undefined behaviour). Linux does not pass yet, and neither run is in CI.
 - The same recording run with Native for every function that has a source gives the same frames
   and the same RAM at chosen points as the Reference run.
 

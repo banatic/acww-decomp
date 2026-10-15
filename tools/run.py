@@ -1,4 +1,5 @@
-"""Build runtime/run.c and boot the game's ARM9 code in the interpreter (docs/runtime.md, M3).
+"""Build runtime/run.c and boot the game's ARM9 code in the interpreter (docs/runtime.md, M3),
+or with the matching sources compiled for the PC in place of the ROM's code (M4).
 
     python tools/run.py                      # run until stuck or 200 M instructions
     python tools/run.py 50000000             # an instruction budget
@@ -6,6 +7,10 @@
     python tools/run.py 0 1300 --input runtime/recordings/title-start.txt --rtc "2005-11-23 12:00:00"
                         --png build/frames --frames 0-1300/50 --hash build/frames/hashes.txt
                                              # (one command) the recorded title run, saved and hashed
+    python tools/run.py 0 1300 --input runtime/recordings/title-start.txt --rtc "2005-11-23 12:00:00"
+                        --native=all --hash build/native/hashes.txt --ram-hash 300,700,1299
+                                             # (one command) the same with every Native function, checked
+                                             # against the Reference run (M4)
 
 Options for the screens (docs/runtime.md, M3):
     --png DIR        save frames as DIR/frame-<n>.png (upper screen above the lower one)
@@ -17,6 +22,27 @@ Options for the screens (docs/runtime.md, M3):
     --input FILE     an input recording (format in runtime/input.h)
     --rtc "YYYY-MM-DD HH:MM:SS"  start the clock at a fixed moment and advance it with the
                      emulated time, so runs are identical (default: the host's clock)
+
+Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
+    --native=all|leaf|none|FILE
+                     which functions with a Native (tools/native.py, run first) run as Native:
+                     all of them, the leaves (functions whose ROM code calls nothing), none, or
+                     the names / addresses listed in FILE (one per line). Functions listed in
+                     runtime/native-reference.txt stay Reference in every case. The run is made
+                     twice: a Reference run that records where the Native run will cross between
+                     Native and interpreted code (and the step count there, which gives Native code
+                     the Reference's timing), then the Native run, which follows the record and
+                     reports the first crossing that differs. Both frame sequences are compared;
+                     the exit status is 1 when they differ.
+    --ram-hash LIST  a SHA-1 of main RAM, ITCM and DTCM (stacks and the static data of functions
+                     that run Native left out) after each listed frame (comma-separated), at the
+                     first moment no Native function is half done; compared between the two runs
+    --ram-dump DIR   also write those memory images to DIR, to compare by hand
+    --no-timing      the Native run without the record: Native code takes no time
+    --learn          when a Native function touches hardware (it faults) or loops waiting for an
+                     interrupt (the watchdog), add it to runtime/native-reference.txt and run
+                     again, until none does
+    --expect FILE    the frame sequence SHA-1 (as in runtime/recordings/*.sha1) both runs must give
 
 Prints how far the boot gets: where it stopped, the registers the game touched, the BIOS
 calls, the PXI traffic, the functions branched to most and the last branch targets with their
@@ -35,18 +61,32 @@ from __future__ import annotations
 import argparse
 import os
 import pathlib
+import re
 import subprocess
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 import diffcheck  # noqa: E402
+import native as native_build  # noqa: E402
 
-OUT = C.BUILD / "runtime"
+WINDOWS = os.name == "nt"
+# Per host: a Linux run (in a container) and a Windows one can share the build tree.
+OUT = C.BUILD / ("runtime" if WINDOWS else "runtime-linux")
 RUNTIME = C.ROOT / "runtime"
 ROM = C.ROOT / "extract" / "adm-kr.nds"
+NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
+KEPT = RUNTIME / "native-reference.txt"
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
-           "run.c")
+           "run.c", "native_run.c", "native_os.c", "host.c", "native_tramp.S")
+
+# The ROM's compiler helpers that Native code does inline (runtime/native_run.c, status H):
+# the libs/Runtime package, and the C library functions the PC's own versions replace
+# (tools/native.py, HOST_NAMES). Where a source calls one by name (__register_global_object),
+# the Native run interprets that call without counting it as a crossing.
+HOST_NAMES = {"memcmp", "memcpy", "memmove", "memset", "strcat", "strchr", "strcmp", "strcpy", "strlen",
+              "strncmp", "strncpy"}
+RET_SKIP = 7
 
 
 def generate() -> tuple[pathlib.Path, pathlib.Path]:
@@ -69,17 +109,290 @@ def generate() -> tuple[pathlib.Path, pathlib.Path]:
     return manifest, table
 
 
-def build() -> pathlib.Path:
-    exe = OUT / ("run.exe" if os.name == "nt" else "run")
+def compile_asm(src: pathlib.Path, obj: pathlib.Path) -> pathlib.Path:
+    target = (["C:/Program Files/LLVM/bin/clang.exe", "--target=i686-pc-windows-gnu"] if WINDOWS
+              else ["gcc", "-m32"])
+    p = subprocess.run([*target, "-c", str(src), "-o", str(obj)], capture_output=True, text=True)
+    if p.returncode != 0:
+        raise SystemExit(p.stdout + p.stderr)
+    return obj
+
+
+def build(native: bool) -> pathlib.Path:
+    """The runtime; with `native`, linked with every Native object as tools/diffcheck.py
+    --native links them (runtime/native_table.h), else with an empty table."""
+    exe = OUT / (("run-native" if native else "run") + (".exe" if WINDOWS else ""))
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
     srcs = [str(RUNTIME / n) for n in SOURCES]
-    p = subprocess.run([*diffcheck.compiler(), *flags, *srcs, "-o", str(exe)], capture_output=True, text=True)
+    extra: list[str] = []
+    link: list[str] = []
+    if native:
+        if not (NATIVE / "natives.s").exists():
+            raise SystemExit("run `python tools/native.py` first")
+        assembly = [NATIVE / "natives.s", NATIVE / "absolute.s"]
+        if WINDOWS:
+            assembly.append(RUNTIME / "native_rt_win.s")
+        extra = [str(compile_asm(a, OUT / ("run-" + a.name.replace(".s", ".o")))) for a in assembly]
+        extra += [str(RUNTIME / "native_rt.c"), f"@{NATIVE / 'objects.txt'}"]
+        # Classes split one function per file define their destructors and vtable in several
+        # objects, identically; the linker keeps the first. The image sits at a fixed low
+        # address (below the DS's 0x01000000) and its data must not be executable: a call
+        # into DS memory has to fault (runtime/native_run.h).
+        # On Linux the heap starts after the image's last section (.heap_floor, above the DS's
+        # addresses: runtime/native_os.c).
+        # The map names the host code a fault report points at.
+        # No identical-code folding: every Native function keeps its own address, which the
+        # runtime patches (functions kept Reference) and looks up by.
+        link = (["-Wl,/SAFESEH:NO", "-Wl,/FORCE:MULTIPLE", "-Wl,/DYNAMICBASE:NO", "-Wl,/FIXED", "-Wl,/NXCOMPAT",
+                 "-Wl,/OPT:NOICF",
+                 f"-Wl,/MAP:{exe.with_suffix('.map')}"]
+                if WINDOWS else ["-no-pie", "-Wl,--allow-multiple-definition", "-Wl,-z,noexecstack",
+                                 "-Wl,-Ttext-segment=0x400000", "-Wl,--section-start=.heap_floor=0x10000000",
+                                 f"-Wl,-Map={exe.with_suffix('.map')}"])
+    else:
+        srcs.append(str(RUNTIME / "native_none.c"))
+        if not WINDOWS:
+            link = ["-Wl,-z,noexecstack"]
+    p = subprocess.run([*diffcheck.compiler(), *flags, *srcs, *extra, *link, "-o", str(exe)], capture_output=True,
+                       text=True)
     if p.returncode != 0:
-        raise SystemExit(p.stdout + p.stderr)
-    if p.stderr.strip():
-        print(p.stderr, file=sys.stderr)
+        raise SystemExit((p.stdout + p.stderr)[-6000:])
+    if p.stderr.strip() and not native:  # the Native link warns of every duplicate it drops
+        print(p.stderr[-4000:], file=sys.stderr)
     return exe
+
+
+# --------------------------------------------------------------------------- Native policy
+
+def natives_table() -> dict[tuple[int, str], tuple[str, int]]:
+    """(DS address with the Thumb bit, module) -> (name, info) of every Native function, as
+    tools/native.py wrote natives.s."""
+    text = (NATIVE / "natives.s").read_text()
+    names = dict(re.findall(r"native_module_name_(\d+):\s*\.asciz \"(\w+)\"", text))
+    out = {}
+    prefix = "_" if WINDOWS else ""
+    for addr, _size, host, info in re.findall(r"\.long 0x([0-9a-f]{8}), 0x([0-9a-f]+), (\S+), 0x([0-9a-f]{8})", text):
+        info = int(info, 16)
+        name = host[len(prefix):]
+        if name.startswith("native_"):
+            name = name[len("native_"):]
+        out[(int(addr, 16), names[str(info >> 16)])] = (name, info)
+    return out
+
+
+def calls_something(code: bytes, start: int, thumb: bool) -> bool:
+    """Whether a function's ROM code calls or jumps out of itself: BL/BLX, BX to a register
+    other than lr, or a branch outside its bytes. Literal pools can look like either; that
+    only makes a leaf look like a caller, which is the safe side."""
+    end = start + len(code)
+    if thumb:
+        for i in range(0, len(code) - 1, 2):
+            h = code[i] | code[i + 1] << 8
+            if (h & 0xF800) == 0xF000 or (h & 0xFF87) == 0x4780:
+                return True
+            if (h & 0xFF87) == 0x4700 and ((h >> 3) & 15) != 14:
+                return True
+            if (h & 0xF800) == 0xE000:
+                off = (h & 0x7FF) << 1
+                target = start + i + 4 + (off - 0x1000 if off & 0x800 else off)
+                if not start <= target < end:
+                    return True
+        return False
+    for i in range(0, len(code) - 3, 4):
+        w = int.from_bytes(code[i:i + 4], "little")
+        if (w & 0xFE000000) == 0xFA000000 or ((w & 0x0F000000) == 0x0B000000 and w >> 28 != 15):
+            return True
+        if (w & 0x0FFFFFF0) == 0x012FFF30 or ((w & 0x0FFFFFF0) == 0x012FFF10 and (w & 15) != 14):
+            return True
+        if (w & 0x0F000000) == 0x0A000000 and w >> 28 != 15:
+            off = (w & 0xFFFFFF) << 2
+            target = start + i + 8 + (off - (1 << 26) if off & (1 << 25) else off)
+            if not start <= target < end:
+                return True
+    return False
+
+
+def kept_reference() -> dict[str, str]:
+    """runtime/native-reference.txt: name -> why it stays Reference."""
+    out = {}
+    if KEPT.exists():
+        for line in KEPT.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                name, _, why = line.partition(" ")
+                out[name] = why.strip()
+    return out
+
+
+def write_policy(policy: str) -> pathlib.Path:
+    """Every function of every module with the letter runtime/native_run.c reads: N, C, R, H
+    or -."""
+    mods = C.modules()
+    syms = C.SymbolTable(mods)
+    table = natives_table()
+    kept = kept_reference()
+    # what tools/native.py finds Native code cannot do (keep-reference.txt)
+    found = NATIVE / "keep-reference.txt"
+    for line in found.read_text().splitlines() if found.exists() else []:
+        name, _, why = line.partition(" ")
+        kept.setdefault(name, why)
+    # every source's parameter count (with `this`), libraries' too: the Native run compares
+    # the arguments of the calls Native code makes into the ROM's code
+    params: dict[tuple[str, int], int] = {}
+    helpers = set()
+    for path in C.all_sources():
+        src = C.parse_source(path)
+        if src:
+            _kind, count, member, _floating = native_build.signature(path, src.name)
+            params[(src.module, src.address)] = count + int(member) if _kind != native_build.RET_SKIP or count else -1
+        if C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES):
+            src = C.parse_source(path)
+            if src:
+                helpers.add((src.module, src.address))
+    wanted: set[str] | None = None
+    if policy not in ("all", "leaf", "none"):
+        wanted = {w.split()[0] for w in pathlib.Path(policy).read_text().splitlines()
+                  if w.strip() and not w.startswith("#")}
+    images: dict[str, bytes] = {}
+    rows = []
+    counts = {}
+    for mod in mods:
+        for s in syms.by_module.get(mod, []):
+            if s.kind != "function" or not s.size:
+                continue
+            address = s.address | (1 if s.thumb else 0)
+            native = table.get((address, mod))
+            if native:
+                name, info = native
+                allowed = name not in kept
+                if policy == "none":
+                    allowed = False
+                elif policy == "leaf" and allowed:
+                    if mod not in images:
+                        images[mod] = C.module_image(mod)
+                    base = mods[mod]["base"]
+                    code = images[mod][s.address - base:s.address - base + s.size]
+                    allowed = not calls_something(code, s.address, s.thumb)
+                elif wanted is not None:
+                    allowed = allowed and (name in wanted or f"{s.address:08x}" in wanted)
+                status = ("C" if (info & 15) == RET_SKIP else "N") if allowed else "R"
+            elif (mod, s.address) in helpers:
+                status = "H"
+            else:
+                status = "-"
+            counts[status] = counts.get(status, 0) + 1
+            rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)}\n")
+    path = OUT / "native-policy.txt"
+    path.write_text("".join(rows), newline="\n")
+    print(f"native policy {policy}: {counts.get('N', 0)} Native, {counts.get('C', 0)} Native for Native callers "
+          f"only, {counts.get('R', 0)} kept Reference, {counts.get('H', 0)} compiler helpers", flush=True)
+    return path
+
+
+# --------------------------------------------------------------------------- runs
+
+def run_once(exe: pathlib.Path, manifest: pathlib.Path, table: pathlib.Path, budget: list[str], env: dict,
+             log: pathlib.Path | None = None) -> tuple[int, str]:
+    if log is None:
+        p = subprocess.run([str(exe), str(ROM), str(manifest), str(table), *budget], cwd=C.ROOT, env=env)
+        return p.returncode, ""
+    with open(log, "w", encoding="utf-8", errors="replace") as out:
+        p = subprocess.run([str(exe), str(ROM), str(manifest), str(table), *budget], cwd=C.ROOT, env=env,
+                           stdout=out, stderr=subprocess.STDOUT)
+    return p.returncode, log.read_text(encoding="utf-8", errors="replace")
+
+
+def summary(text: str) -> dict:
+    out = {"sequence": None, "ram": {}, "stop": None, "native": [], "diverged": None, "ram_differ": {}}
+    for line in text.splitlines():
+        m = re.search(r"sequence sha1 ([0-9a-f]{40})", line)
+        if m:
+            out["sequence"] = m.group(1)
+        m = re.match(r"ram frame (\d+) ([0-9a-f]{40})", line)
+        if m:
+            out["ram"][int(m.group(1))] = m.group(2)
+        m = re.match(r"native: memory after frame (\d+): (-?\d+) words differ", line)
+        if m:
+            out["ram_differ"][int(m.group(1))] = int(m.group(2))
+        if line.startswith("== stop:"):
+            out["stop"] = line.strip("= ")
+        if line.startswith("native:"):
+            out["native"].append(line)
+            if "DIVERGED" in line and out["diverged"] is None:
+                out["diverged"] = line
+    return out
+
+
+def native_main(args, manifest, table, budget, env) -> int:
+    exe = build(native=True)
+    env = dict(env)
+    hash_file = env.pop("RUN_HASH", None)
+    out = OUT / "native-run"
+    out.mkdir(parents=True, exist_ok=True)
+    env["RUN_NATIVE_POLICY"] = str(write_policy(args.native))
+    if args.ram_hash:
+        env["RUN_RAM_HASH"] = args.ram_hash
+    # the Reference pass leaves its memory images there; the Native pass compares with them
+    ram_dir = pathlib.Path(args.ram_dump) if args.ram_dump else out / "ram"
+    ram_dir.mkdir(parents=True, exist_ok=True)
+    env["RUN_RAM_DUMP"] = str(ram_dir.resolve())
+    trace = out / "crossings.bin"
+
+    def reference() -> dict:
+        ref_env = dict(env, RUN_HASH=str(out / "reference-hashes.txt"))
+        if not args.no_timing:
+            ref_env["RUN_NATIVE_RECORD"] = str(trace)
+        print("reference run" + ("" if args.no_timing else " (recording the crossings)") + "...", flush=True)
+        _, text = run_once(exe, manifest, table, budget, ref_env, out / "reference.log")
+        return summary(text)
+
+    ref = reference()
+    nat_env = dict(env, RUN_NATIVE="1", RUN_HASH=hash_file or str(out / "native-hashes.txt"))
+    if not args.no_timing:
+        nat_env["RUN_NATIVE_REPLAY"] = str(trace)
+    learn = out / "learned.txt"
+    while True:
+        if args.learn:
+            learn.unlink(missing_ok=True)
+            nat_env["RUN_NATIVE_LEARN"] = str(learn)
+        print("native run...", flush=True)
+        status, nat_text = run_once(exe, manifest, table, budget, nat_env, out / "native.log")
+        if status != 3 or not args.learn or not learn.exists():
+            break
+        kept = kept_reference()
+        added = [line for line in learn.read_text().splitlines() if line.split()[0] not in kept]
+        if not added:
+            break
+        with open(KEPT, "a", newline="\n") as f:
+            f.write("".join(line + "\n" for line in added))
+        print("kept Reference from now on: " + "; ".join(added), flush=True)
+        # the record depends on which functions are Native: make it again
+        env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native))
+        ref = reference()
+    nat = summary(nat_text)
+    print(f"logs: {(out / 'reference.log').relative_to(C.ROOT).as_posix()}, "
+          f"{(out / 'native.log').relative_to(C.ROOT).as_posix()}")
+    for line in nat["native"]:
+        print(line)
+    if nat["stop"]:
+        print(f"native run: {nat['stop']}")
+    print(f"frames: reference {ref['sequence']}, native {nat['sequence']}")
+    same = ref["sequence"] is not None and ref["sequence"] == nat["sequence"]
+    if args.expect:
+        expected = pathlib.Path(args.expect).read_text().split()[0]
+        print(f"frames expected ({args.expect}): {expected}")
+        same = same and nat["sequence"] == expected
+    wanted = [int(f) for f in args.ram_hash.split(",")] if args.ram_hash else []
+    for frame in sorted(set(ref["ram"]) | set(nat["ram"]) | {f for f in wanted if budget and f < int(budget[-1])}):
+        a, b = ref["ram"].get(frame), nat["ram"].get(frame)
+        differ = nat["ram_differ"].get(frame)
+        verdict = "same" if a == b else "same apart from words holding PC addresses"
+        verdict = verdict if differ == 0 else "DIFFERENT" if differ is None else f"DIFFERENT in {differ} words"
+        print(f"ram after frame {frame}: reference {a}, native {b}: {verdict}")
+        same = same and differ == 0
+    print("Native and Reference agree" if same else "Native and Reference DIFFER")
+    return 0 if same else 1
 
 
 def main() -> None:
@@ -92,11 +405,16 @@ def main() -> None:
     ap.add_argument("--hash", metavar="FILE", help="per-frame SHA-1s to FILE, or - for stdout")
     ap.add_argument("--input", metavar="FILE", help="input recording")
     ap.add_argument("--rtc", metavar="TIME", help='pin the clock: "YYYY-MM-DD HH:MM:SS"')
+    ap.add_argument("--native", metavar="POLICY", help="all, leaf, none, or a file of functions (see above)")
+    ap.add_argument("--ram-hash", metavar="FRAMES", help="hash memory after these frames (comma-separated)")
+    ap.add_argument("--ram-dump", metavar="DIR", help="write the hashed memory images to DIR")
+    ap.add_argument("--no-timing", action="store_true", help="Native run without the Reference's timing")
+    ap.add_argument("--learn", action="store_true", help="keep functions that touch hardware Reference")
+    ap.add_argument("--expect", metavar="FILE", help="with --native: the frame sequence SHA-1 both runs must give")
     args = ap.parse_args()
     if not ROM.exists():
         raise SystemExit(f"no ROM at {ROM}")
     manifest, table = generate()
-    exe = build()
     env = dict(os.environ)
     if args.png:
         pathlib.Path(args.png).mkdir(parents=True, exist_ok=True)
@@ -115,8 +433,16 @@ def main() -> None:
     if args.rtc:
         env["RUN_RTC"] = args.rtc
     budget = [a for a in (args.max_instructions, args.max_frames) if a is not None]
-    p = subprocess.run([str(exe), str(ROM), str(manifest), str(table), *budget], cwd=C.ROOT, env=env)
-    sys.exit(p.returncode)
+    if args.native:
+        sys.exit(native_main(args, manifest, table, budget, env))
+    if args.ram_hash:
+        env["RUN_RAM_HASH"] = args.ram_hash
+    if args.ram_dump:
+        pathlib.Path(args.ram_dump).mkdir(parents=True, exist_ok=True)
+        env["RUN_RAM_DUMP"] = str(pathlib.Path(args.ram_dump).resolve())
+    exe = build(native=False)
+    status, _ = run_once(exe, manifest, table, budget, env)
+    sys.exit(status)
 
 
 if __name__ == "__main__":

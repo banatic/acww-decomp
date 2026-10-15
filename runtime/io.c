@@ -75,6 +75,11 @@ static uint64_t clock_now(void)
     return clock_cycles + (the_cpu->steps - steps_synced) * IO_CYCLES_PER_INSTRUCTION;
 }
 
+uint64_t io_clock(void)
+{
+    return clock_now();
+}
+
 uint32_t io_frame(void)
 {
     return frame_count;
@@ -1222,11 +1227,13 @@ static uint32_t log_address(uint32_t address)
     return address & 0xffff0000u;
 }
 
+int (*io_unmapped)(uint32_t address, int size, uint32_t *value, int write);
+
 int io_read(void *user, uint32_t address, int size, uint32_t *value)
 {
     (void) user;
     if (!io_access_inner(address, size, value, 0)) {
-        return 0;
+        return io_unmapped != NULL && io_unmapped(address, size, value, 0);
     }
     log_access(log_address(address), size, 0);
     return 1;
@@ -1236,7 +1243,7 @@ int io_write(void *user, uint32_t address, int size, uint32_t value)
 {
     (void) user;
     if (!io_access_inner(address, size, &value, 1)) {
-        return 0;
+        return io_unmapped != NULL && io_unmapped(address, size, &value, 1);
     }
     log_access(log_address(address), size, 1);
     return 1;

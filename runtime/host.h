@@ -5,8 +5,9 @@
 #include <stdint.h>
 
 /* Calls `fn` with `count` 32-bit arguments as the PC's compiler expects them: all on the stack
- * (cdecl), or with the first in ecx when `thiscall` is set (C++ member functions on 32-bit
- * Windows). Returns edx:eax, which holds a 64-bit result or a 32-bit one in the low half. */
+ * (cdecl). `thiscall` marks a C++ member function, whose `this` the Native objects also take
+ * on the stack, on both hosts (see host.c). Returns edx:eax, which holds a 64-bit result or a
+ * 32-bit one in the low half. */
 uint64_t host_invoke(const void *fn, const uint32_t *args, int count, int thiscall);
 
 /* Runs host_invoke, but returns nonzero instead of crashing when the code faults (an access to

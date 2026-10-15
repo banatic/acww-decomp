@@ -50,6 +50,11 @@ int io_init(const char *rom_path, ArmCpu *cpu);
 int io_read(void *user, uint32_t address, int size, uint32_t *value);
 int io_write(void *user, uint32_t address, int size, uint32_t value);
 
+/* Asked for an address nothing above serves, when set: in a Native run, the ROM's code may be
+ * handed the PC's own memory by Native code (a string, a variable on the host stack), and
+ * native_run.c serves it. Returns nonzero when it did. */
+extern int (*io_unmapped)(uint32_t address, int size, uint32_t *value, int write);
+
 /* The whole bus as the CPU and the DMA units see it: RAM through memory_host, the rest
  * through the register file. Nonzero on success. */
 int bus_read(uint32_t address, int size, uint32_t *value);
@@ -59,6 +64,9 @@ int bus_write(uint32_t address, int size, uint32_t value);
  * raise. Started DMAs that wait for VBlank or HBlank run when their moment comes. */
 void io_advance(uint32_t cycles);
 uint64_t io_cycles(void);
+/* The time now, to the instruction: io_cycles plus the instructions run since the last
+ * io_advance. */
+uint64_t io_clock(void);
 /* A started DMA has not run yet: it runs on the next io_advance, so the caller keeps its
  * slices short until then (the transfer takes a few hundred cycles on the hardware). */
 int io_dma_pending(void);

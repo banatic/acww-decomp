@@ -24,6 +24,7 @@
 #include "input.h"
 #include "io.h"
 #include "memory.h"
+#include "native_run.h"
 
 #define SLICE 512
 #define DMA_SLICE 32 /* while a DMA waits to run: its completion and interrupt come soon */
@@ -190,7 +191,13 @@ static ArmHook hook_at(void *user, uint32_t address, void **hook_user)
                 thread_switches_in_irq++;
             }
         }
+        uint32_t previous = last_thread;
         last_thread = thread;
+        /* with Native functions, the run continues on the new thread's host stack */
+        ArmHook move = native_thread_changed(previous, thread);
+        if (move != NULL) {
+            return move;
+        }
     }
     for (int i = 0; i < traced_count; i++) {
         if (traced[i] == address) {
@@ -199,6 +206,11 @@ static ArmHook hook_at(void *user, uint32_t address, void **hook_user)
     }
     if (address == SDK_AUTOLOAD_DONE && verified < 0) {
         verified = boot_verify(manifest_path, stdout);
+        native_resident_ready();
+    }
+    ArmHook native = native_hook_at(address, hook_user);
+    if (native != NULL) {
+        return native;
     }
     return bios_hook_at(user, address, hook_user);
 }
@@ -384,20 +396,236 @@ static void report_cpu(const char *reason)
 
 /* The run -------------------------------------------------------------------------------- */
 
+static uint64_t max_steps;
+static uint32_t max_frames;
+
+/* The execution state shared by every level of the run: the top loop, the calls Native code
+ * makes into the interpreter, and the loops at the base of each thread's host stack
+ * (native_run.h). A slice is the stretch of instructions after which the clock advances. It
+ * is global, not per call: a call from Native code continues the slice the interpreter was
+ * in, so the clock advances at the same step counts as in a run without Native code. */
+static uint64_t slice_end; /* the step count where the open slice ends; 0: none open */
+static uint64_t accounted; /* steps already turned into bus time */
+static int halted;
+static uint64_t halt_slices;
+static uint32_t state_hash[STUCK_SLOTS], state_count[STUCK_SLOTS];
+static int window_slices;
+static uint64_t irqs_at_window_start;
+static char reason_buf[256];
+
+/* Tells the Native side when a frame has begun (memory hashes are taken after one). */
+static void frame_check(void)
+{
+    static uint32_t seen;
+    if (io_frame() != seen) {
+        seen = io_frame();
+        native_frame_ended(seen);
+    }
+}
+
+/* "Wait for interrupt": the CPU sleeps until IE & IF is nonzero, whatever IME and CPSR I say
+ * (a masked request ends the wait too); until then time passes. */
+static void wait_for_interrupt(void)
+{
+    while (halted) {
+        if (max_frames && io_frame() >= max_frames) {
+            run_finish("frame budget reached", 0);
+        }
+        if (io_reg(0x04000210) & io_reg(0x04000214)) {
+            halted = 0;
+            halt_slices = 0;
+            return;
+        }
+        io_advance(IO_CYCLES_PER_LINE);
+        arm7_step();
+        frame_check();
+        if (++halt_slices > (uint64_t) HALT_LIMIT_FRAMES * IO_LINES_PER_FRAME) {
+            snprintf(reason_buf, sizeof(reason_buf),
+                     "halted for %d frames with no interrupt (IME %x IE %08x IF %08x, cpsr I %d)", HALT_LIMIT_FRAMES,
+                     io_reg(0x04000208), io_reg(0x04000210), io_reg(0x04000214), (cpu.cpsr >> 7) & 1);
+            run_finish(reason_buf, 0);
+        }
+    }
+}
+
+/* Busy-wait detection: a loop that makes no progress reaches the same register state again
+ * and again; count identical slice-end states over a window and stop when one recurs often
+ * with no interrupt taken meanwhile. A long but honest loop (the crt0's decompressor) never
+ * repeats a state. A slice spent stalled for Native code (native_run.h) repeats its state
+ * too, and is not counted. */
+static void check_stuck(uint64_t slice_start)
+{
+    if (cpu.stall_until[0] > slice_start || cpu.stall_until[1] > slice_start) {
+        return;
+    }
+    uint32_t h = cpu.cpsr;
+    for (int i = 0; i < 16; i++) {
+        h = (h ^ cpu.r[i]) * 16777619u;
+    }
+    uint32_t slot = h % STUCK_SLOTS;
+    for (int probe = 0; probe < 64; probe++) {
+        uint32_t k = (slot + (uint32_t) probe) % STUCK_SLOTS;
+        if (state_hash[k] == 0) {
+            state_hash[k] = h | 1;
+            state_count[k] = 1;
+            break;
+        }
+        if (state_hash[k] == (h | 1)) {
+            if (++state_count[k] >= STUCK_REPEATS && cpu.irq_taken == irqs_at_window_start) {
+                snprintf(reason_buf, sizeof(reason_buf), "busy-wait loop at %08x (%s): the same state %d times", cpu.r[15],
+                         symbolize(cpu.r[15]), STUCK_REPEATS);
+                run_finish(reason_buf, 0);
+            }
+            break;
+        }
+    }
+    if (++window_slices == STUCK_WINDOW_SLICES) {
+        memset(state_hash, 0, sizeof(state_hash));
+        window_slices = 0;
+        irqs_at_window_start = cpu.irq_taken;
+    }
+}
+
+/* Runs slices until the CPU branches to ARM_RETURN_ADDRESS, the end of a call Native code
+ * made (returns), or, with `forever`, until the run ends (a branch there is then an error). */
+static void execute(int forever)
+{
+    for (;;) {
+        if (max_frames && io_frame() >= max_frames) {
+            run_finish("frame budget reached", 0);
+        }
+        if (halted) {
+            wait_for_interrupt();
+            continue;
+        }
+        if (cpu.steps >= max_steps) {
+            run_finish("instruction budget reached", 0);
+        }
+        if (slice_end == 0) {
+            slice_end = cpu.steps + (io_dma_pending() ? DMA_SLICE : SLICE);
+        }
+        uint64_t slice_start = accounted;
+        enum ArmStop stop = ARM_STEP_LIMIT;
+        if (cpu.steps < slice_end) {
+            stop = arm_run(&cpu, ARM_RETURN_ADDRESS, slice_end - cpu.steps);
+            if (stop == ARM_STEP_LIMIT && cpu.steps < slice_end) {
+                /* a run that was suspended in a hook while nested runs ended its slice stops
+                   at that old slice's limit; the slice open now goes on */
+                continue;
+            }
+            if (stop == ARM_RETURNED && !forever) {
+                /* the end of a call from Native code, in the middle of a slice */
+                return;
+            }
+        }
+        /* else the slice ran out at the branch into Native code that now calls back: it ends
+           here, before the next instruction, as it does between the two in the Reference */
+        slice_end = 0;
+        if (cpu.steps > accounted) { /* not after run_rewind took back accounted steps */
+            io_advance((uint32_t) (cpu.steps - accounted) * IO_CYCLES_PER_INSTRUCTION);
+            accounted = cpu.steps;
+        }
+        arm7_step();
+        frame_check();
+
+        switch (stop) {
+            case ARM_STEP_LIMIT:
+                break;
+            case ARM_SWI:
+                if (bios_swi(&cpu) < 0) {
+                    snprintf(reason_buf, sizeof(reason_buf), "unsupported SWI 0x%02x",
+                             (cpu.cpsr & ARM_CPSR_T) ? cpu.swi & 0xff : (cpu.swi >> 16) & 0xff);
+                    run_finish(reason_buf, 0);
+                }
+                break;
+            case ARM_HALT:
+                halted = 1;
+                break;
+            case ARM_HOOK_STOP:
+                run_finish("a hook stopped the CPU", 0);
+                break;
+            case ARM_RETURNED:
+                run_finish("branched to the return sentinel", 0);
+                break;
+            case ARM_UNDEFINED:
+                run_finish("undefined instruction", 0);
+                break;
+            case ARM_BREAKPOINT:
+                run_finish("breakpoint", 0);
+                break;
+            case ARM_BAD_ADDRESS:
+                run_finish("access to an address nothing serves", 0);
+                break;
+        }
+        check_stuck(slice_start);
+    }
+}
+
+uint64_t run_rewind(uint64_t steps)
+{
+    /* The clock only advances at the end of a slice, by the steps since the last one; the
+       slice ends at the same step count as before. Bus time already given for the steps
+       taken back stays given (it may run ahead of the steps until the slice ends), and the
+       slice's end puts both back in step with a run that never ran ahead. */
+    if (cpu.steps <= steps) {
+        return 0;
+    }
+    uint64_t back = cpu.steps - steps;
+    cpu.steps = steps;
+    return back;
+}
+
+void run_until_return(void)
+{
+    execute(0);
+}
+
+void run_forever(void)
+{
+    execute(1);
+}
+
+/* Ends the run from wherever it is (any thread's host stack, any depth of calls): the
+ * report, then the process exits. */
+void run_finish(const char *reason, int status)
+{
+    report_cpu(reason);
+    printf("interrupts taken %llu, thread switches %llu (%llu in interrupt handlers), modules verified: %s\n",
+           (unsigned long long) cpu.irq_taken, (unsigned long long) thread_switches,
+           (unsigned long long) thread_switches_in_irq,
+           verified < 0    ? "not reached"
+           : verified == 0 ? "all match"
+                           : "MISMATCH");
+    io_report(stdout);
+    bios_report(&cpu, stdout);
+    arm7_report(stdout);
+    frame_report(stdout);
+    report_display();
+    report_registers();
+    report_hot(40);
+    report_branches(getenv("RUN_BRANCHES") ? atoi(getenv("RUN_BRANCHES")) : 300);
+    native_report(stdout);
+    fflush(stdout);
+    exit(status);
+}
+
 int main(int argc, char **argv)
 {
     if (argc < 4) {
         fprintf(stderr, "usage: run <rom.nds> <modules.txt> <symbols.txt> [max_instructions] [max_frames]\n");
         return 2;
     }
+    if (native_reserve() != 0) {
+        return 1;
+    }
     const char *rom = argv[1];
     manifest_path = argv[2];
     load_symbols(argv[3]);
-    uint64_t max_steps = argc > 4 ? strtoull(argv[4], NULL, 0) : 200000000ull;
+    max_steps = argc > 4 ? strtoull(argv[4], NULL, 0) : 200000000ull;
     if (max_steps == 0) {
         max_steps = UINT64_MAX; /* no budget: frames or getting stuck end the run */
     }
-    uint32_t max_frames = argc > 5 ? (uint32_t) strtoul(argv[5], NULL, 0) : 0;
+    max_frames = argc > 5 ? (uint32_t) strtoul(argv[5], NULL, 0) : 0;
 
     if (memory_init() != 0) {
         fprintf(stderr, "cannot map the DS memory\n");
@@ -426,127 +654,18 @@ int main(int argc, char **argv)
     cpu.io_read = bios_io_read;
     cpu.io_write = io_write;
     cpu.hook_at = hook_at;
+    if (getenv("RUN_STEPS") != NULL) {
+        /* RUN_STEPS=<from>,<count>: print those instructions as they execute */
+        unsigned long long from = 0, count = 0;
+        sscanf(getenv("RUN_STEPS"), "%llu,%llu", &from, &count);
+        cpu.trace_from = from;
+        cpu.trace_count = count;
+    }
     printf("boot: entry %08x %s\n", boot_entry(), symbolize(boot_entry()));
 
-    const char *reason = NULL;
-    char reason_buf[256];
-    static uint32_t state_hash[STUCK_SLOTS], state_count[STUCK_SLOTS];
-    int window_slices = 0, halted = 0;
-    uint64_t irqs_at_window_start = 0, halt_slices = 0;
-
-    while (reason == NULL) {
-        if (max_frames && io_frame() >= max_frames) {
-            reason = "frame budget reached";
-            break;
-        }
-        if (halted) {
-            /* "wait for interrupt": the CPU sleeps until IE & IF is nonzero, whatever IME and
-               CPSR I say (a masked request ends the wait too); until then time passes */
-            if (io_reg(0x04000210) & io_reg(0x04000214)) {
-                halted = 0;
-                halt_slices = 0;
-                continue;
-            }
-            io_advance(IO_CYCLES_PER_LINE);
-            arm7_step();
-            if (++halt_slices > (uint64_t) HALT_LIMIT_FRAMES * IO_LINES_PER_FRAME) {
-                snprintf(reason_buf, sizeof(reason_buf),
-                         "halted for %d frames with no interrupt (IME %x IE %08x IF %08x, cpsr I %d)", HALT_LIMIT_FRAMES,
-                         io_reg(0x04000208), io_reg(0x04000210), io_reg(0x04000214), (cpu.cpsr >> 7) & 1);
-                reason = reason_buf;
-            }
-            continue;
-        }
-        if (cpu.steps >= max_steps) {
-            reason = "instruction budget reached";
-            break;
-        }
-        uint64_t before = cpu.steps;
-        enum ArmStop stop = arm_run(&cpu, 0xfffffff0u, io_dma_pending() ? DMA_SLICE : SLICE);
-        io_advance((uint32_t) (cpu.steps - before) * IO_CYCLES_PER_INSTRUCTION);
-        arm7_step();
-
-        switch (stop) {
-            case ARM_STEP_LIMIT:
-                break;
-            case ARM_SWI: {
-                int r = bios_swi(&cpu);
-                if (r < 0) {
-                    snprintf(reason_buf, sizeof(reason_buf), "unsupported SWI 0x%02x",
-                             (cpu.cpsr & ARM_CPSR_T) ? cpu.swi & 0xff : (cpu.swi >> 16) & 0xff);
-                    reason = reason_buf;
-                }
-                break;
-            }
-            case ARM_HALT:
-                halted = 1;
-                break;
-            case ARM_HOOK_STOP:
-                reason = "a hook stopped the CPU";
-                break;
-            case ARM_RETURNED:
-                reason = "branched to the return sentinel";
-                break;
-            case ARM_UNDEFINED:
-                reason = "undefined instruction";
-                break;
-            case ARM_BREAKPOINT:
-                reason = "breakpoint";
-                break;
-            case ARM_BAD_ADDRESS:
-                reason = "access to an address nothing serves";
-                break;
-        }
-        if (reason != NULL) {
-            break;
-        }
-
-        /* Busy-wait detection: a loop that makes no progress reaches the same register
-           state again and again; count identical slice-end states over a window and stop
-           when one recurs often with no interrupt taken meanwhile. A long but honest loop
-           (the crt0's decompressor) never repeats a state. */
-        uint32_t h = cpu.cpsr;
-        for (int i = 0; i < 16; i++) {
-            h = (h ^ cpu.r[i]) * 16777619u;
-        }
-        uint32_t slot = h % STUCK_SLOTS;
-        for (int probe = 0; probe < 64; probe++) {
-            uint32_t k = (slot + (uint32_t) probe) % STUCK_SLOTS;
-            if (state_hash[k] == 0) {
-                state_hash[k] = h | 1;
-                state_count[k] = 1;
-                break;
-            }
-            if (state_hash[k] == (h | 1)) {
-                if (++state_count[k] >= STUCK_REPEATS && cpu.irq_taken == irqs_at_window_start) {
-                    snprintf(reason_buf, sizeof(reason_buf), "busy-wait loop at %08x (%s): the same state %d times", cpu.r[15],
-                             symbolize(cpu.r[15]), STUCK_REPEATS);
-                    reason = reason_buf;
-                }
-                break;
-            }
-        }
-        if (++window_slices == STUCK_WINDOW_SLICES) {
-            memset(state_hash, 0, sizeof(state_hash));
-            window_slices = 0;
-            irqs_at_window_start = cpu.irq_taken;
-        }
+    if (native_init(&cpu, manifest_path) < 0) {
+        return 1;
     }
-
-    report_cpu(reason);
-    printf("interrupts taken %llu, thread switches %llu (%llu in interrupt handlers), modules verified: %s\n",
-           (unsigned long long) cpu.irq_taken, (unsigned long long) thread_switches,
-           (unsigned long long) thread_switches_in_irq,
-           verified < 0    ? "not reached"
-           : verified == 0 ? "all match"
-                           : "MISMATCH");
-    io_report(stdout);
-    bios_report(&cpu, stdout);
-    arm7_report(stdout);
-    frame_report(stdout);
-    report_display();
-    report_registers();
-    report_hot(40);
-    report_branches(getenv("RUN_BRANCHES") ? atoi(getenv("RUN_BRANCHES")) : 300);
+    native_start(run_forever);
     return 0;
 }

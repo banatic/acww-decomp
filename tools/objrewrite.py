@@ -22,6 +22,9 @@ from __future__ import annotations
 import struct
 
 NATIVE = "native_"
+# Functions whose definition is renamed `native_body_<name>`: tools/native.py puts a wrapper
+# under `native_<name>` that widens their narrow result (see native.py, WIDEN).
+BODY: set[str] = set()
 
 # relocation types meaning "relative branch target"
 COFF_REL32 = 0x14
@@ -89,6 +92,21 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str) ->
             symbols.append((raw, name))
         return extra[name]
 
+    # A C++ source's static initializer is the game's own (its __sinit), which the ROM's code
+    # calls when it starts the module; the PC must not run it when the program starts, before
+    # the DS memory it writes exists. Its .CRT$XC* entry (the table the C runtime runs)
+    # becomes a section of another name, which the C runtime does not see.
+    for s in range(nsec):
+        hdr = 20 + opt + 40 * s
+        raw_name = bytes(out[hdr:hdr + 8])
+        if raw_name.startswith(b"/"):
+            at = int(raw_name[1:].rstrip(b"\0")) - 4
+            name = bytes(strings.data[at:at + 8])
+            if name.startswith(b".CRT$XC") or name.startswith(b".ctors"):
+                strings.data[at + 1] = ord("x")
+        elif raw_name.startswith(b".CRT$XC") or raw_name.startswith(b".ctors"):
+            out[hdr + 1] = ord("x")
+
     # definitions of known names become native$ names
     renamed: dict[int, str] = {}
     for idx, (raw, name) in enumerate(symbols):
@@ -98,7 +116,7 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str) ->
         storage = raw[16]
         p = plain(name)
         if storage == 2 and section > 0 and p in known:
-            set_name(raw, prefix + NATIVE + p)
+            set_name(raw, prefix + NATIVE + ("body_" if p in BODY else "") + p)
             renamed[idx] = p
 
     # relocations
@@ -141,6 +159,18 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str]) -> tuple[bytes, 
     symbols = [bytearray(data[symtab[4] + 16 * i:symtab[4] + 16 * (i + 1)]) for i in range(symtab[5] // 16)]
     out = bytearray(data)
 
+    # A C++ source's static initializer is the game's own (its __sinit), which the ROM's code
+    # calls when it starts the module; the PC must not run it when the program starts, before
+    # the DS memory it writes exists. Its .init_array entry becomes plain data under another
+    # name, which the linker does not collect.
+    shstrndx, = struct.unpack_from("<H", data, 0x32)
+    for s in sections:
+        if s[1] in (14, 15, 16):  # SHT_INIT_ARRAY, SHT_FINI_ARRAY, SHT_PREINIT_ARRAY
+            s[1] = 1  # SHT_PROGBITS
+            out[sections[shstrndx][4] + s[0]] = ord("x")  # ".init_array" -> "xinit_array"
+            if shstrndx == symtab[6]:
+                strings.data[s[0]] = ord("x")
+
     def name_of(raw: bytearray) -> str:
         return strings.get(struct.unpack_from("<I", raw, 0)[0])
 
@@ -158,7 +188,7 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str]) -> tuple[bytes, 
         bind, shndx = raw[12] >> 4, struct.unpack_from("<H", raw, 14)[0]
         name = name_of(raw)
         if bind in (1, 2) and shndx not in (0, 0xFFF1) and name in known:
-            struct.pack_into("<I", raw, 0, strings.add(NATIVE + name))
+            struct.pack_into("<I", raw, 0, strings.add(NATIVE + ("body_" if name in BODY else "") + name))
             renamed[idx] = name
 
     for s in sections:

@@ -39,9 +39,13 @@ enum ArmException {
 
 typedef struct ArmCpu ArmCpu;
 
-/* Called before the instruction at a hooked address executes (bit 0 clear). Return nonzero to
- * stop with ARM_HOOK_STOP; a hook may change registers and pc to run something else instead,
- * for example a host implementation of the function that returns to lr. */
+/* Called before the instruction at a hooked address executes (bit 0 clear). Return 1 to stop
+ * with ARM_HOOK_STOP, 0 to go on; a hook may change registers and pc to run something else
+ * instead, for example a host implementation of the function that returns to lr, and the new
+ * pc is a branch target in turn. ARM_HOOK_AGAIN asks for the hooks at pc to be consulted again
+ * even when pc did not change (the hook switched host stacks, and what it found on its return
+ * is a different moment of the run; see run.c). */
+#define ARM_HOOK_AGAIN 2
 typedef int (*ArmHook)(ArmCpu *cpu, void *user);
 
 struct ArmCpu {
@@ -84,6 +88,29 @@ struct ArmCpu {
     /* Hooks, looked up by address on every branch target (not on every instruction). */
     ArmHook (*hook_at)(void *user, uint32_t address, void **hook_user);
     void *hook_user;
+
+    /* Time without instructions: when the next instruction is at stall_pc and `steps` is below
+     * stall_until (index 1 in IRQ mode, 0 in the others), the CPU first only counts steps up to
+     * it, as if it executed that many instructions in place. A pending interrupt is still taken
+     * first, and the stall waits at its instruction while the handler, or other threads, run:
+     * it is the time of the code that was about to continue there, and holds up nothing else.
+     * Native code uses it to take the time its Reference takes (see native_run.h); zero (the
+     * default) stalls nothing. */
+    uint64_t stall_until[2];
+    uint32_t stall_pc[2];
+    /* Nonzero: when the stall at stall_pc is over, the CPU arrives there again as at a branch
+     * target (the hooks run, between instructions) before executing anything: a hook that
+     * deferred its work to the end of the stall (Native code run late, native_run.h). */
+    int stall_branch[2];
+
+    /* Set while the hooks run for an address the CPU arrives at between instructions (the
+     * start of a run, an exception vector); clear while they run inside a branching
+     * instruction, which is counted in `steps` only after its hooks return. */
+    int hook_between;
+
+    /* Debugging: the instructions whose step count is in [trace_from, trace_from +
+     * trace_count) are printed to stderr as they execute (run.c sets these from RUN_STEPS). */
+    uint64_t trace_from, trace_count;
 };
 
 #define ARM_CPSR_N (1u << 31)

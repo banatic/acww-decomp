@@ -40,6 +40,7 @@
  */
 #include "arm.h"
 
+#include <stdio.h>
 #include <string.h>
 
 #include "memory.h"
@@ -577,11 +578,12 @@ static int jump(ArmCpu *cpu, uint32_t target)
         if (!hook) {
             return CONTINUE;
         }
-        if (hook(cpu, user)) {
+        int asked = hook(cpu, user);
+        if (asked == 1) {
             cpu->stop_pc = target;
             return ARM_HOOK_STOP;
         }
-        if (cpu->r[15] == target) {
+        if (asked != ARM_HOOK_AGAIN && cpu->r[15] == target) {
             return CONTINUE;
         }
         target = cpu->r[15];
@@ -1626,7 +1628,9 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
     until &= ~1u;
 
     /* The first address is a branch target too: the function's entry may be hooked. */
+    cpu->hook_between = 1;
     int result = jump(cpu, cpu->r[15]);
+    cpu->hook_between = 0;
     if (result != CONTINUE) {
         return (enum ArmStop) result;
     }
@@ -1646,11 +1650,38 @@ static enum ArmStop run(ArmCpu *cpu, uint32_t until, uint64_t max_steps)
                The vector is a branch target: a hook there runs as for any branch. */
             arm_enter_exception(cpu, ARM_EXC_IRQ);
             cpu->irq_taken++;
+            cpu->hook_between = 1;
             result = jump(cpu, cpu->r[15]);
+            cpu->hook_between = 0;
             if (result != CONTINUE) {
                 return (enum ArmStop) result;
             }
             pc = cpu->r[15];
+        }
+        int mode = (cpu->cpsr & ARM_MODE_MASK) == ARM_MODE_IRQ;
+        uint64_t stall = cpu->stall_until[mode];
+        if (cpu->steps < stall && pc == cpu->stall_pc[mode]) {
+            /* Nothing that executes can raise the interrupt line, so the whole stall up to
+               the slice's limit passes at once. */
+            cpu->steps = stall < limit ? stall : limit;
+            continue;
+        }
+        if (cpu->stall_branch[mode] && pc == cpu->stall_pc[mode]) {
+            /* the stall is over: its hooks run again at the instruction it held up */
+            cpu->stall_branch[mode] = 0;
+            cpu->hook_between = 1;
+            result = jump(cpu, pc);
+            cpu->hook_between = 0;
+            if (result != CONTINUE) {
+                return (enum ArmStop) result;
+            }
+            continue;
+        }
+        if (cpu->steps - cpu->trace_from < cpu->trace_count) {
+            fprintf(stderr,
+                    "step %llu pc %08x %c cpsr %08x r0-r3 %08x %08x %08x %08x r4-r7 %08x %08x %08x %08x sp %08x lr %08x\n",
+                    (unsigned long long) cpu->steps, pc, (cpu->cpsr & ARM_CPSR_T) ? 't' : 'a', cpu->cpsr, cpu->r[0], cpu->r[1],
+                    cpu->r[2], cpu->r[3], cpu->r[4], cpu->r[5], cpu->r[6], cpu->r[7], cpu->r[13], cpu->r[14]);
         }
         if (cpu->cpsr & ARM_CPSR_T) {
             uint32_t instr;

@@ -2,6 +2,8 @@
  * does not provide under these names (they come from libgcc / compiler-rt elsewhere). */
 #include <stdint.h>
 
+/* Elsewhere libgcc has these; defined there, `a / b` below would call itself. */
+#ifdef _WIN32
 uint64_t __udivdi3(uint64_t a, uint64_t b);
 uint64_t __umoddi3(uint64_t a, uint64_t b);
 int64_t __divdi3(int64_t a, int64_t b);
@@ -23,6 +25,7 @@ int64_t __moddi3(int64_t a, int64_t b)
 {
     return a % b;
 }
+#endif
 
 /* A C++ function-local static with a dynamic initializer is guarded by these (the Itanium C++
  * ABI); Native code runs on one thread, so the guard's first byte is all they need. */
@@ -42,3 +45,11 @@ void __cxa_guard_abort(uint64_t *guard)
 {
     (void) guard;
 }
+
+#ifdef _WIN32
+/* The objects tools/native.py builds for i686-pc-windows-itanium call the C++ runtime through
+ * import pointers (`__imp_` names), as if it were a DLL; these are those pointers. */
+int (*_imp____cxa_guard_acquire)(uint64_t *guard) = __cxa_guard_acquire;
+void (*_imp____cxa_guard_release)(uint64_t *guard) = __cxa_guard_release;
+void (*_imp____cxa_guard_abort)(uint64_t *guard) = __cxa_guard_abort;
+#endif

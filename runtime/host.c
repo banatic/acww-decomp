@@ -13,6 +13,8 @@
 #include <string.h>
 #endif
 
+#define HOST_MEMBERS_THISCALL 0
+
 #if !defined(__i386__) && !defined(_M_IX86)
 #error "host_invoke is written for 32-bit x86"
 #endif
@@ -20,6 +22,11 @@
 uint64_t host_invoke(const void *fn, const uint32_t *args, int count, int thiscall)
 {
     uint32_t lo, hi;
+    /* The Native objects are built so that member functions take `this` on the stack, like
+       any first argument (tools/native.py: i686-pc-windows-itanium, not windows-gnu, whose
+       members are thiscall), so `thiscall` changes nothing on either host. The ecx path is
+       kept for code built the other way. */
+    thiscall = thiscall && HOST_MEMBERS_THISCALL;
     int first = thiscall ? 1 : 0;
     uint32_t self = thiscall && count > 0 ? args[0] : 0;
     /* Push the arguments right to left, call, and put the stack pointer back whether the

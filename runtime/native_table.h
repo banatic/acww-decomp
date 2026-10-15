@@ -20,7 +20,8 @@ typedef struct NativeFunction {
     uint32_t size;
     const void *host; /* the compiled function */
     /* bits 0-3: enum NativeReturn; 4-7: parameters (not counting `this`); 8: a C++ member
-     * function (`this` comes first); 16-31: index into native_module_names */
+     * function (`this` comes first); 9-10: a floating-point result (1 float, 2 double), which
+     * the PC returns in st(0); 16-31: index into native_module_names */
     uint32_t info;
 } NativeFunction;
 
@@ -48,6 +49,10 @@ static inline int native_params(const NativeFunction *f)
 static inline int native_member(const NativeFunction *f)
 {
     return (int) ((f->info >> 8) & 1);
+}
+static inline int native_floating(const NativeFunction *f)
+{
+    return (int) ((f->info >> 9) & 3);
 }
 static inline const char *native_module(const NativeFunction *f)
 {
