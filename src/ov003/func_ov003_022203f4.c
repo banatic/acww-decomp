@@ -4,7 +4,7 @@
 
 extern void func_0205ca48(void);
 
-void func_ov003_022203f4(void)
+void func_ov003_022203f4(void *param)
 {
     func_0205ca48();
 }

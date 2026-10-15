@@ -11,7 +11,6 @@ extern int func_02044808(void *);
 extern int func_0204cafc(void *);
 extern int func_0204c878(void *);
 extern int func_0205be38(void);
-extern int _s32_div_f(int, int);
 extern int func_020644cc(int);
 extern void func_0204cb2c(void *);
 
@@ -35,8 +34,8 @@ void func_02044750(u16 *out0, u8 *out1, u16 arg2)
                 if (func_0204cafc(base + 0x17254)) {
                     int x = func_0204c878((void *) &v);
                     int y = func_0205be38();
-                    x = _s32_div_f(x, 1000);
-                    y = _s32_div_f(y, 0x19);
+                    x = x / 1000;
+                    y = y / 0x19;
                     x += y;
                     if (x > 0x64) {
                         x = 0x64;

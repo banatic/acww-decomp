@@ -14,7 +14,7 @@ typedef struct {
 extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void __register_global_object(void *, void *, void *);
 extern void *func_ov003_02228f8c(void *);
-extern void func_ov003_0222c418(void *, int);
+extern void func_ov003_0222c418(void *self, int v);
 
 extern int data_ov003_0225f76c, data_ov003_0225f4dc, data_ov003_0225f35c;
 extern char *func_ov003_0222902c(void *argument0);

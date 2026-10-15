@@ -26,7 +26,7 @@ extern void func_ov066_022695ac(int a, int b);
 extern void func_ov066_02266e64(void);
 extern void func_ov066_02266800(int a, int b);
 
-void func_ov066_02268e14(void)
+void func_ov066_02268e14(void *self)
 {
     data_ov066_0226bdec->unk_04 = 4;
     data_ov066_0226bdf4->func_0x9c();

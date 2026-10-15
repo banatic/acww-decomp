@@ -15,7 +15,6 @@ typedef struct {
 
 extern void func_0200f268(UnkStruct_0200a528 *s, int n);
 extern void func_0200f650(UnkStruct_0200a528 *s, int n);
-extern int _s32_div_f(unsigned int a, int b);
 
 void func_0200a528(UnkStruct_0200a528 *s)
 {
@@ -30,7 +29,7 @@ void func_0200a528(UnkStruct_0200a528 *s)
 equal: {
     unsigned int t = (s->unk_2D8 << 4) >> 16;
     if (t < 6) {
-        int r4 = 0x1000 - _s32_div_f(t << 12, 6);
+        int r4 = 0x1000 - (int) (t << 12) / 6;
         if (r4 < 0) {
             r4 = 0;
             func_0200f268(s, 13);

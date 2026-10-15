@@ -7,7 +7,7 @@
 extern int func_0202edc8(void *self);
 extern void func_0201c280(void *self, void *p);
 extern void func_ov054_02261f5c(void *p, void *self);
-extern int func_ov054_02260474(void);
+extern int func_ov054_02260474(void *self);
 extern int func_0204bcdc(void *p);
 extern int func_0204bc64(void *p);
 extern void func_0209def4(void *p);
@@ -61,11 +61,7 @@ int func_ov054_022626e0(void *self)
     func_0201c280(self, (char *) self + 0x658);
     func_ov054_02261f5c((char *) self + 0x658, self);
 
-    asm {
-        mov r0, self
-    }
-    if (func_ov054_02260474())
-    {
+    if (func_ov054_02260474(self)) {
         if (func_0204bcdc((char *) self + 0xea)) {
             info.unk_04 = data_ov054_02262990[0];
             a = func_0204bc64((char *) self + 0xea);
@@ -103,9 +99,7 @@ int func_ov054_022626e0(void *self)
             ((UnkStruct_022626e0 *) self)->unk_60 = data_ov054_022629e0[1];
             ((UnkStruct_022626e0 *) self)->unk_64 = data_ov054_022629e0[2];
         }
-    }
-    else
-    {
+    } else {
         func_0209def4(&info);
         r5 = info.type;
         ((UnkStruct_022626e0 *) self)->unk_808 = 0;

@@ -10,7 +10,6 @@ extern int func_02041718(void);
 extern int func_02073d90(void *);
 extern void func_0209e474(void *);
 extern int func_0209e350(void *dst, void *src);
-extern int _s32_div_f(int a, int b);
 extern void func_0204130c(int a, int b, int c);
 extern void func_02046f7c(void *p);
 
@@ -39,7 +38,7 @@ void func_020469f4(void)
             ((unsigned char *) &b)[4] = g[1];
             ((unsigned char *) &b)[3] = g[0];
             ((unsigned char *) &b)[2] = 6;
-            if (_s32_div_f(_s32_div_f(func_0209e350(&b, &a), 0x3c), 0x18) >= 1) {
+            if (func_0209e350(&b, &a) / 0x3c / 0x18 >= 1) {
                 func_0204130c(-1, 0x63, 0);
             }
         }

@@ -5,7 +5,7 @@
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
-int func_ov112_0229fa2c(void)
+int func_ov112_0229fa2c(void *self)
 {
     int a = data_021f6c58;
     int b = data_021f6c54;

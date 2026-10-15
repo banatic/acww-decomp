@@ -4,22 +4,22 @@
 
 class UnkStruct_020e9d64 {
   public:
-    virtual int f0(int);
-    virtual int f1(int);
-    virtual int f2(int);
-    virtual int f3(int);
-    virtual int f4(int);
-    virtual int f5(int);
-    virtual int f6(int);
-    virtual int f7(int);
-    virtual int f8(int);
-    virtual int f9(int);
-    virtual int f10(int);
-    virtual int f11(int);
-    virtual int f12(int);
-    virtual int f13(int);
-    virtual int f14(int);
-    virtual int target(int);
+    virtual void vfunc_00();
+    virtual void vfunc_04();
+    virtual void vfunc_08();
+    virtual void vfunc_0c();
+    virtual void vfunc_10();
+    virtual void vfunc_14();
+    virtual void vfunc_18();
+    virtual void vfunc_1c();
+    virtual void vfunc_20();
+    virtual void vfunc_24();
+    virtual void vfunc_28();
+    virtual void vfunc_2c();
+    virtual void vfunc_30();
+    virtual void vfunc_34();
+    virtual void vfunc_38();
+    virtual int vfunc_3c(int);
 };
 
 extern "C" {
@@ -30,7 +30,7 @@ int func_020e9d64(UnkStruct_020e9d64 *obj, int value)
 {
     int result;
     func_020ea0a4(obj);
-    result = obj->target(value);
+    result = obj->vfunc_3c(value);
     func_020ea084(obj);
     return result;
 }

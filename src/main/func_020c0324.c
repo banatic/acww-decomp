@@ -14,7 +14,6 @@ typedef struct {
 extern UnkStruct_020c0324_2 data_021c67d0;
 extern int data_020ca0e8;
 extern int data_020ca0ec;
-extern int _s32_div_f(int a, int b);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
 
@@ -35,7 +34,7 @@ void func_020c0324(int *out, int px, int py, int flag)
     e = data_020ca0e8;
     d = p.z.v - e;
     n = data_020ca0ec;
-    u = _s32_div_f(n * 4, 2);
+    u = n * 4 / 2;
     w = FX_Div((p.x.v - n * 3) << 4, u);
     t = FX_Div(d, e << 2);
     if (w < -0x10000) {

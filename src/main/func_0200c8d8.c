@@ -10,13 +10,11 @@ typedef struct {
     short unk_0E;
 } Struct0200c8d8;
 
-extern int _s32_div_f(int, int);
-
 void func_0200c8d8(Struct0200c8d8 *s, short a, int b, int c, short d)
 {
     s->unk_00 = a;
     s->unk_04 = b;
     s->unk_08 = c;
     s->unk_0C = 0;
-    s->unk_0E = (short) _s32_div_f(-d, 3);
+    s->unk_0E = (short) (-d / 3);
 }

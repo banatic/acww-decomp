@@ -16,10 +16,10 @@ extern int data_ov032_0226032c, data_ov032_02260348, data_ov032_02260364, data_o
 extern char data_ov032_022602cc, data_ov032_022602f0, data_ov032_02260308, data_ov032_02260320, data_ov032_022602c0,
     data_ov032_022602d8, data_ov032_022602fc, data_ov032_02260314;
 
-extern void func_020012dc(void);
-extern void func_020b649c(void);
+extern void func_020012dc(void *object);
+extern void func_020b649c(void *object);
 extern void func_020b6468(void *self, int id, const Vec *v, unsigned int flags, int a, int b, int c, int d, int e);
-extern void __register_global_object(void *obj, void (*dtor)(void), void *node);
+extern void __register_global_object(void *obj, void (*dtor)(void *), void *node);
 
 void __sinit_ov032_02260020(void)
 {

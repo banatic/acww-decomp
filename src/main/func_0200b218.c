@@ -46,7 +46,6 @@ typedef struct UnkStruct_0200b218_3 {
 extern void func_0200f268(UnkStruct_0200b218_3 *s, int k);
 extern void *func_ov004_0223badc(int);
 extern unsigned int *func_0200f27c(UnkStruct_0200b218_3 *s, int k);
-extern u32 _s32_div_f(u32 a, u32 b);
 extern void func_0200ee40(UnkStruct_0200b218_3 *s);
 extern void func_0200f650(UnkStruct_0200b218_3 *s, int a);
 
@@ -89,7 +88,7 @@ void func_0200b218(UnkStruct_0200b218_3 *self)
     if (v < 6) {
         return;
     }
-    t = 0x1000 - _s32_div_f((v - 6) << 12, 0xc);
+    t = 0x1000 - (int) ((v - 6) << 12) / 0xc;
     if (t < 0) {
         t = 0;
         func_0200f268(self, 0xd);

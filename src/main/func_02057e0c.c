@@ -6,7 +6,6 @@ extern unsigned int data_021c9374;
 extern unsigned int data_021c9368;
 extern unsigned char data_021c9340[];
 extern unsigned char data_020cbaf4[];
-extern int _s32_div_f(unsigned int, unsigned char);
 extern void func_0205967c(void *, void *);
 extern void func_02059674(void *, int);
 extern void func_020ea6e0(void *, short);
@@ -39,7 +38,7 @@ void func_02057e0c(UnkStruct_02057e0c *self)
     int v;
 
     if ((data_021c9374 & 1) == 0) {
-        v = _s32_div_f(0x1000, data_021c9340[1]);
+        v = 0x1000 / data_021c9340[1];
         if (v < 0) {
             v = -v;
         }

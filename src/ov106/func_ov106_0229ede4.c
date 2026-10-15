@@ -8,7 +8,7 @@ extern void func_ov002_02207e90(void *a, int b);
 extern void func_02002708(int a);
 extern void func_ov002_02208090(void *a, int b);
 extern void func_ov106_0229eafc(void *a);
-extern void func_ov106_0229e88c(void *a);
+extern void func_ov106_0229e88c(void *self);
 extern void func_ov106_0229c354(void *a, int b);
 extern void func_ov106_0229eadc(void *a);
 

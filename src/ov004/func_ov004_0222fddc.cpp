@@ -3,31 +3,31 @@
  */
 
 struct UnkStruct_0222fddc {
-    virtual void p0();
-    virtual void p1();
-    virtual void p2();
-    virtual void p3();
-    virtual void p4();
-    virtual void p5();
-    virtual void p6();
-    virtual void p7();
-    virtual void p8();
-    virtual void p9();
-    virtual void p10();
-    virtual void p11();
-    virtual void p12();
-    virtual void p13();
-    virtual void p14();
-    virtual void p15();
-    virtual void p16();
-    virtual void p17();
-    virtual void p18();
-    virtual void p19();
-    virtual void p20();
-    virtual void p21();
-    virtual void p22();
-    virtual void p23();
-    virtual void m0(int);
+    virtual void vfunc_00();
+    virtual void vfunc_04();
+    virtual void vfunc_08();
+    virtual void vfunc_0c();
+    virtual void vfunc_10();
+    virtual void vfunc_14();
+    virtual void vfunc_18();
+    virtual void vfunc_1c();
+    virtual void vfunc_20();
+    virtual void vfunc_24();
+    virtual void vfunc_28();
+    virtual void vfunc_2c();
+    virtual void vfunc_30();
+    virtual void vfunc_34();
+    virtual void vfunc_38();
+    virtual void vfunc_3c();
+    virtual void vfunc_40();
+    virtual void vfunc_44();
+    virtual void vfunc_48();
+    virtual void vfunc_4c();
+    virtual void vfunc_50();
+    virtual void vfunc_54();
+    virtual void vfunc_58();
+    virtual void vfunc_5c();
+    virtual void vfunc_60(int);
 };
 extern "C" int func_020643dc(int, int, int, int, int);
 
@@ -38,6 +38,6 @@ extern "C" void func_ov004_0222fddc(char *self)
     *(int *) (self + 0x428) = r;
     *(int *) (self + 0x43c) += 0x1000;
     if (r == 0) {
-        ((UnkStruct_0222fddc *) self)->m0(0);
+        ((UnkStruct_0222fddc *) self)->vfunc_60(0);
     }
 }

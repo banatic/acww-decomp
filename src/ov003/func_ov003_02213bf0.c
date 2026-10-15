@@ -4,7 +4,7 @@
 
 extern int func_02056f94(const void *);
 extern void *func_0205e8e4(const void *);
-extern int func_ov003_0222e538(int, unsigned char);
+extern unsigned char func_ov003_0222e538(int v, unsigned char unused);
 extern int func_ov003_0222e5fc(int);
 extern void *func_ov003_02213ae4(const void *, int, int, int, int, int);
 extern unsigned int func_02008258(const void *, unsigned int);

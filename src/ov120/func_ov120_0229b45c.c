@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-unsigned int func_ov120_0229b45c(unsigned int unused, unsigned int x)
+unsigned int func_ov120_0229b45c(void *self, unsigned int x, int idx)
 {
     if (x == 0) {
         return 7;

@@ -4,7 +4,7 @@
 
 extern int func_0206fca4(void);
 
-int func_ov124_0229f27c(void)
+int func_ov124_0229f27c(int a)
 {
     switch (func_0206fca4() - 15) {
         case 0:

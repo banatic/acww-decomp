@@ -4,9 +4,9 @@
 
 class UnkStruct_020ee834 {
   public:
-    virtual void m0();
-    virtual void m1();
-    virtual void m2();
+    virtual void vfunc_00();
+    virtual void vfunc_04();
+    virtual void vfunc_08();
 };
 
 struct Node {

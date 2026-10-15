@@ -22,7 +22,6 @@ typedef struct {
 } UnkStruct_02058280;
 
 extern int data_021c9390[3];
-extern int _s32_div_f(int, int);
 extern void func_02059674(UnkStruct_02058280 *, int);
 
 void func_02058280(UnkStruct_02058280 *obj)
@@ -41,17 +40,17 @@ void func_02058280(UnkStruct_02058280 *obj)
     obj->unk_7C = 0;
     obj->unk_80 = 0;
 
-    a = _s32_div_f(obj->unk_8C, 8);
+    a = obj->unk_8C / 8;
     if (a < 0) {
         a = -a;
     }
 
-    b = _s32_div_f(obj->unk_88, 8);
+    b = obj->unk_88 / 8;
     if (b < 0) {
         b = -b;
     }
 
-    c = _s32_div_f(obj->unk_84, 8);
+    c = obj->unk_84 / 8;
     if (c < 0) {
         c = -c;
     }

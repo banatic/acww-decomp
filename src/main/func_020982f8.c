@@ -7,7 +7,6 @@ extern int func_020992fc(int);
 extern int func_0206f798(void);
 extern int func_020983f0(int);
 extern void func_020983ec(int, int);
-extern int _s32_div_f(int, int);
 extern void func_02066694(char *);
 extern void *func_020b5630(char *);
 extern int func_020b45d0(char *, int, int, int, int, int);
@@ -39,7 +38,7 @@ void func_020982f8(int p)
         return;
     }
     base = func_020983f0(k);
-    v = _s32_div_f(base, 2000);
+    v = base / 2000;
     v = p * v;
     v = v * 10;
     if (v > 99999) {

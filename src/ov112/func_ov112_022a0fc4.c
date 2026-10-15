@@ -20,7 +20,7 @@ extern void func_ov095_0229b3ec(void *p);
 extern int func_ov112_0229fa5c(void *p);
 extern void func_ov002_0220a574(void *p);
 extern void func_ov112_0229f8e4(void *p);
-extern int func_ov112_0229fa2c(void *p);
+extern int func_ov112_0229fa2c(void *self);
 extern int func_ov112_022a04b8(void *p);
 
 typedef struct UnkStruct_022a0fc4 {

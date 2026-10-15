@@ -14,7 +14,6 @@ extern void *func_0209bfe8(void *a);
 extern void *func_02080814(void *a);
 extern int func_0209dffc(void *a);
 extern int func_0209e350(void *a, void *b);
-extern int _s32_div_f(int a, int b);
 extern int func_0209c1c0(void *a, void *b);
 extern void *func_0209bfec(void *a);
 extern void MI_CpuCopy8(void *a, void *b, int c);
@@ -54,7 +53,7 @@ void func_0207d9d4(void *self, void *a)
     if (d < 0) {
         d = -d;
     }
-    limit = _s32_div_f(d, 0x5a0);
+    limit = d / 0x5a0;
     if (limit <= 0) {
         return;
     }
@@ -70,7 +69,7 @@ void func_0207d9d4(void *self, void *a)
         if (d < 0) {
             d = -d;
         }
-        val = _s32_div_f(d, 0x5a0);
+        val = d / 0x5a0;
 
         if (val < 7) {
             func_0209e29c(local, 6);
@@ -78,7 +77,7 @@ void func_0207d9d4(void *self, void *a)
             if (d < 0) {
                 d = -d;
             }
-            loop = _s32_div_f(d, 0x5a0);
+            loop = d / 0x5a0;
         }
 
         while (loop > 0) {

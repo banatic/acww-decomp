@@ -18,7 +18,6 @@ extern char data_021dc7a8[];
 extern char data_021f3b0c[];
 extern void func_0209e474(void *p);
 extern int func_0209e350(void *dst, void *src);
-extern int _s32_div_f(int a, int b);
 extern void func_02046bc8(void);
 extern int func_020b6660(void);
 extern int func_020b6640(void);
@@ -60,7 +59,7 @@ void func_02046a74(int param)
     ((unsigned char *) (&b))[3] = g[0];
     ((unsigned char *) (&b))[2] = 6;
     t = func_0209e350(&b, &a);
-    days = _s32_div_f(_s32_div_f(t, 0x3c), 0x18);
+    days = t / 0x3c / 0x18;
     func_02046bc8();
     if ((days >= 1) && (param == 0)) {
         if ((func_020b6660() != 0) || (func_020b6640() != 0)) {

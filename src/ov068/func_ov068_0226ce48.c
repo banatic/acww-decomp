@@ -2,15 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020139ec(void);
+extern void func_020139ec(void *p);
 
 void *func_ov068_0226ce48(void *p)
 {
-    // clang-format off
-    asm {
-        add r0, #0x3c
-    }
-    // clang-format on
-    func_020139ec();
+    func_020139ec((char *) p + 0x3c);
     return p;
 }

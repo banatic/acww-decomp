@@ -5,8 +5,8 @@
 extern void func_020b6468(void *out, unsigned char b, int *data, int v, short s1, unsigned char c1, unsigned char c2, short s2,
                           unsigned char c3);
 extern void __register_global_object(void *a, void *b, void *node);
-extern void func_020012dc(void);
-extern void func_020b649c(void);
+extern void func_020012dc(void *object);
+extern void func_020b649c(void *object);
 
 extern unsigned char data_ov004_02256914;
 extern unsigned char data_ov024_0226014c[];

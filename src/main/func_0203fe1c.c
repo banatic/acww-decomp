@@ -24,7 +24,7 @@ typedef union {
         unsigned char pad1[6];
     } bytes;
 } LocalUnion;
-void func_0203fe1c(void)
+void func_0203fe1c(int arg)
 {
     LocalUnion local;
     int ok;

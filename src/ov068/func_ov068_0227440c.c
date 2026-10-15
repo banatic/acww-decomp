@@ -26,7 +26,7 @@ struct UnkStruct_0227440c_3 {
     char *unk_B4;
 };
 
-void func_ov068_0227440c(struct UnkStruct_0227440c_3 *o)
+void func_ov068_0227440c(struct UnkStruct_0227440c_3 *o, int arg2)
 {
     unsigned short h[2];
     struct UnkStruct_0227440c a;

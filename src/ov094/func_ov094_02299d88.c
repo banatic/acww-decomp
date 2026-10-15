@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov094_02299d88(void) {}
+void func_ov094_02299d88(void *self) {}

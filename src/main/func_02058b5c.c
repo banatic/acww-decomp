@@ -6,7 +6,6 @@ extern unsigned char data_020cbaec[];
 extern unsigned char data_021c933c[];
 extern void func_0205967c(void *a, void *b);
 extern void VEC_Add(void *a, void *b, void *c);
-extern int _s32_div_f(unsigned int a, unsigned char b);
 
 struct UnkStruct_02058b5c {
     char pad_00[0x60];
@@ -28,7 +27,7 @@ void func_02058b5c(struct UnkStruct_02058b5c *s)
         VEC_Add(s->unk_60, s->unk_84, s->unk_60);
         s->unk_D6++;
         if (s->unk_D6 >= data_020cbaec[s->unk_D4]) {
-            int res = _s32_div_f(s->unk_A8, data_021c933c[s->unk_D4]);
+            int res = (int) s->unk_A8 / data_021c933c[s->unk_D4];
             if (res < 0) {
                 res = -res;
             }

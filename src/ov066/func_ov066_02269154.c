@@ -29,7 +29,7 @@ struct UnkStruct_02269154_2 {
 extern struct UnkStruct_02269154 *data_ov066_0226bdf4;
 extern struct UnkStruct_02269154_2 *data_ov066_0226bdec;
 
-void func_ov066_02269154(void)
+void func_ov066_02269154(void *p)
 {
     if (data_ov066_0226bdf4->flag) {
         func_ov066_0226987c(0xe34d, data_ov066_0226bdf4->unk_8C);

@@ -4,7 +4,7 @@
 
 extern void MIi_CpuCopy16(void *, void *, int);
 extern void *func_ov118_0229b3b0(void *);
-extern int func_ov118_0229b68c(void *, unsigned char, int);
+extern unsigned int func_ov118_0229b68c(void *self, unsigned int x, int idx);
 extern void func_ov118_0229a450(void *, int);
 
 void func_ov118_0229b6e0(char *base)

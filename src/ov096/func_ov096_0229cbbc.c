@@ -11,7 +11,7 @@ typedef struct UnkStruct_0229cbbc {
 
 extern UnkStruct_0229cbbc *data_020ccf94;
 
-unsigned char func_ov096_0229cbbc(void)
+unsigned char func_ov096_0229cbbc(void *self)
 {
     unsigned int field = data_020ccf94->unk_64;
     if (func_02073dd4(data_020ccf94, field) != 0) {

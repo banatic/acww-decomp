@@ -44,7 +44,7 @@ extern int func_02066830(void *, const void *);
 extern int func_020984e8(void);
 extern int func_020989e0(int object);
 extern void *func_02097f58(int, int);
-extern void func_ov105_0229c694(UnkStruct_0229eb54 *);
+extern void func_ov105_0229c694(void *self);
 
 void func_ov105_0229eb54(UnkStruct_0229eb54 *self)
 {

@@ -3,7 +3,6 @@
  */
 
 extern int FX_MulFunc(int, int);
-extern int _s32_div_f(int, int);
 typedef struct UnkStruct_020bf308 {
     unsigned char pad_00[0x34];
     int unk_34;
@@ -52,8 +51,8 @@ int func_020bf308(UnkStruct_020bf308 *self, int a, int b, int c)
     v1 = FX_MulFunc(a, self->unk_4C);
     v2 = FX_MulFunc(b, self->unk_50);
     v3 = FX_MulFunc(c, self->unk_50);
-    r = _s32_div_f(v1, 2);
-    s = _s32_div_f(v2, 2);
+    r = v1 / 2;
+    s = v2 / 2;
     cy = self->unk_38 + v3;
     cx = self->unk_34;
     min_x = cx - r;

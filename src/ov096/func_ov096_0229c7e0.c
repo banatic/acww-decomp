@@ -7,7 +7,7 @@ extern int func_ov002_0220889c(int);
 extern int func_ov002_022088bc(int);
 extern void func_ov002_0220a2b4(unsigned char *);
 
-void func_ov096_0229c7e0(volatile unsigned char *self, int param)
+void func_ov096_0229c7e0(volatile unsigned char *self, int param, int b)
 {
     if (func_ov002_022088ac(param)) {
         if (self[0xb5] > 0x19) {

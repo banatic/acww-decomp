@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov054_02260474(void);
+extern int func_ov054_02260474(void *self);
 extern int *func_02095794(int param);
 extern int func_02019e00(char *ptr);
 extern int func_02019de8(char *ptr);
@@ -13,7 +13,7 @@ int func_ov054_02262134(char *p)
     volatile int local[4];
     int *data;
 
-    func_ov054_02260474();
+    func_ov054_02260474(p);
     data = func_02095794(4);
     local[0] = data[0];
     local[1] = data[1];

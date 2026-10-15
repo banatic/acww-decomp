@@ -12,7 +12,7 @@ extern int func_02060e88(void *p);
 extern void func_0209f100(void *p, int k);
 extern void func_0209f128(void *p, int k);
 
-int func_ov050_022634c8(void)
+int func_ov050_022634c8(void *self)
 {
     char *g;
     char *h;

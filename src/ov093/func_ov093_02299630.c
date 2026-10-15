@@ -15,9 +15,9 @@ typedef struct UnkStruct_02299630 {
 } UnkStruct_02299630;
 
 extern void func_ov093_02299048(UnkStruct_02299630 *self);
-extern void func_ov093_02299514(void);
+extern void func_ov093_02299514(void *self);
 extern void func_ov093_022990b8(UnkStruct_02299630 *self, int a);
-extern void func_ov093_02298fdc(void);
+extern void func_ov093_02298fdc(void *self);
 extern void func_ov093_02299490(UnkStruct_02299630 *self);
 extern void func_ov093_02298f84(UnkStruct_02299630 *self, int a);
 extern void func_02002708(int a);
@@ -41,10 +41,7 @@ void func_ov093_02299630(UnkStruct_02299630 *self)
             func_02002708(0);
             func_0200284c(4, 8, -0xc0);
             func_0200284c(0, 8, -0xc0);
-            asm {
-                mov r0, self
-            }
-            func_ov093_02299514();
+            func_ov093_02299514(self);
             break;
         case 2:
             func_ov093_022990b8(self, 1);
@@ -53,19 +50,13 @@ void func_ov093_02299630(UnkStruct_02299630 *self)
             func_ov093_022990b8(self, 0);
             func_02002708(0);
             func_020019dc(2, 0x21, 0);
-            asm {
-                mov r0, self
-            }
-            func_ov093_02298fdc();
+            func_ov093_02298fdc(self);
             self->state = 5;
             break;
         case 4:
             func_ov093_022990b8(self, 0);
             func_02002708(0);
-            asm {
-                mov r0, self
-            }
-            func_ov093_02298fdc();
+            func_ov093_02298fdc(self);
             self->state = 6;
             break;
         case 5:

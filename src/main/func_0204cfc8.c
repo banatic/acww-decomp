@@ -23,7 +23,7 @@ extern int func_020e9948(void *a, int b);
 extern void func_0204ecf8(void *);
 extern RecT *func_020b682c(void);
 extern void func_0204d594(SelfT *self, int r6);
-extern void func_0204d08c(SelfT *self, int r7, int f58);
+extern void func_0204d08c(void *self, int *out, int count);
 extern void *func_0204d3f0(SelfT *self, int r7, int f58, int r6);
 extern int func_0204ebb0(int a, void *r4, void *bufptr, int r6);
 extern unsigned char data_020e54a8;
@@ -66,7 +66,7 @@ int func_0204cfc8(SelfT *self, void *arg1)
             func_0204d594(self, r6);
 
             r7 = rec->unk_00;
-            func_0204d08c(self, r7, self->unk_58);
+            func_0204d08c(self, (int *) r7, self->unk_58);
 
             self->unk_50 = rec->unk_06;
         }

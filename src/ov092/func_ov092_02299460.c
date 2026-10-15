@@ -5,21 +5,13 @@
 extern void func_020041ec(void);
 extern void func_0206ef34(void);
 extern void func_0206f54c(void);
-extern void func_ov092_02298f58(void);
+extern void func_ov092_02298f58(char *self);
 
-// clang-format off
-asm int func_ov092_02299460(char *self)
+int func_ov092_02299460(char *self)
 {
-    push {r4, lr}
-    mov r4, r0
-    bl func_0206f54c
-    bl func_0206ef34
-    mov r0, r4
-    bl func_ov092_02298f58
-    bl func_020041ec
-    mov r0, #1
-    pop {r4}
-    pop {r3}
-    bx r3
+    func_0206f54c();
+    func_0206ef34();
+    func_ov092_02298f58(self);
+    func_020041ec();
+    return 1;
 }
-// clang-format on

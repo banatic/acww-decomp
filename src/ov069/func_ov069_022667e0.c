@@ -35,7 +35,7 @@ extern unsigned char data_ov069_022688d4[];
 extern unsigned char data_ov069_02268a0c[];
 extern unsigned char data_ov069_02268ba4[];
 
-void func_ov069_022667e0(void)
+void func_ov069_022667e0(int a, int b)
 {
     memcpy((void *) data_021c1f04, (const void *) data_ov069_02268364, 0x48);
     memcpy((void *) data_021c283c, (const void *) data_ov069_02268a0c, 0x198);

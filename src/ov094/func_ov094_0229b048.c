@@ -7,7 +7,7 @@ extern int func_02064af4(char *dst, const char *src, unsigned int size);
 extern unsigned int func_0206fe28(unsigned int i);
 extern unsigned char data_ov094_0229c0c0[];
 
-void *func_ov094_0229b048(char *self, unsigned int idx)
+void *func_ov094_0229b048(char *self, unsigned int idx, unsigned int unused)
 {
     char buf[0x28];
     char *p;

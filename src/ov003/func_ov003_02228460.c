@@ -11,7 +11,7 @@ typedef struct {
 } UnkStruct_02228460;
 extern UnkStruct_02228460 data_ov003_0225f35c[];
 
-void func_ov003_02228460(void)
+void func_ov003_02228460(char *self)
 {
     UnkStruct_02228460 *p = data_ov003_0225f35c;
     int i;

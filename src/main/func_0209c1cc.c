@@ -5,7 +5,6 @@
 extern int func_0209dffc(int a);
 extern int func_0209c380(int a);
 extern int func_0209e350(int a, int b);
-extern unsigned int _s32_div_f(unsigned int a, unsigned int b);
 
 int func_0209c1cc(int a, int b, unsigned int c)
 {
@@ -21,7 +20,7 @@ int func_0209c1cc(int a, int b, unsigned int c)
     if (t < 0) {
         t = -t;
     }
-    return (_s32_div_f(t, 0x5a0) >= c) ? 1 : 0;
+    return (t / 0x5a0 >= c) ? 1 : 0;
 
 ret0:
     return 0;

@@ -37,7 +37,6 @@ struct Unit {
 
 extern void func_0205967c(void *unit, void *tmp);
 extern void func_020eaca0(void *dst, void *src1, void *src2);
-extern int _s32_div_f(int val, int param);
 extern void func_020ea6e0(s32 *dst, s16 val);
 extern void func_02059674(void *unit, int param);
 
@@ -66,15 +65,15 @@ void func_02058e0c(struct Unit *unit)
     unit->unk_7C = 0;
     unit->unk_80 = 0;
 
-    r6 = _s32_div_f(unit->unk_8C, 8);
+    r6 = unit->unk_8C / 8;
     if (r6 < 0) {
         r6 = -r6;
     }
-    r4 = _s32_div_f(unit->unk_88, 8);
+    r4 = unit->unk_88 / 8;
     if (r4 < 0) {
         r4 = -r4;
     }
-    abs84 = _s32_div_f(unit->unk_84, 8);
+    abs84 = unit->unk_84 / 8;
     if (abs84 < 0) {
         abs84 = -abs84;
     }
@@ -83,7 +82,7 @@ void func_02058e0c(struct Unit *unit)
     unit->unk_94 = r4;
     unit->unk_98 = r6;
 
-    abs84 = _s32_div_f(unit->unk_A8, 8);
+    abs84 = unit->unk_A8 / 8;
     if (abs84 < 0) {
         abs84 = -abs84;
     }

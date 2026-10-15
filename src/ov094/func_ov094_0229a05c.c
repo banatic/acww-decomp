@@ -6,7 +6,7 @@ extern void func_ov094_02299b74(void *);
 extern void func_ov094_02299ad0(void *);
 extern void func_ov094_02299fb8(void *);
 extern void func_ov094_02299d8c(void *);
-extern void func_ov094_02299d88(void *);
+extern void func_ov094_02299d88(void *self);
 
 void func_ov094_0229a05c(void *p)
 {

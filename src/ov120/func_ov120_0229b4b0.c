@@ -4,7 +4,7 @@
 
 extern void MIi_CpuCopy16(void *dest, const void *src, unsigned int size);
 extern void *func_ov120_0229b188(void *self);
-extern int func_ov120_0229b45c(void *self, int c, int idx);
+extern unsigned int func_ov120_0229b45c(void *self, unsigned int x, int idx);
 extern void func_ov120_0229a438(void *self, int n);
 
 void func_ov120_0229b4b0(void *self)

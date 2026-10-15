@@ -15,7 +15,7 @@ class UnkStruct_020e9cdc {
     virtual void vfunc_20();
     virtual void vfunc_24();
     virtual void vfunc_28();
-    virtual int method(int a, int b);
+    virtual int vfunc_2c(int a, int b);
 };
 
 extern "C" void func_020ea0a4(void *unused0);
@@ -25,7 +25,7 @@ extern "C" int func_020e9cdc(UnkStruct_020e9cdc *obj, int a, int b)
 {
     int result;
     func_020ea0a4(obj);
-    result = obj->method(a, b);
+    result = obj->vfunc_2c(a, b);
     func_020ea084(obj);
     return result;
 }

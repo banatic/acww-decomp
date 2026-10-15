@@ -9,7 +9,7 @@ extern void __register_global_object(void *a, void *b, void *node);
 extern unsigned char data_ov004_02256914[];
 extern unsigned char data_ov041_02260168[];
 extern unsigned char data_ov041_022601e4[];
-extern void func_020b649c(void);
+extern void func_020b649c(void *object);
 extern unsigned char data_ov041_022601c0[];
 extern unsigned char data_ov041_02260200[];
 extern unsigned char data_ov041_022601cc[];

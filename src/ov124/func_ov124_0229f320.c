@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_ov124_0229f27c(void);
+extern int func_ov124_0229f27c(int a);
 extern void func_02070adc(int, int, int, int, int, int, int);
 
 void func_ov124_0229f320(int a0)
@@ -10,7 +10,7 @@ void func_ov124_0229f320(int a0)
     int s;
     unsigned int v;
 
-    v = func_ov124_0229f27c();
+    v = func_ov124_0229f27c(a0);
 
     switch (v) {
         case 0:

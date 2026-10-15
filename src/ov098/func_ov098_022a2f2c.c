@@ -9,7 +9,7 @@ typedef struct UnkStruct_022a2f2c {
     u8 unk_B6;
 } UnkStruct_022a2f2c;
 
-extern int func_ov096_0229cbbc(void);
+extern unsigned char func_ov096_0229cbbc(void *self);
 extern unsigned short func_ov096_0229f0dc(UnkStruct_022a2f2c *self, u8 kind);
 extern int func_ov003_0222780c(int a, int b, void *p);
 extern void func_ov098_022a2eb4(UnkStruct_022a2f2c *self, u8 idx);
@@ -22,7 +22,7 @@ void func_ov098_022a2f2c(UnkStruct_022a2f2c *self)
     int a;
     int b;
 
-    a = func_ov096_0229cbbc();
+    a = func_ov096_0229cbbc(self);
     b = func_ov096_0229f0dc(self, self->unk_B6);
     if (func_ov003_0222780c(a, b, (u8 *) self + 0x2e14) != 0) {
         u8 idx;

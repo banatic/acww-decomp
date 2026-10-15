@@ -7,7 +7,7 @@ extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_02207ce4(void *p, int size);
 extern void func_ov002_02207d00(void *p);
 extern int func_ov110_0229c2c8(void *p, int a);
-extern int func_ov110_0229cf54(void *p);
+extern int func_ov110_0229cf54(void *self);
 extern void func_ov110_0229d770(void *p, unsigned char b);
 
 void func_ov110_0229e0f8(void *p)

@@ -11,7 +11,7 @@ extern int func_02002d14(int *p, int a, int b, int c, int d, int e);
 extern int func_02002ca4(int *p, int a, int b);
 extern int func_02002c6c(int *p, int a, int b, int c, int d, int e);
 
-void func_ov106_0229e88c(void)
+void func_ov106_0229e88c(void *self)
 {
     int value = data_021fbe94;
     int local1 = 4;

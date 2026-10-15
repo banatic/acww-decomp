@@ -7,7 +7,6 @@ extern int func_020bb1d4(void *, void *);
 extern void func_0209e100(void *, int);
 extern int func_020bb214(void *, void *);
 extern void MI_CpuCopy8(void *, const void *, int);
-extern int _s32_div_f(int, int);
 extern void func_0209e29c(void *, int);
 extern void func_0209e234(void *, int);
 extern int func_0209e3ac(void *, const void *, int);
@@ -34,7 +33,7 @@ void func_020ba3bc(unsigned char *dst, int num, int idx)
         num += 0x200;
     }
 
-    func_0209e29c(dst, _s32_div_f(num - ret, 8));
+    func_0209e29c(dst, (num - ret) / 8);
 
     if (idx < 0) {
         idx = 0;
@@ -46,7 +45,7 @@ void func_020ba3bc(unsigned char *dst, int num, int idx)
     dst[1] = 0;
     dst[0] = 0;
 
-    func_0209e234(dst, _s32_div_f(idx * 0x2d0, 0x68));
+    func_0209e234(dst, idx * 0x2d0 / 0x68);
 
     if (dst[2] == 6) {
         func_0209e100(dst, 1);

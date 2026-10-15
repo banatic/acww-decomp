@@ -30,7 +30,6 @@ typedef struct UnkStruct_020ad0c0_2 {
 extern UnkStruct_020ad0c0 data_021f49a0[];
 extern void *data_021fbe94;
 
-extern int _s32_div_f(int, int);
 extern void *func_020e9948(void *, int);
 extern int FX_MulFunc(int, int);
 extern int FX_Div(int, int);
@@ -57,7 +56,7 @@ int func_020ad0c0(UnkStruct_020ad0c0_2 *p, int *src, int v2, int v3, int a5, int
     }
     p->unk_10 = t;
     p->unk_18 = 0;
-    p->unk_14 = _s32_div_f(v3 - 0x200, 0x2000) + 2;
+    p->unk_14 = (v3 - 0x200) / 0x2000 + 2;
     n = p->unk_14 * 4;
     p->unk_1C = (int *) func_020e9948(a8, n * 2 + p->unk_14 * 0xc);
     p->unk_28 = (int *) ((u8 *) p->unk_1C + n);

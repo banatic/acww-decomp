@@ -12,7 +12,6 @@ typedef struct {
     int unk_E4;
 } UnkStruct_020380f4;
 
-extern int _s32_div_f(int a, int b);
 extern void func_02038444(void *obj, int a, int b);
 extern void func_0203859c(void *obj);
 extern void func_02038680(void *obj, int a);
@@ -21,7 +20,7 @@ extern void func_020380c4(void *obj);
 
 void func_020380f4(UnkStruct_020380f4 *obj)
 {
-    int temp = _s32_div_f(obj->unk_C0 + 0x13, 0x14);
+    int temp = (obj->unk_C0 + 0x13) / 0x14;
     int changed = (obj->unk_E4 != temp);
     obj->unk_E4 = temp;
 

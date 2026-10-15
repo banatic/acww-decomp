@@ -4,7 +4,7 @@
 
 extern void func_0209def4(void *);
 
-int func_ov009_02264c40(void)
+int func_ov009_02264c40(void *self)
 {
     unsigned char data[4];
     func_0209def4(data);

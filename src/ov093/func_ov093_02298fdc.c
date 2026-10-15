@@ -12,7 +12,7 @@ extern unsigned char data_ov093_022998c8[];
 extern unsigned char data_ov093_022998dc[];
 extern unsigned char data_ov093_022998f4[];
 
-void func_ov093_02298fdc(void)
+void func_ov093_02298fdc(void *self)
 {
     int r4 = data_021fbe94;
     func_02002ca4((unsigned int) data_ov093_022998c8, r4, 0);

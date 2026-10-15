@@ -11,7 +11,7 @@ extern int func_0204eda8(void *ctx, int x, int y);
 extern int func_02042f20(void *table, int arg, int type, void *coords, int a5, int a6, int a7, int a8, int a9, int a10);
 extern int data_021c7c48[];
 
-int func_020438dc(int a0, int *coords)
+int func_020438dc(int a0, int *coords, int arg2)
 {
     void *ctx;
     int zero;

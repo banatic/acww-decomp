@@ -7,7 +7,7 @@ extern int func_0204bcdc(void *p);
 extern int func_0204bc64(void *p);
 extern unsigned char data_021f3b30;
 
-int func_ov052_02261054(void)
+int func_ov052_02261054(void *self)
 {
     int val, val2;
     unsigned int val3;

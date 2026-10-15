@@ -7,7 +7,6 @@ extern struct UnkStruct_020bc548 {
     int unk_00;
     int unk_04;
 } data_021f75b0;
-extern int _s32_div_f(int, int);
 
 void func_020bc548(unsigned char *param)
 {
@@ -30,7 +29,7 @@ void func_020bc548(unsigned char *param)
         *ptr++ = value;
     }
 
-    mult = _s32_div_f(-((int) byte << 12), 0x20);
+    mult = -((int) byte << 12) / 0x20;
     i = 0;
     while (ptr < end2) {
         tmp = ((mult * i + 0x800) >> 12) + byte;

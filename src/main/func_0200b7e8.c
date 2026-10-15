@@ -13,7 +13,7 @@ typedef struct {
     short b;
 } UnkStruct_0200b7e8;
 
-int func_0200b7e8(void *p0, int *p1, int p2, int p3, UnkStruct_0200b7e8 s)
+int func_0200b7e8(void *p0, int *p1, int p2, int p3, int p4, short p5)
 {
     int pair[2];
     char obj[12];
@@ -21,7 +21,7 @@ int func_0200b7e8(void *p0, int *p1, int p2, int p3, UnkStruct_0200b7e8 s)
     int result;
 
     func_0200e92c(obj);
-    func_0200e90c(obj, 0x19, s.a, s.b);
+    func_0200e90c(obj, 0x19, p4, p5);
     pair[0] = p1[0];
     pair[1] = p1[1];
     func_0200b894(tmp, pair, -1, p2, p3);

@@ -4,7 +4,7 @@
 
 class UnkStruct_020eea4c {
   public:
-    virtual void m0();
+    virtual void vfunc_00();
 };
 
 struct Node {

@@ -21,7 +21,7 @@ extern int func_02002bd0(void *a, int b, int c, int d, int e);
 extern unsigned char data_ov121_0229c408[];
 extern unsigned char data_ov121_0229c420[];
 
-void func_ov121_0229b7d4(void)
+void func_ov121_0229b7d4(void *self)
 {
     void *pool = data_021fbe94;
     void *ptr1, *ptr2;

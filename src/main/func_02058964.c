@@ -11,7 +11,6 @@ typedef struct {
 } Triple;
 extern u8 data_020cbaf0;
 extern Triple data_021c9390;
-extern int _s32_div_f(int val, int frac);
 
 typedef struct {
     u8 pad_00[0x6c];
@@ -55,15 +54,15 @@ void func_02058964(UnkStruct_02058964 *self)
     self->unk_70 = data_021c9390.b;
     self->unk_74 = data_021c9390.c;
 
-    v74 = _s32_div_f(self->unk_74, 0xc);
+    v74 = self->unk_74 / 0xc;
     if (v74 < 0) {
         v74 = -v74;
     }
-    v70 = _s32_div_f(self->unk_70, 0xc);
+    v70 = self->unk_70 / 0xc;
     if (v70 < 0) {
         v70 = -v70;
     }
-    v6c = _s32_div_f(self->unk_6C, 0xc);
+    v6c = self->unk_6C / 0xc;
     if (v6c < 0) {
         v6c = -v6c;
     }

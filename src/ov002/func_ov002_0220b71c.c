@@ -4,7 +4,7 @@
 
 extern int *func_020682e0(int which);
 
-int func_ov002_0220b71c(void)
+int func_ov002_0220b71c(void *self)
 {
     if (func_020682e0(1)[1] == 2) {
         return 1;

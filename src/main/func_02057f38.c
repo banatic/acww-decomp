@@ -35,7 +35,6 @@ extern void func_0205967c(struct UnkStruct_02057f38_2 *, struct Vec *);
 extern void func_020ea6e0(struct Vec *, int);
 extern void VEC_Add(struct Vec *, struct Vec *, struct Vec *);
 extern int func_020e895c(int *, int, int);
-extern int _s32_div_f(int, int);
 
 void func_02057f38(struct UnkStruct_02057f38_2 *o)
 {
@@ -66,15 +65,15 @@ void func_02057f38(struct UnkStruct_02057f38_2 *o)
             o->unk_78.x = 0;
             o->unk_78.y = 0;
             o->unk_78.z = 0;
-            tz = _s32_div_f(o->unk_84.z, 8);
+            tz = o->unk_84.z / 8;
             if (tz < 0) {
                 tz = -tz;
             }
-            ty = _s32_div_f(o->unk_84.y, 8);
+            ty = o->unk_84.y / 8;
             if (ty < 0) {
                 ty = -ty;
             }
-            tx = _s32_div_f(o->unk_84.x, 8);
+            tx = o->unk_84.x / 8;
             if (tx < 0) {
                 tx = -tx;
             }

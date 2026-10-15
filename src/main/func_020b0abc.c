@@ -2,9 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b0b00(int, int, int, int, int);
+#include "types.h"
 
-int func_020b0abc(int *ptr, int a, int b, int c, int d)
+typedef struct UnkStruct_020b0b00_2 UnkStruct_020b0b00_2;
+
+extern int func_020b0b00(UnkStruct_020b0b00_2 *self, u8 *cnt, u8 *flag, u64 start);
+
+int func_020b0abc(UnkStruct_020b0b00_2 **ptr, u8 *cnt, u8 *flag, u64 start)
 {
-    return func_020b0b00(*ptr, a, b, c, d);
+    return func_020b0b00(*ptr, cnt, flag, start);
 }

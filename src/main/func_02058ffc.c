@@ -36,7 +36,6 @@ extern void func_02059598(u32 *dst, UnkStruct_02058ffc *self, int x);
 extern void func_020595fc(UnkStruct_02058ffc *self, u32 *dst, u32 *src, int x);
 extern void func_02059674(UnkStruct_02058ffc *self, int x);
 extern void VEC_Add(void *a, void *b, void *c);
-extern int _s32_div_f(int a, int b);
 
 void func_02058ffc(UnkStruct_02058ffc *self)
 {
@@ -76,11 +75,11 @@ void func_02058ffc(UnkStruct_02058ffc *self)
     self->unk_70 = self->unk_A0;
     self->unk_74 = self->unk_A4;
 
-    delta1 = _s32_div_f(self->unk_74 - self->unk_68, 2);
+    delta1 = (int) (self->unk_74 - self->unk_68) / 2;
     if (delta1 < 0) {
         delta1 = -delta1;
     }
-    delta2 = _s32_div_f(self->unk_6C - self->unk_60, 2);
+    delta2 = (int) (self->unk_6C - self->unk_60) / 2;
     if (delta2 < 0) {
         delta2 = -delta2;
     }

@@ -14,7 +14,7 @@ extern int func_ov002_022088bc(void *arg);
 extern int func_ov103_0229cdfc(struct UnkStruct_0229c3a0 *self, int b);
 extern int func_ov103_0229c2f4(struct UnkStruct_0229c3a0 *self, int val);
 
-void func_ov103_0229c3a0(struct UnkStruct_0229c3a0 *self, void *arg)
+void func_ov103_0229c3a0(struct UnkStruct_0229c3a0 *self, void *arg, int b)
 {
     int r4 = self->b - 11;
     int r6 = r4 >> 1;

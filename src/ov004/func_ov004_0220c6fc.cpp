@@ -4,44 +4,44 @@
 
 class UnknownClass {
   public:
-    virtual void m0();
-    virtual void m1();
-    virtual void m2();
-    virtual void m3();
-    virtual void m4();
-    virtual void m5();
-    virtual void m6();
-    virtual void m7();
-    virtual void m8();
-    virtual void m9();
-    virtual void m10();
-    virtual void m11();
-    virtual void m12();
-    virtual void m13();
-    virtual void m14();
-    virtual void m15();
-    virtual void m16();
-    virtual void m17();
-    virtual void m18();
-    virtual void m19();
-    virtual void m20();
-    virtual void m21();
-    virtual void m22();
-    virtual void m23();
-    virtual void m24();
-    virtual void m25();
-    virtual void m26();
-    virtual void m27();
-    virtual void m28();
-    virtual void m29();
-    virtual void m30();
-    virtual void m31();
-    virtual void m32();
-    virtual void m33();
-    virtual void m34();
-    virtual void m35();
-    virtual void m36();
-    virtual void m37(int arg);
+    virtual void vfunc_00();
+    virtual void vfunc_04();
+    virtual void vfunc_08();
+    virtual void vfunc_0c();
+    virtual void vfunc_10();
+    virtual void vfunc_14();
+    virtual void vfunc_18();
+    virtual void vfunc_1c();
+    virtual void vfunc_20();
+    virtual void vfunc_24();
+    virtual void vfunc_28();
+    virtual void vfunc_2c();
+    virtual void vfunc_30();
+    virtual void vfunc_34();
+    virtual void vfunc_38();
+    virtual void vfunc_3c();
+    virtual void vfunc_40();
+    virtual void vfunc_44();
+    virtual void vfunc_48();
+    virtual void vfunc_4c();
+    virtual void vfunc_50();
+    virtual void vfunc_54();
+    virtual void vfunc_58();
+    virtual void vfunc_5c();
+    virtual void vfunc_60();
+    virtual void vfunc_64();
+    virtual void vfunc_68();
+    virtual void vfunc_6c();
+    virtual void vfunc_70();
+    virtual void vfunc_74();
+    virtual void vfunc_78();
+    virtual void vfunc_7c();
+    virtual void vfunc_80();
+    virtual void vfunc_84();
+    virtual void vfunc_88();
+    virtual void vfunc_8c();
+    virtual void vfunc_90();
+    virtual void vfunc_94(int arg);
 };
 
 extern "C" void func_020eaca0(void *, void *, void *);
@@ -62,7 +62,7 @@ extern "C" int func_ov004_0220c6fc(UnknownClass *obj)
     cond = func_ov004_0223b22c();
     if (cond != 0) {
         if (func_ov004_0223b058(cond, (char *) obj + 0x250, (char *) obj + 0x5c, *(short *) ((char *) obj + 0x16c))) {
-            obj->m37(0);
+            obj->vfunc_94(0);
             func_ov004_0220e674(obj, 1);
             return 1;
         }

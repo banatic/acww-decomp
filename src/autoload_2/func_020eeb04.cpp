@@ -6,9 +6,9 @@
 
 class UnkStruct_020eeb04 {
   public:
-    virtual void m0();
-    virtual void m1();
-    virtual short m2(int);
+    virtual void vfunc_00();
+    virtual void vfunc_04();
+    virtual short vfunc_08(int);
     short unk_04;
     short unk_06;
     volatile int *arr;
@@ -32,7 +32,7 @@ body:
         goto end;
     }
     do {
-        self->unk_04 = self->m2(self->arr[i]);
+        self->unk_04 = self->vfunc_08(self->arr[i]);
         if (self->unk_04 != 2) {
             goto end;
         }

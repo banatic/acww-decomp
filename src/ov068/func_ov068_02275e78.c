@@ -31,9 +31,9 @@ extern Ctl *func_02099640(int argument0);
 extern void func_0202da88(u8 *, void *);
 extern void func_0202d994(u8 *, Buf *);
 extern void func_ov068_02276278(u8 *);
-extern int func_ov068_02276254(void);
+extern int func_ov068_02276254(void *self);
 extern void func_ov068_02276230(u8 *);
-extern int func_ov068_0227620c(void);
+extern int func_ov068_0227620c(void *self);
 extern void func_ov068_022761f0(u8 *);
 
 extern u8 data_ov068_02278920[];
@@ -95,13 +95,7 @@ void func_ov068_02275e78(u8 *self, Buf *b)
         b->v = (u8) func_020644cc(2);
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, self
-    }
-    // clang-format on
-    if (func_ov068_02276254() == 0)
-    {
+    if (func_ov068_02276254(self) == 0) {
         (*(u8 **) (self + 0x1a4))[0xa5a] = 2;
         func_0200366c(func_0208150c(*(void **) (*(u8 **) (self + 0x1a4) + 0x830)), data_ov068_02278920, 0x28,
                       data_ov068_0227822c);
@@ -109,13 +103,7 @@ void func_ov068_02275e78(u8 *self, Buf *b)
         func_ov068_02276230(self);
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, self
-    }
-    // clang-format on
-    if (func_ov068_0227620c() != 0)
-    {
+    if (func_ov068_0227620c(self) != 0) {
         (*(u8 **) (self + 0x1a4))[0xa5a] = 5;
         func_0200366c(func_0208150c(*(void **) (*(u8 **) (self + 0x1a4) + 0x830)), data_ov068_02278920, 0x28,
                       data_ov068_02278238);

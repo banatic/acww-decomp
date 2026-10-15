@@ -26,7 +26,7 @@ extern s32 FX_Div(s32, s32);
 extern s32 FX_MulFunc(s32, s32);
 extern long long func_01ffd028(Vec *, struct Node *);
 
-int func_020899a8(int a, int b, s32 c, u8 *d)
+int func_020899a8(int a, int b, s32 c, u8 *d, int e)
 {
     int ret;
     s32 t;

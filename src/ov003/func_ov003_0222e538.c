@@ -20,7 +20,7 @@ extern void func_02073770(UnkStruct_0222e538 *p, int a, int b);
 
 extern unsigned char data_ov003_0226053c;
 
-unsigned char func_ov003_0222e538(int v)
+unsigned char func_ov003_0222e538(int v, unsigned char unused)
 {
     unsigned char id;
     unsigned char *p;

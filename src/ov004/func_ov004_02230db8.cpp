@@ -9,9 +9,9 @@ struct UnkStruct_02230db8 {
     ~UnkStruct_02230db8() {}
 };
 struct B {
-    virtual void m0();
-    virtual void m1();
-    virtual void m2();
+    virtual void vfunc_00();
+    virtual void vfunc_04();
+    virtual void vfunc_08();
 };
 extern "C" {
 extern void *func_020682e0(int);
@@ -23,7 +23,7 @@ extern "C" void func_ov004_02230db8(char *self, void *p1, u8 p2)
 {
     UnkStruct_02230db8 t;
     void *h = func_020682e0(0);
-    ((B *) (self + 0x290))->m2();
+    ((B *) (self + 0x290))->vfunc_08();
     func_020a8164(self + 0x290, p1);
     *(u8 *) (self + 0x2ae) = p2;
     {

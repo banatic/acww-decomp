@@ -2,12 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b0abc(void *p, void *a, void *b, int c, int d);
-extern void *data_021f6948;
-extern int data_021f42dc;
-extern int data_021f42e4;
+#include "types.h"
 
-void func_020b6d8c(int unused, int p2, int p3)
+typedef struct UnkStruct_020b0b00_2 UnkStruct_020b0b00_2;
+
+extern int func_020b0abc(UnkStruct_020b0b00_2 **ptr, u8 *cnt, u8 *flag, u64 start);
+extern UnkStruct_020b0b00_2 **data_021f6948;
+extern u8 data_021f42dc;
+extern u8 data_021f42e4;
+
+void func_020b6d8c(int unused, u64 start)
 {
-    func_020b0abc(data_021f6948, &data_021f42dc, &data_021f42e4, p2, p3);
+    func_020b0abc(data_021f6948, &data_021f42dc, &data_021f42e4, start);
 }

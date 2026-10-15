@@ -4,14 +4,14 @@
 
 #include "types.h"
 
-extern int func_ov097_022a27c0(void);
+extern int func_ov097_022a27c0(void *self);
 extern int func_ov002_02208d4c(void *p, int a, int b);
 
 void func_ov097_022a28e4(u8 *self, u16 arg)
 {
     volatile u16 id;
 
-    if (func_ov097_022a27c0() == 0) {
+    if (func_ov097_022a27c0(self) == 0) {
         return;
     }
     id = arg;

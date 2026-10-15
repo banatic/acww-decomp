@@ -4,8 +4,8 @@
 
 extern unsigned char func_ov094_0229a39c(unsigned char *arg0);
 extern void func_ov094_0229a464(void *arg0);
-extern int func_ov094_0229b048(void *p, unsigned char a, unsigned char b);
-extern void func_ov094_0229a8cc(void *self, const unsigned char *tab, int n, unsigned int m);
+extern void *func_ov094_0229b048(char *self, unsigned int idx, unsigned int unused);
+extern void func_ov094_0229a8cc(void *self, const unsigned char *tab, void *src, int n);
 extern void func_ov094_0229a99c(void *self, unsigned short v, int n);
 
 extern const unsigned char data_ov094_0229bc50[];
@@ -28,7 +28,7 @@ int func_ov094_0229a3b0(UnkStruct_0229a3b0 *self)
 
     if (state < 6) {
         if (data_ov094_0229bc50[state] != 0xff) {
-            int r = func_ov094_0229b048(self->buf, data_ov094_0229bc50[state], self->unk_A5B);
+            void *r = func_ov094_0229b048((char *) self->buf, data_ov094_0229bc50[state], self->unk_A5B);
             func_ov094_0229a8cc(self, data_ov094_0229bf70, r, 8);
         }
         self->unk_A5A++;

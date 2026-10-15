@@ -3,7 +3,6 @@
  */
 
 extern void func_020bb7e0(void *obj, int a, int b);
-extern int _s32_div_f(int, int);
 
 struct UnkStruct_020bb30c {
     char pad_00[0x120c];
@@ -22,5 +21,5 @@ void func_020bb30c(struct UnkStruct_020bb30c *p)
         func_020bb7e0(p, p->unk_1528, p->unk_1528);
         p->unk_158C = 3;
     }
-    p->unk_120C = _s32_div_f(p->unk_1590 << 5, 0x2a8);
+    p->unk_120C = (p->unk_1590 << 5) / 0x2a8;
 }

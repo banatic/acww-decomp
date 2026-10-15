@@ -23,7 +23,7 @@ struct UnkStruct_02274238_2 {
 extern "C" int func_0206837c(int);
 extern "C" int func_020ab504(int);
 
-extern "C" void func_ov068_02274238(UnkStruct_02274238 *self)
+extern "C" void func_ov068_02274238(UnkStruct_02274238 *self, int b)
 {
     static UnkStruct_02274238_2 tbl[5] = {{1, data_ov068_02277a1c},
                                           {2, data_ov068_02277a44},

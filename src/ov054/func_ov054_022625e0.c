@@ -4,7 +4,7 @@
 
 extern int func_0202ec14(void *arg0);
 extern void func_02035638(int);
-extern int func_ov054_02260474(void);
+extern int func_ov054_02260474(void *self);
 
 int func_ov054_022625e0(void *p)
 {
@@ -16,11 +16,7 @@ int func_ov054_022625e0(void *p)
     if (r == 0) {
         func_02035638(0x55);
     } else if (r == 1) {
-        asm {
-            mov r0, p
-        }
-        if (!func_ov054_02260474())
-        {
+        if (!func_ov054_02260474(p)) {
             func_02035638(0x56);
         }
     }

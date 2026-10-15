@@ -7,7 +7,7 @@ extern void func_ov127_02299fd4(unsigned char *self, unsigned char val, int mode
 extern void func_020b177c(void *self, int a);
 extern void func_ov127_02299f90(void *receiver);
 extern void func_ov002_0220b36c(void *self, const void *data, int a, int b);
-extern int func_ov002_0220b338(void *self, int a);
+extern void func_ov002_0220b338(char *self, int value);
 extern void func_ov128_0229bb20(void *self);
 extern const unsigned char data_ov128_0229cb38[];
 

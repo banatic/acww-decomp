@@ -4,7 +4,7 @@
 
 extern int func_0200457c(int arg);
 
-int func_ov130_02299dc8(void)
+int func_ov130_02299dc8(int value)
 {
     return func_0200457c(0);
 }

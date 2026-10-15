@@ -8,7 +8,7 @@ extern char data_ov003_0225f4dc[];
 int func_ov003_022298c4(void *p, u8 i);
 int func_020044a0(void *p);
 
-void func_ov003_0222847c(void)
+void func_ov003_0222847c(char *self)
 {
     char *p = data_ov003_0225f4dc;
     int i;

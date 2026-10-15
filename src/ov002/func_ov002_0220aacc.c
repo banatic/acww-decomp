@@ -8,7 +8,7 @@ extern void func_ov002_0220b04c(char *p);
 extern void func_ov002_0220b06c(char *p, void *a, int b, int c);
 extern void func_0208aa68(char *p);
 extern void func_ov002_0220b36c(char *argument0, int argument1, unsigned char argument2, unsigned char argument3);
-extern int func_ov002_0220b338(char *argument0, unsigned char argument1);
+extern void func_ov002_0220b338(char *self, int value);
 extern void *data_ov002_0220bd38;
 extern void *data_ov002_0220bd20;
 

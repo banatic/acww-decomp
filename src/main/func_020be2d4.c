@@ -21,7 +21,7 @@ extern int func_020bec70(void *a, int v);
 extern void func_020bee9c(UnkStruct_020be2d4 *e, void *b);
 extern void func_020bed64(void *a, void *b, int v);
 
-void func_020be2d4(UnkStruct_020be2d4_2 *self)
+void func_020be2d4(UnkStruct_020be2d4_2 *self, void *arg)
 {
     UnkStruct_020be2d4 *end;
     UnkStruct_020be2d4 *e;

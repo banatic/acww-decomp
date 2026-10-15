@@ -22,7 +22,7 @@ typedef struct {
 extern int func_0206fca4(void);
 extern void func_ov126_0229f7b8(UnkStruct_022a14d0 *o, int a);
 extern void func_ov095_0229c084(void *p, int a);
-extern int func_ov124_0229f27c(void *p);
+extern int func_ov124_0229f27c(int a);
 extern void func_02051bf8(void *p, int a);
 extern int func_02051ca8(void *p, int a);
 extern void func_ov126_0229fb9c(UnkStruct_022a14d0 *o);
@@ -70,7 +70,7 @@ void func_ov126_022a14d0(UnkStruct_022a14d0 *o)
             func_ov095_0229c084(o->unk_19C, 3);
             break;
     }
-    switch (func_ov124_0229f27c(o->unk_B0)) {
+    switch (func_ov124_0229f27c((int) o->unk_B0)) {
         case 0:
             o->unk_A6 = 0xa;
             o->unk_AB = 0x52;

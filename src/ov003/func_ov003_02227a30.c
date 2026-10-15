@@ -3,7 +3,7 @@
  */
 
 int func_020ba4e4(void);
-int func_ov003_02227a30(void)
+int func_ov003_02227a30(void *a0)
 {
     int r = 0;
     if ((unsigned int) (func_020ba4e4() - 1) <= 1) {

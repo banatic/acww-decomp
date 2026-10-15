@@ -35,7 +35,7 @@ extern int func_0204bc64(u16 *p);
 extern int func_02099020(int a, int b);
 extern int func_02073d90(void *p);
 extern int func_02099e9c(u16 *p);
-extern int func_ov052_02261054(UnkStruct_02260c1c *self);
+extern int func_ov052_02261054(void *self);
 extern int func_0202ea80(int a, int b);
 extern u16 *func_02087228(void *record);
 extern int func_020951bc(int a);

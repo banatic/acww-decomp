@@ -4,7 +4,7 @@
 
 extern int data_021f4b2c;
 
-int func_020b3b20(void)
+int func_020b3b20(void *param)
 {
     if (data_021f4b2c) {
         data_021f4b2c = 0;

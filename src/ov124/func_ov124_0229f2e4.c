@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov124_0229f27c(void);
+extern int func_ov124_0229f27c(int a);
 extern void func_02070978(int a, int b);
 
 void func_ov124_0229f2e4(int a)
 {
     int val;
-    switch (func_ov124_0229f27c()) {
+    switch (func_ov124_0229f27c(a)) {
         case 0:
         case 1:
             val = 2;

@@ -7,7 +7,7 @@ typedef struct {
     int b;
 } UnkStruct_02266904;
 
-extern void func_ov069_022667e0(int, int);
+extern void func_ov069_022667e0(int a, int b);
 extern UnkStruct_02266904 data_ov069_02268a0c[16];
 extern UnkStruct_02266904 data_ov069_02268a8c[16];
 extern UnkStruct_02266904 data_ov069_02268b0c[16];

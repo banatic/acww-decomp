@@ -40,7 +40,6 @@ extern int func_020b65c4(void);
 extern void func_020ea6e0(Vec *, int);
 extern void VEC_Add(Vec *, void *, Vec *);
 extern void func_0204f7e0(Vec *, Vec *);
-extern int _s32_div_f(int, int);
 extern void func_02059674(UnkStruct_02058528_2 *, int);
 
 void func_02058528(UnkStruct_02058528_2 *p)
@@ -68,15 +67,15 @@ void func_02058528(UnkStruct_02058528_2 *p)
         func_0204f7e0(&p->pos, &v);
     }
     p->pos.y += 0x1000;
-    c = _s32_div_f(p->pos.z - p->unk_68, 4);
+    c = (p->pos.z - p->unk_68) / 4;
     if (c < 0) {
         c = -c;
     }
-    b = _s32_div_f(p->pos.y - p->unk_64, 4);
+    b = (p->pos.y - p->unk_64) / 4;
     if (b < 0) {
         b = -b;
     }
-    a = _s32_div_f(p->pos.x - p->unk_60, 4);
+    a = (p->pos.x - p->unk_60) / 4;
     if (a < 0) {
         a = -a;
     }

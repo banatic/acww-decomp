@@ -19,7 +19,6 @@ struct UnkStruct_020a1e08 {
 };
 
 extern s32 data_020d1bf0[];
-extern long long _s32_div_f(s32, s32);
 extern int func_020a199c(struct UnkStruct_020a1e08 *, s32, s32, s32);
 
 int func_020a1e08(struct UnkStruct_020a1e08 *p, int idx)
@@ -27,8 +26,8 @@ int func_020a1e08(struct UnkStruct_020a1e08 *p, int idx)
     s32 val, q, r, inc, res;
 
     val = data_020d1bf0[idx];
-    q = (s32) _s32_div_f(val, 0x200);
-    r = (s32) ((unsigned long long) _s32_div_f(val, 0x200) >> 32);
+    q = val / 0x200;
+    r = val % 0x200;
 
     while (p->unk_A2 <= q) {
         inc = 0x200;

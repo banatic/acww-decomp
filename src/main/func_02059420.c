@@ -3,7 +3,6 @@
  */
 
 extern void func_0205967c(void *obj, void *field);
-extern int _s32_div_f(int a, int b);
 extern unsigned char data_020cbb00[];
 extern unsigned char data_021c9348;
 
@@ -38,19 +37,19 @@ void func_02059420(void *self_raw)
     self->d4++;
     d = data_021c9348;
 
-    v1 = _s32_div_f(self->unk_9C - self->unk_60, d);
+    v1 = (self->unk_9C - self->unk_60) / d;
     if (v1 < 0) {
         v1 = -v1;
     }
     self->unk_90 = v1;
 
-    v2 = _s32_div_f(self->unk_A0, d);
+    v2 = self->unk_A0 / d;
     if (v2 < 0) {
         v2 = -v2;
     }
     self->unk_94 = v2;
 
-    v3 = _s32_div_f(self->unk_A4 - self->unk_68, d);
+    v3 = (self->unk_A4 - self->unk_68) / d;
     if (v3 < 0) {
         v3 = -v3;
     }

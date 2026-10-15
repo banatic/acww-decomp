@@ -13,7 +13,7 @@ typedef struct {
     unsigned char count;
 } FlagStruct;
 
-unsigned char func_02099f1c(FlagStruct *flags, int (*cb)(unsigned short *))
+int func_02099f1c(FlagStruct *flags, int (*cb)(unsigned short *))
 {
     void *v8;
     unsigned short *arr;

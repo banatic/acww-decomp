@@ -3,9 +3,9 @@
  */
 
 extern void func_0200b794(void *, int *, void *, unsigned short *, unsigned char *);
-extern int func_0200b7e8(void *, int *, unsigned short, unsigned char, int, int);
+extern int func_0200b7e8(void *p0, int *p1, int p2, int p3, int p4, short p5);
 
-void func_0200b3b4(void *self, int arg2)
+void func_0200b3b4(void *self, short arg2)
 {
     char *base = (char *) self;
     unsigned char *byte = (unsigned char *) base;

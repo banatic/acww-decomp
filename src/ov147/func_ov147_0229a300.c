@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov147_0229a300(void);
+extern void func_ov147_0229a300(void *object);
 extern void G2x_SetBlendAlpha_(unsigned int, int, int, int, int);
 
-void func_ov147_0229a300(void)
+void func_ov147_0229a300(void *object)
 {
     int local;
     local = 0;

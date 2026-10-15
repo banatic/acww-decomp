@@ -5,7 +5,7 @@
 extern int func_02073d90(int);
 extern int data_020ccf94;
 
-int func_ov054_02260474(void)
+int func_ov054_02260474(void *self)
 {
     return func_02073d90(data_020ccf94);
 }

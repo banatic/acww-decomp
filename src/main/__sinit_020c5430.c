@@ -117,7 +117,6 @@ typedef struct {
 } UnkStruct_020c5430_6;
 extern void __register_global_object(void *, void *, void *);
 extern void func_020012dc(void *);
-extern int _s32_div_f(int, int);
 extern const UnkStruct_020c5430_3 data_020cbb00;
 extern const UnkStruct_020c5430_4 data_020cbaf0;
 extern const UnkStruct_020c5430_4 data_020cbaf4;
@@ -218,17 +217,17 @@ void __sinit_020c5430(void)
     data_021c93e4.c = 0xd00;
     __register_global_object((void *) (&data_021c93e4), (((void *) func_020012dc)), (void *) (&data_021c93d8));
 
-    v = _s32_div_f(data_020cbb34.unk_04, data_021c9348.unk_00);
+    v = data_020cbb34.unk_04 / data_021c9348.unk_00;
     if (v < 0) {
         v = -v;
     }
     data_021c9400.unk_04 = v;
-    v = _s32_div_f(data_020cbb34.unk_08, data_021c9348.unk_01);
+    v = data_020cbb34.unk_08 / data_021c9348.unk_01;
     if (v < 0) {
         v = -v;
     }
     data_021c9400.unk_08 = v;
-    v = _s32_div_f(data_020cbb34.unk_0C, data_021c9348.unk_02);
+    v = data_020cbb34.unk_0C / data_021c9348.unk_02;
     if (v < 0) {
         v = -v;
     }

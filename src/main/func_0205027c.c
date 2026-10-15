@@ -22,7 +22,6 @@ extern const char data_020dcec0[];
 extern const char data_020dced8[];
 
 extern void *func_0209d238(void *, int *);
-extern int _s32_div_f(int, int);
 extern int func_02064328(char *, const char *, ...);
 extern int func_0209d0ac(void *, void *, char *);
 extern void *func_0209d088(void *);
@@ -55,7 +54,7 @@ int func_0205027c(void *p0, void *p1, UnkStruct_0205027c *s)
     n = s->unk_40;
     a = func_0209d238(p1, &s->unk_48);
     q = &s->unk_4C;
-    t = _s32_div_f(n, 0x10);
+    t = n / 0x10;
     if (n < 10) {
         func_02064328(buf, data_020dce90, t, n);
     } else {

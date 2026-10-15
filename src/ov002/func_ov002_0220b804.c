@@ -4,8 +4,7 @@
 
 #include "types.h"
 
-// self is passed even though the callee ignores it.
-extern int func_ov002_0220b71c(u8 *self);
+extern int func_ov002_0220b71c(void *self);
 
 int func_ov002_0220b804(u8 *self)
 {

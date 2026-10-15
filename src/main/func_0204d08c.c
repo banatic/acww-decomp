@@ -3,10 +3,10 @@
  */
 
 extern int func_020b67ac(void);
-extern int func_02060d7c(void *addr);
+extern unsigned short func_02060d7c(void *addr);
 extern unsigned char data_021ebcd4[];
 
-void func_0204d08c(int a, int *out)
+void func_0204d08c(void *self, int *out, int count)
 {
     if (func_020b67ac()) {
         *out = func_02060d7c((void *) data_021ebcd4);

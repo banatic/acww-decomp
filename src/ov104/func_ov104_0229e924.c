@@ -10,7 +10,7 @@ extern int func_02002d14(void *data, void *param, int a, int b, int c, int d);
 extern int func_02002ca4(void *data, void *param, int a);
 extern int func_02002c6c(void *data, void *param, int a, int b, int c, int d);
 
-void func_ov104_0229e924(void)
+void func_ov104_0229e924(void *self)
 {
     void *p = data_021fbe94;
     func_02002d14(data_ov104_0229f730, p, 4, 4, 4, 4);

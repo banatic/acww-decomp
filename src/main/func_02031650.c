@@ -6,7 +6,6 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern int _u32_div_f(void *arr, unsigned int count);
 extern void func_020ea6e0(int *v, int angle);
 extern int FX_MulFunc(int a, int b);
 extern int func_020316fc(Vec3 *a, int d, int *out, int p3);
@@ -23,7 +22,7 @@ int func_02031650(Vec3 *out, Vec3 *base, void *arr, int p4, unsigned int count, 
     int i;
 
     if (count >= 1) {
-        scale = _u32_div_f(arr, count);
+        scale = (unsigned int) arr / count;
         vec.x = 0;
         vec.y = 0;
         vec.z = 0x1000;
