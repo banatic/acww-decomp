@@ -39,7 +39,9 @@ memory and arguments on entry:
 
 - the same return value;
 - the same writes to memory outside the function's own stack frame (address and value);
-- the same calls, to the same functions, with the same arguments, in the same order;
+- the same calls to the game's functions, with the same arguments, in the same order (the C
+  library and SDK helpers that only copy, fill or compute, such as `MI_CpuCopy8`, may be done
+  in place);
 - the same accesses to hardware registers, in the same order.
 
 Register use, instruction order, stack temporaries, inlining and repeated computation are not

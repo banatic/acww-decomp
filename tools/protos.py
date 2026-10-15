@@ -44,8 +44,24 @@ def params(text: str) -> int | None:
 
 
 def returns(ret: str) -> bool:
-    words = [w for w in ret.replace("*", " * ").split() if w not in ("extern", "static", "inline", "asm")]
+    words = [w for w in ret.replace("*", " * ").split() if w not in ("extern", "static", "inline", "asm", "virtual", "__arm", "__thumb")]
     return not (words == ["void"])
+
+
+CLASS_BODY = re.compile(r"\b(?:class|struct|union)\b[^;{}()=]*\{")
+
+
+def class_bodies(text: str) -> list[tuple[int, int]]:
+    """The spans of the class, struct and union bodies in `text`: what is declared there is a
+    member, not the function of that name elsewhere."""
+    spans = []
+    for m in CLASS_BODY.finditer(text):
+        depth, i = 1, m.end()
+        while i < len(text) and depth:
+            depth += {"{": 1, "}": -1}.get(text[i], 0)
+            i += 1
+        spans.append((m.end(), i))
+    return spans
 
 
 def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, str]]:
@@ -61,22 +77,28 @@ def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, 
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
         # a file's own static functions are its business, whatever other files name theirs
         local = {m.group(2) for m in FUNC.finditer(text) if "static" in m.group(1).split()}
+        members = class_bodies(text)
         for m in FUNC.finditer(text):
             ret, name, ps, end = m.group(1), m.group(2), m.group(3), m.group(4)
             if STATEMENT & set(ret.replace("*", " ").split()) or name in local:
                 continue
+            if any(start <= m.start(2) < stop for start, stop in members):
+                continue
             entry = (params(ps), returns(ret))
+            if end == "{" and "asm" in ret.split():
+                # an assembly body says nothing of its parameters or result
+                entry = (None, None)
             if end == "{":
                 (defs if game else library)[name] = (*entry, rel)
             elif game:
                 decls.append((rel, name, *entry))
     if library:
-        LIBRARY.write_text("".join(f"{name} {-1 if n is None else n} {int(ret)}\n"
+        LIBRARY.write_text("".join(f"{name} {-1 if n is None else n} {-1 if ret is None else int(ret)}\n"
                                    for name, (n, ret, _) in sorted(library.items())), newline="\n")
     elif LIBRARY.exists():
         for line in LIBRARY.read_text().splitlines():
             name, n, ret = line.split()
-            library[name] = (None if n == "-1" else int(n), ret == "1", "libs")
+            library[name] = (None if n == "-1" else int(n), None if ret == "-1" else ret == "1", "libs")
     for name, entry in library.items():
         defs.setdefault(name, entry)
     out = []
@@ -84,7 +106,7 @@ def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, 
         if name not in defs:
             continue
         dn, dret, drel = defs[name]
-        if (n is not None and dn is not None and n != dn) or ret != dret:
+        if (n is not None and dn is not None and n != dn) or (dret is not None and ret != dret):
             out.append((rel, name, n, dn, ret, dret, drel))
     return out
 

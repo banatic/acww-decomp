@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stddef.h>
+#include <stdint.h>
 
 /* The last day of each period of the year, as (month << 8) | day, in the game's own tables.
  * What the game uses the two sets of periods for is not known yet. */
@@ -15,10 +16,8 @@ static int is_leap(u32 year)
     return (year & 3) == 0;
 }
 
-static const u8 days_in_month[2][12] = {
-    {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-    {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
-};
+/* The days in each month, the leap year's row first (the game's table at 020d1aec). */
+extern const u8 data_020d1aec[2][12];
 
 /* The days before each month, and in the last entry the year's (the game's table at
  * 020d1b5c). */
@@ -75,21 +74,13 @@ void Calendar_AddTime(Time time, Time delta, Time *sum)
 }
 
 /* func_0209de24.
- * QUIRK: as with days_before, the game reads its table at [month - 1] unchecked, and its leap
- * year row (at 020d1aec) comes before the common year's (020d1af8). Month 0 of a leap year
- * reads the zero byte before the table and of a common year the leap row's December; month 13
- * of a leap year reads the common row's January and of a common year the first byte of the
- * next table (the periods' first entry, 0x0104). REQUIRES: month 0-13. */
+ * QUIRK: the game reads its table at [month - 1] unchecked, so a month outside 1-12 reads the
+ * bytes around it (month 0 of a common year the leap row's December, month 13 of a leap year
+ * the common row's January, and so on); it is read here the same way. */
 u8 Calendar_DaysInMonth(u32 year, u32 month)
 {
-    int leap = is_leap(year);
-    if (month == 0) {
-        return leap ? 0 : days_in_month[1][11];
-    }
-    if (month == 13) {
-        return leap ? days_in_month[0][0] : (u8) data_020d1b04[0];
-    }
-    return days_in_month[leap][month - 1];
+    const u8 *row = data_020d1aec[is_leap(year) ? 0 : 1];
+    return *(const u8 *) ((uintptr_t) row + (u32) (month - 1));
 }
 
 /* func_0209de44: the day of the month that is the `n`th `weekday` (0 = Sunday), or -1 when

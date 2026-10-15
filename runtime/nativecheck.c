@@ -296,8 +296,11 @@ int main(int argc, char **argv)
     for (uint32_t m = 0; m < native_module_count; m++) {
         int any = 0;
         MemorySnapshot *loaded = NULL;
-        for (uint32_t i = 0; i < native_function_count; i++) {
-            const NativeFunction *f = &native_functions[i];
+        /* with Clean functions linked in (tools/diffcheck.py --native --clean), those instead */
+        const NativeFunction *table = clean_function_count ? clean_functions : native_functions;
+        uint32_t count = clean_function_count ? clean_function_count : native_function_count;
+        for (uint32_t i = 0; i < count; i++) {
+            const NativeFunction *f = &table[i];
             if ((f->info >> 16) != m) {
                 continue;
             }

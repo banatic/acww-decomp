@@ -4,6 +4,7 @@ code on generated entry states (see docs/runtime.md and runtime/diffcheck.h).
     python tools/diffcheck.py               # every check
     python tools/diffcheck.py func_02039444 # some
     python tools/diffcheck.py --native      # Native against Reference (tools/native.py first)
+    python tools/diffcheck.py --native --clean   # the Clean functions, the same way
 
 Needs a C compiler that targets 32-bit x86: clang on Windows (CC, default
 "C:/Program Files/LLVM/bin/clang.exe"), gcc with -m32 elsewhere.
@@ -22,7 +23,9 @@ import sys
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 
-OUT = C.BUILD / "runtime"
+# ACWW_RUNTIME_OUT: another directory for what this tool and tools/run.py build, so that
+# several checks can run at once
+OUT = pathlib.Path(os.environ["ACWW_RUNTIME_OUT"]) if os.environ.get("ACWW_RUNTIME_OUT") else C.BUILD / "runtime"
 RUNTIME = C.ROOT / "runtime"
 TEST = re.compile(r"^const DiffTest (diff_test_\w+) = \{(.*?)^\};", re.M | re.S)
 CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+)", re.M)
@@ -112,7 +115,7 @@ def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
 def build(sources: list[pathlib.Path]) -> pathlib.Path:
     exe = OUT / ("diffcheck.exe" if os.name == "nt" else "diffcheck")
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing",
-             f"-I{RUNTIME}", f"-I{C.INCLUDE}"]
+             f"-I{RUNTIME}", f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}"]
     if os.name != "nt":
         flags += ["-fno-pic", "-fno-pie"]
     clean = [s for s in sources if C.ROOT / "clean" in s.parents]
@@ -237,8 +240,11 @@ def param_table() -> pathlib.Path:
 RUNTIME_NAMES = {"__cxa_guard_acquire", "__cxa_guard_release", "__cxa_guard_abort"}
 
 
-def build_native() -> pathlib.Path:
-    """runtime/nativecheck.c with every Native object (tools/native.py must have run)."""
+def build_native(clean: bool = False) -> pathlib.Path:
+    """runtime/nativecheck.c with every Native object (tools/native.py must have run); with
+    `clean`, also with every Clean function (tools/run.py's table), which it then checks
+    instead of the Native ones."""
+    import run  # noqa: PLC0415 (run imports this module)
     native = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
     if not (native / "natives.s").exists():
         raise SystemExit("run `python tools/native.py` first")
@@ -266,6 +272,11 @@ def build_native() -> pathlib.Path:
     srcs = [RUNTIME / n for n in ("arm.c", "memory.c", "loader.c", "host.c", "native_rt.c", "nativecheck.c")]
     srcs.append(param_table())
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", f"-I{RUNTIME}"]
+    run.OUT.mkdir(parents=True, exist_ok=True)
+    srcs.append(run.write_clean_table("all" if clean else None))
+    if clean:
+        srcs += run.build_clean(["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing",
+                                 f"-I{RUNTIME}"])
     # Classes split one function per file define their destructors and vtable in several
     # objects, identically; the linker keeps the first.
     link = (["-Wl,/SAFESEH:NO", "-Wl,/FORCE:MULTIPLE", "-Wl,/DYNAMICBASE:NO", "-Wl,/FIXED"] if os.name == "nt"
@@ -280,10 +291,13 @@ def build_native() -> pathlib.Path:
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     if sys.argv[1:2] == ["--native"]:
+        clean = "--clean" in sys.argv[2:]
+        rest = [a for a in sys.argv[2:] if a != "--clean"]
         generate()
-        exe = build_native()
-        log = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux") / "differences.txt"
-        p = subprocess.run([str(exe), str(OUT / "modules.txt"), str(log), *sys.argv[2:]], cwd=C.ROOT)
+        exe = build_native(clean)
+        log = (OUT / "differences-clean.txt" if clean
+               else C.BUILD / "native" / ("windows" if os.name == "nt" else "linux") / "differences.txt")
+        p = subprocess.run([str(exe), str(OUT / "modules.txt"), str(log), *rest], cwd=C.ROOT)
         sys.exit(p.returncode)
     unit_tests()
     exe = build(generate())
@@ -294,8 +308,9 @@ def main() -> None:
 
 
 def write_clean_list() -> None:
-    """build/adm-kr/clean.json: every function whose Clean version passed, for
-    tools/progress_map.py."""
+    """build/adm-kr/clean.json: every function with a Clean version, for tools/progress_map.py:
+    the ones checked through tests/clean/ (which just passed) and the ones registered with
+    CLEAN_AS (checked by `--native --clean` and the title run in CI)."""
     rows = []
     for path in sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         text = path.read_text()
@@ -304,6 +319,8 @@ def write_clean_list() -> None:
             rows.append((fields["module"].strip().strip('"'), int(fields["address"].split("|")[0].strip(), 16)))
         for m in CHECK.finditer(text):
             rows.append((m.group(2), int(m.group(3), 16)))
+    import run  # noqa: PLC0415 (run imports this module)
+    rows += [(module, address) for _, _, module, address, _ in run.clean_registrations("all")]
     out = [{"module": module, "address": f"{address & ~1:08x}"} for module, address in sorted(set(rows))]
     (C.BUILD / "clean.json").write_text(json.dumps(out, indent=1) + "\n", newline="\n")
 

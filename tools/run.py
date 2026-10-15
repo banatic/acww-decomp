@@ -76,12 +76,15 @@ import native as native_build  # noqa: E402
 
 WINDOWS = os.name == "nt"
 # Per host: a Linux run (in a container) and a Windows one can share the build tree.
-OUT = C.BUILD / ("runtime" if WINDOWS else "runtime-linux")
+OUT = (pathlib.Path(os.environ["ACWW_RUNTIME_OUT"]) if os.environ.get("ACWW_RUNTIME_OUT")
+       else C.BUILD / ("runtime" if WINDOWS else "runtime-linux"))
 RUNTIME = C.ROOT / "runtime"
 ROM = C.ROOT / "extract" / "adm-kr.nds"
 NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
 KEPT = RUNTIME / "native-reference.txt"
 HELPERS = RUNTIME / "compiler-helpers.txt"
+# CLEAN_AS(symbol, function) (clean/clean.h)
+CLEAN_AS = re.compile(r"^CLEAN_AS\((\w+),\s*(\w+)\)", re.M)
 # DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
@@ -153,6 +156,25 @@ def clean_checks(only: str | None = None) -> list[tuple[str, str, int, int]]:
     return out
 
 
+def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, int, int]]:
+    """Every Clean function registered with CLEAN_AS (clean/clean.h): (symbol, function, module,
+    DS address with the Thumb bit, size); with `only` ("all" or a file of names or addresses),
+    those it lists."""
+    syms = C.SymbolTable(C.modules())
+    out = []
+    for path in sorted((C.ROOT / "clean").rglob("*.c")):
+        for symbol, function in CLEAN_AS.findall(path.read_text()):
+            found = [s for s in syms.by_name.get(symbol, []) if s.kind == "function" and s.size]
+            if len(found) != 1:
+                raise SystemExit(f"{path.relative_to(C.ROOT)}: CLEAN_AS({symbol}, ...) names no single function")
+            s = found[0]
+            out.append((symbol, function, s.module, s.address | (1 if s.thumb else 0), s.size))
+    if only and only != "all":
+        wanted = {w.split()[0] for w in pathlib.Path(only).read_text().splitlines() if w.strip()}
+        out = [r for r in out if r[0] in wanted or f"{r[3] & ~1:08x}" in wanted]
+    return out
+
+
 def write_clean_table(clean: str | None) -> pathlib.Path:
     """runtime/native_table.h's clean_functions: for each Clean function, a function the Native
     run calls like a Native one (the argument registers, then the stack words) that calls the
@@ -177,6 +199,15 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
                   "}", ""]
         rows.append(f"    {{0x{address:08x}u, 0x{fn.size:x}u, (const void *) clean_{i}, "
                     f"(uint32_t) {ret} | 4u << 4 | (uint32_t) {names[module]} << 16}},")
+    # Functions registered with CLEAN_AS have their matching source's signature: the table calls
+    # them as it calls the Native version, with its result kind and parameter count.
+    table = natives_table()
+    for symbol, function, module, address, size in clean_registrations(clean) if clean else []:
+        native = table.get((address, module))
+        if native is None or module not in names:
+            raise SystemExit(f"CLEAN_AS({symbol}, {function}): {symbol} has no Native version to stand in for")
+        lines += [f"extern void {function}(void);"]
+        rows.append(f"    {{0x{address:08x}u, 0x{size:x}u, (const void *) {function}, 0x{native[1]:08x}u}},")
     lines += ["const NativeFunction clean_functions[] = {", *(rows or ["    {0, 0, 0, 0},"]), "};",
               f"const uint32_t clean_function_count = {len(rows)};", ""]
     path = OUT / "clean_table.c"
@@ -191,7 +222,8 @@ def build_clean(flags: list[str]) -> list[str]:
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         obj = OUT / "clean" / src.relative_to(C.ROOT).with_suffix(".o")
         obj.parent.mkdir(parents=True, exist_ok=True)
-        p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", "-c", str(src), "-o", str(obj)],
+        p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", f"-I{C.ROOT / 'clean'}", "-c", str(src),
+                            "-o", str(obj)],
                            capture_output=True, text=True)
         if p.returncode != 0:
             raise SystemExit(p.stdout + p.stderr)
@@ -354,7 +386,8 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     if policy not in ("all", "leaf", "none"):
         wanted = {w.split()[0] for w in pathlib.Path(policy).read_text().splitlines()
                   if w.strip() and not w.startswith("#")}
-    cleaned = {(module, address & ~1) for _, module, address, _ in clean_checks(clean)} if clean else set()
+    cleaned = ({(module, address & ~1) for _, module, address, _ in clean_checks(clean)}
+               | {(module, address & ~1) for _, _, module, address, _ in clean_registrations(clean)}) if clean else set()
     images: dict[str, bytes] = {}
     rows = []
     counts = {}
