@@ -28,6 +28,8 @@ extern const int diff_test_count;
 #define MAX_STEPS 10000000u
 #define MAX_WRITES 256
 
+const uint32_t *diff_stack;
+
 typedef struct Write {
     uint32_t address;
     uint32_t size;
@@ -172,6 +174,7 @@ static int run_test(const DiffTestEntry *entry)
         /* Clean */
         memory_restore(entry_state);
         Effects clean = {0};
+        diff_stack = (const uint32_t *) (uintptr_t) STACK_TOP;
         clean.ret = keep_return(t, t->run_clean(args));
         memory_diff(entry_state, STACK_TOP - STACK_SIZE, STACK_TOP + DIFF_STACK_ARGS_SIZE, record_write, &clean);
         memory_snapshot_free(entry_state);

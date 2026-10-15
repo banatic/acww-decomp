@@ -101,8 +101,7 @@ static void init_args(DiffRng *rng, uint32_t args[4])
 
 static uint32_t init(const uint32_t args[4])
 {
-    u16 *start = (u16 *) (uintptr_t) STACK_ARGS;
-    FrameCtrl_Init(ctrl_at(args[0]), args[1], (u8) args[2], (fx32) args[3], *start);
+    FrameCtrl_Init(ctrl_at(args[0]), args[1], (u8) args[2], (fx32) args[3], (u16) diff_stack[0]);
     return 0;
 }
 

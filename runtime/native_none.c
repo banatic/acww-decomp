@@ -4,6 +4,8 @@
 
 const NativeFunction native_functions[1];
 const uint32_t native_function_count = 0;
+const NativeFunction clean_functions[1];
+const uint32_t clean_function_count = 0;
 const NativePrivate native_private[1];
 const uint32_t native_private_count = 0;
 const char *const native_module_names[1];

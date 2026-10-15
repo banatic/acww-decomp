@@ -1675,6 +1675,29 @@ static int patch_kept(void)
     return 0;
 }
 
+/* Native code calls a Native function directly, not through the table: each Native function
+ * with a Clean version jumps to it, so every caller runs the Clean code. Both take the
+ * arguments on the stack and return in eax. */
+static int patch_clean(void)
+{
+    for (uint32_t c = 0; c < clean_function_count; c++) {
+        const NativeFunction *clean = &clean_functions[c];
+        for (uint32_t i = 0; i < native_function_count; i++) {
+            const NativeFunction *n = &native_functions[i];
+            if (n->address != clean->address || (n->info >> 16) != (clean->info >> 16)) {
+                continue;
+            }
+            uint8_t jmp[5] = {0xe9}; /* jmp clean */
+            int32_t rel = (int32_t) ((uintptr_t) clean->host - ((uintptr_t) n->host + 5));
+            memcpy(jmp + 1, &rel, 4);
+            if (native_os_patch((void *) n->host, jmp, 5) != 0) {
+                return -1;
+            }
+        }
+    }
+    return 0;
+}
+
 static void parse_frames(const char *list)
 {
     for (const char *p = list; p && *p;) {
@@ -1755,9 +1778,11 @@ int native_init(ArmCpu *c, const char *manifest)
         return -1;
     }
     /* the Native functions of the policy's functions, by DS address and module */
-    by_host = malloc(sizeof(*by_host) * (native_function_count + 1));
-    for (uint32_t i = 0; i < native_function_count; i++) {
-        const NativeFunction *n = &native_functions[i];
+    by_host = malloc(sizeof(*by_host) * (native_function_count + clean_function_count + 1));
+    for (uint32_t i = 0; i < native_function_count + clean_function_count; i++) {
+        /* a Clean function comes after its Native one and takes its place */
+        const NativeFunction *n =
+            i < native_function_count ? &native_functions[i] : &clean_functions[i - native_function_count];
         int m = module_index(native_module(n));
         Fn *f = first_at(n->address);
         for (; f && f < fns + fn_count && (f->address & ~1u) == (n->address & ~1u); f++) {
@@ -1785,7 +1810,7 @@ int native_init(ArmCpu *c, const char *manifest)
             }
             replaying = 1;
         }
-        if (native_os_init() != 0 || patch_kept() != 0) {
+        if (native_os_init() != 0 || patch_kept() != 0 || patch_clean() != 0) {
             fprintf(stderr, "native: cannot set up the fault handler or the patches\n");
             return -1;
         }
@@ -1809,9 +1834,12 @@ void native_report(FILE *out)
     if (!running) {
         return;
     }
-    int ran = 0, by_interp = 0, kept = 0, have = 0;
+    int ran = 0, by_interp = 0, kept = 0, have = 0, clean = 0, clean_ran = 0;
     for (int i = 0; i < fn_count; i++) {
         Fn *f = &fns[i];
+        int is_clean = f->native >= clean_functions && f->native < clean_functions + clean_function_count;
+        clean += is_clean;
+        clean_ran += is_clean && f->calls_in != 0;
         have += f->native != NULL;
         kept += f->native != NULL && !native_for_native(f);
         ran += f->calls_in != 0;
@@ -1825,6 +1853,10 @@ void native_report(FILE *out)
             have, kept, ran, (unsigned long long) calls_in, (unsigned long long) calls_out, by_interp,
             (unsigned long long) calls_pointer, (unsigned long long) calls_host, depth_max, (unsigned long long) thread_moves,
             (unsigned long long) fibers_made + 1, (unsigned long long) host_accesses);
+    if (clean_function_count != 0) {
+        fprintf(out, "native: %d Clean functions in place of their Native ones, %d entered from the interpreter\n", clean,
+                clean_ran);
+    }
     if (replaying) {
         uint32_t left = 0;
         for (int i = 0; i < stream_count; i++) {

@@ -40,10 +40,21 @@ static void set_clock(DiffRng *rng)
     word_at(CLOCK_TIME)[2] = (uint32_t) diff_range(rng, 0, 59);
 }
 
+/* A date whose month may also be 0 or 13, which the game's table answers too and which some
+ * callers ask about. */
+static Date any_month_date(DiffRng *rng)
+{
+    Date d = random_date(rng);
+    if (diff_range(rng, 0, 3) == 0) {
+        d.month = (u8) (diff_range(rng, 0, 1) * 13);
+    }
+    return d;
+}
+
 /* Two dates, sometimes equal or in the same month. */
 static void two_dates(DiffRng *rng, uint32_t args[4])
 {
-    *date_at(DATE_A) = random_date(rng);
+    *date_at(DATE_A) = any_month_date(rng);
     *date_at(DATE_B) = diff_range(rng, 0, 3) == 0 ? *date_at(DATE_A) : random_date(rng);
     if (diff_range(rng, 0, 3) == 0) {
         date_at(DATE_B)->year = date_at(DATE_A)->year;
@@ -83,9 +94,9 @@ static void year_month(DiffRng *rng, uint32_t args[4])
 {
     set_clock(rng);
     args[0] = (uint32_t) diff_range(rng, 0, 99);
-    args[1] = (uint32_t) diff_range(rng, 1, 12);
-    args[2] = (uint32_t) diff_range(rng, 0, 6); /* weekday */
-    args[3] = (uint32_t) diff_range(rng, 1, 5); /* the nth */
+    args[1] = (uint32_t) diff_range(rng, 0, 13); /* 0 and 13 too: see Calendar_DaysInMonth */
+    args[2] = (uint32_t) diff_range(rng, 0, 6);  /* weekday */
+    args[3] = (uint32_t) diff_range(rng, 1, 5);  /* the nth */
 }
 
 static uint32_t days_in_month(const uint32_t args[4])
@@ -101,7 +112,7 @@ static uint32_t nth_weekday(const uint32_t args[4])
 static void a_date(DiffRng *rng, uint32_t args[4])
 {
     set_clock(rng);
-    Date d = random_date(rng);
+    Date d = any_month_date(rng);
     args[0] = d.year;
     args[1] = d.month;
     args[2] = d.day;

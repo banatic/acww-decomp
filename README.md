@@ -18,7 +18,9 @@ to build it.
 
 ## Status
 
-![Progress](docs/progress.svg)
+![Progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress.svg)
+
+CI draws the map from each build of `main` (`tools/progress_map.py`).
 
 Every function moves through these levels:
 

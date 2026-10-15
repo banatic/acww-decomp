@@ -27,6 +27,10 @@ typedef struct NativeFunction {
 
 extern const NativeFunction native_functions[];
 extern const uint32_t native_function_count;
+/* The Clean functions that take the place of their Native ones (tools/run.py --clean): each
+ * calls its check's run_clean (runtime/diffcheck.h) with r0-r3. Empty without --clean. */
+extern const NativeFunction clean_functions[];
+extern const uint32_t clean_function_count;
 /* A function's own static data in the ROM: writes there are its private state. */
 typedef struct NativePrivate {
     uint32_t function; /* DS address, bit 0 clear */

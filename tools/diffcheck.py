@@ -282,7 +282,24 @@ def main() -> None:
     unit_tests()
     exe = build(generate())
     p = subprocess.run([str(exe), str(OUT / "modules.txt"), *sys.argv[1:]])
+    if p.returncode == 0 and not sys.argv[1:]:
+        write_clean_list()
     sys.exit(p.returncode)
+
+
+def write_clean_list() -> None:
+    """build/adm-kr/clean.json: every function whose Clean version passed, for
+    tools/progress_map.py."""
+    rows = []
+    for path in sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
+        text = path.read_text()
+        for m in TEST.finditer(text):
+            fields = dict(FIELD.findall(m.group(2)))
+            rows.append((fields["module"].strip().strip('"'), int(fields["address"].split("|")[0].strip(), 16)))
+        for m in CHECK.finditer(text):
+            rows.append((m.group(2), int(m.group(3), 16)))
+    out = [{"module": module, "address": f"{address & ~1:08x}"} for module, address in sorted(set(rows))]
+    (C.BUILD / "clean.json").write_text(json.dumps(out, indent=1) + "\n", newline="\n")
 
 
 if __name__ == "__main__":

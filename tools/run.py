@@ -43,6 +43,10 @@ Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
                      interrupt (the watchdog), add it to runtime/native-reference.txt and run
                      again, until none does
     --expect FILE    the frame sequence SHA-1 (as in runtime/recordings/*.sha1) both runs must give
+    --clean[=FILE]   run each Clean function (clean/, registered by its check in tests/clean/) in
+                     place of its Native one, in both runs: the Native run then checks the Clean
+                     code too (docs/runtime.md, M5). With FILE, only the functions it lists (names
+                     or addresses, one per line)
 
 Prints how far the boot gets: where it stopped, the registers the game touched, the BIOS
 calls, the PXI traffic, the functions branched to most and the last branch targets with their
@@ -77,6 +81,8 @@ RUNTIME = C.ROOT / "runtime"
 ROM = C.ROOT / "extract" / "adm-kr.nds"
 NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
 KEPT = RUNTIME / "native-reference.txt"
+# DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
+CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
            "run.c", "native_run.c", "native_os.c", "host.c", "native_tramp.S")
 
@@ -118,9 +124,85 @@ def compile_asm(src: pathlib.Path, obj: pathlib.Path) -> pathlib.Path:
     return obj
 
 
-def build(native: bool) -> pathlib.Path:
+def address_of(text: str) -> int:
+    """A check's address: `0x... | 1` for Thumb."""
+    value = 0
+    for part in text.split("|"):
+        value |= int(part.strip(), 0)
+    return value
+
+
+def clean_checks(only: str | None = None) -> list[tuple[str, str, int, int]]:
+    """Every Clean function's check in tests/clean/: (DiffTest symbol, module, DS address with
+    the Thumb bit, result width in bits); with `only` ("all" or a file of names or addresses),
+    those it lists."""
+    out = []
+    for path in sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
+        text = path.read_text()
+        for m in diffcheck.TEST.finditer(text):
+            fields = dict(diffcheck.FIELD.findall(m.group(2)))
+            bits = re.search(r"\.return_bits\s*=\s*(\d+)", m.group(2))
+            address = address_of(fields["address"])
+            out.append((m.group(1), fields["module"].strip().strip('"'), address, int(bits.group(1)) if bits else 32))
+        for m in CLEAN_CHECK.finditer(text):
+            out.append((f"diff_test_{m.group(1)}", m.group(2), address_of(m.group(3)), int(m.group(4))))
+    if only and only != "all":
+        wanted = {w.split()[0] for w in pathlib.Path(only).read_text().splitlines() if w.strip()}
+        out = [c for c in out if c[0][len("diff_test_"):] in wanted or f"{c[2] & ~1:08x}" in wanted]
+    return out
+
+
+def write_clean_table(clean: str | None) -> pathlib.Path:
+    """runtime/native_table.h's clean_functions: for each Clean function, a function the Native
+    run calls like a Native one (the argument registers, then the stack words) that calls the
+    check's run_clean with r0-r3 and the stack words in diff_stack. Empty without `clean`."""
+    names = {m: int(i) for i, m in
+             re.findall(r"native_module_name_(\d+):\s*\.asciz \"(\w+)\"", (NATIVE / "natives.s").read_text())}
+    syms = C.SymbolTable(C.modules())
+    lines = ['#include "diffcheck.h"', '#include "native_table.h"', "", "const uint32_t *diff_stack;", ""]
+    rows = []
+    for i, (test, module, address, bits) in enumerate(clean_checks(clean) if clean else []):
+        fn = syms.function(module, address & ~1)
+        if fn is None or module not in names:
+            raise SystemExit(f"{test}: no function at {address:#010x} in {module}")
+        ret = {0: "NATIVE_RET_VOID", 8: "NATIVE_RET_U8", 16: "NATIVE_RET_U16"}.get(bits, "NATIVE_RET_32")
+        lines += [f"extern const DiffTest {test};",
+                  f"static uint32_t clean_{i}({', '.join(f'uint32_t a{k}' for k in range(16))})",
+                  "{",
+                  "    const uint32_t args[4] = {a0, a1, a2, a3};",
+                  f"    const uint32_t stack[12] = {{{', '.join(f'a{k}' for k in range(4, 16))}}};",
+                  "    diff_stack = stack;",
+                  f"    return {test}.run_clean(args);",
+                  "}", ""]
+        rows.append(f"    {{0x{address:08x}u, 0x{fn.size:x}u, (const void *) clean_{i}, "
+                    f"(uint32_t) {ret} | 4u << 4 | (uint32_t) {names[module]} << 16}},")
+    lines += ["const NativeFunction clean_functions[] = {", *(rows or ["    {0, 0, 0, 0},"]), "};",
+              f"const uint32_t clean_function_count = {len(rows)};", ""]
+    path = OUT / "clean_table.c"
+    path.write_text("\n".join(lines), newline="\n")
+    return path
+
+
+def build_clean(flags: list[str]) -> list[str]:
+    """The Clean code and its checks as objects, and the names they take from the game placed at
+    their DS addresses (as tools/diffcheck.py builds them)."""
+    objects = []
+    for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
+        obj = OUT / "clean" / src.relative_to(C.ROOT).with_suffix(".o")
+        obj.parent.mkdir(parents=True, exist_ok=True)
+        p = subprocess.run([*diffcheck.compiler(), *flags, f"-I{C.INCLUDE}", "-c", str(src), "-o", str(obj)],
+                           capture_output=True, text=True)
+        if p.returncode != 0:
+            raise SystemExit(p.stdout + p.stderr)
+        objects.append(obj)
+    names = diffcheck.game_names(objects)
+    return [str(o) for o in objects] + ([str(names)] if names else [])
+
+
+def build(native: bool, clean: str | None = None) -> pathlib.Path:
     """The runtime; with `native`, linked with every Native object as tools/diffcheck.py
-    --native links them (runtime/native_table.h), else with an empty table."""
+    --native links them (runtime/native_table.h), else with an empty table; with `clean`, also
+    with the Clean code (write_clean_table)."""
     exe = OUT / (("run-native" if native else "run") + (".exe" if WINDOWS else ""))
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
@@ -134,7 +216,9 @@ def build(native: bool) -> pathlib.Path:
         if WINDOWS:
             assembly.append(RUNTIME / "native_rt_win.s")
         extra = [str(compile_asm(a, OUT / ("run-" + a.name.replace(".s", ".o")))) for a in assembly]
-        extra += [str(RUNTIME / "native_rt.c"), f"@{NATIVE / 'objects.txt'}"]
+        extra += [str(RUNTIME / "native_rt.c"), str(write_clean_table(clean)), f"@{NATIVE / 'objects.txt'}"]
+        if clean:
+            extra += build_clean(flags)
         # Classes split one function per file define their destructors and vtable in several
         # objects, identically; the linker keeps the first. The image sits at a fixed low
         # address (below the DS's 0x01000000) and its data must not be executable: a call
@@ -225,9 +309,9 @@ def kept_reference() -> dict[str, str]:
     return out
 
 
-def write_policy(policy: str) -> pathlib.Path:
+def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     """Every function of every module with the letter runtime/native_run.c reads: N, C, R, H
-    or -."""
+    or -. With `clean`, every function with a Clean version is N."""
     mods = C.modules()
     syms = C.SymbolTable(mods)
     table = natives_table()
@@ -254,6 +338,7 @@ def write_policy(policy: str) -> pathlib.Path:
     if policy not in ("all", "leaf", "none"):
         wanted = {w.split()[0] for w in pathlib.Path(policy).read_text().splitlines()
                   if w.strip() and not w.startswith("#")}
+    cleaned = {(module, address & ~1) for _, module, address, _ in clean_checks(clean)} if clean else set()
     images: dict[str, bytes] = {}
     rows = []
     counts = {}
@@ -281,11 +366,13 @@ def write_policy(policy: str) -> pathlib.Path:
                 status = "H"
             else:
                 status = "-"
+            if (mod, s.address) in cleaned:
+                status = "N"
             counts[status] = counts.get(status, 0) + 1
             rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)}\n")
     path = OUT / "native-policy.txt"
     path.write_text("".join(rows), newline="\n")
-    print(f"native policy {policy}: {counts.get('N', 0)} Native, {counts.get('C', 0)} Native for Native callers "
+    print(f"native policy {policy}{' with Clean' if clean else ''}: {counts.get('N', 0)} Native, {counts.get('C', 0)} Native for Native callers "
           f"only, {counts.get('R', 0)} kept Reference, {counts.get('H', 0)} compiler helpers", flush=True)
     return path
 
@@ -325,12 +412,12 @@ def summary(text: str) -> dict:
 
 
 def native_main(args, manifest, table, budget, env) -> int:
-    exe = build(native=True)
+    exe = build(native=True, clean=args.clean)
     env = dict(env)
     hash_file = env.pop("RUN_HASH", None)
     out = OUT / "native-run"
     out.mkdir(parents=True, exist_ok=True)
-    env["RUN_NATIVE_POLICY"] = str(write_policy(args.native))
+    env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
     if args.ram_hash:
         env["RUN_RAM_HASH"] = args.ram_hash
     # the Reference pass leaves its memory images there; the Native pass compares with them
@@ -368,7 +455,7 @@ def native_main(args, manifest, table, budget, env) -> int:
             f.write("".join(line + "\n" for line in added))
         print("kept Reference from now on: " + "; ".join(added), flush=True)
         # the record depends on which functions are Native: make it again
-        env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native))
+        env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
         ref = reference()
     nat = summary(nat_text)
     print(f"logs: {(out / 'reference.log').relative_to(C.ROOT).as_posix()}, "
@@ -411,7 +498,11 @@ def main() -> None:
     ap.add_argument("--no-timing", action="store_true", help="Native run without the Reference's timing")
     ap.add_argument("--learn", action="store_true", help="keep functions that touch hardware Reference")
     ap.add_argument("--expect", metavar="FILE", help="with --native: the frame sequence SHA-1 both runs must give")
+    ap.add_argument("--clean", nargs="?", const="all", metavar="FILE",
+                    help="with --native: Clean functions (all, or those FILE lists) in place of their Native ones")
     args = ap.parse_args()
+    if args.clean and not args.native:
+        raise SystemExit("--clean needs --native")
     if not ROM.exists():
         raise SystemExit(f"no ROM at {ROM}")
     manifest, table = generate()

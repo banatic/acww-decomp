@@ -38,6 +38,11 @@ static inline int32_t diff_range(DiffRng *rng, int32_t lo, int32_t hi)
 #define DIFF_STACK_ARGS 0x027e3f00u
 #define DIFF_STACK_ARGS_SIZE 0x40u
 
+/* The words the caller passed on the stack (the fifth argument and on) while run_clean runs:
+ * DIFF_STACK_ARGS in the check; the calling function's own stack words in a run of the game
+ * (tools/run.py --clean). */
+extern const uint32_t *diff_stack;
+
 /* Free main RAM the checks may build their inputs in: above everything the modules load. */
 #define DIFF_SCRATCH 0x023e0000u
 #define DIFF_SCRATCH_SIZE 0x00010000u

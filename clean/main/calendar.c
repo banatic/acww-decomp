@@ -37,16 +37,30 @@ static const u8 days_in_month[2][12] = {
     {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
 };
 
-static const u16 days_before_month[2][12] = {
-    {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334},
-    {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335},
+/* The days before each month, and in the last entry the year's (the game's table at
+ * 020d1b5c). */
+static const u16 days_before_month[2][13] = {
+    {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365},
+    {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366},
 };
 
-/* Days from 1 January 2000. REQUIRES: a valid date. */
+/* QUIRK: the game looks a month up in its table at [month - 1] without a check, and some of
+ * its callers ask about month 0. Month 0 then reads the entry before the row: in a leap year
+ * the end of the common year's row (365), otherwise the zero halfword before the table.
+ * Month 13 reads the year's own length. REQUIRES: month 0-13. */
+static int days_before(int leap, int month)
+{
+    if (month == 0) {
+        return leap ? days_before_month[0][12] : 0;
+    }
+    return days_before_month[leap][month - 1];
+}
+
+/* Days from 1 January 2000. REQUIRES: a day of the month; month 0-13 (days_before). */
 static int day_number(const Date *date)
 {
     int year = date->year;
-    return 365 * year + (year + 3) / 4 + days_before_month[is_leap(year)][date->month - 1] + date->day - 1;
+    return 365 * year + (year + 3) / 4 + days_before(is_leap(year), date->month) + date->day - 1;
 }
 
 /* func_0209dd9c */
@@ -77,10 +91,22 @@ void Calendar_AddTime(Time time, Time delta, Time *sum)
     sum->hour = hour % 24;
 }
 
-/* func_0209de24. REQUIRES: month 1-12. */
+/* func_0209de24.
+ * QUIRK: as with days_before, the game reads its table at [month - 1] unchecked, and its leap
+ * year row (at 020d1aec) comes before the common year's (020d1af8). Month 0 of a leap year
+ * reads the zero byte before the table and of a common year the leap row's December; month 13
+ * of a leap year reads the common row's January and of a common year the first byte of the
+ * next table (the periods' first entry, 0x0104). REQUIRES: month 0-13. */
 u8 Calendar_DaysInMonth(u32 year, u32 month)
 {
-    return days_in_month[is_leap(year)][month - 1];
+    int leap = is_leap(year);
+    if (month == 0) {
+        return leap ? 0 : days_in_month[1][11];
+    }
+    if (month == 13) {
+        return leap ? days_in_month[0][0] : (u8) data_020d1b04[0];
+    }
+    return days_in_month[leap][month - 1];
 }
 
 /* func_0209de44: the day of the month that is the `n`th `weekday` (0 = Sunday), or -1 when

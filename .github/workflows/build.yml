@@ -1,6 +1,6 @@
 # Full build: needs the base ROM and the compiler, which live only in a private container image
-# (see docs/ci.md). Verifies every function, links the program with the original linker, and
-# uploads the progress report.
+# (see docs/ci.md). Verifies every function, links the program with the original linker,
+# uploads the progress report and publishes the progress map to the `progress` branch.
 name: build
 
 # Not on pull requests: workflows from forks cannot read the private image.
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # the progress map's branch
   packages: read
 
 jobs:
@@ -77,3 +77,21 @@ jobs:
         with:
           name: adm-kr_report
           path: build/adm-kr/report.json
+
+      # The map is drawn from this run's results and kept on its own branch (one commit, replaced
+      # each time), so main holds no generated files; README.md shows it from there.
+      - name: Progress map
+        run: python3 tools/progress_map.py
+
+      - name: Publish the progress map
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          command -v git >/dev/null || (apt-get install -y -qq --no-install-recommends git >/dev/null)
+          mkdir -p build/progress
+          cp docs/progress.svg build/progress/
+          cd build/progress
+          git init -q -b progress
+          git add progress.svg
+          git -c user.name="github-actions[bot]" -c user.email="41898283+github-actions[bot]@users.noreply.github.com"             commit -q -m "Progress map for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" progress
