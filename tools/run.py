@@ -415,7 +415,9 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
                 status = "H"
             else:
                 status = "-"
-            if (mod, s.address) in cleaned:
+            # A Clean version runs in place of its function, unless the function stays Reference for
+            # what the PC cannot do (hardware, the ROM's stack layout): its Clean code cannot either.
+            if (mod, s.address) in cleaned and s.name not in kept:
                 status = "N"
             counts[status] = counts.get(status, 0) + 1
             rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)}\n")

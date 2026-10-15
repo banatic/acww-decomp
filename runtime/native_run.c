@@ -283,8 +283,6 @@ static int inside_native(uint32_t address)
 }
 
 /* The loaded function whose bytes contain `address`, or NULL. */
-static int is_clean(const Fn *f);
-
 static Fn *containing(uint32_t address)
 {
     address &= ~1u;
@@ -379,11 +377,9 @@ typedef struct Stream {
     struct Frame {
         uint32_t ret, sp, function;
         int native;
-        int quiet; /* a call out of a Clean function: nothing in it is recorded */
         Fn *fn;
     } *frames;
     int depth, capacity;
-    int quiet; /* quiet frames open */
 } Stream;
 
 #define MAX_STREAMS 256
@@ -987,15 +983,8 @@ static void record_branch(uint32_t address)
             break;
         }
         s->depth--;
-        if (t->quiet) {
-            s->quiet--;
-            continue;
-        }
         write_record(key, t->native ? CROSS_RETURN : CROSS_BACK, t->function, cpu->steps,
                      t->native ? narrow_result(t->fn, cpu->r[0], cpu->r[1]) : cpu->r[0]);
-    }
-    if (s->quiet > 0) {
-        return;
     }
     int inside = s->depth > 0 && s->frames[s->depth - 1].native;
     Fn *f = first_at(address);
@@ -1009,12 +998,8 @@ static void record_branch(uint32_t address)
             (cpu->r[14] & ~1u) - (address & ~1u) < 8u) {
             return;
         }
-        struct Frame out = {cpu->r[14], cpu->r[13], address & ~1u, 0, is_clean(containing(cpu->r[14])), NULL};
-        if (out.quiet) {
-            s->quiet++;
-        } else {
-            write_record(key, CROSS_CALL_OUT, address & ~1u, cpu->steps, cpu->r[13]);
-        }
+        write_record(key, CROSS_CALL_OUT, address & ~1u, cpu->steps, cpu->r[13]);
+        struct Frame out = {cpu->r[14], cpu->r[13], address & ~1u, 0, NULL};
         if (s->depth == s->capacity) {
             s->capacity = s->capacity ? s->capacity * 2 : 16;
             s->frames = realloc(s->frames, (size_t) s->capacity * sizeof(struct Frame));
@@ -1023,7 +1008,7 @@ static void record_branch(uint32_t address)
         return;
     }
     f = loaded_at(address);
-    struct Frame frame = {cpu->r[14], cpu->r[13], address & ~1u, 0, 0, f};
+    struct Frame frame = {cpu->r[14], cpu->r[13], address & ~1u, 0, f};
     if (!inside) {
         if (!native_for_interpreter(f)) {
             return;
@@ -1056,16 +1041,8 @@ static void record_branch(uint32_t address)
         if (!inside_native(cpu->r[14]) && !((cpu->r[14] & ~1u) == (top->ret & ~1u) && cpu->r[13] == top->sp)) {
             return;
         }
-        /* A Clean function need not call what the ROM's code calls (it may copy a structure
-           itself where the ROM calls MI_CpuCopy8): its calls out are not recorded, nor
-           anything until they return. */
-        frame.quiet = is_clean(containing(cpu->r[14]));
-        if (frame.quiet) {
-            s->quiet++;
-        } else {
-            /* the callee's stack pointer: the Native run calls it with the same one */
-            write_record(key, CROSS_CALL_OUT, address & ~1u, cpu->steps, cpu->r[13]);
-        }
+        /* the callee's stack pointer: the Native run calls it with the same one */
+        write_record(key, CROSS_CALL_OUT, address & ~1u, cpu->steps, cpu->r[13]);
     }
     if (s->depth == s->capacity) {
         s->capacity = s->capacity ? s->capacity * 2 : 16;

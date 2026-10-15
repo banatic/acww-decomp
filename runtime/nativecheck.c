@@ -328,6 +328,9 @@ int main(int argc, char **argv)
             if (outcome == DIFFERENT && is_known(f)) {
                 outcome = KNOWN;
             }
+            if (outcome == NO_STATE) {
+                fprintf(log, "%08x %s: no generated state the reference finishes\n", f->address & ~1u, native_module_names[m]);
+            }
             counts[outcome]++;
         }
         if (loaded) {

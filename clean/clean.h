@@ -13,7 +13,7 @@
 #ifndef CLEAN_CLEAN_H
 #define CLEAN_CLEAN_H
 
-#define CLEAN_AS(symbol, function)                                                                                   \
+#define CLEAN_AS(symbol, function)                                                                                            \
     static const void *const clean_as_##symbol __attribute__((unused)) = (const void *) (function);
 
 #endif

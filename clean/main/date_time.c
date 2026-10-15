@@ -6,6 +6,10 @@
 
 #include <stddef.h>
 
+#include "clean.h"
+
+extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
+
 /* func_0209e040: `when` moved back by `amount`, a count of each unit in DateTime's fields. */
 void DateTime_Subtract(DateTime *when, const DateTime *amount)
 {
@@ -191,13 +195,14 @@ void DateTime_StartOfWeek(const DateTime *when, DateTime *start)
     }
     int weekday = Calendar_Weekday((s8) when->year, (s8) when->month, (s8) when->day);
     if (start != when) {
-        *start = *when;
+        MI_CpuCopy8(when, start, sizeof(DateTime));
     }
     DateTime_SubtractDays(start, weekday);
     start->hour = 0;
     start->minute = 0;
     start->second = 0;
 }
+CLEAN_AS(func_0209e314, DateTime_StartOfWeek)
 
 /* func_0209e350: the minutes from `from` to `to`, leaving out the seconds. */
 int DateTime_MinutesBetween(const DateTime *from, const DateTime *to)

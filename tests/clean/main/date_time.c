@@ -91,24 +91,6 @@ static void two_times(DiffRng *rng, uint32_t args[4])
     args[2] = (uint32_t) diff_range(rng, 0, 63);
 }
 
-static void a_week(DiffRng *rng, uint32_t args[4])
-{
-    set_clock(rng);
-    *at(WHEN) = random_date_time(rng);
-    *at(OTHER) = random_date_time(rng);
-    args[0] = WHEN;
-    switch (diff_range(rng, 0, 3)) {
-        case 0:
-            args[1] = WHEN;
-            break;
-        case 1:
-            args[1] = 0;
-            break;
-        default:
-            args[1] = OTHER;
-    }
-}
-
 static void clock_only(DiffRng *rng, uint32_t args[4])
 {
     set_clock(rng);
@@ -138,12 +120,6 @@ BY_AMOUNT(AddYears)
 static uint32_t subtract(const uint32_t args[4])
 {
     DateTime_Subtract(at(args[0]), at(args[1]));
-    return 0;
-}
-
-static uint32_t start_of_week(const uint32_t args[4])
-{
-    DateTime_StartOfWeek(at(args[0]), args[1] ? at(args[1]) : NULL);
     return 0;
 }
 
@@ -181,7 +157,6 @@ DIFF_CHECK(func_0209e268, "main", 0x0209e268 | 1, 0, 1, a_time_and_amount, run_A
 DIFF_CHECK(func_0209e29c, "main", 0x0209e29c | 1, 0, 1, a_time_and_amount, run_AddDays)
 DIFF_CHECK(func_0209e2d0, "main", 0x0209e2d0 | 1, 0, 1, a_time_and_amount, run_AddMonths)
 DIFF_CHECK(func_0209e304, "main", 0x0209e304 | 1, 0, 0, a_time_and_amount, run_AddYears)
-DIFF_CHECK(func_0209e314, "main", 0x0209e314 | 1, 0, 1, a_week, start_of_week)
 DIFF_CHECK(func_0209e350, "main", 0x0209e350 | 1, 32, 1, two_times, minutes_between)
 DIFF_CHECK(func_0209e380, "main", 0x0209e380 | 1, 32, 1, two_times, days_between)
 DIFF_CHECK(func_0209e3ac, "main", 0x0209e3ac | 1, 32, 0, two_times, compare)
