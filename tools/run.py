@@ -207,6 +207,8 @@ def build(native: bool, clean: str | None = None) -> pathlib.Path:
     exe = OUT / (("run-native" if native else "run") + (".exe" if WINDOWS else ""))
     flags = ["-std=c11", "-O2", "-Wall", "-Wextra", "-fwrapv", "-fno-strict-aliasing", "-D_CRT_SECURE_NO_WARNINGS",
              "-D_CRT_NONSTDC_NO_WARNINGS", f"-I{RUNTIME}"]
+    if not WINDOWS:
+        flags.append("-D_DEFAULT_SOURCE")  # strdup and the POSIX calls, which -std=c11 leaves out
     srcs = [str(RUNTIME / n) for n in SOURCES]
     extra: list[str] = []
     link: list[str] = []

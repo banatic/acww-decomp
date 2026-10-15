@@ -98,6 +98,7 @@ def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
             rows.append(f"\t.globl {host}\n\t.set {host}, 0x{addrs.pop():08x}\n")
     if not rows:
         return None
+    OUT.mkdir(parents=True, exist_ok=True)
     src = OUT / "clean_names.s"
     src.write_text("".join(rows), newline="\n")
     obj = OUT / "clean_names.o"

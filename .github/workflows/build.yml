@@ -69,6 +69,46 @@ jobs:
           python3 tools/run.py 0 1300 --input runtime/recordings/title-start.txt             --rtc "2005-11-23 12:00:00" --hash build/adm-kr/title-start.txt | tee build/adm-kr/run.log
           grep -q "sequence sha1 $(cat runtime/recordings/title-start.sha1)" build/adm-kr/run.log
 
+      # The matching sources compiled for 32-bit x86. Each object is keyed by its source, its
+      # headers and the flags (tools/native.py), so a restored cache only recompiles what changed.
+      - uses: actions/cache@v4
+        with:
+          path: build/adm-kr/native/linux
+          key: native-linux-${{ hashFiles('src/**', 'include/**', 'runtime/native.h', 'tools/native.py', 'tools/objrewrite.py') }}
+          restore-keys: native-linux-
+
+      - name: Build the Native functions
+        run: |
+          apt-get install -y -qq --no-install-recommends gcc-multilib g++-multilib binutils >/dev/null
+          python3 tools/native.py
+
+      # Every function with a source runs as Native, following the Reference run's timing: the
+      # frames must be the Reference's, and memory the same apart from words holding PC addresses.
+      - name: Run to the title as Native
+        run: |
+          python3 tools/run.py 0 1300 --input runtime/recordings/title-start.txt --rtc "2005-11-23 12:00:00" \
+            --native=all --ram-hash 100,390,500,700,1000,1299 --expect runtime/recordings/title-start.sha1 \
+            > build/adm-kr/native-all.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-all.log | tail -40; exit 1; }
+          grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-all.log | tail -12
+
+      - name: Run to the title as Native with the Clean functions
+        run: |
+          python3 tools/run.py 0 1300 --input runtime/recordings/title-start.txt --rtc "2005-11-23 12:00:00" \
+            --native=all --clean --ram-hash 100,390,500,700,1000,1299 --expect runtime/recordings/title-start.sha1 \
+            > build/adm-kr/native-clean.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -40; exit 1; }
+          grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -12
+
+      - name: Upload the Native run logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-run-logs
+          path: |
+            build/adm-kr/runtime-linux/native-run/*.log
+            build/adm-kr/native-*.log
+            build/adm-kr/native/linux/left-out.txt
+            build/adm-kr/native/linux/keep-reference.txt
+
       - name: Report
         run: python3 tools/report.py
 

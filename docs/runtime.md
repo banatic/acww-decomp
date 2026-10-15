@@ -118,27 +118,29 @@ CI checks against `title-start.sha1`.
   at native resolution, input) runs the game's own boot code to the title screen.
 - A recorded input sequence reaches the same title-screen frames on every run.
 
-**M4: The game starts, as Native.** In progress: on Windows,
-`tools/run.py ... --native=all --expect runtime/recordings/title-start.sha1` runs 23,885
+**M4: The game starts, as Native.** Done: on Windows (clang) and Linux (gcc),
+`tools/run.py ... --native=all --expect runtime/recordings/title-start.sha1` runs about 23,450
 functions as Native and gives the Reference's 1,300 frames, with RAM at six points equal apart
-from words that hold PC addresses (function pointers and stack addresses the PC code keeps).
+from words that hold PC addresses (function pointers and stack addresses the PC code keeps); CI
+runs it on Linux.
 `runtime/native_run.c` dispatches between the two: Reference code calling a Native function, a
 Native function calling the ROM's code through the interpreter (`native_tramp.S`), and a trace of
-the Reference run's crossings that gives Native code the Reference's timing. 1,326 functions stay
-Reference: those `tools/native.py` finds by reading the sources (member function pointers,
+the Reference run's crossings that gives Native code the Reference's timing. About 1,400 functions
+stay Reference: those `tools/native.py` finds by reading the sources (member function pointers,
 virtual calls with no known address, calls to a function's middle), and those listed with a
 reason in `runtime/native-reference.txt` (hardware access, calls with fewer arguments than the
-callee takes, undefined behaviour). Linux does not pass yet, and neither run is in CI.
+callee takes, undefined behaviour, a source that relies on mwccarm's stack layout).
 - The same recording run with Native for every function that has a source gives the same frames
   and the same RAM at chosen points as the Reference run.
 
-**M5: Clean, one subsystem at a time.** In progress: eleven subsystems of `main` in
-`clean/main/` (180 functions) pass their function-level checks, and on Windows the M4
-recording run with `--clean` (each Clean function in place of its Native one, `tools/run.py`)
-gives the Reference's frames and RAM. The recording found what random entry states had not: callers that
-ask the calendar about month 0 or 13, which the game's tables answer from their neighbouring
-bytes (`clean/main/calendar.c`), and a fifth argument that a check placed where the game does
-not (`diff_stack` in `runtime/diffcheck.h`). A Clean function need not call what the ROM's code
-calls: the Reference run records nothing of its calls out (`runtime/native_run.c`).
+**M5: Clean, one subsystem at a time.** Done, and growing: eleven subsystems of `main` in
+`clean/main/` (180 functions) pass their function-level checks, and the M4 recording run with
+`--clean` (each Clean function in place of its Native one, `tools/run.py`) gives the
+Reference's frames and RAM on Windows and on Linux in CI. The recording found what random entry
+states had not: callers that ask the calendar about month 0 or 13, which the game's tables
+answer from their neighbouring bytes (`clean/main/calendar.c`), and a fifth argument that a
+check placed where the game does not (`diff_stack` in `runtime/diffcheck.h`). A Clean function
+need not call what the ROM's code calls: the Reference run records nothing of its calls out
+(`runtime/native_run.c`).
 - Clean functions are added by subsystem; each passes the function-level check and the M4
   recording. The progress map counts them.
