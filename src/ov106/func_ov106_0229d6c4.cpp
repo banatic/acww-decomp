@@ -9,7 +9,7 @@ extern "C" void func_ov002_0220a374(void *, int);
 extern "C" int func_ov002_0220a768(void *, int);
 extern "C" int func_ov002_0220a72c(void *, int);
 extern "C" void func_ov002_0220a0b4(void *, int, int);
-extern "C" void func_ov002_02208098(void *, int);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 class UnkStruct_0229d6c4 {
   public:
@@ -38,5 +38,5 @@ void func_ov106_0229d6c4(void *p)
     int a = func_ov002_0220a768(&o->unk_3FB4, 4);
     int b = func_ov002_0220a72c(&o->unk_3FB4, 4);
     func_ov002_0220a0b4(&o->sub1, a, b);
-    func_ov002_02208098(o, 0x1d);
+    func_ov002_02208098((void *) (o), 0x1d);
 }

@@ -12,10 +12,10 @@ struct UnkStruct_0200d1e4 {
 
 extern int data_020ccf94;
 extern int func_02073908(int, int);
-extern void func_0201100c(UnkStruct_0200d1e4 *);
+extern int func_0201100c(UnkStruct_0200d1e4 *);
 extern void func_02010f5c(UnkStruct_0200d1e4 *);
 extern void func_02010d64(UnkStruct_0200d1e4 *);
-extern void func_02010ca4(UnkStruct_0200d1e4 *);
+extern int func_02010ca4(UnkStruct_0200d1e4 *);
 extern void func_0200d2bc(UnkStruct_0200d1e4 *);
 extern char func_0200d3a4(UnkStruct_0200d1e4 *);
 extern void func_0200ef1c(UnkStruct_0200d1e4 *);

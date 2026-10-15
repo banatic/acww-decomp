@@ -4,7 +4,7 @@
 
 extern int data_020e29fc;
 extern int data_021d5658;
-extern int func_02091494(int, int, int, int, int, int, int);
+extern void func_02091494(int, int, int, int, int, int, int);
 extern int func_02090c2c(int, int, int, int);
 
 int func_02094cf8(int a0, int a1, int a2, int a3, int a4, int a5)

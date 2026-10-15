@@ -2,21 +2,21 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02003780(void *);
-extern void func_0209529c(void *);
+extern int func_02003780(void *);
+extern void *func_0209529c(void *);
 extern void func_02095208(void *, void *);
-extern void func_02095074(void *, void *);
+extern void *func_02095074(void *, void *);
 extern void func_020037ac(void *, void *);
-extern void func_02003618(void *, void *);
-extern void func_0209526c(void *);
-extern void func_02003750(void *);
+extern int func_02003618(void *, void *);
+extern int func_0209526c(void *);
+extern int func_02003750(void *);
 
 struct Param {
     unsigned char pad_00[0x1e];
     unsigned char mode;
 };
 
-void func_0206671c(struct Param *p, void *q)
+int func_0206671c(struct Param *p, void *q)
 {
     unsigned char obj0[16];
     unsigned char obj1[36];
@@ -39,5 +39,5 @@ void func_0206671c(struct Param *p, void *q)
     }
 
     func_0209526c(&obj1);
-    func_02003750(&obj0);
+    return func_02003750(&obj0);
 }

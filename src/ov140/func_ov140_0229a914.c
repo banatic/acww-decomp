@@ -11,7 +11,7 @@ extern void func_ov140_0229a73c(void *);
 extern void func_ov140_0229a3fc(void *, int _x);
 extern void func_ov140_02299fa0(void *, int);
 extern void RtcSendPxiCommand(int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov140_0229a544(void *);
 
 typedef struct UnkStruct_0229a914 {
@@ -53,7 +53,7 @@ void func_ov140_0229a914(UnkStruct_0229a914 *self)
             }
         }
     tail:
-        func_ov002_02208098(self, 1);
+        func_ov002_02208098((void *) (self), 1);
         func_ov140_0229a544(self);
     }
 exit:

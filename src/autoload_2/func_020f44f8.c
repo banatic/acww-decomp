@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f0fb0(void *arg);
+extern void func_020f0fb0(void *arg, int value);
 extern char data_021fd1bc;
 
-void func_020f44f8(void)
+void func_020f44f8(void *receiver, int value)
 {
-    func_020f0fb0(&data_021fd1bc);
+    func_020f0fb0(&data_021fd1bc, value);
 }

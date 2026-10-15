@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov123_0229b174(void *param);
+extern int func_ov123_0229b174(void *param);
 extern void func_020708e4(void *a, unsigned short *b, int c);
 extern void func_02070a98(void *a, int b, int c, int d, int e, int f, int g);
 extern void func_02070a04(void *a, int b, int c);

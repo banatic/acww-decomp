@@ -8,7 +8,7 @@ struct obj_020f2540 {
     void *unk_00;
 };
 
-extern void func_020f4514(struct obj_020f2540 *);
+extern void *func_020f4514(struct obj_020f2540 *);
 extern void func_020edb3c(struct obj_020f2540 *);
 
 struct obj_020f2540 *func_020f2540(struct obj_020f2540 *self)

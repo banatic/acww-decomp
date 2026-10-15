@@ -9,14 +9,14 @@ extern char data_ov130_0229ac58[];
 extern char data_ov130_0229ac6c[];
 extern void *data_ov130_0229a980[];
 
-extern void func_02002d14(void *t, void *g, int a, int b, int c, int d);
-extern void func_02002c6c(void *t, void *g, int a, int b, int c, int d);
+extern int func_02002d14(void *t, void *g, int a, int b, int c, int d);
+extern int func_02002c6c(void *t, void *g, int a, int b, int c, int d);
 extern void *func_02064b2c(void *t, void *g, int a, int *out);
-extern void func_02002a88(void *p, int a, int b, int c, int d);
+extern int func_02002a88(void *p, int a, int b, int c, int d);
 extern void func_020e993c(void *g, void *h);
-extern void func_02002cd8(void *t, void *g, int a, int b, int c);
+extern int func_02002cd8(void *t, void *g, int a, int b, int c);
 
-void func_ov130_0229a3f0(int a)
+int func_ov130_0229a3f0(int a)
 {
     void *g;
     void *h;
@@ -38,5 +38,5 @@ void func_ov130_0229a3f0(int a)
         k = k + 0x20;
     }
     func_020e993c(g, h);
-    func_02002cd8(data_ov130_0229ac6c, g, 8, a, 4);
+    return func_02002cd8(data_ov130_0229ac6c, g, 8, a, 4);
 }

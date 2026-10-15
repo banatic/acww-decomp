@@ -29,7 +29,7 @@ extern "C" {
 extern void func_02059920(UnkStruct_02059b6c *self);
 extern int func_0205989c(UnkStruct_02059b6c *self);
 extern void func_020044d0(void *p, int *args);
-extern void func_020e8858(void *p);
+extern unsigned char func_020e8858(void *p);
 
 int func_02059b6c(UnkStruct_02059b6c *self)
 {

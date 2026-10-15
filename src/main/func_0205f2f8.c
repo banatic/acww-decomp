@@ -28,7 +28,7 @@ struct UnkStruct_0205f2f8_3 {
     u16 c[9];
 };
 
-extern void func_02055454(struct UnkStruct_0205f2f8 *);
+extern int func_02055454(struct UnkStruct_0205f2f8 *);
 extern void func_0205f0c0(struct UnkStruct_0205f2f8_3 *, int);
 extern void func_02055b40(struct UnkStruct_0205f2f8_2 *);
 extern void func_020e9b9c(void *);

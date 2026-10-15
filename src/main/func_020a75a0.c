@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b65c4(void);
+extern unsigned char func_020b65c4(void);
 extern void func_02084f8c(void);
 extern void MI_CpuCopy8(void *param1, void *param2, int param3);
 

@@ -22,7 +22,7 @@ typedef struct {
 
 extern void func_0208af30(UnkStruct_0208bbbc *obj);
 extern void func_0208a1f8(char *p);
-extern void func_020b5630(char *p);
+extern void *func_020b5630(char *p);
 
 extern unsigned char data_020e21fc[];
 

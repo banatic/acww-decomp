@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void OS_ClearAlloc(unsigned char);
+extern int OS_ClearAlloc(unsigned char);
 
 void func_0203f260(int arg0, int arg1)
 {

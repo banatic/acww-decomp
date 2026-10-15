@@ -3,9 +3,9 @@
  */
 
 extern int data_021fbe94;
-void func_020e9ed4(int, int, int);
+int func_020e9ed4(int, int, int);
 
-void func_020e98f4(int a, int b)
+int func_020e98f4(int a, int b)
 {
-    func_020e9ed4(data_021fbe94, a, b);
+    return func_020e9ed4(data_021fbe94, a, b);
 }

@@ -25,7 +25,7 @@ extern void func_ov004_02244224(char *);
 extern void func_ov004_0224412c(char *);
 extern void func_ov004_02244f48(Vec *, Vec *, int, int);
 extern void func_020550e4(void *, int);
-extern void func_ov004_02244904(char *);
+extern int func_ov004_02244904(char *);
 void func_ov004_022442b4(char *self)
 {
     u8 state = (u8) S(0x172);

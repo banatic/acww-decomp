@@ -17,11 +17,11 @@ extern const char data_ov114_0229dca0[];
 extern const char data_ov114_0229dcb4[];
 extern const char data_ov114_0229dcc8[];
 
-extern void func_02002c6c(const void *data, void *ctx, u8 val, int a, int b, int c);
-extern void func_02002d14(const void *data, void *ctx, u8 val, int a, int b, int c);
-extern void func_02064af4(const void *src, void *dst, unsigned int size);
+extern int func_02002c6c(const void *data, void *ctx, u8 val, int a, int b, int c);
+extern int func_02002d14(const void *data, void *ctx, u8 val, int a, int b, int c);
+extern int func_02064af4(const void *src, void *dst, unsigned int size);
 extern void MIi_CpuCopy16(const void *src, void *dst, unsigned int size);
-extern void func_02002ca4(const void *data, void *ctx, u8 val);
+extern int func_02002ca4(const void *data, void *ctx, u8 val);
 
 struct UnkStruct_0229d700 {
     char pad_00[0x948];

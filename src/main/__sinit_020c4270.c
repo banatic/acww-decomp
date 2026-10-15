@@ -12,8 +12,8 @@ typedef struct {
     int c;
 } UnkStruct_020c4270_2;
 
-extern void __register_global_object(UnkStruct_020c4270_2 *, void *, UnkStruct_020c4270_2 *);
-extern void func_020012dc(void);
+extern void __register_global_object(void *, void *, void *);
+extern void func_020012dc(void *);
 
 extern UnkStruct_020c4270_2 data_021c16b4[2], data_021c16e4[2];
 extern UnkStruct_020c4270_2 data_021c157c[4];
@@ -64,22 +64,22 @@ void __sinit_020c4270(void)
     p->a = 0x800;
     p->b = 0;
     p->c = 0x1000;
-    __register_global_object(p, (void *) func_020012dc, &data_021c157c[0]);
+    __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021c157c[0]));
     p = &data_021c16b4[1];
     p->a = -0x800;
     p->b = 0;
     p->c = 0x1000;
-    __register_global_object(p, (void *) func_020012dc, &data_021c157c[1]);
+    __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021c157c[1]));
     p = &data_021c16e4[0];
     p->a = 0x700;
     p->b = 0;
     p->c = 0xf00;
-    __register_global_object(p, (void *) func_020012dc, &data_021c157c[2]);
+    __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021c157c[2]));
     p = &data_021c16e4[1];
     p->a = -0x700;
     p->b = 0;
     p->c = 0xf00;
-    __register_global_object(p, (void *) func_020012dc, &data_021c157c[3]);
+    __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021c157c[3]));
 
     data_021c1794[0] = data_020d85cc;
     data_021c1794[1] = data_020d87fc;

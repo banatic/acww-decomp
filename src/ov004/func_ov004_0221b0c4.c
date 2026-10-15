@@ -4,10 +4,10 @@
 
 extern char data_ov004_0225328c;
 extern char data_ov004_022532f4;
-extern void func_020b7f60(void *p);
-extern void func_02066994(void **p);
-extern void func_0203f080(void *p);
-extern __arm void func_020edf54(void *p);
+extern int func_020b7f60(void *p);
+extern void *func_02066994(void **p);
+extern void *func_0203f080(void *p);
+extern void func_020edf54(void *p);
 
 typedef struct UnkStruct_0221b0c4 {
     void *vt0;

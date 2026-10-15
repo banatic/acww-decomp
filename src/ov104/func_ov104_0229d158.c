@@ -3,10 +3,10 @@
  */
 
 extern void func_ov002_0220a374(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov104_0229d158(char *p)
 {
     func_ov002_0220a374(p + 0x24a0, 4);
-    func_ov002_02208098(p, 0x10);
+    func_ov002_02208098((void *) (p), 0x10);
 }

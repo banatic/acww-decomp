@@ -7,14 +7,14 @@ typedef struct {
     unsigned char unk_B9;
 } UnkStruct_0229caa8;
 
-extern int func_0206f6a4(UnkStruct_0229caa8 *p);
+extern int func_0206f6a4(void);
 extern void func_02061e2c(unsigned short *dst, unsigned short *src);
 extern int func_0209a19c(void);
-extern void func_020984e8(void);
-extern int func_020996ac(void);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int a, void *b, int c, int d);
-extern void func_ov107_0229d0f0(UnkStruct_0229caa8 *p, unsigned char b);
-extern void func_0206f698(void);
+extern int func_020984e8(void);
+extern int func_020996ac(int argument0);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int a, void *b, int c, int d);
+extern int func_ov107_0229d0f0(UnkStruct_0229caa8 *p, unsigned char b);
+extern void func_0206f698(int value);
 extern void func_ov107_0229d2d8(UnkStruct_0229caa8 *p, unsigned char b, int c, int d);
 
 void func_ov107_0229caa8(UnkStruct_0229caa8 *param)
@@ -24,7 +24,7 @@ void func_ov107_0229caa8(UnkStruct_0229caa8 *param)
     int flag;
     int res;
 
-    local[0] = (unsigned short) func_0206f6a4(param);
+    local[0] = (unsigned short) func_0206f6a4();
     func_02061e2c(&local[1], local);
     val = local[1];
     flag = 0;
@@ -32,11 +32,10 @@ void func_ov107_0229caa8(UnkStruct_0229caa8 *param)
         val = func_0209a19c();
         flag = 1;
     }
-    func_020984e8();
-    res = func_020996ac();
+
+    res = func_020996ac((int) func_020984e8());
     OSi_DoUnlockByWord__main_0203cd2c(res, &local[1], 0, 1);
 
-    func_ov107_0229d0f0(param, param->unk_B9);
-    func_0206f698();
+    func_0206f698(func_ov107_0229d0f0(param, param->unk_B9));
     func_ov107_0229d2d8(param, param->unk_B9, val, flag);
 }

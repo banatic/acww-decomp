@@ -26,9 +26,9 @@ struct MainObj {
     int unk_58;
 };
 
-extern "C" void func_020a94a4(MainObj *self, unsigned char param1);
+extern "C" void func_020a94a4(MainObj *self);
 extern "C" void func_020a9354(MainObj *self, int ret);
-extern "C" void func_020a92d8(MainObj *self, int arg);
+extern "C" int func_020a92d8(MainObj *self, int arg);
 
 extern "C" unsigned char func_0203dd10(MainObj *self, unsigned char param1)
 {
@@ -37,7 +37,7 @@ extern "C" unsigned char func_0203dd10(MainObj *self, unsigned char param1)
     self->unk_50 = param1;
     self->unk_54 = 0;
     self->unk_58 = 0;
-    func_020a94a4(self, param1);
+    func_020a94a4(self);
     int ret = self->inner->sub.v2();
     func_020a9354(self, ret);
     func_020a92d8(self, 0);

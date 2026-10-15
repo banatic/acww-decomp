@@ -17,8 +17,8 @@ typedef struct {
     u8 unk_AE;
 } UnkStruct_02299f40;
 
-extern void func_ov123_0229a094(UnkStruct_02299f40 *self, int a, int b);
-extern void func_ov123_0229ab80(UnkStruct_02299f40 *self, int a, int b, int c, int d, int e, int f);
+extern int func_ov123_0229a094(UnkStruct_02299f40 *self, int a, int b);
+extern int func_ov123_0229ab80(UnkStruct_02299f40 *self, int a, int b, int c, int d, int e, int f);
 extern void func_ov123_0229a180(UnkStruct_02299f40 *self, int a, int b, int c);
 extern void func_ov123_0229a148(UnkStruct_02299f40 *self, int a, int b);
 

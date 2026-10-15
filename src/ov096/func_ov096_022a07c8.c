@@ -2,24 +2,24 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f56c(void *p);
+extern int func_0206f56c(void);
 extern void *func_ov002_02208008(void *p);
 extern int func_ov096_0229c560(void *p, void *q, int n);
 extern void func_ov096_0229e898(void *p, unsigned char b, int n);
-extern void func_ov096_022a18dc(void *p, int n);
+extern int func_ov096_022a18dc(void *p, int n);
 extern void func_ov096_0229eb14(void *p);
 extern void func_ov096_0229dd94(void *p);
-extern void func_ov002_02207d24(void *p, int n);
+extern int func_ov002_02207d24(void *p, int n);
 extern int func_ov096_0229f150(void *p, unsigned char b);
 extern void func_ov096_0229db78(void *p, unsigned char b);
 extern void func_ov096_0229db30(void *p, unsigned char b);
-extern void func_ov096_0229ea5c(void *p);
+extern int func_ov096_0229ea5c(void *p);
 extern void func_ov002_02207d00(void *p);
 extern char data_021fbe40[];
 
 void func_ov096_022a07c8(void *self)
 {
-    if (func_0206f56c(self)) {
+    if (func_0206f56c()) {
         func_ov096_0229e898(self, *((unsigned char *) self + 0xb4), 1);
         func_ov096_022a18dc(self, 7);
         return;

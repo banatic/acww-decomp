@@ -22,7 +22,7 @@ struct UnkStruct_020fa090_3 {
 
 struct UnkStruct_020fa090_4;
 
-extern void func_020fabdc(struct UnkStruct_020fa090_2 *a, char *p, int v);
+extern void func_020fabdc(struct UnkStruct_020fa090_2 *a, char *p);
 
 void func_020fa090(struct UnkStruct_020fa090_4 *f, struct UnkStruct_020fa090_2 *a, struct UnkStruct_020fa090_3 *e)
 {
@@ -32,5 +32,5 @@ void func_020fa090(struct UnkStruct_020fa090_4 *f, struct UnkStruct_020fa090_2 *
     a->vec[1] = e->arr[1] + (*a->b)->y;
     v2 = e->arr[2] + (*a->b)->z;
     a->vec[2] = v2;
-    func_020fabdc(a, (char *) f + 0x14, v2);
+    func_020fabdc(a, (char *) f + 0x14);
 }

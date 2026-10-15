@@ -54,8 +54,8 @@ class UnkStruct_02266da8 {
     char unk_8B8[4];
 };
 
-extern "C" int func_0201ce5c(UnkStruct_02266da8 *p, void *q);
-extern "C" int func_0201ce44(UnkStruct_02266da8 *p, int q);
+extern "C" void func_0201ce5c(UnkStruct_02266da8 *p, void *q);
+extern "C" void func_0201ce44(UnkStruct_02266da8 *p, int q);
 extern "C" void func_ov068_0226ccd8(void *p);
 extern "C" void func_ov068_0226cce8(void *p, UnkStruct_02266da8 *q, int r);
 

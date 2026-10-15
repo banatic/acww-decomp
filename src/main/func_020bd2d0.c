@@ -25,10 +25,10 @@ typedef struct UnkStruct_020bd2d0_2 {
 
 extern int func_02073dd4(UnkStruct_020bd2d0 *a, unsigned int b);
 extern int func_020644cc(int a);
-extern int func_020984e8(int a);
+extern int func_020984e8(void);
 extern int func_02099020(int a, int b);
 extern int func_020be9dc(void);
-extern void func_020bdc50(void *a, int b, int c, int d, int e);
+extern void *func_020bdc50(void *a, int b, int c, int d, int e);
 extern void func_020bece0(void *a);
 
 void func_020bd2d0(UnkStruct_020bd2d0_2 *self)
@@ -56,7 +56,7 @@ void func_020bd2d0(UnkStruct_020bd2d0_2 *self)
     r5 = self->unk_2F24;
     r0 = func_020644cc(8);
     if (r0 < r5) {
-        if (func_02099020(func_020984e8(r0), 0x30) == 0 && func_020be9dc() != 0 && func_020644cc(4) == 0) {
+        if (func_02099020(func_020984e8(), 0x30) == 0 && func_020be9dc() != 0 && func_020644cc(4) == 0) {
             func_020bdc50(self, 5, 0x2d, 0, 1);
         } else {
             func_020bdc50(self, 5, 0x2d, 0, 0);

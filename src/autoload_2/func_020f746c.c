@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f7bc4(void *p, int a, void *h);
-extern void NNS_SndPlayerWriteVariable(void *h, int v, int x);
+extern int func_020f7bc4(void *p, int a, void *h);
+extern int NNS_SndPlayerWriteVariable(void *h, int v, int x);
 extern void ciAddUNQUIETFilter(void *p, void *q);
 
 typedef struct {

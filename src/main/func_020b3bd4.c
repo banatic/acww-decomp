@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern void *func_02064b2c(const char *, int, int, int);
-extern void func_02064328(void *, const char *, int);
+extern int func_02064328(void *, const char *, int);
 extern int NNS_FndMountArchive(void *, const char *, void *);
-extern void func_0210285c(void *);
+extern int func_0210285c(void *);
 extern int NNS_FndGetArchiveFileByName(void *);
 extern const char data_020e5110[];
 extern int data_021fbe94;

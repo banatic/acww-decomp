@@ -5,7 +5,7 @@
 struct UnkStruct_020f2bcc {
     void *v;
 };
-extern void func_020f4514(void *);
+extern void *func_020f4514(void *);
 extern char data_0213edac;
 
 void *func_020f2bcc(void *p)

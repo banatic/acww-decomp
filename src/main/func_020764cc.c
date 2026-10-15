@@ -6,7 +6,7 @@ extern int func_020b65c4(void);
 extern int func_020a132c(void);
 extern void func_020a1210(int);
 
-void func_020764cc(void)
+void func_020764cc(int length, int sequence, unsigned char category, unsigned int player)
 {
     int temp;
 

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208a840(void);
-extern int func_0208a1cc(void);
+extern int func_0208a840(int);
+extern int func_0208a1cc(int *);
 extern void func_0208a1f0(void *dst, const void *src);
 extern void func_0208a1ec(void *dst, int a);
 extern void func_0208a1e8(void *dst, int a);
@@ -20,8 +20,7 @@ void func_020b8fe0(UnkStruct_020b8fe0 *self)
 {
     int v;
 
-    func_0208a840();
-    v = func_0208a1cc();
+    v = func_0208a1cc((int *) func_0208a840((int) self));
     func_0208a1f0(&self->unk_CC, data_020d71d4);
     func_0208a1ec(&self->unk_CC, 1);
     func_0208a1e8(&self->unk_CC, 0);

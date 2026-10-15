@@ -2,6 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern int func_ov002_0220ab38(void *, int a1);
+extern int func_ov002_0220ab84(void *, int a1);
+
 void func_ov126_022a0054(void *self)
 {
     switch (((unsigned char *) self)[0xad]) {

@@ -39,9 +39,9 @@ typedef struct {
 } Head;
 
 extern Vec data_021fbee8;
-extern void func_02034270(UnkStruct_02094a4c *, Vec *, int, int);
+extern int func_02034270(UnkStruct_02094a4c *, Vec *, int, int);
 extern void func_0203423c(UnkStruct_02094a4c *);
-extern void func_02094cf8(int, int, Vec *, int, int, int);
+extern int func_02094cf8(int, int, Vec *, int, int, int);
 
 int func_02094a4c(Head *h, int p1, int p2, int p3, int p4, int p5, int p6, int p7, int p8)
 {

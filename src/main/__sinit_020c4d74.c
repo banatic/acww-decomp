@@ -88,12 +88,12 @@ extern struct B021c67a0 {
     UnkStruct_020c4d74 unk_1C8;
 } data_021c67a0;
 extern int data_021c67b8;
-extern int func_020012dc;
+extern void func_020012dc(void *);
 extern int data_021c67ac;
 extern int data_021c67d0;
 extern int data_021c67c4;
 extern int data_021c6800;
-extern int func_0203cb30;
+extern void func_0203cb30(void *);
 extern int data_021c67dc;
 extern int data_021c67f4;
 extern int data_021c67e8;
@@ -166,10 +166,14 @@ void __sinit_020c4d74(void)
     data_021c67a0.unk_01 = 24;
     data_021c67a0.unk_02 = 24;
     data_021c67a0.unk_03 = 31;
-    __register_global_object((void *) &data_021c67b8, (void *) &func_020012dc, (void *) &data_021c67ac);
-    __register_global_object((void *) &data_021c67d0, (void *) &func_020012dc, (void *) &data_021c67c4);
-    __register_global_object((void *) &data_021c6800, (void *) &func_0203cb30, (void *) &data_021c67dc);
-    __register_global_object((void *) &data_021c67f4, (void *) &func_020012dc, (void *) &data_021c67e8);
+    __register_global_object((void *) ((void *) &data_021c67b8), (((void *) func_020012dc)),
+                             (void *) ((void *) &data_021c67ac));
+    __register_global_object((void *) ((void *) &data_021c67d0), (((void *) func_020012dc)),
+                             (void *) ((void *) &data_021c67c4));
+    __register_global_object((void *) ((void *) &data_021c6800), (((void *) func_0203cb30)),
+                             (void *) ((void *) &data_021c67dc));
+    __register_global_object((void *) ((void *) &data_021c67f4), (((void *) func_020012dc)),
+                             (void *) ((void *) &data_021c67e8));
     data_021c67a0.unk_80 = data_020da744;
     data_021c67a0.unk_88 = data_020da82c;
     data_021c67a0.unk_90 = data_020da824;

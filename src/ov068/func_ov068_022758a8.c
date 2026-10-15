@@ -3,9 +3,9 @@
  */
 
 extern unsigned int data_ov068_02277fdc[2];
-extern void func_02019d0c(void *p, int a, int b, unsigned int c, unsigned int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, unsigned int c, unsigned int d, int e, int f, int g, int h, int i, int j);
 extern int func_02019de8(void *p);
-extern void func_ov068_02275c78(void *self, int a);
+extern int func_ov068_02275c78(void *self, int a);
 
 typedef struct {
     unsigned int lo, hi;

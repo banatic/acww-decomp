@@ -3,13 +3,13 @@
  */
 
 extern void RtcSendPxiCommand(int cmd);
-extern void func_ov002_0220a720(void *ptr, int val);
-extern void func_ov002_02208098(void *ptr, int val);
+extern void *func_ov002_0220a720(void *ptr, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov106_0229d3e8(void *self)
 {
     RtcSendPxiCommand(0x27);
     func_ov002_0220a720((char *) self + 0x3fb4, 3);
-    func_ov002_02208098(self, 0x1f);
+    func_ov002_02208098((void *) (self), 0x1f);
     ((char *) self)[0xbe] = 0;
 }

@@ -12,19 +12,19 @@ struct BIG {
 };
 
 extern void *func_020984e8(void);
-extern void func_020992fc(void);
-extern int func_020983f0(void);
+extern int func_020992fc(int);
+extern int func_020983f0(int *);
 extern int func_02099020(void *, int);
 extern void func_02066694(struct BIG *);
-extern void func_020641c8(struct UnkStruct_020981f4 *);
+extern void *func_020641c8(struct UnkStruct_020981f4 *);
 extern void func_02064210(void *, struct UnkStruct_020981f4 *);
-extern void func_0203d7c4(int, struct UnkStruct_020981f4 *);
+extern int func_0203d7c4(int, struct UnkStruct_020981f4 *);
 extern int func_02099870(void *);
 extern void func_02066024(struct BIG *, u8 *, void *, void *, void *, int);
-extern void func_02065ed0(struct BIG *, int, int);
+extern unsigned short func_02065ed0(struct BIG *, int, int);
 extern int func_02097a54(struct BIG *);
 extern void func_02098ff8(void *, int);
-extern void func_020641b0(struct UnkStruct_020981f4 *);
+extern void *func_020641b0(struct UnkStruct_020981f4 *);
 extern void func_02066688(struct BIG *);
 extern u8 data_021dc7aa[];
 extern u8 data_020e3104[], data_020e3118[], data_020e3108[];
@@ -35,12 +35,13 @@ void func_020981f4(int a)
     struct UnkStruct_020981f4 s2;
     struct BIG big;
     void *p;
+    int *account;
     int v, cost, idx, t;
 
     p = func_020984e8();
-    func_020992fc();
+    account = (int *) func_020992fc((int) p);
     if (a > 0) {
-        v = func_020983f0();
+        v = func_020983f0(account);
         if (v >= 1000000) {
             cost = 0x37dc;
             idx = 0;

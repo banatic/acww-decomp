@@ -3,12 +3,12 @@
  */
 
 extern int func_020644cc(int);
-extern int func_02048cb8(int, int, int, int, int, int (*)(void), int);
-extern int func_02048ee4(void);
+extern int func_02048cb8(int, int, int, int, int, int (*predicate)(int, int, int), int);
+extern int func_02048ee4(void *, int, int);
 
 int func_0204851c(int a, int b, int c, int d)
 {
     int t1 = func_020644cc(c);
     int t2 = func_020644cc(d);
-    return func_02048cb8(a, b, t1 + 1, t2 + 1, 0x1b, func_02048ee4, 0);
+    return func_02048cb8(a, b, t1 + 1, t2 + 1, 0x1b, (((int (*)(int, int, int)) func_02048ee4)), 0);
 }

@@ -21,7 +21,7 @@ typedef struct {
 } UnkStruct_02299de8_2;
 
 extern void func_02088df8(int, void *, int, void *, int, int, int, int, int, int, int, int);
-extern void func_020896b8(int, void *, int, void *, int, int, int);
+extern int func_020896b8(int, void *, int, void *, int, int, int);
 
 extern char data_ov130_0229ab20;
 extern char data_ov130_0229abf0;

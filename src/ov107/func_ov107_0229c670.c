@@ -11,16 +11,16 @@ typedef struct {
     short unk_8E;
 } UnkStruct_0229c670;
 
-extern int func_ov107_0229c354(UnkStruct_0229c670_2 *);
+extern int func_ov107_0229c354(void);
 extern int func_ov003_0222ea84(int);
 extern unsigned short func_ov107_0229d0f0(UnkStruct_0229c670_2 *, int);
 extern int func_020644cc(int);
 extern UnkStruct_0229c670 *func_020961a8(int);
 extern void func_ov003_0222e898(unsigned char, int);
 extern void func_ov003_0222eabc(int, int);
-extern void func_ov003_02219b38(int);
+extern int func_ov003_02219b38(int);
 extern void func_ov107_0229c628(UnkStruct_0229c670_2 *, unsigned char, int);
-extern void func_ov002_02208098(UnkStruct_0229c670_2 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov107_0229caa8(UnkStruct_0229c670_2 *);
 
 void func_ov107_0229c670(UnkStruct_0229c670_2 *o)
@@ -30,7 +30,7 @@ void func_ov107_0229c670(UnkStruct_0229c670_2 *o)
     unsigned short t1, t2;
     int h, y, r, d;
 
-    h = func_ov107_0229c354(o);
+    h = func_ov107_0229c354();
     if (func_ov003_0222ea84(h) != 0) {
         return;
     }
@@ -53,6 +53,6 @@ void func_ov107_0229c670(UnkStruct_0229c670_2 *o)
     func_ov003_0222eabc(h, y);
     func_ov003_02219b38(0);
     func_ov107_0229c628(o, (unsigned char) d, r);
-    func_ov002_02208098(o, 0x12);
+    func_ov002_02208098((void *) (o), 0x12);
     func_ov107_0229caa8(o);
 }

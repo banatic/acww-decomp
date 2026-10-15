@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_ov120_0229b168(void);
+extern unsigned int func_ov120_0229b168(void *parameter0);
 
-unsigned int func_ov120_0229b14c(void)
+unsigned int func_ov120_0229b14c(void *arg0)
 {
-    unsigned int v = func_ov120_0229b168();
+    unsigned int v = func_ov120_0229b168((void *) arg0);
     unsigned int result;
 
     if (v <= 6) {

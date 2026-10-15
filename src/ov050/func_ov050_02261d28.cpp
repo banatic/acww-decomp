@@ -7,7 +7,7 @@
 extern "C" {
 
 extern int func_020984e8(void);
-extern void func_02099640(void);
+extern int func_02099640(int argument0);
 extern int func_02099020(int, int);
 extern int func_ov050_02260510(int);
 extern unsigned long strlen(const char *);
@@ -106,7 +106,7 @@ void func_ov050_02261d28(UnkStruct_02261d28 *p)
     void *dp;
 
     q = func_020984e8();
-    func_02099640();
+    func_02099640(q);
     if (func_02099020(q, 1) != 0) {
         p->v42();
         return;

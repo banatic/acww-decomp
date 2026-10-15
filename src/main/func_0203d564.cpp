@@ -19,7 +19,7 @@ struct UnkStruct_0203d564_2 {
 };
 
 extern "C" int func_0203d4d8(UnkStruct_0203d564_2 *);
-extern "C" void func_02064328(char *, const char *, ...);
+extern "C" int func_02064328(char *, const char *, ...);
 extern "C" int func_020a9a08(char *, char *);
 extern "C" int func_020a9938(char *, char *);
 extern "C" void func_020a99d8(char *);

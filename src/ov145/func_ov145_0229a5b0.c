@@ -13,9 +13,9 @@ extern u8 data_021f6c54;
 extern int func_ov002_0220a784(void *p, int a);
 extern void func_ov145_0229a2e0(void *self);
 extern int func_ov145_022998c4(void *self, int a, int b);
-extern void func_ov145_022998f0(void *self, int n);
+extern int func_ov145_022998f0(void *self, int n);
 extern int func_ov145_0229a298(void *self, int a, int b);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_0220a574(void *p);
 
 void func_ov145_0229a5b0(char *self)
@@ -52,7 +52,7 @@ void func_ov145_0229a5b0(char *self)
         return;
     }
     if (func_ov145_0229a298(self, a, b) != 0) {
-        func_ov002_02208098(self, 1);
+        func_ov002_02208098((void *) (self), 1);
         return;
     }
     if (a < 0xe4) {
@@ -68,5 +68,5 @@ void func_ov145_0229a5b0(char *self)
         return;
     }
     func_ov002_0220a574(self + 0x12c);
-    func_ov002_02208098(self, 2);
+    func_ov002_02208098((void *) (self), 2);
 }

@@ -17,8 +17,8 @@ typedef struct {
 
 extern int func_ov002_02208ae4(void *ptr);
 extern int func_ov002_02208ad8(void *ptr, unsigned char b);
-extern void func_ov002_0220a08c(void *ptr, int a, int b, int c);
-extern void func_ov002_02208098(void *ptr, int n);
+extern int func_ov002_0220a08c(void *ptr, int a, int b, int c);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov110_0229cb28(UnkStruct_0229cb28 *self)
 {
@@ -28,5 +28,5 @@ void func_ov110_0229cb28(UnkStruct_0229cb28 *self)
     tmp2 = func_ov002_02208ad8(&self->unk_2344, self->unk_FA);
     func_ov002_0220a08c(&self->unk_22E0, tmp1, tmp2, 2);
     self->unk_F8 = self->unk_8D;
-    func_ov002_02208098(self, 8);
+    func_ov002_02208098((void *) (self), 8);
 }

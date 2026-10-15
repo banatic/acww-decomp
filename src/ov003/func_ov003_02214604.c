@@ -14,10 +14,10 @@ typedef struct {
     Sub7D4 sub;
 } UnkStruct_02214604;
 
-extern void func_020109a0(void *, int, int, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
 extern void func_0205eae0(void *, int, int, int);
 
-void func_ov003_02214604(UnkStruct_02214604 *self, char *other)
+void func_ov003_02214604(UnkStruct_02214604 *self, char *other, int previous)
 {
     int idx = 0xc;
     Sub7D4 *p = &self->sub;

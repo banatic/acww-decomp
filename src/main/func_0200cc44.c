@@ -4,17 +4,17 @@
 
 extern int data_020ccf94;
 extern int func_02073908(int, int);
-extern int func_0200d0b0(int);
-extern int func_0200ce2c(int);
-extern int func_0200cdc8(int);
+extern void func_0200d0b0(int);
+extern void func_0200ce2c(int);
+extern void func_0200cdc8(int);
 extern int func_0201100c(int);
-extern int func_02010d64(int);
+extern void func_02010d64(int);
 extern int func_02010ca4(int);
 extern int func_0200cce8(int, short *);
 extern int func_0200cf50(int);
 extern int func_02010ff4(int);
-extern int func_0200ef1c(int);
-extern int func_0200cccc(int, char *);
+extern void func_0200ef1c(int);
+extern void func_0200cccc(int, char *);
 
 void func_0200cc44(int r0)
 {

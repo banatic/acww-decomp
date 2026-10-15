@@ -35,7 +35,7 @@ typedef struct Context {
     unsigned int unk_628;
 } Context;
 
-extern Profile *func_02019de4(void *a, void *b, int c, int d);
+extern Profile *func_02019de4(void *a);
 extern void func_0201b044(void *a, void *b);
 extern void func_0201afd4(void *a, void *b);
 extern int func_0201b040(void *a);
@@ -53,7 +53,7 @@ int func_0201935c(UnkStruct_0201935c *self, Context *b, int c, int d)
     Vec3 v0, v1;
     short out;
 
-    p = func_02019de4(self, b, c, d);
+    p = func_02019de4(self);
     {
         int t8 = p->unk_08;
         int t4 = p->unk_04;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_FndGetAllocatableSizeForFrmHeapEx(int, int);
+extern unsigned int NNS_FndGetAllocatableSizeForFrmHeapEx(int, int);
 
 void func_020e9d20(void *p)
 {

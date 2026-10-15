@@ -17,7 +17,7 @@ struct UnkStruct_02032d8c_2 {
 extern "C" {
 extern u8 data_021c5124;
 extern void *func_02034600(u8 *g, int x, int y);
-extern void func_02032e80(void *p0, UnkStruct_02032d8c *v, int a, int b, int m, int n);
+extern int func_02032e80(void *p0, UnkStruct_02032d8c *v, int a, int b, int m, int n);
 }
 
 extern "C" void func_02032d8c(void *p0, UnkStruct_02032d8c_2 *o, int x0, int x1, int y0, int y1, int flag)

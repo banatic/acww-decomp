@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207ba24();
+extern int func_0207ba24(int, int);
 extern int func_0207ba3c(int, int, int (**)(), int);
 
 int func_0207b9e4(int arg1, int arg2)

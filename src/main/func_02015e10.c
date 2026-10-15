@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02094fd4(void *);
-extern void func_02003618(void *, void *);
+extern void *func_02094fd4(void *);
+extern int func_02003618(void *, void *);
 extern void func_02068404(void *, void *, void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fbc(void *);
 
 typedef struct {
     char pad_00[0x40];

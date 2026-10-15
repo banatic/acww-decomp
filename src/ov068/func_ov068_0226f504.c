@@ -16,7 +16,7 @@ struct UnkStruct_0226f504 {
 };
 
 extern void func_020e8b60(void *, int, int, int);
-extern void func_02034270(void *, void *, int, int);
+extern int func_02034270(void *, void *, int, int);
 extern int FX_MulFunc(int, int);
 extern void func_020ee470(void *);
 extern void func_ov068_0226fd80(void *);

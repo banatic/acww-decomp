@@ -9,7 +9,7 @@ struct UnkStruct_0229b500 {
     int unk_64;
 };
 
-extern void *func_020984e8(char *self);
+extern void *func_020984e8(void);
 extern void func_02077ec0(void *buf);
 extern void func_02077e68(void *buf);
 extern void *func_02099664(void *a);
@@ -23,13 +23,13 @@ extern int func_ov133_0229b6b8(char *self, void *buf);
 extern void *func_ov133_0229b714(char *self);
 extern void *func_02077c3c(void *e);
 extern void func_0206fc4c(int v);
-extern void func_ov002_0220a720(char *p, int v);
+extern void *func_ov002_0220a720(char *p, int v);
 extern void func_ov002_02208090(char *self, int v);
-extern void func_ov002_02208098(char *self, int v);
+extern unsigned char *func_ov002_02208098(char *self, unsigned char value);
 extern int func_0206fca4(void);
-extern void func_ov133_0229c3d4(char *self, int v);
-extern void func_020ee45c(char *self);
-extern void func_ov090_02298fa4(void);
+extern int func_ov133_0229c3d4(char *self, int v);
+extern int func_020ee45c(char *self);
+extern void func_ov090_02298fa4(int);
 extern void func_0206f51c(void);
 extern int func_02073dd4(struct UnkStruct_0229b500 *p, int v);
 extern int func_020ec1e8(void);
@@ -48,7 +48,7 @@ void func_ov133_0229b500(char *self)
     int m;
     int b;
 
-    a = func_020984e8(self);
+    a = func_020984e8();
     func_02077ec0(buf);
     func_02077e68(buf);
     if (func_02077dd4(buf, self + 0xa4, func_02077bcc(func_02099664(a))) == 0) {
@@ -80,8 +80,7 @@ void func_ov133_0229b500(char *self)
     if (func_0206fca4() == 0xe) {
         func_ov133_0229c3d4(self, 0xc);
     } else {
-        func_020ee45c(self);
-        func_ov090_02298fa4();
+        func_ov090_02298fa4((int) func_020ee45c(self));
         func_ov133_0229c3d4(self, 6);
         func_0206f51c();
         p = data_020ccf94;

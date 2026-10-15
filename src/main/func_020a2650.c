@@ -27,10 +27,10 @@ extern int func_020757ac(unsigned char *p);
 extern int func_02075774(unsigned char *p);
 extern int func_0207570c(void);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
-extern void func_0208b4f8(void);
-extern void func_0208b9b8(void);
-extern void func_0208b9b0(void);
+extern int func_020ebf70(void);
+extern int func_0208b4f8(void);
+extern void func_0208b9b8(int);
+extern void func_0208b9b0(int);
 extern void *func_020984e8(void);
 extern void *func_020984d4(void);
 extern void MI_CpuCopy8(void *d, void *s, int n);
@@ -43,7 +43,7 @@ extern void func_0209fb54(char *p);
 extern int func_02075aa4(int a, int b);
 extern int func_0209ffb0(void);
 extern void func_020a0174(void);
-extern void func_020a0848(struct UnkStruct_020a2650 *o, unsigned char *p, int a, int b, int c, int d);
+extern int func_020a0848(struct UnkStruct_020a2650 *o, unsigned char *p, int a, int b, int c, int d);
 extern void func_020a4e94(struct UnkStruct_020a2650 *o, int a);
 
 void func_020a2650(struct UnkStruct_020a2650 *self)
@@ -102,11 +102,10 @@ void func_020a2650(struct UnkStruct_020a2650 *self)
                 func_02074078();
                 return;
             }
-            if (!func_020ebf70(func_02073044())) {
+            if (!(func_02073044(), func_020ebf70())) {
                 return;
             }
-            func_0208b4f8();
-            func_0208b9b8();
+            func_0208b9b8((int) func_0208b4f8());
             MI_CpuCopy8(func_020984e8(), self->unk_BC, 0x249c);
             func_02099a38(func_020984e8());
             func_0209ef10(data_021dc7a8, func_020984d4());
@@ -162,7 +161,7 @@ void func_020a2650(struct UnkStruct_020a2650 *self)
                 self->state = 0xa;
                 return;
             }
-            if (!func_020ebf70(func_02073044())) {
+            if (!(func_02073044(), func_020ebf70())) {
                 return;
             }
             n = self->unk_EF;
@@ -183,8 +182,7 @@ void func_020a2650(struct UnkStruct_020a2650 *self)
                 func_020a0174();
             }
             MI_CpuCopy8(self->unk_BC, func_020984e8(), 0x249c);
-            func_0208b4f8();
-            func_0208b9b0();
+            func_0208b9b0((int) func_0208b4f8());
             self->state = 0x16;
             return;
 

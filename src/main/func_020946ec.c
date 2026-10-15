@@ -47,7 +47,7 @@ typedef struct {
 
 extern UnkStruct_020946ec_3 data_021d5658;
 extern u8 data_021d52d8[];
-extern int func_02090db0(void *obj);
+extern void func_02090db0(void *obj);
 extern void func_020ea6e0(void *a, int b);
 extern void MI_CpuCopy8(const void *src, void *dest, u32 size);
 

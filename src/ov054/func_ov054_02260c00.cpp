@@ -10,10 +10,10 @@
 extern "C" int func_020160b4(void *);
 extern "C" int func_020ab504(int);
 extern "C" int func_020984e8(void);
-extern "C" void func_020157d4(void *, void (*)(void), int, int);
-extern "C" void func_02015828(void *, int);
+extern "C" void func_020157d4(void *self, int (*predicate)(unsigned short *, int), unsigned char kind, unsigned char flag);
+extern "C" int func_02015828(void *, int);
 extern "C" void func_ov054_02261cc4(void *, int);
-extern "C" void func_ov054_02261850(void);
+extern "C" unsigned short func_ov054_02261850(unsigned short *argument0, int argument1);
 extern "C" void func_ov054_02261f44(void *);
 extern "C" void func_0206f910(void);
 extern "C" void func_0206f92c(void);
@@ -38,6 +38,8 @@ typedef struct {
     int unk_B0;
 } UnkStruct_02260c00;
 
+#define TilePredicate_func_ov054_02261850 ((int (*)(unsigned short *, int)) func_ov054_02261850)
+
 void Obj_ov054_02263004::func_ov054_02260c00(unsigned int a1)
 {
     UnkStruct_02260c00 *p = (UnkStruct_02260c00 *) this;
@@ -56,7 +58,7 @@ void Obj_ov054_02263004::func_ov054_02260c00(unsigned int a1)
     switch (v) {
         case 0x5f:
             if (r == 0) {
-                func_020157d4(p, func_ov054_02261850, 0xd, 0);
+                func_020157d4(p, TilePredicate_func_ov054_02261850, 0xd, 0);
                 func_02015828(p, 0);
                 func_ov054_02261cc4(p, 0xb);
             } else if (r == 1) {
@@ -131,3 +133,5 @@ void Obj_ov054_02263004::func_ov054_02260c00(unsigned int a1)
         func_0206844c(h, &m, t);
     }
 }
+
+#undef TilePredicate_func_ov054_02261850

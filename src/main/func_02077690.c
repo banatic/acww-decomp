@@ -10,7 +10,7 @@ typedef struct {
 extern void *data_020ccf94;
 extern void (*data_020ccf98[])(void *);
 
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 extern void func_02073320(void *g);
 extern unsigned char *func_02073d28(void *g, int k);

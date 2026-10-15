@@ -17,10 +17,10 @@ typedef struct {
 
 extern TabEntry FX_SinCosTable_[];
 
-extern void func_020e89dc(void *, u32, u32);
+extern int func_020e89dc(void *, u32, u32);
 extern int FX_MulFunc(int, void *);
 extern void func_0203bc50(void *, void *);
-extern void func_020e8bb0(void *, u32, u32, u32, u32);
+extern int func_020e8bb0(void *, u32, u32, u32, u32);
 extern void func_0203be6c(void *);
 extern void func_01ffcbb0(void *, void *);
 extern void *func_0203c57c(void *);

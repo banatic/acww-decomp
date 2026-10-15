@@ -31,7 +31,7 @@ typedef struct UnkStruct_0226b27c {
 
 typedef struct UnkStruct_0226b27c_2 {
     u8 pad[0xb8];
-    void (*cb)(int idx, u32 f0, u32 f8);
+    void (*cb)(int idx, char *buffer, u32 length);
 } UnkStruct_0226b27c_2;
 
 extern UnkStruct_0226b27c *data_ov066_0226be08;
@@ -87,6 +87,6 @@ void func_ov066_0226b27c(int idx, u8 *src)
 
     data_ov066_0226be08->flags ^= mask;
     if (data_ov066_0226bdf4->cb != 0) {
-        data_ov066_0226bdf4->cb(idx, entry->unk_00, entry->unk_08);
+        data_ov066_0226bdf4->cb(idx, (char *) entry->unk_00, entry->unk_08);
     }
 }

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f6950(void);
+extern void func_020f6950(unsigned char *, const unsigned char *);
 
-void func_0200419c(void)
+void func_0200419c(unsigned char *argument0, const unsigned char *argument1)
 {
-    func_020f6950();
+    func_020f6950((unsigned char *) argument0, (const unsigned char *) argument1);
 }

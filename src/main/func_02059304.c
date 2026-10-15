@@ -10,9 +10,9 @@ extern unsigned int data_021c9400[];
 extern int func_0204fd3c(int);
 extern int func_02059e10(int);
 extern int FX_MulFunc(int, int);
-extern void func_020e88dc(int *, int, int);
+extern int func_020e88dc(int *, int, int);
 extern void func_0205967c(void *, void *);
-extern void func_020e895c(int *, int, int);
+extern int func_020e895c(int *, int, int);
 extern void func_02059674(void *, int);
 
 typedef struct {

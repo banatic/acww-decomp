@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b65c4(char *self);
+extern int func_020b65c4(void);
 extern void func_ov004_02246598(char *self);
 int func_ov004_0224657c(char *self)
 {
-    if (func_020b65c4(self) != 0x1f) {
+    if (func_020b65c4() != 0x1f) {
         func_ov004_02246598(self);
     }
     return 1;

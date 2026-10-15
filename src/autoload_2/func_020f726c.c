@@ -4,7 +4,7 @@
 
 extern char data_021fd1bc[];
 extern int func_020f1d3c(void *address, int arg);
-extern void NNS_SndArcPlayerStartSeq(void *address, unsigned short val);
+extern int NNS_SndArcPlayerStartSeq(void *address, unsigned short val);
 
 struct UnkStruct_020f726c {
     unsigned char pad_00[4];

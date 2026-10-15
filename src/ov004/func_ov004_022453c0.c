@@ -16,13 +16,13 @@ typedef struct Row {
 extern Row data_ov004_0224b868[];
 extern int func_020b65c4(void);
 extern int func_ov004_02245544(Elem *e);
-extern int func_ov004_02245554(Elem *e);
+extern unsigned int *func_ov004_02245554(Elem *e);
 extern int func_ov004_0224554c(Elem *e);
 extern int func_ov004_02245548(Elem *e);
-extern int func_ov004_0224553c(Elem *e);
+extern short func_ov004_0224553c(Elem *e);
 extern int func_ov004_02245538(Elem *e);
 extern int func_ov004_02245534(Elem *e);
-extern void func_ov004_0221b224(int a, int b, int c, int d, int e, int f, int g);
+extern void func_ov004_0221b224(int a, void *position, int c, int d, short e, int f, int g);
 
 void func_ov004_022453c0(void)
 {

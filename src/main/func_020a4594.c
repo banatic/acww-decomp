@@ -10,7 +10,7 @@ struct UnkStruct_020a4594 {
 extern struct UnkStruct_020a4594 *func_020682e0(int);
 extern void func_02068320(struct UnkStruct_020a4594 *);
 extern int func_020b5e10(void);
-extern void func_020b63f4(int, int, int *, int, int, int, int);
+extern int func_020b63f4(int, int, int *, int, int, int, int);
 extern void func_020a4e94(int, int);
 extern int data_020d1c14[3];
 

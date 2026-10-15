@@ -2,10 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02050c10(int param);
-extern int func_020a9334(int param1, int param2);
+extern int func_02050c10(void);
+extern void func_020a9334(void *object, void *next);
 
-int func_020b4e58(int param)
+void func_020b4e58(int object)
 {
-    return func_020a9334(param, func_02050c10(param));
+    int next = func_02050c10();
+    func_020a9334((void *) object, (void *) next);
 }

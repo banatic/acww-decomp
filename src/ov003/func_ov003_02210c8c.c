@@ -25,9 +25,9 @@ typedef struct {
 extern int data_020ccf94;
 extern int func_02056f94(void *);
 extern int func_02008258(UnkStruct_02210c8c *, int);
-extern void func_0200d4e8(UnkStruct_02210c8c *, int, int, int);
+extern int func_0200d4e8(UnkStruct_02210c8c *, int, int, int);
 extern int func_02073908(int, int);
-extern void func_0209a110(s16 *);
+extern int func_0209a110(s16 *);
 extern void func_020109fc(UnkStruct_02210c8c *, int, int, int);
 extern int func_0206f6b0(u16);
 extern int func_0206fbc0(void);
@@ -35,8 +35,8 @@ extern int func_0206fc6c(void);
 extern int func_0200f290(UnkStruct_02210c8c *, int);
 extern void func_0200f268(UnkStruct_02210c8c *, int);
 extern void func_0203ee08(UnkStruct_02210c8c *, void *);
-extern void func_0203e19c(void);
-extern void func_ov003_02210c24(UnkStruct_02210c8c *, int, int *, u16, int, int);
+extern int func_0203e19c(void);
+extern void *func_ov003_02210c24(UnkStruct_02210c8c *, int, int *, u16, int, int);
 inline int inline_fn(UnkStruct_02210c8c *arg0)
 {
     return arg0->unk_800;

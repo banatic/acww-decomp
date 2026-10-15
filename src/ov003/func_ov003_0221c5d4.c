@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b374c(void *);
-extern int func_020b3848(void);
-extern void func_ov003_0221c438(void *, unsigned int, int);
+extern int func_020b374c(void *);
+extern void *func_020b3848(void *record);
+extern int func_ov003_0221c438(void *, unsigned int, int);
 extern void func_0204f818(int *, int *, void *);
-extern void func_02030920(int, int, int);
+extern int func_02030920(int, int, int);
 
 typedef struct {
     unsigned char pad_00[0x5c];
@@ -28,8 +28,7 @@ int func_ov003_0221c5d4(UnkStruct_0221c5d4 *self)
     int result;
 
     old = self->unk_198;
-    func_020b374c((void *) data_021f34b0);
-    result = func_020b3848();
+    result = (int) func_020b3848((void *) func_020b374c((void *) data_021f34b0));
     func_ov003_0221c438(&self->unk_2B4, old, result);
     func_0204f818(&v0, &v1, &self->unk_5C);
     for (i = -2; i <= 2; i++) {

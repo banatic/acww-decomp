@@ -37,7 +37,7 @@ extern "C" int func_020e9ed4(Blk *, int, int);
 extern "C" void func_020e9974(void);
 extern "C" void func_020e9fd4(Blk *);
 extern "C" unsigned int func_020e9e34(void *);
-extern "C" void func_020e9abc(Blk *);
+extern "C" int func_020e9abc(Blk *);
 extern "C" void func_020ee470(UnkStruct_020ee0a4 *);
 
 extern "C" int func_020ee0a4(UnkStruct_020ee0a4 *self, unsigned int size, void *heap)

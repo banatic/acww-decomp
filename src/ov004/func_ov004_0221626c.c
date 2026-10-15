@@ -14,10 +14,10 @@ extern void *data_ov004_022531f0;
 extern int func_020b6680(void);
 extern int func_020b66b0(void);
 extern int func_0207cec0(void *d, int a);
-extern unsigned int func_0207f2c4(void);
-extern void func_02062f90(struct UnkStruct_0221626c *o, u16 *p);
+extern unsigned int func_0207f2c4(int result);
+extern void *func_02062f90(struct UnkStruct_0221626c *o, u16 *p);
 extern void func_020683b4(void *h, int a, struct UnkStruct_0221626c *o, int k);
-extern void func_02062f4c(struct UnkStruct_0221626c *o);
+extern void *func_02062f4c(struct UnkStruct_0221626c *o);
 extern u16 *func_02060b70(void);
 extern int data_021e5a2c;
 
@@ -53,8 +53,8 @@ int func_ov004_0221626c(Main *self)
     func_020a8164((char *) self + 0xec, &data_ov004_022531f0);
     if (func_020b6680() != 0) {
         n = 0;
-        if (func_0207cec0(&data_021e5a2c, func_020b66b0()) != 0) {
-            n = func_0207f2c4();
+        if ((m = func_0207cec0(&data_021e5a2c, func_020b66b0())) != 0) {
+            n = func_0207f2c4(m);
         }
         tv[2] = (n < 0x46) ? (u16) (n + 0x1323) : (u16) 0x1323;
         func_02062f90(&a, &tv[2]);

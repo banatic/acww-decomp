@@ -5,7 +5,7 @@
 typedef struct {
     int w[12];
 } Big;
-void func_ov003_022253a8(void *a, void *b, Big s);
+void *func_ov003_022253a8(void *a, void *b, Big s);
 void func_020ad228(void *c);
 
 void func_ov003_0222535c(void *a, void *b, void *c, Big s)

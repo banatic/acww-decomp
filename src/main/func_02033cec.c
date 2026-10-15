@@ -38,7 +38,7 @@ extern int func_02031da8(Vec3 *v);
 extern int func_02031ca8(int a, int b, int c);
 extern int func_02031d28(int a, int b, int c);
 extern int func_02031c14(int a, int b);
-extern void func_0202feb4(Box *o, Vec3 *p, Vec3 *q, Vec3 *r, int *tbl);
+extern void *func_0202feb4(Box *o, Vec3 *p, Vec3 *q, Vec3 *r, int *tbl);
 extern int func_0202fb8c(Box *o, Vec3 *v);
 extern void func_0202fee0(Box *o);
 extern void func_02034150(Res *r, int a, int b, int c);

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ab4c8(void *);
-extern int func_020a829c(void);
+extern int func_020ab4c8(void *);
+extern int func_020a829c(unsigned char *);
 
 typedef struct VTable {
     char pad_00[0x18];
@@ -26,8 +26,7 @@ void func_02067504(UnkStruct_02067504 *obj)
         void *ptr;
         VTable *vt;
 
-        func_020ab4c8((void *) &obj->unk_31C);
-        result = func_020a829c();
+        result = func_020a829c((unsigned char *) func_020ab4c8((void *) &obj->unk_31C));
         ptr = obj->unk_14A8;
         vt = (VTable *) (*(void **) ptr);
         vt->callback(ptr, result);

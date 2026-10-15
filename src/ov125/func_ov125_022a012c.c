@@ -17,7 +17,7 @@ typedef struct GlobalReg {
 
 extern volatile GlobalReg data_021fbe40; // placed at 0x021fbe40
 
-extern int func_ov002_02208014(UnkStruct_022a012c *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(UnkStruct_022a012c *self);
 extern int func_ov125_0229f784(UnkStruct_022a012c *self, int arg);
 extern void func_ov125_0229fee4(UnkStruct_022a012c *self);
@@ -26,17 +26,17 @@ extern void func_ov125_0229fa80(UnkStruct_022a012c *self);
 extern void func_ov125_0229fc90(UnkStruct_022a012c *self);
 extern void func_ov125_0229fc24(UnkStruct_022a012c *self);
 extern void func_ov125_0229faf8(UnkStruct_022a012c *self);
-extern void func_ov002_02207d24(void *addr, int arg);
+extern int func_ov002_02207d24(void *addr, int arg);
 extern void func_ov002_02207d00(void *addr);
 extern void func_ov002_0220a1dc(void *addr);
-extern void func_ov002_0220a720(void *addr, int arg);
-extern void func_ov002_02208098(UnkStruct_022a012c *self, int arg);
+extern void *func_ov002_0220a720(void *addr, int arg);
+extern unsigned char *func_ov002_02208098(UnkStruct_022a012c *self, unsigned char value);
 
 void func_ov125_022a012c(UnkStruct_022a012c *self)
 {
     u16 reg;
 
-    if (func_ov002_02208014(self)) {
+    if (func_ov002_02208014()) {
         func_ov125_0229fee4(self);
         func_ov002_02207d24((char *) self + 0x574, 1);
         return;

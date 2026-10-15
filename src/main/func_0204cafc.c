@@ -7,7 +7,7 @@ typedef struct {
     void *array[1];
 } UnkStruct_0204cafc;
 
-extern int func_020984d4(UnkStruct_0204cafc *);
+extern int func_020984d4(void);
 extern void func_0209df64(void *);
 extern int func_0209dcdc(void *, void *);
 
@@ -19,7 +19,7 @@ int func_0204cafc(UnkStruct_0204cafc *param)
         int a, b;
     } obj;
 
-    idx = func_020984d4(param);
+    idx = func_020984d4();
     func_0209df64(&obj);
     if (func_0209dcdc(&obj, &param->array[idx]) != 0) {
         ret = 1;

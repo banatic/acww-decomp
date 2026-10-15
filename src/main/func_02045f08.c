@@ -7,8 +7,8 @@ typedef struct {
     unsigned int unk_04;
 } Pair;
 
-extern void func_02045cec(Pair *out, int arg);
-extern void func_02045eec(void);
+extern int func_02045cec(Pair *out, int arg);
+extern void func_02045eec(int);
 
 void func_02045f08(Pair *src, int arg)
 {
@@ -16,6 +16,5 @@ void func_02045f08(Pair *src, int arg)
 
     local.unk_00 = src->unk_00;
     local.unk_04 = src->unk_04;
-    func_02045cec(&local, arg);
-    func_02045eec();
+    func_02045eec((int) func_02045cec(&local, arg));
 }

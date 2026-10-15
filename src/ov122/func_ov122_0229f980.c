@@ -4,7 +4,7 @@
 
 struct UnkStruct_0229f980;
 
-extern unsigned short *func_ov122_0229f634(struct UnkStruct_0229f980 *obj, unsigned char field);
+extern unsigned short *func_ov122_0229f634(struct UnkStruct_0229f980 *obj);
 
 struct UnkStruct_0229f980 {
     char pad_00[0xac];
@@ -16,5 +16,5 @@ unsigned short func_ov122_0229f980(struct UnkStruct_0229f980 *obj)
     if (obj->unk_AC == 0) {
         return 0;
     }
-    return func_ov122_0229f634(obj, obj->unk_AC)[obj->unk_AC - 1];
+    return func_ov122_0229f634(obj)[obj->unk_AC - 1];
 }

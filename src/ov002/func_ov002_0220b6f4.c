@@ -3,7 +3,7 @@
  */
 
 extern void *func_020682e0(int which);
-extern void func_02068484(void *p, void *q, int x);
+extern int func_02068484(void *p, void *q, int x);
 extern void func_02068428(void *p);
 extern void func_02068434(void *p);
 

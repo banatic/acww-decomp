@@ -11,7 +11,7 @@ struct UnkStruct_02020f9c {
 
 extern char data_021c1d34[14];
 extern int data_020c8ea4;
-extern "C" int MI_CpuCopy8(int *, char *, int);
+extern "C" void MI_CpuCopy8(int *, char *, int);
 extern "C" int func_02021118(Base_02020f9c *);
 extern "C" int func_02021168(Base_02020f9c *);
 extern "C" int func_020211dc(Base_02020f9c *);

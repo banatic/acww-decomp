@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *a);
-extern int func_0202e9fc(void *ctx);
+extern void *func_020984e8(void);
+extern int func_0202e9fc(void);
 extern int func_020a12e8(void);
 extern int func_020644cc(int a);
 extern int func_02099020(void *ctx, int a);
@@ -12,9 +12,9 @@ extern int data_ov004_02254794;
 
 void func_ov004_02225410(void *a, char *out)
 {
-    void *ctx = func_020984e8(a);
+    void *ctx = func_020984e8();
 
-    if (func_0202e9fc(ctx) == 0 || func_020a12e8() != 0) {
+    if (func_0202e9fc() == 0 || func_020a12e8() != 0) {
         out[4] = (char) (func_020644cc(3) + 8);
     } else {
         if (func_02099020(ctx, 0x1b) == 0) {

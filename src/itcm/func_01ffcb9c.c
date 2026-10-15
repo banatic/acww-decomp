@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_01ffd070(int, int, int);
+extern void func_01ffd070(int, int, int);
 
-int func_01ffcb9c(int a, int b)
+void func_01ffcb9c(int a, int b)
 {
-    return func_01ffd070(a, b + 0x150, b + 0x84);
+    func_01ffd070(a, b + 0x150, b + 0x84);
 }

@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020027f0(int);
-extern int func_ov104_0229c344(void *, int);
+extern void func_020027f0(int);
+extern void func_ov104_0229c344(void *, int);
 extern int func_ov104_0229c364(void *, int);
-extern int func_ov104_0229ec4c(void *);
-extern int func_ov104_0229eb68(void *);
+extern void func_ov104_0229ec4c(void *);
+extern void func_ov104_0229eb68(void *);
 extern int func_ov002_02207f3c(void *, int);
-extern int func_ov002_02208090(void *, int);
-extern int func_ov002_022080a0(void *, int);
+extern void func_ov002_02208090(void *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 void func_ov104_0229ecc0(void *self)
 {
@@ -21,7 +21,7 @@ void func_ov104_0229ecc0(void *self)
             func_ov104_0229ec4c(self);
         } else {
             func_ov104_0229c344(self, 1);
-            func_ov002_022080a0(self, 5);
+            func_ov002_022080a0((void *) (self), 5);
         }
     } else {
         func_ov104_0229eb68(self);

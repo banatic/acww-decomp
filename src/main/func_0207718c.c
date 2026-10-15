@@ -3,7 +3,7 @@
  */
 
 extern int func_02077afc(int a, int b);
-extern int func_020738e0(int a, int b);
+extern void func_020738e0(int a, int b);
 extern void func_02077598(int a);
 extern void MI_CpuFill8(int a, int b, int c);
 extern int data_020ccf94;

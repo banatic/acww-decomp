@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200e918(unsigned int param);
+extern void func_0200e918(void);
 
 unsigned int func_0200e92c(unsigned int param)
 {
-    func_0200e918(param);
+    func_0200e918();
     return param;
 }

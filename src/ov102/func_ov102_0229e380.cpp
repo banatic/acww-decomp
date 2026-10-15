@@ -3,13 +3,13 @@
  */
 
 extern "C" int func_ov002_02207f48(void *p, int a);
-extern "C" void func_ov002_022080a0(void *p, int a);
+extern "C" unsigned char *func_ov002_022080a0(void *p, unsigned char value);
 extern "C" void func_ov102_0229d740(void *p);
 extern "C" void func_ov102_0229c288(void *p, int a);
-extern "C" int func_0206fe54(int a);
+extern "C" int func_0206fe54(void);
 extern "C" void func_0208e4c0(void *p, int a);
 extern "C" void func_ov102_0229cd38(void *p);
-extern "C" void func_ov002_02208098(void *p, int a);
+extern "C" unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern "C" void func_ov002_02207e80(void *p, int a, int b, int c);
 extern "C" int func_ov002_02207f60(void *p);
 
@@ -39,7 +39,7 @@ extern "C" void func_ov102_0229e380(UnkStruct_0229e380_2 *p)
         func_ov102_0229c288(p, 0x40);
         unsigned char f = p->unk_259F;
         if (f != 0) {
-            if (func_0206fe54(f) != 0) {
+            if (func_0206fe54() != 0) {
                 unsigned char b = p->unk_25A5;
                 if (b < 0x1e || b > 0x23) {
                     func_0208e4c0((void *) ((char *) p + 0x2274), 4);

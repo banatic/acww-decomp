@@ -4,7 +4,7 @@
 
 extern "C" {
 int func_ov104_0229c364(char *self, int flag);
-int func_0206fe54(int value);
+int func_0206fe54(void);
 void func_ov104_0229d580(char *self);
 void func_ov002_02209eb8(char *p);
 void func_ov002_0220ad18(char *p, unsigned int v);
@@ -28,7 +28,7 @@ extern "C" int func_ov104_0229f33c(char *self)
     if (func_ov104_0229c364(self, 1) == 0) {
         return 1;
     }
-    if (func_0206fe54(((UnkStruct_0229f33c *) (self + 0x23b8))->vf2()) != 0) {
+    if (((void) (((UnkStruct_0229f33c *) (self + 0x23b8))->vf2()), func_0206fe54()) != 0) {
         func_ov002_02209eb8(self + 0x24a0);
     }
     func_ov104_0229d580(self);

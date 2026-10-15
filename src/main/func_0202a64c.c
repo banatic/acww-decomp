@@ -21,17 +21,16 @@ typedef struct {
     u8 flag;
 } UnkStruct_0202a64c_2;
 
-extern void func_0208150c(u32 arg);
-extern int func_020036e8(void);
-extern void func_0200368c(u8 *dest, u32 size, u32 src, int arg);
+extern unsigned int func_0208150c(u32 arg);
+extern int func_020036e8(unsigned char *);
+extern int func_0200368c(u8 *dest, u32 size, u32 src, int arg);
 extern u32 data_020c8b20;
 
 void func_0202a64c(Big *p, UnkStruct_0202a64c_2 *out)
 {
     int ret;
 
-    func_0208150c(p->inner->value);
-    ret = func_020036e8();
+    ret = func_020036e8((unsigned char *) func_0208150c(p->inner->value));
     func_0200368c(p->data, 0x1e, data_020c8b20, ret);
     p->flag = 1;
     out->data = p->data;

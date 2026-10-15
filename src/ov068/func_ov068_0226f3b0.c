@@ -21,11 +21,11 @@ typedef struct {
 } UnkStruct_0226f3b0_2;
 
 extern void func_020eaca0(UnkStruct_0226f3b0_2 *, char *, int *);
-extern void func_020ea838(UnkStruct_0226f3b0_2 *);
+extern int func_020ea838(UnkStruct_0226f3b0_2 *);
 extern void func_020eabc8(UnkStruct_0226f3b0_2 *, int);
 extern int func_020ea990(int *, char *);
 extern int _s32_div_f(int, int);
-extern void func_ov003_0221abf8(UnkStruct_0226f3b0 *, int);
+extern int func_ov003_0221abf8(void *object);
 extern void func_ov068_0226fd80(UnkStruct_0226f3b0 *);
 
 void func_ov068_0226f3b0(UnkStruct_0226f3b0 *self)
@@ -55,7 +55,13 @@ void func_ov068_0226f3b0(UnkStruct_0226f3b0 *self)
     if (self->unk_60 < v) {
         self->unk_60 = v;
         if (r4 < 0x333) {
-            func_ov003_0221abf8(self, 1);
+            // clang-format off
+            asm {
+                mov r0, self
+                mov r1, #1
+                bl func_ov003_0221abf8
+            }
+            // clang-format on
         }
     }
 }

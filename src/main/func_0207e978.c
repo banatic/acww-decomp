@@ -8,15 +8,15 @@ struct UnkStruct_0207e978 {
     unsigned int other;
 };
 
-extern struct UnkStruct_0207e978 *func_020996f8(void);
+extern struct UnkStruct_0207e978 *func_020996f8(int);
 extern int func_0204bcdc(struct UnkStruct_0207e978 *);
 extern int func_0204bc64(struct UnkStruct_0207e978 *);
 
-int func_0207e978(void)
+int func_0207e978(int argument0)
 {
     struct UnkStruct_0207e978 *p;
 
-    p = func_020996f8();
+    p = func_020996f8((int) argument0);
     if (func_0204bcdc(p) != 0) {
         struct UnkStruct_0207e978 local;
         local.first = 0x13e6;

@@ -40,13 +40,13 @@ extern Global data_020c8da8;
 extern Res *func_0209b408(void *p);
 extern void func_0202d5e4(u16 *buf, int zero);
 extern void func_0207de14(u16 *out, void *p);
-extern void func_0207de70(void *p, u16 *val);
+extern int func_0207de70(void *p, u16 *val);
 extern int func_0205be38(void);
 extern int func_0202b510(int val);
 extern void func_02027170(void *buf, int val);
-extern void func_0208150c(void *p);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_02026e78_2 *self, void *r1, void *r2, int r3, int a5, int a6, int a7, int a8, int a9);
+extern unsigned int func_0208150c(void *p);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_02026e78_2 *self, void *r1, void *r2, int r3, int a5, int a6, int a7, int a8, int a9);
 
 void func_02026e78(UnkStruct_02026e78_2 *self, UnkStruct_02026e78_3 *out)
 {
@@ -90,8 +90,7 @@ void func_02026e78(UnkStruct_02026e78_2 *self, UnkStruct_02026e78_3 *out)
         self->unk_124 = local[4];
     }
 
-    func_0208150c(self->unk_100->unk_830);
-    a5 = func_020036e8();
+    a5 = func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830));
     func_0202da38(self, self->unk_104, &self->unk_122, 0x1e, a5, data_020c8da8.word, data_020c8da8.byte, 0, 0);
 
     out->ptr = self->unk_104;

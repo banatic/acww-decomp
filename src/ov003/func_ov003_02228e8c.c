@@ -4,7 +4,7 @@
 
 extern int data_020da13c;
 extern int data_ov003_0223bfcc;
-void func_020ee660(void *p);
+void *func_020ee660(void *p);
 void func_0209d2b8(void *p);
 
 void *func_ov003_02228e8c(char *self)

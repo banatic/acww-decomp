@@ -6,7 +6,7 @@ extern void MI_CpuFill8(void *, int, int);
 extern char *data_021fbf3c;
 extern void (*data_021fbf30)(int);
 
-void func_020ed440(int x)
+void func_020ed440(int x, int reason, void *user_data)
 {
     MI_CpuFill8(data_021fbf3c + 12 * x, 0, 12);
     {

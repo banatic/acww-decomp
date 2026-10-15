@@ -6,8 +6,8 @@
 
 extern int func_02073908(void *g, u32 val);
 extern u32 func_02008258(void *self, u32 val);
-extern void func_ov003_0220fda0(void *self, u32 *arr, int a, int b);
-extern void func_0200d4e8(void *self, int a, int b, int c);
+extern int func_ov003_0220fda0(void *self, u32 *arr, int a, int b);
+extern int func_0200d4e8(void *self, int a, int b, int c);
 extern void *data_020ccf94;
 
 typedef struct UnkStruct_0220fe4c {

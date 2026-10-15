@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_020784b0(unsigned int param1, unsigned int param2)
+void func_020784b0(unsigned int param1, unsigned int param2)
 {
     extern unsigned int data_020ccf94;
     extern int func_02073d90(unsigned int);

@@ -4,13 +4,13 @@
 
 extern void func_020f5988(void);
 extern int func_020eef70(void);
-extern void func_020ef008(char *, int);
+extern int func_020ef008(char *, int);
 extern void NNS_SndHeapLoadState(int, int);
-extern void func_020f2338(unsigned char *);
+extern void func_020f2338(void);
 extern char data_021fd054[];
 extern unsigned char data_021fd1bc[];
 
-void func_020f43a4(void)
+void func_020f43a4(void *receiver)
 {
     int v;
 
@@ -21,5 +21,8 @@ void func_020f43a4(void)
         return;
     }
     NNS_SndHeapLoadState(v, 1);
-    func_020f2338(data_021fd1bc);
+    // clang-format off
+    asm { ldr r0, =data_021fd1bc }
+    // clang-format on
+    func_020f2338();
 }

@@ -3,7 +3,7 @@
  */
 
 extern int func_ov123_02299650(int, int);
-extern int func_ov123_02299640(int, int);
+extern void func_ov123_02299640(int, int);
 extern void func_02002708(int);
 extern void func_02001a04(int, int, int);
 

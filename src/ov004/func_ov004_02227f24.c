@@ -4,7 +4,7 @@
 
 extern int func_02056f94(void *p);
 extern int func_02008258(void *self, int a);
-extern void func_0200c3b0(void *self, int a, int b, int c);
+extern int func_0200c3b0(void *self, int a, int b, int c);
 extern void func_02057bb8(unsigned short *buf);
 extern void func_02057cb8(void *self);
 

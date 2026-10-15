@@ -4,9 +4,9 @@
 
 extern unsigned int data_020ccf94;
 extern int func_020b65c4(void);
-extern int func_020b5e04(void);
+extern int func_020b5e04(unsigned int);
 extern int func_0205dc3c(void);
-extern int func_020b5df8(void);
+extern int func_020b5df8(unsigned int);
 extern int func_02085f08(void);
 extern int func_020ea0e0(int, int);
 
@@ -22,8 +22,7 @@ void func_0205dbb8(int *r6)
 
     r7 = *((int *) data_021c9ad4);
     r5b = *((unsigned char *) ((*((int *) (&data_020ccf94))) + 0x6c));
-    func_020b65c4();
-    r4 = func_020b5e04();
+    r4 = func_020b5e04((unsigned int) func_020b65c4());
     if (r5b < r4) {
         r4 = r5b;
     }
@@ -37,8 +36,7 @@ void func_0205dbb8(int *r6)
     if (r4 == 0) {
         r4 = 1;
     }
-    func_020b65c4();
-    r5 = func_020b5df8();
+    r5 = func_020b5df8((unsigned int) func_020b65c4());
     r0v = func_02085f08();
     r4 = (r5 + r0v) - r4;
     r4 = r4 + 4;

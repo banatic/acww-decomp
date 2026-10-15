@@ -14,7 +14,7 @@ typedef struct {
     int w1;
 } UnkStruct_02042e10_2;
 
-extern int func_0205be38(int a, int b);
+extern int func_0205be38(void);
 extern void func_02042d94(UnkStruct_02042e10 *a, UnkStruct_02042e10_2 *b);
 
 void func_02042e10(UnkStruct_02042e10 *a, UnkStruct_02042e10_2 *b)
@@ -27,7 +27,7 @@ void func_02042e10(UnkStruct_02042e10 *a, UnkStruct_02042e10_2 *b)
 
         a->unk_01 = x;
         a->unk_00 = y;
-        a->unk_04 = ((func_0205be38(x, y) * 960) >> 12) + 150;
+        a->unk_04 = ((func_0205be38() * 960) >> 12) + 150;
     }
     a->unk_02++;
     if (a->unk_02 >= 8) {

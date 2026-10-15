@@ -3,7 +3,7 @@
  */
 
 extern int func_020e9948(void *param0, int param1);
-extern void func_02042484(void);
+extern int func_02042484(void *);
 
 struct Func02042458_Data {
     unsigned char pad_00[0x20];
@@ -20,6 +20,6 @@ void func_02042458(void)
     result = func_020e9948(data_021fbe94, 0x10ec);
     data_021c779c.unk_20 = result;
     if (result != 0) {
-        func_02042484();
+        func_02042484((void *) result);
     }
 }

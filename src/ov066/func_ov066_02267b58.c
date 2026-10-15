@@ -40,12 +40,12 @@ extern struct UnkStruct_02267b58 *data_ov066_0226bdf4;
 extern struct UnkStruct_02267b58_2 *data_ov066_0226bdf0;
 extern struct UnkStruct_02267b58_3 *data_ov066_0226bdec;
 
-extern unsigned char func_ov066_02267db4(unsigned char, struct UnkStruct_02267b58_2 *);
+extern unsigned char func_ov066_02267db4(unsigned char);
 
 void func_ov066_02267b58(void)
 {
     struct UnkStruct_02267b58_4 *out = data_ov066_0226bdf0->first;
-    data_ov066_0226bdf4->unk_8E = func_ov066_02267db4(data_ov066_0226bdf4->unk_95, data_ov066_0226bdf0);
+    data_ov066_0226bdf4->unk_8E = func_ov066_02267db4(data_ov066_0226bdf4->unk_95);
     out->unk_00 = data_ov066_0226bdf0->second;
     out->unk_04 = data_ov066_0226bdf4->unk_8E;
     out->unk_06 = data_ov066_0226bdec->unk_22;

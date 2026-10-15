@@ -13,8 +13,10 @@ typedef struct {
 #define W(p, o) (*(int *) ((p) + (o)))
 #define S(p, o) (*(short *) ((p) + (o)))
 extern int func_ov004_022430f8(void *), FX_MulFunc(int, int), func_020341c8(Probe *, int), func_020644cc(int);
-extern void func_ov004_02244fb8(Vec *, int), func_02034270(Probe *, Vec *, int, int), func_0203423c(Probe *),
-    func_ov004_02244be0(void *, int);
+extern void func_ov004_02244fb8(Vec *, int);
+extern int func_02034270(Probe *, Vec *, int, int);
+extern void func_0203423c(Probe *);
+extern int func_ov004_02244be0(void *, int);
 int func_ov004_02241ba8(u8 *self)
 {
     Vec previous, direction;

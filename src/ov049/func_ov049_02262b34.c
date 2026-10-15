@@ -25,7 +25,7 @@ extern int func_02073d90(int x);
 extern short *func_0209d358(int a, int b);
 extern int func_020a7278(void);
 extern int func_020b65b8(void);
-extern void func_02030864(int x);
+extern int func_02030864(int x);
 extern int func_0202ea40(UnkStruct_02262b34 *self, void *buf, int n);
 extern void func_ov049_02262a94(UnkStruct_02262b34 *self, int n);
 

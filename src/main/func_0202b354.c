@@ -34,14 +34,14 @@ typedef struct {
 extern Cfg data_020c8a30;
 
 extern int func_0207f1c8(int x);
-extern int func_0209b5ec(int x);
+extern int func_0209b5ec(void *);
 extern int func_0209c330(int x);
 extern void func_0202b52c(UnkStruct_0202b354 *t, int x);
 extern void func_0207de14(unsigned short *p, int x);
 extern void func_0202d694(unsigned short *p);
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
-extern void func_0202da38(UnkStruct_0202b354_3 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
+extern int func_0202da38(UnkStruct_0202b354_3 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
 
 int func_0202b354(UnkStruct_0202b354_3 *self)
 {
@@ -51,7 +51,7 @@ int func_0202b354(UnkStruct_0202b354_3 *self)
     // ENDDECLS
 
     inner = self->unk_100->unk_830;
-    func_0202b52c(&tmp, func_0209c330(func_0209b5ec(func_0207f1c8(inner))));
+    func_0202b52c(&tmp, func_0209c330((func_0209b5ec((void *) func_0207f1c8(inner)))));
     self->unk_124 = tmp.unk_00;
     if (self->unk_124 == 0xfff1) {
         goto fail;

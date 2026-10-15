@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020eba08();
-extern int func_020ec1e8();
+extern int func_020eba08(void);
+extern int func_020ec1e8(void);
 extern int data_021c5938;
 extern unsigned char data_021c5934;
 

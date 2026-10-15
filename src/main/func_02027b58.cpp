@@ -38,18 +38,18 @@ extern char data_021c2adc[];
 extern char data_021c2af4[];
 extern UnkStruct_02027b58_3 data_020d8e48;
 
-extern "C" int func_0206fc6c(UnkStruct_02027b58 *p);
+extern "C" int func_0206fc6c(void);
 extern "C" int func_0202d9c4(UnkStruct_02027b58 *p);
 extern "C" int func_0209bc40(int x);
 extern "C" void func_0202da88(UnkStruct_02027b58 *p, char *s);
 extern "C" int func_0206fc8c(void);
-extern "C" void func_020984e8(void);
-extern "C" int func_02099734(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099734(int);
 extern "C" u16 *func_02098f48(int a, int b);
-extern "C" void func_02098f0c(int a, u16 *b, int c, int d);
+extern "C" int func_02098f0c(int a, u16 *b, int c, int d);
 extern "C" void func_0206844c(UnkStruct_02027b58_2 *b, UnkStruct_02027b58_4 *l, int v);
 extern "C" void func_0202dbdc(UnkStruct_02027b58 *p, UnkStruct_02027b58_3 c);
-extern "C" void func_02015330(UnkStruct_02027b58 *p, u16 *q, int m, int n, int o);
+extern "C" int func_02015330(UnkStruct_02027b58 *p, u16 *q, int m, int n, int o);
 
 extern "C" void func_02027b58(UnkStruct_02027b58 *p)
 {
@@ -59,7 +59,7 @@ extern "C" void func_02027b58(UnkStruct_02027b58 *p)
     int r7;
     UnkStruct_02027b58_2 *b;
 
-    if (func_0206fc6c(p) == 0) {
+    if (func_0206fc6c() == 0) {
         if (func_0209bc40(func_0202d9c4(p)) == 0x13) {
             b = p->unk_40;
             if (b) {
@@ -70,8 +70,7 @@ extern "C" void func_02027b58(UnkStruct_02027b58 *p)
     } else {
         mode = 2;
         r6 = func_0206fc8c();
-        func_020984e8();
-        r7 = func_02099734();
+        r7 = func_02099734((int) func_020984e8());
         switch (func_0209bc40(func_0202d9c4(p))) {
             case 0xa:
                 p->unk_124 = *func_02098f48(r7, r6);

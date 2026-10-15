@@ -19,7 +19,7 @@ typedef struct UnkStruct_0229cbe4 {
 } UnkStruct_0229cbe4;
 
 extern int func_ov114_0229c1b8(UnkStruct_0229cbe4 *self, int value);
-extern void func_020896b8(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
+extern int func_020896b8(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
 extern int data_ov114_0229dac0;
 extern int data_ov114_0229dae0;
 extern int data_ov114_0229dad8;

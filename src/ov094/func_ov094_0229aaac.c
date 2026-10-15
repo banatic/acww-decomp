@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern void *func_02099734(void);
+extern int func_020984e8(void);
+extern void *func_02099734(int);
 extern void *func_02098f48(void *, int);
 
 unsigned short func_ov094_0229aaac(void *obj, int val)
@@ -12,8 +12,7 @@ unsigned short func_ov094_0229aaac(void *obj, int val)
     void **field;
     unsigned short *list;
 
-    func_020984e8();
-    tmp = func_02099734();
+    tmp = func_02099734((int) func_020984e8());
 
     if (val >= 0 && val <= 14) {
         list = (unsigned short *) func_02098f48(tmp, 0);

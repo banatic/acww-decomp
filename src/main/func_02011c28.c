@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02011cd8(void *p);
+extern int func_02011cd8(void *p, int);
 extern int FS_OpenFile(void *p, int val);
 extern void *func_020e98d4(int size);
 extern int FS_ReadFile(void *p, void *addr, int size);
@@ -13,13 +13,12 @@ struct UnkStruct_02011c28 {
     void *unk_48;
 };
 
-int func_02011c28(struct UnkStruct_02011c28 *p)
+int func_02011c28(struct UnkStruct_02011c28 *p, int flag)
 {
-    int flag;
     int ret;
     int last;
 
-    ret = FS_OpenFile(p, func_02011cd8(p));
+    ret = FS_OpenFile(p, func_02011cd8(p, flag));
     p->unk_48 = func_020e98d4(0x180);
 
     if (p->unk_48 != 0) {

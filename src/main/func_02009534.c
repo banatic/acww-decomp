@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020113e0(short *, short);
-extern void func_020110a0(void *, short *);
+extern int func_020113e0(short *, short);
+extern void func_020110a0(void *s, short *src);
 
 typedef struct {
     short unk_00;

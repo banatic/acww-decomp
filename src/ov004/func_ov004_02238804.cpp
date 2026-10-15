@@ -12,8 +12,11 @@ typedef void (Actor::*Method)();
 extern "C" {
 extern Method data_ov004_0225949c[];
 extern int func_020e89dc(short *, int, int);
-extern void func_ov004_02239bb4(void *, int, int), func_ov004_022398a8(void *, u16), func_020e88dc(int *, int, int),
-    func_ov004_02239858(void *), func_ov004_022358c0(void *, int);
+extern int func_ov004_02239bb4(void *, int, int);
+extern void func_ov004_022398a8(void *, u16);
+extern int func_020e88dc(int *, int, int);
+extern int func_ov004_02239858(void *);
+extern void func_ov004_022358c0(void *, int);
 void func_ov004_02238804(u8 *self, int low, int high)
 {
     if (W(self, 0x1a8) <= (low + 2) * 0x1000) {

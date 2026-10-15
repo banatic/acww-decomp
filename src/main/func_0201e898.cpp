@@ -22,9 +22,9 @@ extern "C" void func_0209e474(void *);
 extern "C" int func_02020a5c(UnkStruct_0201e898 *, int);
 extern "C" void func_0202d8f8(UnkStruct_0201e898 *, void *, void *, u32, int);
 extern "C" void func_0202da88(UnkStruct_0201e898 *, const char *);
-extern "C" void func_0208150c(u32);
-extern "C" void func_020036e8(void);
-extern "C" u8 *func_0208222c(void);
+extern "C" unsigned int func_0208150c(u32);
+extern "C" int func_020036e8(unsigned char *);
+extern "C" u8 *func_0208222c(unsigned int);
 extern "C" int func_020819bc(void *);
 extern "C" void func_020819e0(void *);
 extern "C" void func_02015fb0(UnkStruct_0201e898 *, int, int, int, int, int);
@@ -82,9 +82,7 @@ path2:
     } else {
         u8 *ptr;
 
-        func_0208150c(val);
-        func_020036e8();
-        ptr = func_0208222c();
+        ptr = func_0208222c((unsigned int) func_020036e8((unsigned char *) func_0208150c(val)));
 
         if ((unsigned) b2 < (unsigned) ptr[2] || ((unsigned) b2 == (unsigned) ptr[2] && (unsigned) b1 < (unsigned) ptr[3])) {
             func_0202da88(p, (const char *) data_021c23f4);

@@ -8,12 +8,12 @@ extern void *data_021fbe94;
 
 extern void *func_02064b2c(int a, void *b, int c, int d);
 extern void func_02055b50(int a, void *b);
-extern void func_020b9eec(void *a, void *b, int c);
+extern int func_020b9eec(void *a, void *b, int c);
 extern void *func_021077e8(void *a);
 extern void *func_02107828(void *a);
 extern void *func_02056268(void *a, void *b);
-extern void NNS_G3dBindMdlTex(void *a, void *b);
-extern void NNS_G3dBindMdlPltt(void *a, void *b);
+extern int NNS_G3dBindMdlTex(void *a, void *b);
+extern int NNS_G3dBindMdlPltt(void *a, void *b);
 extern void func_020e993c(void *a, void *b);
 
 typedef struct {

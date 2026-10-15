@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02030dcc(int);
+extern void func_02030dcc(void);
 extern void func_0208a0a0(void);
 extern unsigned char data_021c75b8;
 extern unsigned char data_021c75b0;
@@ -19,7 +19,7 @@ int func_020b6a7c(int a0)
     unsigned int ok;
     int st;
 
-    func_02030dcc(a0);
+    func_02030dcc();
     func_0208a0a0();
     if (data_021c75b8 == 2) {
         ok = 1;

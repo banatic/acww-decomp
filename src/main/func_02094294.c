@@ -8,7 +8,7 @@ typedef struct {
     unsigned char pad_38[0x40 - 0x38];
 } Big;
 
-extern void func_02034270(Big *b, void *v, int c, int d);
+extern int func_02034270(Big *b, void *v, int c, int d);
 extern void func_0203423c(Big *b);
 extern int func_020ba4e4(void);
 extern int func_020b6598(void);

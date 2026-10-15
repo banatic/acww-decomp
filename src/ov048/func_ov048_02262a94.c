@@ -3,7 +3,7 @@
  */
 
 extern int func_020b5e10(void);
-extern void func_020b6098(int a, int b);
+extern int func_020b6098(int a, int b);
 
 int func_ov048_02262a94(void)
 {

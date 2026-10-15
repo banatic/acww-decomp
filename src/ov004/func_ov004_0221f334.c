@@ -10,11 +10,11 @@ typedef struct {
     char pad_834[0xa54 - 0x834];
     u8 unk_A54;
 } UnkStruct_0221f334;
-extern int func_020160b4(void);
-extern int func_020ab504(void);
+extern int func_020160b4(void *arg0);
+extern int func_020ab504(void *);
 extern int func_020644cc(int);
 extern int func_0208150c(void *);
-extern void func_0200366c(int a, void *b, int c, void *d);
+extern int func_0200366c(int a, void *b, int c, void *d);
 extern void func_0208b520(void);
 extern void func_ov004_0221f71c(void *self);
 extern void func_0206844c(int, u8 *, void *);
@@ -31,8 +31,7 @@ void func_ov004_0221f334(char *self)
     u8 state;
     u8 code;
     char *tblEarly;
-    func_020160b4();
-    have = func_020ab504();
+    have = func_020ab504((void *) func_020160b4((void *) self));
     code = 0xff;
     if ((*((UnkStruct_0221f334 **) (self + 0x1a4)))->unk_A54 == 1) {
         state = *((u8 *) (self + 0x1e));

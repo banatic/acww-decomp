@@ -4,9 +4,9 @@
 
 extern void *data_020d1b90[];
 
-extern void *func_020984e8(void *p);
+extern void *func_020984e8(void);
 extern int func_020b65c4(void);
-extern void func_0209e7fc(void *p);
+extern void func_0209e7fc(void);
 extern void func_0204de34(void);
 extern void func_0204dde0(void);
 extern void func_0209dfc0(void);
@@ -14,13 +14,13 @@ extern void func_0207bddc(void *p, int a);
 extern void func_0207bbb8(void *p);
 extern void func_0207b764(void);
 extern void func_0207b594(void *p);
-extern void func_020b03f8(void);
-extern void func_020b0518(void);
+extern int func_020b03f8(void);
+extern void func_020b0518(void *);
 extern void func_0204e938(void *p);
 extern void func_0209d7e8(void);
-extern void func_0205a2f0(void);
+extern int func_0205a2f0(void);
 extern int func_0203d470(void);
-extern void func_02004634(void *p);
+extern void func_02004634(int effect);
 extern void func_02088318(void);
 extern void func_02096c88(void);
 extern void func_020b10b8(void);
@@ -33,10 +33,10 @@ extern void func_0207a6a0(void *p, int a);
 extern void func_0207c754(void *p, int a);
 extern int func_0207918c(void);
 extern int func_02099020(void *p, int a);
-extern void func_02099670(void *p);
-extern void func_02088b68(void);
-extern void func_0208602c(void);
-extern int func_020860c8(void);
+extern int func_02099670(void *p);
+extern void func_02088b68(unsigned char *);
+extern int func_0208602c(void);
+extern int func_020860c8(int);
 extern void func_02087e9c(int r0, int a);
 extern void func_02098ff8(void *p, int a);
 extern void func_02099050(void *p);
@@ -46,9 +46,10 @@ void func_0209ec74(char *p)
 {
     void *ret;
 
-    ret = func_020984e8(p);
+    ret = func_020984e8();
     if (func_020b65c4() != 6) {
-        func_0209e7fc(p);
+        asm { add r0, p, #0 }
+        func_0209e7fc();
         func_0204de34();
         func_0204dde0();
         func_0209dfc0();
@@ -57,12 +58,11 @@ void func_0209ec74(char *p)
     func_0207bbb8(p + 0x9284);
     func_0207b764();
     func_0207b594(p + 0x9284);
-    func_020b03f8();
-    func_020b0518();
+    func_020b0518((void *) func_020b03f8());
     func_0204e938(p + 0xd304);
     func_0209d7e8();
     func_0205a2f0();
-    func_02004634(data_020d1b90[func_0203d470()]);
+    func_02004634((int) data_020d1b90[func_0203d470()]);
     func_02088318();
     func_02096c88();
     func_020b10b8();
@@ -77,10 +77,8 @@ void func_0209ec74(char *p)
         if (func_0207918c() == -1) {
             if (func_02099020(ret, 0x23) == 0) {
                 if (func_02099020(ret, 2) != 0) {
-                    func_02099670(ret);
-                    func_02088b68();
-                    func_0208602c();
-                    func_02087e9c(func_020860c8(), 1);
+                    func_02088b68((unsigned char *) func_02099670(ret));
+                    func_02087e9c(func_020860c8((int) func_0208602c()), 1);
                 }
             }
         }

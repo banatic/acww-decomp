@@ -4,10 +4,10 @@
 
 extern char data_ov004_0224fc4c;
 extern char data_ov004_0224fcc0;
-extern void func_020b82d0(void *addr);
-extern void func_020324c4(void *addr);
-extern void func_02066994(void *addr);
-extern void func_0203f080(void *addr);
+extern void *func_020b82d0(void *addr);
+extern void *func_020324c4(void *addr);
+extern void *func_02066994(void *addr);
+extern void *func_0203f080(void *addr);
 
 struct UnkStruct_0220c414 {
     void *unk_00;

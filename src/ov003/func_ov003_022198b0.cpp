@@ -7,7 +7,7 @@ extern "C" void *func_02096718(int);
 extern "C" int func_0200f290(void *, int);
 extern "C" int func_0200e7f8(void *);
 extern "C" int func_0203e1c4(void);
-extern "C" void func_ov003_02215624(void *, int, int, int);
+extern "C" void *func_ov003_02215624(void *, int, int, int);
 extern "C" int func_ov003_0220e05c(void *, int, int);
 
 struct UnkStruct_022198b0 {

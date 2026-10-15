@@ -7,7 +7,7 @@ typedef struct {
     int y;
 } Pair;
 extern Pair data_020d8f98;
-extern void func_02015590(int a, int b);
+extern int func_02015590(int a, int b);
 extern void func_0202dbf0(int a, Pair p);
 
 void func_0201e3b0(int a)

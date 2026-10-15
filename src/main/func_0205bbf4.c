@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0205a370(int *a, int *b, int *c, int *d, int e);
+extern int func_0205a370(int *a, int *b, int *c, int *d, int e);
 extern int func_0205bc60(unsigned char *out, int p2, int x, int y, int z, int w, int v);
 
 void func_0205bbf4(unsigned char *out, int p2)

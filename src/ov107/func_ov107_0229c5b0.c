@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern int func_0206fca4(u8 *self);
-extern int func_ov107_0229c354(u8 *self);
+extern int func_0206fca4(void);
+extern int func_ov107_0229c354(void);
 extern int func_ov003_022278e0(u8 *p, int x);
 extern u8 *func_020961a8(int);
 extern int func_0203162c(u8 *a, u8 *b, int c, int d, int e, int f);
@@ -20,8 +20,13 @@ int func_ov107_0229c5b0(u8 *self)
     u8 *obj;
     u8 *sub;
 
-    t = func_0206fca4(self);
-    x = func_ov107_0229c354(self);
+    t = func_0206fca4();
+    // clang-format off
+    asm {
+        mov r0, self
+    }
+    // clang-format on
+    x = func_ov107_0229c354();
     if (t == 0x2c) {
         return func_ov003_022278e0(self + 0xc0, x);
     }

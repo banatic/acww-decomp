@@ -29,7 +29,7 @@ struct UnkStruct_020f61e4_3 {
 };
 
 extern struct UnkStruct_020f61e4_3 data_021fd1bc;
-extern void func_020eedb8(int, unsigned short, struct UnkStruct_020f61e4 *);
+extern int func_020eedb8(int, unsigned short, struct UnkStruct_020f61e4 *);
 extern void func_020f6194(struct UnkStruct_020f61e4 *);
 extern int func_020f6000(struct UnkStruct_020f61e4 *);
 extern void func_020f609c(struct UnkStruct_020f61e4 *, int);

@@ -7,8 +7,8 @@ extern int func_0200dc8c(void *self);
 extern int func_0200dc2c(void *self);
 extern int func_ov004_0223c510(void *p, short a);
 extern int func_ov004_0223c4b8(void *p, short a);
-extern void func_ov004_0222b6a8(void *self, int a, int b, int c);
-extern void func_ov004_0222bbe4(void *self, int a, int b, int c);
+extern int func_ov004_0222b6a8(void *self, int a, int b, int c);
+extern int func_ov004_0222bbe4(void *self, int a, int b, int c);
 
 void func_ov004_0222bc60(char *self)
 {

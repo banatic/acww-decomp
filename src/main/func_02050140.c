@@ -15,7 +15,7 @@ typedef struct {
 extern void *func_0209d238(void *b, int *p);
 extern int func_0209d0ac(void *p, void *h, void *g);
 extern void *func_0209d088(void *p);
-extern void func_02055f2c(void *a, void *b, int c);
+extern int func_02055f2c(void *a, void *b, int c);
 extern void *func_0209d324(void *h);
 extern void *func_02064b2c(void *g, void *v, int n, int k);
 extern void *NNS_G3dGetJntAnmSet(void *x);

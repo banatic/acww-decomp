@@ -7,7 +7,7 @@ typedef struct {
     char pad_02[10];
 } Entry;
 
-extern Entry *func_0204cc04(int, int);
+extern Entry *func_0204cc04(int);
 
 int func_0204cb90(int a, int b)
 {
@@ -15,7 +15,7 @@ int func_0204cb90(int a, int b)
     int i;
     Entry *p;
 
-    p = func_0204cc04(0, b);
+    p = func_0204cc04(0);
     for (i = 0; i < 4; i++) {
         if (b == p->unk_00) {
             result = i;

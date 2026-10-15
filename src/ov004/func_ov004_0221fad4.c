@@ -14,7 +14,7 @@ extern int *func_02095794(int n);
 extern int func_0201c378(char *self, int n);
 extern void func_0201b458(Vec3 *out, char *self, Vec3 *in);
 extern int func_02019e00(char *p);
-extern void func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern void func_0201b044(char *p, Vec3 *v);
 extern int func_020eaa6c(Vec3 *a, char *b);
 extern void func_ov004_0221fdf4(char *self, int n);

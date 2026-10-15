@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02034f14(void);
+extern int func_02034f14(unsigned char *, int);
 
-void func_02035170(void *arg0)
+void func_02035170(void *arg0, int key)
 {
     int val;
     int val2;
     char val3;
 
-    val = func_02034f14();
+    val = func_02034f14(arg0, key);
     if (val >= 0) {
         val2 = *(int *) ((char *) arg0 + 0x1c0);
         if (val < val2) {

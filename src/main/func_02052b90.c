@@ -19,7 +19,7 @@ typedef struct Msg {
 
 extern void *data_020ccf94;
 
-extern void func_02052cac(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
+extern int func_02052cac(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
 extern void func_02073820(void *p);
 extern void func_020737f0(void *p, Msg *buf, int len);
 extern void func_02073770(void *p, int id, int len);

@@ -9,7 +9,7 @@ extern PMF data_ov003_0225f190[];
 
 extern "C" {
 
-void func_ov003_0222a784(UnkStruct_0222b744 *self);
+int func_ov003_0222a784(UnkStruct_0222b744 *self);
 
 void func_ov003_0222b744(UnkStruct_0222b744 *self)
 {

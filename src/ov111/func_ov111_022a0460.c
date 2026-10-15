@@ -3,9 +3,9 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(void *p, unsigned char b);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov095_0229bf0c(void *p);
-extern void func_ov111_0229f730(void *p, int val);
+extern int func_ov111_0229f730(void *p, int val);
 extern int func_ov111_0229efd8(void *p, int val);
 extern void func_ov111_0229f10c(void *p);
 
@@ -16,7 +16,7 @@ void func_ov111_022a0460(unsigned char *p)
         unsigned char b;
         q = p + 0x98;
         b = *q;
-        func_ov002_02208098(p, b);
+        func_ov002_02208098((void *) (p), b);
     } else {
         if (func_ov095_0229bf0c(p + 0xac)) {
             func_ov111_0229f730(p, 0x100);

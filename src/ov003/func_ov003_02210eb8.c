@@ -13,7 +13,7 @@ typedef struct Pair {
 } Pair;
 
 extern void func_ov003_02210f3c(unsigned char *p0, unsigned char *p1, unsigned char *p2, unsigned char *p3);
-extern void func_ov003_02210f58(UnkStruct_02210eb8 *s, Pair *p, unsigned char c, int n, int arg);
+extern int func_ov003_02210f58(UnkStruct_02210eb8 *s, Pair *p, unsigned char c, int n, int arg);
 
 void func_ov003_02210eb8(UnkStruct_02210eb8 *s, int arg)
 {

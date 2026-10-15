@@ -33,7 +33,7 @@ extern void func_020732cc(UnkStruct_02074330 *a, int b);
 extern int func_02077a80(void);
 extern int func_02073690(UnkStruct_02074330 *a);
 extern void func_02074fa0(void);
-extern void func_02137550(void *a, int b);
+extern char *func_02137550(void *a, int b);
 extern int func_02073918(UnkStruct_02074330 *a, int b);
 extern int func_02073d28(UnkStruct_02074330 *a, int b);
 extern int func_02074f28(int a, int b, int c);
@@ -58,16 +58,16 @@ extern int func_020a6ea0(void);
 extern void func_020a6eb0(int a);
 extern void func_02073698(UnkStruct_02074330 *a, int b);
 extern int func_02077b20(int a);
-extern void func_02074308(void);
+extern int func_02074308(void);
 extern int func_02073d90(UnkStruct_02074330 *a);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern int func_02073c90(UnkStruct_02074330 *a, int b);
 extern void func_02077b3c(u8 *a, int b, int c);
 extern void func_0207323c(UnkStruct_02074330 *a);
 extern int func_020731c4(UnkStruct_02074330 *a);
 extern int func_020ec1f8(void);
-extern int func_020ec920(int a);
+extern int func_020ec920(void);
 extern void func_02073d78(UnkStruct_02074330 *a);
 
 void func_02074330(int p0)
@@ -305,7 +305,7 @@ other:
     if (func_02073d90(self) == 0) {
         goto tail;
     }
-    if (func_020ebf70(func_02073044()) == 0) {
+    if ((func_02073044(), func_020ebf70()) == 0) {
         goto tail;
     }
     func_02137550(w84, 0xc);
@@ -376,7 +376,7 @@ tail:
                 }
             }
         } else {
-            if (func_020ec920(func_02073044()) == 0) {
+            if ((func_02073044(), func_020ec920()) == 0) {
                 v = func_020732c0(self);
                 if ((v & 8) == 0) {
                     func_020732cc(self, v | 8);

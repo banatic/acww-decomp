@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02053f20(void);
-extern void G3X_Init(int arg);
+extern void func_02053f20(void);
+extern void G3X_Init(void);
 extern void GX_SetBankForBG(int arg);
 extern void GX_SetBankForOBJ(int arg);
 extern void GX_SetBankForBGExtPltt(int arg);
@@ -13,7 +13,8 @@ extern void func_02002f68(void);
 
 void func_020a5670(void)
 {
-    G3X_Init(func_02053f20());
+    func_02053f20();
+    G3X_Init();
     GX_SetBankForBG(0x20);
     GX_SetBankForOBJ(0x1);
     GX_SetBankForBGExtPltt(0x40);

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void OS_DisableInterrupts(int a, int b, int c, int d);
-extern void OS_VSNPrintf(int a, int b, int c, int d);
+extern unsigned int OS_DisableInterrupts(void);
+extern int OS_VSNPrintf(int a, int b, int c, int d);
 extern void OS_Terminate(void);
 
 extern int data_0213fde4;
@@ -14,7 +14,7 @@ extern unsigned char FX_SinCosTable_[];
 
 void func_02001988(int a, int b, int c, int d)
 {
-    OS_DisableInterrupts(a, b, c, d);
+    OS_DisableInterrupts();
     data_0213fdec = a;
     data_0213fde8 = b;
     data_0213fde4 = (unsigned int) FX_SinCosTable_;

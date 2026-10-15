@@ -8,8 +8,8 @@ struct OverlayState {
 };
 
 extern struct OverlayState *data_ov066_0226bdec; // 0x0226bdec
-extern int data_ov066_0226bde8;                  // 0x0226bde8
-extern int data_ov066_0226bde4;                  // 0x0226bde4
+extern int (*data_ov066_0226bde8)(int, int);     // 0x0226bde8
+extern int (*data_ov066_0226bde4)(int);          // 0x0226bde4
 extern int data_ov066_0226bde0;                  // 0x0226bde0
 
 extern void func_ov066_022668c4(struct OverlayState *);

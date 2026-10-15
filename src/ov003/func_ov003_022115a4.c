@@ -22,7 +22,7 @@ typedef struct UnkStruct_022115a4 {
 
 extern void func_ov003_022118b8(unsigned char *data, unsigned int *out, unsigned short *val, unsigned char *flag);
 extern void func_0204f794(Vec *vec, unsigned int a, unsigned int b);
-extern void func_ov003_022118f8(UnkStruct_022115a4 *self, Vec *vec, unsigned short val, unsigned char flag, int c, int d);
+extern int func_ov003_022118f8(UnkStruct_022115a4 *self, Vec *vec, unsigned short val, unsigned char flag, int c, int d);
 
 void func_ov003_022115a4(UnkStruct_022115a4 *self, int arg2)
 {

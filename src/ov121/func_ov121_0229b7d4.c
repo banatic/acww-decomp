@@ -3,20 +3,20 @@
  */
 
 extern void *data_021fbe94;
-extern void func_02002c6c(void *dst, void *src, int size, int a, int b, int c);
+extern int func_02002c6c(void *dst, void *src, int size, int a, int b, int c);
 extern void *func_020e9958(void *pool, int size);
-extern void func_020984e8(void);
-extern void *func_020996b8(void);
+extern int func_020984e8(void);
+extern void *func_020996b8(void *object);
 extern void *func_02072bb0(void *p, int idx);
-extern void *func_02072da0(void *p);
+extern void *func_02072da0(void *object);
 extern void func_020025c4(void *a, void *b, int c, int d, int e);
-extern void func_02002a88(void *a, int b, int c, int d, int e);
+extern int func_02002a88(void *a, int b, int c, int d, int e);
 extern void func_020e993c(void *a, void *b);
 extern void *func_02072d4c(void *p);
 extern void *func_02072f88(void *p);
 extern void MIi_CpuCopy16(void *src, void *dst, int size);
-extern void func_02064af4(const void *src, void *dst, int size);
-extern void func_02002bd0(void *a, int b, int c, int d, int e);
+extern int func_02064af4(const void *src, void *dst, int size);
+extern int func_02002bd0(void *a, int b, int c, int d, int e);
 
 extern unsigned char data_ov121_0229c408[];
 extern unsigned char data_ov121_0229c420[];
@@ -31,8 +31,7 @@ void func_ov121_0229b7d4(void)
 
     func_02002c6c((void *) data_ov121_0229c408, pool, 8, 0x140, 0x140, 0x17f);
     ptr1 = func_020e9958(pool, 0x1000);
-    func_020984e8();
-    local = func_020996b8();
+    local = func_020996b8((void *) func_020984e8());
 
     for (i = 0; i < 8; i++) {
         void *a = func_02072bb0(local, i);

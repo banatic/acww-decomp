@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a6cd4(int);
+extern void func_020a6cd4(int);
 
-int func_0207553c(void)
+void func_0207553c(unsigned char *payload, unsigned int length, int player)
 {
-    return func_020a6cd4(1);
+    func_020a6cd4(1);
 }

@@ -18,15 +18,19 @@ typedef struct {
 #define P(p, o) (*(u8 **) ((p) + (o)))
 extern "C" {
 extern u8 data_021c75b8, data_ov004_02254b00[];
-extern void func_ov004_022279a0(void *, int, int), func_ov004_02227794(void *, int, int),
-    func_ov004_0222626c(void *, int, int);
+extern int func_ov004_022279a0(void *, int, int);
+extern int func_ov004_02227794(void *, int, int);
+extern void func_ov004_0222626c(void *, int, int);
 extern void *func_020b5e10(void), *func_0209d5e8(void);
 extern int func_020b6098(void *, int), func_0209d5f0(int);
 extern int func_0209d850(void *), func_0209d848(void *);
 extern Vec *func_0209d840(void *);
-extern void func_020109a0(void *, int, int, int);
-extern void func_0203ee14(void *, void *), func_0203ee08(void *, void *);
-extern void func_0200f27c(void *, int), func_0200f268(void *, int), func_020a8164(void *, void *);
+extern void func_020109a0(void *, int, int, unsigned short d);
+extern void func_0203ee14(void *, void *);
+extern void func_0203ee08(void *, void *);
+extern unsigned int *func_0200f27c(void *, int);
+extern void func_0200f268(void *, int);
+extern void func_020a8164(void *, void *);
 extern int func_02008258(void *, int), func_02009a44(void *, Vec *, int, int, int);
 }
 inline int disabled()

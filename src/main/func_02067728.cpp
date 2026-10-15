@@ -3,9 +3,9 @@
  */
 
 extern "C" void func_020a8c1c(void *);
-extern "C" void func_020984e8(void);
-extern "C" int func_02099870(void);
-extern "C" void func_02080190(int, void *, int);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099870(int);
+extern "C" int func_02080190(int, void *, int);
 
 class VBase {
   public:
@@ -51,8 +51,7 @@ extern "C" int func_02067728(UnkStruct_02067728 *self)
     int ret = 0;
     func_020a8c1c(&self->sub);
     if (r6 != 0) {
-        func_020984e8();
-        int x = func_02099870();
+        int x = func_02099870((int) func_020984e8());
         func_02080190(r6, &self->sub, x);
         ret = 1;
     }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec58(void);
+extern int func_0202ec58(void *unused0);
 extern void func_021074dc(int, int);
 extern void func_ov068_022749dc(void *, int);
 extern void func_02016764(void *, void *, int, int, int, int, int, int);
@@ -23,7 +23,7 @@ typedef struct {
 
 int func_ov068_02274abc(UnkStruct_02274abc *self)
 {
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58(self) == 0) {
         return 0;
     }
     if (self->unk_730 == 7) {

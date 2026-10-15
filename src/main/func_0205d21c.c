@@ -3,10 +3,10 @@
  */
 
 extern int data_021c9c2c;
-extern int func_0205d0e8(int *ptr);
-extern void func_0205c694(int arg);
+extern void func_0205d0e8(int *ptr);
+extern void func_0205c694(void);
 
 void func_0205d21c(void)
 {
-    func_0205c694(func_0205d0e8(&data_021c9c2c));
+    (((int) (func_0205d0e8(&data_021c9c2c), &data_021c9c2c)), func_0205c694());
 }

@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern "C" void func_020896b8(int, int, int, int, int, int, int);
-extern "C" void func_02089300(int, int, int, int, int, int, int, int, int);
+extern "C" int func_020896b8(int, int, int, int, int, int, int);
+extern "C" void *func_02089300(int, int, int, int, int, int, int, int, int);
 extern "C" void func_02088df8(int, int, int, int, int, int, int, int, int, int, int, int);
 extern "C" int func_ov134_022995c0(void *, int);
 extern "C" void func_ov134_022995a0(void *, int);

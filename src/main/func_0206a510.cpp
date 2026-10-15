@@ -3,7 +3,7 @@
  */
 
 extern "C" {
-void func_020679fc(char *p);
+int func_020679fc(char *p);
 int func_020a82f8(int p);
 void func_020a9334(void *p, int q);
 void func_020a7994(char *p, int q);

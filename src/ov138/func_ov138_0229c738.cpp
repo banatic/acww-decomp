@@ -15,7 +15,7 @@ struct Parent {
     UnkStruct_0229c738 sub;
 };
 
-extern "C" int func_ov002_0220a374(UnkStruct_0229c738 *sub, int arg);
+extern "C" void func_ov002_0220a374(UnkStruct_0229c738 *sub, int arg);
 
 extern "C" int func_ov138_0229c738(Parent *parent)
 {

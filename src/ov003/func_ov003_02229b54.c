@@ -21,7 +21,7 @@ typedef struct {
 extern int func_02096190(unsigned idx);
 extern void func_0209549c(Mtx43 *out, unsigned idx);
 extern void func_ov003_02219668(Mtx43 *m, Vec3 *s);
-extern void func_0203f7d0(Vec3 *d, Vec3 *s);
+extern int func_0203f7d0(Vec3 *d, Vec3 *s);
 extern void func_0205fbc4(Vec3 *a, Vec3 *b, int *c, int *d, int e);
 int func_ov003_02229b54(UnkStruct_02229b54 *o, unsigned idx)
 {

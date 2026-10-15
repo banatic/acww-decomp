@@ -30,24 +30,24 @@ typedef struct UnkStruct_02278ab8_2 {
     int b;
 } UnkStruct_02278ab8_2;
 
-extern int func_020160b4(void);
+extern int func_020160b4(void *arg0);
 extern int func_020ab504(int);
 extern void func_0209a050(int);
-extern void func_02015330(UnkStruct_02278ab8 *, u16 *, int, int, int);
+extern int func_02015330(UnkStruct_02278ab8 *, u16 *, int, int, int);
 extern void func_0206844c(void *, u8 *, const void *);
 extern int func_0209a1e8(void);
 extern int func_0209a1d0(void);
 extern int func_020984e8(void);
-extern void func_020a8228(int *);
-extern void func_020a8210(int *);
+extern void *func_020a8228(int *);
+extern void *func_020a8210(int *);
 extern int func_020644cc(int);
-extern void func_020b4a20(int *, u8 *, int);
-extern void func_0203d7c4(int, int *);
+extern int func_020b4a20(int *, u8 *, int);
+extern int func_0203d7c4(int, int *);
 extern int func_02099870(int);
 extern void func_02066024(int, u8 *, const void *, const void *, const void *, int);
 extern u16 func_0204bd20(int, int);
 extern int func_020996ac(int);
-extern void OS_UnlockByWord_IrqAndFiq(int, u16 *, int);
+extern int OS_UnlockByWord_IrqAndFiq(int object, u16 *item, int mode);
 extern int func_0208602c(void);
 extern void func_020860f0(int, int);
 extern UnkStruct_02278ab8_2 data_ov084_022792fc[];
@@ -61,7 +61,7 @@ void func_ov084_02278ab8(UnkStruct_02278ab8 *this)
 {
     Msg m;
     int blk2[0x17];
-    int ok = func_020ab504(func_020160b4());
+    int ok = func_020ab504(func_020160b4((void *) this));
     int code = 0xff;
     int v = this->unk_B4;
     int q;

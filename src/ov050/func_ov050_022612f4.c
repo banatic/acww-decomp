@@ -11,12 +11,12 @@ typedef struct {
 
 extern int func_0204bcdc(const u16 *);
 extern int func_0204bc64(const u16 *);
-extern void func_02034aa8(int);
-extern void func_02034a74(int);
-extern void func_0203aeac(void);
-extern int func_ov050_02261390(UnkStruct_022612f4 *, int);
+extern int func_02034aa8(int);
+extern int func_02034a74(int);
+extern int func_0203aeac(void);
+extern void func_ov050_02261390(UnkStruct_022612f4 *, int);
 
-int func_ov050_022612f4(UnkStruct_022612f4 *self, int arg1)
+void func_ov050_022612f4(UnkStruct_022612f4 *self, int arg1)
 {
     u16 *p;
     int r;
@@ -56,5 +56,5 @@ int func_ov050_022612f4(UnkStruct_022612f4 *self, int arg1)
         func_0203aeac();
     }
 
-    return func_ov050_02261390(self, arg1);
+    func_ov050_02261390(self, arg1);
 }

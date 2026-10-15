@@ -37,7 +37,7 @@ typedef struct {
 
 extern int func_02071d60(int);
 extern Rec *func_02071604(int, int);
-extern void func_020720ac(int, int);
+extern int func_020720ac(int, int);
 extern void *data_020ccf94;
 extern int func_02073d90(void *);
 extern void func_02073820(void *);

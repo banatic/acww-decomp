@@ -19,7 +19,7 @@ extern struct {
     u16 flags;
 } data_021fbe40;
 
-extern int func_ov002_02208014(struct UnkStruct_022a0848 *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(struct UnkStruct_022a0848 *self);
 extern int func_ov122_0229f684(struct UnkStruct_022a0848 *self, int a, int b);
 extern void func_ov122_0229f940(struct UnkStruct_022a0848 *self);
@@ -28,12 +28,12 @@ extern void func_ov122_0229f1b4(struct UnkStruct_022a0848 *self);
 extern void func_ov122_022a14c0(struct UnkStruct_022a0848 *self);
 extern int func_ov122_022a0168(struct UnkStruct_022a0848 *self);
 extern int func_ov122_022a0204(struct UnkStruct_022a0848 *self);
-extern void func_ov002_02208098(struct UnkStruct_022a0848 *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov122_0229efd8(struct UnkStruct_022a0848 *self, int a);
 extern int func_ov122_022a0098(struct UnkStruct_022a0848 *self);
 extern int func_ov122_022a00fc(struct UnkStruct_022a0848 *self);
 extern int func_ov122_022a006c(struct UnkStruct_022a0848 *self);
-extern void func_ov122_022a0054(struct UnkStruct_022a0848 *self);
+extern unsigned char *func_ov122_022a0054(struct UnkStruct_022a0848 *self);
 extern void RtcSendPxiCommand(int cmd);
 
 void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
@@ -42,7 +42,7 @@ void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
     u32 r4;
     u32 r6;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov122_022a0054(self);
         return;
     }
@@ -72,7 +72,7 @@ void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
     }
 
     if ((data_021fbe40.flags & 1) != 0) {
-        func_ov002_02208098(self, 0xd);
+        func_ov002_02208098((void *) (self), 0xd);
         func_ov122_0229efd8(self, 8);
         self->unk_AD = self->unk_AC;
         self->unk_AE = self->unk_AC;

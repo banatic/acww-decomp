@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short *func_ov102_0229d258(void);
+extern unsigned short *func_ov102_0229d258(void *parameter0);
 
-unsigned char func_ov102_0229d47c(void)
+unsigned char func_ov102_0229d47c(void *arg0)
 {
-    unsigned short *ptr = func_ov102_0229d258();
+    unsigned short *ptr = func_ov102_0229d258((void *) arg0);
     int i = 0;
     while (i < 15) {
         if (ptr[i] == 0xfff1) {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov068_022732bc(void *p, int x);
+extern void func_ov068_022732bc(void *p, int x);
 
 struct __unknown_02273198 {
     unsigned char pad_00[0x59a];

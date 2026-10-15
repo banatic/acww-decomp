@@ -4,11 +4,11 @@
 
 extern int func_020164a0(void *p, int v);
 extern int func_02056f94(void *p);
-extern void func_02019c20(void *p, int a, int b, int c, unsigned short d, int e);
-extern void func_02034270(void *out, const void *in, int a, int b);
-extern void func_ov003_02221228(int a, const void *b);
-extern void func_02091254(int a, const void *b, int c, int d);
-extern void func_0200442c(void *p, int a, int b, int c);
+extern int func_02019c20(void *p, int a, int b, int c, unsigned short d, int e);
+extern int func_02034270(void *out, const void *in, int a, int b);
+extern int func_ov003_02221228(int a, const void *b);
+extern int func_02091254(int a, const void *b, int c, int d);
+extern int func_0200442c(void *p, int a, int b, int c);
 extern void func_0201233c(void *p, unsigned short a, int b);
 extern void func_02016638(void *p, void *q, void *r, int a, int b);
 extern void func_0203423c(void *p);

@@ -3,8 +3,8 @@
  */
 
 extern void func_020f9c0c(void *self);
-extern void NNS_SndPlayerReadGlobalVariable(int index, signed short *out);
-extern void NNS_SndPlayerReadVariable(void *player, int id, signed short *out);
+extern int NNS_SndPlayerReadGlobalVariable(int index, signed short *out);
+extern int NNS_SndPlayerReadVariable(void *player, int id, signed short *out);
 
 extern signed short data_021fd26c;
 extern signed short data_021fd270;

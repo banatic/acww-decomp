@@ -14,7 +14,7 @@ extern int func_ov105_0229d76c(struct UnkStruct_0229d0f8 *self, int arg);
 extern int func_ov105_0229d75c(struct UnkStruct_0229d0f8 *self, int arg);
 extern int func_ov105_0229d718(struct UnkStruct_0229d0f8 *self, int arg);
 extern int func_ov094_0229b8d8(u8 *ptr, int arg);
-extern void func_02066830(u8 *ptr, int arg);
+extern int func_02066830(u8 *ptr, int arg);
 extern void func_ov094_0229b890(u8 *ptr, int arg);
 
 void func_ov105_0229d0f8(struct UnkStruct_0229d0f8 *self, int arg)

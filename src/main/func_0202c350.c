@@ -8,7 +8,7 @@ struct UnkStruct_0202c350 {
 };
 
 extern int func_02081d64(int value);
-extern void func_02015e70(struct UnkStruct_0202c350 *obj, int value, int flag);
+extern void *func_02015e70(struct UnkStruct_0202c350 *obj, int value, int flag);
 extern int data_020c8cf8;
 
 int *func_0202c350(struct UnkStruct_0202c350 *obj)

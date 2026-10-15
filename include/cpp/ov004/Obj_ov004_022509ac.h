@@ -13,9 +13,11 @@ struct Obj_ov004_022509ac : public RoomObject {
 
     // state handlers, dispatched through tables in func_ov004_0221215c, func_ov004_022121c8
     void func_ov004_0221215c();
-    void func_ov004_0221206c();
+    int func_ov004_0221206c();
+
     int func_ov004_022120b0();
-    void func_ov004_022120e8();
+    int func_ov004_022120e8();
+
     int func_ov004_02212124();
 
     Member_ov004_0220d0f4 unk_844;

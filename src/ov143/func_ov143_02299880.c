@@ -10,7 +10,7 @@ typedef struct {
 extern int func_ov143_02299650(UnkStruct_02299880 *a, int n);
 extern void func_ov143_022999a4(UnkStruct_02299880 *a, unsigned char byte, int c, int d);
 extern void func_ov143_02299924(UnkStruct_02299880 *a, unsigned char byte, int c, int d);
-extern void func_020896b8(int a, void *b, int c, int d, int e, int f, int g);
+extern int func_020896b8(int a, void *b, int c, int d, int e, int f, int g);
 extern int data_ov143_0229af90;
 
 void func_ov143_02299880(UnkStruct_02299880 *a, int b, int c, int d)

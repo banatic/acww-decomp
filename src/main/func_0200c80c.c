@@ -29,13 +29,13 @@ struct UnkStruct_0200c80c_2 {
     uint32_t unk_8F0;    // 0x8f0
 };
 
-extern void func_020109a0(struct UnkStruct_0200c80c_2 *p0, int r1, int r2, int r3);
+extern void func_020109a0(struct UnkStruct_0200c80c_2 *p0, int r1, int r2, unsigned short r3);
 extern void func_0200c8d8(void *addr, uint16_t s, uint32_t a, uint32_t b, int local);
 extern void func_0200c8c0(void *addr, uint16_t s, uint8_t a, uint8_t b);
-extern void func_0200f328(struct UnkStruct_0200c80c_2 *p0, int param);
-extern void func_02091230(int arg0, void *arg1, int arg2, int arg3);
+extern int func_0200f328(struct UnkStruct_0200c80c_2 *p0, int param);
+extern int func_02091230(int arg0, void *arg1, int arg2, int arg3);
 
-void func_0200c80c(struct UnkStruct_0200c80c_2 *p0, struct UnkStruct_0200c80c *p1)
+void func_0200c80c(struct UnkStruct_0200c80c_2 *p0, struct UnkStruct_0200c80c *p1, int previous)
 {
     struct P1_sub *sub = &p1->sub;
     uint16_t s = p1->sub.s;

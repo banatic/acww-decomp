@@ -3,7 +3,7 @@
  */
 
 extern void func_02063ccc(void *buf, int a, int b);
-extern void func_020638b0(void *a, unsigned int b, void *c, int d, void *e, int f, int g, int h);
+extern int func_020638b0(void *a, unsigned int b, void *c, int d, void *e, int f, int g, int h);
 extern void func_02063cc8(void *buf);
 extern void func_02061b1c(void *out, void *src, int n);
 extern char data_021f4a80[];

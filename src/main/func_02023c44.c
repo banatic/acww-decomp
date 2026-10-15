@@ -29,9 +29,9 @@ struct UnkStruct_02023c44_4 {
     unsigned char flag;
 };
 
-extern void func_0208150c(void *p);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_02023c44 *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern unsigned int func_0208150c(void *p);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_02023c44 *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 extern UnkStruct_02023c44_2 data_020c8c18;
 
 void func_02023c44(UnkStruct_02023c44 *a, UnkStruct_02023c44_4 *out)
@@ -40,8 +40,7 @@ void func_02023c44(UnkStruct_02023c44 *a, UnkStruct_02023c44_4 *out)
     int p6;
     int p7;
 
-    func_0208150c(a->sub->data);
-    x = func_020036e8();
+    x = func_020036e8((unsigned char *) func_0208150c(a->sub->data));
     p6 = data_020c8c18.word;
     p7 = data_020c8c18.byte;
 

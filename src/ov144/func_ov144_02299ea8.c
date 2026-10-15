@@ -11,13 +11,13 @@ typedef struct {
     short unk_BC;
 } UnkStruct_02299ea8;
 
-extern int func_ov144_02299694(UnkStruct_02299ea8 *self, int val);
+extern void func_ov144_02299694(UnkStruct_02299ea8 *self, int val);
 
-int func_ov144_02299ea8(UnkStruct_02299ea8 *self)
+void func_ov144_02299ea8(UnkStruct_02299ea8 *self)
 {
     self->unk_A4 = (self->unk_B8 - 8) << 4;
     if (self->unk_A4 < 0) {
         self->unk_A4 = 0;
     }
-    return func_ov144_02299694(self, self->unk_BC);
+    func_ov144_02299694(self, self->unk_BC);
 }

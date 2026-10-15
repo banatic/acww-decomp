@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern void func_ov002_02208098(void *, int);
-extern void func_ov002_0220a1dc(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
+extern void func_ov002_0220a1dc(void *);
 
 void func_ov133_0229b978(char *self)
 {
@@ -14,7 +14,7 @@ void func_ov133_0229b978(char *self)
     if (*(u8 *) (self + 0x9c) == 0xc) {
         func_ov002_02208098(self, 0x9);
     } else {
-        func_ov002_0220a1dc(self + 0x11c, *(u8 *) (self + 0x9c));
+        func_ov002_0220a1dc(self + 0x11c);
         func_ov002_02208098(self, 0x5);
     }
 }

@@ -7,10 +7,10 @@
 extern void func_0203ee14(void *s, void *q);
 extern void func_020a8164(void *p, void *v);
 extern unsigned int func_020712b0(void *g, u16 *k);
-extern void func_02094fd4(void *o);
+extern void *func_02094fd4(void *o);
 extern int func_02070fe4(void *g, void *o, u16 *k);
 extern void func_02068404(int h, int a, void *o);
-extern void func_02094fbc(void *o);
+extern void *func_02094fbc(void *o);
 extern int data_ov004_022534cc;
 extern int data_021f38f8;
 

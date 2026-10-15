@@ -27,24 +27,22 @@ typedef struct UnkStruct_020253bc_4 {
 extern UnkStruct_020253bc_3 data_020c8ad0;
 extern UnkStruct_020253bc_3 data_020c8ac0;
 
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
-extern void func_0208150c(int);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_020253bc_2 *, unsigned char *, unsigned char *, int, int, int, int, int, int);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
+extern unsigned int func_0208150c(int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_020253bc_2 *, unsigned char *, unsigned char *, int, int, int, int, int, int);
 
 void func_020253bc(UnkStruct_020253bc_2 *r5, UnkStruct_020253bc_4 *r6)
 {
     UnkStruct_020253bc_3 *r4 = &data_020c8ad0;
 
-    func_0202d9c4();
-    if (func_0209bc40() == 1) {
+    if (func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) r5)) == 1) {
         r4 = &data_020c8ac0;
     }
 
-    func_0208150c(r5->ptr->unk_830);
-
-    func_0202da38(r5, r5->arr, &r5->byte, 0x1e, func_020036e8(), r4->unk_00, r4->unk_04, 0, 0);
+    func_0202da38(r5, r5->arr, &r5->byte, 0x1e, func_020036e8((unsigned char *) func_0208150c(r5->ptr->unk_830)), r4->unk_00,
+                  r4->unk_04, 0, 0);
 
     r6->unk_00 = r5->arr;
     r6->unk_04 = r5->byte;

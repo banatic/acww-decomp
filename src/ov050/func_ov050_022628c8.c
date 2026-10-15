@@ -7,7 +7,7 @@ extern void func_0206844c(unsigned int, unsigned int, int);
 
 extern unsigned char data_021f43e8[];
 
-void func_ov050_022628c8(unsigned int *param)
+void func_ov050_022628c8(unsigned int *param, int event)
 {
     if (((unsigned char *) *((unsigned int *) ((char *) param + 0xb4)))[0x73e] == 0 && func_02099fe8() != -1) {
         *(unsigned int *) ((char *) param + 0xd0) = 0x22;

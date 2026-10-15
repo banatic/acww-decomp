@@ -11,7 +11,7 @@ class Obj_ov147_0229ac1c {
     // states run by func_ov147_0229a634, indexed by unk_04
     void func_ov147_0229a2dc();
     void func_ov147_0229a2a8();
-    void func_ov147_0229a250();
+    int func_ov147_0229a250();
 
     void func_ov147_0229a634();
 };

@@ -3,17 +3,17 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void *ptr);
-extern void func_ov002_02209ccc(void *ptr);
-extern void func_ov002_0220a5fc(void *ptr);
-extern void func_ov002_0220b008(void *ptr);
-extern void __cxa_vec_ctor(void *ptr, int a, int b, void *c, void *d);
-extern void func_020b9cfc(void *ptr);
-extern void func_ov002_0220ba24(void *ptr);
+extern void *func_ov002_0220830c(void *ptr);
+extern void *func_ov002_02209ccc(void *ptr);
+extern void *func_ov002_0220a5fc(void *ptr);
+extern void *func_ov002_0220b008(void *ptr);
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*callback3)(void *), void (*callback4)(void *));
+extern void *func_020b9cfc(void *ptr);
+extern void *func_ov002_0220ba24(void *ptr);
 
 extern char data_ov144_0229b3f8[];
-void func_02070c08(void);
-void func_02070be8(void);
+void *func_02070c08(void *arg0);
+int **func_02070be8(int **arg0);
 
 typedef struct {
     char data[0x24];
@@ -29,6 +29,10 @@ typedef struct {
     Elem arr[2];
 } MyObj;
 
+#define DisposeElement_func_02070c08 ((void (*)(void *)) func_02070c08)
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
+
 void *func_ov144_0229b290(void)
 {
     void *obj;
@@ -43,7 +47,7 @@ void *func_ov144_0229b290(void)
         func_ov002_02209ccc(&self->obj_c4);
         func_ov002_0220a5fc(&self->obj_128);
         func_ov002_0220b008(&self->obj_170);
-        __cxa_vec_ctor(&self->obj_33c, 9, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(&self->obj_33c, 9, 0x6c, DisposeElement_func_02070c08, DisposeElement_func_02070be8);
         p = self->arr;
         end = &self->arr[2];
         do {
@@ -54,3 +58,6 @@ void *func_ov144_0229b290(void)
     }
     return obj;
 }
+
+#undef DisposeElement_func_02070c08
+#undef DisposeElement_func_02070be8

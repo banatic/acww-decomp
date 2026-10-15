@@ -8,17 +8,17 @@ extern struct UnkStruct_02074150 {
 };
 extern struct UnkStruct_02074150 *data_020ccf94;
 extern int func_02073dd4(struct UnkStruct_02074150 *p, int field);
-extern void func_020a6f64(int value);
+extern int func_020a6f64(int value);
 
-void func_02074150(void)
+int func_02074150(void)
 {
     struct UnkStruct_02074150 *p;
     int field;
     p = data_020ccf94;
     field = p->unk_64;
     if (func_02073dd4(p, field) == 0) {
-        func_020a6f64(3);
+        return func_020a6f64(3);
     } else {
-        func_020a6f64(field);
+        return func_020a6f64(field);
     }
 }

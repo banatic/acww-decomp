@@ -10,7 +10,7 @@ extern void func_0200fa1c(int *v, void *self, void *p, short *b, int *a);
 extern void func_02051e04(int *w);
 extern void func_020109fc(void *self, int m, int a, int b);
 
-void func_ov004_0222b5e0(void *self, void *msg)
+void func_ov004_0222b5e0(void *self, void *msg, int previous)
 {
     short b;
     int a;

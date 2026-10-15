@@ -4,7 +4,7 @@
 
 extern int func_0206fbf8(int);
 
-int func_ov003_0221e46c(void)
+int func_ov003_0221e46c(void *receiver)
 {
     if (func_0206fbf8(0x27) != 0) {
         return 1;

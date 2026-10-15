@@ -8,7 +8,7 @@
 extern "C" {
 void func_020b23ec(unsigned short a, int b);
 void func_020b23c8(void);
-void func_020b5e10(void);
+int func_020b5e10(void);
 void func_020b5e90(void);
 }
 

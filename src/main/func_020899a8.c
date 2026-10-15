@@ -20,7 +20,7 @@ struct Node {
 
 extern struct Node *data_021d3124;
 
-extern void func_0203f844(Vec *, int);
+extern int func_0203f844(Vec *, int);
 extern void func_020eaca0(Vec *, Vec *, Vec *);
 extern s32 FX_Div(s32, s32);
 extern s32 FX_MulFunc(s32, s32);

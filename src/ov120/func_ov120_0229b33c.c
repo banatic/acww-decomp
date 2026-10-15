@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern void func_020984e8(void);
-extern int func_02099870(void);
+extern int func_020984e8(void);
+extern int func_02099870(int);
 extern int func_0209871c(void *, int);
 extern int func_020988a4(void *, int);
 extern int func_0207cee4(void *, int);
@@ -21,8 +21,7 @@ void func_ov120_0229b33c(u8 *self)
     int cur;
 
     n = 0;
-    func_020984e8();
-    cur = func_0209871c(data_021dc7bc, func_02099870());
+    cur = func_0209871c(data_021dc7bc, func_02099870((int) func_020984e8()));
     if (cur != -1) {
         self[0x2720] = 1;
         n++;

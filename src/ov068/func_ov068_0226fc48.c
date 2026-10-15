@@ -4,9 +4,9 @@
 
 extern int data_020c904c;
 extern int FX_Div(int, int);
-extern void func_020912d4(int, int *, int, short *);
-extern void func_020044c0(void *, int, int, int);
-extern void func_ov003_02228400(void *, int);
+extern int func_020912d4(int, int *, int, short *);
+extern int func_020044c0(void *, int, int, int);
+extern int func_ov003_02228400(void *, int);
 
 void func_ov068_0226fc48(void *p)
 {

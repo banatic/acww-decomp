@@ -16,7 +16,7 @@ extern int func_020e8ed8(int dx, int dz);
 extern int func_020e8b4c(int a, int b);
 extern int func_0200e9a8(void *self, s16 *ang, int *tx, int *tz, s16 *out_ang);
 extern void func_0201107c(void *self, void *ptr);
-extern void func_020113e0(s16 *ang, s16 val);
+extern int func_020113e0(s16 *ang, s16 val);
 extern void func_020110a0(void *self, s16 *ang);
 extern int FX_MulFunc(int a, s16 b);
 

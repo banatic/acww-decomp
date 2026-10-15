@@ -12,7 +12,7 @@ typedef struct {
 extern void func_0209df64(unsigned char *);
 extern void func_0208683c(UnkStruct_020866b8 *);
 extern int func_02098844(unsigned int, int);
-extern int func_02099a28(void);
+extern int func_02099a28(unsigned int object);
 extern int func_02099670(int);
 extern void func_02088b38(int, int);
 extern void func_02088b1c(int, int);
@@ -35,7 +35,7 @@ void func_020866b8(UnkStruct_020866b8 *p, int mode)
 
     for (i = 0; i < 4; i++) {
         val = func_02098844((unsigned int) &data_021dc7bc, i);
-        if (val != 0 && func_02099a28() != 0) {
+        if (val != 0 && func_02099a28((unsigned int) val) != 0) {
             switch (mode) {
                 case 1:
                     func_02088b38(func_02099670(val), zero);

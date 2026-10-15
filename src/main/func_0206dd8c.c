@@ -3,7 +3,7 @@
  */
 
 extern char data_020df258;
-extern void func_020a8cac(void *self);
+extern void *func_020a8cac(void *self);
 extern void func_020a8c1c(void *self);
 
 typedef struct UnkStruct_0206dd8c {

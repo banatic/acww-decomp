@@ -10,7 +10,7 @@ extern "C" {
 extern "C" {
 extern s16 *func_0209d358(int, int);
 extern int func_020984e8(void);
-extern int func_020992fc(void);
+extern int func_020992fc(int object);
 extern void func_020983ec(int, int);
 extern int func_020983e0(void);
 extern void func_020983c8(int);
@@ -48,9 +48,10 @@ extern PMFEntry data_021f3ba4[];
 
 extern "C" int func_0209f858(UnkStruct_0209f858 *self)
 {
+    int profile;
     if (func_0209d358(0, 0x4b)[0] != 0) {
-        if (func_020984e8() != 0) {
-            int v = func_020992fc();
+        if ((profile = func_020984e8()) != 0) {
+            int v = func_020992fc(profile);
             int b = func_0209d358(0, 0x4b)[0];
             switch (b) {
                 case 0:
@@ -75,8 +76,8 @@ extern "C" int func_0209f858(UnkStruct_0209f858 *self)
     }
 
     if (func_0209d358(0, 0x4c)[0] != 0) {
-        if (func_020984e8() != 0) {
-            func_020992fc();
+        if ((profile = func_020984e8()) != 0) {
+            func_020992fc(profile);
             if (func_0209d358(0, 0x4c)[0] != 0) {
                 int r4 = func_0209d358(0, 0x4c)[0];
                 if (r4 < 1) {

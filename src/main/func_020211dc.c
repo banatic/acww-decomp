@@ -21,7 +21,7 @@ extern void func_020991a0(int);
 extern int func_02073d90(int);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0200368c(void *, int, int, int);
+extern int func_0200368c(void *, int, int, int);
 extern int data_020ccf94;
 extern int data_020c8c20;
 extern u32 data_020d9078[2];

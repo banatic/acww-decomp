@@ -2,22 +2,22 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02064170(void *);
-extern void func_020641c8(void *);
-extern void __register_global_object(void *, void *, void *);
-extern void func_ov146_0229a174(void *);
+extern void *func_02064170(void *);
+extern void *func_020641c8(void *);
+extern void __register_global_object(void *, void *destructor, void *);
+extern unsigned int func_ov146_0229a174(void *);
 extern void *func_ov146_0229a42c(void *);
 extern void func_020a8c1c(void *);
 extern void func_020a8874(void *, void *, int);
-extern void func_020a8a70(void *, void *, int, int);
-extern void func_020b496c(void *, void *);
-extern void func_0207094c(void *, int);
+extern int func_020a8a70(void *, void *, int, int);
+extern void *func_020b496c(void *, void *);
+extern int func_0207094c(void *, int);
 extern void func_020708e4(void *, void *, int);
 extern void func_02070adc(void *, int, int, int, unsigned char, int, int);
 extern void func_02070a04(void *, void *, void *);
 
-extern void func_02064158(void);
-extern void func_020641b0(void);
+extern void *func_02064158(void *arg0);
+extern void *func_020641b0(void *arg0);
 
 extern int data_ov146_0229b78c;
 extern int data_ov146_0229b7a8;
@@ -25,6 +25,10 @@ extern int data_ov146_0229b79c;
 extern int data_ov146_0229b780;
 extern int data_ov146_0229b7e4;
 extern int data_ov146_0229b790;
+
+#define DisposeGlobal_func_02064158 ((void *) &func_02064158)
+
+#define DisposeGlobal_func_020641b0 ((void *) &func_020641b0)
 
 void func_ov146_0229a238(char *self)
 {
@@ -37,12 +41,12 @@ void func_ov146_0229a238(char *self)
 
     if ((data_ov146_0229b78c & 1) == 0) {
         func_02064170(&data_ov146_0229b7a8);
-        __register_global_object(&data_ov146_0229b7a8, func_02064158, &data_ov146_0229b79c);
+        __register_global_object(&data_ov146_0229b7a8, DisposeGlobal_func_02064158, &data_ov146_0229b79c);
         data_ov146_0229b78c |= 1;
     }
     if ((data_ov146_0229b780 & 1) == 0) {
         func_020641c8(&data_ov146_0229b7e4);
-        __register_global_object(&data_ov146_0229b7e4, func_020641b0, &data_ov146_0229b790);
+        __register_global_object(&data_ov146_0229b7e4, DisposeGlobal_func_020641b0, &data_ov146_0229b790);
         data_ov146_0229b780 |= 1;
     }
 
@@ -94,3 +98,6 @@ void func_ov146_0229a238(char *self)
         }
     }
 }
+
+#undef DisposeGlobal_func_02064158
+#undef DisposeGlobal_func_020641b0

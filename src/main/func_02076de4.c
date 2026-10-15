@@ -13,7 +13,7 @@ struct UnkStruct_02076de4 {
     int unk_64;
 };
 
-void func_02076de4(int a)
+void func_02076de4(int a, int sequence, unsigned char category, unsigned int player)
 {
     struct UnkStruct_02076de4 *p;
     unsigned char local;

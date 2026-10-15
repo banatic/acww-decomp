@@ -56,21 +56,21 @@ extern int func_0209e380(void *, void *);
 extern void func_02086874(UnkStruct_020868e8 *);
 extern int func_0203fdc4(int);
 extern void func_02086d24(UnkStruct_020868e8 *);
-extern void func_020b5630(void *);
+extern void *func_020b5630(void *);
 extern void func_02066694(void *);
-extern void func_02094fd4(void *);
+extern void *func_02094fd4(void *);
 extern void *func_02098844(unsigned int, int);
-extern int func_02099a28(void);
+extern int func_02099a28(unsigned int);
 extern void *func_02099670(void *);
-extern void func_0203d7b0(int, int);
-extern void func_0203d79c(int, int);
+extern int func_0203d7b0(int, int);
+extern int func_0203d79c(int, int);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
-extern void func_02062f90(void *, u16 *);
-extern void func_0203d7c4(int, void *);
-extern void func_02062f4c(void *);
-extern void func_020b4508(void *, int, int);
-extern void func_020b45d0(void *, int, int, int, int, int);
+extern void *func_02062f90(void *, u16 *);
+extern int func_0203d7c4(int, void *);
+extern void *func_02062f4c(void *);
+extern int func_020b4508(void *, int, int);
+extern int func_020b45d0(void *, int, int, int, int, int);
 extern int func_02088b48(void *);
 extern int func_02088b30(void *);
 extern UnkStruct_020868e8 *func_02099870(void *);
@@ -78,13 +78,13 @@ extern int memcmp(void *, void *, int);
 extern int func_0209518c(UnkStruct_020868e8 *, UnkStruct_020868e8 *);
 extern int func_02088ab8(void *);
 extern int func_020644cc(int);
-extern void func_02095074(UnkStruct_020868e8 *, void *);
+extern void *func_02095074(UnkStruct_020868e8 *, void *);
 extern void func_02088aa0(void *);
 extern void func_02066024(void *, Rec *, int, const void *, const void *, UnkStruct_020868e8 *);
-extern void func_02065ed0(void *, u16, int);
-extern void func_02097a54(void *);
-extern void func_02094fbc(void *);
-extern void func_020b5618(void *);
+extern unsigned short func_02065ed0(void *, u16, int);
+extern int func_02097a54(void *);
+extern void *func_02094fbc(void *);
+extern void *func_020b5618(void *);
 extern void func_02066688(void *);
 
 extern unsigned char data_020e1f5c[];
@@ -201,7 +201,7 @@ go:
     do {
         res = z0;
         obj = func_02098844((unsigned int) data_021dc7bc, i);
-        if (obj != 0 && func_02099a28() != 0) {
+        if (obj != 0 && func_02099a28((unsigned int) obj) != 0) {
             r7 = func_02099670(obj);
             if ((u8) (self->unk_47 + 0xff) <= 1) {
                 func_0203d7b0(z1, self->unk_45);

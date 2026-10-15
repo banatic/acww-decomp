@@ -4,14 +4,14 @@
 
 extern void *data_020ccf94;
 extern void *data_021c80bc;
-extern void func_020912d4(int a, void *b, void *c, int d);
+extern int func_020912d4(int a, void *b, void *c, int d);
 extern int func_02073908(void *a, int b);
-extern void func_ov003_022211bc(int a, int *b);
+extern int func_ov003_022211bc(int a, int *b);
 extern void func_ov003_02221150(int a, int *b);
 extern unsigned short *func_0204f5a8(void *a, void *b, int c);
 extern void func_0200f268(void *self, int a);
-extern void func_0200f328(void *self, int a);
-extern void func_0200f27c(void *self, int a);
+extern int func_0200f328(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern void func_02010f5c(void *self);
 
 typedef struct {

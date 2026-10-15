@@ -2,12 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern const void *func_02095040(const void *);
+extern const void *func_02095040(void *);
 extern int memcmp(const void *, const void *, unsigned int);
 
-int func_0208053c(const void *a, const void *b)
+int func_0208053c(void *a, void *b, void *context)
 {
-    const void *p = func_02095040(a);
+    const void *p = func_02095040((void *) a);
+    (void) context;
 
     if (*(const unsigned short *) b != *(const unsigned short *) p ||
         memcmp((const char *) b + 2, (const char *) p + 2, 12) != 0) {

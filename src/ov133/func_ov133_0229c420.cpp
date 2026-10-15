@@ -20,11 +20,11 @@ extern "C" void func_0206f58c(void);
 extern "C" int func_0206f56c(void);
 extern "C" void func_ov133_0229ba10(UnkStruct_0229c420 *self);
 extern "C" void func_ov002_02208090(UnkStruct_0229c420 *self, int v);
-extern "C" void func_ov133_0229c3d4(UnkStruct_0229c420 *self, int v);
+extern "C" int func_ov133_0229c3d4(UnkStruct_0229c420 *self, int v);
 extern "C" int func_0206fca4(void);
 extern "C" void *func_ov133_0229b714(UnkStruct_0229c420 *self);
 extern "C" void func_02077c40(void *p);
-extern "C" void func_ov002_022080a0(UnkStruct_0229c420 *self, int v);
+extern "C" unsigned char *func_ov002_022080a0(UnkStruct_0229c420 *self, unsigned char value);
 
 extern "C" void func_ov133_0229c420(UnkStruct_0229c420 *self)
 {

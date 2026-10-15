@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_FndGetPrevListObject(void);
+extern void *NNS_FndGetPrevListObject(void *list, void *object);
 
-void func_020efc20(void)
+void *func_020efc20(void *list, void *object)
 {
-    NNS_FndGetPrevListObject();
+    return NNS_FndGetPrevListObject(list, object);
 }

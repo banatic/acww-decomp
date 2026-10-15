@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *self);
+extern int func_ov002_02208014(void);
 extern void func_ov120_0229b64c(void *self);
 extern int func_ov002_02208008(void *self);
 extern int func_ov120_0229a584(void *self, int val);
@@ -15,7 +15,7 @@ extern void func_ov120_0229ad5c(void *self, int num);
 extern void func_ov120_0229a45c(void *self);
 extern unsigned char func_ov120_0229ae78(void *self, unsigned char a, unsigned char b);
 extern void func_ov120_0229a438(void *self, unsigned int val);
-extern void func_ov002_02208098(void *self, int num);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern unsigned short data_021fbe40[];
 
 typedef struct UnkStruct_0229b7f8 {
@@ -30,7 +30,7 @@ typedef struct UnkStruct_0229b7f8 {
 
 void func_ov120_0229b7f8(UnkStruct_0229b7f8 *self)
 {
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov120_0229b64c(self);
         return;
     }

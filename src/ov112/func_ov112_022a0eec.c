@@ -10,7 +10,7 @@ typedef struct {
     unsigned char unk_BF;
 } UnkStruct_022a0eec;
 
-extern void func_ov002_02208098(UnkStruct_022a0eec *self, int val);
+extern unsigned char *func_ov002_02208098(UnkStruct_022a0eec *self, unsigned char value);
 extern void func_ov112_0229fe50(UnkStruct_022a0eec *self, int val);
 extern int func_ov112_0229f730(UnkStruct_022a0eec *self);
 extern void RtcSendPxiCommand(int cmd);

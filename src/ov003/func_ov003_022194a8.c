@@ -22,14 +22,14 @@ extern void *data_020ccf94;
 
 extern void func_ov003_0222e898(int a, int b);
 extern int func_0204fea4(void);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f328(void *self, int a);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
+extern int func_0200f328(void *self, int a);
 extern int func_02073908(void *a, int b);
 extern void func_ov003_022195c0(void *q, int a);
 extern void func_ov003_022195ac(void *q, int a);
 extern unsigned int func_ov003_022195a8(void *q);
 
-void func_ov003_022194a8(char *self, Src *src)
+void func_ov003_022194a8(char *self, Src *src, int previous)
 {
     u16 v;
     u16 id;

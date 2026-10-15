@@ -51,27 +51,27 @@ extern int data_ov074_02279d14;
 extern int data_021f3278;
 extern int data_ov074_02279d28;
 
-extern void func_02088220(int *p);
-extern Rec *func_02072d4c(void);
-extern Hdr *func_02072ee8(Rec *r);
+extern void *func_02088220(void *record);
+extern Rec *func_02072d4c(void *record);
+extern Hdr *func_02072ee8(Rec *record);
 extern int func_020644cc(int a);
 extern int func_0202ea80(int a, int b);
 extern int func_020951bc(Hdr *h);
-extern void func_020984e8(void);
-extern Hdr *func_02099870(void);
+extern int func_020984e8(void);
+extern Hdr *func_02099870(int argument0);
 extern int memcmp(const void *a, const void *b, unsigned long n);
 extern int func_0209518c(Hdr *h, Hdr *q);
-extern void func_02062fbc(Blob *t);
+extern void *func_02062fbc(Blob *t);
 extern void func_02015e40(UnkStruct_02278de8_2 *self, Hdr *h, int a);
 extern int func_02095040(Hdr *h);
-extern void func_02015e70(UnkStruct_02278de8_2 *self, int a, int b);
+extern void *func_02015e70(UnkStruct_02278de8_2 *self, int a, int b);
 extern int func_020881f0(int *p);
-extern void func_020683e4(Owner *o, int a, unsigned char *p, int *t);
+extern int func_020683e4(Owner *o, int a, unsigned char *p, int *t);
 extern void func_02072eb8(Rec *r, Blob *t);
 extern void func_02068404(Owner *o, int a, Blob *t);
-extern void func_02062f4c(Blob *t);
-extern void func_0209526c(Hdr *h);
-extern void func_02072fac(Rec *r);
+extern void *func_02062f4c(Blob *t);
+extern int func_0209526c(Hdr *h);
+extern int func_02072fac(Rec *r);
 
 void func_ov074_02278de8(UnkStruct_02278de8_2 *self, UnkStruct_02278de8_3 *out)
 {
@@ -80,14 +80,15 @@ void func_ov074_02278de8(UnkStruct_02278de8_2 *self, UnkStruct_02278de8_3 *out)
     Hdr b;
     Blob t;
     Rec *r;
+    void *record;
     Hdr *p;
     Hdr *q;
     int *g;
 
     out->unk_00 = (int) &data_ov074_02279d14;
     g = &data_021f3278;
-    func_02088220(g);
-    r = func_02072d4c();
+    record = func_02088220(g);
+    r = func_02072d4c(record);
     a.a = r->a;
     a.b = r->b;
     a.c = r->c;
@@ -107,8 +108,8 @@ void func_ov074_02278de8(UnkStruct_02278de8_2 *self, UnkStruct_02278de8_3 *out)
         out->unk_04 = 3;
     } else {
         if (func_020951bc(&b) != 0) {
-            func_020984e8();
-            q = func_02099870();
+
+            q = func_02099870((int) func_020984e8());
             if (b.a == q->a) {
                 if (memcmp(&b.b, &q->b, 0xc) == 0) {
                     if (func_0209518c(&b, q) != 0) {

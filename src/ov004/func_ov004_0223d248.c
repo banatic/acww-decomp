@@ -4,8 +4,8 @@
 
 extern void *data_021fbe94;
 extern void *func_020e9948(void *h, int sz);
-extern void *func_020ba294(void *p);
-extern void *func_0203cbcc(void *p);
+extern void *func_020ba294(void *object);
+extern void *func_0203cbcc(void *object);
 
 void func_ov004_0223d248(void *self)
 {

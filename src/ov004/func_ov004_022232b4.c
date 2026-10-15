@@ -5,7 +5,7 @@
 extern void func_ov004_02223388(void *self, int a);
 extern int func_02016884(void *a, int b, void *c);
 extern int func_ov004_0222fd70(void);
-extern void func_ov004_0222fdb8(void);
+extern int func_ov004_0222fdb8(void);
 extern void func_ov004_0222fd58(unsigned short v);
 
 int func_ov004_022232b4(char *self)

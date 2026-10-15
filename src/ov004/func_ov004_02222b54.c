@@ -10,10 +10,16 @@ struct UnkStruct_02222b54 {
     void (**vt)(UnkStruct_02222b54 *);
 };
 extern u8 *data_020ccf94;
-extern void func_0201c054(void *, int, int, int), func_ov004_02223388(void *, int), func_02016108(void *, void *),
-    func_0201b6e4(void *, int, int);
-extern void *func_0201c2a4(void *, int);
-extern int func_0201c0e0(void *), func_020a7278(void *), func_0201c014(void *), func_0201c040(void *, int *, int *);
+extern void func_0201c054(void *self, int mode, int first, int second);
+extern void func_ov004_02223388(void *self, int state);
+extern void func_02016108(void *self, void *target);
+extern void func_0201b6e4(void *self, int event, int participant);
+extern void *func_0201c2a4(void *self, int participant);
+extern int func_0201c0e0(void *self);
+extern int func_020a7278(void);
+extern int func_0201c014(void *self);
+extern int func_0201c040(void *self, int *first, int *second);
+
 void func_ov004_02222b54(u8 *self, int event, int who)
 {
     switch (event) {
@@ -43,7 +49,7 @@ void func_ov004_02222b54(u8 *self, int event, int who)
             break;
         case 8:
             if (who == 4) {
-                if (func_020a7278(self)) {
+                if (func_020a7278()) {
                     func_0201c054(self, 1, W(data_020ccf94, 0x64), 4);
                     func_ov004_02223388(self, 3);
                 } else {

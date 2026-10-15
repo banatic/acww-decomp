@@ -9,7 +9,7 @@ struct UnkStruct_02217a6c {
 };
 
 extern void func_ov003_02217bf0(int base, struct UnkStruct_02217a6c *out1, int *out2, int *out3, short *out4);
-extern void func_ov003_02217c5c(int p1, int sel, unsigned char lowNib, int v14, int v18, short s, int const6, int p2);
+extern int func_ov003_02217c5c(int p1, int sel, unsigned char lowNib, int v14, int v18, short s, int const6, int p2);
 
 void func_ov003_02217a6c(int p1, int p2)
 {

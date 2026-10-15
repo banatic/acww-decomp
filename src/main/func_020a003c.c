@@ -5,7 +5,7 @@
 extern void OS_CreateThread(void *a, void *b, void *c, void *d, int e, int f);
 extern void OS_WakeupThreadDirect(void *a);
 
-extern void func_020a00c0(void);
+extern void func_020a00c0(int);
 
 void func_020a003c(void *obj, void *arg2)
 {

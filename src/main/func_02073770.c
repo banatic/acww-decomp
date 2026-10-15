@@ -12,9 +12,9 @@ typedef struct {
     int d4; // 0xd4
 } UnkStruct_02073770;
 
-extern int func_02073d90(void);
+extern int func_02073d90(void *);
 extern int func_020b65c4(void);
-extern void func_020a6c98(void);
+extern int func_020a6c98(int);
 extern void func_02077880(void *dst, unsigned short value);
 extern void func_02077a54(void *dst, int value, unsigned char byte);
 extern void MI_CpuCopy8(void *dst, int value, int count);
@@ -25,10 +25,9 @@ void func_02073770(UnkStruct_02073770 *p, unsigned int param1, unsigned int para
     unsigned char arr2[8];
     int diff;
 
-    if (func_02073d90()) {
+    if (func_02073d90(p)) {
         if ((param2 - 6) <= 1) {
-            func_020b65c4();
-            func_020a6c98();
+            func_020a6c98((int) func_020b65c4());
         }
 
         diff = p->d4 - p->d0;

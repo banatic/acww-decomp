@@ -5,7 +5,7 @@
 extern int data_ov003_02239754;
 extern int data_ov003_02239818;
 
-extern void func_ov009_0226539c(void *p);
+extern void *func_ov009_0226539c(void *p);
 extern void func_020edf54(void *p);
 
 struct func_ov003_0221ed80_obj {

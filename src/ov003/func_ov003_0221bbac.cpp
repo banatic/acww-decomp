@@ -6,7 +6,7 @@
 #include "cpp/ov003/Obj_ov003_02238630.h"
 
 extern "C" {
-int func_02096168(void *self);
+int func_02096168(void);
 int func_ov009_0226321c(void *self, int *a, short *s);
 int func_ov003_02219a64(int n, int *a, int *b, short val);
 }
@@ -18,7 +18,7 @@ void Obj_ov003_02238630::func_ov003_0221bbac()
     int b[2];
     short *ps;
 
-    if (func_02096168(this)) {
+    if (func_02096168()) {
         func_ov003_0221bfa8(9);
         return;
     }

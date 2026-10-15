@@ -3,7 +3,7 @@
  */
 
 extern int func_ov134_02299a60(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov136_0229c628(void *);
 extern int func_ov136_0229c794(void *);
 extern int func_ov136_0229c750(void *);
@@ -15,7 +15,7 @@ void func_ov136_0229cb58(void *arg)
     int b;
 
     if (func_ov134_02299a60((char *) arg + 0x2c4)) {
-        func_ov002_02208098(arg, 7);
+        func_ov002_02208098((void *) (arg), 7);
         func_ov136_0229c628(arg);
     }
 

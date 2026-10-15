@@ -4,7 +4,7 @@
 
 extern void func_02010f5c(int param);
 extern int func_0200f554(int param);
-extern void func_0201100c(int param);
+extern int func_0201100c(int param);
 extern void func_02010d64(int param);
 
 void func_0200c954(int param)

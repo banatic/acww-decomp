@@ -78,7 +78,7 @@ extern int func_0209f150(void *p, int k);
 extern void func_0206844c(int h, unsigned char *p, void *q);
 extern void func_ov047_02261618(UnkStruct_022610cc *self);
 extern int func_02070f5c(void *p);
-extern void func_02015094(UnkStruct_022610cc *self);
+extern int func_02015094(UnkStruct_022610cc *self);
 extern int func_02070e98(void *p);
 extern int func_020984e8(void);
 extern int func_02070f1c(void *p);

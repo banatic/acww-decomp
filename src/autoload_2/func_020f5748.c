@@ -21,7 +21,7 @@ extern struct UnkStruct_020f5748_2 data_021fd1bc;
 extern struct UnkStruct_020f5748_3 data_021fd1fc;
 extern void func_020eed68(struct UnkStruct_020f5748_3 *, int, int, int, int, int);
 extern void NNS_SndPlayerSetVolume(struct UnkStruct_020f5748_3 *, int);
-extern void func_020f564c(struct UnkStruct_020f5748 *);
+extern void func_020f564c(void);
 extern int func_020f1d3c(struct UnkStruct_020f5748_2 *, int);
 extern int func_020ef3ac(void *, int, int, int, int);
 
@@ -48,7 +48,10 @@ int func_020f5748(struct UnkStruct_020f5748 *self, int a, int p2, int p3)
         goto skip;
     }
 hit:
-    func_020f564c(self);
+    // clang-format off
+    asm { mov r0, self }
+    // clang-format on
+    func_020f564c();
 skip:
     b = a;
     if (a == 0x7b || a == 0x7f) {

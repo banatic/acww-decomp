@@ -3,8 +3,8 @@
  */
 
 extern int func_020e8ed8(int a, int b);
-extern void func_020113e0(short *p, int v, short s);
-extern void func_020110a0(void *p, short *q);
+extern int func_020113e0(short *p, int v);
+extern void func_020110a0(void *object, short *values);
 
 typedef struct {
     char pad_00[0x5c];
@@ -30,6 +30,6 @@ void func_ov003_02215918(UnkStruct_02215918 *this)
     res = func_020e8ed8(d1, d2);
     val = this->unk_8E;
     s = val;
-    func_020113e0(&s, res, val);
-    func_020110a0(this, &s);
+    func_020113e0(&s, res);
+    func_020110a0((void *) (this), (short *) (&s));
 }

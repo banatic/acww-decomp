@@ -9,7 +9,7 @@ extern int func_02073908(void *p, u32 v);
 extern u32 func_02008258(void *p, u32 v);
 extern int func_02056f94(void *p);
 extern void func_020109fc(void *p, int a, int b, int c);
-extern void func_ov003_022109f8(void *p, u8 a, u32 *b, u16 c, int d, int e);
+extern void *func_ov003_022109f8(void *p, u8 a, u32 *b, u16 c, int d, int e);
 
 struct S7D4 {
     u16 unk_00;

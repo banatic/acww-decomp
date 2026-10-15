@@ -16,7 +16,7 @@ struct UnkStruct_02009728 {
     int unk_704;
 };
 
-extern void func_02010f5c(void);
+extern void func_02010f5c(int);
 extern int func_0200f290(UnkStruct_02009728 *p, int a);
 extern int FX_MulFunc(int a, int b);
 extern void func_020109c8(UnkStruct_02009728 *p, int a, int b, int c);
@@ -29,7 +29,7 @@ void func_02009728(UnkStruct_02009728 *self)
     int result;
 
     if (self->unk_704 == 0) {
-        func_02010f5c();
+        func_02010f5c((int) self);
         return;
     }
 

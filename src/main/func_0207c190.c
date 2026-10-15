@@ -5,20 +5,20 @@
 extern char data_021ee418[];
 extern char data_021dc7aa[];
 extern char data_021d1554[];
-extern void func_020900d8(char *a);
-extern int func_02079900(void);
+extern int func_020900d8(int address);
+extern void func_02079900(void);
 extern int func_0207c0f0(int a, int b);
 extern int func_0207cec0(int a, int b);
-extern void func_0208150c(int a);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(int a);
+extern int func_02003704(void *);
 extern char *func_020800fc(int a);
-extern int func_02064294(void);
+extern int func_02064294(const unsigned short *);
 extern int func_02080330(int a, int b, int c);
 extern void func_0207c330(int a, int b, int c, int d, int e);
-extern int func_02003648(void);
+extern int func_02003648(unsigned char *);
 extern int func_0207c4a4(int a, int b);
 extern int func_0207cd40(int a);
-extern int func_0207cf74(void);
+extern int func_0207cf74(unsigned int);
 extern void func_0207c3b0(int a, int b, int c, int d, int e, int f);
 extern void func_02081660(int a);
 extern void func_0208164c(int a, int b);
@@ -26,22 +26,24 @@ extern void func_02080d70(int a);
 extern int memcmp(const char *a, const char *b, int c);
 void func_0207c190(int self, int param2)
 {
+    register int preserved_result;
+
     char *ptr;
     int r4;
     int r7;
     int T;
     char *p;
     ptr = (char *) data_021dc7aa;
-    func_020900d8(data_021ee418);
-    r7 = func_02079900();
+    func_020900d8((int) data_021ee418);
+    func_02079900();
+    asm { mov preserved_result, r0 }
+    r7 = preserved_result;
     T = func_0207c0f0(self, param2);
     r4 = func_0207cec0(self, T);
-    func_0208150c(r7);
-    if (func_02003704() == 0) {
+    if (func_02003704((void *) func_0208150c(r7)) == 0) {
         goto cleanup;
     }
-    func_020800fc(r7);
-    if (func_02064294() == 0) {
+    if (func_02064294((const unsigned short *) func_020800fc(r7)) == 0) {
         goto cleanup;
     }
     p = func_020800fc(r7);
@@ -58,19 +60,17 @@ void func_0207c190(int self, int param2)
             goto end;
         }
     }
-    func_0208150c(r7);
-    if (func_0207c4a4(self, func_02003648()) != 0) {
+    if (func_0207c4a4(self, func_02003648((unsigned char *) func_0208150c(r7))) != 0) {
         goto L2;
     }
-    func_0208150c(r7);
-    if ((*((signed char *) (((char *) self) + 0x4074))) == func_02003648()) {
+    if ((*((signed char *) (((char *) self) + 0x4074))) == func_02003648((unsigned char *) func_0208150c(r7))) {
         goto L2;
     }
     if (r4 != 0) {
         goto L290;
     }
     r4 = func_0207cd40(self);
-    if (func_0207cf74() == 0) {
+    if (func_0207cf74(r4) == 0) {
         goto end;
     }
     func_0207c3b0(self, func_0207cec0(self, r4), r4, r7, 2, param2);

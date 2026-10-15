@@ -3,9 +3,9 @@
  */
 
 extern int data_021f3278;
-extern int func_02088220(int *ptr);
+extern void *func_02088220(void *record);
 
-int func_02071648(void)
+int func_02071648(int selector)
 {
-    return func_02088220(&data_021f3278);
+    return (int) func_02088220(&data_021f3278);
 }

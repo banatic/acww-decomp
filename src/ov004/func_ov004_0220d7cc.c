@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern int func_ov004_0220d7f0();
-extern void func_ov004_0220d870();
+extern int func_ov004_0220d7f0(char *argument0, unsigned int argument1);
+extern void func_ov004_0220d870(void *argument0, char *argument1);
 
 void func_ov004_0220d7cc(char *self, int a1)
 {
@@ -13,6 +13,6 @@ void func_ov004_0220d7cc(char *self, int a1)
     u32 i;
     // ENDDECLS
     for (i = 0; i < 0x4; i++) {
-        func_ov004_0220d870(func_ov004_0220d7f0(self, i), a1);
+        func_ov004_0220d870((void *) (func_ov004_0220d7f0(self, i)), (char *) (a1));
     }
 }

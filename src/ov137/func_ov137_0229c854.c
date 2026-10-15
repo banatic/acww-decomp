@@ -9,7 +9,7 @@ extern void func_ov134_02299980(int *p, int val);
 extern void func_ov137_0229c564(struct UnkStruct_0229c854 *self, int param);
 extern void func_ov137_0229c7d8(struct UnkStruct_0229c854 *self);
 extern void func_ov002_02207fc0(struct UnkStruct_0229c854 *self);
-extern void func_ov002_02208098(struct UnkStruct_0229c854 *self, int param);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229c854 *self, unsigned char value);
 
 struct UnkStruct_0229c854 {
     char pad_00[0x2c4];

@@ -9,9 +9,9 @@ struct UnkStruct_0208b900 {
 
 extern int func_0208b79c(struct UnkStruct_0208b900 *p);
 extern void func_0208b8d0(struct UnkStruct_0208b900 *p);
-extern int func_0208b748(struct UnkStruct_0208b900 *p, int value);
+extern void func_0208b748(struct UnkStruct_0208b900 *p, int value);
 
-int func_0208b900(struct UnkStruct_0208b900 *p)
+void func_0208b900(struct UnkStruct_0208b900 *p)
 {
     int value;
 
@@ -20,5 +20,5 @@ int func_0208b900(struct UnkStruct_0208b900 *p)
         func_0208b8d0(p);
         value = 0;
     }
-    return func_0208b748(p, value);
+    func_0208b748(p, value);
 }

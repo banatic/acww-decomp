@@ -12,16 +12,17 @@ typedef struct UnkStruct_02021b4c_2 {
     UnkStruct_02021b4c *ptr;
 } UnkStruct_02021b4c_2;
 
-extern void func_02021b8c(void);
-extern int func_02021ea8(int a, int b, int c, void (*fp)(void));
-extern int func_02081d64(void);
-extern void func_02015e70(void *a, int b, int c);
+extern int func_02021b8c(int a, int b);
+
+extern int func_02021ea8(void *self, int *arr, int count, void *predicate);
+extern int func_02081d64(int);
+extern void *func_02015e70(void *a, int b, int c);
 
 int func_02021b4c(UnkStruct_02021b4c_2 *a, int b, int c)
 {
-    int result = func_02021ea8(a->ptr->value, b, c, func_02021b8c);
+    int result = func_02021ea8((void *) (a->ptr->value), (int *) (b), (int) (c), (((void *) func_02021b8c)));
     if (result != 0) {
-        func_02015e70(a, func_02081d64(), 9);
+        func_02015e70(a, func_02081d64(result), 9);
     }
     return result;
 }

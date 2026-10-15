@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_0223a458(void *);
+extern void *func_ov004_0223a458(void *);
 extern void *data_ov004_02255d6c;
 
 void *func_ov004_0223a25c(char *self)

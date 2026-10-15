@@ -11,13 +11,13 @@ typedef struct {
 
 extern "C" {
 extern void func_0202da88(void *self, void *arg);
-extern void func_020151c0(void *self);
+extern int func_020151c0(void *self);
 extern void func_0202dbf0(void *self, U64 val);
 extern u32 func_0209b4cc(u32 val, int mode);
 extern u32 func_0208150c(u32 a);
 extern void func_0207bae8(void *dst, u32 a, u32 b, int c);
 extern void *func_02080ce4(u32 a);
-extern void func_02068484(void *a, void *b, u32 c);
+extern int func_02068484(void *a, void *b, u32 c);
 extern U64 data_020d94c8;
 }
 

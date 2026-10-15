@@ -23,8 +23,8 @@ typedef struct {
 } BigStruct;
 
 extern "C" UnkStruct_0206c988 *func_02067fa4(void *obj);
-extern "C" int func_020a9334(void *a, int b);
-extern "C" int func_020a7994(void *a, int b);
+extern "C" void func_020a9334(void *a, int b);
+extern "C" void func_020a7994(void *a, int b);
 
 extern "C" void func_0206c988(UnkStruct_0206c988_2 *param)
 {

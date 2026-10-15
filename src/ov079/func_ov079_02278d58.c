@@ -35,20 +35,20 @@ extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
 extern int func_0204c3f0(u16 *p);
 extern int func_020644cc(int a);
-extern void func_02071d8c(int a, int b, int c, int d, int e);
-extern void func_020154b4(UnkStruct_02278d58 *self, u16 *p, int a, int b, int c);
+extern int func_02071d8c(int a, int b, int c, int d, int e);
+extern int func_020154b4(UnkStruct_02278d58 *self, u16 *p, int a, int b, int c);
 extern u16 *func_02099710(int a);
 extern u16 *func_020996f8(int a);
 extern u16 *func_02099728(int a);
-extern void func_02095b58(u16 *p);
-extern void func_02095b40(u16 *p);
-extern void func_02095b1c(u16 *p);
+extern int func_02095b58(u16 *p);
+extern int func_02095b40(u16 *p);
+extern int func_02095b1c(u16 *p);
 extern int func_02072bd0(int a, int b);
-extern void func_02062fbc(UnkStruct_02278d58_2 *o);
+extern void *func_02062fbc(UnkStruct_02278d58_2 *o);
 extern int func_02072d4c(int a);
 extern void func_02072eb8(int a, UnkStruct_02278d58_2 *o);
 extern void func_020683b4(void *a, int b, UnkStruct_02278d58_2 *o, int c);
-extern void func_02062f4c(UnkStruct_02278d58_2 *o);
+extern void *func_02062f4c(UnkStruct_02278d58_2 *o);
 extern void func_0206844c(void *a, Msg *m, void *t);
 
 void func_ov079_02278d58(UnkStruct_02278d58 *self)

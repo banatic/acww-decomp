@@ -3,15 +3,15 @@
  */
 
 extern int func_020984e8(void);
-extern void func_02094fd4(int *);
-extern void func_0203a404(int *);
+extern void *func_02094fd4(int *);
+extern void *func_0203a404(int *);
 extern int func_02099870(int);
-extern void func_02095074(int, int *);
-extern void func_020b4980(int *, unsigned char *, int);
-extern int func_020398e8(int, int *, int *);
+extern void *func_02095074(int, int *);
+extern int func_020b4980(int *, unsigned char *, int);
+extern void func_020398e8(int, int *, int *);
 extern void RtcSendPxiCommand(int);
-extern void func_0203a3ec(int *);
-extern void func_02094fbc(int *);
+extern void *func_0203a3ec(int *);
+extern void *func_02094fbc(int *);
 
 extern int data_021c6730;
 extern int *data_020ccf94;

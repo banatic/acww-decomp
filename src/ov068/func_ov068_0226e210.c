@@ -36,12 +36,12 @@ extern void *data_ov068_0227733c;
 extern void func_02035624(int);
 extern void func_020356c4(int, int, int, int);
 extern void func_02095eec(int, int);
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern int func_02019de8(void *);
 extern int func_02019e00(void *);
 extern int func_020a12d4(void);
 extern void func_0206844c(UnkStruct_0226e210 *, unsigned char *, void *);
-extern void func_0203af80(Vec *);
+extern int func_0203af80(Vec *);
 extern void func_ov068_0226e3a4(UnkStruct_0226e210_3 *, int);
 
 void func_ov068_0226e210(UnkStruct_0226e210_3 *self)

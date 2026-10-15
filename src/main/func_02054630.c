@@ -7,7 +7,7 @@ extern char data_020dd08c;
 extern char data_020dd09c;
 extern void func_02056ed4(void *p);
 extern void func_02057078(void *p);
-extern void func_02054ad0(void *p);
+extern void *func_02054ad0(void *p);
 
 struct SubA {
     void *ptr;

@@ -6,7 +6,7 @@ extern void func_0201ad18(char *p, int a, int b, int c, int d, int e, int f, int
 extern int func_02073d90(void *p);
 extern short *func_0209d358(int a, int b);
 extern int func_020960f8(int a, int b);
-extern void func_0203e070(char *self, int a);
+extern int func_0203e070(char *self, int a);
 extern void func_ov004_022249b4(char *self, int a);
 extern void *data_020ccf94;
 extern int data_020c814c;

@@ -3,12 +3,15 @@
  */
 
 extern int func_0206f8c8(void);
-extern int func_ov054_02261da4(int);
+extern int func_ov054_02261da4(void);
 
 int func_ov054_02261dc0(int param)
 {
     if (func_0206f8c8() != 0) {
         return 0x58;
     }
-    return func_ov054_02261da4(param);
+    asm {
+        mov r0, param
+    }
+    return func_ov054_02261da4();
 }

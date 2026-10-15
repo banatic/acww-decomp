@@ -16,12 +16,12 @@ typedef struct {
     unsigned char pad_C1[0x86c - 0xc1];
     unsigned short table[1];
 } UnkStruct_0229a894;
-extern void func_02060984(unsigned short);
-extern void func_ov144_02299b48(UnkStruct_0229a894 *self, int);
+extern void func_02060984(unsigned int item);
+extern int func_ov144_02299b48(UnkStruct_0229a894 *self, int);
 extern void func_ov144_0229a328(UnkStruct_0229a894 *self);
 extern void func_ov144_02299e6c(UnkStruct_0229a894 *self, int);
 extern void func_ov144_0229a378(UnkStruct_0229a894 *self);
-extern void func_ov144_0229a7c8(UnkStruct_0229a894 *self);
+extern int func_ov144_0229a7c8(UnkStruct_0229a894 *self);
 void func_ov144_0229a894(UnkStruct_0229a894 *self)
 {
     if (self->unk_C0 != 0) {

@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void func_020becbc(void *self, int arg);
-extern void *MI_CpuFill8(void *dst, int value, u32 size);
+extern void MI_CpuFill8(void *dst, int value, u32 size);
 
 typedef struct {
     u16 item;

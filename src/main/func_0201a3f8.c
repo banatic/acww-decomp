@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02056910(void *);
-extern void func_02082dec(void *);
-extern void func_02082e60(void *);
-extern void func_02082d78(void *);
+extern void *func_02056910(void *);
+extern void *func_02082dec(void *);
+extern void *func_02082e60(void *);
+extern void *func_02082d78(void *);
 extern void func_02064638(void *);
 
 typedef struct {

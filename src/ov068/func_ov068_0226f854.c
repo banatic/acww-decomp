@@ -70,7 +70,7 @@ extern void func_020b0400(void);
 extern int func_ov003_0221abf8(UnkStruct_0226f854_2 *, int);
 extern int func_ov003_0221a35c(UnkStruct_0226f854_2 *, int);
 extern void func_ov068_0226fd80(UnkStruct_0226f854_2 *);
-extern void func_02034270(UnkStruct_0226f854 *, Vec *, int, int);
+extern int func_02034270(UnkStruct_0226f854 *, Vec *, int, int);
 extern int func_020341c8(UnkStruct_0226f854 *, int);
 extern void func_0203423c(UnkStruct_0226f854 *);
 extern void func_0204f7e0(Vec *, Vec *);

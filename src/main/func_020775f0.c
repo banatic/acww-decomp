@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02085350(int a, int b);
-void func_020775f0(int a)
+extern void func_02085350(void *buffer, int index);
+void func_020775f0(void *buffer)
 {
-    func_02085350(a, 0xf);
+    func_02085350(buffer, 0xf);
 }

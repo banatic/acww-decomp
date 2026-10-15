@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b1130(void *p);
+extern void func_020b1130(void);
 extern int func_02090040(int a);
 extern void MI_CpuCopy8(int a, void *b, int c);
 extern void func_02090174(int a);
@@ -20,7 +20,7 @@ typedef struct {
 void func_ov055_02260544(UnkStruct_02260544 *p)
 {
     int r;
-    func_020b1130(p);
+    func_020b1130();
     r = func_02090040(4);
     MI_CpuCopy8(r, p->unk_714, 0x950);
     p->unk_1168 = 1;

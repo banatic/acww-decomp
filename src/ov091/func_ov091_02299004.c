@@ -10,9 +10,9 @@ typedef struct {
 
 extern int func_ov002_02208054(UnkStruct_02299004 *self, int a);
 extern void func_ov091_02298f9c(UnkStruct_02299004 *self);
-extern int MATH_CalcMD5(char *ptr);
+extern int func_ov002_0220b498(void *);
 extern void func_0208f0c4(char *ptr, int a);
-extern void func_ov002_022080a0(UnkStruct_02299004 *self, int a);
+extern unsigned char *func_ov002_022080a0(UnkStruct_02299004 *self, unsigned char value);
 extern void RtcSendPxiCommand(int cmd);
 
 void func_ov091_02299004(UnkStruct_02299004 *self)
@@ -21,7 +21,7 @@ void func_ov091_02299004(UnkStruct_02299004 *self)
         func_ov091_02298f9c(self);
         return;
     }
-    if (MATH_CalcMD5((char *) self + 0x3bc)) {
+    if (func_ov002_0220b498((void *) ((char *) self + 0x3bc))) {
         func_0208f0c4((char *) self + 0x3bc, 2);
         self->unk_8C = 3;
         func_ov002_022080a0(self, 1);

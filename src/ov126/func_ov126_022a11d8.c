@@ -4,7 +4,7 @@
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021f6c58;
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov126_022a0854(void *, unsigned char);
 extern void func_ov126_022a0680(void *);
 extern void func_ov126_022a0168(void *);
@@ -18,7 +18,7 @@ typedef struct {
 void func_ov126_022a11d8(UnkStruct_022a11d8 *s)
 {
     if (data_021fbdd8 == 0) {
-        func_ov002_02208098(s, 0);
+        func_ov002_02208098((void *) (s), 0);
         return;
     }
     {

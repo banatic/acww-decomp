@@ -4,14 +4,14 @@
 
 extern int func_ov002_02207f3c(int a, int b);
 extern void func_020027f0(int a);
-extern void func_ov002_022080a0(int a, int b);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov141_0229aa04(int a);
 
 void func_ov141_0229aa28(int param)
 {
     if (func_ov002_02207f3c(param, 0)) {
         func_020027f0(6);
-        func_ov002_022080a0(param, 5);
+        func_ov002_022080a0((void *) (param), 5);
     } else {
         func_ov141_0229aa04(param);
     }

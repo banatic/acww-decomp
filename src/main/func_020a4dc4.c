@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O1,s
  */
 
-extern int func_020b65c4(int);
+extern int func_020b65c4(void);
 extern void func_020a4e94(int, int);
 extern unsigned char data_021c75b8;
 extern int data_021f3c38;
@@ -12,7 +12,7 @@ void func_020a4dc4(int param)
     int v;
     unsigned int flag;
 
-    v = func_020b65c4(param);
+    v = func_020b65c4();
     flag = (data_021c75b8 == 2) ? 1 : 0;
     if (flag > 0) {
         if (v == 9) {

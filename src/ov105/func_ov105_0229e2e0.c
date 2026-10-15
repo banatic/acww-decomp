@@ -24,7 +24,7 @@ extern void func_ov002_0220a0b4(void *p, int v1, int v2);
 extern void func_ov002_0220a374(void *p, int flag);
 extern int func_ov002_02208014(void *p);
 extern void func_ov105_0229cfc0(void *p);
-extern void func_ov002_02208098(void *p, int value);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_ov002_0220a1dc(void *p);
 extern unsigned short data_021fbe40[2];
 

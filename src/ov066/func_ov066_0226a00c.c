@@ -21,7 +21,7 @@ extern char data_ov066_0226bdfc;                         // 0x0226bdfc
 extern short data_ov066_0226be00;                        // 0x0226be00
 extern short data_ov066_0226be04;                        // 0x0226be04
 
-void func_ov066_02269f6c(int, struct UnkStruct_0226a00c_2 *, short *, short *);
+int func_ov066_02269f6c(int);
 
 void func_ov066_0226a00c(void)
 {
@@ -32,5 +32,5 @@ void func_ov066_0226a00c(void)
     data_ov066_0226be04 = 0x65;
     p = data_ov066_0226bdf4;
     p->unk_8D = 0;
-    func_ov066_02269f6c(0, p, &data_ov066_0226be04, &data_ov066_0226be00);
+    func_ov066_02269f6c(0);
 }

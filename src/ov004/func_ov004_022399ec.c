@@ -14,7 +14,9 @@ extern Descriptor data_ov004_02247924[];
 #define W(p, o) (*(int *) ((p) + (o)))
 #define S(p, o) (*(short *) ((p) + (o)))
 extern int func_ov004_02239460(int, int), func_ov004_0223938c(Vec *, int), func_ov004_02239858(void *);
-extern void func_ov004_02239bb4(Vec *, int, int), func_ov004_02239944(void *, int, int, int), func_ov004_022398a8(void *, int);
+extern int func_ov004_02239bb4(Vec *, int, int);
+extern void func_ov004_02239944(void *, int, int, int);
+extern void func_ov004_022398a8(void *, int);
 void func_ov004_022399ec(u8 *self)
 {
     Vec pos;

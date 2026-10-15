@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
 
-void func_ov004_02227118(void *self, void *msg)
+void func_ov004_02227118(void *self, void *msg, int previous)
 {
     unsigned char *d;
     unsigned char b;

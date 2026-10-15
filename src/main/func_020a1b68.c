@@ -13,7 +13,7 @@ struct UnkStruct_020a1b68 {
 };
 extern struct UnkStruct_020a1b68 *data_021f3c3c;
 
-extern int func_020a1368(void *);
+extern int func_020a1368(void);
 extern int func_02050a10(void *, int, int, int);
 
 int func_020a1b68(unsigned int a, int b)
@@ -24,7 +24,7 @@ int func_020a1b68(unsigned int a, int b)
 
     arr[0] = (int) &data_021dc7a8;
     arr[1] = (int) &data_021dc7a8;
-    arr[2] = func_020a1368(&data_021dc7a8);
+    arr[2] = func_020a1368();
 
     v = arr[a];
     x = data_020d1c20[a];

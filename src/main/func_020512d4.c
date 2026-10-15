@@ -18,15 +18,15 @@ typedef struct UnkStruct_020512d4 {
     int unk_78;
 } UnkStruct_020512d4;
 
-extern int func_020516b8();
+extern int func_020516b8(int table, int key);
 extern int func_020510c8(UnkStruct_020512d4 *this);
 extern void func_02051034(UnkStruct_020512d4 *this);
 extern void func_02050fc8(UnkStruct_020512d4 *this, int old);
 
-void func_020512d4(UnkStruct_020512d4 *this)
+void func_020512d4(UnkStruct_020512d4 *this, int key)
 {
     int old_68;
-    this->unk_64 = func_020516b8(this->unk_28);
+    this->unk_64 = func_020516b8(this->unk_28, key);
     if (this->unk_64 == -1) {
         this->unk_64 = func_020516b8(this->unk_28, 0x0000ff20);
     }

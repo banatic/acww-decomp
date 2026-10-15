@@ -2,7 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_020ef754()
+extern void func_020ef284(void *receiver);
+
+void func_020ef754(void *receiver)
 {
-    func_020ef284();
+    func_020ef284(receiver);
 }

@@ -7,7 +7,7 @@ struct Main;
 extern "C" {
 int func_ov110_0229c2c8(struct Main *self, int mode);
 void func_ov110_0229ce0c(struct Main *self);
-int func_0206fe54(int value);
+int func_0206fe54(void);
 void func_ov002_02209eb8(void *ptr);
 void func_ov094_0229a7cc(void *ptr, int a, unsigned int b);
 void func_ov094_0229a850(void *ptr, int a, unsigned int b);
@@ -32,7 +32,7 @@ extern "C" int func_ov110_0229ea10(struct Main *self)
     if (func_ov110_0229c2c8(self, 1) == 0) {
         return 1;
     }
-    if (func_0206fe54(((UnkStruct_0229ea10 *) ((char *) self + 0x21f8))->v2()) != 0) {
+    if (((void) (((UnkStruct_0229ea10 *) ((char *) self + 0x21f8))->v2()), func_0206fe54()) != 0) {
         func_ov002_02209eb8((void *) ((char *) self + 0x22e0));
     }
     func_ov110_0229ce0c(self);

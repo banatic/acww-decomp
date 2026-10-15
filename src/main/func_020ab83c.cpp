@@ -13,7 +13,7 @@ class UnkStruct_020ab83c {
 extern int data_021f4670;
 
 extern "C" void func_020ab91c(int *g, int a, int b);
-extern "C" void func_020a9a08(int *g, int p1);
+extern "C" unsigned char func_020a9a08(int *g, int p1);
 extern "C" int func_020a9938(int *g, int p2);
 extern "C" int func_020a9530(int *g);
 extern "C" void func_020a82bc(int p3, int d);

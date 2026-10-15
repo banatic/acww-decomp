@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short func_02050920(int a, int b, unsigned short c, int d);
+extern unsigned short func_02050920(int a, int b);
 
-unsigned short func_020508fc(int a, int b, unsigned short c, int d)
+unsigned short func_020508fc(int a, int b, unsigned short c)
 {
-    return (unsigned short) (((~(unsigned short) (func_02050920(a, b, c, d) - c)) & 0xFFFF) + 1);
+    return (unsigned short) (((~(unsigned short) (func_02050920(a, b) - c)) & 0xFFFF) + 1);
 }

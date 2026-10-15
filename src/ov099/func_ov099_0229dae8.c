@@ -8,7 +8,7 @@ typedef struct StructName {
 } StructName;
 
 extern int func_ov002_02207f48(StructName *p, int a);
-extern void func_ov002_022080a0(StructName *p, int a);
+extern unsigned char *func_ov002_022080a0(StructName *p, unsigned char value);
 extern void func_ov002_02207e80(StructName *p, int a, int b, int c);
 extern int func_ov002_02207f60(StructName *p);
 extern void func_ov099_0229d0f0(StructName *p);

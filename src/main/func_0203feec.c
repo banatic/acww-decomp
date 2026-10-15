@@ -36,7 +36,7 @@ typedef struct {
 
 extern UnkStruct_0203feec_2 data_020dac08[];
 
-extern u8 func_0209de88(int a, int b);
+extern int func_0209de88(int a, int b, int c);
 extern void func_02040164(void *a, int n);
 extern int func_0203ff98(Dst *d, UnkStruct_0203feec_2 *e, int t, UnkStruct_0203feec p);
 extern int func_02040034(UnkStruct_0203feec_2 *e, UnkStruct_0203feec p, Dst *d, void *a, int n, void *c, void *dd);
@@ -52,14 +52,16 @@ int func_0203feec(UnkStruct_0203feec_3 *arr, Src *src, void *c, void *dd)
     int i;
     int t;
     int d4;
+    int d3;
 
     n = 0;
     t = src->unk_05;
     d4 = src->unk_04;
     pp.s.d = (u8) d4;
-    pp.s.c = src->unk_03;
+    d3 = src->unk_03;
+    pp.s.c = (u8) d3;
     pp.s.b = src->unk_02;
-    pp.s.a = func_0209de88(t, d4);
+    pp.s.a = func_0209de88(t, d4, d3);
     func_02040164(arr, 7);
     e = data_020dac08;
     for (i = 0; i < 0x63; e++, i++) {

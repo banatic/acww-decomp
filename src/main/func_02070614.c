@@ -7,7 +7,7 @@ extern void MI_CpuCopy8(void *dst, const void *src, unsigned int len);
 extern unsigned char data_021f3a68[];
 extern unsigned char data_021f3a86[];
 
-void func_02070614(unsigned char *p)
+void func_02070614(unsigned char *p, int player)
 {
     char buf[30];
     MI_CpuCopy8(p + 1, buf, 30);

@@ -4,9 +4,9 @@
 
 struct UnkStruct_0203e904;
 extern int func_0203ef90(int arg);
-extern int func_02095d84(int arg);
+extern int func_02095d84(void);
 extern int func_0203eb08(struct UnkStruct_0203e904 *s);
-extern void func_02095904(void);
+extern int func_02095904(void);
 
 struct UnkStruct_0203e904 {
     char pad_00[12];
@@ -17,7 +17,7 @@ struct UnkStruct_0203e904 {
 
 int func_0203e904(struct UnkStruct_0203e904 *s)
 {
-    if (func_02095d84(func_0203ef90(s->unk_0C)) == 0) {
+    if ((func_0203ef90(s->unk_0C), func_02095d84()) == 0) {
         return 0;
     }
     s->unk_17 = 1;

@@ -8,7 +8,7 @@ extern void func_ov068_02266c34(void *, void *, int, int, int, void *, int, int,
 extern void func_0202e188(void *);
 extern void func_02013c0c(void *);
 extern int func_0201c2c8(void *, int);
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern void func_0201cbbc(void *);
 
 extern unsigned char data_021fbee8[];

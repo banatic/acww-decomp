@@ -4,7 +4,7 @@
 
 extern unsigned char data_021fd1bc[];
 extern void func_020f6700(int);
-extern void func_020f43f8(void *, int, unsigned char *, int);
+extern void func_020f43f8(void *, int);
 
 int func_020f44b8(void *arg)
 {
@@ -12,7 +12,7 @@ int func_020f44b8(void *arg)
     val = *(int *) (data_021fd1bc + 0x30);
     func_020f6700(val);
     data_021fd1bc[0x4d] = 1;
-    func_020f43f8(arg, 15, data_021fd1bc, 1);
+    func_020f43f8(arg, 15);
     ((char *) arg)[5] = 1;
     return 1;
 }

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206d428(int, int);
-int func_0206c770(int arg0)
+extern void func_0206d428(void *self, int index);
+void func_0206c770(void *arg0)
 {
-    return func_0206d428(arg0, 0);
+    func_0206d428(arg0, 0);
 }

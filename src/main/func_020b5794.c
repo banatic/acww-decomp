@@ -13,9 +13,9 @@ extern void GX_SetBankForSubBG(int);
 extern void func_02001bf0(int);
 extern void func_02001bdc(int);
 extern void func_020028bc(int, int, int, int);
-extern void func_02002c6c(const void *, void *, int, int, int, int);
-extern void func_02002d14(const void *, void *, int, int, int, int);
-extern void func_02002ca4(const void *, void *, int);
+extern int func_02002c6c(const void *, void *, int, int, int, int);
+extern int func_02002d14(const void *, void *, int, int, int, int);
+extern int func_02002ca4(const void *, void *, int);
 extern void func_02002708(int);
 
 extern void *data_021fbe94;

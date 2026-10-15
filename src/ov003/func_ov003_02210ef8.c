@@ -19,10 +19,10 @@ typedef struct UnkStruct_02210ef8_2 {
 } UnkStruct_02210ef8_2;
 
 extern void func_ov003_02210f50(unsigned char *p0, int p1, int p2, int p3);
-extern void func_020109a0(int, int, int, int);
-extern void func_0200f328(int, int);
+extern void func_020109a0(int, int b, int c, unsigned short d);
+extern int func_0200f328(int, int);
 
-void func_ov003_02210ef8(UnkStruct_02210ef8_2 *self, Src *src)
+void func_ov003_02210ef8(UnkStruct_02210ef8_2 *self, Src *src, int previous)
 {
     UnkStruct_02210ef8 *p = &src->sub;
     unsigned char *fA = self->unk_7D4;

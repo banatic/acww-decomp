@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_0221a8ac(void);
+extern int func_ov003_0221a8ac(void *argument0);
 
 int func_ov003_0221a888(int *this)
 {
     int result;
     int tmp;
 
-    if (func_ov003_0221a8ac() != 0) {
+    if (func_ov003_0221a8ac(this) != 0) {
         tmp = this[2] - 2;
         if ((tmp & 1) != 0) {
             result = 0;

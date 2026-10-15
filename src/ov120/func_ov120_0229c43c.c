@@ -4,7 +4,7 @@
 
 extern void func_ov120_0229bc74(void *);
 extern void func_ov002_02208090(void *, int);
-extern void func_ov002_022080a0(void *, int);
+extern unsigned char *func_ov002_022080a0(void *, unsigned char value);
 
 int func_ov120_0229c43c(void *arg)
 {

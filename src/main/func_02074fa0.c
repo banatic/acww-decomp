@@ -7,7 +7,7 @@ extern int func_02073dd4(void *p, int i);
 extern int func_02073918(void *p, int i);
 extern int func_02073d28(void *p, int i);
 extern int func_02073c90(void *p, int i);
-extern int func_02077b50(int a, int b);
+extern void func_02077b50(int a, int b);
 
 void func_02074fa0(void)
 {

@@ -11,9 +11,9 @@ typedef struct Ov118Struct {
 
 extern void func_ov002_0220a4c8(void *);
 extern int func_ov118_0229b374(void *);
-extern int func_ov118_0229adf0(void *, int);
+extern void func_ov118_0229adf0(void *, int);
 
-int func_ov118_0229ac44(Ov118Struct *self, int val)
+void func_ov118_0229ac44(Ov118Struct *self, int val)
 {
     int t = val;
     int diff;
@@ -35,5 +35,5 @@ int func_ov118_0229ac44(Ov118Struct *self, int val)
 
     product = t * func_ov118_0229b374(self);
     quotient = product / 0x58;
-    return func_ov118_0229adf0(self, quotient);
+    func_ov118_0229adf0(self, quotient);
 }

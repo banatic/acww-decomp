@@ -10,10 +10,10 @@ typedef struct UnkStruct_0229dcc0 {
     unsigned char sub[0x100];
 } UnkStruct_0229dcc0;
 
-extern int func_ov110_0229e7ac(UnkStruct_0229dcc0 *self);
-extern void func_ov110_0229cce8(UnkStruct_0229dcc0 *self, unsigned char b);
+extern int func_ov110_0229e7ac(void);
+extern int func_ov110_0229cce8(UnkStruct_0229dcc0 *self, unsigned char b);
 extern void func_ov110_0229cbe0(UnkStruct_0229dcc0 *self);
-extern void func_ov002_02207d24(void *ptr, int val);
+extern int func_ov002_02207d24(void *ptr, int val);
 extern void func_ov110_0229c3b8(UnkStruct_0229dcc0 *self, int val);
 extern void *func_ov002_02208008(UnkStruct_0229dcc0 *self);
 extern int func_ov110_0229c5a0(UnkStruct_0229dcc0 *self, void *arg, int n);
@@ -34,7 +34,7 @@ void func_ov110_0229dcc0(UnkStruct_0229dcc0 *self)
     unsigned short flags;
     void *res;
 
-    if (func_ov110_0229e7ac(self) != 0) {
+    if (func_ov110_0229e7ac() != 0) {
         func_ov110_0229cce8(self, self->unk_F4);
         func_ov110_0229cbe0(self);
         func_ov002_02207d24(self->sub, 0);

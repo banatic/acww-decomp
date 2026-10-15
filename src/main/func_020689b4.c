@@ -26,7 +26,7 @@ typedef struct Main {
 } Main;
 
 extern int func_02068958(Main *p);
-extern void func_02004618(int v);
+extern int func_02004618(int v);
 
 void func_020689b4(Main *p)
 {

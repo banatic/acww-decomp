@@ -4,7 +4,7 @@
 
 extern void func_0204f7e0(void *dst, void *src);
 extern int FX_Div(int numer, int denom);
-extern void *func_020b03f8(int arg);
+extern void *func_020b03f8(void);
 
 int func_ov068_0226f0e0(void *self)
 {
@@ -22,7 +22,7 @@ int func_ov068_0226f0e0(void *self)
     func_0204f7e0((char *) self + 0x37C, (char *) self + 0x5C);
 
     mask = *(unsigned int *) ((char *) self + 8) & 1;
-    base = func_020b03f8(1);
+    base = func_020b03f8();
     mask = mask & 1;
     arr = (unsigned int (*)[4]) base;
 

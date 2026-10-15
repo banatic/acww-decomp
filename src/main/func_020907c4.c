@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020906dc(int a, int b);
+extern void func_020906dc(void *base, void (*callback)(void *));
 
-int func_020907c4(int a, int b, int c)
+void func_020907c4(void *base, int index, void (*callback)(void *))
 {
-    return func_020906dc(a + b * 0x530, c);
+    func_020906dc((char *) base + index * 0x530, callback);
 }

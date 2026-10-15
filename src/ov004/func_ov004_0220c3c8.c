@@ -4,10 +4,10 @@
 
 extern char data_ov004_0224fc4c;
 extern char data_ov004_0224fcc0;
-extern void func_020b82d0(void *);
-extern void func_020324c4(void *);
-extern void func_02066994(void *);
-extern void func_0203f080(void *);
+extern void *func_020b82d0(void *);
+extern void *func_020324c4(void *);
+extern void *func_02066994(void *);
+extern void *func_0203f080(void *);
 extern void func_020edf54(void *);
 
 char *func_ov004_0220c3c8(char *self)

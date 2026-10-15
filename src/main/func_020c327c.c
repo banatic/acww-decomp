@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(void *p, void *out);
+extern int func_020984e8(void);
 extern int func_02099020(int a, int b);
 extern int func_0202ea80(int a, int b);
 extern void func_020c3348(void *p, int k);
@@ -21,7 +21,7 @@ void func_020c327c(void *p, UnkStruct_020c327c *out)
     int a;
     unsigned int idx;
 
-    a = func_020984e8(p, out);
+    a = func_020984e8();
     out->val = data_020e7d0c;
 
     if (func_02099020(a, 0x33) == 0) {

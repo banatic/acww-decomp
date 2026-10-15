@@ -13,11 +13,11 @@ typedef struct {
     int unk_DC;
 } UnkStruct_0226077c;
 
-extern void func_020b1954(void *);
-extern void func_020b1394(void *, int);
+extern void *func_020b1954(void *);
+extern int func_020b1394(void *, int);
 extern void func_02068404(int, int, void *);
 extern void func_020b14c0(int);
-extern void func_020b193c(void *);
+extern void *func_020b193c(void *);
 extern int func_020b1558(void);
 extern int func_ov046_022610fc(UnkStruct_0226077c *);
 

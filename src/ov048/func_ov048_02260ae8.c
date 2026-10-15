@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02074150(void *self);
+extern int func_02074150(void);
 extern void func_02074120(void);
 extern void func_ov048_02262378(void *self);
 extern void func_ov048_022616b8(void *self, int n);
@@ -19,7 +19,7 @@ void func_ov048_02260ae8(void *self)
     char local;
 
     obj = *(char **) ((char *) self + 0x40);
-    ret = func_02074150(self);
+    ret = func_02074150();
     if ((unsigned) (ret - 5) > 1) {
         return;
     }

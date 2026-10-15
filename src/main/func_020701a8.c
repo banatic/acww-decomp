@@ -8,7 +8,7 @@ extern struct {
     int c;
 } data_021cfcb4;
 extern int func_0206ff48(int);
-extern void func_020700cc(int);
+extern int func_020700cc(int);
 
 void func_020701a8(void)
 {

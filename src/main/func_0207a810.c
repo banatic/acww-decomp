@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(char *p);
+extern int func_020984e8(void);
 extern int func_02099870(int x);
 extern int func_020951bc(int x);
 extern int func_0208150c(char *p);
@@ -21,7 +21,7 @@ int func_0207a810(char *p)
     int count;
     int i;
 
-    ret = func_020984e8(p);
+    ret = func_020984e8();
     if (ret != 0) {
         v = func_02099870(ret);
     } else {

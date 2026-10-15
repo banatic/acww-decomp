@@ -7,21 +7,21 @@
 extern void func_ov095_0229c084(void *, int);
 extern void func_02051bf8(void *, int);
 extern void *func_02070c08(void *);
-extern int func_020984e8(void *);
-extern void func_02094fd4(void *);
+extern int func_020984e8(void);
+extern void *func_02094fd4(void *);
 extern int func_02099870(int);
-extern void func_02095074(int, void *);
-extern void func_020b496c(int, void *);
-extern void func_0207094c(void *, int);
-extern void func_020707d0(void *);
-extern void func_020a87e0(void *, void *);
+extern void *func_02095074(int, void *);
+extern void *func_020b496c(int, void *);
+extern int func_0207094c(void *, int);
+extern void *func_020707d0(void *);
+extern int func_020a87e0(void *, void *);
 extern int func_02051c8c_unk(void *, int);
-extern void func_02051c08(void *, void *, int);
+extern int func_02051c08(void *, void *, int);
 extern void func_ov002_0220a580(void *);
 extern void MI_CpuFill8(void *, int, int);
-extern void func_020707b8(void *);
-extern void func_02094fbc(void *);
-extern void func_02070be8(void *);
+extern void *func_020707b8(void *);
+extern void *func_02094fbc(void *);
+extern int **func_02070be8(void *);
 
 void func_ov112_022a1310(char *self)
 {
@@ -38,7 +38,8 @@ void func_ov112_022a1310(char *self)
     func_ov095_0229c084(self + 0x384, 2);
     func_02051bf8(self + 0xc4, 0x60);
 
-    r4 = func_020984e8(func_02070c08(s.b));
+    func_02070c08(s.b);
+    r4 = func_020984e8();
     func_02094fd4(s.a);
     func_02095074(func_02099870(r4), s.a);
     func_020b496c(0, s.a);

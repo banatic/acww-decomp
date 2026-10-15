@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02010f5c(void *self, int arg);
+extern void func_02010f5c(void *self);
 extern int func_0200f434(void *self, int *arr);
 extern void func_ov003_0220ff14(void *self);
 extern void func_02010d64(void *self);
@@ -17,7 +17,7 @@ void func_ov003_0220fe04(UnkStruct_0220fe04 *self)
 {
     int local[3];
     int *p = self->arr;
-    func_02010f5c(self, 0x7d4);
+    func_02010f5c(self);
     local[0] = self->arr[0];
     local[1] = p[1];
     local[2] = p[2];

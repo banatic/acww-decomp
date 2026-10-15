@@ -4,7 +4,7 @@
 
 extern int func_ov003_0220efc8(int a, int b, int c);
 
-int func_ov003_0220ef74(int a, int b)
+void func_ov003_0220ef74(int a, int b)
 {
-    return func_ov003_0220efc8(a, 7, b);
+    func_ov003_0220efc8(a, 7, b);
 }

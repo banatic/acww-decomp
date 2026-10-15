@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void MI_CpuCopy8(unsigned int, unsigned int);
+extern void MI_CpuCopy8(const void *, void *, unsigned int);
 
 typedef struct {
     unsigned char pad_00[0x104];
@@ -11,6 +11,6 @@ typedef struct {
 
 void func_020733d0(UnkStruct_020733d0 *obj, unsigned int p1, unsigned int delta)
 {
-    MI_CpuCopy8(p1, obj->unk_104);
+    MI_CpuCopy8((const void *) p1, (void *) obj->unk_104, delta);
     obj->unk_104 += delta;
 }

@@ -4,7 +4,7 @@
 
 extern unsigned long data_ov003_02239754;
 extern unsigned long data_ov003_02239818;
-extern void func_ov009_0226539c(void *p);
+extern void *func_ov009_0226539c(void *p);
 
 unsigned long *func_ov003_0221edac(unsigned long *p)
 {

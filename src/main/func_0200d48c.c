@@ -6,7 +6,7 @@ extern int func_0200f748(unsigned char *);
 extern void func_020109fc(unsigned char *, int, int, int);
 extern void func_0200eebc(unsigned char *);
 extern void func_0200f268(unsigned char *, int);
-extern void func_02095518(int, int, int);
+extern int func_02095518(int, int, int);
 
 void func_0200d48c(unsigned char *self, unsigned char *other, int flag)
 {

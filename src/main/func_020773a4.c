@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0208520c(int a, int b);
+extern void func_0208520c(int a, int b);
 
-int func_020773a4(int arg)
+void func_020773a4(int arg, void *object, int mode)
 {
-    return func_0208520c(arg, 0x29);
+    func_0208520c(arg, 0x29);
 }

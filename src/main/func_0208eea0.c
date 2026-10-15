@@ -23,8 +23,8 @@ struct UnkStruct_0208eea0_2 {
 void func_0208eea0(struct UnkStruct_0208eea0_2 *obj)
 {
     int v7, v4, v6, sum;
-    UnkStruct_0208eea0 *sub;
 
+    UnkStruct_0208eea0 *sub;
     if (obj->flag == 0) {
         return;
     }

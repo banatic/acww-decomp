@@ -8,7 +8,7 @@ typedef struct {
 extern Vec *func_02095794(int);
 extern int func_020e89dc(short *, int, int);
 extern int func_020e88dc(int *, int, int);
-extern void func_ov004_022377ec(void *);
+extern int func_ov004_022377ec(void *);
 extern void func_ov004_02237794(void *);
 extern void func_ov004_02237834(void *);
 extern int func_0200322c(Vec *, Vec *);

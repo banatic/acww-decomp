@@ -17,7 +17,7 @@ typedef struct {
     unsigned int d;
 } Elem;
 
-extern void *func_020b03f8(int a, int b);
+extern void *func_020b03f8(void);
 
 int func_ov068_0226f5cc(unsigned char *self)
 {
@@ -29,7 +29,7 @@ int func_ov068_0226f5cc(unsigned char *self)
     *(unsigned short *) (self + 0x396) = 0;
 
     idx = *(unsigned int *) (self + 8) & 1;
-    arr = (Elem *) func_020b03f8(1, 0);
+    arr = (Elem *) func_020b03f8();
     idx &= 1;
 
     arr[idx].a = 0;

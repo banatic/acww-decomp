@@ -5,7 +5,7 @@
 extern void func_0209df64(void *);
 extern int func_0209dcdc(void *, void *);
 extern int func_0209ded0(void);
-int func_0209de88(char p1, char p2, char p3)
+int func_0209de88(int p1, int p2, int p3)
 {
     char arr[4];
     int buf[2];

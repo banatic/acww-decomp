@@ -4,7 +4,7 @@
 
 extern unsigned char data_ov004_022593a4, data_ov004_02255c30;
 extern unsigned char *data_ov004_022594d4[], *data_ov004_022593ac, *data_ov004_022593b4, *data_ov004_022593b8;
-extern int func_020e9898(void *);
+extern void func_020e9898(void *);
 extern void func_0205502c(void *);
 extern int func_02055454(void *);
 extern void func_0209d090(void *);

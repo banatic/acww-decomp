@@ -9,7 +9,7 @@ typedef struct UnkStruct_0229c758 {
     unsigned char unk_24A4;
 } UnkStruct_0229c758;
 
-extern int func_ov105_0229c320(UnkStruct_0229c758 *self, int arg);
+extern void func_ov105_0229c320(UnkStruct_0229c758 *self, int arg);
 extern int func_ov105_0229d76c(UnkStruct_0229c758 *self, unsigned char field);
 extern void func_ov105_0229c9ac(UnkStruct_0229c758 *self, int a, int b);
 extern int func_ov105_0229d75c(UnkStruct_0229c758 *self, unsigned char field);

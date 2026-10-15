@@ -5,10 +5,11 @@
 #include "types.h"
 
 extern void func_02063414(volatile u16 *, int, int, int, int, int, int, int, int, int);
-extern int func_02048cb8(int, int, int, int, int, int, int);
+extern int func_02048cb8(int, int, int, int, int, int (*predicate)(int, int, int), int);
+extern int func_02048e54(void *, int, int);
+
 extern int func_020ba4d4(void);
 extern int func_020644cc(int);
-extern int func_02048e54(void);
 
 void func_02047ee8(int a, int b, int nx, int ny, u8 flag)
 {
@@ -35,6 +36,6 @@ void func_02047ee8(int a, int b, int nx, int ny, u8 flag)
         w[0] = w[1];
         cx = (cx + 1 + func_020644cc(nx - 1)) % nx;
         cy = (cy + 1 + func_020644cc(ny - 1)) % ny;
-        func_02048cb8(a, b, cx + 1, cy + 1, w[0], (int) func_02048e54, 1);
+        func_02048cb8(a, b, cx + 1, cy + 1, w[0], (((int (*)(int, int, int)) func_02048e54)), 1);
     }
 }

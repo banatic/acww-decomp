@@ -4,9 +4,9 @@
 
 extern void *func_02096718(int);
 extern int func_0200fbe0(void *);
-extern void func_0200f27c(void *, int);
-extern void func_0200c3b0(void *, int, int, int);
-extern void func_ov003_02217c5c(void *, int, unsigned int, int, int, int, int, int);
+extern unsigned int *func_0200f27c(void *, int);
+extern int func_0200c3b0(void *, int, int, int);
+extern int func_ov003_02217c5c(void *, int, unsigned int, int, int, int, int, int);
 
 typedef struct {
     char pad_00[0x5c];

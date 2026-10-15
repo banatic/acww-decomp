@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned char func_0209ded0(unsigned char *param);
-extern unsigned char *func_02040980(unsigned char *param);
-extern void func_020409e8(unsigned char *param);
+extern unsigned char func_0209ded0(void);
+extern unsigned char *func_02040980(void);
+extern void func_020409e8(void);
 
 void func_02040a10(unsigned char *param)
 {
@@ -13,8 +13,9 @@ void func_02040a10(unsigned char *param)
     unsigned char b2;
     unsigned char b13;
 
-    val = func_0209ded0(param);
-    p = func_02040980(param);
+    val = func_0209ded0();
+    asm { add r0, param, #0 }
+    p = func_02040980();
     if (p != 0) {
         b2 = p[2];
         b13 = param[0x13];
@@ -22,6 +23,7 @@ void func_02040a10(unsigned char *param)
             param[0x12] = b2;
             param[0x13] = val;
         }
-        func_020409e8(param);
+        asm { add r0, param, #0 }
+        func_020409e8();
     }
 }

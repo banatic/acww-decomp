@@ -14,7 +14,7 @@ typedef struct {
 extern int data_ov095_0229e410[];
 extern int data_ov095_0229e3e8[];
 
-extern int func_ov095_02299bb4(UnkStruct_0229a720 *self);
+extern int func_ov095_02299bb4(UnkStruct_0229a720 *self, void *unused1);
 extern int func_ov002_022088cc(void *p);
 extern int func_ov002_022088ac(void *p);
 extern int func_ov002_022088bc(void *p);
@@ -33,7 +33,7 @@ void func_ov095_0229a720(UnkStruct_0229a720 *self, void *pad)
     int *p;
     int *p2;
 
-    if (func_ov095_02299bb4(self) != 0) {
+    if (func_ov095_02299bb4(self, pad) != 0) {
         return;
     }
     if (self->unk_28 >= 0x3b) {

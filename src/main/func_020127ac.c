@@ -18,7 +18,7 @@ struct UnkStruct_020127ac_2 {
 extern void func_0204f818(int *a, int *b, struct UnkStruct_020127ac_2 *obj);
 extern void func_0204f794(struct UnkStruct_020127ac_2 *obj, int a, int b);
 extern int func_020644cc(int);
-extern void func_02012a98(struct UnkStruct_020127ac *self, struct UnkStruct_020127ac_2 *obj);
+extern int func_02012a98(struct UnkStruct_020127ac *self, struct UnkStruct_020127ac_2 *obj);
 extern void func_02013910(struct UnkStruct_020127ac *self);
 extern int func_02013518(struct UnkStruct_020127ac *self, struct UnkStruct_020127ac_2 *obj);
 

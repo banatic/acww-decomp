@@ -17,10 +17,10 @@ typedef struct {
 extern void func_ov002_02209d68(void *p, u32 a, u32 b);
 extern u32 func_ov099_0229cd70(UnkStruct_0229cf48 *self, u8 value);
 extern u32 func_ov099_0229cd1c(UnkStruct_0229cf48 *self, u8 value);
-extern void func_ov002_02209d38(void *p, u32 b, u32 c, u32 d);
-extern void func_ov002_02209d8c(void *p);
+extern int func_ov002_02209d38(void *p, u32 b, u32 c, u32 d);
+extern int func_ov002_02209d8c(void *p);
 extern void func_ov099_0229c8f8(UnkStruct_0229cf48 *self);
-extern void func_ov002_02208098(UnkStruct_0229cf48 *self, u32 arg);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229cf48 *self, unsigned char value);
 
 void func_ov099_0229cf48(UnkStruct_0229cf48 *self, u8 value, u32 arg2)
 {

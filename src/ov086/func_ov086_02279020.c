@@ -4,14 +4,14 @@
 
 struct UnkStruct_02279020;
 
-extern int func_0202ec58(void);
+extern int func_0202ec58(void *arg0);
 extern void func_ov086_02278f80(struct UnkStruct_02279020 *, int);
 extern void func_02016764(void *, void *, int, int, int, int, int, int);
 extern void func_02054188(void *, int, int);
 
 int func_ov086_02279020(struct UnkStruct_02279020 *self)
 {
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58((void *) self) == 0) {
         return 0;
     }
 

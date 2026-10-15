@@ -3,19 +3,19 @@
  */
 
 class UnkStruct_0201cfe4;
-typedef void (UnkStruct_0201cfe4::*PMF)(void *);
+typedef void (UnkStruct_0201cfe4::*PMF)(int);
 
 extern PMF __ptmf_null;
 extern unsigned char data_021f43f8;
 extern unsigned char data_021f43e8;
 
 extern "C" {
-extern int func_0201d198(UnkStruct_0201cfe4 *self, void *arg);
-extern void RtcSendPxiCommand(void);
-extern void func_0207e054(int a, int b, int c);
+extern int func_0201d198(UnkStruct_0201cfe4 *self, unsigned int idx);
+extern void RtcSendPxiCommand(int command);
+extern int func_0207e054(int a, int b, int c);
 extern int func_02081a88(int a);
 extern void func_02078864(int a, int b, int c);
-extern void func_0207d4bc(int a, int b);
+extern int func_0207d4bc(int a, int b);
 extern void *func_0201ce50(void *obj);
 }
 
@@ -37,25 +37,25 @@ class UnkStruct_0201cfe4 {
     unsigned short flag;
 };
 
-extern "C" void func_0201cfe4(UnkStruct_0201cfe4 *self, void *arg)
+extern "C" void func_0201cfe4(UnkStruct_0201cfe4 *self, int event)
 {
     unsigned char id_slot;
     *(volatile unsigned char *) &id_slot = self->data[0x1e77];
 
-    if (func_0201d198(self, arg) == 0) {
+    if (func_0201d198(self, event) == 0) {
         if (self->flag != 0) {
-            RtcSendPxiCommand();
+            RtcSendPxiCommand(self->flag);
             self->flag = 0;
         }
 
         unsigned char id = id_slot;
         if (id == data_021f43f8) {
             if (self->pmf_c0) {
-                (self->*self->pmf_c0)(arg);
+                (self->*self->pmf_c0)(event);
             }
         } else if (id == data_021f43e8) {
             if (self->pmf_c8) {
-                (self->*self->pmf_c8)(arg);
+                (self->*self->pmf_c8)(event);
                 self->pmf_c8 = __ptmf_null;
             }
         }

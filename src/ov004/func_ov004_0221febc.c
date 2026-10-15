@@ -6,11 +6,11 @@
 
 extern int func_0202e1fc(void *s);
 extern void func_ov004_0223d33c(void);
-extern int func_02013c0c(void *p);
+extern void func_02013c0c(void *p);
 extern int func_020b65b8(void);
-extern int func_020b6654(void);
+extern int func_020b6654(int);
 extern void func_ov004_0221fdf4(void *s, int a);
-extern void func_02030864(int a);
+extern int func_02030864(int a);
 extern int func_0201c444(void *s);
 extern int func_0204d624(void *p, int a, int b);
 extern int data_021fbe94;
@@ -23,8 +23,7 @@ int func_ov004_0221febc(char *s)
     func_ov004_0223d33c();
     *(u16 *) (s + 0x898) = 0xfff1;
     func_02013c0c(s + 0x558);
-    func_020b65b8();
-    if (func_020b6654() != 0) {
+    if (func_020b6654((int) func_020b65b8()) != 0) {
         func_ov004_0221fdf4(s, 4);
     } else {
         func_ov004_0221fdf4(s, 0);

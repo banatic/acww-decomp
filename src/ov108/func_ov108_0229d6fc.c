@@ -3,12 +3,12 @@
  */
 
 extern unsigned char data_021fbdd8;
-extern int func_ov002_02208098(int, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 int func_ov108_0229d6fc(int a)
 {
     if (data_021fbdd8 == 0) {
-        return func_ov002_02208098(a, 5);
+        return (int) func_ov002_02208098((void *) (a), 5);
     }
     return a;
 }

@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020614c4(void) {}
+void *func_020614c4(void *buffer)
+{
+    return buffer;
+}

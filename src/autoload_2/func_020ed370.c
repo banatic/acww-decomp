@@ -4,7 +4,7 @@
 
 extern void func_020ed370(int p0, int p1, int p2, int p3);
 extern int data_0213e6c0;
-extern void DWC_Auth_Base64Decode(int p0, int p1, int p2, int p3);
+extern int DWC_Auth_Base64Decode(int p0, int p1, int p2, int p3);
 
 extern int data_021fbf14;
 

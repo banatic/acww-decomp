@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02019de4(void *, void *);
+extern void *func_02019de4(void *);
 extern int func_02057bf0(int);
-extern void func_02057b90(int, void *);
+extern int func_02057b90(int, void *);
 extern int func_02057c20(void *);
 extern int func_ov004_0222bf50(void);
 
@@ -21,7 +21,7 @@ typedef struct {
 void func_02017ab4(UnkStruct_02017ab4 *param1, void *param2)
 {
     UnkStruct_02017ab4_2 *ptr;
-    ptr = (UnkStruct_02017ab4_2 *) func_02019de4(param1, param2);
+    ptr = (UnkStruct_02017ab4_2 *) func_02019de4(param1);
     if (func_02057bf0(2) == 0) {
         func_02057b90(9, param2);
         if (func_02057c20(ptr->unk_28) != 0) {

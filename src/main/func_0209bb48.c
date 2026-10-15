@@ -3,7 +3,7 @@
  */
 
 extern void func_0209bd80(void *);
-extern void func_0209529c(void *);
+extern void *func_0209529c(void *);
 
 typedef struct {
     char pad_00[0x0C];

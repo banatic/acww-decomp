@@ -22,7 +22,7 @@ typedef struct {
     u8 unk_75;
 } Self5;
 
-extern void func_0210fc7c(void *sub, int mode, int zero);
+extern int func_0210fc7c(void *sub, int mode, int zero);
 extern int NNS_SndArcStrmGetTimeLength(void *sub);
 extern void func_020f162c(Self5 *self, int mode, int val);
 

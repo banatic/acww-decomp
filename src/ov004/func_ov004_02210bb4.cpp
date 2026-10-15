@@ -15,7 +15,7 @@ extern "C" int func_ov004_0220e080(void *, void *, int, int);
 extern "C" int func_ov004_0220e068(void *);
 extern "C" int func_ov004_0220e050(void *);
 extern "C" int func_02055f2c(void *, int, int);
-extern "C" int func_ov004_0220f484(char *);
+extern "C" void func_ov004_0220f484(char *);
 // Reconstructed vtable slots at byte offsets 0x7C and 0x8C.
 class Actor {
   public:

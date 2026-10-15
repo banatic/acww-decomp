@@ -10,10 +10,10 @@ struct UnkStruct_02299cd0 {
 };
 
 extern struct UnkStruct_02299cd0 *func_020682e0(int);
-extern int func_02068320(struct UnkStruct_02299cd0 *);
-extern int func_020b5e10(int);
+extern void func_02068320(struct UnkStruct_02299cd0 *);
+extern int func_020b5e10(void);
 extern int func_020b6434(int, int, int, int);
-extern int func_020a1930(int);
+extern void func_020a1930(void);
 extern void func_ov147_0229a01c(int);
 
 void func_ov147_02299cd0(int self)
@@ -24,7 +24,7 @@ void func_ov147_02299cd0(int self)
         if (p->b != 0) {
             return;
         }
-        func_020a1930(func_020b6434(func_020b5e10(func_02068320(p)), 46, 2, 3));
+        ((void) (func_020b6434(((void) (func_02068320(p)), func_020b5e10()), 46, 2, 3)), func_020a1930());
         func_ov147_0229a01c(self);
     }
 }

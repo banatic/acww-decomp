@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020ed6a8(void) {}
+void func_020ed6a8(int status, int local, int cancelled, int peer, int connection, void *userData) {}

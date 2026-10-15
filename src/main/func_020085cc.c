@@ -29,7 +29,7 @@ typedef struct {
 extern void func_02010f5c(UnkStruct_020085cc *self);
 extern unsigned int *func_0200f27c(unsigned int *param0, int param1);
 extern void func_0200850c(VecFx32 *out, UnkStruct_020085cc *self, int count);
-extern void func_020e8bb0(void *dst, int val, int a, int b, int c);
+extern int func_020e8bb0(void *dst, int val, int a, int b, int c);
 
 void func_020085cc(UnkStruct_020085cc *self)
 {

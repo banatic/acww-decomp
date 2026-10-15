@@ -26,9 +26,9 @@ typedef struct {
     s16 unk_12;
 } UnkStruct_020f9728;
 
-void NNS_SndArcPlayerStartSeq(Player *p, int seq);
-void NNS_SndPlayerReadGlobalVariable(int varIndex, s16 *value);
-void NNS_SndPlayerReadVariable(Player *p, int varIndex, s16 *value);
+int NNS_SndArcPlayerStartSeq(Player *p, int seq);
+int NNS_SndPlayerReadGlobalVariable(int varIndex, s16 *value);
+int NNS_SndPlayerReadVariable(Player *p, int varIndex, s16 *value);
 void func_020f96b0(UnkStruct_020f9728 *self);
 
 void func_020f9728(UnkStruct_020f9728 *self)

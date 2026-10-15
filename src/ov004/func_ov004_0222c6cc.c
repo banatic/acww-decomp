@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_ov004_0222c6cc(void)
+int func_ov004_0222c6cc(void *object, unsigned int mode)
 {
     return 1;
 }

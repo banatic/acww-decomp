@@ -26,7 +26,7 @@ struct SomeSelf {
     UnkStruct_0208d5ec obj;
 };
 
-extern "C" void func_020b45d0(UnkStruct_0208d5ec *, unsigned char, int, int, int, int);
+extern "C" int func_020b45d0(UnkStruct_0208d5ec *, unsigned char, int, int, int, int);
 extern "C" void func_02051648(MyPtrStruct *);
 extern "C" void func_02051694(MyPtrStruct *);
 

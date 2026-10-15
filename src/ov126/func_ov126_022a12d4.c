@@ -2,19 +2,19 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov095_0229b324(void *ptr);
+extern int func_ov095_0229b324(void *ptr);
 extern void func_ov124_0229ef4c(void *ptr, int val);
-extern void func_02002d14(void *a, int b, int c, int d, int e, int f);
+extern int func_02002d14(void *a, int b, int c, int d, int e, int f);
 extern void func_ov002_0220af94(void *ptr);
 extern int func_ov126_0229f7c8(void *self, int val);
-extern void func_02070c08(void *ptr);
+extern void *func_02070c08(void *ptr);
 extern void func_020a8c1c(void *ptr);
 extern int func_020b496c(int a, void *ptr);
-extern int func_0206fca4(int a);
-extern void func_0207094c(void *ptr, int val);
+extern int func_0206fca4(void);
+extern int func_0207094c(void *ptr, int val);
 extern void func_02070adc(void *ptr, int a, int b, int c, int d, int e, int f);
 extern void func_02070a04(void *ptr, int a, int b);
-extern void func_02070be8(void *ptr);
+extern int **func_02070be8(void *ptr);
 extern unsigned char data_ov126_022a2140[];
 extern int data_021fbe94;
 
@@ -37,7 +37,7 @@ void func_ov126_022a12d4(char *self)
         func_02070c08(local);
         func_020a8c1c(local);
         ret = func_020b496c(0, local);
-        res = func_0206fca4(ret);
+        res = func_0206fca4();
         if (res == 0x12) {
             func_0207094c(get_3ff4(self), 0x80);
         } else {

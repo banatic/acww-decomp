@@ -12,7 +12,7 @@ class Task {
     unsigned char cost;
 };
 
-extern "C" void func_020e8ce0(void *list, void *p);
+extern "C" int func_020e8ce0(void *list, void *p);
 
 extern unsigned char data_021f6ca0[];
 

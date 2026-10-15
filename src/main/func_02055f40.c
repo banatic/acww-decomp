@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_G3dBindMdlTex(unsigned int, unsigned int);
-extern void NNS_G3dBindMdlPltt(unsigned int, unsigned int);
+extern int NNS_G3dBindMdlTex(unsigned int, unsigned int);
+extern int NNS_G3dBindMdlPltt(unsigned int, unsigned int);
 extern void func_02055f6c(void *);
 
 typedef struct {

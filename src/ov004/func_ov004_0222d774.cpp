@@ -5,7 +5,7 @@
 
 #include "cpp/ov004/Obj_ov004_02254e4c.h"
 
-extern "C" void func_ov004_0222d320(void *self);
+extern "C" void *func_ov004_0222d320(void *self);
 extern "C" void func_ov004_0222d2a4(void *self);
 
 int Obj_ov004_02254e4c::func_ov004_0222d774()

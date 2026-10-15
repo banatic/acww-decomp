@@ -4,7 +4,7 @@
 
 extern void func_ov068_0226cfd4(int);
 extern void func_ov068_02266c34(int, int, int, int, int, int, int, int, int);
-extern void func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
 extern void func_0202e194(int);
 extern void func_0201cbbc(int);
 extern int data_020c814c;

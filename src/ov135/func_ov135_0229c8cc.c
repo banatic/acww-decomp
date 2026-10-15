@@ -5,12 +5,12 @@
 extern void func_ov135_0229c738(void *);
 extern void func_ov135_0229c554(void *, int);
 extern void func_ov134_0229a398(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov135_0229c8cc(void *self)
 {
     func_ov135_0229c738(self);
     func_ov135_0229c554(self, 2);
     func_ov134_0229a398((char *) self + 0x2c8);
-    func_ov002_02208098(self, 0xf);
+    func_ov002_02208098((void *) (self), 0xf);
 }

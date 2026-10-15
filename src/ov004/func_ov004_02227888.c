@@ -10,7 +10,7 @@ struct UnkStruct_02227888 {
     int state;
 };
 
-extern void func_020109a0(struct UnkStruct_02227888 *self, int a, int b, int c);
+extern void func_020109a0(struct UnkStruct_02227888 *self, int a, int b, unsigned short d);
 extern void func_02010f5c(struct UnkStruct_02227888 *self);
 extern int func_02056f28(void *p, int slot);
 extern void func_0200f888(struct UnkStruct_02227888 *self);

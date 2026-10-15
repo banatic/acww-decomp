@@ -15,7 +15,7 @@ class UnkStruct_020b9b6c {
 };
 
 extern "C" {
-void func_020b9c68(UnkStruct_020b9b6c *p1, int p2, int p3, int p4);
+void func_020b9c68(UnkStruct_020b9b6c *p1);
 void func_020ba09c(char *sub, int p2, int p3, int p4);
 int func_020ba078(char *sub);
 int func_020b98c4(UnkStruct_020b9b6c *p1);
@@ -23,7 +23,7 @@ int func_020b98c4(UnkStruct_020b9b6c *p1);
 
 extern "C" int func_020b9b6c(UnkStruct_020b9b6c *p1, int p2, int p3, int p4)
 {
-    func_020b9c68(p1, p2, p3, p4);
+    func_020b9c68(p1);
     p1->e = 6;
     func_020ba09c(&p1->sub, p2, p3, p4);
     p1->unk_0F = func_020ba078(&p1->sub);

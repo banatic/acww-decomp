@@ -11,7 +11,7 @@ class UnkStruct_0208bfd0 {
     char sub[4];
 };
 
-extern "C" void func_0208c638(void *sub);
+extern "C" int func_0208c638(void *sub);
 
 extern "C" void func_0208bfd0(UnkStruct_0208bfd0 *self)
 {

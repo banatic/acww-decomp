@@ -3,7 +3,7 @@
  */
 
 extern char data_020df008[];
-extern void func_02066a84(void *p);
+extern void *func_02066a84(void *p);
 extern void func_020a8188(void *p);
 
 void *func_020669e0(void *obj)

@@ -3,7 +3,7 @@
  */
 
 extern void func_0203ee08(void *a, void *b);
-extern void func_0203e020(void *a);
+extern int func_0203e020(void *a);
 
 struct Node {
     int unk_00;

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov004_022433c8(void);
+extern void func_ov004_022433c8(unsigned char *parameter0);
 
-void func_ov004_02240538(void)
+void func_ov004_02240538(unsigned char *arg0)
 {
-    func_ov004_022433c8();
+    func_ov004_022433c8((unsigned char *) arg0);
 }

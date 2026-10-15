@@ -14,7 +14,7 @@ struct UnkStruct_02007364 {
 extern "C" void func_02007d40(Obj_020d82b4 *, int);
 extern "C" void func_02007d2c(Obj_020d82b4 *);
 extern "C" void func_02007d00(Obj_020d82b4 *, int);
-extern "C" void func_02008270(Obj_020d82b4 *, int, int);
+extern "C" int func_02008270(Obj_020d82b4 *, int, int);
 extern "C" void func_02007ce4(Obj_020d82b4 *, int);
 extern "C" void func_02010e48(Obj_020d82b4 *, int *);
 extern "C" void func_020064cc(Obj_020d82b4 *, int);
@@ -22,7 +22,7 @@ extern "C" int func_02073dd4(UnkStruct_02007364 *, int);
 extern "C" int func_02073908(UnkStruct_02007364 *, int);
 extern "C" short func_02073d80(UnkStruct_02007364 *);
 extern "C" int func_02008264(Obj_020d82b4 *, int);
-extern "C" void func_0200f27c(Obj_020d82b4 *, int);
+extern "C" unsigned int *func_0200f27c(Obj_020d82b4 *, int);
 extern "C" void func_0200f268(Obj_020d82b4 *, int);
 
 extern UnkStruct_02007364 *data_020ccf94;

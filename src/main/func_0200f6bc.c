@@ -16,7 +16,7 @@ typedef struct {
 
 extern int FX_MulFunc(int a, int b);
 extern void MTX_MultVec43(int *in, Mtx43 *mat, int *out);
-extern void func_0203f7d0(int a, int *v);
+extern int func_0203f7d0(int a, int *v);
 
 void func_0200f6bc(int arg0, BaseStruct *base, int *scale)
 {

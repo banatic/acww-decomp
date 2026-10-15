@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int func_02050bdc_unk(int arg);
-extern void func_0206c234(void *param1, int param2);
+extern int func_0206c234(void *param1, int param2);
 extern void func_0206c1cc(void *param1, u32 param2);
 extern void func_02068104(u8 *param1, int param2);
 extern void func_020a9318(void *self);

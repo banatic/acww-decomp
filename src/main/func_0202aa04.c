@@ -4,20 +4,20 @@
 
 #include "types.h"
 
-extern void func_020984e8(void);
-extern int func_02099870(void);
-extern void func_02094fd4(void *);
-extern void func_02095074(int, void *);
-extern void func_0208150c(void *);
-extern int func_020036e8(void);
+extern int func_020984e8(void);
+extern int func_02099870(int);
+extern void *func_02094fd4(void *);
+extern void *func_02095074(int, void *);
+extern unsigned int func_0208150c(void *);
+extern int func_020036e8(unsigned char *);
 extern int func_0202aab0(void *, void *, int);
-extern void func_020a8bb8(void *, void *);
+extern void *func_020a8bb8(void *, void *);
 extern void func_0209df64(void *);
-extern void func_02081c40(void *, void *);
+extern void *func_02081c40(void *, void *);
 extern void func_0207a62c(void *, void *);
-extern void func_020802c8(void *, void *, int);
+extern int func_020802c8(void *, void *, int);
 extern void func_02068404(void *, int, void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fbc(void *);
 extern unsigned char data_021e5a2c;
 
 typedef struct {
@@ -45,16 +45,13 @@ void func_0202aa04(struct UnkStruct_0202aa04_2 *self)
     Mutex mutex2;
     int handle;
 
-    func_020984e8();
-    handle = func_02099870();
+    handle = func_02099870((int) func_020984e8());
 
     func_02094fd4(&mutex1);
     func_02094fd4(&mutex2);
     func_02095074(handle, &mutex2);
 
-    func_0208150c(self->unk_100->unk_830);
-
-    if (func_0202aab0(&mutex1, &mutex2, func_020036e8()) == 0) {
+    if (func_0202aab0(&mutex1, &mutex2, func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830))) == 0) {
         func_020a8bb8(&mutex1, &mutex2);
     }
 

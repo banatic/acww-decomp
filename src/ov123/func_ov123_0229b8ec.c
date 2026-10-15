@@ -13,7 +13,7 @@ typedef struct {
     unsigned char b0;
 } UnkStruct_0229b8ec;
 
-extern int func_ov002_02208014(UnkStruct_0229b8ec *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(UnkStruct_0229b8ec *self);
 extern int func_ov123_022999b0(UnkStruct_0229b8ec *self, int r1, int r2);
 extern void RtcSendPxiCommand(int cmd);
@@ -26,7 +26,7 @@ extern unsigned short data_021fbe40[2];
 
 void func_ov123_0229b8ec(UnkStruct_0229b8ec *self)
 {
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         RtcSendPxiCommand(0x86e);
         func_ov123_02299ec4(self);
         func_ov123_0229b6d0(self);

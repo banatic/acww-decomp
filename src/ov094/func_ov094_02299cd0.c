@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov094_02299c5c(void *, void *);
+extern int func_ov094_02299c5c(void);
 extern void func_ov094_02299c74(void *, void *);
 extern void func_02004658(int);
 
@@ -17,7 +17,7 @@ void func_ov094_02299cd0(UnkStruct_02299cd0 *p, UnkStruct_02299cd0 *q)
 {
     int a;
     int diff;
-    a = func_ov094_02299c5c(p, q);
+    a = func_ov094_02299c5c();
     if (a == p->unk_00) {
         return;
     }

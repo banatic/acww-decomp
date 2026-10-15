@@ -3,13 +3,13 @@
  */
 
 extern int func_020682e0(int);
-extern int func_02068358(int);
-extern int func_02068434(int);
+extern void func_02068358(int);
+extern void func_02068434(int);
 
-int func_020a25cc(void)
+void func_020a25cc(void)
 {
     int a;
     a = func_020682e0(0);
     func_02068358(a);
-    return func_02068434(a);
+    func_02068434(a);
 }

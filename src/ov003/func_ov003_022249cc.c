@@ -39,17 +39,17 @@ extern int func_0203adc4(Vec3 *v, int a, int b);
 extern int func_01ffcbd8(void *p1, int x, int z);
 extern int func_0204c63c(u16 *t);
 extern void func_ov003_02225714(void *g, u16 *t, int a, int b, Vec3 *v, Mtx m);
-extern void func_ov003_02225404(void *g, u16 *t, Mtx m);
-extern void func_ov003_02225598(void *g, u16 *t, Mtx m);
-extern void func_ov003_02225538(void *g, u16 *t, Mtx m);
+extern char *func_ov003_02225404(void *g, u16 *t, Mtx m);
+extern char *func_ov003_02225598(void *g, u16 *t, Mtx m);
+extern void *func_ov003_02225538(void *g, u16 *t, Mtx m);
 extern void func_ov003_0222535c(void *g, u16 *t, Vec3 *v, Mtx m);
 extern void func_ov003_022252a0(void *g, u16 *t, Mtx m);
-extern void func_ov003_022252fc(void *g, u16 *t, Mtx m);
-extern void func_ov003_02225694(void *g, u16 *t, int a, int b, Mtx m);
-extern void func_ov003_02225608(void *g, u16 *t, Mtx m);
-extern void func_ov003_02225474(void *g, u16 *t, Mtx m);
-extern void func_ov003_022251e8(void *g, u16 *t, Mtx m);
-extern void func_ov003_02225240(void *g, u16 *t, Mtx m);
+extern void *func_ov003_022252fc(void *g, u16 *t, Mtx m);
+extern char *func_ov003_02225694(void *g, u16 *t, int a, int b, Mtx m);
+extern char *func_ov003_02225608(void *g, u16 *t, Mtx m);
+extern void *func_ov003_02225474(void *g, u16 *t, Mtx m);
+extern void *func_ov003_022251e8(void *g, u16 *t, Mtx m);
+extern void *func_ov003_02225240(void *g, u16 *t, Mtx m);
 extern void func_ov003_022251a4(void *g, void *p, Mtx m);
 
 void func_ov003_022249cc(char *p0, void *p1)

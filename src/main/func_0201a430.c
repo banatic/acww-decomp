@@ -2,17 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206463c(void *p);
-extern void func_02082d90(void *p);
-extern void func_02082e78(void *p);
-extern void func_02082e04(void *p);
-extern void func_02056928(void *p);
+extern void func_0206463c(void);
+extern void *func_02082d90(void *p);
+extern void *func_02082e78(void *p);
+extern void *func_02082e04(void *p);
+extern void *func_02056928(void *p);
 
 void *func_0201a430(void *ptr)
 {
     unsigned char *base = (unsigned char *) ptr;
 
-    func_0206463c(ptr);
+    func_0206463c();
     func_02082d90(base + 4);
     func_02082e78(base + 0xc);
     func_02082e04(base + 0x14);

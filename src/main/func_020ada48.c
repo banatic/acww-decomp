@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short *func_ov004_02246378(void);
+extern unsigned short *func_ov004_02246378(int, int);
 extern int func_020b65c4(void);
-extern void func_020af854(void *, int, volatile unsigned short *);
+extern void *func_020af854(void *, int, volatile unsigned short *);
 extern int func_020af83c(void *, volatile unsigned short *);
 extern int func_ov004_0224632c(void *, void *);
 extern void *func_020984e8(void);
@@ -24,7 +24,7 @@ void func_020ada48(void *a0, void *a1, int a2, int a3)
     int idx, flag;
     unsigned int i;
 
-    h[0] = *func_ov004_02246378();
+    h[0] = *func_ov004_02246378((int) a0, (int) a1);
     hit = 0;
     v0 = h[0];
     v1 = h[0];

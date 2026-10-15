@@ -54,7 +54,7 @@ extern void func_ov003_0222f958(void *a, UnkStruct_0222f6b0_2 *self);
 extern void func_ov003_0222d68c(UnkStruct_0222f6b0_2 *self);
 extern void func_ov003_0222f570(void *a, UnkStruct_0222f6b0_2 *self);
 extern int func_ov003_0222eb94(void *a, UnkStruct_0222f6b0_2 *self);
-extern void func_02034270(Box *b, Vec3 *p, int x, int y);
+extern int func_02034270(Box *b, Vec3 *p, int x, int y);
 extern int func_020341c8(Box *b, int k);
 extern void func_0203423c(Box *b);
 extern void func_02031288(char *o, Vec3 *a, Vec3 *b, int h, int d, int e, int f);

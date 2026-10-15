@@ -4,7 +4,7 @@
 
 struct UnkStruct_0221342c;
 struct UnkStruct_0221342c_2;
-extern void func_ov004_02213590(struct UnkStruct_0221342c_2 *, int);
+extern int func_ov004_02213590(struct UnkStruct_0221342c_2 *, int);
 
 struct UnkStruct_0221342c {
     int pad_00;

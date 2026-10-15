@@ -4,7 +4,7 @@
 
 extern char data_ov068_02277750;
 extern char data_ov068_02277814;
-extern void func_ov009_0226539c(void *);
+extern void *func_ov009_0226539c(void *);
 extern void func_020edf54(void *);
 
 typedef struct {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void func_ov066_022672b8(int a, int b, int c);
+extern int func_ov066_022672b8(int a, int b, int c);
 extern unsigned long long OS_GetTick(void);
 extern int func_ov066_0226760c(void);
 extern void func_ov066_0226b90c(void);

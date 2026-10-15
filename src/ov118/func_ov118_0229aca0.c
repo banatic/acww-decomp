@@ -4,7 +4,7 @@
 
 extern int func_ov118_0229a460(void *p, int);
 extern int func_ov002_0220a58c(void *p, unsigned char a, unsigned char b);
-extern int func_ov002_02208098(void *p, int);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 

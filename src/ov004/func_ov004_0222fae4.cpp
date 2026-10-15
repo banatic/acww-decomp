@@ -6,7 +6,7 @@
 #include "cpp/ov004/Obj_ov004_022553d8.h"
 
 extern "C" int func_020b6590(void);
-extern "C" void func_020b7e04(int, void *);
+extern "C" int func_020b7e04(int, void *);
 
 int Obj_ov004_022553d8::func_ov004_0222fae4()
 {

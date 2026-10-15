@@ -8,12 +8,12 @@ typedef struct {
 } UnkStruct_0229c1e8;
 
 extern void func_ov142_0229ba64(UnkStruct_0229c1e8 *);
-extern void func_ov002_022080a0(UnkStruct_0229c1e8 *);
+extern unsigned char *func_ov002_022080a0(void *, unsigned char);
 
 int func_ov142_0229c1e8(UnkStruct_0229c1e8 *self)
 {
     func_ov142_0229ba64(self);
     self->unk_8C = 0;
-    func_ov002_022080a0(self);
+    func_ov002_022080a0(self, 0);
     return 1;
 }

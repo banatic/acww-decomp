@@ -9,7 +9,7 @@ extern char data_020e7abc[];
 extern char data_021f7280[];
 extern int func_02002c6c(void *, void *, unsigned char, int, int, int);
 extern void *func_020e9958(void *, int);
-extern void func_02064af4(void *, void *, int);
+extern int func_02064af4(void *, void *, int);
 extern void func_020b0f54(void *);
 extern int func_02002b40(void *, unsigned char, int, int);
 extern void func_020e993c(void *, void *);

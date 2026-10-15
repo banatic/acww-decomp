@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_020e4170[];
-extern void func_020a8c38(void *);
+extern void *func_020a8c38(void *);
 extern void func_020edb3c(void *);
 
 struct UnkStruct_020ae73c {

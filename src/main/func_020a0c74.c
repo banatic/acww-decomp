@@ -3,10 +3,10 @@
  */
 
 extern void *func_020984fc(int a);
-extern void func_020641c8(void *o);
-extern void func_020641b0(void *o);
-extern void func_02099870(void *p);
-extern int func_02095040(void);
+extern void *func_020641c8(void *o);
+extern void *func_020641b0(void *o);
+extern int func_02099870(void *p);
+extern int func_02095040(void *);
 extern void func_02064210(int a, void *o);
 extern void *func_02099688(void *p);
 extern int func_020882dc(void *p);
@@ -46,8 +46,7 @@ void func_020a0c74(void *self, int idx)
         return;
     }
     func_020641c8(o1);
-    func_02099870(p);
-    func_02064210(func_02095040(), o1);
+    func_02064210(func_02095040((void *) func_02099870(p)), o1);
     pr = func_02099688(p);
     if (func_020882dc(pr) != 0) {
         func_020a0ea8(self, pr);
@@ -71,8 +70,7 @@ void func_020a0c74(void *self, int idx)
         if (q == 0) {
             continue;
         }
-        func_02099870(q);
-        func_02064210(func_02095040(), o2);
+        func_02064210(func_02095040((void *) func_02099870(q)), o2);
         rr = func_02099688(q);
         if (func_020882dc(rr) != 0) {
             continue;
@@ -102,12 +100,10 @@ void func_020a0c74(void *self, int idx)
     }
     i = func_020644cc(2);
     func_020882b0(rr, (unsigned char) (i == 0));
-    func_02099870(p);
-    func_020882e4(rr, func_02095040());
+    func_020882e4(rr, func_02095040((void *) func_02099870(p)));
     func_020882cc(rr, 0xa);
     func_020882b0(pr, (unsigned char) (i == 1));
-    func_02099870(q);
-    func_020882e4(pr, func_02095040());
+    func_020882e4(pr, func_02095040((void *) func_02099870(q)));
     func_020882cc(pr, 0xa);
     func_020a0ea8(self, pr);
     func_020a0ea8(self, rr);
@@ -117,16 +113,14 @@ void func_020a0c74(void *self, int idx)
     y = func_02090040(A);
     func_020641c8(o3);
     if (x != 0) {
-        func_02099870(x);
-        func_02064210(func_02095040(), o3);
+        func_02064210(func_02095040((void *) func_02099870(x)), o3);
     }
     MI_CpuCopy8(pr, func_02090124(y), 0x10);
     x = func_020984fc(B);
     y = func_02090040(B);
     func_020641c8(o4);
     if (x != 0) {
-        func_02099870(x);
-        func_02064210(func_02095040(), o4);
+        func_02064210(func_02095040((void *) func_02099870(x)), o4);
     }
     MI_CpuCopy8(rr, func_02090124(y), 0x10);
     func_020641b0(o4);

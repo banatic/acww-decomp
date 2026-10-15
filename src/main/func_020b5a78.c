@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(unsigned int size);
-extern void func_020ee660(void *ptr);
+extern void *func_020ee660(void *ptr);
 extern int data_020da13c;
 extern int data_020e3c94;
 extern int data_020e5320;

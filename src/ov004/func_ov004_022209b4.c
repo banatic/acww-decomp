@@ -10,7 +10,7 @@ extern int func_0208150c(int a);
 extern int func_020804e8(int a);
 extern void func_02081ac0(int a, char *b);
 extern void func_0207df18(int a, char *b);
-extern void func_ov004_0223bb14(int a);
+extern int func_ov004_0223bb14(int a);
 
 void func_ov004_022209b4(char *self)
 {

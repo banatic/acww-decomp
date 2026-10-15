@@ -4,7 +4,7 @@
 
 extern void func_02010f5c(int arg);
 extern void func_02010d64(int arg);
-extern void func_0200a2a8(int arg);
+extern int func_0200a2a8(int arg);
 
 void func_0200a28c(int arg)
 {

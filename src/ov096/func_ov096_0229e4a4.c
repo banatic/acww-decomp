@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(int);
+extern void *func_020984e8(void);
 extern unsigned short *func_02099710(void *);
 extern unsigned short *func_020996e0(void *);
 extern unsigned short *func_020996f8(void *);
@@ -10,7 +10,7 @@ extern unsigned short *func_02099728(void *);
 
 int func_ov096_0229e4a4(int a, int b)
 {
-    void *p = func_020984e8(a);
+    void *p = func_020984e8();
     switch (b) {
         case 2:
             return *func_02099710(p);

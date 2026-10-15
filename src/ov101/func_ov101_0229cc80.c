@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_0206f9cc(char *a);
+extern unsigned int func_0206f9cc(void);
 extern int func_ov101_0229cc20(char *a, unsigned char i);
 extern int func_ov101_0229ce1c(char *a, unsigned char i);
 extern void func_ov094_0229a888(char *p, int v);
@@ -14,7 +14,7 @@ void func_ov101_0229cc80(char *a)
     unsigned int mask;
     int ret;
 
-    mask = func_0206f9cc(a);
+    mask = func_0206f9cc();
     for (i = 0, b = 0; i <= 14; i++, b++) {
         if (func_ov101_0229cc20(a, i) != 0) {
             continue;

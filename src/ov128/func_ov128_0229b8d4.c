@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov128_0229b90c(void);
+extern void func_ov128_0229b90c(void *unused0);
 
 void func_ov128_0229b8d4(void *r0)
 {
@@ -15,7 +15,7 @@ void func_ov128_0229b8d4(void *r0)
     if (r2 != r1) {
         r1 = *(unsigned int *) ((char *) r0 + 0x2d64);
         if (r2 == r1) {
-            func_ov128_0229b90c();
+            func_ov128_0229b90c(r0);
             return;
         }
     }

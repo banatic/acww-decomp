@@ -11,7 +11,7 @@ typedef struct {
     int unk_04;
     int unk_08;
 } UnkStruct_0204cb50;
-extern UnkStruct_0204cb50 *func_0204cc04(void);
+extern UnkStruct_0204cb50 *func_0204cc04(int);
 int func_0204cb50(int a, int b)
 {
     int r;
@@ -25,7 +25,7 @@ int func_0204cb50(int a, int b)
     if (r < 0) {
         goto done;
     }
-    p = func_0204cc04();
+    p = func_0204cc04(r);
     p->unk_00 = (unsigned short) b;
     func_0203fb80(&p->unk_04, &p->unk_08, b);
     p->unk_02 = func_0209dee8();

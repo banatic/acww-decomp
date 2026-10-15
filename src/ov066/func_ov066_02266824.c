@@ -6,17 +6,17 @@ extern struct UnkStruct_02266824 *data_ov066_0226bdec;
 
 struct UnkStruct_02266824 {
     char pad_00[0x38];
-    int (*func)(void);
+    void (*func)(unsigned char *);
 };
 
-int func_ov066_02266824(int p)
+void func_ov066_02266824(unsigned char *p)
 {
     struct UnkStruct_02266824 *ptr = data_ov066_0226bdec;
     if (ptr == 0) {
-        return p;
+        return;
     }
     if (ptr->func == 0) {
-        return p;
+        return;
     }
-    return ptr->func();
+    ptr->func(p);
 }

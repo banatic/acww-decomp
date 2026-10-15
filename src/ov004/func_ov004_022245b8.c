@@ -8,7 +8,7 @@ struct UnkStruct_022245b8 {
 };
 extern int func_0201c0e0(int);
 extern int func_0201c040(int, int *, int *);
-extern int func_020a7278(int);
+extern int func_020a7278(void);
 extern void func_0201c054(int, int, int, int);
 extern void func_ov004_022249b4(int, int);
 extern struct UnkStruct_022245b8 *data_020ccf94;
@@ -21,7 +21,7 @@ int func_ov004_022245b8(int arg)
         b = 4;
         if (func_0201c040(arg, &a, &b) != 0) {
             if (a == 4) {
-                if (func_020a7278(a) != 0) {
+                if (func_020a7278() != 0) {
                     func_0201c054(arg, 1, data_020ccf94->unk_64, 4);
                     func_ov004_022249b4(arg, 0);
                 }

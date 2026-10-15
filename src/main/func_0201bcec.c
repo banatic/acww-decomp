@@ -11,14 +11,14 @@ typedef struct UnkStruct_0201bcec {
     unsigned char unk_62C;
 } UnkStruct_0201bcec;
 
-extern int func_020a7278(UnkStruct_0201bcec *self);
+extern int func_020a7278(void);
 extern void func_0201bf24(UnkStruct_0201bcec *self, int arg);
 extern void func_0203f004(UnkStruct_0201bcec *self, int arg);
 
 void func_0201bcec(UnkStruct_0201bcec *self, int arg2)
 {
     if (arg2 == 2) {
-        if (func_020a7278(self) == 0) {
+        if (func_020a7278() == 0) {
             if ((self->unk_4E8 & 2) == 0) {
                 self->unk_4E8 |= 2;
                 self->unk_62C = 1;

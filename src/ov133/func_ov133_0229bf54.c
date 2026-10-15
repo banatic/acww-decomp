@@ -6,9 +6,9 @@
 
 extern u8 data_021fbdd8;
 extern void func_ov133_0229ae8c(void *self);
-extern void func_ov002_02208098(void *self, int x);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern int func_ov133_0229ae5c(void *self);
-extern void func_ov133_0229b3f8(void *self, int x);
+extern int func_ov133_0229b3f8(void *self, int x);
 
 void func_ov133_0229bf54(void *self)
 {

@@ -2,17 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208150c(void);
-extern void func_02003648(void);
-extern int func_02082500(void);
+extern unsigned int func_0208150c(unsigned int);
+extern int func_02003648(unsigned char *);
+extern int func_02082500(int);
 
-int func_02080814(void)
+int func_02080814(unsigned int object)
 {
     int result;
 
-    func_0208150c();
-    func_02003648();
-    result = func_02082500();
+    result = func_02082500((int) func_02003648((unsigned char *) func_0208150c(object)));
     if (result != 0) {
         result += 0x3a;
     } else {

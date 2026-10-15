@@ -23,8 +23,8 @@ extern Hdr *func_02107828(Hdr *res);
 extern void *func_020561fc(void *ptr, int name);
 extern void *func_02072614(void);
 extern void *func_02072630(void *a, int b, int c);
-extern void NNS_G3dForceBindMdlTex(void *m, void *t, int a, int b);
-extern void NNS_G3dForceBindMdlPltt(void *m, void *t, int a, int b);
+extern int NNS_G3dForceBindMdlTex(void *m, void *t, int a, int b);
+extern int NNS_G3dForceBindMdlPltt(void *m, void *t, int a, int b);
 extern void func_020e993c(void *heap, void *p);
 extern void func_02055f6c(UnkStruct_020554ec *self);
 

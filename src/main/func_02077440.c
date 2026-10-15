@@ -2,8 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_02235c94(int a, int b, int c);
-int func_02077440(int a, int b)
+extern void func_ov003_02235c94(void *buffer, int index);
+void func_02077440(int a, int b)
 {
-    return func_ov003_02235c94(a, 28, b);
+    asm { add r2, b, #0 }
+    func_ov003_02235c94((void *) a, 28);
 }

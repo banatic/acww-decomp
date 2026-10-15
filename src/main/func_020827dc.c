@@ -2,15 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02082854(void *);
+extern int func_02082854(void *, void *);
 
-int func_020827dc(void *param)
+int func_020827dc(void *param, char *p)
 {
     int idx;
     int ret;
-    char *p;
 
-    idx = func_02082854(param);
+    idx = func_02082854(param, p);
     ret = 0;
     if (idx >= 0 && idx < 4) {
         p = (char *) param + idx * 8;

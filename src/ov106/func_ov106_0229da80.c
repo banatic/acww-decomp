@@ -16,8 +16,8 @@ struct Big {
 };
 
 extern int func_0208e484(void *);
-extern void func_ov002_02208098(void *, int);
-extern void func_ov002_0220a720(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+extern void *func_ov002_0220a720(void *, int);
 extern void RtcSendPxiCommand(int);
 
 void func_ov106_0229da80(struct Big *p)
@@ -26,7 +26,7 @@ void func_ov106_0229da80(struct Big *p)
     if (func_0208e484(&p->unk_22A0) == 0) {
         return;
     }
-    func_ov002_02208098(p, 0x1f);
+    func_ov002_02208098((void *) (p), 0x1f);
     s = &p->sub;
     if (s->flag != 0) {
         func_ov002_0220a720(&p->unk_3FB4, 4);

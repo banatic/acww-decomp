@@ -7,7 +7,7 @@
 extern int func_0204bcdc(void *p);
 extern int func_0204bc64(void *p);
 extern u16 func_0204bc50(int a, int b);
-extern void __register_global_object(void *o, void (*d)(void *), void *n);
+extern void __register_global_object(void *o, void *destructor, void *n);
 extern void func_020051b0(void *p);
 extern void *func_0204f5e0(void *g, int qx, int qy, int rx, int ry, int k);
 extern int func_0204bc90(void *p);
@@ -38,7 +38,7 @@ u16 *func_ov004_02246378(int x, int y)
 
     if ((data_ov004_0225ff14 & 1) == 0) {
         data_ov004_0225ff04 = 0xfff1;
-        __register_global_object(&data_ov004_0225ff04, func_020051b0, &data_ov004_0225ff24);
+        __register_global_object(&data_ov004_0225ff04, ((void *) &func_020051b0), &data_ov004_0225ff24);
         data_ov004_0225ff14 |= 1;
     }
     if (data_021c80bc != 0) {
@@ -61,7 +61,7 @@ u16 *func_ov004_02246378(int x, int y)
                     }
                     if ((data_ov004_0225ff10 & 1) == 0) {
                         data_ov004_0225ff08 = 0xfff1;
-                        __register_global_object(&data_ov004_0225ff08, func_020051b0, &data_ov004_0225ff18);
+                        __register_global_object(&data_ov004_0225ff08, ((void *) &func_020051b0), &data_ov004_0225ff18);
                         data_ov004_0225ff10 |= 1;
                     }
                     data_ov004_0225ff08 = func_0204bc50(func_ov004_0220fde0(e), 0);

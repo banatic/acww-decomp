@@ -23,13 +23,13 @@ extern void func_02097f88(void *, int);
 extern void MI_CpuCopy8(int *, int *, int);
 extern void func_0209e29c(int *, int);
 extern int func_0209e3ac(UnkStruct_020976a4_2 *, int *, int);
-extern void func_02097b24(void);
+extern int func_02097b24(void);
 extern int func_020988a4(int *, int);
 extern void *func_02098844(int *, int);
 extern void *func_02098a18(void *);
 extern UnkStruct_020976a4 *func_02097e08(void *);
-extern void *func_02097e14(void *);
-extern int func_02065ec0(void);
+extern unsigned char *func_02097e14(void *p);
+extern int func_02065ec0(unsigned char *);
 extern int func_02097a74(void *, int, int);
 extern void func_02097dd4(void *);
 
@@ -94,7 +94,7 @@ void func_020976a4(void)
         x = func_02098844(&data_021dc7bc, i);
         e = func_02097e08(func_02098a18(x));
         y = func_02097e14(func_02098a18(x));
-        if (func_02065ec0() == 0) {
+        if (func_02065ec0(y) == 0) {
             continue;
         }
         s.unk_08 = 0;

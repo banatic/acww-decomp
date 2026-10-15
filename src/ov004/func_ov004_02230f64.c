@@ -3,8 +3,9 @@
  */
 
 extern char data_ov004_022558ac[];
-extern int func_ov004_02230db8(int a, char *p, int n);
-int func_ov004_02230f64(int a)
+extern void func_ov004_02230db8(char *self, void *p1, unsigned char p2);
+void func_ov004_02230f64(int a)
 {
-    return func_ov004_02230db8(a, data_ov004_022558ac, 0x22);
+    func_ov004_02230db8((char *) a, data_ov004_022558ac, 0x22);
+    return;
 }

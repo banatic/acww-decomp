@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202eb70(void *self);
+extern void *func_0202eb70(void *self);
 extern char data_ov085_0227945c;
 
 struct obj_ov085_02278f14 {

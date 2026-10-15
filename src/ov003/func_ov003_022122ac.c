@@ -13,11 +13,11 @@ typedef struct {
     char data[16];
 } Result;
 
-extern void func_0200e92c(UnkStruct_022122ac *);
+extern unsigned int func_0200e92c(UnkStruct_022122ac *);
 extern void func_0200e90c(UnkStruct_022122ac *, int, void *, short);
 extern void func_ov003_022122fc(Result *, Pair *, void *);
 extern int func_0200e894(void *, UnkStruct_022122ac *);
-extern void func_0200e91c(UnkStruct_022122ac *);
+extern int func_0200e91c(UnkStruct_022122ac *);
 
 int func_ov003_022122ac(void *a, void *b, Pair *c, void *d, short e)
 {

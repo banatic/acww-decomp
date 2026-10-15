@@ -2,18 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(char *p);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(char *p);
 extern int func_ov002_02209044(char *p, int a, char *q, int b);
 extern void func_ov103_0229c4fc(char *p);
 extern void func_ov103_0229c720(char *p);
 extern void func_ov002_0220a1dc(char *p);
-extern void func_ov002_02208098(char *p, int a);
+extern unsigned char *func_ov002_02208098(char *p, unsigned char value);
 extern unsigned short data_021fbe40[];
 
 void func_ov103_0229d3b4(char *p)
 {
-    if (func_ov002_02208014(p)) {
+    if (func_ov002_02208014()) {
         func_ov103_0229c4fc(p);
         return;
     }

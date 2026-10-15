@@ -4,7 +4,7 @@
 
 extern void func_ov139_022999f8(void *);
 extern void func_ov139_022999c4(void *);
-extern void func_02064af4(const void *, void *, unsigned int);
+extern int func_02064af4(const void *, void *, unsigned int);
 extern void func_ov140_0229a41c(void *);
 extern const unsigned char data_ov140_0229b5b4[];
 

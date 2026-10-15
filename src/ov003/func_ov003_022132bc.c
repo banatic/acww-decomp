@@ -61,11 +61,11 @@ typedef struct {
 extern void *data_020ccf94;
 extern const int data_ov003_02238144;
 
-extern void func_0200faf0(UnkStruct_022132bc *, int);
+extern int func_0200faf0(UnkStruct_022132bc *, int);
 extern int func_02073908(void *, int);
-extern void func_ov003_0222e5fc(int);
+extern int func_ov003_0222e5fc(int);
 extern void func_ov003_02219668(Blk *, void *);
-extern void func_0203f7d0(Vec *, Vec *);
+extern int func_0203f7d0(Vec *, Vec *);
 extern int func_020912d4(int, Vec *, int, int);
 extern void func_ov003_0222e898(int, int);
 extern void func_02091278(int, Vec *, int, int);
@@ -75,10 +75,10 @@ extern int func_ov003_02213a80(void *);
 extern void func_ov003_0222eabc(int, int);
 extern void func_020109fc(UnkStruct_022132bc *, int, int, int);
 extern int func_0203e1c4(void);
-extern void func_0203ee14(UnkStruct_022132bc *, void *);
-extern void func_0200f27c(UnkStruct_022132bc *, int);
+extern void func_0203ee14(UnkStruct_022132bc *self, void *arg);
+extern unsigned int *func_0200f27c(UnkStruct_022132bc *, int);
 extern void func_020a8164(void *, const void *);
-extern void func_0203cbd0(u16 *);
+extern int func_0203cbd0(u16 *);
 extern void func_0203ae98(void);
 extern int func_0200f290(UnkStruct_022132bc *, int);
 extern void func_02035638(int);
@@ -88,24 +88,24 @@ extern void func_02035684(int, int, int);
 extern void func_020356c4(int, int, int, int);
 extern int func_0203cc1c(void);
 extern int func_02099fe8(void);
-extern int func_02043368(int, int *);
+extern int func_02043368(int a, int *point, unsigned char *result);
 extern void func_0203ee08(UnkStruct_022132bc *, void *);
-extern void func_0203e19c(void);
-extern void func_ov003_022131c8(UnkStruct_022132bc *, int, int, int, int);
-extern void func_0203b144(void);
+extern int func_0203e19c(void);
+extern int func_ov003_022131c8(UnkStruct_022132bc *, int, int, int, int);
+extern int func_0203b144(void);
 extern void func_0209129c(int);
 extern int func_020644cc(int);
 extern void func_ov003_02213ab4(void *, int);
 extern void func_ov003_02213ac0(void *, int);
 extern int func_ov003_0222ea84(u8);
-extern void func_0200d4e8(UnkStruct_022132bc *, int, int, int);
-extern void func_0200c9a8(UnkStruct_022132bc *, int, int, int);
-extern void func_02011404(s16 *, int, int, int, int);
+extern int func_0200d4e8(UnkStruct_022132bc *, int, int, int);
+extern int func_0200c9a8(UnkStruct_022132bc *, int, int, int);
+extern int func_02011404(s16 *, int, int, int, int);
 extern Vec *func_ov003_0222e970(u8);
 extern int func_020e8ed8(int, int);
 extern int func_020ea990(Vec *, Vec *);
-extern void func_020094a0(UnkStruct_022132bc *, int, int, int, int, int);
-extern void func_ov003_0222d83c(int, s16 *, Blk *, int);
+extern void *func_020094a0(UnkStruct_022132bc *, int, int, int, int, int);
+extern int func_ov003_0222d83c(int, s16 *, Blk *, int);
 
 void func_ov003_022132bc(UnkStruct_022132bc *self)
 {
@@ -269,7 +269,7 @@ void func_ov003_022132bc(UnkStruct_022132bc *self)
             if (func_02099fe8() == -1) {
                 msg.pa = 0;
                 msg.pb = 0;
-                if (func_02043368(0x10, &msg.pa) != 0) {
+                if (func_02043368(0x10, &msg.pa, 0) != 0) {
                     *st = 4;
                     self->unk_81C = 0;
                     return;

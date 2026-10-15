@@ -11,8 +11,8 @@ extern int func_020e8858(void *p);
 extern int func_020644cc(int);
 extern char *func_020961a8(int a);
 extern int func_020ea990(Vec3 *v, void *p);
-extern void func_020044c0(void *p, int a, int b, int c);
-extern void func_0203e0a8(void *s, int a);
+extern int func_020044c0(void *p, int a, int b, int c);
+extern int func_0203e0a8(void *s, int a);
 
 int func_ov004_02221444(char *s)
 {

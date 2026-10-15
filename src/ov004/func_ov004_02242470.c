@@ -12,7 +12,7 @@ extern short func_0200322c(Vec *, Vec *);
 extern int func_020644cc(int);
 extern int func_020ea990(Vec *, Vec *);
 extern int FX_MulFunc(int, int);
-extern int func_ov004_02242a9c(char *, int, int);
+extern void func_ov004_02242a9c(char *, int, int);
 extern int func_ov004_02244c20(char *);
 void func_ov004_02242470(char *self)
 {

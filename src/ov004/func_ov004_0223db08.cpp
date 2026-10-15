@@ -8,7 +8,7 @@ typedef struct {
 extern "C" void *func_02032c64(void *);
 extern "C" void *func_02032c50(void *);
 extern "C" int func_02034270(void *, Vec *, int, int);
-extern "C" void *func_0203423c(void *);
+extern "C" void func_0203423c(void *);
 extern "C" int func_020341c8(void *, int);
 extern "C" void func_02031288(void *, Vec *, void *, int, int, void *, int);
 static inline int hit_count(void *p)

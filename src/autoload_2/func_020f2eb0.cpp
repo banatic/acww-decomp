@@ -12,9 +12,9 @@ struct UnkStruct_020f2eb0 {
     UnkStruct_020f2eb0_2 base;
 };
 
-extern "C" void func_020f44f8(UnkStruct_020f2eb0 *self);
-extern "C" void func_020f2eb0(UnkStruct_020f2eb0 *self)
+extern "C" void func_020f44f8(void *receiver, int value);
+extern "C" void func_020f2eb0(UnkStruct_020f2eb0 *self, int value)
 {
-    func_020f44f8(self);
+    func_020f44f8(self, value);
     self->base.vfunc0();
 }

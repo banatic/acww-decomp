@@ -18,7 +18,7 @@ typedef struct {
 
 extern UnkStruct_02227cec *data_021c80bc;
 extern int func_02037d9c(Cell *c);
-extern int func_02037e70(Cell *c);
+extern int func_02037e70(void *argument0);
 
 int func_ov003_02227cec(int unused, UnkStruct_02227cec_2 *out, int *n, unsigned kind)
 {

@@ -10,7 +10,7 @@ struct UnkStruct_0208bc60 {
 };
 
 extern int func_0208c620(void *);
-extern void func_0203e1ec(void);
+extern int func_0203e1ec(void);
 extern void func_0208bd90(struct UnkStruct_0208bc60 *);
 
 void func_0208bc60(struct UnkStruct_0208bc60 *param)

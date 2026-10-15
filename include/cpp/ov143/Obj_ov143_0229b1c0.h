@@ -22,14 +22,14 @@ class Obj_ov143_0229b1c0 : public Obj_ov002_0220bb24 {
     void func_ov143_0229a334();
 
     // states run by func_ov143_0229acf8, indexed by state
-    int func_ov143_0229ab68();
-    int func_ov143_0229ab40();
-    int func_ov143_0229ab08();
-    int func_ov143_0229aad8();
-    int func_ov143_0229aa70();
-    int func_ov143_0229aa4c();
-    int func_ov143_0229aa18();
-    int func_ov143_0229a9f4();
+    void func_ov143_0229ab68();
+    void func_ov143_0229ab40();
+    void func_ov143_0229ab08();
+    void func_ov143_0229aad8();
+    void func_ov143_0229aa70();
+    void func_ov143_0229aa4c();
+    void func_ov143_0229aa18();
+    void func_ov143_0229a9f4();
 
     void func_ov143_0229ac10();
     int func_ov143_0229acf8();

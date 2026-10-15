@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov100_0229d620(int a, int b, int c, int d);
+extern int func_ov100_0229d620(int a, int b);
 
-int func_ov100_0229d48c(int a, int b, int c, int d)
+int func_ov100_0229d48c(int a, int b)
 {
-    if (func_ov100_0229d620(a, b, c, d) != 0) {
+    if (func_ov100_0229d620(a, b) != 0) {
         return (unsigned char) b;
     }
     return 0xF;

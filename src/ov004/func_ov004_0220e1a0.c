@@ -6,13 +6,13 @@
 
 extern int func_ov004_0220e448(void *self);
 extern u16 func_0204bc50(void *b, int a);
-extern void func_ov004_0220e224(void *self, void *a, void *b);
+extern int func_ov004_0220e224(void *self, void *a, void *b);
 extern void *func_021077e8(int a);
 extern int func_0209d320(void *a);
 extern int func_0209d324(void *a);
-extern void func_02056064(void *p, int a);
+extern int func_02056064(void *p, int a);
 extern int func_020561cc(void *p, int a);
-extern void func_ov004_0220e028(void *self);
+extern int func_ov004_0220e028(void *self);
 
 int func_ov004_0220e1a0(char *self, void *a, void *b, int d)
 {

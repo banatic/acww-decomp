@@ -5,7 +5,7 @@
 
 #include "cpp/ov142/Obj_ov142_0229c3e8.h"
 
-typedef int (Obj_ov142_0229c3e8::*PMF)();
+typedef void (Obj_ov142_0229c3e8::*PMF)();
 
 int Obj_ov142_0229c3e8::func_ov142_0229bea0()
 {

@@ -4,7 +4,7 @@
 
 extern int func_0208e484(void *p);
 extern void func_ov135_0229c66c(void *p);
-extern void func_ov002_02208098(void *p, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 struct UnkStruct_0229cb30 {
     char pad_00[0x94];
@@ -17,6 +17,6 @@ void func_ov135_0229cb30(struct UnkStruct_0229cb30 *self)
 {
     if (func_0208e484(&self->unk_98) != 0) {
         func_ov135_0229c66c(self);
-        func_ov002_02208098(self, self->unk_94);
+        func_ov002_02208098((void *) (self), self->unk_94);
     }
 }

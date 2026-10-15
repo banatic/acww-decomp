@@ -35,16 +35,17 @@ typedef void (*Fn)(void *p);
 
 extern "C" int func_0202e364(UnkStruct_0221ee1c *self);
 extern "C" void func_0201c280(UnkStruct_0221ee1c *self, void *p);
-extern "C" void func_02084e90(void *p);
+extern "C" int func_02084e90(void *p);
 extern "C" int func_0208150c(void *p);
 extern "C" int func_02003704(int x);
 extern "C" int func_0207f270(void *p);
-extern "C" int func_0207944c(void);
+extern "C" int func_0207944c(int object);
 extern "C" void func_02079438(int x);
 
 extern "C" int func_ov004_0221ee1c(UnkStruct_0221ee1c *self)
 {
     void *p;
+    int selected;
 
     if (func_0202e364(self) == 0) {
         return 0;
@@ -55,8 +56,8 @@ extern "C" int func_ov004_0221ee1c(UnkStruct_0221ee1c *self)
     *(int *) ((char *) self + 0x8d8) = 0;
     *((char *) self + 0x8d4) = 0;
     p = self->vcall();
-    if (p != 0 && func_02003704(func_0208150c(p)) != 0 && func_0207f270(p) != 0) {
-        func_02079438(func_0207944c());
+    if (p != 0 && func_02003704(func_0208150c(p)) != 0 && (selected = func_0207f270(p)) != 0) {
+        func_02079438(func_0207944c(selected));
     }
     return 1;
 }

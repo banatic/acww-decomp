@@ -3,10 +3,10 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void *p);
-extern void func_0206e388(void *p);
-extern void func_ov002_0220b428(void *p);
-extern void func_ov002_02209c78(void *p);
+extern void *func_ov002_0220830c(void *p);
+extern void *func_0206e388(void *p);
+extern void *func_ov002_0220b428(void *p);
+extern void *func_ov002_02209c78(void *p);
 extern int data_ov091_02299530;
 
 void *func_ov091_02299494(void)

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02101210(void);
+extern long long func_02101210(int data);
 
-void func_020eb61c(void)
+long long func_020eb61c(int data)
 {
-    func_02101210();
+    return func_02101210(data);
 }

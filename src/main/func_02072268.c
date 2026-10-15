@@ -3,24 +3,24 @@
  */
 
 extern int func_0206e7bc(int a0, int a2);
-extern void func_02062fbc(void *);
-extern void func_020a8be4(void *, void *);
+extern void *func_02062fbc(void *);
+extern int func_020a8be4(void *, void *);
 extern void func_02072e64(void *, void *);
 extern void func_02072f54(void *, int);
 extern void func_02072e18(void *, int);
-extern void func_020641c8(void *);
-extern void func_02094fd4(void *);
+extern void *func_020641c8(void *);
+extern void *func_02094fd4(void *);
 extern void func_020642fc(void *);
 extern void func_020641e0(void *, void *);
-extern void func_0209529c(void *);
+extern void *func_0209529c(void *);
 extern void func_02095044(void *, void *);
 extern void func_02095038(void *, void *);
 extern void func_02072eec(void *, void *);
-extern void func_0209526c(void *);
+extern int func_0209526c(void *);
 extern void func_020642f8(void *);
-extern void func_02094fbc(void *);
-extern void func_020641b0(void *);
-extern void func_02062f4c(void *);
+extern void *func_02094fbc(void *);
+extern void *func_020641b0(void *);
+extern void *func_02062f4c(void *);
 
 int func_02072268(int a0, void *a1, int a2)
 {

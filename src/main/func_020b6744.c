@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b6774(void);
+extern int func_020b6774(unsigned int);
 
-int func_020b6744(void)
+int func_020b6744(unsigned int code)
 {
     int r0;
     int r2;
     int r1;
 
-    r0 = func_020b6774();
+    r0 = func_020b6774(code);
     r2 = 0;
     r1 = ~r2;
     if (r0 == r1) {

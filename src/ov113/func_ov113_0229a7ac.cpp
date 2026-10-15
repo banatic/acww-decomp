@@ -17,7 +17,7 @@ extern "C" void func_0206f58c(void);
 extern "C" int func_0206f56c(void);
 extern "C" void func_ov113_0229a3fc(CB *self);
 extern "C" void func_ov113_02299980(CB *self);
-extern "C" void func_ov113_02299aa4(CB *self);
+extern "C" int func_ov113_02299aa4(CB *self);
 extern "C" void func_ov113_0229a390(CB *self);
 extern const PMF data_ov113_0229abe8;
 extern const PMF data_ov113_0229ab98;

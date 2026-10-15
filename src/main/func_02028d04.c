@@ -28,10 +28,10 @@ typedef struct {
 } Pair8;
 extern const Pair8 data_020d8db8;
 
-extern void func_0207f270(void *);
-extern int func_020794d0(void);
-extern void func_0207f1c8(void *);
-extern int func_0209b5e8(void);
+extern int func_0207f270(void *);
+extern int func_020794d0(int);
+extern unsigned int func_0207f1c8(void *);
+extern int func_0209b5e8(int);
 extern int func_0201cddc(void *);
 extern int func_0209bc40(int);
 extern void func_0202e118(unsigned short *, void *);
@@ -53,12 +53,10 @@ int func_02028d04(UnkStruct_02028d04 *p, void *arg)
     unsigned int ok2;
     unsigned short hv, lv;
 
-    func_0207f270(arg);
-    r6 = func_020794d0();
+    r6 = func_020794d0((int) func_0207f270(arg));
     q[0] = 0xfff1;
     changed = 0;
-    func_0207f1c8(arg);
-    p->unk_164 = func_0209b5e8();
+    p->unk_164 = func_0209b5e8((int) func_0207f1c8(arg));
     if (func_0201cddc(p->unk_100) != 0xb) {
         goto end;
     }

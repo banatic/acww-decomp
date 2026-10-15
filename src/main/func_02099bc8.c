@@ -2,27 +2,27 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02072d14(void *);
-extern void __cxa_vec_ctor(void *, int, int, void *, void *);
-extern void func_02066688(void);
-extern void func_02066694(void);
-extern void func_020051b0(void);
-extern void func_02034ce0(void);
+extern void *func_02072d14(void *);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
+extern void func_02066688(void *);
+extern void func_02066694(void *);
+extern void func_020051b0(void *);
+extern void func_02034ce0(void *);
 extern void func_0203cfa4(void *);
 extern void func_0203d38c(void *);
-extern void func_02097e28(void *);
-extern void func_0209ae20(void *);
-extern void func_02077c20(void *);
-extern void func_02077d40(void *);
+extern void *func_02097e28(void *);
+extern void *func_0209ae20(void *);
+extern void *func_02077c20(void *);
+extern void *func_02077d40(void *);
 extern void func_02098400(void *);
 extern void func_0208880c(void *);
-extern void func_020adf74(void *);
+extern int func_020adf74(void *);
 extern void func_02088c10(void *);
 extern void func_02088764(void *);
-extern void func_02088460(void *);
+extern int func_02088460(void *);
 extern void func_02097dd0(void *);
-extern void func_02099e58(void *);
-extern void func_0209529c(void *);
+extern void *func_02099e58(void *);
+extern void *func_0209529c(void *);
 
 void *func_02099bc8(void *p)
 {
@@ -31,8 +31,9 @@ void *func_02099bc8(void *p)
 
     func_02072d14(p);
     sub = (char *) p + 0x11a8;
-    __cxa_vec_ctor(sub, 0xa, 0x100, (void *) func_02066694, (void *) func_02066688);
-    __cxa_vec_ctor((char *) sub + 0xa4a, 0xf, 2, (void *) func_02034ce0, (void *) func_020051b0);
+    __cxa_vec_ctor((void *) (sub), 0xa, 0x100, (void (*)(void *)) func_02066694, (void (*)(void *)) func_02066688);
+    __cxa_vec_ctor((void *) ((char *) sub + 0xa4a), 0xf, 2, (void (*)(void *)) func_02034ce0,
+                   (void (*)(void *)) func_020051b0);
     func_0203cfa4((char *) p + 0x1c18);
     func_0203d38c((char *) p + 0x1d3b);
     func_02097e28((char *) p + 0x1d3c);

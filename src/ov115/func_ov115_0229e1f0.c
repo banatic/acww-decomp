@@ -6,7 +6,7 @@ extern unsigned char data_021fbdd8;
 extern unsigned char data_021f6c58;
 extern void func_ov114_0229d32c(void *ptr, unsigned char val);
 extern void func_ov114_0229d304(void *ptr);
-extern void func_ov002_02208098(void *ptr, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov115_0229e1f0(void *self)
 {
@@ -14,6 +14,6 @@ void func_ov115_0229e1f0(void *self)
         func_ov114_0229d32c((char *) self + 0xf8, data_021f6c58);
     } else {
         func_ov114_0229d304((char *) self + 0xf8);
-        func_ov002_02208098(self, 0);
+        func_ov002_02208098((void *) (self), 0);
     }
 }

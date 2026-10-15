@@ -5,7 +5,7 @@
 extern int func_ov003_0221e6a0(void *obj);
 extern int func_02056f94(void *ptr);
 extern int func_ov003_0221e6ac(void *obj);
-extern void func_020b2800(void *obj, int arg);
+extern int func_020b2800(void *obj, int arg);
 extern void func_02055124(void *ptr);
 extern void func_02056ffc(void *ptr);
 

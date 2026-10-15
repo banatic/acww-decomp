@@ -3,7 +3,7 @@
  */
 
 extern void func_0208e2a4(void *);
-extern void func_0203a3ec(void *);
+extern void *func_0203a3ec(void *);
 extern void func_0208a1f4(void *);
 extern void func_0208af00(void *);
 

@@ -3,11 +3,11 @@
  */
 
 extern int func_ov002_02209f64(void *p);
-extern void func_ov002_02208098(void *p, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char c);
 extern void func_ov099_0229cb8c(void *p, unsigned char c);
-extern int func_ov099_0229c928(void *p);
+extern void func_ov099_0229c928(void *p);
 
-int func_ov099_0229d400(unsigned char *self)
+void func_ov099_0229d400(unsigned char *self)
 {
     if (!func_ov002_02209f64(self + 0x2274)) {
         func_ov002_02208098(self, self[0x290a]);
@@ -15,5 +15,5 @@ int func_ov099_0229d400(unsigned char *self)
             func_ov099_0229cb8c(self, self[0x2907]);
         }
     }
-    return func_ov099_0229c928(self);
+    func_ov099_0229c928(self);
 }

@@ -7,7 +7,7 @@ extern int func_02019de8(void *);
 extern void func_02016638(void *, void *, void *, int, int);
 extern int func_ov068_0226ccb0(void *, void *);
 extern void func_ov068_0226cce8(void *, void *, int);
-extern void func_0200442c(void *, int, int, int);
+extern int func_0200442c(void *, int, int, int);
 
 void func_ov068_0226893c(unsigned char *out, unsigned char *in)
 {

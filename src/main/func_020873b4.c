@@ -7,7 +7,7 @@
 extern void func_0209dfd8(void *dst, const void *src, int size, int d, int e);
 extern void func_0209e474(void *p);
 extern void func_0209e140(void *p, int v);
-extern int func_0209de88(u8 a, u8 b, u8 c);
+extern int func_0209de88(int year, int month, int day);
 extern int func_0209e3ac(void *p, void *q, int v);
 extern void func_020872d0(void *p);
 extern int func_0209e380(void *p, void *q);

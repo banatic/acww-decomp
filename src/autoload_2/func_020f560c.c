@@ -5,13 +5,13 @@
 struct UnkStruct_020f560c;
 
 extern void func_020f5970(struct UnkStruct_020f560c *self);
-extern void func_020f555c(void);
+extern void func_020f555c(void *sound, int index, int code);
 extern char data_020d8414;
 
 typedef struct UnkStruct_020f560c {
     void *unk_00;
     unsigned char pad_04[0x30];
-    void (*unk_34)(void);
+    void (*unk_34)(void *, int, int);
     unsigned char pad_38[0x06];
     unsigned char unk_3E;
     unsigned char unk_3F;

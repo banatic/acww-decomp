@@ -36,7 +36,7 @@ extern int data_021c1d6c;
 extern const Pair data_020d8e10;
 extern void data_020c8928(void);
 extern void data_020c8924(void);
-extern void func_02029e78(void);
+extern int func_02029e78(unsigned short *);
 
 extern void func_0201cfb4(UnkStruct_02029a98 *, Buf *);
 extern void func_0201cf90(UnkStruct_02029a98 *, Buf *, int, int, int, void *);

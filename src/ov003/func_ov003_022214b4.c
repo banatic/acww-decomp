@@ -33,18 +33,18 @@ extern int func_0203f8d0(Vec3 *a, Vec3 *b);
 extern void func_020e96c8(Mtx *m, int x, int y, int z);
 extern void func_020e9774(Mtx *m, int a);
 extern void func_020e9838(Mtx *m, int x, int y, int z);
-extern void func_ov003_02225da0(void *g, int id, Vec3 *a, int s, Vec3 *b, int p, int q, int r);
-extern void func_ov003_02225404(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225598(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225538(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225474(void *g, Draw *d, Mtx m);
-extern void func_ov003_022252fc(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225608(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225768(void *g, Draw *d, int a, int b, Vec3 *v, Mtx m);
-extern void func_ov003_02225694(void *g, Draw *d, int a, int b, Mtx m);
-extern void func_ov003_022253a8(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225240(void *g, Draw *d, Mtx m);
-extern void func_ov003_022251e8(void *g, Draw *d, Mtx m);
+extern int func_ov003_02225da0(void *g, int id, Vec3 *a, int s, Vec3 *b, int p, int q, int r);
+extern char *func_ov003_02225404(void *g, Draw *d, Mtx m);
+extern char *func_ov003_02225598(void *g, Draw *d, Mtx m);
+extern void *func_ov003_02225538(void *g, Draw *d, Mtx m);
+extern void *func_ov003_02225474(void *g, Draw *d, Mtx m);
+extern void *func_ov003_022252fc(void *g, Draw *d, Mtx m);
+extern char *func_ov003_02225608(void *g, Draw *d, Mtx m);
+extern char *func_ov003_02225768(void *g, Draw *d, int a, int b, Vec3 *v, Mtx m);
+extern char *func_ov003_02225694(void *g, Draw *d, int a, int b, Mtx m);
+extern void *func_ov003_022253a8(void *g, Draw *d, Mtx m);
+extern void *func_ov003_02225240(void *g, Draw *d, Mtx m);
+extern void *func_ov003_022251e8(void *g, Draw *d, Mtx m);
 
 void func_ov003_022214b4(char *e)
 {

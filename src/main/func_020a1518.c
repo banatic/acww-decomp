@@ -3,9 +3,9 @@
  */
 
 extern int func_020984d4(void);
-extern void func_020984e8(void);
-extern char *func_02099658(void);
-extern void func_02098844(char *p, int val);
+extern int func_020984e8(void);
+extern char *func_02099658(int);
+extern int func_02098844(char *p, int val);
 extern void *func_02077c9c(char *p);
 extern void *func_020508fc(char *p, int n, void *q);
 extern void func_02077ca8(char *p, void *q);
@@ -24,13 +24,11 @@ int func_020a1518(void)
     int diff;
 
     val = func_020984d4();
-    func_020984e8();
-    b = func_02099658();
+    b = func_02099658((int) func_020984e8());
     if (val >= 4) {
         val = data_020e37f8;
     }
-    func_02098844(base + 0x14, val);
-    c = func_02099658();
+    c = func_02099658((int) func_02098844(base + 0x14, val));
     func_02077ca8(b, func_020508fc(b, 0x484, func_02077c9c(b)));
     diff = c - base;
     if (func_02050af8(data_021c8188, data_020d1c20[0] + diff, b, 0x484) == 1) {

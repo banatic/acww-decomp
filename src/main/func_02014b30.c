@@ -5,7 +5,7 @@
 extern void func_02068440(void *);
 extern void func_0206ea5c(void *, void *);
 extern void func_0206ea10(unsigned short);
-extern void func_0206e970(unsigned short);
+extern int func_0206e970(unsigned short);
 extern unsigned char data_021cfbbc;
 
 struct FuncTable;

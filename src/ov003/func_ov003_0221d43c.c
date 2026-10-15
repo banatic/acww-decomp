@@ -33,10 +33,10 @@ extern void func_020a8164(void *p, void *q);
 extern int func_0207f1d4(void *h);
 extern int func_0208150c(void *h);
 extern int func_020036e8(int q);
-extern void func_02094fd4(Buf *b);
-extern void func_02003618(int a, Buf *b);
+extern void *func_02094fd4(Buf *b);
+extern int func_02003618(int a, Buf *b);
 extern void func_02068404(int a, int b, Buf *c);
-extern void func_02094fbc(Buf *b);
+extern void *func_02094fbc(Buf *b);
 
 extern char data_021e5a2c[];
 extern char data_ov003_02239064[];

@@ -2,13 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-#include "types.h"
+extern int OSi_DoUnlockByWord__main_0203cd2c(int object, unsigned short *item, int mode, int set);
 
-typedef struct OSLockWord OSLockWord;
-
-extern s32 OSi_DoUnlockByWord__main_0203cd2c(u16 lockID, OSLockWord *lockp, void (*ctrlFuncp)(void), BOOL disableFIQ);
-
-s32 OS_UnlockByWord_IrqAndFiq(u16 lockID, OSLockWord *lockp, void (*ctrlFuncp)(void))
+int OS_UnlockByWord_IrqAndFiq(int object, unsigned short *item, int mode)
 {
-    return OSi_DoUnlockByWord__main_0203cd2c(lockID, lockp, ctrlFuncp, TRUE);
+    return OSi_DoUnlockByWord__main_0203cd2c(object, item, mode, 1);
 }

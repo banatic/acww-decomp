@@ -4,7 +4,7 @@
 
 extern int func_ov093_02298fac(void *a, int b);
 extern int func_020b9bbc(void *a, void *b, int c, int d, int e);
-extern int func_ov093_02298f9c(void *a, int b);
+extern void func_ov093_02298f9c(void *a, int b);
 
 void func_ov093_022995b0(void *base)
 {

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_02228850(void *, int, int, int);
+extern int func_ov004_02228850(void *, int, int);
 
 void func_ov004_022287b4(char *self, int a1)
 {
@@ -14,7 +14,7 @@ void func_ov004_022287b4(char *self, int a1)
         if (*(int *) (self + 0x7f0) == 0x2c) {
             *(u16 *) (self + 0xc84) = a1;
         } else {
-            func_ov004_02228850(self, 0x6, a1, *(int *) (self + 0x7f0));
+            func_ov004_02228850(self, 0x6, a1);
         }
     }
 }

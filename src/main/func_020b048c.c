@@ -10,13 +10,13 @@ typedef struct {
 
 extern void *func_020984e8(void);
 extern void func_02066694(void *);
-extern void func_02062f90(void *, void *);
-extern void func_0203d7c4(int, void *);
+extern void *func_02062f90(void *, void *);
+extern int func_0203d7c4(int, void *);
 extern void *func_02099870(void *);
 extern void func_02066024(void *, void *, void *, void *, void *, void *);
-extern void func_02065ed0(void *, unsigned short, int);
-extern void func_020979f0(void *, int);
-extern void func_02062f4c(void *);
+extern unsigned short func_02065ed0(void *, unsigned short, int);
+extern int func_020979f0(void *, int);
+extern void *func_02062f4c(void *);
 extern void func_02066688(void *);
 extern const unsigned short data_020d1e74[];
 

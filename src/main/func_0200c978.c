@@ -4,7 +4,7 @@
 
 extern int func_0200c9a8(int, int, int, int);
 
-int func_0200c978(int a, int b)
+void func_0200c978(int a, int b)
 {
-    return func_0200c9a8(a, 3, 5, b);
+    func_0200c9a8(a, 3, 5, b);
 }

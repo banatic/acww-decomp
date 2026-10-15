@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_ov002_0220a164(void *);
 
 int func_ov133_0229b958(char *self)
@@ -10,5 +10,5 @@ int func_ov133_0229b958(char *self)
     // DECLS
     // ENDDECLS
     func_ov002_0220a164(self + 0x11c);
-    return func_ov002_02208098(self, 0x6);
+    return (int) func_ov002_02208098(self, 0x6);
 }

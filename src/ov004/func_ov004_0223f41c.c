@@ -17,7 +17,7 @@ extern void func_ov004_0223f69c(void *, char *, Vec *);
 extern int func_02089cc0(void *, int);
 extern int func_ov004_0223f398(void *, int, u8);
 extern int func_02055d0c(void *, Mat *, int);
-extern void func_0203f7d0(Vec *, Vec *);
+extern int func_0203f7d0(Vec *, Vec *);
 extern void func_02031288(void *, Vec *, Vec *, int, int, int, int);
 extern void func_02089bec(void *, Vec *, int, int, int, int, int, u8, int);
 extern void func_02089fc8(void *);

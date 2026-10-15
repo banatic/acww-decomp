@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02066a30(void *p);
+extern void *func_02066a30(void *p);
 extern char data_020e3758;
 
 typedef struct {

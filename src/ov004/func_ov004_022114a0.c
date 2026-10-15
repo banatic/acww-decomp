@@ -8,7 +8,7 @@ typedef struct UnkStruct_022114a0 UnkStruct_022114a0;
 struct UnkStruct_022114a0 {
     void (**vt)(UnkStruct_022114a0 *, int, void *);
 };
-extern void func_ov004_022114cc(void);
+extern void func_ov004_022114cc(char *arg0);
 void func_ov004_022114a0(char *self)
 {
     UnkStruct_022114a0 *o = *(UnkStruct_022114a0 **) (*(char **) (self + 4) + 0x2c);

@@ -34,7 +34,7 @@ typedef struct UnkStruct_02058d2c_2 {
 } UnkStruct_02058d2c_2;
 
 extern void func_0205967c(UnkStruct_02058d2c_2 *, void *);
-extern void func_020e895c(void *, int, unsigned int);
+extern int func_020e895c(void *, int, unsigned int);
 extern void func_020ea6e0(void *, int);
 extern void VEC_Add(void *, void *, void *);
 extern void func_02059674(UnkStruct_02058d2c_2 *, int);

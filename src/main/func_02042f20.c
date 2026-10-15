@@ -24,8 +24,8 @@ typedef struct {
 
 extern int func_0209a1d0(void);
 extern int func_02099fe8(void);
-extern void func_020b65c4(void);
-extern int func_020a6ff0(void);
+extern unsigned char func_020b65c4(void);
+extern int func_020a6ff0(int);
 extern void func_02045770(unsigned char i, int p1);
 
 int func_02042f20(Slot *slot, int a1, int a2, Pair *a3, unsigned short p5, unsigned short p6, unsigned char p7,
@@ -52,8 +52,7 @@ int func_02042f20(Slot *slot, int a1, int a2, Pair *a3, unsigned short p5, unsig
             }
         }
         slot->unk_00 = a1;
-        func_020b65c4();
-        slot->unk_04 = func_020a6ff0();
+        slot->unk_04 = func_020a6ff0((int) func_020b65c4());
         slot->unk_08 = 1;
         slot->unk_0C = a2;
         slot->unk_10 = p5;

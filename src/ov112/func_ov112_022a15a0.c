@@ -12,9 +12,9 @@ typedef struct {
 } UnkStruct_022a15a0;
 
 extern int func_ov002_02207f48(void *p, int a);
-extern void func_ov002_022080a0(void *p, int a);
+extern unsigned char *func_ov002_022080a0(void *p, unsigned char value);
 extern void func_ov112_0229f6e4(void *p);
-extern void func_ov112_0229fefc(void *p);
+extern int func_ov112_0229fefc(void *p);
 extern void func_ov112_0229fd20(void *p);
 extern void func_ov112_022a122c(void *p);
 extern void func_ov112_0229fe60(void *p, int a);

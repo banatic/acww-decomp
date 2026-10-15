@@ -9,7 +9,7 @@ typedef struct {
 extern void FS_InitFile(void *p);
 extern int FS_OpenFileFast(void *p, FSFileID id);
 extern void func_02064658(void *a, int b, int c, int d);
-extern void FS_CloseFile(void *p);
+extern int FS_CloseFile(void *p);
 
 void func_020647ec(FSFileID id, int a2, int a3, int a4)
 {

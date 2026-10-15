@@ -20,7 +20,7 @@ extern char data_ov004_02254ae4;
 
 extern int func_02073908(void *g, int k);
 extern void func_020b220c(void);
-extern void func_0200f328(UnkStruct_022269a8_2 *self, int k);
+extern int func_0200f328(UnkStruct_022269a8_2 *self, int k);
 extern void func_0201107c(UnkStruct_022269a8_2 *self, char *p);
 extern void func_ov004_02225de0(UnkStruct_022269a8_2 *self, Vec3 *v, int *q, int *a);
 

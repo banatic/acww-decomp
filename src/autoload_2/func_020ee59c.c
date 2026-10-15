@@ -19,8 +19,8 @@ extern int data_0213e7fc;
 extern u8 data_021fd004;
 extern u8 data_021fd024;
 
-extern void func_020e8ce0(u8 *src, u8 *dst);
-extern void func_020ee8a8(u8 *src, u8 *dst);
+extern int func_020e8ce0(u8 *src, u8 *dst);
+extern int func_020ee8a8(u8 *src, u8 *dst);
 
 void func_020ee59c(UnkStruct_020ee59c *self, int mode)
 {

@@ -4,7 +4,7 @@
 
 extern char data_020e2b44[];
 extern char data_021d52d8[];
-extern void func_02094bcc(void *a, void *b, int c);
+extern int func_02094bcc(void *a, void *b, int c);
 
 struct UnkStruct_02091ca0 {
     unsigned char v[4];

@@ -13,7 +13,7 @@ typedef struct UnkStruct_0229a4c8 {
 extern void *func_020e895c(void *s, int c, unsigned int n);
 extern void func_ov144_0229a3a4(UnkStruct_0229a4c8 *self);
 extern void func_ov144_0229a3dc(UnkStruct_0229a4c8 *self);
-extern void func_ov002_0220a4c8(void *ptr);
+extern void func_ov002_0220a4c8(void);
 
 void func_ov144_0229a4c8(UnkStruct_0229a4c8 *self, int a, int flag)
 {
@@ -43,7 +43,11 @@ void func_ov144_0229a4c8(UnkStruct_0229a4c8 *self, int a, int flag)
 
     d = self->unk_B0 - self->unk_A8;
     if (d >= 4 || d <= -4) {
-        func_ov002_0220a4c8((char *) self + 0x128);
+        asm {
+            ldr r0, =0x128
+            add r0, self, r0
+        }
+        func_ov002_0220a4c8();
         self->unk_B0 = self->unk_A8;
     }
 }

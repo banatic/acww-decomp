@@ -5,8 +5,8 @@
 struct UnkStruct_02278a28 {
     char pad_00;
 };
-extern void func_ov087_02278fdc(struct UnkStruct_02278a28 *p);
-extern void func_0202ee5c(void *p);
+extern void *func_ov087_02278fdc(struct UnkStruct_02278a28 *p);
+extern void *func_0202ee5c(void *p);
 extern void func_020edf54(void *p);
 extern char data_ov087_022794ec;
 

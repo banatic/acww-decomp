@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O1,s
  */
 
-extern int func_ov127_0229989c(void);
+extern int func_ov127_0229989c(void *argument0);
 extern int func_ov127_022996d8(int);
 extern int func_ov127_02299890(int);
 extern int func_ov127_022996c8(int);
@@ -11,7 +11,7 @@ extern const char data_ov127_0229b5e4[];
 
 int func_ov127_02299d64(int p0, int p1)
 {
-    int a = func_ov127_0229989c();
+    int a = func_ov127_0229989c((void *) p0);
     int v = func_ov127_022996d8(p1);
     int t = -a;
     int x = t + 4 + (v << 3);

@@ -10,7 +10,7 @@ extern int func_0205ceb0(int a);
 extern int func_020168e4(int a, int b, int c);
 extern int func_0205f670(unsigned short *a);
 extern int func_0205cebc(int a);
-extern unsigned int func_0205cf10(void);
+extern unsigned int func_0205cf10(unsigned int);
 extern int func_0205ceec(int a, unsigned int b);
 extern int func_0205cec8(int a, unsigned int b);
 
@@ -55,7 +55,7 @@ void func_02016638(int param1, char *param2, unsigned short *param3, int param4,
         if (val >= 4) {
             goto err_1;
         }
-        count = func_0205cf10();
+        count = func_0205cf10(val);
         for (i = 0; i < count; i++) {
             tmp = func_0205ceec(val, i);
             r2 = func_0205cec8(val, i);

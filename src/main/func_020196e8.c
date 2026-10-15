@@ -34,7 +34,7 @@ typedef struct {
     u32 unk_1C;
 } ObjStruct;
 
-extern SrcStruct *func_02019de4(void);
+extern SrcStruct *func_02019de4(int);
 extern void func_0201b044(void *dst, const StackStruct *src);
 extern void func_0201afd4(void *dst, const StackStruct *src);
 extern void func_0201b1a4(void *dst, void *base, int n, int m, u16 p);
@@ -49,7 +49,7 @@ int func_020196e8(ObjStruct *obj, char *base)
     SrcStruct *src;
     u32 c0, a0, c1, a1;
 
-    src = func_02019de4();
+    src = func_02019de4((int) obj);
 
     c0 = src->unk_08;
     a0 = src->unk_04;

@@ -10,8 +10,8 @@ typedef struct {
 } UnkStruct_0229a404;
 
 extern void func_ov143_02299a9c(UnkStruct_0229a404 *);
-extern void func_ov002_0220a720(void *, int);
-extern int RtcSendPxiCommand(int);
+extern void *func_ov002_0220a720(void *, int);
+extern void RtcSendPxiCommand(int command);
 
 void func_ov143_0229a404(UnkStruct_0229a404 *obj)
 {

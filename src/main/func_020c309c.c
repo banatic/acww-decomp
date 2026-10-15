@@ -3,8 +3,8 @@
  */
 
 extern int func_020e92e8(void *);
-extern int FX_MulFunc(int, int, int);
-extern int func_0204f7e0(int *, int *);
+extern int FX_MulFunc(int, int);
+extern void func_0204f7e0(int *, int *);
 extern int func_02078e98(int *, int);
 extern short FX_SinCosTable_[];
 extern int data_021cb5a0;
@@ -30,9 +30,9 @@ int func_020c309c(struct UnkStruct_020c309c *self, int *out1, int *out2)
     r4 = r6;
     while (r4 < 6) {
         r7 = ((unsigned short) (short) func_020e92e8(&data_021cb5a0) >> 4) << 1;
-        t1 = FX_MulFunc(0xc000, FX_SinCosTable_[r7], r7 * 2);
+        t1 = FX_MulFunc(0xc000, FX_SinCosTable_[r7]);
         local[0] = t1 + self->unk_5C;
-        t2 = FX_MulFunc(0xc000, FX_SinCosTable_[r7 + 1], (r7 + 1) * 2);
+        t2 = FX_MulFunc(0xc000, FX_SinCosTable_[r7 + 1]);
         local[2] = t2 + self->unk_64;
         func_0204f7e0(local, local);
         if (func_02078e98(local, r6) != 0) {

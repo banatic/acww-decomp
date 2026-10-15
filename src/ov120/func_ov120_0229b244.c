@@ -4,11 +4,11 @@
 
 extern void func_020a8c1c(void *);
 extern int func_020984e8(void);
-extern int func_02099870(void);
-extern void func_ov002_02209018(void *, int);
-extern void func_ov002_02208ff8(void *, unsigned);
-extern void func_ov002_02208fac(void *, unsigned);
-extern void func_0207094c(void *, unsigned);
+extern int func_02099870(int);
+extern int func_ov002_02209018(void *, int);
+extern int func_ov002_02208ff8(void *, unsigned);
+extern int func_ov002_02208fac(void *, unsigned);
+extern int func_0207094c(void *, unsigned);
 
 void func_ov120_0229b244(int arg1, void *arg2, unsigned arg3)
 {
@@ -16,8 +16,7 @@ void func_ov120_0229b244(int arg1, void *arg2, unsigned arg3)
     if (arg3 == 0) {
         func_020a8c1c(arg2);
     } else if (arg3 == 1) {
-        func_020984e8();
-        t = func_02099870();
+        t = func_02099870((int) func_020984e8());
         func_ov002_02209018(arg2, t);
     } else if (arg3 >= 2 && arg3 < 6) {
         func_ov002_02208ff8(arg2, arg3 - 2);

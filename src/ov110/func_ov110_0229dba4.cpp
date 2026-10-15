@@ -6,7 +6,7 @@
 #include "cpp/ov110/Obj_ov110_0229ecb8.h"
 
 extern "C" int func_ov002_02209f64(void *p);
-extern "C" void func_ov002_02208098(void *p, unsigned char b);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern "C" void func_ov110_0229cff8(void *p, unsigned char b);
 extern "C" void func_ov110_0229cdb4(void *p);
 
@@ -14,7 +14,7 @@ void Obj_ov110_0229ecb8::func_ov110_0229dba4()
 {
     char *self = (char *) this;
     if (func_ov002_02209f64(self + 0x22e0) == 0) {
-        func_ov002_02208098(self, *(unsigned char *) (self + 0xf8));
+        func_ov002_02208098((void *) (self), *(unsigned char *) (self + 0xf8));
         if (((unsigned char) (*(unsigned char *) (self + 0xf8) + 0xfc)) <= 1) {
             func_ov110_0229cff8(self, *(unsigned char *) (self + 0xf5));
         }

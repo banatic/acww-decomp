@@ -32,11 +32,11 @@ extern void func_0209e474(struct UnkStruct_020bd1c4_2 *);
 extern void MI_CpuCopy8(struct UnkStruct_020bd1c4_2 *, struct UnkStruct_020bd1c4_2 *, u32);
 extern int func_0203fc78(int, struct UnkStruct_020bd1c4_2 *, int);
 extern int func_02073dd4(struct UnkStruct_020bd1c4_3 *, int);
-extern void func_0208602c(void);
-extern void func_020860bc(void);
-extern int func_02087b1c(void);
+extern int func_0208602c(void);
+extern int func_020860bc(int);
+extern int func_02087b1c(void *);
 extern int func_020644cc(int);
-extern void func_020bdc50(struct UnkStruct_020bd1c4 *, int, int, int, int);
+extern void *func_020bdc50(struct UnkStruct_020bd1c4 *, int, int, int, int);
 
 void func_020bd1c4(struct UnkStruct_020bd1c4 *p)
 {
@@ -67,9 +67,7 @@ void func_020bd1c4(struct UnkStruct_020bd1c4 *p)
             rem = (unsigned int) v % 10;
             if (p->unk_2F1A != v) {
                 if (rem == 2 || rem == 7) {
-                    func_0208602c();
-                    func_020860bc();
-                    if (func_02087b1c() == 0) {
+                    if (func_02087b1c((void *) func_020860bc((int) func_0208602c())) == 0) {
                         if (p->unk_1464 != 6) {
                             if (p->unk_2F25 == 0) {
                                 p->unk_2F25 = func_020644cc(8) + 1;

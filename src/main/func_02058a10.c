@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02059674(int, int, int);
+extern void func_02059674(int, int);
 
 void func_02058a10(int *p0)
 {
@@ -18,5 +18,5 @@ void func_02058a10(int *p0)
     *(unsigned char *) ((char *) (((int) ((int) p0) + (216))) + (0)) = 1;
     *(unsigned char *) ((char *) (((int) ((int) p0) + (212))) + (0)) = 0;
     *(unsigned short *) ((char *) (((int) ((int) p0) + (214))) + (0)) = 0;
-    func_02059674((int) p0, 1, 0);
+    func_02059674((int) p0, 1);
 }

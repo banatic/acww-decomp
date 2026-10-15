@@ -4,7 +4,7 @@
 
 extern "C" void *func_0201ce50(void *);
 extern "C" void *func_0208150c(void *);
-extern "C" void func_ov068_0226aec0(void *, void *);
+extern "C" int func_ov068_0226aec0(void *, void *);
 
 class UnkStruct_0226ae80 {
   public:
@@ -36,12 +36,12 @@ class UnkStruct_0226ae80 {
     virtual void *m25();
 };
 
-extern "C" void func_ov068_0226ae80(void *unused, UnkStruct_0226ae80 *param)
+extern "C" int func_ov068_0226ae80(void *unused, UnkStruct_0226ae80 *param)
 {
     UnkStruct_0226ae80 *a = (UnkStruct_0226ae80 *) func_0201ce50(param);
     void *x = param->m25();
     void *y = a->m25();
     x = func_0208150c(x);
     y = func_0208150c(y);
-    func_ov068_0226aec0(x, y);
+    return func_ov068_0226aec0(x, y);
 }

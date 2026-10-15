@@ -12,7 +12,7 @@ extern "C" void func_020ee470(void *self);
 extern "C" void func_0204f818(int *px, int *pz, void *p);
 extern "C" short func_0201c314(void *self, void *o);
 extern "C" void func_0204f794(void *p, int x, int z);
-extern "C" void func_0203e070(void *self, int k);
+extern "C" int func_0203e070(void *self, int k);
 
 extern "C" int func_ov077_022790c4(char *self)
 {

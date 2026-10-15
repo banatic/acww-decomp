@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_SndPlayerReadVariable(void *p, int mode, short *value);
+extern int NNS_SndPlayerReadVariable(void *p, int mode, short *value);
 
 void func_020f6194(char *p)
 {

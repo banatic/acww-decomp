@@ -28,8 +28,8 @@ extern void func_0201ad18(void *p, int a, int b, int c, void *d, int e, int f, i
 extern int gt2GetIncomingBufferSize(void *p);
 extern int func_0201c314(UnkStruct_022613b0 *self, int a);
 extern int func_ov053_02260ba8(void *p);
-extern void func_ov004_0224719c(Vec3 *v);
-extern void func_020147fc(void *p, int a, int b, int c);
+extern int func_ov004_0224719c(Vec3 *v);
+extern int func_020147fc(void *p, int a, int b, int c);
 
 int func_ov053_022613b0(UnkStruct_022613b0 *self)
 {

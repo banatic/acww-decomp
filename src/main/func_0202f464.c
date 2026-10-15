@@ -19,7 +19,7 @@ extern void func_0202f898(Vec2 *out, Vec2 *a, Vec2 *b);
 extern int func_0202f7f4(Vec2 *v);
 extern void func_0202f8fc(Vec2 *out, fx32 negx, fx32 negy);
 extern void func_0202f8c8(Vec2 *out, Vec2 *a, Vec2 *c);
-extern void func_0202f6f4(u32 *out, Vec2 *a, Vec2 *b, Vec2 *c);
+extern void *func_0202f6f4(u32 *out, Vec2 *a, Vec2 *b, Vec2 *c);
 extern int func_0202f660(u32 *mat, int arg);
 extern void func_0202f6e8(u32 *mat);
 

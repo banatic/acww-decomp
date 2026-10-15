@@ -38,7 +38,7 @@ extern void func_0206f80c(Pair *v);
 extern void func_02029264(UnkStruct_020233ac_2 *self, Pair *v);
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
-extern void func_0202da38(UnkStruct_020233ac_2 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
+extern int func_0202da38(UnkStruct_020233ac_2 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
 extern void func_0202db48(UnkStruct_020233ac_2 *self, Pair p);
 
 void func_020233ac(UnkStruct_020233ac_2 *self, UnkStruct_020233ac_3 *out)

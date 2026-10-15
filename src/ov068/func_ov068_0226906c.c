@@ -4,7 +4,7 @@
 
 extern int func_0201c2c8(void *a, int b);
 extern void func_ov068_0226cfd4(void *a);
-extern void func_02019d0c(void *a, int b1, int b2, int b3, int b4, int b5, int b6, int b7, int b8, int b9, int b10);
+extern int func_02019d0c(void *a, int b1, int b2, int b3, int b4, int b5, int b6, int b7, int b8, int b9, int b10);
 extern void func_ov068_02266c34(void *a, void *b, int c, int d, int e, void *f, int g, int h, int i);
 extern void func_0202e188(void *a);
 extern void func_0201cbc4(void *a);

@@ -3,11 +3,11 @@
  */
 
 extern "C" {
-extern void *func_0203dfac(void *);
+extern void *func_0203dfac(void);
 extern int func_0200f290(void *, int);
 extern int func_020e8ed8(int, int);
-extern void func_020113e0(short *, short);
-extern void func_020110a0(void *, short *);
+extern int func_020113e0(short *, short);
+extern void func_020110a0(void *s, short *src);
 }
 
 struct Vec {
@@ -62,7 +62,7 @@ extern "C" void func_0200c2c8(UnkStruct_0200c2c8_3 *obj)
     UnkStruct_0200c2c8 *pp;
     Vec *q;
 
-    e = (UnkStruct_0200c2c8_2 *) func_0203dfac(obj);
+    e = (UnkStruct_0200c2c8_2 *) func_0203dfac();
     pp = 0;
     if (func_0200f290(obj, 14) != 0) {
         e = 0;

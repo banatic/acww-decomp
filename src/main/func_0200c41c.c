@@ -15,9 +15,9 @@ typedef struct UnkStruct_0200c41c {
 
 extern int func_02056f94(const void *);
 extern int func_02008258(UnkStruct_0200c41c *, int);
-extern void func_0200c9a8(UnkStruct_0200c41c *, int, int, int);
-extern void func_0200c3b0(UnkStruct_0200c41c *, int, int, int);
-extern void func_02095bdc(int);
+extern int func_0200c9a8(UnkStruct_0200c41c *, int, int, int);
+extern int func_0200c3b0(UnkStruct_0200c41c *, int, int, int);
+extern int func_02095bdc(void);
 
 void func_0200c41c(UnkStruct_0200c41c *p)
 {
@@ -28,7 +28,7 @@ void func_0200c41c(UnkStruct_0200c41c *p)
         } else if (p->unk_7DC == 0x10) {
             func_0200c3b0(p, 0, 5, -1);
         } else {
-            func_02095bdc(p->unk_7DC);
+            func_02095bdc();
         }
     }
 }

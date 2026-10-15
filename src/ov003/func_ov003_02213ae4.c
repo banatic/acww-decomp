@@ -8,10 +8,10 @@ typedef struct {
     unsigned char rest[0x11];
 } Buffer;
 
-extern void func_0200e92c(Buffer *buf);
+extern unsigned int func_0200e92c(Buffer *buf);
 extern void func_0200e90c(Buffer *buf, int a, unsigned int b, signed short c);
 extern void *func_0200e894(void *obj, Buffer *buf);
-extern void func_0200e91c(Buffer *buf);
+extern int func_0200e91c(Buffer *buf);
 
 void *func_ov003_02213ae4(void *obj, unsigned char b, unsigned char c, unsigned char d, unsigned int e, signed short f)
 {

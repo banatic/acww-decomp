@@ -5,9 +5,9 @@
 extern void func_ov121_0229a3fc(void *);
 extern void func_ov121_0229a450(void *);
 extern void func_ov002_02207fc0(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
-void func_ov121_0229afd8(void *param)
+unsigned char *func_ov121_0229afd8(void *param)
 {
     unsigned char *p = (unsigned char *) param;
     p[0xae] = 0x18;
@@ -15,5 +15,5 @@ void func_ov121_0229afd8(void *param)
     func_ov121_0229a3fc(param);
     func_ov002_02207fc0(param);
     func_ov121_0229a450(param);
-    func_ov002_02208098(param, 4);
+    return func_ov002_02208098(param, 4);
 }

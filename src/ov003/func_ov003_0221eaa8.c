@@ -8,7 +8,7 @@ typedef struct {
     void *unk_EC;
 } UnkStruct_0221eaa8;
 
-extern void func_ov009_0226539c(UnkStruct_0221eaa8 *s);
+extern void *func_ov009_0226539c(UnkStruct_0221eaa8 *s);
 extern char data_ov003_022395e8[];
 extern char data_ov003_022396ac[];
 

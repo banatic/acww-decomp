@@ -14,7 +14,7 @@ struct UnkStruct_020b4dc8_2 {
     struct UnkStruct_020b4dc8 *data;
 };
 
-extern void func_020a86e4(void *p, unsigned char *b0, unsigned char *b1, unsigned char *b2);
+extern int func_020a86e4(void *p, unsigned char *b0, unsigned char *b1, unsigned char *b2);
 
 void func_020b4dc8(struct UnkStruct_020b4dc8_2 *p)
 {

@@ -8,8 +8,8 @@ extern int func_020160b4(void *);
 extern int func_020ab504(int);
 extern int func_0201b43c(int, int);
 extern int func_02099fe8(void);
-extern int func_0209a050(void);
-extern void func_02015330(void *, u16 *, int, int, int);
+extern void func_0209a050(void *parameter0);
+extern int func_02015330(void *, u16 *, int, int, int);
 extern int func_ov052_02261158(int, int, int);
 extern int func_ov052_0226118c(int, int, int);
 extern void MI_CpuFill8(void *, int, int);
@@ -47,7 +47,10 @@ void func_ov052_0226095c(UnkStruct_0226095c *p)
         case 0x2c:
             if (r == 0) {
                 if (p->unk_BC >= 0) {
-                    func_0209a050();
+                    func_0209a050((void *) (*(
+                        int *) ((char *) (((unsigned int) (((unsigned int) (((unsigned int) (p) + (0x0))) + (0x0))) +
+                                           (0xbc))) +
+                                0)));
                     m.h = 0x34a8;
                     func_02015330(p, &m.h, 0, 5, 0);
                 }

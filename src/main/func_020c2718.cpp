@@ -14,9 +14,9 @@ extern "C" void func_02016108(void *obj, int value);
 extern "C" unsigned long func_020c1b20(void *p);
 extern "C" void func_020c1b28(void *p, unsigned long v);
 extern "C" void func_020c26b4(void *self, int i);
-extern "C" void func_0208602c(void);
-extern "C" void func_020860c4(void);
-extern "C" int func_02087f30(void);
+extern "C" int func_0208602c(void);
+extern "C" int func_020860c4(int);
+extern "C" int func_02087f30(void *);
 
 extern "C" void func_020c2718(void *self, int code)
 {
@@ -31,9 +31,7 @@ extern "C" void func_020c2718(void *self, int code)
             break;
         case 8:
             func_020c1b28((char *) self + 0x658, 3);
-            func_0208602c();
-            func_020860c4();
-            if (func_02087f30() != 0) {
+            if (func_02087f30((void *) func_020860c4((int) func_0208602c())) != 0) {
                 func_020c26b4(self, 5);
             } else {
                 if (*((unsigned char *) self + 0x711) != 0) {

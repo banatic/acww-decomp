@@ -3,10 +3,10 @@
  */
 
 extern "C" {
-void func_020ea0a4(void *self, int b, int c);
+void func_020ea0a4(void *self);
 int func_020e9d64(void *self, int c);
 void func_020ea084(void *self);
-void OS_Terminate(int value);
+void OS_Terminate(void);
 void (*g_callback)(void *self, int ret, int b, int c);
 }
 
@@ -30,7 +30,7 @@ extern "C" int func_020e9ed4(UnkStruct_020e9ed4 *self, int b, int c)
 {
     int ret;
 
-    func_020ea0a4(self, b, c);
+    func_020ea0a4(self);
     if (b == -1) {
         b = func_020e9d64(self, c);
     }
@@ -42,7 +42,7 @@ extern "C" int func_020e9ed4(UnkStruct_020e9ed4 *self, int b, int c)
     }
 
     if (ret == 0 && (self->flags & 0x4000)) {
-        OS_Terminate(self->flags & 0x4000);
+        OS_Terminate();
     }
 
     func_020ea084(self);

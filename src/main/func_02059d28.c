@@ -3,12 +3,14 @@
  */
 
 extern int func_0207cec0(const void *table, int mask);
-extern int func_020808ec(int value);
+extern int func_020808ec(unsigned int object);
 
 extern unsigned char data_021e5a2c[];
 
 int func_02059d28(void *param)
 {
+    int forwarded_value;
+
     volatile unsigned short id_store;
     unsigned short full;
     unsigned short raw;
@@ -22,7 +24,8 @@ int func_02059d28(void *param)
 
     switch ((raw & 0xf000) >> 12) {
         case 0xe: {
-            int idx = func_020808ec(func_0207cec0((const void *) data_021e5a2c, raw & 0x0fff));
+            int idx = ((forwarded_value = (int) func_0207cec0((const void *) data_021e5a2c, raw & 0x0fff)),
+                       func_020808ec((unsigned int) forwarded_value));
             switch (idx) {
                 case 0:
                 case 5:

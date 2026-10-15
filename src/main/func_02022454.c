@@ -4,8 +4,8 @@
 
 extern int func_0208150c(int p);
 extern int func_020036e8(int p);
-extern void func_0202da38(char *a, char *b, char *c, int d, int e, int f, int g, int h, int i);
-extern void func_0202bd7c(char *a, int b, unsigned char c);
+extern int func_0202da38(char *a, char *b, char *c, int d, int e, int f, int g, int h, int i);
+extern int func_0202bd7c(char *a, int b, unsigned char c);
 extern int data_020c8cc0;
 extern unsigned char data_020c8960[];
 

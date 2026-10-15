@@ -4,10 +4,10 @@
 
 extern void *data_ov091_02299530;
 
-extern void func_ov002_02209c60(void *ptr);
-extern void func_ov002_0220b410(void *ptr);
-extern void func_0206e35c(void *ptr);
-extern void func_ov002_0220826c(void *ptr);
+extern void *func_ov002_02209c60(void *ptr);
+extern void *func_ov002_0220b410(void *ptr);
+extern void *func_0206e35c(void *ptr);
+extern void *func_ov002_0220826c(void *ptr);
 extern void func_ov002_02207f6c(void *ptr);
 
 void *func_ov091_02298f5c(void *self)

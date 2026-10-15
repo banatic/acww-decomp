@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov134_0229af00(int);
+extern int func_ov134_0229af00(int, int unused1, int unused2);
 extern int func_ov134_0229ae9c(int, int, int);
 
 int func_ov134_0229aed4(int r0, int r1, int r2, int r3)
@@ -14,7 +14,7 @@ int func_ov134_0229aed4(int r0, int r1, int r2, int r3)
     if (r1 == 0x38 && r2 == 0x34) {
         result = 0;
     } else {
-        result = func_ov134_0229ae9c(r5, func_ov134_0229af00(r5), r4);
+        result = func_ov134_0229ae9c(r5, func_ov134_0229af00(r5, r1, r2), r4);
     }
 
     return result;

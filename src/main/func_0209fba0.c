@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern __thumb void func_020a256c(void *);
+extern __thumb void *func_020a256c(void *);
 extern void func_020ee62c(void *);
 extern void func_020edf54(void *);
 extern const int data_020e3ae8;

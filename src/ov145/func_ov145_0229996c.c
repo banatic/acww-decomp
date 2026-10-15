@@ -10,7 +10,7 @@ typedef struct {
     unsigned char unk_C0;
 } UnkStruct_0229996c;
 
-extern int func_ov145_02299a24(UnkStruct_0229996c *self, unsigned char value);
+extern int func_ov145_02299a24(UnkStruct_0229996c *self);
 extern void func_ov145_02299b94(UnkStruct_0229996c *self, int value);
 extern void func_ov145_0229a0d0(UnkStruct_0229996c *self);
 extern void func_ov145_0229a134(UnkStruct_0229996c *self);
@@ -21,7 +21,7 @@ void func_ov145_0229996c(UnkStruct_0229996c *self, unsigned char value)
         return;
     }
     self->unk_C0 = value;
-    self->unk_A4 = (func_ov145_02299a24(self, value) - 8) << 4;
+    self->unk_A4 = (func_ov145_02299a24(self) - 8) << 4;
     if (self->unk_A4 < 0) {
         self->unk_A4 = 0;
     }

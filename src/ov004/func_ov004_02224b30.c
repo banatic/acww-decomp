@@ -9,7 +9,7 @@ extern short *func_0209d358(int a, int b);
 extern int func_020a7278(void);
 extern void func_ov004_022249b4(void *self, int a);
 extern int func_02073dd4(char *g, int a);
-extern void func_02003348(int a, int b, void *c, void *d, int e);
+extern int func_02003348(int a, int b, void *c, void *d, int e);
 extern char *data_ov004_022580dc;
 extern int data_ov004_02247760;
 extern int data_ov004_02247758;

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov106_0229d128(void *param, unsigned char byte);
+extern int func_ov106_0229d128(void *param, unsigned char byte);
 
-void func_ov106_0229cc74(void *param)
+int func_ov106_0229cc74(void *param)
 {
-    func_ov106_0229d128(param, *(unsigned char *) ((char *) param + 0xb8));
+    return func_ov106_0229d128(param, *(unsigned char *) ((char *) param + 0xb8));
 }

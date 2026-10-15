@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b8538(unsigned char);
+extern unsigned char func_020b8538(unsigned char);
 
-void func_020b755c(void *r0, unsigned int *r1, unsigned int *r2, unsigned char *r3)
+unsigned char func_020b755c(void *r0, unsigned int *r1, unsigned int *r2, unsigned char *r3)
 {
     unsigned char b;
 
@@ -20,5 +20,5 @@ void func_020b755c(void *r0, unsigned int *r1, unsigned int *r2, unsigned char *
         *r3 = *(unsigned char *) ((char *) r0 + 0x19);
     }
     b = *(unsigned char *) ((char *) r0 + 0x18);
-    func_020b8538(b);
+    return func_020b8538(b);
 }

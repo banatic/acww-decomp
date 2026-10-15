@@ -4,7 +4,7 @@
 
 extern int func_02019de8(void *ptr);
 extern int func_02019e00(void *ptr);
-extern void func_02019d0c(void *ptr, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *ptr, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern unsigned short data_020c80f8;
 
 typedef struct UnkStruct_020c33bc {

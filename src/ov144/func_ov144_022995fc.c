@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220ba0c(void *);
-extern void __cxa_vec_cleanup(void *, int, int, void *);
-extern void func_ov002_0220afdc(void *);
-extern void func_ov002_0220a5e4(void *);
-extern void func_ov002_02209cb4(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov002_0220ba0c(void *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*callback3)(void *));
+extern void *func_ov002_0220afdc(void *);
+extern void *func_ov002_0220a5e4(void *);
+extern void *func_ov002_02209cb4(void *);
+extern void *func_ov002_0220826c(void *);
 extern void func_ov002_02207f6c(void *);
 
 typedef struct {
@@ -24,15 +24,17 @@ typedef struct {
     unsigned int unk_750;
 } UnkStruct_022995fc;
 
-extern void func_02070be8(void);
+extern int **func_02070be8(int **arg0);
 
 extern unsigned char data_ov144_0229b3f8[];
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
 
 UnkStruct_022995fc *func_ov144_022995fc(UnkStruct_022995fc *self)
 {
     self->unk_00 = (unsigned int) data_ov144_0229b3f8;
     func_ov002_0220ba0c(&self->unk_750);
-    __cxa_vec_cleanup(&self->unk_33C, 9, 0x6c, (void *) func_02070be8);
+    __cxa_vec_cleanup(&self->unk_33C, 9, 0x6c, DisposeElement_func_02070be8);
     func_ov002_0220afdc(&self->unk_170);
     func_ov002_0220a5e4(&self->unk_128);
     func_ov002_02209cb4(&self->unk_C4);
@@ -40,3 +42,5 @@ UnkStruct_022995fc *func_ov144_022995fc(UnkStruct_022995fc *self)
     func_ov002_02207f6c(self);
     return self;
 }
+
+#undef DisposeElement_func_02070be8

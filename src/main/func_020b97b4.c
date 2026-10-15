@@ -2,9 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b97e4(int, unsigned short, int, unsigned int);
+typedef char *FormatArguments;
 
-void func_020b97b4(unsigned short *a, int b, int c, ...)
+extern void func_020b97e4(short *, int, const char *, FormatArguments);
+
+void func_020b97b4(unsigned short *a, short *b, const char *format, ...)
 {
-    func_020b97e4(b, a[1], c, ((unsigned int) &c & ~3U) + 4U);
+    func_020b97e4(b, a[1], format, (char *) (((unsigned int) &format & ~3U) + 4U));
 }

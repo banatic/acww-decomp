@@ -18,7 +18,8 @@ struct Obj_ov004_02251b40 : public RoomObject {
     int func_ov004_02213450();
     void func_ov004_022134cc();
     int func_ov004_022134d8();
-    void func_ov004_022134dc();
+    int func_ov004_022134dc();
+
     int func_ov004_02213500();
 
     int unk_844;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209df64(void *p);
+extern void func_0209df64(void *p);
 extern void func_020887e8(void *p, void *q);
 
 void func_0208878c(unsigned int *ptr, unsigned int bit)

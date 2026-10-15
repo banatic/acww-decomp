@@ -18,9 +18,9 @@ typedef struct {
 } UnkStruct_02045a80_3;
 
 extern UnkStruct_02045a80 *data_020ccf94;
-extern void func_02045ac4(void *arg0, void *arg1);
+extern int func_02045ac4(void *arg0, void *arg1);
 
-void func_02045a80(UnkStruct_02045a80_2 *param)
+int func_02045a80(UnkStruct_02045a80_2 *param)
 {
     void *arg2;
     UnkStruct_02045a80_3 local;
@@ -28,5 +28,5 @@ void func_02045a80(UnkStruct_02045a80_2 *param)
     arg2 = data_020ccf94->unk_68;
     local.unk_00 = param->unk_00;
     local.unk_04 = param->unk_04;
-    func_02045ac4(&local, arg2);
+    return func_02045ac4(&local, arg2);
 }

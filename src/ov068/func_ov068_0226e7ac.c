@@ -3,7 +3,7 @@
  */
 
 extern struct UnkStruct_0226e7ac *func_02095794(int);
-extern void func_02095ab0(void *, unsigned int, unsigned int);
+extern int func_02095ab0(void *, unsigned int, unsigned int);
 
 struct UnkStruct_0226e7ac {
     unsigned int a;

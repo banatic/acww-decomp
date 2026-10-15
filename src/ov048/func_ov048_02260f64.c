@@ -5,9 +5,9 @@
 extern int func_020eba18(void);
 extern int func_020ec1e8(void);
 extern int func_020eba08(void);
-extern void func_020b5630(void *);
-extern void func_020b5618(void *);
-extern void func_020b45d0(void *, int, int, int, int, int);
+extern void *func_020b5630(void *);
+extern void *func_020b5618(void *);
+extern int func_020b45d0(void *, int, int, int, int, int);
 extern void func_02068404(void *, int, void *);
 extern int func_ov048_022609d0(void *);
 extern void func_ov048_02260e28(void *, int, int);

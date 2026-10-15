@@ -12,8 +12,8 @@ typedef struct UnkStruct_020f6ff4 {
 } UnkStruct_020f6ff4;
 
 extern void func_020f6f3c(UnkStruct_020f6ff4 *self);
-extern void func_020eed18(UnkStruct_020f6ff4 *self, int zero);
-extern void func_020eedb8(int arg0, u16 arg1, UnkStruct_020f6ff4 *self);
+extern int func_020eed18(UnkStruct_020f6ff4 *self, int zero);
+extern int func_020eedb8(int arg0, u16 arg1, UnkStruct_020f6ff4 *self);
 
 void func_020f6ff4(UnkStruct_020f6ff4 *self, u32 arg2)
 {

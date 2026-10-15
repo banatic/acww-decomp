@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a7278(void *self);
+extern int func_020a7278(void);
 extern int func_0201c45c(void *self);
 extern void func_0201c0c8(void *self, int a, int b, int c);
 extern void func_0201aff4(void *addr, int value);
@@ -16,7 +16,7 @@ extern UnkStruct_0201bd48 *data_020ccf94;
 
 int func_0201bd48(void *self)
 {
-    if (func_020a7278(self) != 0) {
+    if (func_020a7278() != 0) {
         func_0201c0c8(self, 1, data_020ccf94->unk_64, 4);
     }
     if (func_0201c45c(self) == 0) {

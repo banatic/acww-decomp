@@ -3,9 +3,9 @@
  */
 
 extern unsigned char data_021cacec[];
-extern void func_0205f8e0(unsigned char *ptr, unsigned char val);
+extern unsigned long func_0205f8e0(unsigned char *ptr, unsigned char val);
 
-void func_0205f8b4(unsigned char *p)
+unsigned long func_0205f8b4(unsigned char *p)
 {
-    func_0205f8e0(data_021cacec, *p);
+    return func_0205f8e0(data_021cacec, *p);
 }

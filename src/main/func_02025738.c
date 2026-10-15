@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202d9c4(char *, char *);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(char *);
+extern int func_0209bc40(unsigned char *);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(char *, char *, char *, int, int, int, int, int, int);
+extern int func_0202da38(char *, char *, char *, int, int, int, int, int, int);
 
 struct Table {
     int word;
@@ -32,8 +32,7 @@ void func_02025738(char *a, char *b)
     int v;
 
     t = &data_020c8ce0;
-    func_0202d9c4(a, b);
-    if (func_0209bc40() == 1) {
+    if (func_0209bc40((unsigned char *) func_0202d9c4(a)) == 1) {
         t = &data_020c8ad8;
     }
 

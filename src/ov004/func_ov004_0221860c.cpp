@@ -11,14 +11,14 @@ typedef struct {
 extern "C" void func_ov004_0220cfec(void *p, int a);
 extern "C" int func_ov004_0222c25c(void *t, unsigned int i);
 extern "C" void func_0204f818(int *a, int *b, void *t);
-extern "C" void func_ov004_0220db94(void *it);
+extern "C" char *func_ov004_0220db94(void *it);
 extern "C" void func_ov004_0220f27c(void *s, void *it, int a, int b);
 extern "C" UnkStruct_0221860c *func_ov004_0220db5c(void *it, unsigned int j);
 extern "C" unsigned int func_ov004_0220db68(void *it);
 extern "C" void func_ov004_0220db90(void *it);
 extern "C" void func_ov004_0220d030(void *p);
 extern "C" int func_ov004_0220ffbc(void *s);
-extern "C" void func_ov004_022107d4(void *s);
+extern "C" int func_ov004_022107d4(void *s);
 
 int Obj_ov004_02253058::func_ov004_0221860c()
 {

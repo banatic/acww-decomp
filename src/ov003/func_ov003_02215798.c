@@ -6,7 +6,7 @@ extern int data_020ccf94;
 
 void func_02010f5c(void *self);
 void func_ov003_02215958(void *self);
-void func_0200f554(void *self);
+int func_0200f554(void *self);
 void func_ov003_02215918(void *self);
 void func_02010d64(void *self);
 int func_02073908(int a, int b);

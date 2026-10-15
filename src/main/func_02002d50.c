@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_02002d50(unsigned int param)
+unsigned char func_02002d50(unsigned int param)
 {
     switch (param) {
         case 3:

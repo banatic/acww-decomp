@@ -3,7 +3,7 @@
  */
 
 extern int func_020b65c4(void);
-extern int func_02031930(void *);
+extern int func_02031930(int);
 extern int func_020b6744(int);
 extern int func_020b67e8(int);
 extern int func_020b67c0(int);
@@ -12,14 +12,14 @@ extern int func_020b1d18(int);
 extern int func_020b6598(void);
 extern unsigned char data_020e54a8;
 
-int func_020b1d88(void *self)
+int func_020b1d88(int index)
 {
     int call1;
     int r4;
     unsigned int flag;
 
     call1 = func_020b65c4();
-    r4 = func_02031930(self);
+    r4 = func_02031930(index);
     if (r4 == 0xffff) {
         flag = data_020e54a8 == 0;
         if (flag > 0) {

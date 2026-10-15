@@ -4,8 +4,8 @@
 
 extern void func_02010f5c(void *);
 extern int func_02056f28(void *, int);
-extern void func_020912d4(int, void *, int, int);
-extern void func_0200f328(void *, int);
+extern int func_020912d4(int, void *, int, int);
+extern int func_0200f328(void *, int);
 
 void func_0200be5c(void *self)
 {

@@ -13,23 +13,23 @@ typedef struct {
 } TypeA;
 
 extern int func_02065ec0(int);
-extern void func_02070c08(void *);
-extern void func_02094fd4(void *);
-extern void func_0208aecc(void *);
+extern void *func_02070c08(void *);
+extern void *func_02094fd4(void *);
+extern void *func_0208aecc(void *);
 extern int func_02065f44(int);
 extern void func_02065f38(int, void *);
-extern void func_020b496c(int, void *);
-extern void func_0207094c(void *, int);
+extern void *func_020b496c(int, void *);
+extern int func_0207094c(void *, int);
 extern void func_02051a78(void *, void *);
 extern int func_02065f20(int);
-extern void func_02065f2c(int, void *);
-extern void func_02070be8(void *);
+extern int func_02065f2c(int, void *);
+extern int **func_02070be8(void *);
 extern void func_0208aa48(int, void *);
 extern void func_0208aeb8(void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fbc(void *);
 extern const unsigned short data_ov094_0229bdec[];
 
-void func_ov094_0229b9d4(int p0, int p1, int p2)
+int **func_ov094_0229b9d4(int p0, int p1, int p2)
 {
     TypeC local_B;
     TypeB local_C;
@@ -92,5 +92,5 @@ void func_ov094_0229b9d4(int p0, int p1, int p2)
     func_0208aeb8(&local_D);
     func_0208aeb8(&local_C);
     func_02094fbc(&local_B);
-    func_02070be8(&local_A);
+    return func_02070be8(&local_A);
 }

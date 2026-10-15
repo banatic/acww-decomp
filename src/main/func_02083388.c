@@ -3,9 +3,9 @@
  */
 
 extern void func_02083ca8(void *ptr, int n);
-extern void func_020833d4(void);
-extern void func_020833ec(void);
-extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*cb1)(void), void (*cb2)(void));
+extern int func_020833d4(void *);
+extern void *func_020833ec(void *);
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*cb1)(void *), void (*cb2)(void *));
 extern int data_020e1b38;
 
 typedef struct {
@@ -16,12 +16,12 @@ typedef struct {
 
 void *func_02083388(void *self)
 {
-    void (*cb2)(void);
+    void (*cb2)(void *);
     UnkStruct_02083388 *s = (UnkStruct_02083388 *) self;
 
     func_02083ca8(self, 5);
     s->unk_00 = &data_020e1b38;
-    cb2 = func_020833d4;
-    __cxa_vec_ctor(s->buffer, 5, 2, func_020833ec, cb2);
+    cb2 = (((void (*)(void *)) func_020833d4));
+    __cxa_vec_ctor(s->buffer, 5, 2, (((void (*)(void *)) func_020833ec)), cb2);
     return self;
 }

@@ -13,7 +13,7 @@ extern u8 data_021f6c54;
 extern int func_ov127_02299d20(void *p, int a, int b);
 extern void func_ov127_02299c08(void *p, int v, int c);
 extern void func_ov128_0229bb20(void *self);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov128_0229bdd4(void *self);
 
 void func_ov128_0229c208(char *self)
@@ -40,7 +40,7 @@ void func_ov128_0229c208(char *self)
     if (v != 4) {
         func_ov127_02299c08(self + 0x4a4, v, 1);
         func_ov128_0229bb20(self);
-        func_ov002_02208098(self, 1);
+        func_ov002_02208098((void *) (self), 1);
         return;
     }
     if (a < 0xc0) {

@@ -11,7 +11,7 @@ extern unsigned char data_021f6c54;
 extern int func_ov134_0229a1f0(int ptr, int b1, int b2);
 extern void func_ov138_0229c8f8(int self);
 extern void func_ov138_0229c8cc(int self);
-extern void func_ov002_02208098(int self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov138_0229cdd0(int self)
 {
@@ -34,10 +34,10 @@ void func_ov138_0229cdd0(int self)
             func_ov138_0229c8cc(self);
             break;
         case 3:
-            func_ov002_02208098(self, 2);
+            func_ov002_02208098((void *) (self), 2);
             break;
         case 2:
-            func_ov002_02208098(self, 3);
+            func_ov002_02208098((void *) (self), 3);
             break;
     }
 }

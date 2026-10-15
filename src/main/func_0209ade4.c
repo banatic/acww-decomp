@@ -2,17 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209af2c(void *);
+extern void *func_0209af2c(void *);
 extern void func_0209bd7c(void *);
-extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
-extern void func_02003750(void);
-extern void func_0209b594(void);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern int func_02003750(void *);
+extern void *func_0209b594(void *);
 
 void *func_0209ade4(void *self)
 {
     func_0209af2c((char *) self + 0xa4);
     func_0209bd7c((char *) self + 0x94);
-    __cxa_vec_cleanup((char *) self + 0x60, 3, 0x10, func_02003750);
-    __cxa_vec_cleanup(self, 2, 0x30, func_0209b594);
+    __cxa_vec_cleanup((void *) ((char *) self + 0x60), 3, 0x10, (((void (*)(void *)) func_02003750)));
+    __cxa_vec_cleanup((void *) (self), 2, 0x30, (((void (*)(void *)) func_0209b594)));
     return self;
 }

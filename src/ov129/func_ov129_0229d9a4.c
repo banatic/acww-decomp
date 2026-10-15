@@ -8,7 +8,7 @@ extern int func_ov129_0229b7ec(void *, int);
 extern void func_ov002_0220ad18(void *, unsigned int);
 extern void func_ov127_02299dc0(void *, int);
 extern void func_ov127_02299de8(void *, unsigned int, int);
-extern void func_ov127_02299d64(void *, int);
+extern int func_ov127_02299d64(void *, int);
 
 int func_ov129_0229d9a4(char *self)
 {

@@ -19,7 +19,7 @@ typedef struct {
 } UnkStruct_022996f0;
 
 extern void MIi_CpuCopy16(void *src, void *dst, int n);
-extern void func_020b9b6c(void *a, void *b, int c, int d);
+extern int func_020b9b6c(void *a, void *b, int c, int d);
 
 void func_ov145_022996f0(UnkStruct_022996f0 *self, int t)
 {

@@ -4,8 +4,8 @@
 
 extern int func_020b027c(int);
 extern void func_020b026c(int);
-extern void PM_GetBackLight(int, int);
-extern void func_0211dc78(int, int);
+extern unsigned int PM_GetBackLight(int, int);
+extern int func_0211dc78(int, int);
 
 extern unsigned char data_021f4ad4[];
 extern unsigned char data_021f4ad8[];

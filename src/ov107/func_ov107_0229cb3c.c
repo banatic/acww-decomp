@@ -11,8 +11,8 @@ struct UnkStruct_0229cb3c {
 
 extern void func_0206fc80(int);
 extern void func_0206fc4c(int);
-extern void func_ov002_022080a0(struct UnkStruct_0229cb3c *, int);
-extern void func_ov002_02207d24(void *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
+extern int func_ov002_02207d24(void *, int);
 extern void func_ov107_0229ce90(struct UnkStruct_0229cb3c *);
 
 void func_ov107_0229cb3c(struct UnkStruct_0229cb3c *self)
@@ -20,7 +20,7 @@ void func_ov107_0229cb3c(struct UnkStruct_0229cb3c *self)
     func_0206fc80(self->unk_B9);
     func_0206fc4c(1);
     self->unk_8C = 3;
-    func_ov002_022080a0(self, 1);
+    func_ov002_022080a0((void *) (self), 1);
     func_ov002_02207d24((char *) self + 0x21CC, 1);
     func_ov107_0229ce90(self);
 }

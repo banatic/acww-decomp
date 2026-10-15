@@ -34,7 +34,7 @@ struct UnkStruct_0221974c {
     virtual int v28(int, int);
 };
 extern "C" {
-extern void func_020e895c(void *, int, int);
+extern int func_020e895c(void *, int, int);
 }
 
 extern "C" int func_ov004_0221974c(char *self)

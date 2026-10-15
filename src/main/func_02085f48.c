@@ -14,7 +14,7 @@ extern struct UnkStruct_02085f48 *func_0204e414(void);
 extern u16 *func_02037e0c(u8 *, int, int, int);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
-extern void func_02037e44(u8 *, u16 *, int, int, int);
+extern int func_02037e44(u8 *, u16 *, int, int, int);
 
 void func_02085f48(void)
 {

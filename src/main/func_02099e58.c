@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020642fc(void *);
-extern void func_02003780(void *);
+extern void func_020642fc(void *object);
+extern int func_02003780(void *);
 
 struct UnkStruct_02099e58 {
     char pad_00[30];

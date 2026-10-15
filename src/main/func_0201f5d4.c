@@ -26,16 +26,15 @@ typedef struct GlobalT {
 
 extern GlobalT data_020c8bd8;
 
-extern void func_0208150c(void *arg);
-extern int func_020036e8(void);
-extern void func_0202da38(void *self, void *dst, void *src, int size, int a5, int a6, int a7, int a8, int a9);
+extern unsigned int func_0208150c(void *arg);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *self, void *dst, void *src, int size, int a5, int a6, int a7, int a8, int a9);
 
 void func_0201f5d4(UnkStruct_0201f5d4 *self, UnkStruct_0201f5d4_2 *out)
 {
     int v1, v2, v3, v4, v5;
 
-    func_0208150c(self->unk_100->unk_830);
-    v1 = func_020036e8();
+    v1 = func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830));
     v2 = data_020c8bd8.unk_00;
     v3 = 1;
     v4 = 10;

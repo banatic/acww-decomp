@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f3fe0(void);
+extern void *func_020f3fe0(void *unused0);
 extern void func_020f65bc(int, int);
 
 struct UnkStruct_020f3cd4 {
@@ -22,7 +22,7 @@ struct UnkStruct_020f3cd4 *func_020f3cd4(struct UnkStruct_020f3cd4 *this)
 {
     int flag;
 
-    func_020f3fe0();
+    func_020f3fe0(this);
     this->vtbl = data_0213ec40;
     flag = data_021fd1bc.flag;
     if (flag != 0) {

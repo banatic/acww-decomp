@@ -4,13 +4,12 @@
 
 typedef struct UnkStruct_0204c3f0 UnkStruct_0204c3f0;
 extern int func_0204c3c8(UnkStruct_0204c3f0 *p);
-extern void func_0204c3a0(UnkStruct_0204c3f0 *p);
-extern int func_0204fa68(void);
+extern int func_0204c3a0(UnkStruct_0204c3f0 *p);
+extern int func_0204fa68(int);
 int func_0204c3f0(UnkStruct_0204c3f0 *p)
 {
     if (func_0204c3c8(p) != 0) {
-        func_0204c3a0(p);
-        switch (func_0204fa68()) {
+        switch (func_0204fa68((int) func_0204c3a0(p))) {
             case 1:
                 return 0;
             case 3:

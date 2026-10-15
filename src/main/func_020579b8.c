@@ -7,9 +7,9 @@ typedef struct {
     unsigned short unk_34;
 } UnkStruct_020579b8;
 
-extern void func_02057a98(void *p, int arg);
+extern int func_02057a98(void *p, const char *name);
 
-void func_020579b8(UnkStruct_020579b8 *self, int arg)
+int func_020579b8(UnkStruct_020579b8 *self, const char *name)
 {
-    func_02057a98((char *) self + self->unk_34, arg);
+    return func_02057a98((char *) self + self->unk_34, name);
 }

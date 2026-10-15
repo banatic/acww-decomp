@@ -4,8 +4,8 @@
 
 extern void FS_InitFile(void *);
 extern int FS_OpenFile(void *, const void *);
-extern void FS_ReadFile(void *, const void *, int);
-extern void FS_CloseFile(void *);
+extern int FS_ReadFile(void *, const void *, int);
+extern int FS_CloseFile(void *);
 
 extern unsigned char data_020da4c4[];
 extern unsigned char data_021c5914[];

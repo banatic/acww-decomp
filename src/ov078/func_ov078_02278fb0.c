@@ -3,10 +3,10 @@
  */
 
 extern int data_ov078_02279a9c;
-extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
-extern void func_0202eb20(void *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*callback3)(void *));
+extern void *func_0202eb20(void *);
 extern void func_020edb3c(void *);
-extern void func_020051b0(void);
+extern void func_020051b0(void *element);
 
 typedef struct {
     unsigned int unk_00;
@@ -14,11 +14,15 @@ typedef struct {
     char sub;
 } UnkStruct_02278fb0;
 
+#define DisposeElement_func_020051b0 ((void (*)(void *)) func_020051b0)
+
 UnkStruct_02278fb0 *func_ov078_02278fb0(UnkStruct_02278fb0 *self)
 {
     self->unk_00 = (unsigned int) &data_ov078_02279a9c;
-    __cxa_vec_cleanup((void *) &self->sub, 2, 2, func_020051b0);
+    __cxa_vec_cleanup((void *) &self->sub, 2, 2, DisposeElement_func_020051b0);
     func_0202eb20(self);
     func_020edb3c(self);
     return self;
 }
+
+#undef DisposeElement_func_020051b0

@@ -26,8 +26,8 @@ struct UnkStruct_0202365c_4 {
 
 extern unsigned int func_0208150c(unsigned int);
 extern unsigned int func_020036e8(unsigned int);
-extern void func_0202da38(struct UnkStruct_0202365c *p, char *buf, unsigned char *len, int maxlen, unsigned int a,
-                          unsigned int b, unsigned int c, unsigned int d, unsigned int e);
+extern int func_0202da38(struct UnkStruct_0202365c *p, char *buf, unsigned char *len, int maxlen, int base, int offset,
+                         int scale, int multiplier, int selected);
 extern struct UnkStruct_0202365c_3 data_020c89c0;
 
 void func_0202365c(struct UnkStruct_0202365c *p, struct UnkStruct_0202365c_4 *out)

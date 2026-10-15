@@ -14,13 +14,13 @@ typedef struct OutputStruct {
     unsigned char byte_at_4;
 } OutputStruct;
 
-extern void func_02021118(InputStruct *, OutputStruct *);
-extern void func_02022454(InputStruct *);
+extern int func_02021118(InputStruct *);
+extern int func_02022454(InputStruct *);
 extern void func_0202dac0(InputStruct *);
 
 void func_0201e4d4(InputStruct *param0, OutputStruct *param1)
 {
-    func_02021118(param0, param1);
+    func_02021118(param0);
     func_02022454(param0);
     param1->ptr_at_0 = &param0->field_at_104;
     param1->byte_at_4 = param0->byte_at_122;

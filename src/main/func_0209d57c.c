@@ -8,8 +8,8 @@ extern int data_021dc70c;
 extern int func_02073d90(void *);
 extern int func_02073918(void *, int);
 extern void func_02073820(void *);
-extern int func_020737f0(void *, unsigned char *, int);
-extern int func_02073770(void *, int, int);
+extern void func_020737f0(void *, unsigned char *, int);
+extern void func_02073770(void *, int, int);
 extern void func_0209d8cc(void *, unsigned char, int);
 
 void func_0209d57c(unsigned char a, int b)

@@ -6,7 +6,7 @@ extern int *data_020ccf94;
 extern void func_020736bc(int *ptr, unsigned char *out, int flag);
 extern void func_020a6f74(int value, unsigned char byte);
 
-void func_02076518(void)
+void func_02076518(int length, int sequence, unsigned char category, unsigned int player)
 {
     unsigned char flag;
     int *ptr = data_020ccf94;

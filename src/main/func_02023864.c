@@ -4,8 +4,7 @@
 
 extern int func_0208150c(unsigned int arg);
 extern int func_020036e8(int arg);
-extern void func_0202da38(void *p0, void *p104, void *p122, int n, int x, unsigned int w, unsigned int b1, int one,
-                          unsigned int b2);
+extern int func_0202da38(void *p0, void *p104, void *p122, int n, int x, int offset, int scale, int one, int selected);
 
 typedef struct {
     unsigned int unk_00;

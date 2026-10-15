@@ -11,12 +11,12 @@ typedef struct {
 extern void *func_02095794(int);
 extern int func_0201c378(void *self, int a);
 extern int func_02019e00(void *p);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, u16 i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, u16 i, int j);
 extern void func_0201b044(void *a, void *b);
 extern int func_0200322c(void *a, void *b);
 extern int func_020e8b4c(int a, int b);
-extern void func_020147fc(void *a, int b, int c, int d);
-extern void func_ov004_0221c844(void *self, int a);
+extern int func_020147fc(void *a, int b, int c, int d);
+extern int func_ov004_0221c844(void *self, int a);
 
 extern u16 data_020c80f8;
 

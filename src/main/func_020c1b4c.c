@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202eb20(void *self);
+extern void *func_0202eb20(void *self);
 extern void func_020edb3c(void *self);
 
 extern unsigned char data_020e7bd0[];

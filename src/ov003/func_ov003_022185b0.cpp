@@ -20,16 +20,16 @@ struct UnkStruct_022185b0_3 {
     char unk_8F0[4];
 };
 
-extern "C" void func_0200f27c(struct UnkStruct_022185b0_3 *, int);
-extern "C" void func_020109a0(struct UnkStruct_022185b0_3 *, int, int, int);
+extern "C" unsigned int *func_0200f27c(struct UnkStruct_022185b0_3 *, int);
+extern "C" void func_020109a0(struct UnkStruct_022185b0_3 *, int b, int c, unsigned short d);
 extern "C" void func_020109fc(struct UnkStruct_022185b0_3 *, int, int, int);
 extern "C" void func_ov003_022186b0(void *, int, int, int, int, int);
 extern "C" void func_ov003_02218688(void *, int, int, int, int);
 extern "C" int func_02073908(int, int);
-extern "C" void func_ov003_02220384(void *, int);
+extern "C" int func_ov003_02220384(void *, int);
 extern int data_020ccf94;
 
-extern "C" void func_ov003_022185b0(struct UnkStruct_022185b0_3 *o, struct UnkStruct_022185b0_2 *qq)
+extern "C" void func_ov003_022185b0(struct UnkStruct_022185b0_3 *o, struct UnkStruct_022185b0_2 *qq, int previous)
 {
     func_0200f27c(o, 4);
     struct UnkStruct_022185b0 *p = &qq->p;

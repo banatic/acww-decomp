@@ -3,7 +3,7 @@
  */
 
 extern char data_0213eca8;
-extern void func_020f4514(void *self);
+extern void *func_020f4514(void *self);
 
 struct S_t {
     void *unk_00;

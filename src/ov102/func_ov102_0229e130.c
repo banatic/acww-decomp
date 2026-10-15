@@ -6,10 +6,10 @@ extern void func_ov094_0229af40(void *ptr, int val);
 extern void func_ov094_0229bbd8(void *ptr, int val);
 extern void func_ov094_0229a2b0(void *ptr, int val);
 extern void func_ov002_02209e18(void *ptr);
-extern void func_020984e8(void);
-extern void func_0209898c(void);
-extern int func_0203a674(void);
-extern void MI_CpuCopy8(int a, void *b, int c);
+extern int func_020984e8(void);
+extern void *func_0209898c(int object);
+extern unsigned short *func_0203a674(void *record);
+extern void MI_CpuCopy8(void *a, void *b, int c);
 extern void func_0206fb58(void);
 
 struct UnkStruct_0229e130 {
@@ -48,9 +48,7 @@ void func_ov102_0229e130(struct UnkStruct_0229e130 *self)
     self->unk_259F = 0;
     self->unk_25A5 = 0;
     self->unk_25A8 = 0;
-    func_020984e8();
-    func_0209898c();
-    MI_CpuCopy8(func_0203a674(), &self->unk_24E8, 0xb4);
+    MI_CpuCopy8(func_0203a674(func_0209898c(func_020984e8())), &self->unk_24E8, 0xb4);
     func_0206fb58();
     self->unk_25AA = 0;
 }

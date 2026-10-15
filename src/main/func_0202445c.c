@@ -8,7 +8,7 @@ typedef struct {
 } DblWord;
 
 extern DblWord data_020d91a8;
-extern void func_020154b4(void *a, void *b, int c, int d, int e);
+extern int func_020154b4(void *a, void *b, int c, int d, int e);
 extern void func_0202dbf0(void *a, DblWord val);
 
 void func_0202445c(void *obj)

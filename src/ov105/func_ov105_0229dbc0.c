@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *this);
+extern int func_ov002_02208014(void);
 extern void func_ov105_0229dafc(void *this);
 extern void func_ov002_0220a1dc(void *this);
-extern void func_ov002_02208098(void *this, int value);
+extern unsigned char *func_ov002_02208098(void *this, unsigned char value);
 extern void func_ov105_0229cfc0(void *this);
 extern void func_ov105_0229c5fc(void *this);
 extern void func_ov105_0229c62c(void *this);
@@ -40,7 +40,7 @@ void func_ov105_0229dbc0(struct UnkStruct_0229dbc0 *self)
     int a;
     int b;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov105_0229dafc(self);
         return;
     }

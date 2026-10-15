@@ -11,7 +11,7 @@ typedef struct {
     unsigned char unk_12B5;
 } UnkStruct_0229cf18;
 
-extern void func_ov114_0229cf58(void);
+extern void func_ov114_0229cf58(void *arg0);
 extern void RtcSendPxiCommand(int cmd);
 
 int func_ov114_0229cf18(UnkStruct_0229cf18 *p)
@@ -19,7 +19,7 @@ int func_ov114_0229cf18(UnkStruct_0229cf18 *p)
     if (p->unk_12B5 + 1 < p->unk_12B0) {
         p->unk_12B5 = p->unk_12B5 + 1;
         p->unk_12AE = 5;
-        func_ov114_0229cf58();
+        func_ov114_0229cf58((void *) p);
         RtcSendPxiCommand(0x39);
         return 1;
     }

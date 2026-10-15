@@ -4,7 +4,7 @@
 
 extern void func_ov140_0229a164(unsigned char *param, unsigned char value);
 extern void func_ov140_0229a280(unsigned char *param);
-extern void func_ov002_02208098(unsigned char *param, int num);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov140_0229a85c(unsigned char *param)
 {
@@ -16,6 +16,6 @@ void func_ov140_0229a85c(unsigned char *param)
     } else {
         func_ov140_0229a164(param, 0);
         func_ov140_0229a280(param);
-        func_ov002_02208098(param, 7);
+        func_ov002_02208098((void *) (param), 7);
     }
 }

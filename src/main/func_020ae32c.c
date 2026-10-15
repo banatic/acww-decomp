@@ -8,8 +8,8 @@ extern int data_021f4a14;
 
 extern int func_0204e414(void);
 extern void *func_0204f694(int a, int b);
-extern void __register_global_object(void *a, void (*b)(void), void *c);
-extern void func_020051b0(void);
+extern void __register_global_object(void *, void *, void *);
+extern void func_020051b0(void *);
 extern int func_02037da8(void *a, void *b, void *c, void *d, void *e, int f);
 extern void func_0209e474(void *);
 
@@ -32,7 +32,7 @@ int func_020ae32c(void)
         if (h != 0) {
             if ((data_021f49fc & 1) == 0) {
                 data_021f49f8 = 0x5012;
-                __register_global_object(&data_021f49f8, func_020051b0, &data_021f4a14);
+                __register_global_object((void *) (&data_021f49f8), (((void *) func_020051b0)), (void *) (&data_021f4a14));
                 data_021f49fc |= 1;
             }
             if (func_02037da8(h, &v1, &v2, &data_021f49f8, &data_021f49f8, 0) != 0) {

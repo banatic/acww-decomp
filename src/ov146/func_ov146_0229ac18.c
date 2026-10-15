@@ -14,7 +14,7 @@ extern void func_ov146_02299fbc(struct obj_0229ac18 *);
 extern int func_ov146_02299f08(struct obj_0229ac18 *);
 extern void func_ov146_02299660(struct obj_0229ac18 *, int);
 extern int func_ov146_02299e9c(struct obj_0229ac18 *, int);
-extern void func_ov146_02299d04(struct obj_0229ac18 *);
+extern int func_ov146_02299d04(struct obj_0229ac18 *);
 extern void func_ov146_0229a238(struct obj_0229ac18 *);
 extern void func_ov146_02299650(struct obj_0229ac18 *, int);
 extern void func_ov146_02299684(struct obj_0229ac18 *);

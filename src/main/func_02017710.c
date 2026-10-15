@@ -4,10 +4,10 @@
 
 extern int func_02057bd4(void);
 extern int func_02057d0c(int, int);
-extern int func_02016764(int, int, int, int, int, int, int, int);
+extern void func_02016764(int, int, int, int, int, int, int, int);
 extern int func_020164a0(int, int);
 extern void func_02054768(int, int, int);
-extern void func_02057b90(int, int);
+extern int func_02057b90(int, int);
 extern void func_02019af0(int, int);
 extern unsigned short data_020c80f8;
 
@@ -26,7 +26,7 @@ int func_02017710(int r0, int r1)
             sp[1] = 0x1000;
             sp[2] = 0;
             sp[3] = 0;
-            r0_2 = func_02016764(r4 + 0x334, r4, 0x26, data_020c80f8, sp[0], sp[1], sp[2], sp[3]);
+            r0_2 = ((int) (func_02016764(r4 + 0x334, r4, 0x26, data_020c80f8, sp[0], sp[1], sp[2], sp[3]), r4 + 0x334));
             r0_3 = func_020164a0(r4 + 0x334, 1);
             if (r0_3 == 0x139) {
                 func_02054768(r4 + 0xec, 0, 0);

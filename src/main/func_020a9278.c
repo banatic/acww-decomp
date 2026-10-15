@@ -3,13 +3,13 @@
  */
 
 extern char data_020e3de4;
-extern void func_020a941c(void *obj, void *ptr);
+extern void *func_020a941c(void *obj);
 extern void func_020edb3c(void *obj);
 
 void *func_020a9278(void *obj)
 {
     ((void **) obj)[0] = &data_020e3de4;
-    func_020a941c(obj, &data_020e3de4);
+    func_020a941c(obj);
     func_020edb3c(obj);
     return obj;
 }

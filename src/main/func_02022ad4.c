@@ -32,13 +32,13 @@ extern Settings data_020c8b48;
 
 extern void func_0202e118(volatile u16 *out, UnkStruct_02022ad4_2 *p);
 extern int func_0207f1c8(int a);
-extern void func_0209b5ec(void);
-extern int func_0209c330(void);
+extern void *func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern void func_0202cfa8(UnkStruct_02022ad4 *p);
 extern void func_02015de4(UnkStruct_02022ad4_3 *self, UnkStruct_02022ad4 *p, int a, int b);
 extern int func_0208150c(int a);
 extern int func_020036e8(int a);
-extern void func_0202da38(UnkStruct_02022ad4_3 *self, void *a, void *b, int n, int c, int d, int e, int f, int g);
+extern int func_0202da38(UnkStruct_02022ad4_3 *self, void *a, void *b, int n, int c, int d, int e, int f, int g);
 
 int func_02022ad4(UnkStruct_02022ad4_3 *self)
 {
@@ -59,9 +59,7 @@ int func_02022ad4(UnkStruct_02022ad4_3 *self)
         }
         if (ok > 0) {
             state = 0;
-            func_0207f1c8(self->unk_100->unk_830);
-            func_0209b5ec();
-            if (func_0209c330() != 0) {
+            if (func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(self->unk_100->unk_830))) != 0) {
                 state = 2;
             }
         }

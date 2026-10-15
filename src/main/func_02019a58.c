@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *MI_CpuCopy8(void *dest, const void *src, unsigned int n);
+extern void MI_CpuCopy8(void *dest, const void *src, unsigned int n);
 
 void func_02019a58(char *p, unsigned short a, unsigned short b, char c)
 {

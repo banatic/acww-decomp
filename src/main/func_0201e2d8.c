@@ -4,7 +4,7 @@
 
 extern int func_02019e00(int);
 extern int func_02019de8(int);
-extern void func_02019c6c(int, int, unsigned short);
+extern int func_02019c6c(int, int, unsigned short);
 extern unsigned short data_020c80f8;
 extern unsigned int data_020d8f58[2];
 

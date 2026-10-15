@@ -3,8 +3,8 @@
  */
 
 extern "C" void func_020a8c1c(void *);
-extern "C" void func_020984e8(void);
-extern "C" int func_02099870(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099870(int);
 extern "C" void func_020802ec(int, void *, int);
 
 class UnkStruct_0206777c {
@@ -51,8 +51,7 @@ extern "C" int func_0206777c(UnkStruct_0206777c_2 *obj)
     int ret = 0;
     func_020a8c1c(&obj->unk_1E04);
     if (res != 0) {
-        func_020984e8();
-        int other = func_02099870();
+        int other = func_02099870((int) func_020984e8());
         func_020802ec(res, &obj->unk_1E04, other);
         ret = 1;
     }

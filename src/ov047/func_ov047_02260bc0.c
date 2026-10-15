@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02014f60(void);
+extern int func_02014f60(int argument0);
 
 void func_ov047_02260bc0(void *param)
 {
     unsigned short *p;
     int *q;
 
-    func_02014f60();
+    func_02014f60((int) param);
     p = (unsigned short *) ((char *) param + 0xce);
     *p = 0xfff1;
     q = (int *) ((char *) param + 0xd0);

@@ -15,7 +15,7 @@ extern void *NNS_G3dGetJntAnmSet(void *);
 extern int func_02107b44(void *, int);
 extern int func_02055140(void *, int);
 extern void func_02055060(void *, int, int, int, unsigned short, unsigned short);
-extern int func_02055050(void *);
+extern void func_02055050(void *);
 extern int func_02055478(void *, int);
 extern void func_ov004_022347b8(char *, char **);
 typedef void (*Method)(char *);

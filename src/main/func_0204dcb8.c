@@ -23,7 +23,7 @@ typedef struct {
 extern int func_02037e90(int a, int b, int c);
 extern UnkStruct_0204dcb8_2 *func_02060eac(int *table, int key1, int key2);
 extern void func_0204f800(int *a, int *b, int c, int d, int e, int f);
-extern void func_02030ddc(int a, int b, int c, int d);
+extern int func_02030ddc(int a, int b, int c, int d);
 extern void func_02037f28(int a, int b, int *local, int c, int d, int e, int f, int g, int h, int i, int j);
 extern void func_020e993c(int a, UnkStruct_0204dcb8_2 *b);
 extern int data_021ebcd4;

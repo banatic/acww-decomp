@@ -15,7 +15,7 @@ struct Object {
 
 extern struct GlobalData data_020d8f80;
 
-int func_0201ca24(struct Object *obj)
+int func_0201ca24(struct Object *obj, int event)
 {
     obj->flag = 0;
     obj->data = data_020d8f80;

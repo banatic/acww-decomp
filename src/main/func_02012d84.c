@@ -26,7 +26,7 @@ struct TableEntry {
 
 extern struct TableEntry data_021c172c[];
 
-extern void func_020138a8(void *, void *, void *, void *);
+extern void func_020138a8(void *, void *);
 extern void func_0204f818(u32 *, u32 *, void *);
 extern int func_0204ed58(void *, u32, u32);
 extern void func_0204f794(void *, u32, u32);
@@ -38,7 +38,7 @@ int func_02012d84(void *a0, void *a1, struct Limit *a2, void *a3)
 {
     struct UnkStruct_02012d84 *self = (struct UnkStruct_02012d84 *) a0;
 
-    func_020138a8(a0, a1, a2, a3);
+    func_020138a8(a0, a1);
 
     if (self->unk_90 < 4) {
         u32 idx = self->unk_90;

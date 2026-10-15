@@ -24,7 +24,7 @@ extern int FX_Div(int a, int b);
 extern int func_020ea838(Vec3 *v);
 extern void func_020eabc8(Vec3 *v, int s);
 extern void func_01ffd070(Vec3 *dst, Vec3 *a, Vec3 *b);
-extern void MTX_Inverse43(Mtx *a, Mtx *b);
+extern int MTX_Inverse43(Mtx *a, Mtx *b);
 extern void MTX_MultVec43(Vec3 *v, Mtx *m, Vec3 *dst);
 extern void func_020eaca0(Vec3 *dst, Vec3 *a, Vec3 *b);
 

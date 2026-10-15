@@ -25,12 +25,12 @@ class UnkStruct_0203ee34 {
     virtual int m48(void *q);
 };
 extern short data_020ca4cc[];
-extern "C" int func_0203ee7c(UnkStruct_0203ee34 *p);
+extern "C" int func_0203ee7c(UnkStruct_0203ee34 *p, void *);
 extern "C" int func_0203ef00(UnkStruct_0203ee34 *p, void *q, int d, int v);
 extern "C" int func_0203ee34(UnkStruct_0203ee34 *p, void *q);
 int func_0203ee34(UnkStruct_0203ee34 *p, void *q)
 {
-    if (func_0203ee7c(p) != 0) {
+    if (func_0203ee7c(p, q) != 0) {
         short v = data_020ca4cc[0];
         if (func_0203ef00(p, q, (short) -v, v) != 0) {
             return p->m48(q);

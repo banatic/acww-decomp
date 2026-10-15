@@ -3,13 +3,13 @@
  */
 
 extern void func_020f5970(void *self);
-extern void func_020f555c(void);
+extern void func_020f555c(void *sound, int index, int code);
 extern char data_020d8414;
 
 struct UnkStruct_020f55cc {
     void *unk_00;
     unsigned char pad_04[0x30];
-    void (*unk_34)(void);
+    void (*unk_34)(void *, int, int);
     unsigned char pad_38[0x6];
     unsigned char unk_3E;
     unsigned char unk_3F;

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_02239424(void *a, void *b, void *c, int d);
+extern int func_ov004_02239424(void *a, void *b, void *c, int d);
 extern int FX_MulFunc(int a, int b);
 extern int _s32_div_f(int a, int b);
 extern s16 FX_SinCosTable_[];

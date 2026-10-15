@@ -3,7 +3,7 @@
  */
 
 extern int func_020f1d3c(void *, int);
-extern void NNS_SndArcPlayerStartSeq(void *, unsigned short);
+extern int NNS_SndArcPlayerStartSeq(void *, unsigned short);
 extern int data_021fd1bc;
 
 typedef struct {

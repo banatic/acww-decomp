@@ -7,13 +7,13 @@ typedef struct {
     unsigned char unk_8C;
 } UnkStruct_0229c608;
 
-extern int func_020ee45c(UnkStruct_0229c608 *obj, int index);
+extern int func_020ee45c(UnkStruct_0229c608 *obj);
 extern void func_ov090_022993cc(int a, unsigned char b);
-extern void func_ov002_022080a0(UnkStruct_0229c608 *obj, int c);
+extern unsigned char *func_ov002_022080a0(UnkStruct_0229c608 *obj, unsigned char value);
 
 int func_ov119_0229c608(UnkStruct_0229c608 *obj, int index)
 {
-    int ret = func_020ee45c(obj, index);
+    int ret = func_020ee45c(obj);
     if (index != -1 && index != 6) {
         func_ov090_022993cc(ret, (unsigned char) index);
         obj->unk_8C = 3;

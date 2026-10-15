@@ -11,11 +11,11 @@ extern void *func_ov004_0223cd50(void);
 extern void *func_ov004_0223cc10(void *p, int a1, int a2, int a3);
 extern void *func_0204d5c8(int a0);
 extern u16 *func_0204f5e0(void *o, int x, int y, int ox, int oy, int f);
-extern void func_02052e98(int a1, int a2, u8 v, int a0);
-extern void func_02052e70(int a1, int a2, int a0);
+extern int func_02052e98(int a1, int a2, u8 v, int a0);
+extern int func_02052e70(int a1, int a2, int a0);
 extern void func_02052ee8(int a1, int a2, int a3, u8 p6, int a0);
-extern void func_02060b48(int a0, u16 *code);
-extern void func_02060b18(int a0);
+extern int func_02060b48(int a0, u16 *code);
+extern int func_02060b18(int a0);
 
 typedef int (*VFn)(void *self, u8 a, u8 b);
 

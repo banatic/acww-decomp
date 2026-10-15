@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02097958(int param);
+extern int func_02097958(void *);
 extern int func_02097900(int param);
 
 int func_020979ac(int param)
 {
-    int ret1 = func_02097958(param);
+    int ret1 = func_02097958((void *) param);
     if (ret1 == -2) {
         return 0;
     }

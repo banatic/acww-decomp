@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02019de4(void *param1, void *param2);
+extern void *func_02019de4(void *param1);
 extern void func_02057bb8(unsigned short *out);
-extern int func_02057bd4(int val);
+extern int func_02057bd4(void);
 extern void func_02057cb8(void *p);
 extern void func_02016764(void *a, void *b, int c, unsigned short d, int e, int f, int g, int h);
-extern void func_02091230(int a, void *b, int c, int d);
-extern void func_0200442c(void *a, int b, int c, int d);
+extern int func_02091230(int a, void *b, int c, int d);
+extern int func_0200442c(void *a, int b, int c, int d);
 extern void func_02019af0(void *a, int b);
 extern void func_020199ec(void *a, void *b, void *c);
 extern volatile unsigned short data_020c80f8;
@@ -19,13 +19,13 @@ int func_020178a0(void *param1, char *param2)
     unsigned short vbuf[1];
     int val;
 
-    r6 = (char *) func_02019de4(param1, param2);
+    r6 = (char *) func_02019de4(param1);
 
     func_02057bb8(vbuf);
     val = vbuf[0];
     *(unsigned short *) (r6 + 0x22) = val;
 
-    if (func_02057bd4(val) != 0) {
+    if (func_02057bd4() != 0) {
         func_02057cb8(param2);
     }
 

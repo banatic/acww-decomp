@@ -20,7 +20,7 @@ struct UnkStruct_02221e78 {
 
 extern "C" void func_0204f794(struct Vec *, int, int);
 extern "C" int _s32_div_f(int, int);
-extern "C" void func_020044c0(void *, int, int, int);
+extern "C" int func_020044c0(void *, int, int, int);
 
 extern "C" void func_ov003_02221e78(struct UnkStruct_02221e78 *o, struct Pair *a, struct Vec *b, unsigned short d)
 {

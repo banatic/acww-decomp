@@ -3,16 +3,16 @@
  */
 
 extern void *func_ov002_02207f80(int size);
-extern void func_ov002_0220830c(void);
-extern void func_020b9af4(void *p);
-extern void func_ov094_0229b000(void *p);
+extern void *func_ov002_0220830c(void *arg0);
+extern void *func_020b9af4(void *p);
+extern void *func_ov094_0229b000(void *p);
 extern void func_ov094_0229bc3c(void *p);
-extern void func_ov094_0229a2ec(void *p);
-extern void func_ov002_02207e40(void *p);
+extern void *func_ov094_0229a2ec(void *p);
+extern void *func_ov002_02207e40(void *p);
 extern void func_ov002_02209e44(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_ov002_02209b14(void *p);
-extern void func_ov002_0220ba24(void *p);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_ov002_02209b14(void *p);
+extern void *func_ov002_0220ba24(void *p);
 extern void func_02066694(void *p);
 extern unsigned char data_ov099_0229e040[];
 
@@ -33,7 +33,7 @@ void *func_ov099_0229deb8(void)
 
     p = (UnkStruct_0229deb8_2 *) func_ov002_02207f80(0x2910);
     if (p != 0) {
-        func_ov002_0220830c();
+        func_ov002_0220830c((void *) p);
 
         p->vtable = data_ov099_0229e040;
 

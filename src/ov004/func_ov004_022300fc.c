@@ -8,16 +8,16 @@ extern char *data_ov004_02258558;
 extern char data_ov004_022555a0[], data_ov004_022555bc[], data_ov004_022555d8[], data_ov004_022555f4[], data_ov004_02255610[],
     data_ov004_022585ac[];
 extern int data_021c9b24;
-extern void func_ov004_0222c600(char *, void *, void *);
-extern void func_ov004_0222c3f4(char *, void *);
-extern void func_ov004_0222c348(char *, void *);
+extern int func_ov004_0222c600(char *, void *, void *);
+extern int func_ov004_0222c3f4(char *, void *);
+extern int func_ov004_0222c348(char *, void *);
 extern void *func_ov004_0222c3a0(char *);
 extern void *func_ov004_0222c33c(char *);
 extern void *func_ov004_0222c3c4(char *, int);
 extern void *func_ov004_0222c3a4(char *, int);
-extern void func_02055f2c(char *, void *, int);
-extern void NNS_G3dBindMdlTex(void *, void *);
-extern void NNS_G3dBindMdlPltt(void *, void *);
+extern int func_02055f2c(char *, void *, int);
+extern int NNS_G3dBindMdlTex(void *, void *);
+extern int NNS_G3dBindMdlPltt(void *, void *);
 extern int func_02055140(char *, int);
 extern void func_02055060(char *, void *, int, int, u16, u16);
 extern void func_02055050(char *);
@@ -32,7 +32,7 @@ extern void func_02063cc8(int *);
 extern int func_0203d064(void *, u16 *, void *);
 extern void *func_0203cfc8(void *);
 extern int func_020b9d3c(char *, void *, void *, void *, int, int);
-extern void func_ov004_0222fef4(char *);
+extern int func_ov004_0222fef4(char *);
 extern void *func_02063ddc(void *);
 int func_ov004_022300fc(char *self)
 {

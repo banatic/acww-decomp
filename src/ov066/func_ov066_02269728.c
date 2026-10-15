@@ -8,9 +8,9 @@ typedef struct UnkStruct_02269728 {
 } UnkStruct_02269728;
 
 extern UnkStruct_02269728 *data_ov066_0226bdf4;
-extern int func_ov066_022696b4(int arg1, int arg2);
+extern void func_ov066_022696b4(int arg1, int arg2);
 
-int func_ov066_02269728(void)
+void func_ov066_02269728(void)
 {
-    return func_ov066_022696b4(data_ov066_0226bdf4->unk_88, 0);
+    func_ov066_022696b4(data_ov066_0226bdf4->unk_88, 0);
 }

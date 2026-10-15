@@ -8,15 +8,15 @@ typedef struct UnkStruct_0229bedc {
     unsigned short unk_98;
 } UnkStruct_0229bedc;
 
-extern void func_ov120_0229b97c(UnkStruct_0229bedc *self);
-extern void func_020641c8(void *p);
+extern void func_ov120_0229b97c(void);
+extern void *func_020641c8(void *p);
 extern void func_02064210(unsigned char *s, void *p);
-extern void func_020b496c(int a, void *p);
+extern void *func_020b496c(int a, void *p);
 extern void *func_ov120_0229b400(UnkStruct_0229bedc *self);
 extern void func_02070adc(void *p, int a, int b, int c, int d, int e, int f);
-extern void func_0207094c(void *p, int a);
+extern int func_0207094c(void *p, int a);
 extern void func_02070a04(void *p, int a, int b);
-extern void func_020641b0(void *p);
+extern void *func_020641b0(void *p);
 extern void func_ov002_02207f20(UnkStruct_0229bedc *self, int a, int b, int c, int d);
 extern void func_02002708(int a);
 extern void func_ov002_02207e80(UnkStruct_0229bedc *self, int a, int b, int c);
@@ -30,7 +30,7 @@ void func_ov120_0229bedc(UnkStruct_0229bedc *self)
     void *p;
     unsigned char local[0x20];
 
-    func_ov120_0229b97c(self);
+    func_ov120_0229b97c();
     func_020641c8(local);
     func_02064210(data_021dc7aa, local);
     func_020b496c(0, local);

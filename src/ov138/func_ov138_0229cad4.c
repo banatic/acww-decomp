@@ -11,12 +11,12 @@ struct UnkStruct_0229cad4 {
 
 extern int func_0208e484(void *);
 extern void func_ov138_0229c66c(struct UnkStruct_0229cad4 *);
-extern void func_ov002_02208098(struct UnkStruct_0229cad4 *, unsigned char);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov138_0229cad4(struct UnkStruct_0229cad4 *arg)
 {
     if (func_0208e484(&arg->unk_98) != 0) {
         func_ov138_0229c66c(arg);
-        func_ov002_02208098(arg, arg->unk_94);
+        func_ov002_02208098((void *) (arg), arg->unk_94);
     }
 }

@@ -32,12 +32,12 @@ typedef struct {
 extern Glob data_021fd1bc;
 extern unsigned char data_0213f0a4;
 extern unsigned short data_021fd264;
-extern void func_020eed18(Player *p, int n);
+extern int func_020eed18(Player *p, int n);
 extern int NNS_SndArcPlayerStartSeqArc(Player *p, unsigned short seq, int flags);
 extern void *func_020eef70(void);
 extern void NNS_SndHeapLoadState(void *heap, int state);
-extern void func_0210e1d0(unsigned short n, void *heap);
-extern void func_0210e198(int n, void *heap);
+extern int func_0210e1d0(unsigned short n, void *heap);
+extern int func_0210e198(int n, void *heap);
 
 void func_020f6350(Player *p, unsigned short value)
 {

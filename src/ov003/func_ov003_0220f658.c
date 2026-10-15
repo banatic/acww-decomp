@@ -13,13 +13,13 @@ typedef struct {
     short v[4];
 } LocalVec;
 
-extern void func_020113e0(LocalVec *vec, short value);
-extern void func_020110a0(UnkStruct_0220f658 *self, LocalVec *vec);
+extern int func_020113e0(LocalVec *vec, short value);
+extern void func_020110a0(void *object, short *values);
 
 void func_ov003_0220f658(UnkStruct_0220f658 *self)
 {
     LocalVec vec;
     vec.v[0] = self->unk_8E;
     func_020113e0(&vec, self->unk_7D6);
-    func_020110a0(self, &vec);
+    func_020110a0((void *) (self), (short *) (&vec));
 }

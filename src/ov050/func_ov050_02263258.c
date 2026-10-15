@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(void *a, void *b);
+extern int func_020984e8(void);
 extern int func_02099640(int r0);
 extern int func_0209ad9c(int r0, int r1);
-extern void *func_0209b4d4(int r0);
-extern void func_02099fe8(void *p);
+extern void *func_0209b4d4(void *object);
+extern int func_02099fe8(void);
 extern int func_0209bc40(void *p);
 extern unsigned int func_0209bba0(void *p);
 extern int func_0209b414(int r0);
 extern int func_ov050_02263394(void *a, void *b);
-extern void func_02099f1c(void *dst, void *src);
+extern unsigned char func_02099f1c(void *dst, void *src);
 extern void *func_02099710(int r0);
 extern int func_0204bcdc(void *p);
 extern void *func_0204bc64(void *p);
@@ -24,7 +24,7 @@ struct UnkStruct_02263258 {
     unsigned char state;
 };
 
-extern void func_ov050_022634b4(void);
+extern int func_ov050_022634b4(void *unused0);
 
 void func_ov050_02263258(void *a, struct UnkStruct_02263258 *b)
 {
@@ -36,11 +36,11 @@ void func_ov050_02263258(void *a, struct UnkStruct_02263258 *b)
     unsigned int local2;
     int temp;
 
-    r7 = func_020984e8(a, b);
+    r7 = func_020984e8();
     local0 = func_02099640(r7);
     local1 = func_0209ad9c(local0, 0);
-    r4 = func_0209b4d4(local1);
-    func_02099fe8(r4);
+    r4 = func_0209b4d4((void *) local1);
+    func_02099fe8();
 
     if (func_0209bc40(r4) == 0xb && func_0209bba0(r4) >= 1 && func_0209b414(local1) != 0) {
         if (func_ov050_02263394(a, b) == 0) {

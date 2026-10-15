@@ -3,9 +3,9 @@
  */
 
 extern int func_02096190(int);
-extern void func_0201c390(int, int);
+extern int func_0201c390(int, int);
 
-void func_0201c378(int a, int b)
+int func_0201c378(int a, int b)
 {
     int c;
     int d;
@@ -14,5 +14,5 @@ void func_0201c378(int a, int b)
     c = a;
     d = b;
     e = func_02096190(d);
-    func_0201c390(c, e);
+    return func_0201c390(c, e);
 }

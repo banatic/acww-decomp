@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov113_02299a08(void);
+extern int func_ov113_02299a08(unsigned char *arg0);
 extern int func_ov113_02299da4(int, int);
-extern int func_ov113_02299d84(int, int);
+extern void func_ov113_02299d84(int, int);
 
 int func_ov113_022999c4(int param)
 {
     int r4;
     int r5 = param;
-    r4 = func_ov113_02299a08();
+    r4 = func_ov113_02299a08((unsigned char *) param);
     if (func_ov113_02299da4(r5, 0x10) != 0) {
         r4 -= 0x100;
     } else if (func_ov113_02299da4(r5, 0x20) != 0) {

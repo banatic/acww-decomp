@@ -8,7 +8,7 @@ typedef struct {
     char unk_0A;
 } UnkStruct_020f64c8;
 
-extern void func_020eed18(UnkStruct_020f64c8 *obj, int val);
+extern int func_020eed18(UnkStruct_020f64c8 *obj, int val);
 extern void NNS_SndHandleReleaseSeq(UnkStruct_020f64c8 *obj);
 
 void func_020f64c8(UnkStruct_020f64c8 *obj)

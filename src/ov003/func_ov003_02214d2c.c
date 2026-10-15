@@ -60,30 +60,30 @@ extern void *func_020604f8(void *p);
 extern void func_ov003_0222aaa0(Vec3 *out, int a);
 extern void func_ov003_02219668(UnkStruct_02214d2c *o, const Vec3 *v);
 extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
-extern void func_ov003_0222aa50(void *p, Vec3 *a, Vec3 *b);
+extern int func_ov003_0222aa50(void *p, Vec3 *a, Vec3 *b);
 extern int func_02056f28(void *p, int a);
 extern void func_0203ae98(void);
 extern int func_0203e1c4(void);
 extern void func_0203ee14(UnkStruct_02214d2c_2 *self, void *b);
 extern void func_0203ee08(UnkStruct_02214d2c_2 *self, void *b);
-extern void func_0200f27c(UnkStruct_02214d2c_2 *self, int a);
+extern unsigned int *func_0200f27c(UnkStruct_02214d2c_2 *self, int a);
 extern void func_0200f268(UnkStruct_02214d2c_2 *self, int a);
 extern void func_020a8164(void *p, void *g);
-extern void func_0203cbd0(u16 *p);
+extern int func_0203cbd0(u16 *p);
 extern void func_02035624(int a);
 extern void func_02035684(int a, int b, int c);
 extern void func_020356c4(int a, int b, int c, int d);
 extern int func_0203cc38(void);
 extern int func_02099fe8(void);
-extern int func_02043368(int a, Pair *p);
-extern void func_0203e19c(void);
-extern void func_ov003_02214c04(UnkStruct_02214d2c_2 *self, int a, int b, int c);
-extern void func_0203b144(void);
+extern int func_02043368(int a, Pair *p, unsigned char *result);
+extern int func_0203e19c(void);
+extern int func_ov003_02214c04(UnkStruct_02214d2c_2 *self, int a, int b, int c);
+extern int func_0203b144(void);
 extern int func_02043554(int a, int b);
 extern void func_02060448(void *p);
 extern int func_02008258(UnkStruct_02214d2c_2 *self, int a);
-extern void func_ov003_0220d498(UnkStruct_02214d2c_2 *self, void *d, int a, int b, int c);
-extern void func_020094a0(UnkStruct_02214d2c_2 *self, int a, int b, int c, int d, int e);
+extern int func_ov003_0220d498(UnkStruct_02214d2c_2 *self, void *d, int a, int b, int c);
+extern void *func_020094a0(UnkStruct_02214d2c_2 *self, int a, int b, int c, int d, int e);
 
 void func_ov003_02214d2c(UnkStruct_02214d2c_2 *self)
 {
@@ -190,7 +190,7 @@ void func_ov003_02214d2c(UnkStruct_02214d2c_2 *self)
             if (func_02099fe8() == -1) {
                 pr.x = 0;
                 pr.y = 0;
-                if (func_02043368(0x10, &pr) != 0) {
+                if (func_02043368(0x10, &pr, 0) != 0) {
                     *statep = 3;
                     ok = 0;
                     if (self->unk_820 >= 0x1320 && self->unk_820 <= 0x1322) {

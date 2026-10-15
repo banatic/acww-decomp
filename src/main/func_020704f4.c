@@ -4,7 +4,7 @@
 
 extern unsigned char data_020df6a4;
 
-void func_020704f4(unsigned char *arg0)
+void func_020704f4(unsigned char *arg0, int player)
 {
     unsigned char value;
 

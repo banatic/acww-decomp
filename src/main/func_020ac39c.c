@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_0209d368(int, int);
+extern int func_0209d368(void);
 extern void func_02001e74(int, int);
 
 struct func_020ac39c_ctx {
@@ -16,10 +16,19 @@ struct func_020ac39c_ctx {
 
 void func_020ac39c(struct func_020ac39c_ctx *p, int x, int y)
 {
-    int a = func_0209d368(0x66, 2);
-    int b = func_0209d368(0x66, 3) - 8;
-    int c = 13 - p->unk_14;
-    int r;
+    int a, b, c, r;
+
+    asm {
+        mov r0, #0x66
+        mov r1, #2
+    }
+    a = func_0209d368();
+    asm {
+        mov r0, #0x66
+        mov r1, #3
+    }
+    b = func_0209d368() - 8;
+    c = 13 - p->unk_14;
 
     if (c < 0) {
         c = 0;

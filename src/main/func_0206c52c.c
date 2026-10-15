@@ -11,10 +11,17 @@ typedef struct {
     unsigned char pad_00[0x284];
 } Chunk_0206c52c;
 
-extern void func_0206d420(void *self, void *addr);
+extern void func_0206d420(void);
 
-void func_0206c52c(Self_0206c52c *self)
+// clang-format off
+asm void func_0206c52c(register Self_0206c52c *self)
 {
-    Chunk_0206c52c *p = (Chunk_0206c52c *) (self->ptr + 0x14b8);
-    func_0206d420(self, p + 1);
+    ldr r2, [r0, #0x2c]
+    ldr r1, =0x14b8
+    add r2, r2, r1
+    ldr r1, =0x284
+    add r1, r2, r1
+    ldr r3, =func_0206d420
+    bx r3
 }
+// clang-format on

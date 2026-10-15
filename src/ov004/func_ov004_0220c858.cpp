@@ -63,7 +63,7 @@ typedef struct Pair {
     unsigned int y;
 } Pair;
 
-extern "C" void func_ov004_0220db94(void *ptr);
+extern "C" char *func_ov004_0220db94(void *ptr);
 extern "C" void func_ov004_0220f27c(OV004Obj *self, void *ptr, int a, int b);
 extern "C" void *func_ov004_0223cd50(void);
 extern "C" Pair *func_ov004_0220db5c(void *ptr, unsigned int idx);
@@ -71,7 +71,7 @@ extern "C" OV004Obj *func_ov004_0223cc10(void *p, unsigned int a, unsigned int b
 extern "C" unsigned int func_ov004_0220db68(void *ptr);
 extern "C" void func_ov004_0220db90(void *ptr);
 extern "C" int func_020e8870(void *addr, int val, int param);
-extern "C" void func_ov004_0220ccf8(OV004Obj *self, int v);
+extern "C" int func_ov004_0220ccf8(OV004Obj *self, int v);
 extern "C" void func_ov004_0220d4ec(void *addr, OV004Obj *self);
 
 extern "C" void func_ov004_0220c858(OV004Obj *self)

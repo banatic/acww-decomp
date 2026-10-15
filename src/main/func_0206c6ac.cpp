@@ -24,7 +24,7 @@ struct Parent {
     Sys *sys;
 };
 
-extern "C" void func_0206777c(Sys *sys);
+extern "C" int func_0206777c(Sys *sys);
 extern "C" void func_020a9334(Parent *self, int r);
 extern "C" void func_020a7994(int *field1, int r);
 

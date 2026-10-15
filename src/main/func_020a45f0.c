@@ -4,7 +4,7 @@
 
 extern int *func_020682e0(int);
 extern void func_02068320(int *);
-extern int func_020b5e10(int);
+extern int func_020b5e10(void);
 extern int func_020b63f4(int, int, void *, int, int, int, int);
 extern void func_020a4e94(int, int);
 
@@ -23,7 +23,7 @@ void func_020a45f0(int param)
         func_02068320(p);
         local.a[0] = data_020d1bfc.a[0];
         local.a[1] = data_020d1bfc.a[1];
-        func_020b63f4(func_020b5e10(local.a[2] = data_020d1bfc.a[2]), 13, &local, 0x00800000, 0, 3, 2);
+        func_020b63f4((local.a[2] = data_020d1bfc.a[2], func_020b5e10()), 13, &local, 0x00800000, 0, 3, 2);
         func_020a4e94(param, 0);
     }
 }

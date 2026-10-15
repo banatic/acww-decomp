@@ -18,7 +18,7 @@ struct UnkStruct_0222228c {
     unsigned char unk_A0;
 };
 
-extern "C" void func_020044c0(void *, int, int, int);
+extern "C" int func_020044c0(void *, int, int, int);
 
 extern "C" void func_ov003_0222228c(struct UnkStruct_0222228c *o, int unused, struct Vec *v, int flag)
 {

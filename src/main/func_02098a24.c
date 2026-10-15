@@ -4,9 +4,9 @@
 
 extern int func_02098cf8(int a, int b);
 extern int func_02098adc(int a, int b);
-extern int func_02098aa0(int a, int b, int c);
+extern void func_02098aa0(int a, int b, int c);
 
-int func_02098a24(int a, int b, int c)
+void func_02098a24(int a, int b, int c)
 {
     int t;
 
@@ -23,5 +23,5 @@ int func_02098a24(int a, int b, int c)
             t = 0;
         }
     }
-    return func_02098aa0(a, t, c);
+    func_02098aa0(a, t, c);
 }

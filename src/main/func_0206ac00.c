@@ -3,9 +3,13 @@
  */
 
 extern int func_02050c48(void);
-extern int func_020a9334(int a, int b);
+extern void func_020a9334(void *object, void *next);
 
-int func_0206ac00(int a)
+int func_0206ac00(int object)
 {
-    return func_020a9334(a, func_02050c48());
+    register int preserved_result;
+    int next = func_02050c48();
+    func_020a9334((void *) object, (void *) next);
+    asm { mov preserved_result, r0 }
+    return preserved_result;
 }

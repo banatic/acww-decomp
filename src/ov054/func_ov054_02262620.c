@@ -13,9 +13,9 @@ typedef struct {
     int unk_808;
 } UnkStruct_02262620;
 
-extern int func_0202ec58(void);
+extern int func_0202ec58(void *arg0);
 extern void *func_020984e8(void);
-extern int func_ov054_02260474(UnkStruct_02262620 *self);
+extern int func_ov054_02260474(void);
 extern int func_020a7278(void);
 extern void func_ov054_02262528(UnkStruct_02262620 *self, int mode);
 extern int func_020a12e8(void);
@@ -26,19 +26,25 @@ int func_ov054_02262620(UnkStruct_02262620 *self)
 {
     void *p;
 
-    if (!func_0202ec58()) {
+    if (!func_0202ec58((void *) self)) {
         return 0;
     }
 
     p = func_020984e8();
 
-    if (func_ov054_02260474(self)) {
+    asm {
+        mov r0, self
+    }
+    if (func_ov054_02260474())
+    {
         if (func_020a7278()) {
             func_ov054_02262528(self, 2);
         } else {
             func_ov054_02262528(self, 9);
         }
-    } else {
+    }
+    else
+    {
         if (func_020a12e8() != 0 && func_02099020(p, 9) == 0) {
             func_ov054_02262528(self, 0);
         } else {
@@ -52,7 +58,11 @@ int func_ov054_02262620(UnkStruct_02262620 *self)
     if (self->unk_808 == 0) {
         func_020356c4(0x11, 0x55, 0x7f, 0);
     } else if (self->unk_808 == 1) {
-        if (func_ov054_02260474(self) == 0) {
+        asm {
+            mov r0, self
+        }
+        if (func_ov054_02260474() == 0)
+        {
             func_020356c4(0x11, 0x56, 0x7f, 0);
         }
     }

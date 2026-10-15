@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202f134(int, void *, unsigned short, int);
+extern int func_0202f134(int, void *, unsigned short, int);
 extern void *data_021f42f4;
 
 struct UnkParam {

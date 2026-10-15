@@ -23,7 +23,7 @@ extern void func_020f9728(UnkStruct_020f9408_2 *);
 extern void func_020f92d0(UnkStruct_020f9408_2 *);
 extern void func_020f920c(UnkStruct_020f9408_2 *);
 extern void func_020f8fa8(UnkStruct_020f9408_2 *);
-extern void NNS_SndPlayerReadVariable(UnkStruct_020f9408 **, int, short *);
+extern int NNS_SndPlayerReadVariable(UnkStruct_020f9408 **, int, short *);
 
 void func_020f9408(UnkStruct_020f9408_2 *self)
 {

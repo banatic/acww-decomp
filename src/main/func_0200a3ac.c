@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02057d58(char *p, unsigned int a, unsigned char b, unsigned int c, char *d, unsigned int e);
-extern void func_020109a0(char *p, unsigned int a, unsigned int b, unsigned int c);
-extern void func_02057d0c(unsigned int a, char *p);
-extern void func_0200f328(char *p, unsigned int a);
+extern int func_02057d58(char *p, unsigned int a, unsigned char b, unsigned int c, char *d, unsigned int e);
+extern void func_020109a0(char *p, unsigned int a, unsigned int b, unsigned short c);
+extern int func_02057d0c(unsigned int a, char *p);
+extern int func_0200f328(char *p, unsigned int a);
 
-void func_0200a3ac(char *a, char *b)
+void func_0200a3ac(char *a, char *b, int previous)
 {
     char *p = b + 0xc;
     func_02057d58(a + 0x820, *(unsigned int *) (b + 0xc), *(unsigned char *) (p + 4), *(unsigned int *) (p + 8), a,

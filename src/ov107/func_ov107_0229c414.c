@@ -12,10 +12,10 @@ extern Global *data_020ccf94;
 
 extern int func_ov107_0229d0f0(void *self, unsigned char byte);
 extern int func_02043d34(int a, int b, int c, int d);
-extern int func_ov107_0229d480(void *self);
-extern int func_ov107_0229d3a0(void *self, int a, int b);
+extern void func_ov107_0229d480(void *self);
+extern void func_ov107_0229d3a0(void *self, int a, int b);
 extern unsigned short *func_02045b5c(int a);
-extern int func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct {
     char pad_00[0xac];
@@ -27,7 +27,7 @@ typedef struct {
     int unk_D0;
 } UnkStruct_0229c414;
 
-int func_ov107_0229c414(UnkStruct_0229c414 *self)
+void func_ov107_0229c414(UnkStruct_0229c414 *self)
 {
     int idx = func_ov107_0229d0f0(self, self->unk_B9);
     Global *g = data_020ccf94;
@@ -36,7 +36,8 @@ int func_ov107_0229c414(UnkStruct_0229c414 *self)
 
     if (self->unk_AC == -1) {
         func_ov107_0229d480(self);
-        return func_ov107_0229d3a0(self, 3, 0xff);
+        func_ov107_0229d3a0(self, 3, 0xff);
+        return;
     }
 
     {
@@ -44,6 +45,7 @@ int func_ov107_0229c414(UnkStruct_0229c414 *self)
         unsigned short v = *p;
         self->unk_CC = v >> 8;
         self->unk_D0 = v & 0xff;
-        return func_ov002_02208098(self, 0x16);
+        (int) func_ov002_02208098((void *) (self), 0x16);
+        return;
     }
 }

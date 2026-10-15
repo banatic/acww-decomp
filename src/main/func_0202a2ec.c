@@ -43,7 +43,7 @@ extern void func_02015e10(struct UnkStruct_0202a2ec *a, int b, int c);
 extern void *func_0202d9c4(struct UnkStruct_0202a2ec *a);
 extern int func_0209bb70(int a);
 extern void func_02015de4(struct UnkStruct_0202a2ec *a, int b, int c, int d);
-extern int func_0209bc20(void *a);
+extern void *func_0209bc20(void *record);
 extern int func_0209e3ac(int a, void *b, int c);
 extern int func_02099734(int a);
 extern int func_0202d794(int a, int b);
@@ -100,7 +100,7 @@ int func_0202a2ec(struct UnkStruct_0202a2ec *self, int param1, int param2)
             func_02015e10(self, func_0209b4cc(self->unk_160, idx), idx);
             func_02015e10(self, func_0209b4cc(self->unk_160, 1), 1);
             func_02015de4(self, func_0209bb70((int) func_0202d9c4(self)), idx, 7);
-            if (func_0209e3ac(func_0209bc20(func_0202d9c4(self)), buf, 0x3f) == -1) {
+            if (func_0209e3ac((int) func_0209bc20((void *) func_0202d9c4(self)), buf, 0x3f) == -1) {
                 switch (mode) {
                     case 2:
                         func_0201cf90(self, &st, idx, 0x2b, 0x2b, (void *) data_021c2ac4);

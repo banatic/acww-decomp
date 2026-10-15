@@ -3,7 +3,7 @@
  */
 
 extern int func_0204e414(void);
-extern int func_020b67e8(void);
+extern int func_020b67e8(unsigned int);
 extern int func_0204df08(int);
 
 int func_0204d5c8(int arg0)
@@ -17,7 +17,7 @@ int func_0204d5c8(int arg0)
     if (r5 == 0) {
         r4 = func_0204e414();
     } else {
-        if (func_020b67e8() == 1) {
+        if (func_020b67e8(arg0) == 1) {
             r4 = func_0204df08(r5);
         }
     }

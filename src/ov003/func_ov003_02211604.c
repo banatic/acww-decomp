@@ -65,13 +65,13 @@ extern void *data_020ccf94;
 
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
-extern void func_020109a0(UnkStruct_02211604_2 *self, int a, int b, int c);
-extern void func_0203f7d0(int *a, int *b);
+extern void func_020109a0(UnkStruct_02211604_2 *self, int b, int c, unsigned short d);
+extern int func_0203f7d0(int *a, int *b);
 extern void func_0200f268(UnkStruct_02211604_2 *self, int a);
 extern void func_0204f818(int *x, int *y, int *pos);
 extern void func_ov003_022118d8(char *a, Pair *p, int b, int c);
 extern u16 *func_0204f5e0(void *g, int a, int b, int c, int d, int e);
-extern void func_0200f27c(UnkStruct_02211604_2 *self, int a);
+extern unsigned int *func_0200f27c(UnkStruct_02211604_2 *self, int a);
 extern int func_02073908(void *g, int a);
 extern void func_02035684(int a, int b, int c);
 extern void func_02079750(char *p);
@@ -85,7 +85,7 @@ static __inline int same_item(u16 *p, u16 *t)
     return (*p == 0xfff1) ? 1 : 0;
 }
 
-void func_ov003_02211604(UnkStruct_02211604_2 *self, Msg *m)
+void func_ov003_02211604(UnkStruct_02211604_2 *self, Msg *m, int previous)
 {
     u16 sc[5];
     struct {

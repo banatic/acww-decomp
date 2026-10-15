@@ -18,14 +18,14 @@ typedef struct {
     int b[10];
 } UnkStruct_02299f44_2;
 
-extern void func_02062fbc(UnkStruct_02299f44_2 *c);
+extern void *func_02062fbc(UnkStruct_02299f44_2 *c);
 extern void *func_ov144_0229a06c(UnkStruct_02299f44 *self);
 extern void func_020a8c1c(void *h);
-extern void func_02062ea4(UnkStruct_02299f44_2 *c, u16 *p);
-extern void func_020a8bb8(void *h, UnkStruct_02299f44_2 *c);
+extern int func_02062ea4(UnkStruct_02299f44_2 *c, u16 *p);
+extern void *func_020a8bb8(void *h, UnkStruct_02299f44_2 *c);
 extern void func_02070adc(void *h, int a, int b, int c, int d, int e, int f);
 extern void func_02070a04(void *h, int a, int b);
-extern void func_02062f4c(UnkStruct_02299f44_2 *c);
+extern void *func_02062f4c(UnkStruct_02299f44_2 *c);
 
 void func_ov144_02299f44(UnkStruct_02299f44 *self)
 {

@@ -3,10 +3,10 @@
  */
 
 extern void func_020be6ac(void *self, int a, int b);
-extern int func_ov003_02220c8c(int flag, int v, int c);
+extern int func_ov003_02220c8c(int flag, int v);
 extern void func_020bf2b8(int *out, int a, int b, int c);
 extern void func_020be5d0(int *a, int b, int c, int *d);
-extern void func_ov003_02219774(int arg);
+extern int func_ov003_02219774(void);
 extern void func_020be758(void *self);
 extern int data_021fbb14;
 
@@ -35,7 +35,7 @@ void func_020be904(struct UnkStruct_020be904 *self)
         if (self->unk_08 == 0) {
             flag = (self->unk_21 != 0) ? 1 : 0;
             v = ((self->unk_0C + 0x800) >> 12) - 0x80;
-            if (func_ov003_02220c8c(flag, v, self->unk_0C) == 0) {
+            if (func_ov003_02220c8c(flag, v) == 0) {
                 self->unk_1E = 1;
             }
         }
@@ -53,7 +53,7 @@ void func_020be904(struct UnkStruct_020be904 *self)
     }
 
     if (self->unk_1E != 0) {
-        func_ov003_02219774(self->unk_1E);
+        func_ov003_02219774();
         func_020be758(self);
     }
 }

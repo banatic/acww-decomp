@@ -2,9 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0208ea70(void *a, int b, int c);
+extern void func_0208ea70(int *object, int a, int b);
 
-int func_ov114_0229d52c(void *self, int param)
+void func_ov114_0229d52c(void *self, int param)
 {
-    return func_0208ea70((char *) self + 0x121c, *(int *) ((char *) self + 0x1270) - 0x4e, param + 0x4a);
+    int *field = (int *) ((char *) self + 0x121c);
+    func_0208ea70(field, (int) (*(unsigned int *) ((char *) self + 0x1270) - 0x4eU), (int) ((unsigned int) param + 0x4aU));
 }

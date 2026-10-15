@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020eb694(void);
+extern unsigned long long func_020eb694(const void *data);
 
-void func_02077be0(void)
+unsigned long long func_02077be0(const void *data)
 {
-    func_020eb694();
+    return func_020eb694(data);
 }

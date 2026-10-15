@@ -13,10 +13,10 @@ typedef struct {
     u8 unk_B3;
 } UnkStruct_0229b85c;
 
-extern int func_ov129_0229bbd8(UnkStruct_0229b85c *self);
+extern unsigned short func_ov129_0229bbd8(UnkStruct_0229b85c *self, int previous, unsigned char current);
 extern int func_ov129_0229bca4(UnkStruct_0229b85c *self, u8 b0);
 extern int func_ov129_0229bd1c(UnkStruct_0229b85c *self);
-extern int func_ov129_0229b9a0(UnkStruct_0229b85c *self);
+extern void func_ov129_0229b9a0(UnkStruct_0229b85c *self);
 extern int func_ov129_0229ba2c(UnkStruct_0229b85c *self);
 
 int func_ov129_0229b85c(UnkStruct_0229b85c *self)
@@ -39,7 +39,7 @@ int func_ov129_0229b85c(UnkStruct_0229b85c *self)
     return 1;
 
 L_880:
-    idx = func_ov129_0229bbd8(self);
+    idx = func_ov129_0229bbd8(self, self->unk_B3, self->unk_B0);
     if (idx == 0xffff) {
         goto L_89c;
     }

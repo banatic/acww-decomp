@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206fa8c(int a, int b);
+extern void func_0206fa8c(int a);
 void func_ov050_02261480(int a, int b)
 {
     if (b != 0) {
-        func_0206fa8c(0, b);
+        func_0206fa8c(0);
     }
 }

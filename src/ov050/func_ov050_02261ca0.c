@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201b3a4(int, int);
+extern void func_0201b3a4(int, int);
 
 struct UnkStruct_02261ca0 {
     char pad_00[0xb4];
@@ -11,7 +11,7 @@ struct UnkStruct_02261ca0 {
     int unk_C4;
 };
 
-int func_ov050_02261ca0(struct UnkStruct_02261ca0 *p)
+void func_ov050_02261ca0(struct UnkStruct_02261ca0 *p)
 {
-    return func_0201b3a4(p->unk_B4, p->unk_C4);
+    func_0201b3a4(p->unk_B4, p->unk_C4);
 }

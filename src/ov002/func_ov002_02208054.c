@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206fe7c(int, int);
+extern void func_0206fe7c(void);
 extern void RtcSendPxiCommand(int);
 
 struct UnkStruct_02208054 {
@@ -16,7 +16,7 @@ int func_ov002_02208054(int unused, int p)
     int masked;
     masked = data_021fbe40.val & 0xFFF;
     if (masked) {
-        func_0206fe7c(0xFFF, masked);
+        func_0206fe7c();
         RtcSendPxiCommand(0x866);
         if (p != 0) {
             RtcSendPxiCommand(0x3B);

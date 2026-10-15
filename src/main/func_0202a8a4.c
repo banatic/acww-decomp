@@ -12,10 +12,10 @@ extern Pair data_020d9178;
 
 extern void MI_CpuFill8(void *dst, int fill, int len);
 extern void func_02015774(void *a, int b, void *c, int d, int e);
-extern void func_02015828(void *a, int b);
+extern int func_02015828(void *a, int b);
 extern void func_0202dbf0(void *a, Pair arg);
 
-void func_0202a8a4(void *p)
+void func_0202a8a4(void *p, int event)
 {
     MI_CpuFill8(data_021c1e84, 0, 0x40);
     func_02015774(p, 0x11, data_021c1e84, 6, 0);

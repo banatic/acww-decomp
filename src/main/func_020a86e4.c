@@ -9,9 +9,13 @@ struct UnkStruct_020a86e4 {
     unsigned int unk_0C;
 };
 
-void func_020a86e4(struct UnkStruct_020a86e4 *s, unsigned char *out0, unsigned char *out1, unsigned char *out2)
+int func_020a86e4(struct UnkStruct_020a86e4 *s, unsigned char *out0, unsigned char *out1, unsigned char *out2)
 {
+    int result;
+
     *out0 = func_020a87c8(s->unk_0C, 0);
     *out1 = func_020a87c8(s->unk_0C, 1);
-    *out2 = func_020a87c8(s->unk_0C, 2);
+    result = func_020a87c8(s->unk_0C, 2);
+    *out2 = (unsigned char) result;
+    return result;
 }

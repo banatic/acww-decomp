@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov118_0229bda4(void *self);
-extern void func_020641c8(void *obj);
+extern void func_ov118_0229bda4(void);
+extern void *func_020641c8(void *obj);
 extern void func_02064210(const void *str, void *obj);
-extern void func_020b496c(int value, void *obj);
+extern void *func_020b496c(int value, void *obj);
 extern int func_ov118_0229b630(void *self);
 extern void func_02070adc(int a, int b, int c, int d, int e, int f, int g);
-extern void func_0207094c(int a, int b);
+extern int func_0207094c(int a, int b);
 extern void func_02070a04(int a, int b, int c);
-extern void func_020641b0(void *obj);
+extern void *func_020641b0(void *obj);
 extern void func_ov002_02207f20(void *self, int a, int b, int c, int d);
 extern void func_02002708(int n);
 extern void func_ov002_02207e80(void *self, int a, int b, int c);
@@ -31,7 +31,7 @@ void func_ov118_0229c2a0(UnkStruct_0229c2a0 *self)
     char obj[0x20];
     int r;
 
-    func_ov118_0229bda4(self);
+    func_ov118_0229bda4();
     func_020641c8(obj);
     func_02064210(data_021dc7aa, obj);
     func_020b496c(0, obj);

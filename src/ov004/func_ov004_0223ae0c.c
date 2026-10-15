@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int func_0204bc64(u16 *);
-extern void func_02064328(char *, void *, ...);
+extern int func_02064328(char *, void *, ...);
 extern void *func_02064b2c(char *, void *, int, int);
 extern int NNS_FndMountArchive(void *, void *, void *);
 extern char *NNS_FndGetArchiveFileByName(void *);
@@ -15,9 +15,9 @@ extern int func_02055140(void *, void *);
 extern int func_ov004_0223adfc(void *);
 extern void func_02055060(void *, int, int, int, int, int);
 extern void func_02055050(void *);
-extern void func_02055dc8(void *, void (*)(void), void *);
-extern void func_0210285c(void *);
-extern void func_ov004_0223b1b8(void);
+extern void func_02055dc8(void *, int, int);
+extern int func_0210285c(void *);
+extern void func_ov004_0223b1b8(void *);
 extern char data_ov004_022560fc, data_ov004_02256110;
 extern void *data_ov004_02255f70;
 
@@ -52,7 +52,7 @@ int func_ov004_0223ae0c(char *self)
             int a = func_ov004_0223adfc(self);
             func_02055060(self + 0x2c, a, 1, 0x1000, ok, ok);
             func_02055050(self + 0x2c);
-            func_02055dc8(self + 0x2c, func_ov004_0223b1b8, self);
+            func_02055dc8(self + 0x2c, (int) func_ov004_0223b1b8, (int) self);
             ok = 1;
         }
         func_0210285c(buf);

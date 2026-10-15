@@ -3,7 +3,7 @@
  */
 
 extern int func_02008a54(int, int, int);
-int func_02008a2c(int a, int b)
+void func_02008a2c(int a, int b)
 {
-    return func_02008a54(a, 1, b);
+    func_02008a54(a, 1, b);
 }

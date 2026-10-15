@@ -6,7 +6,7 @@ extern int func_020961a8(int);
 extern int func_0203ec98(void);
 extern void func_0206f5cc(void);
 extern int func_02095f28(void);
-extern void func_02095f08(int);
+extern int func_02095f08(int);
 extern struct UnkStruct_0203df10 *func_0203f504(void);
 
 struct UnkStruct_0203df10 {

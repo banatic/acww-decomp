@@ -7,9 +7,9 @@ typedef struct {
     int unk_20;
 } UnkStruct_020ab338;
 
-extern int func_020ab504(int a, int b);
+extern int func_020ab504(int a);
 
-int func_020ab338(UnkStruct_020ab338 *obj, int b)
+int func_020ab338(UnkStruct_020ab338 *obj)
 {
-    return func_020ab504(obj->unk_20, b);
+    return func_020ab504(obj->unk_20);
 }

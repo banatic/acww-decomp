@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0201a5d8(void);
+extern void func_0201a5d8(void *);
 extern void func_02091278(int, int, short *, int);
 extern void func_0201a518(int *, int, short, int, unsigned short, int);
 
@@ -11,7 +11,7 @@ void func_0201a48c(int *a, int b, short c, int d, unsigned short e)
     int i;
     int zero;
 
-    func_0201a5d8();
+    func_0201a5d8(a);
     zero = 0;
 
     for (i = 0; i < 4; i++) {

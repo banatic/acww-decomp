@@ -3,7 +3,7 @@
  */
 
 extern int func_0208e484(void *ptr);
-extern void func_ov002_02208098(void *obj, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char c);
 extern void func_ov101_0229ca00(void *obj);
 
 void func_ov101_0229d240(void *p)

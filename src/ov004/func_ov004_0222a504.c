@@ -17,9 +17,9 @@ extern int func_0203e1c4(void);
 extern void func_020109fc(char *, int, int, int);
 extern int func_0200fbe0(char *);
 extern void func_0205eae0(char *, int, int, int);
-extern int func_0203ee14(char *, char *);
-extern int func_0203ee08(char *, char *);
-extern void func_0200f27c(char *, int);
+extern void func_0203ee14(char *, char *);
+extern void func_0203ee08(char *, char *);
+extern unsigned int *func_0200f27c(char *, int);
 extern void func_0200f268(char *, int);
 extern void func_020a8164(char *, char *);
 extern int func_0209a110(void *);
@@ -27,9 +27,9 @@ extern int func_02043540(char *, u16);
 extern int func_0206f6d4(u16);
 extern int func_0206fbc0(void);
 extern int func_0206fc6c(void);
-extern void func_0203e19c(void);
+extern int func_0203e19c(void);
 extern u8 func_02008258(char *, int);
-extern void func_0200d4e8(char *, int, int, int);
+extern int func_0200d4e8(char *, int, int, int);
 #define CALL_BASE(fn)                                                                                                         \
     {                                                                                                                         \
         char *base = self;                                                                                                    \

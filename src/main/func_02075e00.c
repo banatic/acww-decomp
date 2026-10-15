@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern void *data_020ccf94;
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
-extern void func_02137550(void *p, int n);
+extern char *func_02137550(void *p, int n);
 extern u8 *func_02073d28(void *h, int n);
 extern void func_02077b3c(u8 *p, int a, int b);
 extern void *func_02090040(int x);

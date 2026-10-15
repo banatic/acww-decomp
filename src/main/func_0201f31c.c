@@ -25,7 +25,7 @@ extern struct {
 } data_020c8ba0;
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(UnkStruct_0201f31c *, char *, unsigned char *, int, int, int, int, int, int);
+extern int func_0202da38(UnkStruct_0201f31c *, char *, unsigned char *, int, int, int, int, int, int);
 
 void func_0201f31c(UnkStruct_0201f31c *self, UnkStruct_0201f31c_2 *out)
 {

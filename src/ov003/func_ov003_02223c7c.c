@@ -34,7 +34,7 @@ extern void func_ov003_02223dc8(struct UnkStruct_02223c7c_4 *, void *, u32 *, u3
                                 struct UnkStruct_02223c7c *);
 extern void func_ov003_022240fc(void *, u32, int, int, int, struct UnkStruct_02223c7c_3 *, int);
 extern int func_ov003_022240cc(void *);
-extern void func_02090ac4(u32, struct UnkStruct_02223c7c_3 *, int, struct UnkStruct_02223c7c_2 *);
+extern int func_02090ac4(u32, struct UnkStruct_02223c7c_3 *, int, struct UnkStruct_02223c7c_2 *);
 
 void *func_ov003_02223c7c(struct UnkStruct_02223c7c_4 *self, int p1, int p2, int p3, struct UnkStruct_02223c7c *p4, int p5)
 {

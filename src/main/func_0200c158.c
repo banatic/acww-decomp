@@ -4,7 +4,7 @@
 
 extern int func_02056f94(char *p);
 extern int func_02008258(char *p, int val);
-extern void func_0200c9a8(char *p, int a, int b, int c);
+extern int func_0200c9a8(char *p, int a, int b, int c);
 
 void func_0200c158(char *p)
 {

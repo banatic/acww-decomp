@@ -5,7 +5,7 @@
 extern int func_0208e484(void *);
 extern void RtcSendPxiCommand(int);
 extern void func_ov002_02209114(void *, unsigned char, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 void func_ov105_0229e1cc(void *base)
 {

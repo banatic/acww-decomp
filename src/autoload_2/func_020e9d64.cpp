@@ -23,13 +23,13 @@ class UnkStruct_020e9d64 {
 };
 
 extern "C" {
-void func_020ea0a4(UnkStruct_020e9d64 *, int);
+void func_020ea0a4(UnkStruct_020e9d64 *);
 void func_020ea084(UnkStruct_020e9d64 *);
 
 int func_020e9d64(UnkStruct_020e9d64 *obj, int value)
 {
     int result;
-    func_020ea0a4(obj, value);
+    func_020ea0a4(obj);
     result = obj->target(value);
     func_020ea084(obj);
     return result;

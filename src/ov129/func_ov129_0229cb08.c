@@ -22,7 +22,7 @@ extern void func_ov129_0229c1f8(UnkStruct_0229cb08 *);
 extern void func_ov129_0229c2fc(UnkStruct_0229cb08 *);
 extern void func_ov129_0229c79c(UnkStruct_0229cb08 *);
 extern void func_ov129_0229c758(UnkStruct_0229cb08 *);
-extern void func_ov002_02208098(UnkStruct_0229cb08 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov002_0220a620(void *, int);
 extern void func_ov127_02299c08(void *, s32, s32);
 
@@ -38,7 +38,7 @@ void func_ov129_0229cb08(UnkStruct_0229cb08 *self)
             }
         }
         func_ov129_0229c1f8(self);
-        func_ov002_02208098(self, 3);
+        func_ov002_02208098((void *) (self), 3);
         func_ov129_0229c2fc(self);
     } else {
         switch (self->unk_AE) {
@@ -46,7 +46,7 @@ void func_ov129_0229cb08(UnkStruct_0229cb08 *self)
                 if (func_ov002_0220a620((char *) self + 0x1d4, 6) == 0) {
                     func_ov129_0229c79c(self);
                 } else {
-                    func_ov002_02208098(self, 4);
+                    func_ov002_02208098((void *) (self), 4);
                     func_ov129_0229c2fc(self);
                 }
                 break;
@@ -59,7 +59,7 @@ void func_ov129_0229cb08(UnkStruct_0229cb08 *self)
             case 3:
                 self->unk_AD = self->unk_AE;
                 func_ov127_02299c08((char *) self + 0x734, self->unk_AD, 0);
-                func_ov002_02208098(self, 5);
+                func_ov002_02208098((void *) (self), 5);
                 break;
             default:
                 break;

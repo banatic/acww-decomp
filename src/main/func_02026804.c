@@ -35,15 +35,15 @@ extern int func_0209bc40(int a);
 extern int func_0209b91c(int a);
 extern int func_0209bd44(int a);
 extern int func_0209b914(int a);
-extern void func_0209bcc4(int a, int *idx);
+extern int func_0209bcc4(int a, int *idx);
 extern int func_0209b8d0(int a);
 extern int func_0207dd10(int a);
-extern void func_02080864(int a, int b);
-extern int func_020822b0(void);
-extern void func_02015dd4(void *self, int a, u8 *buf, void *d, u8 *p);
+extern int func_02080864(int a, int b);
+extern int func_020822b0(unsigned char *);
+extern int func_02015dd4(void *self, int a, u8 *buf, void *d, u8 *p);
 extern int func_0208150c(int a);
 extern int func_020036e8(int a);
-extern void func_0202da38(void *self, void *p1, void *p2, int len, int a, int f0, u8 f4, int x, int y);
+extern int func_0202da38(void *self, void *p1, void *p2, int len, int a, int f0, u8 f4, int x, int y);
 
 void func_02026804(UnkStruct_02026804 *self, UnkStruct_02026804_2 *out)
 {
@@ -70,8 +70,7 @@ void func_02026804(UnkStruct_02026804 *self, UnkStruct_02026804_2 *out)
             local_data.unk_00 = data_020d9cc0[idx][r6];
             if (r4 == 4) {
                 r6 = *(int *) ((char *) self->unk_100 + 0x830);
-                func_02080864(r6, func_0207dd10(r6));
-                buf[0] = (u8) func_020822b0();
+                buf[0] = (u8) func_020822b0((unsigned char *) func_02080864(r6, func_0207dd10(r6)));
                 buf[1] = 0;
                 func_02015dd4(self, 0, buf, data_020d9fa0, &buf[1]);
             }

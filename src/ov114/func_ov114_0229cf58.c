@@ -19,7 +19,7 @@ typedef struct {
 
 extern void *func_ov114_0229cd70(UnkStruct_0229cf58 *self);
 extern int func_020a7bf4(void *p, int idx);
-extern void func_020a8a34(void *h, int a);
+extern int func_020a8a34(void *h, int a);
 extern void func_020a8c1c(void *h);
 extern void func_02070adc(void *h, int a, int b, int c, int d, int e, int f);
 extern void func_02070a04(void *h, int a, int b);

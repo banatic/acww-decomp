@@ -11,7 +11,7 @@ typedef struct {
     unsigned char unk_291D;
 } UnkStruct_0229cd7c;
 
-extern int func_ov100_0229d630(void);
+extern int func_ov100_0229d630(void *object, unsigned int index);
 extern int func_ov100_0229d620(UnkStruct_0229cd7c *p, int n);
 extern int func_ov100_0229d5d4(UnkStruct_0229cd7c *p, int n);
 extern int func_ov094_0229aaac(void *sub, int v);
@@ -23,7 +23,7 @@ void func_ov100_0229cd7c(UnkStruct_0229cd7c *p, int n)
 {
     int result;
 
-    if (func_ov100_0229d630() == 0 && func_ov100_0229d620(p, n) == 0) {
+    if (func_ov100_0229d630(p, n) == 0 && func_ov100_0229d620(p, n) == 0) {
         return;
     }
 

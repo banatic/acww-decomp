@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern unsigned long long OS_GetTick(int a, int b);
+extern unsigned long long OS_GetTick(void);
 extern unsigned int data_021fbf34;
 
 void func_020ed5f8(int a, int b)
@@ -13,5 +13,5 @@ void func_020ed5f8(int a, int b)
     if (b != 0) {
         return;
     }
-    data_021fbf34 = (unsigned int) ((OS_GetTick(a, b) << 6) / 0x82ea);
+    data_021fbf34 = (unsigned int) ((OS_GetTick() << 6) / 0x82ea);
 }

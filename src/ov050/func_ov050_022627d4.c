@@ -16,14 +16,14 @@ typedef struct {
 } Local2;
 
 extern int func_0209ad9c(void *arg, int value);
-extern int func_0209b4d4(int arg);
-extern void func_02094fd4(void *arg);
-extern int func_0209bb90(int arg, int value);
+extern int func_0209b4d4(void *object);
+extern void *func_02094fd4(void *arg);
+extern void func_0209bb90(int arg, int value);
 extern int func_02099fe8(void);
 extern void func_0209a934(void *arg);
-extern void func_0209ac50(void *arg1, void *arg2, unsigned short *arg3);
+extern int func_0209ac50(void *arg1, void *arg2, unsigned short *arg3);
 extern void func_02068404(int arg1, int arg2, void *arg3);
-extern void func_02094fbc(void *arg);
+extern void *func_02094fbc(void *arg);
 
 void func_ov050_022627d4(UnkStruct_022627d4 *a, void *b)
 {
@@ -31,7 +31,7 @@ void func_ov050_022627d4(UnkStruct_022627d4 *a, void *b)
     Local2 local2;
     int r6;
 
-    r6 = func_0209b4d4(func_0209ad9c(b, 0));
+    r6 = func_0209b4d4((void *) (func_0209ad9c(b, 0)));
     func_02094fd4(&local2);
     func_0209bb90(r6, 2);
     a->unk_B4[0x73e] = 0;

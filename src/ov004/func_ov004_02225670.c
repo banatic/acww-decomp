@@ -8,7 +8,7 @@ extern int func_0201c2a4(void *self, int a);
 extern void func_02016108(void *p, int n);
 extern int gt2GetIncomingBufferSize(void *p);
 extern int func_0201c314(void *self, int n);
-extern void func_020147fc(void *p, int a, int b, int c);
+extern int func_020147fc(void *p, int a, int b, int c);
 
 int func_ov004_02225670(char *self)
 {

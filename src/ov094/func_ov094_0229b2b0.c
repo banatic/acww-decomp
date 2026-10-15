@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(void *);
+extern int func_020984e8(void);
 extern int func_02099734(int);
 extern int func_02098e44(int, int);
 extern int func_ov094_0229b1e8(void *, int);
@@ -11,7 +11,7 @@ extern void func_ov094_0229b134(void *, int);
 
 void func_ov094_0229b2b0(void *self)
 {
-    int v = func_02098e44(func_02099734(func_020984e8(self)), 0);
+    int v = func_02098e44(func_02099734(func_020984e8()), 0);
     int idx = 0;
     int i = 0;
     int zero = 0;

@@ -40,10 +40,10 @@ extern int func_0209a034(int a);
 extern void func_0209a050(int a);
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
-extern void func_02015330(UnkStruct_0226175c_2 *self, u16 *p, int a, int b, int c);
+extern int func_02015330(UnkStruct_0226175c_2 *self, u16 *p, int a, int b, int c);
 extern int func_0209af80(int v, char *q);
-extern int func_0209b0f0(int a);
-extern void func_0209bb90(int a, int b);
+extern void *func_0209b0f0(void *record);
+extern void func_0209bb90(void *a, int b);
 extern void func_ov054_02261cc4(UnkStruct_0226175c_2 *self, int a);
 extern void func_0206844c(int h, u8 *p, int k);
 
@@ -83,7 +83,7 @@ void func_ov054_0226175c(UnkStruct_0226175c_2 *self)
                 } else {
                     code = 0x50;
                 }
-                func_0209bb90(func_0209b0f0(v), 1);
+                func_0209bb90(func_0209b0f0((void *) v), 1);
             }
         }
     }

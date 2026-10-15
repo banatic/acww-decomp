@@ -7,7 +7,7 @@
 extern int func_ov095_0229ba44(void *p, int b, int c);
 extern int func_ov095_0229bebc(void *p, int b);
 extern void func_ov112_0229fd20(void *self);
-extern void func_ov112_022a02f4(void *self, int arg);
+extern int func_ov112_022a02f4(void *self, int arg);
 extern int func_ov112_022a01b0(void *self, int b);
 extern void func_ov112_0229ff50(void *self);
 extern void func_ov112_022a0144(void *self);

@@ -6,12 +6,12 @@
 
 extern u16 data_021fbe40[];
 
-extern int func_ov002_02208014(u8 *self);
+extern int func_ov002_02208014(void);
 extern void func_ov118_0229b8b0(u8 *self);
 extern void func_ov118_0229a894(u8 *self);
 extern int func_ov090_02299078(int a);
 extern int func_ov090_02299098(int a);
-extern void func_ov118_0229c438(u8 *self, int a);
+extern int func_ov118_0229c438(u8 *self, int a);
 extern int func_ov090_02298f84(int a);
 extern void func_ov002_0220a254(u8 *p);
 extern void func_ov118_0229b834(u8 *self);
@@ -29,7 +29,7 @@ void func_ov118_0229b8c8(u8 *self)
     int oy;
     // ENDDECLS
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov118_0229b8b0(self);
         return;
     }

@@ -7,7 +7,7 @@ extern unsigned char data_020e54a8;
 extern void func_020736bc(int, void *, int);
 extern void func_ov003_0222e4c0(unsigned char);
 
-void func_02076dac(int arg0)
+void func_02076dac(int arg0, int sequence, unsigned char category, unsigned int player)
 {
     unsigned char local[4];
     unsigned int flag;

@@ -6,7 +6,7 @@ extern unsigned short data_020c80f8;
 extern unsigned int data_020c814c;
 extern int data_021fbee8;
 
-extern void func_02019d0c(unsigned char *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
+extern int func_02019d0c(unsigned char *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
 extern void func_0201ad18(unsigned char *a, int b, int c, int d, void *e, int f, int g, int h);
 
 int func_ov046_02261960(unsigned char *self)

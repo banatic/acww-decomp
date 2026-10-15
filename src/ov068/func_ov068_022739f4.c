@@ -10,11 +10,11 @@ struct UnkStruct_022739f4_2 {
     unsigned char unk_74A;
 };
 
-extern void func_020984e8(void);
+extern int func_020984e8(void);
 extern struct UnkStruct_022739f4 *func_02095794(int);
 extern void func_0204f818(int *, int *, struct UnkStruct_022739f4 *);
 extern int func_020960f8(int, int);
-extern void func_0203e070(struct UnkStruct_022739f4_2 *, int);
+extern int func_0203e070(struct UnkStruct_022739f4_2 *, int);
 
 int func_ov068_022739f4(struct UnkStruct_022739f4_2 *p)
 {

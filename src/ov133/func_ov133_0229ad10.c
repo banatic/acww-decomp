@@ -3,13 +3,13 @@
  */
 
 extern char data_ov133_0229c908;
-extern void func_ov002_0220ba0c(void *addr);
-extern void func_ov002_0220afdc(void *addr);
-extern void func_ov002_02209cb4(void *addr);
-extern void __cxa_vec_cleanup(void *addr, int a, int b, void (*cb)(void));
-extern void func_ov002_0220826c(void *addr);
+extern void *func_ov002_0220ba0c(void *addr);
+extern void *func_ov002_0220afdc(void *addr);
+extern void *func_ov002_02209cb4(void *addr);
+extern void __cxa_vec_cleanup(void *addr, int a, int b, void (*callback3)(void *));
+extern void *func_ov002_0220826c(void *addr);
 extern void func_ov002_02207f6c(void *addr);
-extern void func_02070be8(void);
+extern int **func_02070be8(void *element);
 
 typedef struct {
     void *unk_00;         // offset 0x00
@@ -23,14 +23,18 @@ typedef struct {
     char unk_1394;        // 0x1394
 } UnkStruct_0229ad10;
 
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
+
 UnkStruct_0229ad10 *func_ov133_0229ad10(UnkStruct_0229ad10 *obj)
 {
     obj->unk_00 = &data_ov133_0229c908;
     func_ov002_0220ba0c(&obj->unk_1394);
     func_ov002_0220afdc(&obj->unk_180);
     func_ov002_02209cb4(&obj->unk_11C);
-    __cxa_vec_cleanup(&obj->unk_B0, 1, 0x6c, func_02070be8);
+    __cxa_vec_cleanup(&obj->unk_B0, 1, 0x6c, DisposeElement_func_02070be8);
     func_ov002_0220826c(obj);
     func_ov002_02207f6c(obj);
     return obj;
 }
+
+#undef DisposeElement_func_02070be8

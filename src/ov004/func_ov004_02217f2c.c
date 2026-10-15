@@ -14,11 +14,18 @@ typedef struct {
 #define S(p, o) (*(short *) ((p) + (o)))
 extern void *func_ov004_0223cb10(void), *func_ov004_0223ca9c(void *, void *);
 extern u8 *func_020961a8(int);
-extern int func_ov004_0223c700(void), func_ov004_0223cb20(void *), func_020ea990(Vec *, Vec *), func_ov004_022180d4(Cell *),
-    func_ov004_0223cb18(void *), func_ov004_0220fe24(Vec *, int, int, int, int), func_ov004_0223cb30(void *),
-    func_ov004_0222c14c(int *, int *, short *, short, int);
+extern int func_ov004_0223c700(void);
+extern int func_ov004_0223cb20(void *);
+extern int func_020ea990(Vec *, Vec *);
+extern int func_ov004_022180d4(Cell *);
+extern int func_ov004_0223cb18(void *);
+extern int func_ov004_0220fe24(Vec *, int, int, int, int);
+extern int func_ov004_0223cb30(void *);
+extern int func_ov004_0222c14c(int *, int *, short *, short, int);
 extern Cell *func_ov004_02218384(Cell *), *func_ov004_02218374(Cell *), *func_ov004_02218394(Cell *, int);
-extern void func_ov004_022185b0(void *, Cell *), func_0204f794(Vec *, int, int), func_020ea6e0(Vec *, int);
+extern int func_ov004_022185b0(void *, Cell *);
+extern void func_0204f794(Vec *, int, int);
+extern void func_020ea6e0(Vec *, int);
 extern Vec *func_ov004_0223cb28(void *);
 void func_ov004_02217f2c(u8 *self)
 {

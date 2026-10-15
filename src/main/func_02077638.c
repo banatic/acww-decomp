@@ -14,9 +14,9 @@ extern void (*data_020ccfa0[256])(void *, unsigned short);
 void func_02077638(unsigned char *p, unsigned int remaining)
 {
     UnkStruct_02077638 t;
+
     unsigned short length;
     unsigned char opcode;
-
     while (remaining != 0) {
         MI_CpuCopy8(p, t.tmp, 3);
         p += 3;

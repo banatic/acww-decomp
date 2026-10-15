@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02019c20(char *p, int a, int b, int c, int d, int e);
+extern int func_02019c20(char *p, int a, int b, int c, int d, int e);
 extern void func_0201ad18(char *p, int a, int b, int c, int d, int e, int f, int g);
 extern int data_020c814c;
 

@@ -11,11 +11,12 @@ struct UnkStruct_02229634 {
 extern void func_ov004_02229718(const unsigned char *a, int *c, int *d, unsigned short *e, unsigned char *b);
 extern int func_ov004_02229774(int self, int c, int d, short e, int b, int f, short g);
 
-int func_ov004_02229634(char *self, short arg)
+void func_ov004_02229634(char *self, short arg)
 {
     struct UnkStruct_02229634 t;
     int c, d;
 
     func_ov004_02229718((const unsigned char *) (self + 0x8f0), &c, &d, (unsigned short *) &t.e, &t.b);
-    return func_ov004_02229774((int) self, c, d, t.e, t.b, 6, arg);
+    func_ov004_02229774((int) self, c, d, t.e, t.b, 6, arg);
+    return;
 }

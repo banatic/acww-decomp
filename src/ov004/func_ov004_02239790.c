@@ -15,7 +15,7 @@ struct UnkStruct_02239790 {
     int unk_228;
 };
 
-extern void func_020e88dc(int *p, int v, int step);
+extern int func_020e88dc(int *p, int v, int step);
 
 void func_ov004_02239790(struct UnkStruct_02239790 *self, int step, int hi, int lo)
 {

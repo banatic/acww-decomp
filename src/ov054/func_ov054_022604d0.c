@@ -33,7 +33,7 @@ extern int func_0201c0e0(UnkStruct_022604d0_3 *);
 extern int func_0201c2a4(UnkStruct_022604d0_3 *, int);
 extern void func_02016108(UnkStruct_022604d0_2 *, int);
 extern void func_ov054_02262528(UnkStruct_022604d0_3 *, int);
-extern int func_020a7278(UnkStruct_022604d0_3 *);
+extern int func_020a7278(void);
 extern int func_0201c014(UnkStruct_022604d0_3 *);
 extern int func_0201c040(UnkStruct_022604d0_3 *, int *, int *);
 
@@ -74,7 +74,7 @@ void func_ov054_022604d0(UnkStruct_022604d0_3 *self, int ev, int v)
             break;
         case 8:
             if (v == 4) {
-                if (func_020a7278(self)) {
+                if (func_020a7278()) {
                     func_0201c054(self, 1, data_020ccf94->unk_64, 4);
                     func_ov054_02262528(self, 2);
                 } else {

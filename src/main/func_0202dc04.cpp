@@ -9,7 +9,7 @@ class UnkStruct_0202dc04 {
     char pad_00[0xf0];
     Pmf pmf;
 };
-extern "C" void func_02016128(UnkStruct_0202dc04 *);
+extern "C" void func_02016128(void *object);
 extern "C" void func_0202dc04(UnkStruct_0202dc04 *self)
 {
     func_02016128(self);

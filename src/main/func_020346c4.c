@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020346a4(unsigned char *base, int a, int b);
+extern int func_020346a4(unsigned char *base);
 
 int func_020346c4(unsigned char *base, int a, int b)
 {
     int idx;
     unsigned char *p;
 
-    idx = func_020346a4(base, a, b);
+    idx = func_020346a4(base);
     if (idx != -1) {
         *base |= (1 << idx);
         p = base + idx;

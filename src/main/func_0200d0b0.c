@@ -6,7 +6,7 @@ extern int func_02010718(void *a);
 extern int func_020113b0(int a, int b);
 extern int func_02011398(int a, int b);
 extern int func_0200dc48(void *a);
-extern void func_020113e0(short *p, int b);
+extern int func_020113e0(short *p, int b);
 extern void func_020110a0(void *a, short *p);
 extern int FX_MulFunc(int a, int b);
 extern void func_0201107c(void *a, int *p);

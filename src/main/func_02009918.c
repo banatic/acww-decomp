@@ -25,7 +25,7 @@ struct Packed {
 
 extern void func_020109fc(void *p, int a, int b, int c);
 extern void func_02009a24(void *dst, struct UnkStruct_02009918 s, int p4, int p5);
-extern void func_0200f27c(void *p, int a);
+extern unsigned int *func_0200f27c(void *p, int a);
 extern int func_0200ee0c(void *p);
 extern int func_02073908(void *a, int b);
 extern int func_020b65c4(void);

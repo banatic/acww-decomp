@@ -3,7 +3,7 @@
  */
 
 extern int data_021ee418;
-int func_020900f0(int *);
+extern void *func_020900f0(void *buffer);
 int func_02065ec0(int);
 int func_020900f4(int *);
 void func_0206844c(int, char *, int);
@@ -11,7 +11,7 @@ void func_0206844c(int, char *, int);
 void func_ov147_02299338(void *self)
 {
     int *p = &data_021ee418;
-    if (func_02065ec0(func_020900f0(p)) == 0) {
+    if (func_02065ec0((int) func_020900f0(p)) == 0) {
         return;
     }
     if (func_020900f4(p) != 0) {

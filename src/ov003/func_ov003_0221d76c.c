@@ -17,17 +17,17 @@ extern int data_ov003_0223c908[3];
 extern int data_ov003_0223c8fc;
 extern void *data_ov003_0223c928[];
 extern void *data_021c9b1c;
-extern void __register_global_object(void *, void *, void *);
-extern void func_020012dc(void);
+extern void __register_global_object(void *object, void *destructor, void *node);
+extern void func_020012dc(void *object);
 extern void func_01ffd070(void *, void *, void *);
-extern void func_02003348(int, int, void *, int, void *);
+extern int func_02003348(int, int, void *, int, void *);
 extern int func_ov003_0221d5f4(void *);
 extern int func_ov003_022203b8(void);
 extern int func_ov003_022203c0(void);
 extern int func_ov003_0221ffc0(int, int);
 extern int func_ov003_0221ffb4(int, int);
-extern void NNS_G3dBindMdlTex(void *, void *);
-extern void NNS_G3dBindMdlPltt(void *, void *);
+extern int NNS_G3dBindMdlTex(void *, void *);
+extern int NNS_G3dBindMdlPltt(void *, void *);
 extern int func_ov003_0221fe9c(void *);
 extern int func_ov003_0221d64c(void *);
 extern int func_ov003_0221fea4(int, int);
@@ -35,9 +35,9 @@ extern int func_02055f2c(void *, int, int);
 extern int func_ov003_0221feb4(void *);
 extern int func_0205650c(void *, u32, void *);
 extern int func_ov003_0221fea0(void *);
-extern int func_02056424(void *, int, int, int, int, int);
+extern void func_02056424(void *, int, int, int, int, int);
 extern int func_02055e00(void *);
-extern int func_020563dc(void *, int);
+extern void func_020563dc(void *, int);
 struct UnkStruct_0221d76c {
     u8 pad_00[0x5c];
     u8 unk_5C;
@@ -56,6 +56,9 @@ struct UnkStruct_0221d76c {
     u8 pad_348[0x36c - 0x348];
     u8 unk_36C;
 };
+
+#define DestroyGlobal_020012dc ((void *) &func_020012dc)
+
 int func_ov003_0221d76c(struct UnkStruct_0221d76c *self)
 {
     int inRange = 0;
@@ -87,7 +90,7 @@ int func_ov003_0221d76c(struct UnkStruct_0221d76c *self)
         data_ov003_0223c908[0] = 0xffffe000;
         data_ov003_0223c908[1] = 0x1000;
         data_ov003_0223c908[2] = 0x2000;
-        __register_global_object(&data_ov003_0223c908, func_020012dc, &data_ov003_0223c8fc);
+        __register_global_object(&data_ov003_0223c908, DestroyGlobal_020012dc, &data_ov003_0223c8fc);
         data_ov003_0223c8f8 |= 1;
     }
     func_01ffd070(buf, &self->unk_5C, &data_ov003_0223c908);
@@ -127,3 +130,5 @@ int func_ov003_0221d76c(struct UnkStruct_0221d76c *self)
     }
     return 1;
 }
+
+#undef DestroyGlobal_020012dc

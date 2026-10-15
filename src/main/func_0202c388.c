@@ -5,7 +5,7 @@
 extern int func_020984e8(void);
 extern int func_0207ef48(int);
 extern int func_02099870(int);
-extern int func_02094ffc(void);
+extern int func_02094ffc(void *);
 extern int func_020800fc(int);
 extern int func_02015e70(int, int, int);
 extern int func_0209dcac(void);
@@ -25,8 +25,7 @@ int func_0202c388(int a, int *b, int c)
     sp0 = func_020984e8();
     r4 = func_0207ef48(r6);
     if (r4 == 1) {
-        func_02099870(sp0);
-        if (func_02094ffc() != 0) {
+        if (func_02094ffc((void *) func_02099870(sp0)) != 0) {
             r4 = 0;
         }
     }

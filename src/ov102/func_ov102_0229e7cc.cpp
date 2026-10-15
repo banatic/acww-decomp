@@ -35,7 +35,7 @@ struct UnkStruct_0229e7cc {
 extern int func_ov102_0229c2a8(UnkStruct_0229e7cc *self, int flag);
 extern void func_ov102_0229cdb8(UnkStruct_0229e7cc *self);
 extern void func_ov102_0229c3bc(UnkStruct_0229e7cc *self);
-extern int func_0206fe54(int value);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *ptr);
 extern void func_ov094_0229a7cc(void *ptr, int a, int b);
 extern void func_ov094_0229a850(void *ptr, int a, int b);
@@ -47,7 +47,8 @@ int func_ov102_0229e7cc(UnkStruct_0229e7cc *self)
     if (func_ov102_0229c2a8(self, 1) == 0) {
         return 1;
     }
-    if (func_0206fe54(self->sub.f2()) != 0) {
+    self->sub.f2();
+    if (func_0206fe54() != 0) {
         func_ov002_02209eb8(&self->unk_2274);
     }
     func_ov102_0229cdb8(self);

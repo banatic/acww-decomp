@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206b97c(void *self, unsigned int value);
+extern void func_0206b97c(void);
 extern char abs_000014b8;
 extern char abs_0000033c;
 
@@ -11,10 +11,15 @@ typedef struct {
     unsigned int unk_24;
 } Struct020693f0;
 
-void func_020693f0(Struct020693f0 *self)
+// clang-format off
+asm void func_020693f0(register Struct020693f0 *self)
 {
-    unsigned int value = self->unk_24;
-    value += (unsigned int) &abs_000014b8;
-    value += (unsigned int) &abs_0000033c;
-    func_0206b97c(self, value);
+    ldr r2, [r0, #0x24]
+    ldr r1, =abs_000014b8
+    add r2, r2, r1
+    ldr r1, =abs_0000033c
+    add r1, r2, r1
+    ldr r3, =func_0206b97c
+    bx r3
 }
+// clang-format on

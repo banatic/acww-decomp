@@ -15,10 +15,12 @@ struct Obj_ov004_02254fc8 : public Obj_ov004_02254b28, public Base_02066994 {
     void func_ov004_0222df4c();
     int func_ov004_0222e0a0();
     void func_ov004_0222e0b8();
+
     int func_ov004_0222e124();
     void func_ov004_0222e128();
     int func_ov004_0222e1b4();
     void func_ov004_0222e1b8();
+
     int func_ov004_0222e220();
     void func_ov004_0222e25c();
     int func_ov004_0222e44c();

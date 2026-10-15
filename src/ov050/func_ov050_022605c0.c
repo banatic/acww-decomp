@@ -20,10 +20,10 @@ extern void func_0201aff4(void *p, int n);
 extern int func_02073d90(void *);
 extern short *func_0209d358(int a, int b);
 extern void *func_020984e8(void);
-extern void func_02099640(void);
+extern int func_02099640(int argument0);
 extern int func_02099020(void *p, int n);
 extern void func_ov050_02263640(void *p, int n);
-extern void func_0203e0a8(void *obj, int n);
+extern int func_0203e0a8(void *obj, int n);
 extern void func_ov050_02264834(void *obj, int n);
 
 int func_ov050_022605c0(void *obj)
@@ -47,7 +47,7 @@ int func_ov050_022605c0(void *obj)
             return 0;
         }
         h = func_020984e8();
-        func_02099640();
+        func_02099640((int) h);
         if (func_02099020(h, 1) != 0) {
             return 0;
         }

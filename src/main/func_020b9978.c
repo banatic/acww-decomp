@@ -3,14 +3,14 @@
  */
 
 extern char data_021f6ca0[];
-extern void func_02065c2c(void *a, void *b);
+extern int func_02065c2c(void *a, void *b);
 
-void func_020b9978(void *p)
+int func_020b9978(void *p)
 {
     void *q;
     q = p;
     if (q) {
         q = (char *) q + 4;
     }
-    func_02065c2c(data_021f6ca0, q);
+    return func_02065c2c(data_021f6ca0, q);
 }

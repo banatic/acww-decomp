@@ -31,7 +31,7 @@ extern int func_0204f490(void *, int *, int *, int *, int *, unsigned short *, u
 extern void func_0204f778(Vec *, int, int, int, int);
 extern int func_0200322c(Vec *, Vec *);
 extern void func_0201aff4(void *, int);
-extern void func_02019c6c(void *, int, int);
+extern int func_02019c6c(void *, int, int);
 extern void func_ov068_02266c34(void *, void *, int, int, int, const void *, int, int, int);
 extern void func_02035684(int, int, int);
 extern void func_020791a4(int);

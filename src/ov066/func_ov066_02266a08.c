@@ -9,12 +9,12 @@ typedef struct {
 
 extern UnkStruct_02266a08 *data_ov066_0226bdec;
 
-extern int WM_Reset(void);
+extern int WM_Reset(void (*callback)(void *));
 extern void func_ov066_0226686c(int mode);
 
-void func_ov066_02266a08(void)
+void func_ov066_02266a08(void (*callback)(void *))
 {
-    int mode = WM_Reset();
+    int mode = WM_Reset(callback);
     data_ov066_0226bdec->unk_3C |= 0x400;
     if (mode == 2) {
         return;

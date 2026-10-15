@@ -14,10 +14,10 @@ typedef struct {
     int unk_C8;
 } UnkStruct_02278ab8;
 
-void func_020160b4(void *self);
-int func_020ab504(void);
+int func_020160b4(void *self);
+int func_020ab504(void *argument0);
 void func_0209a050(int val);
-void func_02015330(void *self, void *cmd, int a, int b, int c);
+int func_02015330(void *self, void *cmd, int a, int b, int c);
 void func_0206844c(void *obj, unsigned char *cmd, unsigned char *data);
 int func_ov081_02278da8(void *self);
 
@@ -29,8 +29,7 @@ void func_ov081_02278ab8(UnkStruct_02278ab8 *self)
     unsigned char *p;
     int r4;
 
-    func_020160b4(self);
-    t = func_020ab504();
+    t = func_020ab504((void *) func_020160b4(self));
     p = data_ov081_02279868;
     r4 = 0xff;
     val = self->unk_C8;

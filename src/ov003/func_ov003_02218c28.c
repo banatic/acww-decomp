@@ -27,13 +27,13 @@ typedef struct UnkStruct_02218c28 {
 } UnkStruct_02218c28;
 
 extern void func_0204f794(Vec *out, int a, int b);
-extern void func_020109a0(UnkStruct_02218c28 *self, int a, int b, int c);
+extern void func_020109a0(UnkStruct_02218c28 *self, int b, int c, unsigned short d);
 extern int func_0200fbe0(UnkStruct_02218c28 *self);
 extern void func_0205eae0(unsigned char *p, int a, int b, int c);
 extern void *data_021c80bc;
 extern unsigned short *func_0204f5a8(void *ctx, Vec *v, int z);
 
-void func_ov003_02218c28(UnkStruct_02218c28 *self, Src *src)
+void func_ov003_02218c28(UnkStruct_02218c28 *self, Src *src, int previous)
 {
     Vec t;
     Rec *r;

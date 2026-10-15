@@ -6,7 +6,7 @@
 #include "cpp/ov115/Obj_ov115_0229e8b8.h"
 
 extern "C" int func_ov002_02209f64(void *p);
-extern "C" void func_ov002_02208098(void *self, unsigned char b);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 struct UnkStruct_0229e140 {
     char pad_00[0x94];
@@ -15,11 +15,11 @@ struct UnkStruct_0229e140 {
     unsigned char unk_142C;
 };
 
-int Obj_ov115_0229e8b8::func_ov115_0229e140()
+void Obj_ov115_0229e8b8::func_ov115_0229e140()
 {
     struct UnkStruct_0229e140 *self = (struct UnkStruct_0229e140 *) this;
     if (func_ov002_02209f64(&self->unk_94) == 0) {
-        func_ov002_02208098(self, self->unk_142C);
+        func_ov002_02208098((void *) (self), self->unk_142C);
         ((Obj_ov115_0229e8b8 *) self)->func_ov115_0229e5e8();
     }
 }

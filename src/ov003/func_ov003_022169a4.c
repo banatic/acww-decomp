@@ -4,7 +4,7 @@
 
 extern void func_ov003_02216a70(void *base, unsigned char *a, unsigned char *b, unsigned char *c, unsigned char *d,
                                 unsigned char *e);
-extern void func_ov003_02216ab8(void *obj, unsigned char a, int b, void *c, int d, int e);
+extern int func_ov003_02216ab8(void *obj, unsigned char a, int b, void *c, int d, int e);
 
 void func_ov003_022169a4(void *obj, int param)
 {

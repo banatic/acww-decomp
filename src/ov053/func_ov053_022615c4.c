@@ -17,7 +17,7 @@ typedef struct UnkStruct_022615c4_2 UnkStruct_022615c4_2;
 extern int func_0202ec58(UnkStruct_022615c4 *p);
 extern UnkStruct_022615c4_2 *data_020ccf94;
 extern int func_02073d90(UnkStruct_022615c4_2 *p);
-extern void func_02030864(int);
+extern int func_02030864(int);
 extern void func_ov053_02261524(UnkStruct_022615c4 *p, int);
 extern int func_020b65b8(void);
 

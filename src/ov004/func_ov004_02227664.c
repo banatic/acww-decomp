@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_0222626c();
+extern void func_ov004_0222626c(void *argument0, unsigned int argument1, unsigned int argument2);
 
 void func_ov004_02227664(char *self)
 {

@@ -13,9 +13,9 @@ extern struct GBase data_021d5658;
 extern u8 data_020e2944;
 
 extern __thumb int func_02094cf8(int, int, int, int, int, int);
-extern __thumb int func_02091494(struct GBase *, u16, int, int, int, int, int);
+extern void func_02091494(struct GBase *, u16, int, int, int, int, int);
 extern __thumb int func_02090ac4(int, int, int, void *);
-extern __thumb void func_020914dc(struct GBase *);
+extern void func_020914dc(struct GBase *);
 
 int func_020916e0(u32 p0, u32 p1, u32 p2, u32 p3)
 {

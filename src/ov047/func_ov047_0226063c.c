@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov047_02261ae8(void);
-extern void func_020157d4(void *, void (*)(void), int, int);
-extern void func_02015828(void *, int);
+extern unsigned short func_ov047_02261ae8(void *unused0, int unused1);
+extern void func_020157d4(void *obj, unsigned int address, unsigned char state, unsigned char flags);
+extern int func_02015828(void *, int);
 extern void func_ov047_02261f84(void *, int);
 extern int func_0209f150(void *, int);
 extern int data_021dc7a8;
@@ -12,7 +12,7 @@ extern int data_021dc7a8;
 void func_ov047_0226063c(void *obj, int flag)
 {
     if (flag == 0) {
-        func_020157d4(obj, func_ov047_02261ae8, 0xd, 0);
+        func_020157d4(obj, (unsigned int) func_ov047_02261ae8, 0xd, 0);
         func_02015828(obj, 0);
         func_ov047_02261f84(obj, 2);
     } else {

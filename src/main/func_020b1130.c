@@ -4,12 +4,12 @@
 
 extern int data_021ee418;
 extern void *func_020900e4(int *ptr);
-extern void func_020b1a24(void);
+extern void func_020b1a24(void *);
 extern void *func_020b15b0(void);
 extern int func_020b1974(void *list, int i);
 extern int func_020644cc(int n);
 extern int func_020b1530(int i);
-extern void func_020b1a0c(void *obj, int x);
+extern void *func_020b1a0c(void *obj, int x);
 
 void func_020b1130(void)
 {
@@ -19,7 +19,7 @@ void func_020b1130(void)
     int i;
 
     obj = func_020900e4(&data_021ee418);
-    func_020b1a24();
+    func_020b1a24(obj);
     count = 0;
     list = func_020b15b0();
 

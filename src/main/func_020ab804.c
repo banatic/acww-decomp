@@ -3,8 +3,8 @@
  */
 
 extern unsigned char data_021f43ec;
-extern void func_020ab8dc(unsigned char *p);
-extern void func_020a82e8(unsigned char *p);
+extern void *func_020ab8dc(unsigned char *p);
+extern int func_020a82e8(unsigned char *p);
 extern void func_020ab79c(void *p);
 
 typedef struct {

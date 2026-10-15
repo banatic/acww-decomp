@@ -3,7 +3,7 @@
  */
 
 extern int data_ov003_0223c0d4;
-void func_02056578(void *p);
+void *func_02056578(void *p);
 void *func_ov003_02228fd0(void *self)
 {
     *(int *) self = (int) &data_ov003_0223c0d4;

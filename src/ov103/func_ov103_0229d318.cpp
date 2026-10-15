@@ -6,7 +6,7 @@
 #include "cpp/ov103/Obj_ov103_0229e2e0.h"
 
 extern "C" int func_ov002_02209f64(const unsigned char *);
-extern "C" void func_ov002_02208098(unsigned char *, int);
+extern "C" unsigned char *func_ov002_02208098(unsigned char *, unsigned char value);
 extern "C" void func_ov103_0229cbac(unsigned char *, int);
 extern "C" void func_ov103_0229c994(unsigned char *);
 

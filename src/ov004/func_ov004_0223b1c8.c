@@ -36,7 +36,7 @@ struct UnkStruct_0223b1c8_6 {
 extern struct UnkStruct_0223b1c8_2 data_021fbe48;
 extern struct UnkStruct_0223b1c8_2 *func_ov004_0223b138(struct UnkStruct_0223b1c8_2 *p);
 extern void MTX_MultVec43(struct UnkStruct_0223b1c8 *a, struct UnkStruct_0223b1c8_2 *m, struct UnkStruct_0223b1c8 *out);
-extern void func_ov004_0223b128(struct UnkStruct_0223b1c8_2 *p, struct UnkStruct_0223b1c8 *out);
+extern void *func_ov004_0223b128(struct UnkStruct_0223b1c8_2 *p, struct UnkStruct_0223b1c8 *out);
 
 void func_ov004_0223b1c8(struct UnkStruct_0223b1c8_6 *a)
 {

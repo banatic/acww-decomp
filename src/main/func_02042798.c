@@ -5,14 +5,14 @@
 extern int func_02094fd4(void *);
 extern int func_02094fbc(void *);
 extern int func_0207cec0(const void *, int);
-extern int func_0208150c(void);
-extern void *func_02003648(void);
-extern void func_0208249c(void *, void *);
-extern void func_0203d7c4(int, void *);
+extern unsigned int func_0208150c(unsigned int object);
+extern int func_02003648(unsigned char *item);
+extern int func_0208249c(char *out, int value);
+extern int func_0203d7c4(int, void *);
 extern int func_020644cc(int);
 extern void MI_CpuCopy8(const unsigned char *, void *, unsigned int);
 extern int func_0203fcb4(int, void *, int);
-extern void func_02077f3c(int, const void *, unsigned char, unsigned char, unsigned char);
+extern void *func_02077f3c(int, const void *, unsigned char, unsigned char, unsigned char);
 extern unsigned int data_020cb5c0[];
 extern const unsigned char data_020db864[];
 
@@ -37,6 +37,8 @@ void func_02042798(int unused, unsigned char *p, unsigned char *q)
 
     for (i = 0; i < 7; i++) {
         int code;
+        unsigned int record;
+        unsigned int item;
         r5 = -1;
         code = *(unsigned short *) p;
         switch (code) {
@@ -48,8 +50,8 @@ void func_02042798(int unused, unsigned char *p, unsigned char *q)
             case 5:
             case 6:
             case 7:
-                if (func_0207cec0((const void *) data_021e5a2c, code) != 0 && func_0208150c() != 0) {
-                    func_0208249c(buf20, func_02003648());
+                if ((record = func_0207cec0((const void *) data_021e5a2c, code)) != 0 && (item = func_0208150c(record)) != 0) {
+                    func_0208249c(buf20, func_02003648((unsigned char *) item));
                     func_0203d7c4(c, buf20);
                     r5 = func_020644cc(3) + 0x1e;
                 }

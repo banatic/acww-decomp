@@ -25,7 +25,7 @@ struct UnkStruct_02217cb8_3 : UnkStruct_02217cb8, UnkStruct_02217cb8_2 {
 
 extern "C" int func_ov004_0222c110(int kind, int flag);
 extern "C" void func_0203ee08(UnkStruct_02217cb8_3 *d, UnkStruct_02217cb8_2 *b);
-extern "C" void func_0203e020(UnkStruct_02217cb8_3 *d);
+extern "C" int func_0203e020(UnkStruct_02217cb8_3 *d);
 
 extern "C" void func_ov004_02217cb8(UnkStruct_02217cb8_3 *self)
 {

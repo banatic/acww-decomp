@@ -3,7 +3,7 @@
  */
 
 extern void func_0204f794(void *dst, int a, int b);
-extern void func_02090c2c(int id, void *buf, int c, void *d);
+extern int func_02090c2c(int id, void *buf, int c, void *d);
 extern int data_020e25d4;
 
 void func_020449d4(unsigned short *kind, int *data)

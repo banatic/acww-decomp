@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_01ffd41c(void);
+extern int func_01ffd41c(unsigned char *);
 extern int FX_MulFunc(int, int);
 extern int func_0203a7b8(void *, void *, int *, int, void *);
 extern short FX_SinCosTable_[];
@@ -33,7 +33,7 @@ int func_02003428(struct UnkStruct_02003428 *self)
 {
     int r4_var;
     int val;
-    if (func_01ffd41c() == 0) {
+    if (func_01ffd41c((unsigned char *) self) == 0) {
         return 0;
     }
     self->unk_68 = self->unk_5C;

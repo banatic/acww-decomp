@@ -10,7 +10,7 @@ typedef struct {
     unsigned short unk_1C;
 } UnkStruct_02019144;
 
-extern UnkStruct_02019144 *func_02019de4(char *a, char *b);
+extern UnkStruct_02019144 *func_02019de4(char *a);
 extern void func_0201b1a4(char *a, char *b, int c, int d, int e);
 extern void func_0201aff4(char *a, int b);
 extern void func_0201b350(char *a, int b);
@@ -22,7 +22,7 @@ int func_02019144(char *p0, char *p1)
     UnkStruct_02019144 *a;
     int tmp;
 
-    a = func_02019de4(p0, p1);
+    a = func_02019de4(p0);
     func_0201b1a4(p1 + 0x350, p1, 3, a->unk_1A, a->unk_1C);
     func_0201aff4(p1 + 0x350, a->unk_18);
     func_0201b350(p1 + 0x3aa, -2);

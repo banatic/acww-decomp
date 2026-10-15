@@ -4,7 +4,7 @@
 
 typedef struct UnkStruct_02036be4 UnkStruct_02036be4;
 
-extern int func_02036648(UnkStruct_02036be4 *p, int flag);
+extern int func_02036648(void);
 extern int func_0203736c(int a, int b, int c, int d, int e, int f, int g);
 extern void func_02036ab4(UnkStruct_02036be4 *p);
 extern void func_02036b50(UnkStruct_02036be4 *p, int sel);
@@ -23,7 +23,7 @@ void func_02036be4(UnkStruct_02036be4 *p, int flag)
     int res5, res6, res7, res8;
 
     if (flag != 0) {
-        a = func_02036648(p, flag);
+        a = func_02036648();
         sel = 0xffff;
 
         res1 = func_0203736c(a, 0x17, 0, 0, 0x17, 0x1e, 0);

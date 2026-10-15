@@ -10,9 +10,9 @@ struct Entry {
 
 extern struct Entry data_021c80f4[12];
 extern void OS_Terminate(void);
-extern int func_0204f9ec(struct Entry *);
+extern void func_0204f9ec(struct Entry *);
 
-int func_0204f8ec(unsigned char key)
+void func_0204f8ec(unsigned char key)
 {
     struct Entry *p = 0;
     unsigned int i = 0;
@@ -37,8 +37,6 @@ test:
     }
 
     if (p->count == 0) {
-        return func_0204f9ec(p);
+        func_0204f9ec(p);
     }
-
-    return p->count;
 }

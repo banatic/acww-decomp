@@ -11,11 +11,11 @@ struct UnkStruct_0221bc78 {
 };
 
 extern "C" {
-int func_0206fbc0(void *);
-int func_0206fc6c(int);
-void func_020ae270(void);
+int func_0206fbc0(void);
+int func_0206fc6c(void);
+int func_020ae270(void);
 void func_0206844c(void *, char *, char *);
-int func_020b23ec(unsigned short, int);
+void func_020b23ec(unsigned short, int);
 extern char data_ov003_02238778;
 }
 
@@ -24,11 +24,11 @@ void Obj_ov003_02238630::func_ov003_0221bc78()
     char buf[8];
     int ret;
 
-    ret = func_0206fbc0(this);
+    ret = func_0206fbc0();
     if (ret == 0) {
         return;
     }
-    if (func_0206fc6c(ret) != 0) {
+    if (func_0206fc6c() != 0) {
         func_020ae270();
         buf[0] = 3;
         func_0206844c(unk_40, buf, &data_ov003_02238778);

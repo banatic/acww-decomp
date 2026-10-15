@@ -4,10 +4,10 @@
 
 #include "types.h"
 
-void func_0200e92c(void *);
+unsigned int func_0200e92c(void *);
 void func_0200e90c(void *, int, int, short);
 int func_0200e894(int, void *);
-void func_0200e91c(void *);
+int func_0200e91c(void *);
 
 int func_ov003_02210f58(int a, int *b, int c, int d, short e)
 {

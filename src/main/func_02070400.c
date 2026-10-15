@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(unsigned int);
-extern void func_020ee660(void *);
+extern void *func_020ee660(void *);
 
 extern unsigned char data_020da13c[];
 extern unsigned char data_020df548[];

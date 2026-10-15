@@ -3,7 +3,7 @@
  */
 
 extern char data_020e29dc[];
-extern void func_020948b8(int, int, char *, int, char *, int, char *, int, int);
+extern int func_020948b8(int, int, char *, int, char *, int, char *, int, int);
 
 void func_02094228(int a)
 {

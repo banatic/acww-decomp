@@ -15,7 +15,7 @@ extern "C" unsigned short func_0204bc50(int, int);
 extern "C" Shape *func_02052e3c(Shape *, unsigned short *);
 extern "C" Cell *func_02052dc0(Shape *, unsigned int);
 extern "C" unsigned int func_02052e20(Shape *);
-extern "C" void *func_02052e38(Shape *);
+extern "C" void func_02052e38(Shape *);
 extern "C" void *data_021c80bc;
 extern "C" unsigned short *func_0204f5e0(void *, unsigned int, unsigned int, int, int, unsigned char);
 extern "C" int func_02031b38(int, int);

@@ -4,7 +4,7 @@
 
 extern int func_0207f270(int);
 extern int func_020794d0(int);
-extern int func_0209bd44(void);
+extern int func_0209bd44(void *);
 extern int func_020984e8(void);
 extern int func_02099020(int, int);
 extern int func_020644cc(int);
@@ -22,7 +22,7 @@ int func_02028b74(int a, int b, int c)
     v = func_020794d0(func_0207f270(b));
     result = 0;
 
-    if (func_0209bd44() == 0) {
+    if (func_0209bd44((void *) v) == 0) {
         goto end;
     }
     if (func_02099020(func_020984e8(), 1) != 0) {

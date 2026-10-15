@@ -14,7 +14,7 @@ struct Dest {
     struct Pair pair;
 };
 
-int func_0201ca9c(struct Dest *s)
+int func_0201ca9c(struct Dest *s, int event)
 {
     s->flag = 0;
     s->pair = data_020d92d0;

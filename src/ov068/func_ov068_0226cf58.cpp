@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_0208150c(void);
-extern "C" int func_02003704(void);
+extern "C" unsigned int func_0208150c(unsigned int argument0);
+extern "C" int func_02003704(void *argument0);
 extern "C" int func_0207f270(void *p);
-extern "C" int func_0207944c(void);
+extern "C" int func_0207944c(int obj);
 
 class UnkStruct_0226cf58 {
   public:
@@ -42,10 +42,11 @@ extern "C" int func_ov068_0226cf58(UnkStruct_0226cf58 *obj)
     void *ret;
     ret = obj->v25();
     if (ret != 0) {
-        func_0208150c();
-        if (func_02003704() != 0) {
-            if (func_0207f270(ret) != 0) {
-                return func_0207944c();
+
+        if (func_02003704((void *) func_0208150c((unsigned int) ret)) != 0) {
+            int context = func_0207f270(ret);
+            if (context != 0) {
+                return func_0207944c(context);
             }
         }
     }

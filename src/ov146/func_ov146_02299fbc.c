@@ -17,7 +17,7 @@ typedef struct UnkStruct_02299fbc {
     u8 cnt[0x20];
     Rec rec[0x20];
 } UnkStruct_02299fbc;
-extern void *func_ov146_0229a174(UnkStruct_02299fbc *s);
+extern void *func_ov146_0229a174(void);
 extern int func_ov146_02299ee8(UnkStruct_02299fbc *s, u8 *p);
 extern void MI_CpuCopy8(void *dst, void *src, int n); // func_021175fc
 extern int func_ov146_0229a42c(UnkStruct_02299fbc *s);
@@ -34,7 +34,7 @@ void func_ov146_02299fbc(UnkStruct_02299fbc *self)
     int off;
     u16 digits[3];
 
-    buf = (u8 *) func_ov146_0229a174(self);
+    buf = (u8 *) func_ov146_0229a174();
     count = 0;
     for (i = 0; i < 0x20; i++) {
         off = i * 0x23;

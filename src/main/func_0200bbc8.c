@@ -4,7 +4,7 @@
 
 extern volatile unsigned char data_020e54a8;
 extern void func_0200bda0(void *p, int *pairbuf, int *result);
-extern void func_0200bdbc(void *self, int *pair, int a, int b, int c);
+extern int func_0200bdbc(void *self, int *pair, int a, int b, int c);
 
 void func_0200bbc8(void *self, int param2)
 {

@@ -4,7 +4,7 @@
 
 extern int func_02008258(void *self, int value);
 extern int func_02056f94(void *ptr);
-extern void func_ov003_02216eb4(void *self, int a, int b);
+extern int func_ov003_02216eb4(void *self, int a, int b);
 
 typedef struct UnkStruct_02216fb0 {
     char pad_00[0x2d0];

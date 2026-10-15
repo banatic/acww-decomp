@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b6818(void);
+extern int func_020b6818(unsigned int);
 
-unsigned char func_02060c60(void)
+unsigned char func_02060c60(unsigned int code)
 {
     int ret;
     unsigned char result;
 
-    ret = func_020b6818();
+    ret = func_020b6818(code);
     result = 0;
     if (ret != -1) {
         result = (unsigned char) (1 << ret);

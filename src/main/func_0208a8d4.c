@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208a8cc(void);
+extern void func_0208a8cc(void *);
 
 void func_0208a8d4(unsigned char *r0)
 {
@@ -39,5 +39,5 @@ void func_0208a8d4(unsigned char *r0)
     }
     *(int *) (r0 + 0x48) = 0;
     *(int *) (r0 + 0x4c) = 0;
-    func_0208a8cc();
+    func_0208a8cc(r0);
 }

@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208008(void);
+extern int func_ov002_02208008(void *unused0);
 extern int func_ov100_0229c60c(void *self, int a, int b);
 extern void func_ov100_0229cecc(void *self);
 extern void func_ov100_0229cbd4(void *self);
-extern void func_ov002_02207d24(void *p, int a);
+extern int func_ov002_02207d24(void *p, int a);
 extern void func_ov002_02207d00(void *p);
 extern int func_ov100_0229d630(void *self, unsigned char b);
 extern int func_ov100_0229d620(void *self, unsigned char b);
@@ -33,7 +33,7 @@ extern Globals data_021fbe40;
 
 void func_ov100_0229dd54(Object *self)
 {
-    int r = func_ov002_02208008();
+    int r = func_ov002_02208008(self);
     if (func_ov100_0229c60c(self, r, 1) != 0) {
         func_ov100_0229cecc(self);
         func_ov100_0229cbd4(self);

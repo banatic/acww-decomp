@@ -6,8 +6,8 @@ extern char *data_020ccf94;
 extern int func_02073908(char *g, int a);
 extern int func_02008258(void *self, int a);
 extern int func_02051e28(void);
-extern void func_0200d4e8(void *self, int a, int b, int c);
-extern void func_ov004_0222af6c(int self, int b, int c, int d, int e, int f, short g);
+extern int func_0200d4e8(void *self, int a, int b, int c);
+extern int func_ov004_0222af6c(int self, int b, int c, int d, int e, int f, short g);
 
 void func_ov004_0222aff0(char *self)
 {

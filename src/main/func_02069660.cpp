@@ -34,8 +34,8 @@ struct UnkStruct_02069660 {
 
 extern "C" {
 extern int func_020a86e4(void *, void *, void *, void *);
-extern int func_020808ec(void);
-extern int func_0206bb9c(void *, int, void *);
+extern int func_020808ec(unsigned int);
+extern void func_0206bb9c(void);
 extern int func_0206b964(void *, void *);
 extern int data_020df138;
 }
@@ -57,12 +57,17 @@ extern "C" int func_02069660(void *a0)
         int callResult = obj->v26();
         flag = 0;
         if (callResult) {
-            int x = func_020808ec();
+            int x = func_020808ec((unsigned int) callResult);
             if (x != buf[0]) {
                 flag = 1;
             }
         } else {
-            func_0206bb9c(a0, 0x1021, &data_020df138);
+            asm {
+            mov r0, a0
+            ldr r1, =0x1021
+            ldr r2, =data_020df138
+            bl func_0206bb9c
+            }
         }
         buf[1] = (&buf[2])[flag];
     }

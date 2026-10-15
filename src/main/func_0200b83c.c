@@ -8,9 +8,9 @@ typedef struct {
     int c;
 } UnkStruct_0200b83c;
 
-extern void func_0200e92c(UnkStruct_0200b83c *);
+extern unsigned int func_0200e92c(UnkStruct_0200b83c *);
 extern void func_0200e90c(UnkStruct_0200b83c *, int, int, short);
-extern void func_0200e91c(UnkStruct_0200b83c *);
+extern int func_0200e91c(UnkStruct_0200b83c *);
 extern int func_0200e894(void *, UnkStruct_0200b83c *);
 extern void func_0200b894(int *, int *, int, int, int);
 

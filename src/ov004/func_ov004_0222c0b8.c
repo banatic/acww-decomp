@@ -5,7 +5,7 @@
 #pragma opt_propagation off
 
 extern void *func_02096718(int a);
-extern int func_0200e828(void);
+extern int func_0200e828(void *arg0);
 extern int func_ov004_02229774(void *p, int a, int b, short e, int f, int g, short h);
 
 int func_ov004_0222c0b8(int *a, int *b, short *c, unsigned char *d)
@@ -15,7 +15,7 @@ int func_ov004_0222c0b8(int *a, int *b, short *c, unsigned char *d)
 
     if (p != 0) {
         n = 6;
-        if (n <= func_0200e828()) {
+        if (n <= func_0200e828((void *) p)) {
             return 0;
         }
         return func_ov004_02229774(p, *a, *b, (short) (*c + 0x8000), d[0], n, -1);

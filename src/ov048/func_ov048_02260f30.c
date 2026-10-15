@@ -3,7 +3,7 @@
  */
 
 extern int func_ov048_022609d0(void *this);
-extern int func_ov048_02260e28(void *this, int arg1, int arg2);
+extern void func_ov048_02260e28(void *this, int arg1, int arg2);
 extern int func_020e8840(int arg);
 
 int func_ov048_02260f30(void *this)

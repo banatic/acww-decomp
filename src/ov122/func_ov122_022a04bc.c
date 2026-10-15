@@ -3,8 +3,8 @@
  */
 
 extern int func_0206fe54(void);
-extern int func_ov122_0229ff2c(int);
-extern int func_ov122_0229ff94(int);
+extern void func_ov122_0229ff2c(int);
+extern void func_ov122_0229ff94(int);
 extern int func_ov002_02208e28(int);
 
 void func_ov122_022a04bc(int param)

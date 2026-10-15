@@ -6,16 +6,16 @@ extern unsigned short data_021fbefc;
 extern unsigned char data_021fbef8;
 extern unsigned char data_021fbef4;
 
-extern void func_020ed5f8(void);
+extern void func_020ed5f8(int argument0, int argument1);
 extern void func_020ed5f4(void);
-extern void func_020ed68c(void);
-extern void func_020ed658(void);
-extern void func_020ed6a8(void);
+extern void func_020ed68c(int size, int peer);
+extern void func_020ed658(int argument0, int argument1, int argument2);
+extern void func_020ed6a8(int status, int local, int cancelled, int peer, int connection, void *userData);
 
 extern void func_ov065_02277e7c(unsigned char, void (*)(), int, void (*)(), int);
-extern void func_ov065_0227ed18(void (*)());
-extern void func_ov065_0227ed04(void (*)());
-extern void func_ov065_02277d38(void (*)(), int);
+extern void *func_ov065_0227ed18(void (*)(int, int));
+extern void *func_ov065_0227ed04(void (*)(int, int, int));
+extern void func_ov065_02277d38(void (*)(int, int, int, int, int, void *), void *);
 
 int func_020eb7ac(void)
 {

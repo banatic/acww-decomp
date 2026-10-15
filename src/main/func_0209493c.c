@@ -32,9 +32,9 @@ struct Iter {
 
 extern struct Vec data_021fbee8;
 
-extern void func_02034270(struct Iter *, struct Vec *, int, int);
+extern int func_02034270(struct Iter *, struct Vec *, int, int);
 extern int func_0203419c(struct Iter *);
-extern void func_02094cf8(int, int, struct Vec *, int, int, int);
+extern int func_02094cf8(int, int, struct Vec *, int, int, int);
 extern void func_0203423c(struct Iter *);
 
 int func_0209493c(struct Head *h, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)

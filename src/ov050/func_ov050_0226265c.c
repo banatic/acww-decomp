@@ -16,7 +16,7 @@ struct UnkStruct_0226265c {
     u32 unk_D0;
 };
 
-void func_ov050_0226265c(struct UnkStruct_0226265c *self)
+void func_ov050_0226265c(struct UnkStruct_0226265c *self, int event)
 {
     int res1, res2, val;
     char *base, *other;

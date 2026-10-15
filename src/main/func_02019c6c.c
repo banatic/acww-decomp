@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
 
-void func_02019c6c(int a, int b, int c)
+int func_02019c6c(int a, int b, int c)
 {
-    func_02019d0c(a, 0, b, 0, 0, 0, 0, 0, 0, c, 0);
+    return func_02019d0c(a, 0, b, 0, 0, 0, 0, 0, 0, c, 0);
 }

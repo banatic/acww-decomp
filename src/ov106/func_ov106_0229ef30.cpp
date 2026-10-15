@@ -5,18 +5,18 @@
 
 #include "cpp/ov106/Obj_ov106_0229f6e0.h"
 
-extern "C" int func_0206f58c(unsigned char *);
-extern "C" int func_0206f56c(int);
+extern "C" void func_0206f58c(void);
+extern "C" int func_0206f56c(void);
 extern "C" void func_ov106_0229cc50(unsigned char *);
 extern "C" void func_ov106_0229c378(unsigned char *);
-extern "C" void func_ov002_02207d24(unsigned char *, int);
+extern "C" int func_ov002_02207d24(unsigned char *, int);
 extern "C" void func_ov106_0229e9a4(unsigned char *);
 extern "C" void func_ov106_0229e99c(unsigned char *);
 
 int Obj_ov106_0229f6e0::func_ov106_0229ef30()
 {
     unsigned char *self = (unsigned char *) this;
-    if (func_0206f56c(func_0206f58c(self)) != 0) {
+    if (((void) (func_0206f58c()), func_0206f56c()) != 0) {
         if (self[0x8d] == 0 || self[0x8d] == 1 || self[0x8d] == 7) {
             func_ov106_0229cc50(self);
             func_ov106_0229c378(self);

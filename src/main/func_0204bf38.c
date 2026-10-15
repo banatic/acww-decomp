@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_0206213c(void *obj);
+extern unsigned int func_0206213c(void);
 extern void *func_0204bdd0(int i);
 extern void NNS_FndAllocFromAllocator(void *dest, void *src);
 extern int func_0204be38(void *p);
@@ -14,7 +14,7 @@ void func_0204bf38(void *obj, unsigned int idx)
     unsigned int i, count;
     unsigned int tmp;
 
-    if (idx >= func_0206213c(obj)) {
+    if (idx >= func_0206213c()) {
         idx = 0;
     }
     count = 0;

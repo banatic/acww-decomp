@@ -3,7 +3,7 @@
  */
 
 extern void func_020ba13c(void *p);
-extern void func_020ba184(void *p);
+extern int func_020ba184(void *p);
 extern void func_020ba160(void *p);
 
 struct data {

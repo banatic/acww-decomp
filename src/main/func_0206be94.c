@@ -13,14 +13,14 @@ typedef struct {
     unsigned char unk_39;
 } UnkStruct_0206be94;
 
-extern void func_0206c234(int);
+extern int func_0206c234(int, int);
 extern void func_0206be6c(UnkStruct_0206be94 *);
 extern void func_02068104(int, int);
 
 void func_0206be94(UnkStruct_0206be94 *s, int arg)
 {
     if (*(unsigned char *) ((char *) s + 0x39)) {
-        func_0206c234(s->unk_28);
+        func_0206c234(s->unk_28, arg);
     }
     s->unk_38 = 0;
     if (s->unk_2C == 1) {

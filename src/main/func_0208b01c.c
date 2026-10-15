@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208affc(void);
+extern void *func_0208affc(void *);
 extern void *func_020edf70(unsigned int);
 
 void func_0208b01c(void)
@@ -14,5 +14,5 @@ void func_0208b01c(void)
     if (r0 == 0) {
         return;
     }
-    func_0208affc();
+    func_0208affc((void *) r0);
 }

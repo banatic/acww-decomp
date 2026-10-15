@@ -22,9 +22,9 @@ struct UnkStruct_022220a4 {
     char pad_48[0x18];
     char data[0x7f];
 };
-extern void func_020044c0(void *dest, int value, volatile long long size);
-extern int func_ov003_02222aa4(struct UnkStruct_022220a4 *s);
-extern void func_02044534(int x);
+extern int func_020044c0(int, int, int, int);
+extern void func_ov003_02222aa4(struct UnkStruct_022220a4 *s);
+extern void func_02044534(void);
 void func_ov003_022220a4(struct UnkStruct_022220a4 *s, void *unused, struct In *t)
 {
     s->unk_30 = 0;
@@ -36,6 +36,6 @@ void func_ov003_022220a4(struct UnkStruct_022220a4 *s, void *unused, struct In *
     s->unk_3C = 0x1000;
     s->unk_40 = 0x1000;
     s->unk_44 = 0x1000;
-    func_020044c0(s->data, 0x7d6, 0x7f);
-    func_02044534(func_ov003_02222aa4(s));
+    func_020044c0((int) (s->data), (int) (0x7d6), (int) (0x7f), 0);
+    ((void) (func_ov003_02222aa4(s)), func_02044534());
 }

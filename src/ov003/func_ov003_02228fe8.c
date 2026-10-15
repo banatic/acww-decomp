@@ -3,10 +3,10 @@
  */
 
 void func_ov003_02228f44(void *p);
-void func_020551e0(void *p);
-void func_02055764(void *p);
+void *func_020551e0(void *p);
+void *func_02055764(void *p);
 void func_0209d340(void *p);
-void func_02032c50(void *p);
+void *func_02032c50(void *p);
 void func_020f5948(void *p);
 
 void *func_ov003_02228fe8(char *self)

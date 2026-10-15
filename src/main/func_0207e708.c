@@ -2,7 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_0207e708(void)
+extern int func_020ba4e4(void);
+
+int func_0207e708(void)
 {
     if (func_020ba4e4() == 2) {
         return 1;

@@ -5,11 +5,11 @@
 extern void func_ov068_0226cfd4(unsigned char *);
 extern void func_02013aac(unsigned char *);
 extern int func_0201ce18(unsigned char *);
-extern void func_020147e0(void *, int, int);
+extern int func_020147e0(void *, int, int);
 extern void func_ov068_02266c34(void *, void *, int, int, int, const void *, int, int, int);
 extern int gt2GetIncomingBufferSize(void *);
 extern int func_0201c314(unsigned char *, int);
-extern void func_020147fc(void *, int, int, int);
+extern int func_020147fc(void *, int, int, int);
 
 extern const int data_021fbee8[];
 extern int data_020c814c;

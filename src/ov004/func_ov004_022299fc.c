@@ -18,11 +18,11 @@ struct UnkStruct_022299fc_2 {
 };
 
 extern int data_ov004_02247780;
-extern void func_020109a0(struct UnkStruct_022299fc_2 *self, int a, int b, int c);
+extern void func_020109a0(struct UnkStruct_022299fc_2 *self, int a, int b, unsigned short d);
 extern void func_0200fa1c(struct UnkStruct_022299fc *v, struct UnkStruct_022299fc_2 *self, void *a, void *b, void *c);
 extern void func_ov004_02229a3c(void *p, int a, int b);
 
-void func_ov004_022299fc(struct UnkStruct_022299fc_2 *self)
+void func_ov004_022299fc(struct UnkStruct_022299fc_2 *self, void *message, int previous)
 {
     struct UnkStruct_022299fc v;
 

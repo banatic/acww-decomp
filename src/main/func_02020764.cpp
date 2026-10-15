@@ -22,7 +22,7 @@ extern int data_021c2484;
 extern "C" void func_0202da88(UnkStruct_02020764_2 *self, void *tbl);
 extern "C" void func_0206844c(int a, void *b, int c);
 
-extern "C" void func_02020764(UnkStruct_02020764_2 *self)
+extern "C" void func_02020764(UnkStruct_02020764_2 *self, int event)
 {
     unsigned char arg;
     UnkStruct_02020764 out;

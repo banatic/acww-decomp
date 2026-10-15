@@ -24,10 +24,10 @@ class UnkStruct_0224545c {
     virtual void v17();
     virtual void v18();
 };
-extern "C" void func_ov004_022453c0(UnkStruct_0224545c *self);
+extern "C" void func_ov004_022453c0(void);
 extern "C" int func_ov004_0224545c(UnkStruct_0224545c *self)
 {
-    func_ov004_022453c0(self);
+    func_ov004_022453c0();
     self->v18();
     return 1;
 }

@@ -26,17 +26,17 @@ extern int func_0204bcdc(void *);
 extern u32 func_0204bc64(u16 *);
 extern u16 *func_0204f5a8(void *, void *, int);
 extern void func_0200acb0(void *, u32 *, u16, u8);
-extern void func_020109a0(void *, int, int, int);
+extern void func_020109a0(void *, int, int, unsigned short);
 extern int func_0200fbe0(void *);
 extern void func_0205eae0(void *, int, int, int);
 extern int func_02073908(void *, u32);
 extern void func_02035684(int, int, int);
-extern void func_0200f27c(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
 
 extern void *data_021c80bc;
 extern void *data_020ccf94;
 
-void func_0200ab44(void *self, Other *other)
+void func_0200ab44(void *self, Other *other, int previous)
 {
     u8 *p = (u8 *) other + 0xc;
     u8 r4 = p[2];

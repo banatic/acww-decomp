@@ -10,7 +10,7 @@ extern int func_02037bc4(void *p);
 extern int func_02037b14(void *p);
 extern int func_020644cc(int n);
 extern void *func_0209cc10(void *p);
-extern void func_0209d01c(void *p, void *x);
+extern int func_0209d01c(void *p, void *x);
 
 int func_0209c80c(void *self)
 {

@@ -3,7 +3,7 @@
  */
 
 extern __arm int func_020ee45c(void *p);
-extern void func_ov090_0229936c(int x);
+extern unsigned char func_ov090_0229936c(int x);
 extern void func_ov115_0229e36c(void *p);
 
 int func_ov115_0229e7a4(void *p)

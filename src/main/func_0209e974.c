@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *);
+extern void *func_020984e8(void);
 extern void *func_02099870(void *);
 extern unsigned short *func_02095040(void *);
 extern void *func_02099308(void *);
@@ -11,11 +11,11 @@ extern void func_02095038(void *, void *);
 extern void *func_020996b8(void *);
 extern void func_02072be0(void *, void *, unsigned short *);
 extern void func_02098fd0(void *, int);
-extern void func_02099670(void *);
-extern void func_02088ac0(void);
-extern void func_02088aa0(void);
-extern void func_02099688(void *);
-extern void func_020882f0(void);
+extern int func_02099670(void *);
+extern void func_02088ac0(unsigned char *);
+extern void func_02088aa0(void *);
+extern unsigned int func_02099688(void *);
+extern void func_020882f0(void *);
 extern void func_020993b4(void *);
 extern void func_020642f8(unsigned short *);
 
@@ -33,8 +33,8 @@ void func_0209e974(void *arg)
     unsigned short *src;
     struct UnkStruct_0209e974 buf;
 
-    obj = func_020984e8(arg);
-    src = func_02095040(func_02099870(obj));
+    obj = func_020984e8();
+    src = (func_02095040((void *) func_02099870(obj)));
 
     buf.a = ((struct UnkStruct_0209e974 *) src)->a;
     buf.r = ((struct UnkStruct_0209e974 *) src)->r;
@@ -47,15 +47,12 @@ void func_0209e974(void *arg)
     func_02098fd0(obj, 0x24);
     func_02098fd0(obj, 0x25);
     func_02098fd0(obj, 0x26);
-    func_02099670(obj);
-    func_02088ac0();
+    func_02088ac0((unsigned char *) func_02099670(obj));
 
     func_02098fd0(obj, 0xf);
-    func_02099670(obj);
-    func_02088aa0();
+    func_02088aa0((void *) func_02099670(obj));
 
-    func_02099688(obj);
-    func_020882f0();
+    func_020882f0((void *) func_02099688(obj));
 
     func_020993b4(obj);
     func_020642f8((unsigned short *) &buf);

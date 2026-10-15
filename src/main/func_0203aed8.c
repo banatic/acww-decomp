@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_0203c0ac(unsigned int);
+extern unsigned int func_0203c0ac(void *, int);
 
 extern unsigned char data_021c67a4[];
 

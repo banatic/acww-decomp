@@ -4,7 +4,7 @@
 
 extern void *data_ov004_02258310;
 
-int func_ov004_0222dc00(char *self)
+int func_ov004_0222dc00(void)
 {
     // DECLS
     // ENDDECLS

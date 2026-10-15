@@ -4,8 +4,8 @@
 
 extern void func_0206fc80(unsigned char);
 extern void func_0206fc4c(int);
-extern void func_ov002_022080a0(void *, int);
-extern void func_ov002_02207d24(void *, int);
+extern unsigned char *func_ov002_022080a0(void *, unsigned char value);
+extern int func_ov002_02207d24(void *, int);
 extern void func_ov109_0229c828(void *);
 
 void func_ov109_0229c4f4(void *self)

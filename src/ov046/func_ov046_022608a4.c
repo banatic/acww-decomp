@@ -11,8 +11,8 @@ struct UnkStruct_022608a4 {
     int dc;
 };
 
-extern int func_020b14c0(int);
-extern int func_020b1558(int);
+extern void func_020b14c0(int value);
+extern int func_020b1558(void);
 
 void func_ov046_022608a4(struct UnkStruct_022608a4 *self, int flag)
 {
@@ -22,9 +22,9 @@ void func_ov046_022608a4(struct UnkStruct_022608a4 *self, int flag)
         x = self->c0;
         if (x < 0) {
         } else {
-            x = func_020b14c0(x);
+            func_020b14c0(x);
         }
-        self->c5 = (char) (16 - func_020b1558(x));
+        self->c5 = (char) (16 - func_020b1558());
         self->c4 = 0;
         self->dc = 0x21;
     } else {

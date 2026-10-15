@@ -6,11 +6,11 @@
 
 extern volatile u8 data_020e54a8;
 
-extern void func_02095694(int a, u32 b);
+extern int func_02095694(int a, u32 b);
 extern int func_02008258(void *self, u32 p);
-extern void func_0200c3b0(void *self, int a, int b, int c);
-extern void func_0200c9a8(void *self, int a, int b, int c);
-extern void func_0200faf0(void *self, int a);
+extern int func_0200c3b0(void *self, int a, int b, int c);
+extern int func_0200c9a8(void *self, int a, int b, int c);
+extern int func_0200faf0(void *self, int a);
 extern void func_020108cc(void *self, int a, int b);
 extern int func_02056f94(void *p);
 

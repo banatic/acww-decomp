@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02049944(int, int *, int *, void (*)(void));
-extern void func_02049f74(void);
+extern int func_02049f74(int context, void *point);
+extern int func_02049944(void *object, void *limits, void *origin, void *predicate);
 
 int func_020496cc(int unused, int param1, int *param2, int *param3)
 {
@@ -15,5 +15,5 @@ int func_020496cc(int unused, int param1, int *param2, int *param3)
     local1[0] = param2[0];
     local1[1] = param2[1];
 
-    return func_02049944(param1, local1, local2, func_02049f74);
+    return func_02049944((void *) param1, local1, local2, (((void *) func_02049f74)));
 }

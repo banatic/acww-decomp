@@ -4,7 +4,7 @@
 
 extern void func_020a7a64(void *p);
 extern void func_020a9354(void *p, int v);
-extern void func_020a92d8(void *p, int v);
+extern int func_020a92d8(void *p, int v);
 
 typedef struct {
     char pad_00[0x24];

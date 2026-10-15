@@ -27,7 +27,7 @@ typedef struct UnkStruct_02242078_2 {
 
 extern int func_ov004_02244658(UnkStruct_02242078_2 *self, Vec3 *v);
 extern int func_0200322c(Vec3 *a, Vec3 *b);
-extern void func_020e8870(short *cur, int target, int step);
+extern int func_020e8870(short *cur, int target, int step);
 extern void func_02056fcc(char *p, int a, int b, int c, int d);
 extern void func_020550e4(char *p, int a);
 

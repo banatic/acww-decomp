@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *);
+extern int func_ov002_02208014(void);
 extern void func_ov111_022a0204(void *);
 extern int func_ov002_02208008(void *);
 extern unsigned int func_ov111_0229f430(void *, int);
@@ -14,7 +14,7 @@ extern void func_ov111_0229f10c(void *);
 extern void RtcSendPxiCommand(int);
 extern void func_ov095_0229a148(void *);
 extern void func_ov111_0229efb8(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov111_0229f164(void *);
 extern int func_ov002_02209f00(void *);
 extern void func_ov095_0229a154(void *, int);
@@ -33,7 +33,7 @@ void func_ov111_022a02f8(void *self)
 {
     unsigned char *ptr;
     ptr = (unsigned char *) self;
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov111_022a0204(self);
         return;
     }
@@ -53,14 +53,14 @@ void func_ov111_022a02f8(void *self)
             case 4:
                 func_ov095_0229a148(((char *) self) + 0xac);
                 func_ov111_0229efb8(self, 2);
-                func_ov002_02208098(self, 3);
+                func_ov002_02208098((void *) (self), 3);
                 func_ov111_0229f164(self);
                 break;
 
             case 2:
                 func_ov095_0229a154(((char *) self) + 0xac, func_ov002_02209f00(ptr + 0x3d38));
                 func_ov111_0229efb8(self, 2);
-                func_ov002_02208098(self, 3);
+                func_ov002_02208098((void *) (self), 3);
                 func_ov002_0220a254(((unsigned char *) self) + 0x3d38);
                 func_ov111_0229f164(self);
                 break;
@@ -68,7 +68,7 @@ void func_ov111_022a02f8(void *self)
             case 3:
                 func_ov095_0229a170(((char *) self) + 0xac, func_ov002_02209f00(((char *) self) + 0x3d38));
                 func_ov111_0229efb8(self, 2);
-                func_ov002_02208098(self, 3);
+                func_ov002_02208098((void *) (self), 3);
                 func_ov111_0229f164(self);
                 break;
 
@@ -91,7 +91,7 @@ void func_ov111_022a02f8(void *self)
                         return;
                     }
                     if ((data_021fbe40.f2 & 1) != 0) {
-                        func_ov002_02208098(self, 0xa);
+                        func_ov002_02208098((void *) (self), 0xa);
                         func_ov111_0229efc8(self, 1);
                         *((unsigned char *) (((char *) self) + 0x9f)) = *((unsigned char *) (((char *) self) + 0x9e));
                         *((unsigned char *) (((char *) self) + 0xa0)) = *((unsigned char *) (((char *) self) + 0x9e));

@@ -3,10 +3,10 @@
  */
 
 extern int func_0208e484(int *ptr);
-extern void func_ov146_0229a4b0(void *p);
-extern void func_ov002_02208098(void *p, int b);
+extern int func_ov146_0229a4b0(void *p);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern int func_ov146_02299670(void *p, int n);
-extern int func_ov146_02299650(void *p, int n);
+extern void func_ov146_02299650(void *p, int n);
 extern void func_ov146_0229a534(void *p);
 
 struct UnkStruct_0229a7a4 {

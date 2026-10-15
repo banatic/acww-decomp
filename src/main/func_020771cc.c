@@ -3,9 +3,9 @@
  */
 
 typedef void (*FnPtr)(int, void *, int);
+extern FnPtr data_020cd2f4[];
 
 extern int data_020ccf94;
-extern FnPtr data_020cd2f4[];
 extern int func_020738b4(int p0, int p1);
 extern int func_0207762c(unsigned int r0);
 extern int func_020738bc(int param1, int param2);

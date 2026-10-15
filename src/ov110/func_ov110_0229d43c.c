@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov110_0229d5d4(void);
+extern int func_ov110_0229d5d4(int unused0, unsigned int unused1);
 
 int func_ov110_0229d43c(int param1, int param2)
 {
     int result;
-    if (func_ov110_0229d5d4() != 0) {
+    if (func_ov110_0229d5d4(param1, param2) != 0) {
         result = (unsigned char) param2;
     } else {
         result = 0xf;

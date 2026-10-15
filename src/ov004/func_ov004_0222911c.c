@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020110a0(void *self, const int *p);
+extern void func_020110a0(void *object, short *values);
 
-int func_ov004_0222911c(char *self)
+void func_ov004_0222911c(char *self, int stateId)
 {
     const int *src = (const int *) (self + 0x7d4);
     int *dst = (int *) (self + 0x5c);
     dst[0] = src[0];
     dst[2] = src[1];
-    return func_020110a0(self, src + 2);
+    func_020110a0(self, (short *) (src + 2));
 }

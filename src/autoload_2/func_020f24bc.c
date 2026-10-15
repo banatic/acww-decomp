@@ -7,7 +7,7 @@ typedef unsigned char uint8_t;
 typedef unsigned long long uint64_t;
 
 struct UnkStruct_020f24bc;
-extern uint32_t OS_GetTick(struct UnkStruct_020f24bc *);
+extern uint64_t OS_GetTick(void);
 
 struct UnkStruct_020f24bc {
     char pad_00[0x4d];
@@ -22,7 +22,7 @@ struct UnkStruct_020f24bc {
 
 struct UnkStruct_020f24bc *func_020f24bc(struct UnkStruct_020f24bc *s)
 {
-    s->unk_54 = OS_GetTick(s);
+    s->unk_54 = OS_GetTick();
     s->unk_58 = 0x00269ec35d588b65ULL;
     s->unk_4D = 0;
     s->unk_60 = 0;

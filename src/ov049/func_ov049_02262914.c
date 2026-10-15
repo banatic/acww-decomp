@@ -12,7 +12,7 @@ extern int func_0201c378(char *self, int param);
 extern int func_0201c2c8(char *self, int param);
 extern int func_020e8b4c(short s, int a);
 extern int data_021c80bc;
-extern void func_0204ed30(int value, char *ptr);
+extern int func_0204ed30(int value, char *ptr);
 extern int func_020eaa2c(Vec3 *out, char *ptr);
 extern void func_ov049_02262a94(char *self, int param);
 extern int func_ov049_0226048c(char *self);

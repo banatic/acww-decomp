@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f56c(void *self);
+extern int func_0206f56c(void);
 extern void func_ov102_0229cc60(void *self, unsigned char b);
 extern void func_ov102_0229cb50(void *self);
-extern void func_ov002_02207d24(void *obj, int val);
+extern int func_ov002_02207d24(void *obj, int val);
 extern void func_ov102_0229c460(void *self, int val);
 extern void func_ov102_0229cd80(void *self);
 extern void func_ov102_0229cf74(void *self);
@@ -13,7 +13,7 @@ extern int func_ov102_0229d37c(void *self, void *a, void *b, int c);
 extern int func_ov102_0229d0b0(void *self, int idx);
 extern void func_ov102_0229d508(void *self, unsigned char b, void *p);
 extern int func_ov102_0229d320(void *self, int idx);
-extern void func_ov094_022999d8(int val);
+extern void func_ov094_022999d8(void);
 extern void func_ov102_0229d740(void *self);
 extern void func_ov102_0229cf3c(void *self, int idx);
 
@@ -34,7 +34,7 @@ void func_ov102_0229ddcc(UnkStruct_0229ddcc *self)
     int idx, ret;
     char *p1;
 
-    if (func_0206f56c(self)) {
+    if (func_0206f56c()) {
         func_ov102_0229cc60(self, self->state);
         func_ov102_0229cb50(self);
         func_ov002_02207d24((char *) self + 0x218c, 0);
@@ -61,7 +61,7 @@ void func_ov102_0229ddcc(UnkStruct_0229ddcc *self)
             func_ov102_0229d508(self, self->state, p1);
             return;
         } else {
-            func_ov094_022999d8(ret);
+            func_ov094_022999d8();
             func_ov102_0229d740(self);
             return;
         }

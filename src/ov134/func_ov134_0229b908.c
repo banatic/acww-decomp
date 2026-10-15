@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209de88(unsigned char a, unsigned char b, unsigned char c);
+extern int func_0209de88(int year, int month, int day);
 extern void func_ov134_0229b63c(unsigned char *a, unsigned char b, int c, int d, int e, int f, int g, int h);
 extern unsigned char data_ov134_0229bf6c[];
 

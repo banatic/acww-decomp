@@ -28,14 +28,14 @@ extern struct UnkStruct_02028a40 data_020d8e78;
 
 extern int func_0207b3dc(void *a);
 extern int func_0207f294(int a);
-extern void *func_0207b410(void *a);
-extern void *func_0209a778(void);
-extern int func_0209bd44(void);
+extern unsigned int func_0207b410(unsigned int address);
+extern void func_0209a778(void);
+extern int func_0209bd44(void *);
 extern int func_0209a610(void *a, int b);
 extern void *func_0209a4b8(void *a);
-extern int func_020951bc(void);
-extern void func_020984e8(void);
-extern void *func_02099870(void);
+extern int func_020951bc(void *);
+extern int func_020984e8(void);
+extern void *func_02099870(int);
 extern void func_0201cfb4(struct UnkStruct_02028a40_2 *a, struct ST *st);
 extern int memcmp(const void *a, const void *b, u32 n);
 extern int func_0209518c(void *a, void *b);
@@ -55,6 +55,8 @@ extern unsigned char data_021c2fbc[];
 
 int func_02028a40(struct UnkStruct_02028a40_2 *param0, int param1)
 {
+    register int preserved_result;
+
     void *r7;
     int res;
     void *local1;
@@ -72,9 +74,11 @@ int func_02028a40(struct UnkStruct_02028a40_2 *param0, int param1)
         goto fail;
     }
 
-    r7 = func_0207b410(r7);
-    local1 = func_0209a778();
-    if (func_0209bd44() == 0) {
+    r7 = (void *) func_0207b410((unsigned int) r7);
+    func_0209a778();
+    asm { mov preserved_result, r0 }
+    local1 = (void *) preserved_result;
+    if (func_0209bd44(local1) == 0) {
         goto fail;
     }
     if (func_0209a610(r7, 0) == 0) {
@@ -84,12 +88,11 @@ int func_02028a40(struct UnkStruct_02028a40_2 *param0, int param1)
     if (p_a4b8 == 0) {
         goto fail;
     }
-    if (func_020951bc() == 0) {
+    if (func_020951bc(p_a4b8) == 0) {
         goto fail;
     }
 
-    func_020984e8();
-    p_9870 = func_02099870();
+    p_9870 = func_02099870((int) func_020984e8());
 
     func_0201cfb4(param0, &st);
 

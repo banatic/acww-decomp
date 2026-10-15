@@ -10,6 +10,7 @@ class Obj_ov133_0229c908 : public Obj_ov002_0220bb24 {
 
     // states run by func_ov133_0229c58c, indexed by state
     void func_ov133_0229c39c();
+
     void func_ov133_0229c340();
     void func_ov133_0229c2fc();
     void func_ov133_0229c2b0();

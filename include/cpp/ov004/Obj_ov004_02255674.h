@@ -12,9 +12,11 @@ struct Obj_ov004_02255674 : public Obj_ov004_02254b28, public Base_02066994 {
     void func_ov004_02230780();
     void func_ov004_02230538();
     int func_ov004_022305a0();
-    void func_ov004_02230620();
+    int func_ov004_02230620();
+
     int func_ov004_0223063c();
-    void func_ov004_022306a8();
+    int func_ov004_022306a8();
+
     int func_ov004_022306d0();
     void func_ov004_02230750();
     int func_ov004_02230754();

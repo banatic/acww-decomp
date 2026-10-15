@@ -9,14 +9,14 @@ typedef struct {
 } UnkStruct_0208e2ac;
 
 extern int data_020d0ac8[];
-extern int func_0208e144(UnkStruct_0208e2ac *a, int val);
+extern void func_0208e144(UnkStruct_0208e2ac *a);
 
-int func_0208e2ac(UnkStruct_0208e2ac *a, int index)
+void func_0208e2ac(UnkStruct_0208e2ac *a, int index)
 {
     int val;
 
     a->unk_0C = index;
     val = data_020d0ac8[index];
     a->unk_10 = val;
-    return func_0208e144(a, val);
+    func_0208e144(a);
 }

@@ -15,10 +15,10 @@ extern void VEC_Add(struct UnkStruct_0222631c *dst, struct UnkStruct_0222631c *a
 extern void func_01ffd070(struct UnkStruct_0222631c *out, struct UnkStruct_0222631c *a, struct UnkStruct_0222631c *b);
 extern void func_ov004_0222643c(void *dst, struct UnkStruct_0222631c t, int k);
 extern void func_0201107c(void *self, void *p);
-extern void func_0200f27c(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern int data_020ccf94;
 extern int data_ov004_02254ae8;
-void func_ov004_0222631c(unsigned char *self, unsigned char *p)
+void func_ov004_0222631c(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_0222631c *q, *s;
     struct UnkStruct_0222631c t, v, out;

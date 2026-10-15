@@ -5,11 +5,11 @@
 extern int func_02008258(void *a, unsigned int b);
 extern void func_ov003_02210660(void *a, unsigned char *b);
 extern int func_02096518(unsigned int *a, int b, unsigned int c);
-extern void func_ov003_0221066c(void *a, int b, int c);
+extern int func_ov003_0221066c(void *a, int b, int c);
 extern void func_ov003_02210668(void *a, int b);
-extern void func_0209129c(int a, int b);
+extern void func_0209129c(int a);
 extern int func_02056f94(void *a);
-extern void func_0200d4e8(void *a, int b, int c, int d);
+extern int func_0200d4e8(void *a, int b, int c, int d);
 
 typedef struct {
     unsigned char pad_00[0x2d0];
@@ -40,7 +40,7 @@ void func_ov003_022103cc(UnkStruct_022103cc *self)
         p = (int *) ((char *) self + 0x7d4);
         func_ov003_02210668(base, 1);
         if (self->unk_7D4 != -1) {
-            func_0209129c(self->unk_7D4, -1);
+            func_0209129c(self->unk_7D4);
             *p = -1;
         }
     } else {

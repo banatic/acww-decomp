@@ -4,11 +4,11 @@
 
 extern unsigned short data_021fbe40;
 extern void func_ov134_02299a90(char *p);
-extern void func_ov134_02299a84(char *p);
+extern int func_ov134_02299a84(char *p);
 extern int func_ov135_0229c7a8(char *p);
 extern int func_ov135_0229c754(char *p);
 extern void func_ov002_0220a0b4(char *p, int a, int b);
-extern void func_ov002_02208098(char *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov135_0229cc48(char *self)
 {
@@ -22,6 +22,6 @@ void func_ov135_0229cc48(char *self)
         func_ov002_0220a0b4(self, a, b);
     } else {
         func_ov134_02299a84(self + 0x2c8);
-        func_ov002_02208098(self, 9);
+        func_ov002_02208098((void *) (self), 9);
     }
 }

@@ -18,7 +18,7 @@ typedef struct {
 } RetStruct;
 
 extern "C" int func_ov003_02220174(int);
-extern "C" int func_ov009_022630a0(void);
+extern "C" int func_ov009_022630a0(void *obj);
 extern "C" RetStruct *func_020961a8(int);
 extern "C" int func_02095ab0(const unsigned int *, int, int);
 
@@ -29,10 +29,11 @@ void Obj_ov068_02277750::func_ov068_02272338()
     RetStruct *p;
     unsigned int *fp;
 
-    if (func_ov003_02220174(0x5000) == 0) {
+    int object = func_ov003_02220174(0x5000);
+    if (object == 0) {
         return;
     }
-    if (func_ov009_022630a0() == 0) {
+    if (func_ov009_022630a0((void *) object) == 0) {
         return;
     }
 

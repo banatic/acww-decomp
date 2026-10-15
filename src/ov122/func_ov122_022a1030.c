@@ -2,19 +2,19 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov122_0229f958(void *, int);
+extern int func_ov122_0229f958(void *);
 extern void func_ov095_0229b3ec(void *);
 extern void func_ov122_0229f89c(void *);
 extern void *func_ov122_0229f634(void *);
 extern int func_ov095_0229b3a0(void *, void *, unsigned char);
-extern void func_ov122_0229f388(void *);
+extern void func_ov122_0229f388(void);
 extern void RtcSendPxiCommand(int);
 extern void func_ov122_022a15b8(void *, int, int);
 extern void func_ov122_0229f9a8(void *);
 
 int func_ov122_022a1030(void *self, int param)
 {
-    if (func_ov122_0229f958(self, param) != 0) {
+    if (func_ov122_0229f958(self) != 0) {
         func_ov095_0229b3ec((char *) self + 0xc0);
         func_ov122_0229f89c(self);
     } else {
@@ -45,7 +45,12 @@ int func_ov122_022a1030(void *self, int param)
             }
         ret0:
             if (param != 0) {
-                func_ov122_0229f388(self);
+                // clang-format off
+                asm {
+                    mov r0, self
+                }
+                // clang-format on
+                func_ov122_0229f388();
             }
             return 0;
         set_fields:

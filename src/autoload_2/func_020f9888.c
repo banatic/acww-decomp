@@ -3,7 +3,7 @@
  */
 
 extern char data_0213f25c;
-extern void func_0210b500(int, int);
+extern int func_0210b500(int, int);
 
 struct Object {
     void *vtbl;

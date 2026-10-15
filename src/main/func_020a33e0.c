@@ -26,19 +26,19 @@ extern unsigned short func_020740b4(void);
 extern void func_020a02b4(UnkStruct_020a33e0 *p, unsigned char *q, int a);
 extern int func_020a2438(UnkStruct_020a33e0 *p, int a);
 extern void func_020a2480(UnkStruct_020a33e0 *p);
-extern void func_020a03e0(UnkStruct_020a33e0 *p, unsigned char *q, int a, int b, int c, int d, int e, int f);
+extern int func_020a03e0(UnkStruct_020a33e0 *p, unsigned char *q, int a, int b, int c, int d, int e, int f);
 extern int func_020a6ed0(void);
 extern int func_02073c90(UnkStruct_020a33e0_2 *g, int a);
 extern int func_02075918(void);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern void func_020a6c6c(int a);
 extern void func_02073d74(UnkStruct_020a33e0_2 *g, int a);
 extern void func_02073820(UnkStruct_020a33e0_2 *g);
 extern void func_02073770(UnkStruct_020a33e0_2 *g, int a, int b);
 extern void func_020ba37c(void);
-extern void func_020a0848(UnkStruct_020a33e0 *p, unsigned char *q, int a, int b, int c, int d);
-extern void func_020a25cc(UnkStruct_020a33e0 *p);
+extern int func_020a0848(UnkStruct_020a33e0 *p, unsigned char *q, int a, int b, int c, int d);
+extern void func_020a25cc(void);
 extern void func_020a4e94(UnkStruct_020a33e0 *p, int a);
 
 void func_020a33e0(UnkStruct_020a33e0 *p)
@@ -109,7 +109,7 @@ void func_020a33e0(UnkStruct_020a33e0 *p)
                 func_02074078();
                 break;
             }
-            if (func_020ebf70(func_02073044()) == 0) {
+            if ((func_02073044(), func_020ebf70()) == 0) {
                 break;
             }
             if (p->unk_D2 == func_020740b4()) {
@@ -147,7 +147,8 @@ void func_020a33e0(UnkStruct_020a33e0 *p)
             func_020a0848(p, &p->unk_A1, 0xf, 0x15, 1, 1);
             break;
         default:
-            func_020a25cc(p);
+            asm { add r0, p, #0 }
+            func_020a25cc();
             func_020a4e94(p, 0xa);
             break;
     }

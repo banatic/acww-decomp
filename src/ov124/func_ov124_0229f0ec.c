@@ -14,14 +14,14 @@ extern const unsigned char data_ov124_0229f648[];
 extern const unsigned char data_ov124_0229f65c[];
 extern void *data_ov124_0229f578[];
 
-extern void func_02002c6c(const void *a, void *b, void *c, int d, int e, int f);
-extern void func_02002d14(const void *a, void *b, void *c, int d, int e, int f);
-extern void func_02002cd8(const void *a, void *b, void *c, int d, int e);
-extern void func_02002ca4(void *a, void *b, void *c);
-extern void func_02064328(void *dst, const void *src, int n);
+extern int func_02002c6c(const void *a, void *b, void *c, int d, int e, int f);
+extern int func_02002d14(const void *a, void *b, void *c, int d, int e, int f);
+extern int func_02002cd8(const void *a, void *b, void *c, int d, int e);
+extern int func_02002ca4(void *a, void *b, void *c);
+extern int func_02064328(void *dst, const void *src, int n);
 extern int func_0206fca4(void);
 
-void func_ov124_0229f0ec(UnkStruct_0229f0ec *o, void *p1, int p2)
+int func_ov124_0229f0ec(UnkStruct_0229f0ec *o, void *p1, int p2)
 {
     void *heap;
     char buf[0x24];
@@ -93,5 +93,5 @@ void func_ov124_0229f0ec(UnkStruct_0229f0ec *o, void *p1, int p2)
     func_02064328(buf, data_ov124_0229f648, o->unk_E8);
     func_02002c6c(buf, heap, p1, 0x113, 0x113, 0x126);
     func_02002cd8(data_ov124_0229f65c, heap, p1, o->unk_E8, 0xe);
-    func_02002ca4(data_ov124_0229f578[p2], heap, p1);
+    return func_02002ca4(data_ov124_0229f578[p2], heap, p1);
 }

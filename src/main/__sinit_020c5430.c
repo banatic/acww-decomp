@@ -115,8 +115,8 @@ typedef struct {
 typedef struct {
     unsigned char unk_00;
 } UnkStruct_020c5430_6;
-extern void __register_global_object(UnkStruct_020c5430_2 *, void *, void *);
-extern void func_020012dc(void);
+extern void __register_global_object(void *, void *, void *);
+extern void func_020012dc(void *);
 extern int _s32_div_f(int, int);
 extern const UnkStruct_020c5430_3 data_020cbb00;
 extern const UnkStruct_020c5430_4 data_020cbaf0;
@@ -203,7 +203,7 @@ void __sinit_020c5430(void)
     data_021c9390.a = -0x400;
     data_021c9390.b = -0x300;
     data_021c9390.c = 0x1100;
-    __register_global_object(&data_021c9390, (void *) func_020012dc, &data_021c9384);
+    __register_global_object((void *) (&data_021c9390), (((void *) func_020012dc)), (void *) (&data_021c9384));
 
     data_021c9344.unk_00 = data_020cbaf0.unk_01 - data_020cbaf0.unk_00;
     data_021c9344.unk_01 = data_020cbaf0.unk_02 - data_020cbaf0.unk_01;
@@ -216,7 +216,7 @@ void __sinit_020c5430(void)
     data_021c93e4.a = 0;
     data_021c93e4.b = 0;
     data_021c93e4.c = 0xd00;
-    __register_global_object(&data_021c93e4, (void *) func_020012dc, &data_021c93d8);
+    __register_global_object((void *) (&data_021c93e4), (((void *) func_020012dc)), (void *) (&data_021c93d8));
 
     v = _s32_div_f(data_020cbb34.unk_04, data_021c9348.unk_00);
     if (v < 0) {
@@ -237,5 +237,5 @@ void __sinit_020c5430(void)
     data_021c939c.a = 0;
     data_021c939c.b = 0;
     data_021c939c.c = 0x1300;
-    __register_global_object(&data_021c939c, (void *) func_020012dc, &data_021c9378);
+    __register_global_object((void *) (&data_021c939c), (((void *) func_020012dc)), (void *) (&data_021c9378));
 }

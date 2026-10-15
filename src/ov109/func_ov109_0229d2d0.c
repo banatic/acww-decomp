@@ -13,10 +13,10 @@ typedef struct {
 
 extern unsigned char data_021fbdd8;
 extern int func_ov109_0229cae0(void *p, int a);
-extern void func_ov002_02208098(void *p, int a);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_ov002_02207ce4(void *p, int a);
 extern void func_ov109_0229d7b4(void *p);
-extern int AOSS_FD_SET(void *p);
+extern int func_ov002_02207cc0(int);
 extern void func_ov109_0229c418(void *p, int a, int b);
 extern void func_ov002_02207d00(void *p);
 
@@ -35,7 +35,7 @@ void func_ov109_0229d2d0(UnkStruct_0229d2d0 *self)
     if (func_ov109_0229cae0(self, self->unk_29D0) != 0) {
         goto L34a;
     }
-    if (AOSS_FD_SET(&self->unk_218C) == 0) {
+    if (func_ov002_02207cc0((int) &self->unk_218C) == 0) {
         goto L34a;
     }
     if (self->unk_29D9 != 0) {

@@ -16,9 +16,9 @@ typedef struct {
     u8 pad_BE[0x870 - 0xbe];
 } UnkStruct_0229a96c;
 
-extern int func_0209de88(u8 a, u8 b, u8 c);
-extern int func_ov134_022995a0(UnkStruct_0229a96c *self, int n);
-extern int func_ov134_022995b0(UnkStruct_0229a96c *self, int n);
+extern int func_0209de88(int year, int month, int day);
+extern void func_ov134_022995a0(UnkStruct_0229a96c *self, int n);
+extern void func_ov134_022995b0(UnkStruct_0229a96c *self, int n);
 extern int func_ov134_0229aaa8(UnkStruct_0229a96c *self, int n);
 extern int func_ov134_0229aa78(UnkStruct_0229a96c *self, int n);
 extern int func_ov134_0229aa4c(UnkStruct_0229a96c *self, int n);

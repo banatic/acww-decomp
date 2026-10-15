@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208008(void);
+extern int func_ov002_02208008(char *arg0);
 extern int func_ov099_0229c2c4(unsigned char *, int);
 extern void func_ov099_0229c9d0(unsigned char *);
 extern void func_ov099_0229c6dc(unsigned char *);
@@ -11,7 +11,7 @@ extern int func_ov099_0229cc74(unsigned char *, int);
 extern void func_ov099_0229c56c(unsigned char *, int);
 extern void func_ov099_0229c520(unsigned char *, int);
 extern void func_ov099_0229c928(unsigned char *);
-extern void func_ov002_02207d24(unsigned char *, int);
+extern int func_ov002_02207d24(unsigned char *, int);
 extern void func_ov002_02207d00(unsigned char *);
 
 extern struct {
@@ -21,7 +21,7 @@ extern struct {
 
 void func_ov099_0229d518(unsigned char *self)
 {
-    int ret = func_ov002_02208008();
+    int ret = func_ov002_02208008((char *) self);
     unsigned short flag;
     unsigned char b;
 

@@ -27,22 +27,27 @@ struct UnkStruct_0206a048_3 {
 };
 
 int func_020678f8(UnkStruct_0206a048_2 *);
-void func_0206bb9c(UnkStruct_0206a048_3 *, int, void *);
+void func_0206bb9c(void);
 int func_020a82f8(int);
 void func_020a9334(UnkStruct_0206a048_3 *, int);
-void func_020a7994(int *, int, UnkStruct_0206a048_2 *);
+void func_020a7994(int *, int);
 extern int data_020df188;
 
 void func_0206a048(UnkStruct_0206a048_3 *self)
 {
     if (func_020678f8(self->base) == 0) {
-        func_0206bb9c(self, 0xcf5, &data_020df188);
+        asm {
+            mov r0, self
+            ldr r1, =0xcf5
+            ldr r2, =data_020df188
+            bl func_0206bb9c
+        }
     }
     func_020a9334(self, func_020a82f8(self->unk_5C));
     func_020a9334(self, self->base->sub.m3());
     func_020a9334(self, func_020a82f8(6));
     int r = self->base->sub.m3();
-    func_020a7994(self->base->array, r, self->base);
+    func_020a7994(self->base->array, r);
     self->base->unk_1A60 = 0;
 }
 }

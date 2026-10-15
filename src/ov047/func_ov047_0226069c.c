@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202e9fc(void *);
+extern int func_0202e9fc(void);
 extern int func_02073d90(int);
 extern short *func_0209d358(int, int);
 extern int data_020ccf94;
@@ -12,7 +12,7 @@ void func_ov047_0226069c(void *p, int r1)
     if (r1 != 0) {
         goto L24;
     }
-    if (func_0202e9fc(p) == 0) {
+    if (func_0202e9fc() == 0) {
         goto L40;
     }
     if (func_02073d90(data_020ccf94) != 0) {

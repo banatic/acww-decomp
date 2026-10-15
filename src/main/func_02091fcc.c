@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_020d16e4[];
-extern void func_02094bcc(int, unsigned char *, int);
+extern int func_02094bcc(int, unsigned char *, int);
 
 void func_02091fcc(int arg)
 {

@@ -7,17 +7,19 @@
 extern void *data_020ccf94;
 extern int data_021e5a2c;
 extern void func_020736bc(void *h, u8 *p, int n);
-extern void func_02078448(int *out, volatile u16 *v, u8 *p);
+extern unsigned int func_02078448(int *out, volatile u16 *v, u8 *p);
 extern int func_0207cec0(int *tbl, int k);
-extern void func_0207f1c8(void);
-extern void *func_0209b5e8(void);
-extern void *func_0209b91c(void);
-extern int func_0209bd44(void);
+extern unsigned int func_0207f1c8(unsigned int object);
+extern void *func_0209b5e8(int);
+extern void *func_0209b91c(void *);
+extern int func_0209bd44(void *);
 extern int func_0209bc40(void *o);
 extern u16 *func_0209b8c4(void *o);
 
-void func_02076638(void)
+void func_02076638(int length, int sequence, unsigned char category, unsigned int player)
 {
+    int forwarded_value;
+
     struct {
         volatile u16 v;
         u8 b[4];
@@ -33,13 +35,12 @@ void func_02076638(void)
     q.v = 0xfff1;
     func_020736bc(data_020ccf94, q.b, 4);
     func_02078448(&q.r, &q.v, q.b);
-    if (func_0207cec0(&data_021e5a2c, q.r) == 0) {
+    if ((forwarded_value = (int) func_0207cec0(&data_021e5a2c, q.r)) == 0) {
         return;
     }
-    func_0207f1c8();
-    o5 = func_0209b5e8();
-    o4 = func_0209b91c();
-    if (func_0209bd44() == 0) {
+    o5 = func_0209b5e8((int) func_0207f1c8((unsigned int) forwarded_value));
+    o4 = func_0209b91c((void *) o5);
+    if (func_0209bd44(o4) == 0) {
         return;
     }
     if (func_0209bc40(o4) == 0) {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d368(int, int);
+extern int func_0209d368(void);
 extern void func_02039cb4(void *);
 
 struct UnkStruct_02039cf8 {
@@ -21,21 +21,45 @@ void func_02039cf8(struct UnkStruct_02039cf8 *self)
     int t;
 
     if (self->unk_0C == 0) {
-        r4 = func_0209d368(0x136, 4) + 2;
+        asm {
+            ldr r0, =0x136
+            mov r1, #4
+        }
+        r4 = func_0209d368() + 2;
     } else {
-        r4 = func_0209d368(0x12c, 4) + 2;
+        asm {
+            ldr r0, =0x12c
+            mov r1, #4
+        }
+        r4 = func_0209d368() + 2;
     }
 
     if (self->unk_0C == 0) {
-        r6 = func_0209d368(0x136, 5) - 6;
+        asm {
+            ldr r0, =0x136
+            mov r1, #5
+        }
+        r6 = func_0209d368() - 6;
     } else {
-        r6 = func_0209d368(0x12c, 5) + 6;
+        asm {
+            ldr r0, =0x12c
+            mov r1, #5
+        }
+        r6 = func_0209d368() + 6;
     }
 
     if (self->unk_0C == 0) {
-        t = func_0209d368(0x136, 6) + 2;
+        asm {
+            ldr r0, =0x136
+            mov r1, #6
+        }
+        t = func_0209d368() + 2;
     } else {
-        t = func_0209d368(0x12c, 6) - 2;
+        asm {
+            ldr r0, =0x12c
+            mov r1, #6
+        }
+        t = func_0209d368() - 2;
     }
 
     if (self->unk_A8 > r4) {

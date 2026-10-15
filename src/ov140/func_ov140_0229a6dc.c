@@ -13,7 +13,7 @@ struct UnkStruct_0229a6dc {
 };
 
 extern void func_ov140_02299fa0(struct UnkStruct_0229a6dc *self, int n);
-extern void func_ov002_02208098(struct UnkStruct_0229a6dc *self, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov140_02299fc8(struct UnkStruct_0229a6dc *self);
 extern void func_ov140_0229a3fc(struct UnkStruct_0229a6dc *self, int n);
 extern void RtcSendPxiCommand(int n);
@@ -21,7 +21,7 @@ extern void RtcSendPxiCommand(int n);
 void func_ov140_0229a6dc(struct UnkStruct_0229a6dc *self)
 {
     func_ov140_02299fa0(self, 0x20);
-    func_ov002_02208098(self, 6);
+    func_ov002_02208098((void *) (self), 6);
     self->unk_8DB = 5;
     self->unk_8DD = self->unk_8DD + 1;
     if (self->unk_8DD > self->unk_8DE) {

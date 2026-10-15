@@ -4,7 +4,7 @@
 
 extern int func_020ab550(int a, int b);
 extern int func_020ab780(int a);
-extern int RtcSendPxiCommand(int command);
+extern void RtcSendPxiCommand(int command);
 
 struct UnkStruct_020aaee8 {
     int unk_00;
@@ -12,7 +12,7 @@ struct UnkStruct_020aaee8 {
     int unk_20;
 };
 
-int func_020aaee8(struct UnkStruct_020aaee8 *arg)
+void func_020aaee8(struct UnkStruct_020aaee8 *arg)
 {
     int result;
     int cmd;
@@ -26,5 +26,5 @@ int func_020aaee8(struct UnkStruct_020aaee8 *arg)
     } else if (result == 3) {
         cmd = 0x6c;
     }
-    return RtcSendPxiCommand(cmd);
+    RtcSendPxiCommand(cmd);
 }

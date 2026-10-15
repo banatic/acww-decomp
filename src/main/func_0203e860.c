@@ -3,7 +3,7 @@
  */
 
 extern int func_0203ef90(int arg);
-extern int func_02095f28(int arg);
+extern int func_02095f28(void);
 extern int func_02095f08(int arg);
 
 struct UnkStruct_0203e860 {
@@ -23,7 +23,7 @@ int func_0203e860(struct UnkStruct_0203e860 *arg)
     if (result1 == 0) {
         return 0;
     }
-    if (func_02095f28(result1) == 0) {
+    if (func_02095f28() == 0) {
         return 0;
     }
     if (func_02095f08(1) == 0) {

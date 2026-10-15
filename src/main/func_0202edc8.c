@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201bdb4(void);
-extern int func_0202edfc(void *arg0, int arg1, int arg2);
+extern int func_0201bdb4(unsigned char *);
+extern void func_0202edfc(void *arg0, int arg1, int arg2);
 
 int func_0202edc8(void *arg0)
 {
@@ -11,7 +11,7 @@ int func_0202edc8(void *arg0)
     void *r4;
 
     r4 = arg0;
-    if (func_0201bdb4() == 0) {
+    if (func_0201bdb4(arg0) == 0) {
         return 0;
     }
     func_0202edfc(r4, 0x1000, 0x2000);

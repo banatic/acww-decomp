@@ -3,9 +3,9 @@
  */
 
 extern int func_0209cc30(int a, int b, int c);
-extern int func_0209d030(void);
+extern int func_0209d030(int *);
 extern int func_020644cc(int a);
-extern void func_0209d01c(int a, int b);
+extern int func_0209d01c(int a, int b);
 
 int func_0209cb88(int p1, int p2)
 {
@@ -20,8 +20,7 @@ int func_0209cb88(int p1, int p2)
     do {
         inner1 = one;
         do {
-            func_0209cc30(p1, inner1, outer1);
-            if (func_0209d030() == 9) {
+            if (func_0209d030((int *) func_0209cc30(p1, inner1, outer1)) == 9) {
                 count++;
             }
             inner1++;
@@ -36,8 +35,7 @@ int func_0209cb88(int p1, int p2)
     while (outer2 < 5) {
         inner2 = one2;
         while (inner2 < 5) {
-            func_0209cc30(p1, inner2, outer2);
-            if (func_0209d030() == 9) {
+            if (func_0209d030((int *) func_0209cc30(p1, inner2, outer2)) == 9) {
                 if (result == counter) {
                     func_0209d01c(func_0209cc30(p1, inner2, outer2), p2);
                     return 1;

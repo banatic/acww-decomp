@@ -3,7 +3,7 @@
  */
 
 extern int func_020b0a20(char *p);
-extern int func_020b0970(char *p, int b, int c, int d);
+extern void func_020b0970(char *p, int b, int c, int d);
 
 int func_020b060c(char *a, int b, int c, int d)
 {

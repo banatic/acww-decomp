@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203de6c(int);
+extern void func_0203de6c(void);
 extern void func_02001bb4(int);
 extern void func_02001b7c(int);
 extern void func_02001da0(int);
@@ -31,7 +31,8 @@ void func_02041fe0(void)
     volatile unsigned short *reg;
     int ret;
 
-    func_0203de6c(0);
+    asm { mov r0, #0 }
+    func_0203de6c();
     func_02001bb4(1);
     func_02001b7c(1);
     func_02001da0(0x1b);

@@ -3,11 +3,11 @@
  */
 
 extern int func_02056f94(void *p);
-extern void func_ov004_0222a23c(void *self, int a, int b, int arg, short v);
+extern int func_ov004_0222a23c(void *self, int a, int b, int arg, short v);
 extern int func_ov004_0223cb10(void);
 extern void func_ov004_0223c9d4(int h);
 extern int func_02008258(void *self, int a);
-extern void func_0200d4e8(void *self, int a, int b, int c);
+extern int func_0200d4e8(void *self, int a, int b, int c);
 
 void func_ov004_0222a2e8(char *self)
 {

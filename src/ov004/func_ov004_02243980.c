@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020644cc(void);
+extern int func_020644cc(int parameter0);
 
-int func_ov004_02243980(void)
+int func_ov004_02243980(int arg0)
 {
-    switch (func_020644cc()) {
+    switch (func_020644cc(arg0)) {
         case 0:
             return 0xaaa;
         case 1:

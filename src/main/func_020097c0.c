@@ -25,10 +25,10 @@ extern int FX_MulFunc(int a, int b);
 extern int func_020ea9c8(Vec3 *v);
 extern void func_02011490(int *p, int v);
 extern int func_020ea990(Vec3 *a, Vec3 *b);
-extern int func_02011398(int v);
+extern int func_02011398(int, int);
 extern int func_020113b0(int a, int b);
 extern int func_020e8ed8(int a, int b);
-extern void func_020113e0(short *h, int m);
+extern int func_020113e0(short *h, int m);
 extern void func_020110a0(UnkStruct_020097c0_2 *self, short *h);
 extern void func_0201107c(UnkStruct_020097c0_2 *self, int *p);
 
@@ -83,7 +83,7 @@ int func_020097c0(UnkStruct_020097c0_2 *self)
                 sv->z = p.z;
             }
         } else {
-            *m = func_02011398(*m);
+            *m = func_02011398(*m, 819);
         }
     } else {
         *m = func_020113b0(*m, saved);

@@ -26,25 +26,15 @@ struct UnkStruct_02037eec {
     int z;
 };
 
-extern void func_02037f28(int, int, int *, int);
+extern void func_02037f28(int, int, struct Src3 *, int, int, int, int, int, int, int, int);
 
 void func_02037eec(int a, int b, struct Src3 *s, int d, int t0, int t1, int t2, int t3, struct Src2 *p, int t4)
 {
-    struct UnkStruct_02037eec local;
+    struct Src3 local;
 
     local.x = s->x;
     local.y = s->y;
     local.z = s->z;
 
-    local.unk_00 = t0;
-    local.unk_04 = t1;
-    local.unk_08 = t2;
-    local.unk_0C = t3;
-
-    local.unk_10 = p->a;
-    local.unk_14 = p->b;
-
-    local.unk_18 = t4;
-
-    func_02037f28(a, b, &local.x, d);
+    func_02037f28(a, b, &local, d, t0, t1, t2, t3, p->a, p->b, t4);
 }

@@ -3,15 +3,15 @@
  */
 
 extern int func_ov002_02208e28(void *);
-extern int func_0206fe54(int);
+extern int func_0206fe54(void);
 extern void func_ov099_0229c63c(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 void func_ov099_0229d204(void *arg)
 {
     int x = func_ov002_02208e28((char *) arg + 0x22d8);
     if (x != 0) {
-        if (func_0206fe54(x) != 0) {
+        if (func_0206fe54() != 0) {
             func_ov099_0229c63c(arg);
             func_ov002_02208098(arg, 6);
         } else {

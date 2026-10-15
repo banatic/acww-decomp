@@ -10,7 +10,7 @@ class UnkStruct_0208bfe8 {
     virtual void vf3();
 };
 
-extern "C" void func_0208c658(void *);
+extern "C" int func_0208c658(void *);
 extern "C" void func_0208be44(void *);
 
 extern "C" void func_0208bfe8(UnkStruct_0208bfe8 *obj)

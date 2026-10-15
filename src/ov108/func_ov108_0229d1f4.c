@@ -3,9 +3,9 @@
  */
 
 extern int func_ov002_02209f9c(void *p);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov108_0229c940(void *p);
-extern void func_ov108_0229ccc0(void *p);
+extern int func_ov108_0229ccc0(void *p, void *argument1);
 extern void func_ov108_0229c9d8(void *p);
 extern void func_ov108_0229ce00(void *p, int a, int b);
 
@@ -19,9 +19,9 @@ void func_ov108_0229d1f4(void *self)
         b0 = ((unsigned char *) self)[0x2b0];
 
         if (b0 == b1) {
-            func_ov108_0229ccc0(self);
+            func_ov108_0229ccc0(self, (void *) b1);
             func_ov108_0229c9d8(self);
-            func_ov002_02208098(self, 6);
+            func_ov002_02208098((void *) (self), 6);
         } else {
             func_ov108_0229ce00(self, b1, 4);
         }

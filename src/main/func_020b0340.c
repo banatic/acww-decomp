@@ -8,7 +8,7 @@ extern void func_020b0300(void);
 extern void func_020b02c8(void);
 extern void func_020b0294(void);
 extern void func_020046b4(void);
-extern void PM_SetLCDPower(int arg);
+extern int PM_SetLCDPower(int arg);
 
 void func_020b0340(void)
 {

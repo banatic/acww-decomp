@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206c278(int, unsigned int, unsigned int);
+extern int func_0206c278(int, unsigned int, unsigned int);
 
 struct UnkStruct_0206c224 {
     unsigned int unk_00;

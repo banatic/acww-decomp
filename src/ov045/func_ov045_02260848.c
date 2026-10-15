@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern void func_020160b4(void);
-extern int func_020ab504(void);
+extern int func_020160b4(void *argument0);
+extern int func_020ab504(void *argument0);
 extern int func_0201b43c(void *a, int b);
 extern int func_0202ea80(int a, int b);
 extern void func_0206844c(void *a, void *b, void *c);
@@ -26,8 +26,7 @@ void func_ov045_02260848(struct UnkStruct_02260848 *self)
     int r4;
     u8 c;
 
-    func_020160b4();
-    val = func_020ab504();
+    val = func_020ab504((void *) func_020160b4(self));
     r4 = 0xff;
 
     switch (self->unk_1E) {

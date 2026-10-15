@@ -9,10 +9,10 @@ extern unsigned char data_ov094_0229bf38[];
 extern unsigned char data_ov094_0229bf54[];
 extern void *data_021fbe94;
 
-extern void func_02002d14(const void *, void *, int, int, int, int);
-extern void func_02064af4(const void *, void *, int);
-extern void func_02002b40(void *, int, int, int);
-extern void func_02002c6c(const void *, void *, int, int, int, int);
+extern int func_02002d14(const void *, void *, int, int, int, int);
+extern int func_02064af4(const void *, void *, int);
+extern int func_02002b40(void *, int, int, int);
+extern int func_02002c6c(const void *, void *, int, int, int, int);
 
 void func_ov094_0229a204(void *param1, int param2)
 {

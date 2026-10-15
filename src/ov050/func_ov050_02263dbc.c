@@ -6,7 +6,7 @@ extern int func_0201c2c8(void *, int);
 extern int func_020e8b4c(int, int);
 extern short data_020c80f0;
 extern void func_ov050_02264834(void *, int);
-extern void func_ov050_02260718(void *);
+extern int func_ov050_02260718(void *);
 
 struct UnkStruct_02263dbc {
     char pad_00[0x8e];

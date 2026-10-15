@@ -4,9 +4,9 @@
 
 extern int func_020431c8(int);
 extern void func_020431b8(int);
-extern void func_ov121_0229a50c(void *);
+extern int func_ov121_0229a50c(void);
 extern void func_ov121_02299c88(void *, unsigned char);
-extern void func_ov121_0229afb8(void *);
+extern unsigned char *func_ov121_0229afb8(void *);
 extern void func_ov121_0229af7c(void *, int, int);
 extern void RtcSendPxiCommand(int);
 
@@ -22,7 +22,10 @@ void func_ov121_0229b020(UnkStruct_0229b020 *self)
     int result = func_020431c8(self->state);
     switch (result) {
         case 1:
-            func_ov121_0229a50c(self);
+            asm {
+                mov r0, self
+            }
+            func_ov121_0229a50c();
             func_ov121_02299c88(self, self->unk_AF);
             func_ov121_0229afb8(self);
             break;

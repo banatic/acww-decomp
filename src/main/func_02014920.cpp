@@ -5,11 +5,11 @@
 extern "C" int func_0203ad88(void);
 extern "C" unsigned int func_0203ad30(void);
 extern "C" void *func_02015d78(void *, unsigned char);
-extern "C" void func_0201a7cc(void *, int);
+extern "C" void func_0201a7cc(void *);
 extern "C" int func_0201c250(void *);
 extern "C" void func_020668d8(void *, void *, int);
-extern "C" void func_02094fd4(void *);
-extern "C" void func_02094fbc(void *);
+extern "C" void *func_02094fd4(void *);
+extern "C" void *func_02094fbc(void *);
 
 typedef struct PtrStruct {
     int unk_00;
@@ -82,7 +82,7 @@ extern "C" int func_02014920(void *self)
     }
     p = func_02015d78(s, s->unk_55);
     if (p) {
-        func_0201a7cc((char *) p + 0x418, 0x418);
+        func_0201a7cc((char *) p + 0x418);
     }
     s->unk_55 = (s->unk_55 + 1) & 1;
     obj = func_02015d78(s, s->unk_55);

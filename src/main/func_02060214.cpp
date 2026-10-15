@@ -19,15 +19,15 @@ class UnkStruct_02060214 {
     char pad_34[4];
     unsigned char unk_38;
 };
-extern "C" void func_0206053c(void *, unsigned char);
-extern "C" void func_0206026c(UnkStruct_02060214 *);
+extern "C" int func_0206053c(void *, unsigned char);
+extern "C" void func_0206026c(void *, int);
 extern "C" void func_02060214(UnkStruct_02060214 *self)
 {
     func_0206053c(&data_021cad80, self->unk_00);
     self->unk_30++;
     self->unk_38 = 0;
     if (self->unk_04 >= 10) {
-        func_0206026c(self);
+        func_0206026c(self, 0);
     }
     (self->*(data_021cad30[self->unk_04].pmf))();
 }

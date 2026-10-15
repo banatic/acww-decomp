@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_0209e3ac(int r0, int r1, int r2)
+int func_0209e3ac(int r0, int r1, int r2)
 {
     if (r2 & 0x20) {
         if (*(unsigned char *) (r0 + 5) < *(unsigned char *) (r1 + 5)) {

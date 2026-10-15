@@ -12,7 +12,7 @@ typedef struct {
     int unk_3C;
 } Big;
 
-extern void func_02034270(Big *big, void *src, int c, int d);
+extern int func_02034270(Big *big, void *src, int c, int d);
 extern void func_0203423c(Big *big);
 extern void func_01ffd070(Vec3 *dst, void *mtx, Vec3 *src);
 

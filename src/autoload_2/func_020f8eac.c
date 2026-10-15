@@ -10,8 +10,8 @@ struct UnkStruct_020f8eac {
     int unk_10;
 };
 
-extern int func_020f8e6c(struct UnkStruct_020f8eac *self, int idx, int value);
-extern void func_020f7bc4(struct UnkStruct_020f8eac *self, int off, int *ptr);
+extern int func_020f8e6c(struct UnkStruct_020f8eac *self);
+extern int func_020f7bc4(struct UnkStruct_020f8eac *self, int off, int *ptr);
 extern void ciAddUNQUIETFilter(struct UnkStruct_020f8eac *self, int value);
 
 void func_020f8eac(struct UnkStruct_020f8eac *self, int unused, int value)
@@ -20,7 +20,7 @@ void func_020f8eac(struct UnkStruct_020f8eac *self, int unused, int value)
     int s;
 
     idx4 = self->unk_10 * 4;
-    s = func_020f8e6c(self, self->unk_10, value);
+    s = func_020f8e6c(self);
     switch (s) {
         case 1:
             func_020f7bc4(self, idx4 + 0x507, &self->unk_04);

@@ -15,7 +15,7 @@ extern int func_0208a844(UnkStruct_02207d5c *self);
 extern int func_0208a9ac(UnkStruct_02207d5c *self);
 extern int func_0208a9c8(UnkStruct_02207d5c *self);
 extern void func_0208aaa0(UnkStruct_02207d5c *self);
-extern void func_ov002_02207d24(UnkStruct_02207d5c *self, int value);
+extern int func_ov002_02207d24(UnkStruct_02207d5c *self, int value);
 
 int func_ov002_02207d5c(UnkStruct_02207d5c *self)
 {

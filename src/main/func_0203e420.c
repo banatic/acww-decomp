@@ -4,9 +4,9 @@
 
 extern int func_020961a8(int);
 extern int func_0203efbc(int);
-extern void func_0203e478(int, int, int, int, int);
+extern int func_0203e478(int, int, int, int, int);
 
-void func_0203e420(void)
+int func_0203e420(void)
 {
-    func_0203e478(0, func_0203efbc(func_020961a8(4)), 8, 1, 0);
+    return func_0203e478(0, func_0203efbc(func_020961a8(4)), 8, 1, 0);
 }

@@ -6,7 +6,7 @@
 
 extern void func_0209e474(void *);
 extern void func_0209e140(void *, int);
-extern void func_0209dcdc(void *, void *);
+extern int func_0209dcdc(void *, void *);
 
 struct bf {
     u16 a : 7;
@@ -14,7 +14,7 @@ struct bf {
     u16 c : 5;
 };
 
-void func_020b0860(u16 *param)
+int func_020b0860(u16 *param)
 {
     u8 local[16];
 
@@ -35,5 +35,5 @@ void func_020b0860(u16 *param)
     local[0xd] = (u8) ((struct bf *) param)->b;
     local[0xc] = (u8) ((struct bf *) param)->c;
 
-    func_0209dcdc(&local[8], &local[12]);
+    return func_0209dcdc(&local[8], &local[12]);
 }

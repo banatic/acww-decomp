@@ -4,7 +4,7 @@
 
 extern int func_02042d14(void *a, void *b, int *c);
 extern unsigned char data_020ca5d4[8];
-extern void *func_0204e414(void *a, int *b);
+extern void *func_0204e414(void);
 void func_02042d94(void *param0, int *param1)
 {
     void *result;
@@ -12,7 +12,7 @@ void func_02042d94(void *param0, int *param1)
     unsigned char *p;
     int i;
 
-    result = func_0204e414(param0, param1);
+    result = func_0204e414();
     if (result == 0) {
         return;
     }

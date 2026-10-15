@@ -3,11 +3,11 @@
  */
 
 extern void *func_020edf70(unsigned int size);
-extern void func_020ee660(void *p);
-extern void __cxa_vec_ctor(void *obj, int a, int b, void (*cb1)(void), void (*cb2)(void));
+extern void *func_020ee660(void *p);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 extern void func_0209d2b8(void *arg);
-extern void func_0205072c(void);
-extern void func_02050704(void);
+extern void *func_0205072c(void *);
+extern void *func_02050704(void *);
 
 typedef struct {
     void *unk_00;
@@ -27,7 +27,8 @@ void *func_020507b8(void)
         func_020ee660(p);
         p->unk_00 = (void *) data_020da13c;
         p->unk_00 = (void *) data_020dce48;
-        __cxa_vec_ctor(&p->unk_50, 4, 0x16c, func_0205072c, func_02050704);
+        __cxa_vec_ctor((void *) (&p->unk_50), 4, 0x16c, (((void (*)(void *)) func_0205072c)),
+                       (((void (*)(void *)) func_02050704)));
         func_0209d2b8(&p->unk_600);
     }
     return p;

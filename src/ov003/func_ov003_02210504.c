@@ -3,12 +3,12 @@
  */
 
 extern void func_02010f5c(void *self);
-extern void func_0203f7d0(void *a, void *b);
+extern int func_0203f7d0(void *a, void *b);
 extern int func_020912d4(int a, void *v, void *p, int d);
-extern void func_02091278(int id, void *v, int d);
-extern void func_0200f328(void *self, int a);
+extern void func_02091278(void *, void *, void *, void *);
+extern int func_0200f328(void *self, int a);
 extern void func_0200fa6c(void *out, void *self);
-extern void func_0200ff28(void *self, void *v, int a, int b);
+extern int func_0200ff28(void *self, void *v, int a, int b);
 extern void func_0209129c(int id);
 
 typedef struct {
@@ -56,7 +56,7 @@ void func_ov003_02210504(UnkStruct_02210504 *self)
             data_ov003_02260558.y = a.y;
             data_ov003_02260558.z = a.z;
         } else {
-            func_02091278(*pid, &v, 0);
+            func_02091278((void *) (*pid), (void *) (&v), (void *) (0), 0);
         }
         switch (k) {
             case 0x14:

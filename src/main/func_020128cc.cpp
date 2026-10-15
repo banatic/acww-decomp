@@ -3,10 +3,10 @@
  */
 
 extern "C" {
-extern void func_02137550(void *, unsigned int);
+extern char *func_02137550(void *, unsigned int);
 extern int func_0208150c(int);
 extern int func_0207cc94(void *, void *, int);
-extern unsigned char *func_020800d0(void);
+extern unsigned char *func_020800d0(int object);
 extern void func_020131dc(unsigned int *, void *, unsigned int *, void *);
 extern void *data_021c80bc;
 extern int data_021e5a2c;
@@ -44,6 +44,8 @@ class UnkStruct_020128cc {
 
 extern "C" void func_020128cc(unsigned int *out, void *a1, void *a2, void *a3)
 {
+    int forwarded_value;
+
     unsigned int local;
     unsigned int coords[2];
     unsigned int result[2];
@@ -63,12 +65,12 @@ extern "C" void func_020128cc(unsigned int *out, void *a1, void *a2, void *a3)
     func_02137550(&local, 4);
     local = func_0208150c(((UnkStruct_020128cc *) a3)->f25());
 
-    if (func_0207cc94(&data_021e5a2c, &local, 1) == 0) {
+    if ((forwarded_value = (int) func_0207cc94(&data_021e5a2c, &local, 1)) == 0) {
         return;
     }
 
     {
-        unsigned char *p = func_020800d0();
+        unsigned char *p = func_020800d0((int) forwarded_value);
         coords[0] = 0;
         coords[1] = 0;
         unsigned char b1 = p[1];

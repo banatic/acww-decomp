@@ -5,13 +5,13 @@
 #include "types.h"
 
 extern u8 data_021f43e8;
-extern void func_02068484(int h, u8 *p, int k);
+extern int func_02068484(int h, u8 *p, int k);
 extern void func_0206844c(int h, u8 *p, int k);
-extern void func_ov004_0221c844(int h, int a);
+extern int func_ov004_0221c844(int h, int a);
 extern int func_020644cc(int);
-extern void func_020154b4(void *s, void *p, int a, int b, int c);
-extern void func_0209a000(void *p, int a);
-extern void func_ov004_0221cfe0(void *s);
+extern int func_020154b4(void *s, void *p, int a, int b, int c);
+extern int func_0209a000(void *p, int a);
+extern void func_ov004_0221cfe0(void *arg0);
 
 void func_ov004_0221ca04(char *s)
 {
@@ -45,7 +45,7 @@ void func_ov004_0221ca04(char *s)
             break;
         case 17:
         case 18:
-            func_ov004_0221cfe0(s);
+            func_ov004_0221cfe0((void *) s);
             break;
         case 19:
         case 20:

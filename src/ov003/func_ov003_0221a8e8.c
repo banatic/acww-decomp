@@ -65,7 +65,7 @@ extern int func_020e8b4c(int, int);
 extern void func_020e8b60(int *, int, int, int);
 extern void func_020eaca0(Vec *, Vec *, Vec *);
 extern int func_020ea9c8(Vec *);
-extern void func_020044b0(void *, int, int, int);
+extern int func_020044b0(void *, int, int, int);
 
 int func_ov003_0221a8e8(UnkStruct_0221a8e8 *a, Vec *outPos, short *outAngle, int *outDist, int e, int f6)
 {

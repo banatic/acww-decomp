@@ -8,7 +8,7 @@ extern u32 data_021fbf98;
 extern u32 data_021fbf18;
 extern u32 data_0213e6b8;
 extern u64 OS_GetTick(void);
-extern void func_020ed9f4(void);
+extern int func_020ed9f4(void);
 extern int OS_ReadMessage(void *queue, u32 *msg, u32 flags);
 
 int func_020ec040(u32 param)

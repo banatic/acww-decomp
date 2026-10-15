@@ -4,7 +4,7 @@
 
 extern int func_0205d8ac(int a, int b);
 
-int func_0205d8a0(int a, int b)
+int func_0205d8a0(int a)
 {
     return func_0205d8ac(a, 0);
 }

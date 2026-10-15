@@ -13,7 +13,7 @@ extern void func_02088df8(int, void *, int, void *, int, int, int, int, int, int
 extern void func_ov095_0229b1c8(void *, int, void *, int);
 extern void func_ov095_0229ae84(void *, int, void *);
 extern int func_0206fe54(void);
-extern void func_020896b8(int, void *, int, void *, int, int, int);
+extern int func_020896b8(int, void *, int, void *, int, int, int);
 
 extern int func_ov122_0229f444(void *);
 extern void func_ov122_0229f3c8(void *);
@@ -36,7 +36,7 @@ extern void func_ov002_02209eb8(void *);
 
 extern void func_ov002_0220ad18(void *, int);
 
-extern void func_ov095_0229af58(void *, int, int, int);
+extern int func_ov095_0229af58(void *, int, int, int);
 
 int func_ov122_022a223c(u8 *self)
 {

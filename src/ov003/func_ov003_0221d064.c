@@ -3,11 +3,13 @@
  */
 
 extern int func_ov003_0221ca9c(int);
-extern void func_ov003_0221cb30(void);
+extern void *func_ov003_0221cb30(void *object);
 
 void func_ov003_0221d064(void)
 {
-    if (func_ov003_0221ca9c(0x2dc) != 0) {
-        func_ov003_0221cb30();
+    void *condition_value_7;
+    condition_value_7 = (void *) (func_ov003_0221ca9c(0x2dc));
+    if (condition_value_7 != 0) {
+        func_ov003_0221cb30(condition_value_7);
     }
 }

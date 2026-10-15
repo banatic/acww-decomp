@@ -4,7 +4,7 @@
 
 extern int data_020e3708;
 extern int data_020da13c;
-extern void func_0209f520(void *);
+extern void *func_0209f520(void *);
 extern void func_020ee62c(void *) __attribute__((arm));
 
 void *func_0209f374(void *this)

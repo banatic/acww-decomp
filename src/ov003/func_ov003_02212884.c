@@ -7,13 +7,13 @@ extern void func_0201107c(void *, int *);
 extern int func_02073908(void *, int);
 extern void func_ov003_02212a54(void *);
 extern void func_02010f5c(void *);
-extern void func_0201100c(void *);
+extern int func_0201100c(void *);
 extern void func_02010d64(void *);
 extern void func_ov003_02212968(void *);
 extern void func_ov003_02212a14(void *);
 extern int func_0200f554(void *);
 extern void func_ov003_0221292c(void *);
-extern void func_020912d4(int, void *, void *, int);
+extern int func_020912d4(int, void *, void *, int);
 extern void *data_020ccf94;
 
 typedef struct {

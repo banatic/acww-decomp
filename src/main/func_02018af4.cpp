@@ -3,7 +3,7 @@
  */
 
 extern "C" {
-extern int func_020164cc(void *);
+extern int func_020164cc(void *, int);
 extern void func_02016764(void *, void *, int, unsigned short, int, int, int, int);
 extern void func_02012444(void *, unsigned short, int);
 extern volatile unsigned short data_020c80f8;
@@ -56,7 +56,7 @@ class UnkStruct_02018af4 {
 
 extern "C" void func_02018af4(char *param0, UnkStruct_02018af4 *param1)
 {
-    if (func_020164cc((char *) param1 + 0x334) != 0) {
+    if (func_020164cc((char *) param1 + 0x334, (int) param1) != 0) {
         int ret = param1->v38();
         unsigned short g = data_020c80f8;
         func_02016764((char *) param1 + 0x334, param1, ret, data_020c80f8, 0, 0x1000, 0, 0);

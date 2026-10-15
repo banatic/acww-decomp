@@ -4,8 +4,8 @@
 
 extern int func_02056f28(void *ptr, int arg);
 extern void func_0200f268(void *ptr, int arg);
-extern void func_0200f27c(void *ptr, int arg);
-extern void func_0200f328(void *ptr, int arg);
+extern unsigned int *func_0200f27c(void *ptr, int arg);
+extern int func_0200f328(void *ptr, int arg);
 extern void func_02010f5c(void *ptr);
 
 void func_ov003_02217590(unsigned char *self)

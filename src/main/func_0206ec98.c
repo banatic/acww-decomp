@@ -3,9 +3,9 @@
  */
 
 extern int CARD_IsEnabled(void);
-extern void func_0203ac2c(void);
-extern void func_0203de6c(int);
-extern void func_020ba540(int);
+extern int func_0203ac2c(void);
+extern void func_0203de6c(void);
+extern int func_020ba540(int);
 extern void func_02001b34(int);
 extern void func_0206eb0c(int);
 
@@ -23,7 +23,8 @@ int func_0206ec98(void)
     }
     flag2 = (data_020e54a8 == 0) ? 1 : 0;
     if (flag2 > 0) {
-        func_0203de6c(0);
+        asm { mov r0, #0 }
+        func_0203de6c();
         func_020ba540(1);
         func_02001b34(8);
     }

@@ -39,7 +39,7 @@ extern int func_ov004_0223cd50(void);
 extern int func_ov004_0223cc10(int, int, int, int);
 extern int func_020b6590(void);
 extern int func_020b7524(int, int, int);
-extern void func_020b758c(int, Vec3 *);
+extern int func_020b758c(int, Vec3 *);
 extern u16 *func_ov004_02246378(int, int);
 extern int func_02073d90(int);
 extern short *func_0209d358(int, int);
@@ -47,7 +47,7 @@ extern int func_ov050_022604e0(UnkStruct_02260738_3 *);
 extern int func_ov050_022604bc(UnkStruct_02260738_3 *);
 extern int func_ov050_022609f0(UnkStruct_02260738_3 *);
 extern int func_020984e8(void);
-extern int func_0202e9fc(int);
+extern int func_0202e9fc(void);
 extern int func_02062fe8(u16 *);
 extern void func_ov050_02263640(void *, int);
 extern int data_020ccf94;
@@ -164,7 +164,7 @@ int func_ov050_02260738(UnkStruct_02260738_3 *self)
     } else if ((c1 >= 0x1000) && (c1 <= 0x10ff)) {
         k = 1;
     } else if ((c1 >= 0x1521) && (c1 <= 0x1530)) {
-        if (func_0202e9fc(func_020984e8()) != 0) {
+        if (((void) (func_020984e8()), func_0202e9fc()) != 0) {
             k = 2;
         } else {
             k = 3;

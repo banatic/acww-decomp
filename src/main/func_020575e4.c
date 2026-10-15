@@ -4,10 +4,10 @@
 
 #include "types.h"
 
-extern void func_02057640(void *p0, void *p1, void *p2, void *p3);
+extern void func_02057640(void *p0);
 extern void func_02057730(void *dst, void *src);
 extern void func_02056fcc(void *p0, int p1, int p2, int p3, int p4);
-extern void func_02057538(void *p);
+extern int func_02057538(void *p);
 
 typedef struct {
     u8 pad_00[0x50];
@@ -22,7 +22,7 @@ typedef struct {
 
 int func_020575e4(UnkStruct_020575e4 *p, void *b, void *c, void *d, void *e, void *f, u8 g)
 {
-    func_02057640(p, b, c, d);
+    func_02057640(p);
     p->unk_8C = g;
     func_02057730(p->unk_54, c);
     func_02057730(p->unk_65, d);

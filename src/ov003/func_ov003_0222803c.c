@@ -3,7 +3,7 @@
  */
 
 int FX_MulFunc(int a, int b);
-void func_02034270(void *buf, void *p, int a, int b);
+int func_02034270(void *buf, void *p, int a, int b);
 void func_0203423c(void *buf);
 
 void func_ov003_0222803c(int *out, int a)

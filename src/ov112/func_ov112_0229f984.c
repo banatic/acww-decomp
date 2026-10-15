@@ -8,7 +8,7 @@ struct UnkStruct_0229f984 {
 };
 
 extern unsigned char data_021f6c54;
-extern void func_020e8a38(unsigned char *ptr, unsigned char val, int count);
+extern int func_020e8a38(unsigned char *ptr, unsigned char val, int count);
 extern void func_ov112_0229f9dc(struct UnkStruct_0229f984 *self, unsigned char val);
 
 void func_ov112_0229f984(struct UnkStruct_0229f984 *self)

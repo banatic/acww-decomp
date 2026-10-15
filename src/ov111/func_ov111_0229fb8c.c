@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_ov111_0229f4dc(void *self, int param1);
+extern int func_ov111_0229f4dc(void *self);
 extern void func_ov095_0229b3ec(void *ptr);
 extern int func_ov095_0229b3a0(void *ptr, void *ptr2, int _x);
 extern void RtcSendPxiCommand(int cmd);
@@ -25,7 +25,7 @@ typedef struct {
 
 int func_ov111_0229fb8c(UnkStruct_0229fb8c *self, int param1)
 {
-    if (func_ov111_0229f4dc(self, param1) != 0) {
+    if (func_ov111_0229f4dc(self) != 0) {
         func_ov095_0229b3ec(&self->unk_AC);
         func_ov111_0229fb48(self);
     } else {

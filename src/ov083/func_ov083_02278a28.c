@@ -3,8 +3,8 @@
  */
 
 extern int data_ov083_0227928c;
-extern void func_ov083_02278d64(void *);
-extern void func_0202ee5c(void *);
+extern void *func_ov083_02278d64(void *);
+extern void *func_0202ee5c(void *);
 extern void func_020edf54(void *);
 
 struct TheStruct {

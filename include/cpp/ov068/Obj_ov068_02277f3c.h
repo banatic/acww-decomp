@@ -4,8 +4,8 @@
 #include "cpp/ov004/Obj_ov004_02254b28.h"
 
 // Arrival-sequence object: primary vtable 0x02277f3c. The base's mode byte
-// at 0x24c picks the update handler; func_ov068_02274f84 (vtable slot 0x60,
-// func_ov004_0222c6cc in the base) changes it.
+// at 0x24c picks the update handler. Slot 0x60 checks whether a requested mode
+// can be entered; the base implementation always accepts it.
 class Obj_ov068_02277f3c : public Obj_ov004_02254b28 {
   public:
     // update handlers

@@ -49,12 +49,12 @@ extern void func_02013c04(void *p);
 extern void func_0202e194(UnkStruct_02267dc0 *b);
 extern void func_0209129c(int a);
 extern void func_0202e118(unsigned short *p, UnkStruct_02267dc0 *b);
-extern void func_02019c20(void *p, int a, int b, int c, int d, int e);
+extern int func_02019c20(void *p, int a, int b, int c, int d, int e);
 extern void func_0201228c(void *p, int a, int b);
-extern void func_02034270(Big *p, Vec *v, int a, int b);
-extern void func_ov003_02220b44(int a, Vec *v);
-extern void func_02091254(int a, Vec *v, int b, int c);
-extern void func_0200442c(void *p, int a, int b, int c);
+extern int func_02034270(Big *p, Vec *v, int a, int b);
+extern int func_ov003_02220b44(int a, Vec *v);
+extern int func_02091254(int a, Vec *v, int b, int c);
+extern int func_0200442c(void *p, int a, int b, int c);
 extern void func_0201cbbc(void *p);
 extern void func_0203423c(Big *p);
 

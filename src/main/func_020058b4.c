@@ -4,7 +4,7 @@
 
 extern void func_02054988(void *param1, void *param2);
 
-extern void func_02005740(void);
+extern void func_02005740(void *);
 
 void func_020058b4(void *param1)
 {

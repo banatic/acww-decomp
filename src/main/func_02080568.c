@@ -2,10 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02080578(void);
-extern void func_020805bc(int param1, void (*param2)(void));
+extern int func_02080578(unsigned short *, unsigned short *, void *);
+extern int func_020805bc(void *, int (*)(void *, void *, void *));
 
-void func_02080568(int arg)
+#define Compare_02080578 ((int (*)(void *, void *, void *)) func_02080578)
+
+int func_02080568(int arg)
 {
-    func_020805bc(arg, func_02080578);
+    return func_020805bc((void *) arg, Compare_02080578);
 }

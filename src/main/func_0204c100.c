@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204c0b0(void);
+extern int func_0204c0b0(void *);
 
-int func_0204c100(void)
+int func_0204c100(void *argument0)
 {
     int r0;
     int r1;
 
-    r0 = func_0204c0b0();
+    r0 = func_0204c0b0((void *) argument0);
     r1 = -1;
     if (r0 != r1) {
         r1 = r0 >> 3;

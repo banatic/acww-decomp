@@ -3,7 +3,7 @@
  */
 
 unsigned int *func_0203dd54(unsigned int *p);
-extern void func_020a941c(unsigned int *p);
+extern void *func_020a941c(unsigned int *p);
 extern void func_020edb3c(unsigned int *p);
 
 extern unsigned char data_020da9ac[];

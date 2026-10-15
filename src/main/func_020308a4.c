@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_01ffcb2c(void);
+extern int func_01ffcb2c(int, int);
 
 struct UnkStruct_020308a4 {
     unsigned char pad_00[300];
@@ -11,10 +11,10 @@ struct UnkStruct_020308a4 {
 
 extern struct UnkStruct_020308a4 *data_020da1a8;
 
-int func_020308a4(void)
+int func_020308a4(int argument0, int argument1)
 {
     int r;
-    r = func_01ffcb2c();
+    r = func_01ffcb2c((int) argument0, (int) argument1);
     if (r >= 104 && r <= 110) {
         r -= 104;
     } else {

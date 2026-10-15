@@ -16,7 +16,7 @@ typedef struct {
 } UnkStruct_020b0bbc_2;
 
 extern int data_021f42f4;
-extern void func_0202f134(int a, int b, int c, int d);
+extern int func_0202f134(int a, int b, int c, int d);
 extern u64 OS_GetTick(void);
 
 int func_020b0bbc(UnkStruct_020b0bbc_2 *self, u8 *cnt, u64 start)

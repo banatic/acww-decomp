@@ -6,7 +6,7 @@ extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 
 extern int func_ov002_02208054(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov095_0229bf48(void *);
 extern int func_ov095_0229aff0(void *);
 extern int func_ov095_0229afac(void *);
@@ -43,7 +43,7 @@ void func_ov111_022a075c(struct UnkStruct_022a075c *self)
         result = func_ov111_0229f6d4(self);
         if (result != 0) {
             if (result == 1) {
-                func_ov002_02208098(self, 1);
+                func_ov002_02208098((void *) (self), 1);
                 return;
             }
         } else {
@@ -53,19 +53,19 @@ void func_ov111_022a075c(struct UnkStruct_022a075c *self)
                 return;
             }
             if (func_ov111_0229f6a8(self) != 0) {
-                func_ov002_02208098(self, 0xd);
+                func_ov002_02208098((void *) (self), 0xd);
                 return;
             }
             if (self->unk_A2 == 0) {
                 if (func_ov095_0229afac(&self->unk_AC) != 0) {
                     func_ov111_022a0198(self);
-                    func_ov002_02208098(self, 0);
+                    func_ov002_02208098((void *) (self), 0);
                     return;
                 }
             }
             if (func_ov111_0229f600(self) != 0) {
                 func_ov111_0229efec(self);
-                func_ov002_02208098(self, 2);
+                func_ov002_02208098((void *) (self), 2);
                 return;
             }
         }

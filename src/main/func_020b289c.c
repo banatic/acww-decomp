@@ -19,7 +19,7 @@ struct Iter {
 
 extern int func_020b6660(void);
 extern int func_020b22b8(void);
-extern void func_020b5e10(void);
+extern int func_020b5e10(void);
 extern int func_020b64d4(int *p);
 extern int func_020b64cc(int *p);
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);

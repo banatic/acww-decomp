@@ -17,9 +17,9 @@ typedef struct {
     int fBx, fBy, fBz;
 } UnkStruct_0200c648_2;
 
-extern void func_02010f5c(void);
+extern void func_02010f5c(int);
 extern int func_02056f28(void *flags, int bit);
-extern void func_020912d4(int type, void *a, void *b, int c);
+extern int func_020912d4(int type, void *a, void *b, int c);
 
 void func_0200c648(UnkStruct_0200c648_2 *self)
 {
@@ -27,7 +27,7 @@ void func_0200c648(UnkStruct_0200c648_2 *self)
     UnkStruct_0200c648 v;
     short f8e;
 
-    func_02010f5c();
+    func_02010f5c((int) self);
 
     if (func_02056f28(&self->unk_2D0, 0xd)) {
         func_020912d4(0x22, (char *) self + 0x5c, 0, 0);

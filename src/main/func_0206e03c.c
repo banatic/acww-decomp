@@ -15,8 +15,8 @@ typedef struct {
 } UnkStruct_0206e03c_2;
 
 extern void func_0206df1c(UnkStruct_0206e03c_2 *s, unsigned short *p1, int *a, int *b);
-extern void func_020a88ec(void *o);
-extern void func_020a887c(void *o);
+extern void *func_020a88ec(void *o);
+extern void *func_020a887c(void *o);
 extern void func_020a8874(void *o, void *p, int n);
 extern void func_0206db74(UnkStruct_0206e03c *e);
 extern void func_0206dba8(UnkStruct_0206e03c *e, void *o, int m);

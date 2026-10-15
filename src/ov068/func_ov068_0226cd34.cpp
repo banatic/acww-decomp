@@ -34,14 +34,14 @@ struct Main {
 };
 
 extern "C" {
-int func_ov068_0226c0a4(Main *, unsigned char);
+int func_ov068_0226c0a4(Main *);
 int func_02014868(int);
 }
 
 extern "C" void func_ov068_0226cd34(Main *self, int arg)
 {
     if (self->unk_E0 != 0) {
-        if (func_ov068_0226c0a4(self, self->unk_E0) == 0) {
+        if (func_ov068_0226c0a4(self) == 0) {
             self->unk_E0 = 0;
         }
     }

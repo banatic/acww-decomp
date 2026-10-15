@@ -26,14 +26,14 @@ extern u8 data_021f3c1c;
 extern int func_02073fdc(int);
 extern void func_02074078(void);
 extern int func_02073d70(PtrData *);
-extern int func_020a7394(int, int, int, int, int);
-extern int func_020738f4(PtrData *, u8);
-extern int func_02073de0(PtrData *, u8, int);
-extern int func_02075104(u8);
+extern void func_020a7394(int, int, int, int, int);
+extern void func_020738f4(PtrData *, u8);
+extern void func_02073de0(PtrData *, u8, int);
+extern void func_02075104(u8);
 extern int func_02075dcc(void *, u16);
 extern int func_02073044(void);
-extern int func_020ebf70(int);
-extern int func_02073d74(PtrData *, int);
+extern int func_020ebf70(void);
+extern void func_02073d74(PtrData *, int);
 
 void func_020a3abc(UnkStruct_020a3abc *self)
 {
@@ -67,7 +67,7 @@ void func_020a3abc(UnkStruct_020a3abc *self)
                 func_02074078();
                 return;
             }
-            if (func_020ebf70(func_02073044()) && self->flag_e4) {
+            if ((func_02073044(), func_020ebf70()) && self->flag_e4) {
                 func_02073d74(data_020ccf94, 2);
                 self->flag_d6 = 1;
                 self->state = 3;

@@ -8,7 +8,7 @@ extern void *func_02099688(void *);
 extern unsigned short *func_020882ec(void *);
 extern int func_02064294(void *);
 extern int memcmp(const void *, const void *, int);
-extern void func_02088284(void);
+extern void func_02088284(void *);
 extern int func_0208829c(void *);
 extern void func_02098ff8(void *, int);
 extern const unsigned short data_021dc7aa[];
@@ -29,8 +29,7 @@ int func_ov048_02262ee8(void)
                 goto skip;
             }
         }
-        func_02099688(func_020984e8());
-        func_02088284();
+        func_02088284((void *) func_02099688(func_020984e8()));
     skip:
         if (func_0208829c(b) != 0) {
             func_02098ff8(a, 0x36);

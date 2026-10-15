@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209a1e8(int);
+extern int func_0209a1e8(void);
 
 int func_ov106_0229d48c(int param)
 {
-    int r = func_0209a1e8(param);
+    int r = func_0209a1e8();
     if (r == -1) {
         return 0x20;
     } else {

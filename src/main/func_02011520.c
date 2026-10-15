@@ -6,14 +6,14 @@ extern void *data_020ccf94;
 extern int func_02073908(void *a, int b);
 extern int DWC_Alloc(int size, int kind);
 extern int func_02095794(int);
-extern int func_02030890(void);
+extern int func_02030890(int *);
 extern void func_020953c4(int *);
 extern int func_020b5e10(void);
 extern int func_020b6044(int, int, int *, int *);
 extern void func_020953a4(int *);
 extern int func_0209d780(int);
 extern int func_020b67ac(void);
-extern void func_0203e110(void);
+extern int func_0203e110(void);
 extern int func_0203e420(void);
 extern int func_02096190(int);
 extern int func_0203e444(int, int);
@@ -50,7 +50,7 @@ int func_02011520(int param)
         return ret;
     }
 
-    v = func_02030890();
+    v = func_02030890((int *) ret);
     if (v == -1) {
         return v;
     }

@@ -3,13 +3,13 @@
  */
 
 extern int *data_ov066_0226bdec;
-extern int func_ov066_02266b54(int param);
+extern void func_ov066_02266b54(int param);
 
-int func_ov066_0226727c(void)
+void func_ov066_0226727c(void)
 {
     int v = *data_ov066_0226bdec;
     if (v <= 0) {
-        return v;
+        return;
     }
-    return func_ov066_02266b54(0);
+    func_ov066_02266b54(0);
 }

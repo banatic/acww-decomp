@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02001e34(int, int);
+extern void func_02001e34(int, int);
 
-int func_ov147_0229a3ac(void)
+void func_ov147_0229a3ac(void)
 {
     volatile unsigned short *reg = (volatile unsigned short *) 0x0400000e;
     unsigned short val;
@@ -21,5 +21,5 @@ int func_ov147_0229a3ac(void)
     val = (unsigned short) (val & ~(unsigned short) 0x40);
     *reg = val;
 
-    return func_02001e34(0, 0);
+    func_02001e34(0, 0);
 }

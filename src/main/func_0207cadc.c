@@ -6,8 +6,8 @@ typedef struct {
     unsigned char data[0x7EC];
 } UnkStruct_0207cadc;
 
-extern void func_0208150c(UnkStruct_0207cadc *p);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(UnkStruct_0207cadc *p);
+extern int func_02003704(void *);
 
 int func_0207cadc(UnkStruct_0207cadc *p)
 {
@@ -16,8 +16,7 @@ int func_0207cadc(UnkStruct_0207cadc *p)
 
     count = 0;
     for (i = 0; i < 8; i++) {
-        func_0208150c(p);
-        if (func_02003704()) {
+        if (func_02003704((void *) func_0208150c(p))) {
             count++;
         }
         p++;

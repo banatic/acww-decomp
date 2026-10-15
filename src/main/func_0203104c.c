@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02031060(int, int);
+extern int func_02031060(int, int);
 
-void func_0203104c(int *arg0)
+int func_0203104c(int *arg0)
 {
     int r0;
     int r1;
@@ -13,5 +13,5 @@ void func_0203104c(int *arg0)
     ptr = arg0;
     r0 = *ptr >> 13;
     r1 = *(ptr + 2) >> 13;
-    func_02031060(r0, r1);
+    return func_02031060(r0, r1);
 }

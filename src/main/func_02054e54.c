@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02055260(void *self);
-extern void func_02056f04(void *self);
+extern void *func_02055260(void *self);
+extern void *func_02056f04(void *self);
 extern char data_020dd0dc[];
 extern char data_020dd0ec[];
 extern char data_020dd0fc[];

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void OS_TryLockMutex(void *mutex);
+extern int OS_TryLockMutex(void *mutex);
 
 void func_020ea044(void *mutex)
 {

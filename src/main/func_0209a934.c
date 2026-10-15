@@ -3,11 +3,11 @@
  */
 
 extern void *func_0209ad9c(void *, int);
-extern void func_02137550(void *, int);
+extern char *func_02137550(void *, int);
 extern int func_02003704(void *);
 extern void *func_0207cb9c(void *, void **, int);
 extern unsigned int func_0208150c(unsigned int);
-extern void func_0209b4d8(unsigned int, int, int, unsigned int);
+extern int func_0209b4d8(unsigned int, int, int, unsigned int);
 extern void func_02003728(void *, unsigned int);
 extern int data_021e5a2c;
 

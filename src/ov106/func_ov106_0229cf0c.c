@@ -9,7 +9,7 @@ extern void func_0208aa60(unsigned char *, int, int);
 extern int func_ov106_0229d3a0(unsigned char *, unsigned char);
 extern int func_ov106_0229d390(unsigned char *, unsigned char);
 extern int func_ov106_0229d360(unsigned char *, unsigned char);
-extern void func_ov094_0229b9b4(unsigned char *, unsigned char *, int);
+extern int func_ov094_0229b9b4(unsigned char *, unsigned char *, int);
 
 void func_ov106_0229cf0c(unsigned char *self)
 {

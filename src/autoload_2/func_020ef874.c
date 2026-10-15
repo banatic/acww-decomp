@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void OS_Terminate(void *p);
+extern void OS_Terminate(void);
 
 typedef struct {
     char pad_00[0x34];
@@ -12,7 +12,7 @@ typedef struct {
 void func_020ef874(Func020ef874Struct *obj, int bit, int enable)
 {
     if (obj == 0) {
-        OS_Terminate(obj);
+        OS_Terminate();
     }
     if (enable == 1) {
         obj->unk_34 |= (1 << bit);

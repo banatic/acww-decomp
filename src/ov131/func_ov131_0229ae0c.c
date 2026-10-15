@@ -9,7 +9,7 @@ typedef struct {
 
 extern int func_0206fca4(void);
 extern void *func_020984e8(void);
-extern int func_020992fc(void);
+extern int func_020992fc(int argument0);
 extern int func_020983f0(int a);
 extern int func_02099734(void *h);
 extern int func_02098cf8(int a, int b);
@@ -30,7 +30,7 @@ void func_ov131_0229ae0c(UnkStruct_0229ae0c *self)
 
     kind = func_0206fca4();
     h = func_020984e8();
-    q = func_020992fc();
+    q = func_020992fc((int) h);
 
     switch (kind) {
         case 0x38:

@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec58(void);
+extern int func_0202ec58(void *arg0);
 extern int func_02073d90(int);
 extern int func_020b65c4(void);
 extern int func_0201c0e0(void *);
 extern void func_ov048_022635f4(void *, int);
-extern void func_0208602c(void);
-extern int func_020860cc(void);
+extern int func_0208602c(void);
+extern int func_020860cc(int);
 extern int func_02087e84(int);
 extern int func_02087e78(int);
-extern int func_02087e8c(int);
+extern void func_02087e8c(int);
 extern void func_0203e334(void);
 extern void func_ov048_02262678(void *, int);
 extern int data_020ccf94;
@@ -31,7 +31,7 @@ typedef struct {
 
 int func_ov048_022636c8(UnkStruct_022636c8 *self)
 {
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58((void *) self) == 0) {
         return 0;
     }
     self->unk_E6C = self->unk_8E;
@@ -45,8 +45,7 @@ int func_ov048_022636c8(UnkStruct_022636c8 *self)
         return 1;
     } else {
         int r4;
-        func_0208602c();
-        r4 = func_020860cc();
+        r4 = func_020860cc((int) func_0208602c());
         if (func_02087e84(r4) == 1 || func_02087e84(r4) == 2) {
             if (func_02087e84(r4) == 1) {
                 func_ov048_02262678(&self->unk_658, 6);

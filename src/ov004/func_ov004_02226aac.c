@@ -14,14 +14,14 @@ extern int func_020b67d4(void);
 extern int func_020b6680(void);
 extern int func_02073908(int a, int b);
 extern void func_ov004_02226c00(void *dst, int a, int c);
-extern void func_0200f328(void *self, int msg);
+extern int func_0200f328(void *self, int msg);
 extern void func_020b220c(void);
 extern void func_ov004_02226c08(void *dst, struct UnkStruct_02226aac t, int a, int n, unsigned char k);
 extern void func_0201107c(void *self, void *p);
-extern void func_0200f27c(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern int data_020ccf94;
 extern int data_ov004_02254af4;
-void func_ov004_02226aac(unsigned char *self, unsigned char *p)
+void func_ov004_02226aac(unsigned char *self, unsigned char *p, int previous)
 {
     unsigned char *w;
     struct UnkStruct_02226aac t;

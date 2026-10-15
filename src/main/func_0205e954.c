@@ -34,9 +34,9 @@ extern int data_021ca16c[];
 extern u16 *func_0205f100(int *g, int id);
 extern UnkStruct_0205e954_2 *func_0205f130(int *g, int id);
 extern void func_0205510c(UnkStruct_0205e954_2 *t, VecFx32 *v);
-extern UnkStruct_0205e954 func_0205e8f8(UnkStruct_0205e954_3 *p, int n);
+extern void func_0205e8f8(UnkStruct_0205e954 *out, const u8 *key, u32 n);
 extern void func_02060134(int *sub, UnkStruct_0205e954 *s, VecFx32 *v);
-extern void func_0203f7d0(VecFx32 *out, VecFx32 *in);
+extern int func_0203f7d0(VecFx32 *out, VecFx32 *in);
 extern void func_02060438(int *sub, VecFx32 *in);
 
 static __inline int inr(u16 *q, u16 lo, u16 hi)
@@ -72,10 +72,10 @@ void func_0205e954(UnkStruct_0205e954_3 *p, UnkStruct_0205e954 *src)
         v.z = k;
         func_0205510c(t, &v);
         if (inr(func_0205f100(data_021ca16c, id), 0x1374, 0x1374) || inr(func_0205f100(data_021ca16c, id), 0x1375, 0x1375)) {
-            t1 = func_0205e8f8(p, 2);
+            func_0205e8f8(&t1, (const u8 *) p, 2);
             s = t1;
         } else {
-            t2 = func_0205e8f8(p, 0);
+            func_0205e8f8(&t2, (const u8 *) p, 0);
             s = t2;
         }
         func_02060134(&p->unk_28, &s, &v);

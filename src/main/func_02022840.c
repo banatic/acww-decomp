@@ -30,11 +30,11 @@ extern Settings data_020c8b08;
 
 extern void func_0202e118(UnkStruct_02022840 *out, UnkStruct_02022840_2 *p);
 extern int func_0207f1c8(int a);
-extern void func_0209b5ec(void);
-extern int func_0209c330(void);
+extern void *func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern int func_0208150c(int a);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_02022840_3 *self, void *a, void *b, int n, int c, int d, int e, int f, int g);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_02022840_3 *self, void *a, void *b, int n, int c, int d, int e, int f, int g);
 
 int func_02022840(UnkStruct_02022840_3 *self)
 {
@@ -55,16 +55,14 @@ int func_02022840(UnkStruct_02022840_3 *self)
         }
         if (ok > 0) {
             state = 0;
-            func_0207f1c8(self->unk_100->unk_830);
-            func_0209b5ec();
-            if (func_0209c330() != 5) {
+            if (func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(self->unk_100->unk_830))) != 5) {
                 state = 2;
             }
         }
     }
     if (state != -1) {
-        func_0208150c(self->unk_100->unk_830);
-        func_0202da38(self, (u8 *) self + 0x104, (u8 *) self + 0x122, 0x1e, func_020036e8(), data_020c8b08.unk_00,
+        func_0202da38(self, (u8 *) self + 0x104, (u8 *) self + 0x122, 0x1e,
+                      func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830)), data_020c8b08.unk_00,
                       data_020c8b08.unk_04, state, 0);
         return 1;
     }

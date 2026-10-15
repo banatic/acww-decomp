@@ -10,9 +10,9 @@ typedef struct {
 } Struct020421d0;
 
 extern Struct020421d0 data_021c75b8;
-extern int func_02001aac(int arg);
+extern void func_02001aac(int arg);
 
-int func_020421d0(void)
+void func_020421d0(void)
 {
     Struct020421d0 *p = &data_021c75b8;
     if (p->unk_00 == 3) {
@@ -24,5 +24,5 @@ int func_020421d0(void)
             p->unk_0C = 0x10;
         }
     }
-    return func_02001aac(p->unk_0C);
+    func_02001aac(p->unk_0C);
 }

@@ -4,9 +4,9 @@
 
 extern void func_02008748(void *p, unsigned short v);
 extern void func_0200850c(void *dst, void *src, int c);
-extern void func_020109a0(void *p, int a, int b, int c);
+extern void func_020109a0(void *p, int a, int b, unsigned short c);
 
-void func_020086c4(void *self)
+void func_020086c4(void *self, void *message, int previous)
 {
     unsigned int tmp[4];
     func_02008748((char *) self + 0x8f0, *(unsigned short *) ((char *) self + 0x820));

@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_020e54a8;
-extern int func_02011ed4(char *obj);
+extern int func_02011ed4(void);
 extern int func_0208d01c(char *p);
 extern void func_0208d04c(char *p);
 extern int func_0208d03c(char *p);
@@ -19,7 +19,7 @@ static __inline int check_flag(void)
 
 void func_0208b0d8(char *obj)
 {
-    if (func_02011ed4(obj) != 0) {
+    if (func_02011ed4() != 0) {
         if (check_flag() != 0) {
             if (func_0208d01c(obj + 0xe0) != 0) {
                 func_0208d04c(obj + 0xe0);

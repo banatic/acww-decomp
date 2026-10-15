@@ -5,8 +5,8 @@
 #include "types.h"
 
 extern void *func_020edf70(int size);
-extern void func_0202e8e4(void *p);
-extern void func_ov004_0221f860(void *p);
+extern void *func_0202e8e4(void *p);
+extern void *func_ov004_0221f860(void *p);
 extern int data_ov004_02253bb4;
 
 void *func_ov004_0221ff70(void)

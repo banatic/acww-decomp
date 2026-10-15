@@ -4,8 +4,8 @@
 
 extern int func_020160b4(int);
 extern int func_020ab504(int);
-extern int func_0209a050(int);
-extern void func_02015330(int, unsigned short *, int, int, int);
+extern void func_0209a050(int);
+extern int func_02015330(int, unsigned short *, int, int, int);
 extern void func_0206844c(int, void *, void *);
 extern int data_ov086_02279438;
 void func_ov086_02278ab8(int arg0)

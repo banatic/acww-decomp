@@ -5,7 +5,7 @@
 extern const unsigned char data_ov004_02247924[];
 extern void func_ov004_022354e0(void *self);
 extern void func_02055dc8(void *p, void *fn, void *self);
-extern void func_ov004_0223653c(void);
+extern void func_ov004_0223653c(char *arg0);
 
 void func_ov004_022366c8(void *self)
 {

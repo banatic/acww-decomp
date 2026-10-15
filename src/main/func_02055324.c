@@ -31,11 +31,11 @@ extern void *func_02107828(void *a);
 extern void *func_020e9948(void *a, u32 b);
 extern void MI_CpuCopy8(void *a, void *b, u32 c);
 extern void *func_021077e8(void *a);
-extern void func_02056064(void *a, int b);
+extern int func_02056064(void *a, int b);
 extern void *func_020561cc(void *a, void *b);
 extern void *func_02056268(void *a, void *b);
-extern void func_02055f40(void *a, void *b, void *c);
-extern void func_0205577c(void *a);
+extern int func_02055f40(void *a, void *b, void *c);
+extern void *func_0205577c(void *a);
 extern void func_020e993c(void *a, void *b);
 
 extern void *data_021c9b2c;

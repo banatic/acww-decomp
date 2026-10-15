@@ -8,14 +8,14 @@ struct UnkStruct_0222b31c {
     int c;
 };
 extern int func_02073908(int a, int b);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
 extern void func_0200fa1c(struct UnkStruct_0222b31c *out, void *self, struct UnkStruct_0222b31c *in, unsigned short *p,
                           int *q);
 extern void func_ov004_0222b3e0(void *dst, int a, int c);
 extern void func_ov004_0222b3dc(void *dst, int b);
-extern void func_0200f328(void *self, int msg);
+extern int func_0200f328(void *self, int msg);
 extern int data_020ccf94;
-void func_ov004_0222b31c(unsigned char *self, unsigned char *p)
+void func_ov004_0222b31c(unsigned char *self, unsigned char *p, int previous)
 {
     unsigned char *w;
     short sh;

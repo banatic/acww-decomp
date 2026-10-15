@@ -9,8 +9,8 @@ typedef struct {
     int unk_38;
 } UnkStruct_02048498;
 extern UnkStruct_02048498 data_021c79c4;
-extern void func_0204851c(int a, int b, int c, int d);
-extern void func_020484c8(void);
+extern int func_0204851c(int a, int b, int c, int d);
+extern void func_020484c8(int, int);
 
 void func_02048498(int a, int b, int c, int d)
 {
@@ -25,5 +25,5 @@ void func_02048498(int a, int b, int c, int d)
     }
     return;
 other:
-    func_020484c8();
+    func_020484c8(a, b);
 }

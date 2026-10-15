@@ -50,7 +50,7 @@ struct Pair {
 extern "C" {
 extern int func_02019e00(void *p);
 extern int func_02019de8(void *p);
-extern int func_020ba4e4(int a);
+extern int func_020ba4e4(void);
 extern void *func_0208150c(Object *p);
 extern int func_02003704(void *p);
 extern void *func_0207f270(Object *p);
@@ -112,7 +112,7 @@ int func_ov068_0226c1dc(SomeState *self, Object *obj)
     pair.a = 0;
     pair.b = 0;
     x = 7;
-    lang = func_020ba4e4(x);
+    lang = func_020ba4e4();
     if (o != 0 && func_02003704(func_0208150c(o)) != 0 && func_0207f270(o) != 0) {
         x = func_020794cc(func_0207f270(o));
     }

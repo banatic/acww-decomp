@@ -15,7 +15,7 @@ typedef struct Vec {
 extern void *func_02096718(int);
 extern int func_02008258(void *, int);
 extern int func_020b5e10(void);
-extern void func_020b6044(int, int, int *, s16 *);
+extern int func_020b6044(int, int, int *, s16 *);
 extern int func_02064558(s16);
 extern int func_ov004_022265dc(void *, Vec *, int, int);
 

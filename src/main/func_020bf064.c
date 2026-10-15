@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int FS_OpenFile(void *self, void *ptr, int size);
+extern int FS_OpenFile(void *self, void *ptr);
 extern int FS_SeekFile(void *self, int val, int arg2);
 extern int FS_ReadFile(void *self, void *dst, int size);
 extern void MI_CpuCopy8(void *dst, void *src, int size);
@@ -35,7 +35,7 @@ int func_020bf064(void *self, int arg1)
     int i, j, local;
     int last;
 
-    flag0 = FS_OpenFile(self, (void *) data_020d22d8[entry->unk_00], entry->unk_00 * 4);
+    flag0 = FS_OpenFile(self, (void *) data_020d22d8[entry->unk_00]);
     flag1 = 1;
     flag2 = 1;
     block = &data_020d26a0[entry->unk_08];

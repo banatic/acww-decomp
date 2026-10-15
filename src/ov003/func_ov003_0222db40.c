@@ -28,7 +28,7 @@ extern int func_ov003_02233c70(int a, int b);
 extern int func_020ea990(UnkStruct_0222db40 *a, UnkStruct_0222db40 *b);
 extern int FX_MulFunc(int a, int b);
 extern s16 func_0200322c(UnkStruct_0222db40 *a, UnkStruct_0222db40 *b);
-extern void func_ov003_0222ff2c(char *a, char *e);
+extern int func_ov003_0222ff2c(char *a, char *e);
 extern int func_ov003_0222cf60(char *e, UnkStruct_0222db40_2 *d, int id, int p2);
 
 int func_ov003_0222db40(char *a, int id, int p2, int mode)

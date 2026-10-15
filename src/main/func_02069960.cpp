@@ -33,7 +33,7 @@ struct UnkStruct_02069960_3 {
 };
 
 extern "C" unsigned int func_020a86e4(void *a, unsigned char *b, unsigned char *c, unsigned char *d);
-extern "C" unsigned int func_0203cc04(unsigned int x);
+extern "C" unsigned int func_0203cc04(void);
 extern "C" void func_0206b964(void *self, unsigned char *arr);
 
 extern "C" void func_02069960(UnkStruct_02069960_3 *self)
@@ -45,7 +45,7 @@ extern "C" void func_02069960(UnkStruct_02069960_3 *self)
 
     obj = self->inner->obj;
     obj->target(6, 3);
-    x = func_0203cc04(func_020a86e4((void *) &self->unk_38, &arr[1], &arr[2], &arr[3]));
+    x = (func_020a86e4((void *) &self->unk_38, &arr[1], &arr[2], &arr[3]), func_0203cc04());
     if (x == 0x38) {
         idx = 2;
     } else if (x >= 0x21) {

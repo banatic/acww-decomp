@@ -13,7 +13,7 @@ typedef struct {
     char sub;
 } UnkStruct_0206923c;
 
-extern void func_020a9484(void *p, int x);
+extern void *func_020a9484(void *p);
 extern void func_020a8754(void *p);
 
 extern unsigned char data_020defc0[];
@@ -21,7 +21,7 @@ extern unsigned char data_020e3e68[];
 
 void *func_0206923c(UnkStruct_0206923c *self, int arg)
 {
-    func_020a9484(self, arg);
+    func_020a9484(self);
     self->u.ptr1 = (void *) data_020e3e68;
     self->u.ptr2 = (void *) data_020defc0;
     self->unk_24 = arg;

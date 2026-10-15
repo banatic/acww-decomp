@@ -7,14 +7,14 @@ typedef struct UnkStruct_0229b8d8 {
     unsigned char *unk_04;
 } UnkStruct_0229b8d8;
 
-extern int func_020984e8(void *a, int b);
+extern int func_020984e8(void);
 extern int func_02099734(int x);
 extern unsigned char *func_02098e44(int x, int b);
 
 unsigned char *func_ov094_0229b8d8(void *a, int b)
 {
     int t;
-    t = func_02099734(func_020984e8(a, b));
+    t = func_02099734(func_020984e8());
     if (b >= 0 && b <= 9) {
         return func_02098e44(t, b);
     } else if (b >= 0xa && b <= 0x22) {

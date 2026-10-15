@@ -12,10 +12,10 @@ struct E {
     PMF fn;
 };
 
-extern "C" void func_020984e8(void);
-extern "C" int func_02099640(void);
-extern "C" void func_0209ad9c(int, int);
-extern "C" void func_0209b4d4(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099640(int argument0);
+extern "C" void *func_0209ad9c(int, int);
+extern "C" void *func_0209b4d4(void *argument0);
 extern "C" void func_0206844c(int, unsigned char *, void *);
 
 extern void *data_ov050_02265834;
@@ -28,10 +28,9 @@ void Obj_ov050_02265b14::func_ov050_02262be8(int arg)
     int r;
     unsigned char c;
 
-    func_020984e8();
-    r = func_02099640();
-    func_0209ad9c(r, 0);
-    func_0209b4d4();
+    r = func_02099640((int) func_020984e8());
+
+    func_0209b4d4((void *) func_0209ad9c(r, 0));
     unk_D0 = 0xff;
     {
         static E tbl[24] = {{0, &Obj_ov050_02265b14::func_ov050_02262bac},    {3, &Obj_ov050_02265b14::func_ov050_02262b58},
@@ -52,6 +51,7 @@ void Obj_ov050_02265b14::func_ov050_02262be8(int arg)
     body:
         k = tbl[i].key;
         if (k == *q) {
+
             (this->*((E *) ((char *) tbl + i * sizeof(E)))->fn)(r);
         }
         i++;

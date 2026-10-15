@@ -13,7 +13,7 @@ struct UnkStruct_02219e64_2 {
 };
 
 extern void func_0203ee08(struct UnkStruct_02219e64_2 *, char *);
-extern void func_0203e020(struct UnkStruct_02219e64_2 *);
+extern int func_0203e020(struct UnkStruct_02219e64_2 *);
 
 void func_ov003_02219e64(struct UnkStruct_02219e64_2 *self)
 {

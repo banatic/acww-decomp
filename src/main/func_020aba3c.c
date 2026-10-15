@@ -3,7 +3,7 @@
  */
 
 extern int func_0208e484(void *ptr);
-extern int RtcSendPxiCommand(int cmd);
+extern void RtcSendPxiCommand(int cmd);
 extern void func_020aba24(void *ptr);
 
 void func_020aba3c(void *ptr)

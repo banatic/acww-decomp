@@ -3,8 +3,8 @@
  */
 
 extern int func_02056f94(void *p);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_ov004_02228dfc(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
+extern int func_ov004_02228dfc(void *self, int a, int b, int c);
 void func_ov004_02226c94(unsigned char *self)
 {
     if (func_02056f94(self + 0x2d0) != 0) {

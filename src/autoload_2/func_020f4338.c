@@ -3,10 +3,10 @@
  */
 
 extern int data_021fd1bc;
-extern void func_020f1ecc(void *);
-extern void func_020f1d84(void *, int);
+extern void func_020f1ecc(void *, int unused1);
+extern int func_020f1d84(void *, int);
 
-void func_020f4338(unsigned char *p, unsigned int code)
+int func_020f4338(unsigned char *p, unsigned int code)
 {
     int v;
     switch (code) {
@@ -24,7 +24,11 @@ void func_020f4338(unsigned char *p, unsigned int code)
         default:
             break;
     }
-    func_020f1ecc(&data_021fd1bc);
+    func_020f1ecc(&data_021fd1bc, code);
     func_020f1d84(&data_021fd1bc, v);
-    p[6] = 1;
+    {
+        int result = 1;
+        p[6] = result;
+        return result;
+    }
 }

@@ -11,7 +11,7 @@ extern void *func_020a1338(void);
 extern void func_020a003c(void *p, int a);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-void func_02075670(u8 *p, u32 n)
+void func_02075670(unsigned char *payload, unsigned int length, int player)
 {
     u32 local;
     void *base;
@@ -22,11 +22,11 @@ void func_02075670(u8 *p, u32 n)
         return;
     }
 
-    MI_CpuCopy8(p, &local, 4);
+    MI_CpuCopy8(payload, &local, 4);
 
     base = func_020a1350();
 
-    MI_CpuCopy8(p + 4, (u8 *) base + local, n - 4);
+    MI_CpuCopy8(payload + 4, (u8 *) base + local, length - 4);
 
     ret = (u32) func_020a00fc(base);
 
@@ -36,7 +36,7 @@ void func_02075670(u8 *p, u32 n)
         limit = ret + 4;
     }
 
-    if (local + (n - 4) < limit) {
+    if (local + (length - 4) < limit) {
         return;
     }
 

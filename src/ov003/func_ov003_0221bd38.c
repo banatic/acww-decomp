@@ -15,7 +15,7 @@ struct UnkStruct_0221bd38_2 {
 };
 
 extern void func_0203ee08(void *self, void *arg);
-extern void func_0203e020(void *self);
+extern int func_0203e020(void *self);
 
 void func_ov003_0221bd38(struct UnkStruct_0221bd38_2 *self)
 {

@@ -8,8 +8,8 @@ struct UnkStruct_0229bbd0 {
 };
 
 extern int func_ov002_02207f48(struct UnkStruct_0229bbd0 *s, int x);
-extern void func_ov002_022080a0(struct UnkStruct_0229bbd0 *s, int x);
-extern void func_ov121_0229afb8(struct UnkStruct_0229bbd0 *s);
+extern unsigned char *func_ov002_022080a0(struct UnkStruct_0229bbd0 *s, unsigned char value);
+extern unsigned char *func_ov121_0229afb8(struct UnkStruct_0229bbd0 *s);
 extern void func_ov002_02207e80(struct UnkStruct_0229bbd0 *s, int a, int b, int c);
 extern int func_ov002_02207f60(struct UnkStruct_0229bbd0 *s);
 

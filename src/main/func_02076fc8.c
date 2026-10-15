@@ -4,7 +4,7 @@
 
 extern void func_020528e4(int arg);
 
-void func_02076fc8(void)
+void func_02076fc8(int length, int sequence, unsigned char category, unsigned int player)
 {
     func_020528e4(0);
 }

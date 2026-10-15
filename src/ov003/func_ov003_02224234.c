@@ -8,12 +8,13 @@ extern int func_0204e414(void);
 extern int func_0204f5e0(int t, int xs, int zs, int xf, int zf, int m);
 extern int func_ov003_022245a8(void *a0, int *p);
 extern int func_02045c60(void *a0, int *p, int m);
-extern int func_0204a034(void);
+extern int func_0204a034(unsigned short *tile);
 extern void func_ov003_02223680(char *w, void *a0, int *p, int k, int m);
 
 void func_ov003_02224234(void *a0, int *pos, int k)
 {
     int t;
+    int tile;
     int p0[2];
     int p1[2];
     int p2[2];
@@ -48,7 +49,8 @@ void func_ov003_02224234(void *a0, int *pos, int k)
                     int z = pos[1];
                     int xs = xx >> 4;
                     int zs = z >> 4;
-                    if (func_0204f5e0(t, xs, zs, xx - (xs << 4), z - (zs << 4), 0) && func_0204a034()) {
+                    if ((tile = func_0204f5e0(t, xs, zs, xx - (xs << 4), z - (zs << 4), 0)) &&
+                        func_0204a034((unsigned short *) tile)) {
                         k = 6;
                     } else if (x - 2 < 0x10) {
                         k = 6;
@@ -72,7 +74,8 @@ void func_ov003_02224234(void *a0, int *pos, int k)
                     int z = pos[1];
                     int xs = xx >> 4;
                     int zs = z >> 4;
-                    if (func_0204f5e0(t, xs, zs, xx - (xs << 4), z - (zs << 4), 0) && func_0204a034()) {
+                    if ((tile = func_0204f5e0(t, xs, zs, xx - (xs << 4), z - (zs << 4), 0)) &&
+                        func_0204a034((unsigned short *) tile)) {
                         k = 7;
                     } else if (x + 2 >= 0x50) {
                         k = 7;

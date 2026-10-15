@@ -9,18 +9,18 @@ extern int data_021f3b44;
 extern int data_021ed278;
 
 extern void *func_0207cec0(void *g, int a);
-extern void func_0208150c(void);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(unsigned int);
+extern int func_02003704(void *);
 extern u8 *func_020808b0(void *p);
-extern void func_0207f1c8(void *p);
-extern void func_0209b5ec(void);
-extern int func_0209c330(void);
+extern unsigned int func_0207f1c8(void *p);
+extern void *func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern u32 func_020644cc(u32 n);
-extern void func_020ae8e4(void *tbl, int i, volatile u16 *out);
+extern int func_020ae8e4(void *tbl, int i, volatile u16 *out);
 extern void func_02061e2c(volatile u16 *a, volatile u16 *b);
-extern void func_02072a48(void *g, int k);
-extern void func_02072d4c(void);
-extern int func_02072e30(void);
+extern unsigned int func_02072a48(void *g, int k);
+extern unsigned int func_02072d4c(unsigned int);
+extern int func_02072e30(void *);
 extern int func_02071d8c(int a, int b, int c, int d, int e);
 
 int func_02071efc(int a, int b)
@@ -54,14 +54,11 @@ int func_02071efc(int a, int b)
     if (p == 0) {
         goto fail;
     }
-    func_0208150c();
-    if (func_02003704() == 0) {
+    if (func_02003704((void *) func_0208150c((unsigned int) p)) == 0) {
         goto fail;
     }
     key = *func_020808b0(p);
-    func_0207f1c8(p);
-    func_0209b5ec();
-    mode = func_0209c330();
+    mode = func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(p)));
     t = func_020644cc(0x64);
     g = 0;
     f = 0;
@@ -117,9 +114,7 @@ int func_02071efc(int a, int b)
     }
     k = n = 0;
     do {
-        func_02072a48((void *) (int) &data_021ed278, (u8) k);
-        func_02072d4c();
-        r = func_02072e30();
+        r = func_02072e30((void *) func_02072d4c((unsigned int) func_02072a48((void *) (int) &data_021ed278, (u8) k)));
         if (g != 0) {
             if (r == key) {
                 n++;
@@ -137,9 +132,7 @@ int func_02071efc(int a, int b)
     pick = func_020644cc(n);
     kk = cnt = 0;
     for (; kk < 8; kk++) {
-        func_02072a48((void *) (int) &data_021ed278, (u8) kk);
-        func_02072d4c();
-        r = func_02072e30();
+        r = func_02072e30((void *) func_02072d4c((unsigned int) func_02072a48((void *) (int) &data_021ed278, (u8) kk)));
         if (g != 0) {
             if (r == key) {
                 if (pick == cnt) {

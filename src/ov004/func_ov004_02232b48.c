@@ -20,13 +20,13 @@ struct UnkStruct_02232b48_3 {
 
 extern struct UnkStruct_02232b48_3 *data_021c80bc;
 
-extern void func_ov004_02232980(void *a, int b, int c);
-extern void func_ov004_022326f4(void *a, int b, int c);
+extern int func_ov004_02232980(void *a, int b, int c);
+extern int func_ov004_022326f4(void *a, int b, int c);
 extern void func_ov004_02232c48(void *self, volatile u16 *a, int *b, volatile u16 *c, int *d);
-extern void func_ov004_02232968(void *a, int b, int c, int d);
-extern void func_ov004_022326dc(void *a, int b, int c, int d);
-extern void func_ov004_022327a0(void *a, volatile u16 *b, int c, int d);
-extern void func_ov004_02232514(void *a, volatile u16 *b, int c, int d);
+extern int func_ov004_02232968(void *a, int b, int c, int d);
+extern int func_ov004_022326dc(void *a, int b, int c, int d);
+extern int func_ov004_022327a0(void *a, volatile u16 *b, int c, int d);
+extern int func_ov004_02232514(void *a, volatile u16 *b, int c, int d);
 
 static __inline int atleast(unsigned int x, unsigned int n)
 {

@@ -8,9 +8,9 @@ extern int func_ov004_0220e5c8(void *self);
 extern void func_ov004_0223cf40(void *p, int a, void *q);
 extern int func_ov004_0220ffbc(void *self);
 extern int func_02056f28(void *p, int a);
-extern void func_ov004_0223cf18(void *p, int a);
+extern void func_ov004_0223cf18(void *object, short value);
 extern int func_ov004_0220d2a8(void *p);
-extern void func_0205265c(void *self, int a, int b, int c);
+extern int func_0205265c(void *self, int a, int b, int c);
 
 void func_ov004_02212bb0(char *self)
 {

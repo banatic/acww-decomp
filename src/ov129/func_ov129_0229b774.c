@@ -5,10 +5,10 @@
 extern unsigned char data_ov129_0229dc38;
 extern void func_ov127_0229a0e8(void *);
 extern void func_020b18a8(void *);
-extern void func_ov002_02209cb4(void *);
-extern void func_ov002_0220afdc(void *);
-extern void func_ov002_0220ba0c(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov002_02209cb4(void *);
+extern void *func_ov002_0220afdc(void *);
+extern void *func_ov002_0220ba0c(void *);
+extern void *func_ov002_0220826c(void *);
 extern void func_ov002_02207f6c(void *);
 
 void *func_ov129_0229b774(void *p)

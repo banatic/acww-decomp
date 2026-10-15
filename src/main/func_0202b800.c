@@ -29,13 +29,13 @@ extern Global data_020c8b38;
 
 extern int func_020819f0(int);
 extern int func_02081d20(int);
-extern int func_02081a04(int);
+extern void func_02081a04(int);
 extern int func_02099fe8(void);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
 extern int func_02003704(int);
 extern int func_02003648(int);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 
 int func_0202b800(UnkStruct_0202b800_2 *self)
 {

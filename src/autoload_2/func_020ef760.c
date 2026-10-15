@@ -7,8 +7,8 @@
 typedef struct {
     u8 pad_00[8];
     u8 pad_08[0x2c - 0x08];
-    void (*func1)(void);
-    void (*func2)(void);
+    void (*func1)(int, int, int);
+    void (*func2)(void *, int, int);
     u16 unk_34;
     u8 unk_36;
 } UnkStruct_020ef760;
@@ -19,8 +19,8 @@ typedef struct {
 } UnkStruct_020ef760_2;
 
 extern UnkStruct_020ef760_2 data_021fd054;
-extern void func_020efbb8(void);
-extern void func_020efb64(void);
+extern void func_020efbb8(int self, int index, int code);
+extern void func_020efb64(void *self, int index, int code);
 extern void func_020efa3c(void *);
 extern void OS_Terminate(void);
 

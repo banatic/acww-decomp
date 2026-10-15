@@ -4,11 +4,11 @@
 
 extern unsigned int data_020ccf94;
 extern void func_020736bc(unsigned int, unsigned char *, int);
-extern int func_02074d60(unsigned char);
+extern void func_02074d60(unsigned char);
 
-int func_02076480(void)
+void func_02076480(int length, int sequence, unsigned char category, unsigned int player)
 {
     unsigned char byte_var;
     func_020736bc(data_020ccf94, &byte_var, 1);
-    return func_02074d60(byte_var);
+    func_02074d60(byte_var);
 }

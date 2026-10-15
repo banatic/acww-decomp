@@ -18,7 +18,7 @@ extern int func_g1(u32 *q, u32 *out, int flags);
 extern int OS_ReceiveMessage(u32 *q, u32 *out, int flags);
 extern int OS_ReadMessage(u32 *q, u32 *out, int flags);
 extern void func_020edb14(void);
-extern int func_020ed9f4(int r);
+extern int func_020ed9f4(void);
 
 void func_020ed950(void *arg)
 {
@@ -42,7 +42,7 @@ test:
     if (r == 0) {
         return;
     }
-    if (func_020ed9f4(r) == 0) {
+    if (func_020ed9f4() == 0) {
         goto loop;
     }
 }

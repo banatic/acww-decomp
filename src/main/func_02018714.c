@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02057d0c(int param);
+extern int func_02057d0c(int param, int);
 
 void func_02018714(unsigned char *p, unsigned int *q)
 {
@@ -10,7 +10,7 @@ void func_02018714(unsigned char *p, unsigned int *q)
 
     val = q[0x64];
     if (((val << 4) >> 16) == 0x17) {
-        func_02057d0c(2);
+        func_02057d0c(2, (int) q);
         p[0x98] = 4;
     }
 }

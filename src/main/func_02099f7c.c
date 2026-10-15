@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(void *a, int b);
+extern int func_020984e8(void);
 extern void func_02099fe0(void *a);
 extern int func_02099734(int a);
 extern unsigned short *func_02098f48(int a, int b);
@@ -15,7 +15,7 @@ unsigned char func_02099f7c(unsigned short *a, int b)
     unsigned short *p;
     int i;
 
-    x = func_020984e8(a, b);
+    x = func_020984e8();
     func_02099fe0(a);
     p = func_02098f48(func_02099734(x), 0);
 

@@ -7,12 +7,14 @@
 
 typedef void (Obj_ov004_02253674::*Pmf)(void);
 
+#define DISCARD_HANDLER(Class, Method) (Pmf) & Class::Method
+
 void Obj_ov004_02253674::func_ov004_0221c72c()
 {
     static Pmf tbl[] = {&Obj_ov004_02253674::func_ov004_0221c494, &Obj_ov004_02253674::func_ov004_0221c40c,
                         &Obj_ov004_02253674::func_ov004_0221c39c, &Obj_ov004_02253674::func_ov004_0221c310,
                         &Obj_ov004_02253674::func_ov004_0221c2d8, &Obj_ov004_02253674::func_ov004_0221c298,
-                        &Obj_ov004_02253674::func_ov004_0221c274, &Obj_ov004_02253674::func_ov004_0221c264,
+                        &Obj_ov004_02253674::func_ov004_0221c274, DISCARD_HANDLER(Obj_ov004_02253674, func_ov004_0221c264),
                         &Obj_ov004_02253674::func_ov004_0221c0f0, &Obj_ov004_02253674::func_ov004_0221c0cc,
                         &Obj_ov004_02253674::func_ov004_0221c088, &Obj_ov004_02253674::func_ov004_0221c080,
                         &Obj_ov004_02253674::func_ov004_0221c078, &Obj_ov004_02253674::func_ov004_0221c040};
@@ -21,3 +23,5 @@ void Obj_ov004_02253674::func_ov004_0221c72c()
         (this->*(tbl[i]))();
     }
 }
+
+#undef DISCARD_HANDLER

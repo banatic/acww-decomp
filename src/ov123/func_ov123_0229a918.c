@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int *func_ov123_02299d9c(void *, void *);
+extern int *func_ov123_02299d9c(void *);
 extern int func_ov123_0229a63c(void *, int, int, void *);
 extern int data_ov123_0229cb2c[];
 
@@ -14,7 +14,7 @@ void func_ov123_0229a918(void *a, void *b)
     int init;
     int o;
 
-    p = func_ov123_02299d9c(a, b);
+    p = func_ov123_02299d9c(a);
     init = 0;
     o = 0;
     while (o < 2) {

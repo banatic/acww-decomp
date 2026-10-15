@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02073044(int);
-extern int func_020ebf70(int);
+extern int func_02073044(void);
+extern int func_020ebf70(void);
 extern int func_02077a8c(int);
 extern int *data_020ccf94;
-extern void func_02073918(int *, int);
+extern int func_02073918(int *, int);
 extern int func_02073d28(int *, int);
 extern void func_02077b3c(int, int, int);
 extern void func_0209e474(int *);
@@ -19,7 +19,7 @@ int func_02075b14(int arg)
     int val, temp;
     int local[2];
 
-    if (func_020ebf70(func_02073044(arg)) != 0 && func_02077a8c(arg) != 0) {
+    if ((func_02073044(), func_020ebf70()) != 0 && func_02077a8c(arg) != 0) {
         ptr = data_020ccf94;
         func_02073918(ptr, 0);
         val = func_02073d28(ptr, 4);

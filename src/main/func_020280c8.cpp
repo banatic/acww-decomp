@@ -46,16 +46,16 @@ extern char data_021c2a94[];
 extern UnkStruct_020280c8_4 data_020d8f08;
 extern char data_021e5a2c[];
 
-extern "C" void func_020984e8(void);
-extern "C" int func_02099734(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099734(int);
 extern "C" int func_0202d9c4(UnkStruct_020280c8 *p);
 extern "C" int func_0209bc40(int x);
 extern "C" u16 *func_0209bb70(int x);
 extern "C" int func_0202d794(int a, u16 *b);
-extern "C" void func_02098f0c(int a, u16 *b, int c, int d);
+extern "C" int func_02098f0c(int a, u16 *b, int c, int d);
 extern "C" void func_0202da88(UnkStruct_020280c8 *p, char *s);
-extern "C" void func_02068484(UnkStruct_020280c8_2 *b, UnkStruct_020280c8_5 *l, int v);
-extern "C" void func_02015330(UnkStruct_020280c8 *p, u16 *q, int m, int n, int o);
+extern "C" int func_02068484(UnkStruct_020280c8_2 *b, UnkStruct_020280c8_5 *l, int v);
+extern "C" int func_02015330(UnkStruct_020280c8 *p, u16 *q, int m, int n, int o);
 extern "C" void func_0202dbf0(UnkStruct_020280c8 *p, UnkStruct_020280c8_4 c);
 extern "C" int func_0208150c(void *x);
 extern "C" int func_0209b4cc(void *x, int y);
@@ -69,8 +69,7 @@ extern "C" void func_020280c8(UnkStruct_020280c8 *p)
     int a;
     int b;
 
-    func_020984e8();
-    r6 = func_02099734();
+    r6 = func_02099734((int) func_020984e8());
     switch (func_0209bc40(func_0202d9c4(p))) {
         case 0xa:
             idx = func_0202d794(r6, func_0209bb70(func_0202d9c4(p)));

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f45c4(void *p);
+extern void *func_020f45c4(void *p);
 extern int data_0213ef4c;
 
 struct UnkStruct_020f2590 {

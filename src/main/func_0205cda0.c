@@ -4,9 +4,9 @@
 
 extern unsigned int data_021c9af8;
 extern unsigned char *data_020ccf94;
-extern void func_020b65c4(void);
-extern unsigned int func_020b5e04(void);
-extern unsigned int func_020b5df8(void);
+extern unsigned char func_020b65c4(void);
+extern unsigned int func_020b5e04(unsigned int);
+extern unsigned int func_020b5df8(unsigned int);
 extern unsigned int func_02085f08(void);
 extern unsigned int func_0205cf44(void);
 extern unsigned int func_0205cf3c(void);
@@ -22,8 +22,7 @@ void func_0205cda0(unsigned int *out)
 
     arg = data_021c9af8;
     field = data_020ccf94[0x6c];
-    func_020b65c4();
-    n0 = func_020b5e04();
+    n0 = func_020b5e04((unsigned int) func_020b65c4());
     if (field < n0) {
         n0 = field;
     }
@@ -33,8 +32,7 @@ void func_0205cda0(unsigned int *out)
         n = 1;
     }
 
-    func_020b65c4();
-    tmp = func_020b5df8();
+    tmp = func_020b5df8((unsigned int) func_020b65c4());
     total = tmp + func_02085f08() - n;
     s1 = func_0205cf44();
     s2 = func_0205cf3c();

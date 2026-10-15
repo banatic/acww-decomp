@@ -4,7 +4,7 @@
 
 extern void *data_021c67a4;
 extern int data_021c67d0[3];
-extern int func_ov078_02279564(void *self, void *data, void *offset, int second);
+extern int func_ov078_02279564(void *self, void *data, void *offset);
 
 int func_ov078_0227952c(void *self)
 {
@@ -18,7 +18,7 @@ int func_ov078_0227952c(void *self)
         local[0] = data_021c67d0[0];
         local[1] = data_021c67d0[1];
         local[2] = data_021c67d0[2];
-        result = func_ov078_02279564(self, local, p, local[1]);
+        result = func_ov078_02279564(self, local, p);
     }
     return result;
 }

@@ -5,7 +5,7 @@
 extern void func_ov002_02207e80(int, int, int, int);
 extern int func_ov002_02207f60(int);
 
-void func_ov140_0229ad4c(int param)
+int func_ov140_0229ad4c(int param)
 {
     int *ptr;
     int result;
@@ -14,4 +14,5 @@ void func_ov140_0229ad4c(int param)
     result = func_ov002_02207f60(param);
     ptr = (int *) (param + 0x94);
     *ptr = result;
+    return result;
 }

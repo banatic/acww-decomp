@@ -2,17 +2,21 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_0223a968(void *);
-extern int func_ov004_0223a87c(void *);
+extern int func_ov004_0223a968(void);
+extern int func_ov004_0223a87c(void);
 extern int func_ov004_0223a7d8(void *);
-extern void func_ov004_0223aa30(void *, int, int);
+extern int func_ov004_0223aa30(void *, int, int);
 extern void func_ov004_0223b274(void);
 extern int func_ov004_0223a7f0(void *);
 void func_ov004_0223a9e0(void *self)
 {
-    int v = func_ov004_0223a968(self);
+    int v = func_ov004_0223a968();
     if (v == 0xff) {
-        int w = func_ov004_0223a87c(self);
+        int w;
+        asm {
+            mov r0, self
+        }
+        w = func_ov004_0223a87c();
         if (w != func_ov004_0223a7d8(self)) {
             func_ov004_0223aa30(self, v, w);
             func_ov004_0223b274();

@@ -3,7 +3,7 @@
  */
 
 extern void func_02010f5c(void *);
-extern void func_0200b83c(void *, unsigned int *, int, int, int, int);
+extern int func_0200b83c(void *, unsigned int *, int, int, int, int);
 
 typedef struct {
     int unk_00;

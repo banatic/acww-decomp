@@ -21,16 +21,16 @@ extern const char data_0213e73c[];
 
 extern int STD_GetStringLength(const char *s);
 extern void *func_020edaf0(int size, int align);
-extern void UTi_PutString(void *p);
-extern void STD_CopyString(char *dst, const char *src);
+extern int UTi_PutString(void *p);
+extern char *STD_CopyString(char *dst, const char *src);
 extern int func_ov065_02277148(const void *src, u32 len, char *dst, int cap);
 extern void MATH_CalcSHA1(void *digest, const void *data, int len);
 extern void MI_CpuFill8(void *dst, int val, int n);
-extern long long func_020eb694(char *p);
-extern void OS_SNPrintf(char *buf, int n, const char *fmt, long long v);
-extern void func_ov065_0227f6b0(void *sb);
-extern void func_ov065_0227f6a4(void *sb, const char *k, const void *v);
-extern void DWC_PostGHTTPData(int a, void *sb, void *cb, int d);
+extern unsigned long long func_020eb694(char *p);
+extern int OS_SNPrintf(char *buf, unsigned int n, const char *fmt, ...);
+extern int func_ov065_0227f6b0(void *sb);
+extern int func_ov065_0227f6a4(void *sb, const char *k, const void *v);
+extern int DWC_PostGHTTPData(int a, void *sb, void *cb, int d);
 extern void func_020ed3c0(void);
 
 int func_020eb384(int a0, const void *a1, u32 a2, int a3)

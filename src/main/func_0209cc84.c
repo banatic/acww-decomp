@@ -3,7 +3,7 @@
  */
 
 extern int func_0209cc30(int a, int b, int c);
-extern int func_0209d034(void);
+extern int func_0209d034(int *);
 extern int data_020d1ac0[];
 
 int func_0209cc84(int arg)
@@ -13,8 +13,7 @@ int func_0209cc84(int arg)
     for (i = base; i < 5; i++) {
         for (j = base; j < 5; j++) {
             for (k = 0; k < 6; k++) {
-                func_0209cc30(arg, j, i);
-                if (data_020d1ac0[k] == func_0209d034()) {
+                if (data_020d1ac0[k] == func_0209d034((int *) func_0209cc30(arg, j, i))) {
                     return 1;
                 }
             }

@@ -20,12 +20,12 @@ typedef struct {
 extern int data_021d1244;
 extern El data_021d13a8[];
 extern char data_021d1298[];
-extern void func_02081fa0(void);
-extern void func_02081f9c(void);
+extern int func_02081fa0(void *);
+extern void func_02081f9c(void *);
 extern void func_0207bd28(void);
 
 extern UnkStruct_0207bbb8_2 *func_0204e414(void);
-extern void __cxa_vec_ctor(void *arr, int n, int sz, void *ctor, void *dtor);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 extern void __register_global_object(int a, void *f, void *node);
 extern void func_02081f94(El *e);
 extern void *func_0204f5e0(UnkStruct_0207bbb8_2 *o, int cx, int cy, int fx, int fy, int k);
@@ -60,8 +60,9 @@ void func_0207bbb8(char *self)
 
     obj = func_0204e414();
     if ((data_021d1244 & 1) == 0) {
-        __cxa_vec_ctor(data_021d13a8, 0x1e, 2, (void *) func_02081fa0, (void *) func_02081f9c);
-        __register_global_object(0, (void *) func_0207bd28, data_021d1298);
+        __cxa_vec_ctor((void *) (data_021d13a8), 0x1e, 2, (((void (*)(void *)) func_02081fa0)),
+                       (void (*)(void *)) func_02081f9c);
+        __register_global_object(0, (((void *) func_0207bd28)), data_021d1298);
         data_021d1244 |= 1;
     }
     if (obj == 0) {

@@ -28,11 +28,12 @@ extern struct Global data_020c8ce8;
 
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(struct UnkStruct_02020104 *, char *, unsigned char *, int);
+extern int func_0202da38(struct UnkStruct_02020104 *, char *, unsigned char *, int, int base, int offset, int scale,
+                         int multiplier, int selected);
 
 void func_02020104(struct UnkStruct_02020104 *p, struct UnkStruct_02020104_3 *out)
 {
-    volatile struct {
+    struct {
         int a;
         int b;
         int c;
@@ -46,7 +47,7 @@ void func_02020104(struct UnkStruct_02020104 *p, struct UnkStruct_02020104_3 *ou
     local.d = 0;
     local.e = 0;
 
-    func_0202da38(p, p->buffer, &p->byte, 30);
+    func_0202da38(p, p->buffer, &p->byte, 30, local.a, local.b, local.c, local.d, local.e);
     out->ptr = p->buffer;
     out->byte = p->byte;
 }

@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02079ca4(signed char *base, int index, int value);
+extern int func_02079ca4(signed char *base, int index);
 
 void func_02079c00(signed char *base, int index, int value)
 {
     int sum;
-    if (func_02079ca4(base, index, value)) {
+    if (func_02079ca4(base, index)) {
         sum = base[index] + value;
         if (sum > 127) {
             sum = 127;

@@ -3,18 +3,22 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void *p);
-extern void func_020b9cfc(void *p);
-extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*c)(void), void (*d)(void));
-extern void func_02070be8(void);
-extern void func_02070c08(void);
-extern void func_ov002_02209c78(void *p);
+extern void *func_ov002_0220830c(void *p);
+extern void *func_020b9cfc(void *p);
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*callback3)(void *), void (*callback4)(void *));
+extern int **func_02070be8(void *element);
+extern void *func_02070c08(void *element);
+extern void *func_ov002_02209c78(void *p);
 
 typedef struct {
     void *vtable;
 } UnkStruct_0229aae4;
 
 extern UnkStruct_0229aae4 data_ov113_0229ac00;
+
+#define DisposeElement_func_02070c08 ((void (*)(void *)) func_02070c08)
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
 
 void *func_ov113_0229aae4(void)
 {
@@ -32,9 +36,12 @@ void *func_ov113_0229aae4(void)
             func_020b9cfc(q);
             q += 0x24;
         } while (q != end);
-        __cxa_vec_ctor(end, 4, 0x6c, func_02070c08, func_02070be8);
-        __cxa_vec_ctor(p + 0x2898, 6, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(end, 4, 0x6c, DisposeElement_func_02070c08, DisposeElement_func_02070be8);
+        __cxa_vec_ctor(p + 0x2898, 6, 0x6c, DisposeElement_func_02070c08, DisposeElement_func_02070be8);
         func_ov002_02209c78(p + 0x2b20);
     }
     return p;
 }
+
+#undef DisposeElement_func_02070c08
+#undef DisposeElement_func_02070be8

@@ -4,7 +4,7 @@
 
 extern int func_02073d90(void *ptr);
 extern int func_02073918(void *ptr, int arg);
-extern void func_0205340c(void *addr, int param);
+extern int func_0205340c(void *addr, int param);
 extern void func_02073820(void *ptr);
 extern void func_02073770(void *ptr, int a, int b);
 

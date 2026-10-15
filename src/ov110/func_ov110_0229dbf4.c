@@ -4,7 +4,7 @@
 
 extern int func_0208e484(void *);
 extern void func_ov002_02209114(void *, int, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov110_0229dbf4(unsigned char *p)
 {
@@ -14,6 +14,6 @@ void func_ov110_0229dbf4(unsigned char *p)
             unsigned char *q = p + p[0xfa];
             p[0xf9] = q[0x2731];
         }
-        func_ov002_02208098(p, 0x12);
+        func_ov002_02208098((void *) (p), 0x12);
     }
 }

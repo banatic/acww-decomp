@@ -3,11 +3,11 @@
  */
 
 extern char data_ov121_0229c3a8;
-extern void func_ov002_02209ac8(void *);
-extern void func_ov002_0220ba0c(void *);
-extern void func_ov002_02209cb4(void *);
-extern void func_ov002_02207e28(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov002_02209ac8(void *);
+extern void *func_ov002_0220ba0c(void *);
+extern void *func_ov002_02209cb4(void *);
+extern void *func_ov002_02207e28(void *);
+extern void *func_ov002_0220826c(void *);
 
 void *func_ov121_022999a0(void *self)
 {

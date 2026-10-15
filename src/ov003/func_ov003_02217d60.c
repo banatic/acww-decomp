@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200f268(void *p, int arg);
-extern int func_ov003_022203ac(int arg);
-extern void func_020109a0(void *p, int a, int b, int c);
+extern void func_0200f268(void *p, int arg);
+extern int func_ov003_022203ac(void);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
 extern int func_0208602c(void);
 extern int func_02086108(int a, int b);
 extern int func_02073908(void *a, int b);
@@ -18,11 +18,11 @@ struct UnkStruct_02217d60 {
     int unk_800;
 };
 
-void func_ov003_02217d60(struct UnkStruct_02217d60 *p)
+void func_ov003_02217d60(struct UnkStruct_02217d60 *p, void *message, int previous)
 {
     int zero = 0;
 
-    if (func_ov003_022203ac(func_0200f268(p, 0)) != 0) {
+    if (((void) (func_0200f268(p, 0)), func_ov003_022203ac()) != 0) {
         func_020109a0(p, 0x34, zero, zero);
     } else {
         func_020109a0(p, 0x35, zero, zero);

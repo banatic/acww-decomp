@@ -3,9 +3,9 @@
  */
 
 extern void *func_020e895c(void *, int, unsigned int);
-extern void func_ov004_0220ccf8(void *obj, int arg);
+extern int func_ov004_0220ccf8(void *obj, int arg);
 extern void func_ov004_0220fefc(void *obj, void *arg);
-extern void func_ov004_0220e61c(void *obj, void *arg);
+extern int func_ov004_0220e61c(void *obj, void *arg);
 
 typedef struct {
     unsigned int unk_00;

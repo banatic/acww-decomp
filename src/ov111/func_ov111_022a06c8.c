@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_021fbdd8;
-extern void func_ov002_02208098(void *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov111_0229f5bc(void *self);
 extern void func_ov111_0229fd08(void *self);
 extern void func_ov111_0229efb8(void *self, int arg);
@@ -17,7 +17,7 @@ typedef struct {
 void func_ov111_022a06c8(void *self)
 {
     if (data_021fbdd8 == 0) {
-        func_ov002_02208098(self, 0);
+        func_ov002_02208098((void *) (self), 0);
         if (((UnkStruct_022a06c8 *) self)->unk_9F == ((UnkStruct_022a06c8 *) self)->unk_A0) {
             func_ov111_0229efb8(self, 1);
         }

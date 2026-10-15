@@ -4,7 +4,7 @@
 
 extern void func_0203ecfc(void);
 extern struct UnkStruct_0203ecac *func_0203f504(void);
-extern int func_020b289c(struct UnkStruct_0203ecac *p);
+extern int func_020b289c(void);
 
 typedef struct UnkStruct_0203ecac {
     char pad_00[8];
@@ -27,7 +27,7 @@ void func_0203ecac(void)
 
     func_0203ecfc();
     obj = func_0203f504();
-    result = func_020b289c(obj);
+    result = func_020b289c();
     if (result != 0) {
         obj->unk_0C = result;
         obj->unk_10 = 0;

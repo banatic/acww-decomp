@@ -6,8 +6,8 @@
 
 extern char data_ov047_02262fc0[];
 
-void func_020160b4(int _x);
-int func_020ab504(void);
+int func_020160b4(void *object);
+int func_020ab504(void *argument0);
 int func_0209f150(const void *p, int n);
 void func_0206844c(void *dst, void *src, void *fmt);
 int func_0202ea40(void *obj, void *buf, int n);
@@ -27,7 +27,7 @@ struct UnkStruct_02260a88 {
 
 extern unsigned char data_021dc7a8[];
 
-void func_ov047_02260a88(struct UnkStruct_02260a88 *self)
+void func_ov047_02260a88(struct UnkStruct_02260a88 *self, int event)
 {
     u8 buf[8];
     u32 r;
@@ -37,8 +37,8 @@ void func_ov047_02260a88(struct UnkStruct_02260a88 *self)
     if (k > 0x15) {
         return;
     }
-    func_020160b4(r);
-    r = func_020ab504();
+
+    r = func_020ab504((void *) func_020160b4(self));
     self->unk_D0 = 0xff;
     if (r != 0) {
         if (func_0209f150((void *) data_021dc7a8, 0xc)) {

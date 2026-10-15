@@ -9,7 +9,7 @@ typedef struct UnkStruct_020f7780 {
     signed char d;
 } UnkStruct_020f7780;
 
-extern void func_020f7bc4(UnkStruct_020f7780 *self, int code, void *arg);
+extern int func_020f7bc4(UnkStruct_020f7780 *self, int code, void *arg);
 extern void ciAddUNQUIETFilter(UnkStruct_020f7780 *self, void *p3);
 
 void func_020f7780(UnkStruct_020f7780 *self, int msgId, void *p3)

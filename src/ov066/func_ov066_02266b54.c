@@ -2,17 +2,17 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int func_ov066_02266b94(void);
-extern int func_ov066_0226686c(void);
-extern int (*data_ov066_0226bdc0[])(int (*)(void));
+extern void func_ov066_02266b94(void *packet);
+extern void func_ov066_0226686c(int arg);
+extern int (*data_ov066_0226bdc0[])(void (*)(void *));
 
-int func_ov066_02266b54(int idx)
+void func_ov066_02266b54(int idx)
 {
     int result;
     result = data_ov066_0226bdc0[idx](func_ov066_02266b94);
     if (result == 2) {
-        return result;
+        return;
     } else {
-        return func_ov066_0226686c();
+        func_ov066_0226686c(result);
     }
 }

@@ -5,10 +5,10 @@
 
 #include "cpp/ov110/Obj_ov110_0229ecb8.h"
 
-extern "C" void func_0206f58c(void *);
+extern "C" void func_0206f58c(void);
 extern "C" int func_ov110_0229e7ac(void *);
 extern "C" void func_ov110_0229cbe0(void *);
-extern "C" void func_ov002_02207d24(void *, int);
+extern "C" int func_ov002_02207d24(void *, int);
 extern "C" void func_ov110_0229c3b8(void *, int);
 extern "C" void func_ov110_0229e370(void *);
 extern "C" void func_ov110_0229e368(void *);
@@ -16,7 +16,7 @@ extern "C" void func_ov110_0229e368(void *);
 int Obj_ov110_0229ecb8::func_ov110_0229e74c()
 {
     void *obj = (void *) this;
-    func_0206f58c(obj);
+    func_0206f58c();
     if (func_ov110_0229e7ac(obj) != 0 &&
         (((unsigned char *) obj)[0x8d] == 0 || ((unsigned char *) obj)[0x8d] == 1 || ((unsigned char *) obj)[0x8d] == 4)) {
         func_ov110_0229cbe0(obj);

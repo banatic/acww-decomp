@@ -11,13 +11,13 @@ typedef struct {
 extern int func_02073d90(void *);
 extern void *func_020984e8(void);
 extern void *func_020996a0(void *);
-extern unsigned short *func_020adf50(void *);
+extern unsigned short *func_020adf50(void *record);
 extern unsigned int func_020adde4(unsigned short);
 extern int func_02099020(void *, int);
 extern void func_02066694(void *);
 extern void *func_02099870(void *);
 extern void func_02066024(void *, Hdr *, void *, void *, void *, void *);
-extern void func_02065ed0(void *, unsigned short, int);
+extern unsigned short func_02065ed0(void *, unsigned short, int);
 extern int func_020979f0(void *, int);
 extern void func_02098ff8(void *, int);
 extern void func_02066688(void *);

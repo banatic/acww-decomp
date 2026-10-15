@@ -4,13 +4,13 @@
 
 extern int data_021fbe94;
 extern int func_02064b2c(int, int, int, int);
-extern void *func_02107828(void);
+extern void *func_02107828(int resource);
 extern int func_021077e8(int);
 extern int func_02056268(void *, int);
 extern int func_020561fc(void *, int);
-extern void func_02056064(int, int);
-extern void NNS_G3dBindMdlTex(int, int);
-extern void NNS_G3dBindMdlPltt(int, int);
+extern int func_02056064(int, int);
+extern int NNS_G3dBindMdlTex(int, int);
+extern int NNS_G3dBindMdlPltt(int, int);
 extern void func_020e993c(int, int);
 extern void func_02055f6c(void *);
 
@@ -31,7 +31,7 @@ int func_02055698(void *arg1, int arg2, int arg3, int arg4)
         return 0;
     }
 
-    obj = func_02107828();
+    obj = func_02107828(ret);
     off = *((unsigned short *) ((char *) obj + 0xe));
     mid = (char *) obj + off;
     val = *(int *) (mid + 0xc);

@@ -10,8 +10,8 @@ typedef struct {
     unsigned int unk_0C;
 } UnkStruct_02299424;
 
-extern int func_0200277c(int);
-extern int func_02001b60(int);
+extern void func_0200277c(int);
+extern unsigned char func_02001b60(void);
 extern void func_02001bb4(int);
 extern void func_02001da0(int);
 extern void func_02001d1c(int);
@@ -22,7 +22,8 @@ void func_ov093_02299424(UnkStruct_02299424 *s)
 {
     int val;
 
-    val = func_02001b60(func_0200277c(0));
+    func_0200277c(0);
+    val = func_02001b60();
     *(volatile unsigned int *) 0x04000000 = (*(volatile unsigned int *) 0x04000000 & 0xffffe0ff) | (val << 8);
     func_02001bb4(1);
     func_02001da0(0x1f);

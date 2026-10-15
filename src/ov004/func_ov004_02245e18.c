@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203e334(void *);
+extern void func_0203e334(void);
 extern char data_021dc7a8[];
 extern void *func_02098844(void *, int);
 extern int func_02099a28(void *);
 extern void func_0208e2ac(void *, int);
-extern void func_020b4980(void *, void *, int);
+extern int func_020b4980(void *, void *, int);
 extern int func_0209f150(void *, unsigned int);
 extern int func_0208ffac(void);
 extern void func_ov004_02245cf4(void *, int);
@@ -19,7 +19,7 @@ int func_ov004_02245e18(char *self)
     unsigned char flag;
     char *g;
     void *entry;
-    func_0203e334(self);
+    func_0203e334();
     g = data_021dc7a8;
     for (i = 0; i < 4; ++i) {
         entry = func_02098844(g + 0x14, i);

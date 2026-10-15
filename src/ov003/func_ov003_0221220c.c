@@ -4,10 +4,10 @@
 
 extern void func_ov003_022122a0(void *, int *, unsigned char);
 extern void func_ov003_0221228c(void *, unsigned char, unsigned char, unsigned char, unsigned char);
-extern void func_020109a0(void *, int, int, int);
-extern void func_0200f27c(void *, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
+extern unsigned int *func_0200f27c(void *, int);
 
-void func_ov003_0221220c(void *self, void *data)
+void func_ov003_0221220c(void *self, void *data, int previous)
 {
     unsigned char *p = (unsigned char *) data + 0xc;
     unsigned char c = p[2];

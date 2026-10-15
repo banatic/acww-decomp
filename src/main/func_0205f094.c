@@ -4,7 +4,7 @@
 
 extern int func_0205f6bc(int);
 extern int func_0205f2f0(int, int);
-extern int func_0205f644(int);
+extern int func_0205f644(void);
 extern int func_02064af4(int, int, int);
 
 int func_0205f094(int a, int b, int c)
@@ -14,6 +14,6 @@ int func_0205f094(int a, int b, int c)
     int v3;
     v1 = func_0205f6bc(c);
     v2 = func_0205f2f0(a, b);
-    v3 = func_0205f644(v2);
+    v3 = func_0205f644();
     return func_02064af4(v1, v2, v3);
 }

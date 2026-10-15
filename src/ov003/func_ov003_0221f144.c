@@ -15,7 +15,7 @@ extern void *data_021c67a4; // 0x021c67a4
 extern Vec data_021c67d0;   // 0x021c67d0
 extern Mtx43 data_021fbe48; // 0x021fbe48
 extern fx32 data_020ca0e4;
-extern void func_020e96c8(Mtx43 *, fx32, fx32, fx32, fx32, fx32, fx32);
+extern void func_020e96c8(Mtx43 *, fx32, fx32, fx32);
 extern int func_0203c590(void *);
 extern void func_020e9774(Mtx43 *, int);
 
@@ -27,9 +27,12 @@ typedef struct {
 int func_ov003_0221f144(UnkStruct_0221f144 *self)
 {
     void *x = data_021c67a4;
+    volatile fx32 coordinates[3];
     if (x != 0) {
-        func_020e96c8(&data_021fbe48, data_021c67d0.x - data_020ca0e4, 0, 0, data_021c67d0.x, data_021c67d0.y,
-                      data_021c67d0.z);
+        coordinates[0] = data_021c67d0.x;
+        coordinates[1] = data_021c67d0.y;
+        coordinates[2] = data_021c67d0.z;
+        func_020e96c8(&data_021fbe48, data_021c67d0.x - data_020ca0e4, 0, 0);
         func_020e9774(&data_021fbe48, func_0203c590(x));
         self->m = data_021fbe48;
         return 1;

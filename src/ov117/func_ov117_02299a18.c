@@ -3,7 +3,7 @@
  */
 
 extern void *data_ov117_0229a320;
-extern int func_ov117_02299b08(void);
+extern int func_ov117_02299b08(void *object);
 extern void *func_020e98b4(int);
 
 void func_ov117_02299a18(void)
@@ -12,7 +12,7 @@ void func_ov117_02299a18(void)
         data_ov117_0229a320 = func_020e98b4(0x2066);
         if (data_ov117_0229a320 != 0) {
             if (data_ov117_0229a320 != 0) {
-                func_ov117_02299b08();
+                func_ov117_02299b08((void *) (data_ov117_0229a320));
             }
         }
     }

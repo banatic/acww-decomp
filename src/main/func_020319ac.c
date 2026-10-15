@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02031c50(int a, int b);
+extern void *func_02031c50(void);
 extern int func_02031b14(int a, int b);
 
 typedef struct ObjVTable ObjVTable;
@@ -23,7 +23,7 @@ int func_020319ac(int a, int b)
     void *p2;
     void *p3;
 
-    obj = func_02031c50(a, b);
+    obj = func_02031c50();
     if (obj != 0) {
         if (obj->vtable->vfunc(obj, &p1, &p2, &p3, a, b) != 0) {
             return 0;

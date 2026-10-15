@@ -3,11 +3,11 @@
  */
 
 extern int func_020984e8(void);
-extern int func_020996b8(void);
+extern void *func_020996b8(void *object);
 extern int func_0206fc8c(void);
 extern int func_02072bb0(int, int);
 extern int func_ov123_02299d9c(unsigned char *);
-extern void func_02072d84(int, int);
+extern int func_02072d84(int, int);
 extern int func_02072d4c(int);
 extern void func_02072f38(int);
 extern void func_02072f54(int, int);
@@ -33,7 +33,7 @@ void func_ov123_0229b41c(unsigned char *self)
     int idx2;
 
     p7 = func_020984e8();
-    p6 = func_020996b8();
+    p6 = (int) func_020996b8((void *) p7);
     a = func_0206fc8c();
 
     r4 = func_02072bb0(p6, a);

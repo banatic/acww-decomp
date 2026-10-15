@@ -6,7 +6,7 @@ extern void *func_020961a8(int a);
 extern void func_0204f818(int *a, int *b, void *v);
 extern void func_0204f794(int *out, int a, int b);
 extern int func_02073d90(void *g);
-extern void func_ov003_022213f8(void *p, int x, void *pair, void *vec, int a, int b, int c, int d);
+extern int func_ov003_022213f8(void *p, int x, void *pair, void *vec, int a, int b, int c, int d);
 
 typedef struct {
     int x, y, z;
@@ -27,7 +27,7 @@ typedef struct {
 extern UnkStruct_02220c8c *data_020ccf94;
 extern int data_ov003_0223cfe4;
 
-void func_ov003_02220c8c(int a0, int a1)
+int func_ov003_02220c8c(int a0, int a1)
 {
     int a, b;
     Pair pp;
@@ -74,5 +74,5 @@ void func_ov003_02220c8c(int a0, int a1)
     vv.z = v20.z;
     pp.a = a;
     pp.b = b;
-    func_ov003_022213f8(&data_ov003_0223cfe4, x, &pp, &vv, 0xc, k, 0, 0);
+    return func_ov003_022213f8(&data_ov003_0223cfe4, x, &pp, &vv, 0xc, k, 0, 0);
 }

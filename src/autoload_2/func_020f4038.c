@@ -3,14 +3,16 @@
  */
 
 extern int func_020eef70(void);
-extern void NNS_SndPlayerCreateHeap(int, int, int);
+extern int NNS_SndPlayerCreateHeap(int, int, int);
 
-void func_020f4038(void)
+int func_020f4038(void)
 {
     int x;
     int i;
+    int result;
     x = func_020eef70();
     for (i = 0; i < 2; i++) {
-        NNS_SndPlayerCreateHeap(0xc, x, 0x8cc);
+        result = NNS_SndPlayerCreateHeap(0xc, x, 0x8cc);
     }
+    return result;
 }

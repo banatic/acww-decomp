@@ -12,13 +12,13 @@ struct UnkStruct_0206d500 {
     unsigned int unk_4C;
 };
 
-extern void func_020a8e8c(unsigned int);
+extern void func_020a8e8c(unsigned int, int);
 extern void func_020a9318(struct UnkStruct_0206d500 *);
 
-void func_0206d500(struct UnkStruct_0206d500 *param)
+void func_0206d500(struct UnkStruct_0206d500 *param, int argument1)
 {
     if (param->unk_30) {
-        func_020a8e8c(param->unk_30);
+        func_020a8e8c(param->unk_30, (int) argument1);
     }
     if (param->unk_04 == param->unk_48) {
         param->unk_48 = 0;

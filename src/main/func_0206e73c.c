@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206e890(char *dst, int a, int b, int c);
+extern int func_0206e890(char *dst, int a, int b, int c);
 extern void func_0206e854(char *dst);
 
 int func_0206e73c(char *p0, int p1, int p2, int p3, int p4, int p5, int p6, int p7)

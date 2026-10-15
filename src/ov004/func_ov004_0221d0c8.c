@@ -7,11 +7,11 @@
 typedef struct {
     int x, y, z;
 } Vec3;
-extern void func_ov004_0221c844(void *s, int a);
+extern int func_ov004_0221c844(void *s, int a);
 extern int func_0201c2a4(void *s, int a);
 extern void func_02016108(void *p, int a);
-extern void func_0203af80(Vec3 *v);
-extern void func_0203b144(void *s);
+extern int func_0203af80(Vec3 *v);
+extern int func_0203b144(void);
 extern void func_ov004_0221d1d8(void *s);
 
 void func_ov004_0221d0c8(char *s, unsigned int sel, int a2)
@@ -39,7 +39,7 @@ void func_ov004_0221d0c8(char *s, unsigned int sel, int a2)
             func_ov004_0221c844(s, 8);
             break;
         case 8:
-            func_0203b144(s);
+            func_0203b144();
             func_ov004_0221d1d8(s);
             func_ov004_0221c844(s, 0);
             break;

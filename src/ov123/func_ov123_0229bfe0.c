@@ -22,8 +22,8 @@ struct UnkStruct_0229bfe0 {
 extern void func_ov123_0229b160(struct UnkStruct_0229bfe0 *p, int x);
 extern void func_ov123_0229a224(struct UnkStruct_0229bfe0 *p);
 extern void func_ov123_02299ec4(struct UnkStruct_0229bfe0 *p);
-extern int func_0206fc4c(int x);
-extern void func_02095ce0(int x);
+extern void func_0206fc4c(char value);
+extern int func_02095ce0(void);
 
 void func_ov123_0229bfe0(struct UnkStruct_0229bfe0 *p)
 {
@@ -37,7 +37,8 @@ void func_ov123_0229bfe0(struct UnkStruct_0229bfe0 *p)
     func_ov123_02299ec4(p);
     p->unk_AF = 0x10;
     p->unk_B0 = 0x10;
-    func_02095ce0(func_0206fc4c(0));
+    func_0206fc4c(0);
+    func_02095ce0();
     p->unk_98 = 0;
     p->unk_B3 = 0;
 }

@@ -12,7 +12,7 @@ extern int func_02073dd4(ArcadeStruct *p, int i);
 extern int func_02073918(ArcadeStruct *p, int i);
 extern int func_02077b58(int i);
 extern unsigned int func_02073220(ArcadeStruct *p, int i);
-extern void func_02077a64(void);
+extern int func_02077a64(void);
 
 void func_0207323c(ArcadeStruct *arr)
 {

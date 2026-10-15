@@ -3,9 +3,9 @@
  */
 
 extern int func_0209a000(unsigned short *ptr, int count);
-extern void func_020154b4(void *a, unsigned short *b, int c, int d, int e);
+extern int func_020154b4(void *a, unsigned short *b, int c, int d, int e);
 
-void func_ov050_022629ec(void *param)
+void func_ov050_022629ec(void *param, int event)
 {
     int zero;
     unsigned short arr[2];

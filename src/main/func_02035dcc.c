@@ -4,7 +4,7 @@
 
 extern void *data_021f42f4;
 extern int func_02095f90(void);
-extern void func_02035e7c(void);
+extern int func_02035e7c(void);
 extern void func_02035864(void);
 extern int func_02035e68(void);
 extern int func_02035e54(void);

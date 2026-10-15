@@ -12,11 +12,11 @@ struct UnkStruct_0229d580_2 {
     unsigned char unk_2DA4;
 };
 
-extern int func_ov002_02208014(UnkStruct_0229d580 *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(UnkStruct_0229d580 *self);
-extern void func_ov002_02207d24(void *ptr, int value);
+extern int func_ov002_02207d24(void *ptr, int value);
 extern void func_ov002_02207d00(void *ptr);
-extern void func_ov002_022080a0(UnkStruct_0229d580 *self, int value);
+extern unsigned char *func_ov002_022080a0(UnkStruct_0229d580 *self, unsigned char value);
 
 extern int func_ov103_0229c350(UnkStruct_0229d580 *self, int a, int b);
 extern void func_ov103_0229cffc(UnkStruct_0229d580 *self);
@@ -33,7 +33,7 @@ extern volatile unsigned short data_021fbe40[2];
 
 void func_ov103_0229d580(UnkStruct_0229d580 *self)
 {
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov103_0229cffc(self);
         func_ov002_02207d24(&self->unk_218C, 1);
         return;

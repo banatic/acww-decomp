@@ -2,28 +2,30 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220afdc(void *);
-extern void __cxa_vec_cleanup(void *p, int a, int b, void (*cb)(void *));
+extern void *func_ov002_0220afdc(void *);
+extern void __cxa_vec_cleanup(void *p, int a, int b, void (*callback3)(void *));
 extern void func_02066688(void *);
-extern void func_ov002_0220b464(void *);
-extern void func_0206e35c(void *);
-extern void func_ov002_0220ba0c(void *);
-extern void func_ov002_02209ac8(void *);
-extern void func_ov002_02209cb4(void *);
+extern void *func_ov002_0220b464(void *);
+extern void *func_0206e35c(void *);
+extern void *func_ov002_0220ba0c(void *);
+extern void *func_ov002_02209ac8(void *);
+extern void *func_ov002_02209cb4(void *);
 extern void func_ov002_02209e38(void *);
-extern void func_ov002_02207e28(void *);
-extern void func_ov094_0229a2d0(void *);
+extern void *func_ov002_02207e28(void *);
+extern void *func_ov094_0229a2d0(void *);
 extern void func_ov094_0229bc30(void *);
-extern void func_ov094_0229afe0(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov094_0229afe0(void *);
+extern void *func_ov002_0220826c(void *);
 extern void func_ov002_02207f6c(void *);
 extern char data_ov105_0229fad0;
+
+#define DisposeElement_func_02066688 ((void (*)(void *)) func_02066688)
 
 void *func_ov105_0229c24c(void *self)
 {
     *(void **) self = &data_ov105_0229fad0;
     func_ov002_0220afdc((unsigned char *) self + 0x5fb8);
-    __cxa_vec_cleanup((unsigned char *) self + 0x2db8, 0x32, 0x100, func_02066688);
+    __cxa_vec_cleanup((unsigned char *) self + 0x2db8, 0x32, 0x100, DisposeElement_func_02066688);
     func_ov002_0220b464((unsigned char *) self + 0x2d40);
     func_0206e35c((unsigned char *) self + 0x2a18);
     func_ov002_0220ba0c((unsigned char *) self + 0x28fc);
@@ -40,3 +42,5 @@ void *func_ov105_0229c24c(void *self)
     func_ov002_02207f6c(self);
     return self;
 }
+
+#undef DisposeElement_func_02066688

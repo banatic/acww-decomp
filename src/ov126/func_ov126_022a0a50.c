@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov126_0229ffdc(void *);
+extern int func_ov126_0229ffdc(void *);
 extern void func_ov126_022a0ae0(void *, int);
-extern void func_ov126_022a0110(void *);
+extern void func_ov126_022a0110(void);
 
 struct UnkStruct_022a0a50 {
     char pad_00[0xad];
@@ -23,7 +23,7 @@ int func_ov126_022a0a50(struct UnkStruct_022a0a50 *s)
             func_ov126_022a0ae0(s, 0);
             return 1;
         default:
-            func_ov126_022a0110(s);
+            func_ov126_022a0110();
             return 0;
     }
 }

@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0203e340(unsigned char *p);
+extern int func_0203e340(void);
 extern unsigned char data_021c75b8;
 
 int func_0203e704(unsigned char *param)
 {
-    if (func_0203e340(param) != 0) {
+    if (func_0203e340() != 0) {
         return 0;
     }
     {

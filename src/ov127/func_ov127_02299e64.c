@@ -24,7 +24,7 @@ extern void func_0200284c(int a, int b, int c);
 extern void func_ov127_02299858(UnkStruct_02299e64 *self, int a);
 extern void func_ov127_02299868(UnkStruct_02299e64 *self, int a);
 extern void MI_CpuCopy8(void *src, void *dst, int n);
-extern void func_020b9bbc(UnkStruct_02299e64 *self, void *p, int a, int b, int c);
+extern int func_020b9bbc(UnkStruct_02299e64 *self, void *p, int a, int b, int c);
 
 void func_ov127_02299e64(UnkStruct_02299e64 *self)
 {

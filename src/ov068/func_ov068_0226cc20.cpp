@@ -40,7 +40,7 @@ typedef struct {
 extern "C" {
 int func_02096190(int);
 int func_0207d18c(int, int);
-int func_020b6640(int);
+int func_020b6640(void);
 int func_0201c390(UnkStruct_0226cc20_2 *, int);
 int func_0201c2b0(UnkStruct_0226cc20_2 *, int);
 extern signed short data_ov068_02278264[];
@@ -68,7 +68,7 @@ int func_ov068_0226cc20(UnkStruct_0226cc20 *p, UnkStruct_0226cc20_2 *obj)
     }
 
     result = 0;
-    if (func_020b6640(0) == 0) {
+    if (func_020b6640() == 0) {
         if (p->unk_F4 <= 0 && flag != 0 && f != 0) {
             a = func_0201c390(obj, f);
             if (a <= 0x7000) {

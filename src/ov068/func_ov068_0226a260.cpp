@@ -58,7 +58,7 @@ extern void func_020801c4(void *, void *, int);
 extern void func_ov068_0226ae00(St *, UnkStruct_0226a260 *, const void *);
 extern void func_ov068_0226ad78(St *, char *, int, int, int);
 extern void func_02080cd8(void *, unsigned short *);
-extern void func_020172d8(void *, int, unsigned short *);
+extern int func_020172d8(void *, int, unsigned short *);
 extern const char data_ov068_02276784[];
 }
 

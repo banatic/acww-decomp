@@ -3,7 +3,7 @@
  */
 
 extern void *func_02096718(int);
-extern int func_0203e31c(int);
+extern int func_0203e31c(void);
 extern int func_0200f290(void *, int);
 
 int func_02095d2c(void)
@@ -16,7 +16,7 @@ int func_02095d2c(void)
         goto ret0_late;
     }
     v = *(int *) ((char *) p + 0x7f0);
-    if (func_0203e31c(0x7f0) != 0 || func_0200f290(p, 0x13) != 0) {
+    if (func_0203e31c() != 0 || func_0200f290(p, 0x13) != 0) {
         return 0;
     }
     if (func_0200f290(p, 0xb) == 0) {

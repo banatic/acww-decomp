@@ -2,19 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208150c(void);
-extern void func_02003648(void);
-extern int func_02082500(void);
+extern unsigned int func_0208150c(unsigned int);
+extern int func_02003648(unsigned char *);
+extern int func_02082500(int);
 
-int func_020808ec(void)
+int func_020808ec(unsigned int object)
 {
     int r4;
     int r0;
 
     r4 = 0x21;
-    func_0208150c();
-    func_02003648();
-    r0 = func_02082500();
+    r0 = func_02082500((int) func_02003648((unsigned char *) func_0208150c(object)));
     if (r0 != 0) {
         r0 += 0x4c;
         r4 = *(unsigned char *) r0;

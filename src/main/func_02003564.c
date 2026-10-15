@@ -41,8 +41,8 @@ extern u32 *data_0213ff74;
 extern s16 *data_0213ff70;
 extern struct Elem **data_021fd044;
 
-extern void func_020ee660(void *);
-extern void func_020e8ca8(void *, void *);
+extern void *func_020ee660(void *);
+extern int func_020e8ca8(void *, void *);
 extern void func_02003330(struct UnkStruct_02003564 *, u32, u32, u32);
 
 struct UnkStruct_02003564 *func_02003564(struct UnkStruct_02003564 *self)

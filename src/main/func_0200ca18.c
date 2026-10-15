@@ -16,7 +16,7 @@ struct UnkStruct_0200ca18 {
 };
 
 extern int func_02008258(struct UnkStruct_0200ca18 *self, int arg);
-extern void func_0200d4e8(struct UnkStruct_0200ca18 *self, int a, int b, int c);
+extern int func_0200d4e8(struct UnkStruct_0200ca18 *self, int a, int b, int c);
 
 void func_0200ca18(struct UnkStruct_0200ca18 *self)
 {

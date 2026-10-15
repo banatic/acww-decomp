@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208150c(void *p);
-extern void func_0200368c(void *ptr, int a, int b, int c);
-extern int func_020036e8(void);
+extern unsigned int func_0208150c(void *p);
+extern int func_0200368c(void *ptr, int a, int b, int c);
+extern int func_020036e8(unsigned char *);
 extern int data_020c8b20;
 
 struct UnkStruct_0202a8e8 {
@@ -27,8 +27,7 @@ void func_0202a8e8(struct UnkStruct_0202a8e8_2 *a, struct Result *b)
     int tmp;
     unsigned char *p;
 
-    func_0208150c(a->inner->unk_830);
-    tmp = func_020036e8();
+    tmp = func_020036e8((unsigned char *) func_0208150c(a->inner->unk_830));
     func_0200368c((char *) a + 0x104, 0x1e, data_020c8b20, tmp);
     p = (unsigned char *) a + 0x122;
     *p = 3;

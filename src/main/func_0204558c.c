@@ -11,7 +11,7 @@ typedef struct {
 extern unsigned int func_0204e414(void);
 extern unsigned short func_02045670(int unused, int id);
 extern int func_020456b0(void *unused, Pt *p, int i, int ctx);
-extern void func_02046024(int a, Pt *p, int r, int s, int a5, int a6, int a7, int a8, int a9, int a10);
+extern int func_02046024(int a, Pt *p, int r, int s, int a5, int a6, int a7, int a8, int a9, int a10);
 extern int data_020ca67c[];
 extern u8 data_020ca640[];
 

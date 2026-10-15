@@ -8,7 +8,7 @@ typedef struct {
     char sub;
 } UnkStruct_020b9af4;
 
-extern void func_020b9d1c(void *);
+extern void *func_020b9d1c(void *);
 extern void func_020ba108(void *);
 
 extern unsigned char data_020e5944[];

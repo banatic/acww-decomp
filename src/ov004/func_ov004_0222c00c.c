@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02096718();
-extern int func_ov004_022282c0();
+extern int func_02096718(int argument0);
+extern int func_ov004_022282c0(int argument0, int argument1, int argument2, int argument3);
 
 int func_ov004_0222c00c(char *self)
 {

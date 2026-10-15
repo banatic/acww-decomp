@@ -4,7 +4,7 @@
 
 extern unsigned char data_020e54a8;
 extern void *data_021c80bc;
-extern void *func_ov004_0223cd50(void **pp);
+extern void *func_ov004_0223cd50(void);
 extern void *func_ov004_0223cc10(void *p, int x, int y, int z);
 extern void *func_0204f5e0(void *p, int a, int b, int c, int d, int e);
 extern int func_ov004_0220fde0(void *p);
@@ -20,7 +20,7 @@ int func_02051d44(int x, int y)
         void *q;
         int success;
 
-        q = func_ov004_0223cc10(func_ov004_0223cd50(&data_021c80bc), x, y, 0);
+        q = func_ov004_0223cc10(func_ov004_0223cd50(), x, y, 0);
         if (p == 0 || q == 0) {
             goto fail;
         }

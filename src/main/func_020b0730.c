@@ -4,7 +4,7 @@
 
 extern int func_020b076c(int *a, int *b, int arg0);
 extern int func_0204e414(void);
-extern void func_0204f538(int arg0, unsigned short *arg1, int arg2, int arg3, int arg4);
+extern int func_0204f538(int arg0, unsigned short *arg1, int arg2, int arg3, int arg4);
 
 int func_020b0730(int arg0)
 {

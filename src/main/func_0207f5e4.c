@@ -14,14 +14,14 @@ extern int func_0208150c(void *self);
 extern int func_02003704(int t);
 extern int func_0207f6dc(void *self);
 extern int func_020644cc(int n);
-extern void func_0207f1c8(void *self);
-extern int func_0209b5ec(void);
-extern int func_0209c330(void);
+extern unsigned int func_0207f1c8(void *self);
+extern int func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern int func_0209c2c0(int y);
 extern int func_0207fe94(void *self, int *a, int *b, int i, int s1, int s2);
 extern int func_0207fbb4(void *self, int s1, int a, int b);
 extern int func_0207ffa0(void *self, int v);
-extern void func_0207fb98(u16 *p);
+extern int func_0207fb98(u16 *p);
 
 void func_0207f5e4(char *self)
 {
@@ -48,9 +48,8 @@ void func_0207f5e4(char *self)
         return;
     }
 
-    func_0207f1c8(self);
-    y = func_0209b5ec();
-    s1 = func_0209c330();
+    y = func_0209b5ec((void *) func_0207f1c8(self));
+    s1 = func_0209c330((unsigned char *) y);
     s2 = func_0209c2c0(y);
 
     arr = data_020e18c0;

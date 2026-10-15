@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200363c(void);
+extern int func_0200363c(unsigned int);
 extern char data_020cd884[];
 
 int func_02082500(int param)
@@ -14,7 +14,7 @@ int func_02082500(int param)
     result = 0;
     index = 0;
 
-    if (func_0200363c() != 0) {
+    if (func_0200363c(param) != 0) {
         temp = param * 0x4e;
         result = (int) &data_020cd884[temp];
     }

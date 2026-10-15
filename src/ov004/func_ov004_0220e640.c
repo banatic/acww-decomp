@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200322c();
-extern int func_02095794();
-extern int func_ov004_0220e73c();
-extern void func_ov004_0220fefc();
+extern int func_0200322c(int *argument0, int *argument1);
+extern int func_02095794(int argument0);
+extern int func_ov004_0220e73c(char *arg0, int arg1);
+extern void func_ov004_0220fefc(char *argument0, int *argument1);
 
 int func_ov004_0220e640(char *self)
 {
@@ -15,8 +15,8 @@ int func_ov004_0220e640(char *self)
     // ENDDECLS
     v1 = func_02095794(0x4);
     if (v1 != 0x0) {
-        func_ov004_0220fefc(self, frame);
-        return func_ov004_0220e73c(frame, func_0200322c(frame, v1));
+        func_ov004_0220fefc((char *) (self), (int *) (frame));
+        return func_ov004_0220e73c(frame, func_0200322c((int *) (frame), (int *) (v1)));
     }
     return v1;
 }

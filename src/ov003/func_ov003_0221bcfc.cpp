@@ -11,17 +11,17 @@ struct UnkStruct_0221bcfc {
 };
 
 extern "C" {
-void func_020ae3b8(void *);
-int func_020ae5f4(void);
-void func_0206fbd8(int, int);
+int func_020ae3b8(void *);
+int func_020ae5f4(void *argument0);
+int func_0206fbd8(int, int);
 extern unsigned char data_021f3b30[];
 }
 
 void Obj_ov003_02238630::func_ov003_0221bcfc()
 {
     if (((UnkStruct_0221bcfc *) unk_40)->unk_04 == 5) {
-        func_020ae3b8((void *) data_021f3b30);
-        func_0206fbd8(0xe, func_020ae5f4());
+
+        func_0206fbd8(0xe, func_020ae5f4((void *) func_020ae3b8((void *) data_021f3b30)));
         func_ov003_0221bfa8(5);
     }
 }

@@ -9,7 +9,7 @@ struct UnkStruct_020ae64c {
 
 extern int func_020ae470(struct UnkStruct_020ae64c *p);
 extern void func_020ae564(struct UnkStruct_020ae64c *p);
-extern int func_0209f100(void *p, int n);
+extern void func_0209f100(void *p, int n);
 extern int data_021dc7a8;
 
 int func_020ae64c(struct UnkStruct_020ae64c *p)

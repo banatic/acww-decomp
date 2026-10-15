@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov105_0229d76c(void);
+extern int func_ov105_0229d76c(int parameter0, unsigned int parameter1);
 extern int func_ov105_0229d75c(unsigned char *, int);
 extern int func_ov105_0229d718(unsigned char *, int);
 extern int func_ov105_0229d73c(unsigned char *, int);
 extern void func_ov094_0229b8b4(unsigned char *, int, int);
-extern void func_02066830(unsigned char *, int);
+extern int func_02066830(unsigned char *, int);
 
 void func_ov105_0229d5dc(unsigned char *a, int b, int c)
 {
-    if (func_ov105_0229d76c() != 0 || func_ov105_0229d75c(a, b) != 0) {
+    if (func_ov105_0229d76c((int) (a), (unsigned int) (b)) != 0 || func_ov105_0229d75c(a, b) != 0) {
         func_ov094_0229b8b4(a + 0xd5c, func_ov105_0229d718(a, b), c);
     } else {
         if (func_ov105_0229d73c(a, b) != 0) {

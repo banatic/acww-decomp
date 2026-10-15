@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_02080078(unsigned char *param1)
+void func_02080078(unsigned char *param1)
 {
     unsigned short local_4;
     unsigned char *arg0;

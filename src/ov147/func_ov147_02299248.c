@@ -5,11 +5,11 @@
 extern void func_0203de6c(int);
 extern void func_020028bc(int, int, int, int);
 extern void func_020029e8(int, int);
-extern void func_02002d14(void *, void *, int, int, int, int);
-extern void func_02064af4(void *, void *, int);
-extern void func_02002b40(void *, int, int, int);
+extern int func_02002d14(void *, void *, int, int, int, int);
+extern int func_02064af4(void *, void *, int);
+extern int func_02002b40(void *, int, int, int);
 extern void __arm MI_CpuFill8(void *, int, int);
-extern void func_02002a88(void *, int, int, int, int);
+extern int func_02002a88(void *, int, int, int, int);
 
 extern unsigned char data_ov147_0229ab5c[];
 extern unsigned char data_ov147_0229ab70[];

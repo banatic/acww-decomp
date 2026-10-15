@@ -3,7 +3,7 @@
  */
 
 extern unsigned int data_020e29dc;
-extern void func_020948b8(int, int, int, int, int, int, int, int, int);
+extern int func_020948b8(int, int, int, int, int, int, int, int, int);
 
 void func_02092720(int param)
 {

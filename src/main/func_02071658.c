@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02072824(int);
-extern void func_02072830(int, int);
-extern int func_0207282c(int);
+extern int func_02072824(void);
+extern int func_02072830(int, int);
+extern void *func_0207282c(void *record);
 
 int func_02071658(int arg)
 {
-    int ret1 = func_02072824(arg);
+    int ret1 = func_02072824();
     func_02072830(ret1, arg);
-    return func_0207282c(ret1);
+    return (int) func_0207282c((void *) ret1);
 }

@@ -8,7 +8,7 @@ typedef struct {
     unsigned short flag;
 } UnkStruct_02278d34;
 
-extern void func_0202eb70(void *);
+extern void *func_0202eb70(void *);
 
 extern unsigned char data_ov079_0227a074[];
 

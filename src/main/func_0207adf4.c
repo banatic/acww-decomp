@@ -13,8 +13,8 @@ typedef struct {
 
 extern GlobalType *data_020ccf94;
 extern int func_02073dd4(GlobalType *g, int val);
-extern void func_0208150c(Entry *e);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(Entry *e);
+extern int func_02003704(void *);
 extern void func_0207d148(Entry *e);
 
 void func_0207adf4(Entry *p)
@@ -26,8 +26,7 @@ void func_0207adf4(Entry *p)
     }
 
     for (i = 0; i < 8; i++) {
-        func_0208150c(p);
-        if (func_02003704() != 0) {
+        if (func_02003704((void *) func_0208150c(p)) != 0) {
             func_0207d148(p);
         }
         p++;

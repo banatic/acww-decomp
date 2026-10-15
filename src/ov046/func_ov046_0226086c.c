@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b1558(void *, int);
+extern int func_020b1558(void);
 
 typedef struct {
     char pad_00[0xdc];
@@ -12,7 +12,7 @@ typedef struct {
 void func_ov046_0226086c(UnkStruct_0226086c *p, int r1)
 {
     if (r1 == 0) {
-        int ret = func_020b1558(p, r1);
+        int ret = func_020b1558();
         if (ret < 0x10) {
             p->unk_DC = 0x18;
         } else {

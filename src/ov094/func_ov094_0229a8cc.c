@@ -4,7 +4,7 @@
 
 extern int func_ov094_0229a4c0(int);
 extern void MI_CpuCopy8(void *dst, const void *src, unsigned int size);
-extern void func_020b9a18(char *a, char *b, char *c, int d, int e, int f, int g, int h);
+extern int func_020b9a18(char *a, char *b, char *c, int d, int e, int f, int g, int h);
 
 typedef struct {
     unsigned int pad_00;

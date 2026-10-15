@@ -2,12 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a8fb8(void);
+extern void func_020a8fb8(void *);
 
 void func_020675c0(void *param)
 {
-    if (*(unsigned int *) ((char *) param + 0x680) != 0) {
-        func_020a8fb8();
+    void *condition_value0;
+    if ((condition_value0 = (void *) (*(unsigned int *) ((char *) param + 0x680))) != 0) {
+        func_020a8fb8(condition_value0);
         *(unsigned int *) ((char *) param + 0x680) = 0;
     }
 }

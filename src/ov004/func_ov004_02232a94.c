@@ -23,7 +23,7 @@ struct UnkStruct_02232a94_3 {
 extern struct UnkStruct_02232a94_3 *data_021c80bc;
 extern int data_021c9b24;
 
-extern void func_02055f40(void *, int, int);
+extern int func_02055f40(void *, int, int);
 extern int func_02055140(void *, int);
 extern void func_02055060(void *, int, int, int, int, int);
 extern void func_02055050(void *);

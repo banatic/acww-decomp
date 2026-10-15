@@ -23,7 +23,7 @@ struct Unknown_s {
 
 extern struct UnkStruct_020f6000_2 data_021fd1bc;
 extern unsigned char *data_021fd268;
-extern void func_020eed18(struct Unknown_s *self, int arg);
+extern int func_020eed18(struct Unknown_s *self, int arg);
 
 int func_020f6000(struct Unknown_s *self)
 {

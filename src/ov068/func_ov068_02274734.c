@@ -3,12 +3,12 @@
  */
 
 extern int func_02014868(void *);
-extern void func_0203e020(void *);
+extern int func_0203e020(void *);
 extern int func_020960f8(int, int);
-extern void func_ov004_0222c070(int);
+extern int func_ov004_0222c070(int);
 extern void func_02035624(int);
 extern void func_020355cc(void);
-extern void func_0203b144(void);
+extern int func_0203b144(void);
 extern void func_ov068_022749dc(void *, int);
 
 int func_ov068_02274734(char *self)

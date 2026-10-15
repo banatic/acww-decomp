@@ -14,7 +14,7 @@ extern double _dfltu(int a);
 extern double _dmul(double a, double b);
 extern int func_0213460c(double a);
 
-extern void func_020eedb8(unsigned short rem, unsigned short quot, void *p);
+extern int func_020eedb8(unsigned short rem, unsigned short quot, void *p);
 extern void NNS_SndPlayerSetVolume(void *p, int a);
 extern void NNS_SndPlayerSetTrackPitch(void *p, int a, int b);
 

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov126_0229fc54(void);
-extern int func_02077c34(void);
-extern void func_02051c08(int, int, int);
+extern int func_ov126_0229fc54(void);
+extern int func_02077c34(int argument0);
+extern int func_02051c08(int, int, int);
 
 void func_ov126_0229f90c(int *param)
 {
@@ -14,8 +14,8 @@ void func_ov126_0229f90c(int *param)
     int r2;
 
     r4 = param;
-    func_ov126_0229fc54();
-    r0 = func_02077c34();
+
+    r0 = func_02077c34((int) func_ov126_0229fc54());
     r1 = r0;
     r0 = (int) r4 + 0x4248;
     r2 = 6;

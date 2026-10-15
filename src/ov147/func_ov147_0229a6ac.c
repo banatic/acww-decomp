@@ -12,7 +12,7 @@ struct Struct_ov147_0229a6ac {
     int unk_18;
 };
 
-extern void func_ov147_0229a608(struct Struct_ov147_0229a6ac *p, int a, int b);
+extern void func_ov147_0229a608(struct Struct_ov147_0229a6ac *p);
 extern void func_ov147_0229a2f4(struct Struct_ov147_0229a6ac *p);
 
 void func_ov147_0229a6ac(struct Struct_ov147_0229a6ac *p)
@@ -21,6 +21,6 @@ void func_ov147_0229a6ac(struct Struct_ov147_0229a6ac *p)
     p->unk_08 = 2;
     p->unk_18 = 0;
     p->unk_0C = 2;
-    func_ov147_0229a608(p, 2, 0);
+    func_ov147_0229a608(p);
     func_ov147_0229a2f4(p);
 }

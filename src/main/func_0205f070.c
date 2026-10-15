@@ -2,18 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0205f2f0(void);
-extern int func_02055b50(int, int);
+extern unsigned long func_0205f2f0(void *, int);
+extern void func_02055b50(int, int);
 extern int func_0205f150(int, int);
-extern int func_021077e8(void);
+extern int func_021077e8(unsigned int *);
 
-int func_0205f070(int param1, int param2)
+void func_0205f070(int param1, int param2)
 {
     int result;
     int temp;
 
-    func_0205f2f0();
-    temp = func_021077e8();
+    temp = func_021077e8((unsigned int *) func_0205f2f0((void *) param1, (int) param2));
     result = func_0205f150(param1, param2);
-    return func_02055b50(result, temp);
+    func_02055b50(result, temp);
 }

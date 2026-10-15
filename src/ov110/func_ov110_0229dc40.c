@@ -9,7 +9,7 @@ extern int func_ov002_02208008(char *p);
 extern int func_ov002_02209044(char *a, int b, char *c, int d);
 extern void func_ov110_0229cb28(char *p);
 extern void func_ov002_0220a1dc(char *p);
-extern void func_ov002_02208098(char *p, int v);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov110_0229cac8(char *p);
 struct Flags {
     unsigned short unk_00;
@@ -33,7 +33,7 @@ void func_ov110_0229dc40(char *p)
         flags = data_021fbe40.unk_02;
         if ((flags & 1) != 0) {
             func_ov002_0220a1dc(p + 0x22e0);
-            func_ov002_02208098(p, 7);
+            func_ov002_02208098((void *) (p), 7);
             return;
         } else if ((flags & 2) != 0) {
             func_ov110_0229cac8(p);

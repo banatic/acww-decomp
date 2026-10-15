@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02032214(void *self, void *src1, short d, void *src2);
+extern int func_02032214(void *self, void *src1, short d, void *src2);
 
 typedef struct {
     int unk_00;
@@ -26,7 +26,7 @@ typedef struct {
     char unk_98;
 } UnkStruct_02032444;
 
-void func_02032444(UnkStruct_02032444 *out, int a, int b, int c, SrcStruct *src1, short d, SrcStruct *src2)
+int func_02032444(UnkStruct_02032444 *out, int a, int b, int c, SrcStruct *src1, short d, SrcStruct *src2)
 {
     out->unk_10 = a;
     out->unk_14 = b;
@@ -40,4 +40,5 @@ void func_02032444(UnkStruct_02032444 *out, int a, int b, int c, SrcStruct *src1
     out->unk_24 = src2->unk_08;
     out->unk_28 = d;
     out->unk_98 = 1;
+    return 1;
 }

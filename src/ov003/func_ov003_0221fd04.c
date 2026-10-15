@@ -6,9 +6,9 @@ extern char data_ov003_02239a58[];
 extern char data_020da13c[];
 
 extern void func_ov003_0221ef78(void *);
-extern void func_02057694(void *);
-extern void func_ov003_0221f1f4(void *);
-extern void func_ov003_0221f5f4(void *);
+extern void *func_02057694(void *);
+extern int func_ov003_0221f1f4(void *);
+extern void *func_ov003_0221f5f4(void *);
 extern void func_020ee62c(void *);
 
 struct UnkStruct_0221fd04 {

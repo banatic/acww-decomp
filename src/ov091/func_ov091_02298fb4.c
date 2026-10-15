@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *p);
+extern int func_ov002_02208014(void);
 extern void func_ov091_02298fa8(void *p);
 extern void func_ov002_0220a1dc(void *p);
-extern void func_ov002_022080a0(void *p, int a);
+extern unsigned char *func_ov002_022080a0(void *p, unsigned char value);
 
 typedef struct UnkStruct_02298fb4 {
     unsigned char pad_00[0x8c];
@@ -23,7 +23,7 @@ extern Global data_021fbe40;
 
 void func_ov091_02298fb4(UnkStruct_02298fb4 *p)
 {
-    if (func_ov002_02208014(p)) {
+    if (func_ov002_02208014()) {
         func_ov091_02298fa8(p);
         return;
     }

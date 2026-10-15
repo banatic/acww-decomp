@@ -14,8 +14,8 @@ struct UnkStruct_0226fcbc {
 
 extern void func_01ffd070(void *, void *, void *);
 extern short FX_Div(int, int);
-extern void func_020912d4(int, void *, int, void *);
-extern void func_020044c0(void *, unsigned, unsigned, int);
+extern int func_020912d4(int, void *, int, void *);
+extern int func_020044c0(void *, unsigned, unsigned, int);
 
 void func_ov068_0226fcbc(UnkStruct_0226fcbc *param)
 {

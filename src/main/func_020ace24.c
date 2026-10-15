@@ -3,8 +3,8 @@
  */
 
 extern int data_020e40e0;
-extern int func_02065604(int *ptr, int val);
-extern __arm void NNS_G3dMdlSetMdlDiff(unsigned int arg0, int arg1, unsigned short arg2);
+extern int func_02065604(void);
+extern unsigned int __arm NNS_G3dMdlSetMdlDiff(unsigned int arg0, int arg1, unsigned short arg2);
 
 typedef struct {
     unsigned char pad_00[0x5c];
@@ -18,7 +18,7 @@ void func_020ace24(void)
     volatile unsigned short a, b;
 
     data_020e40e0 = 1;
-    a = (unsigned short) func_02065604(&data_020e40e0, 1);
+    a = (unsigned short) func_02065604();
     b = a;
     NNS_G3dMdlSetMdlDiff(data_021f472c.unk_5C, 0, b);
 }

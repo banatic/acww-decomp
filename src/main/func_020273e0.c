@@ -7,7 +7,7 @@ typedef struct {
     unsigned int y;
 } TwoWords;
 
-extern void func_02015094(unsigned int arg);
+extern int func_02015094(unsigned int arg);
 extern void func_0202dbdc(unsigned int arg, TwoWords pair);
 extern TwoWords data_020d9068;
 

@@ -40,9 +40,9 @@ extern void func_ov002_02209e18(void *);
 extern void func_ov002_02209984(void *, int, int, int);
 extern void func_0206e2ec(void *, int);
 extern void func_02066650(void *);
-extern void func_02066830(void *, const void *);
-extern void func_020984e8(void);
-extern int func_020989e0(void);
+extern int func_02066830(void *, const void *);
+extern int func_020984e8(void);
+extern int func_020989e0(int object);
 extern void *func_02097f58(int, int);
 extern void func_ov105_0229c694(UnkStruct_0229eb54 *);
 
@@ -68,8 +68,7 @@ void func_ov105_0229eb54(UnkStruct_0229eb54 *self)
         func_02066650(&self->arr[i]);
     }
 
-    func_020984e8();
-    r = func_020989e0();
+    r = func_020989e0(func_020984e8());
     if (r != 0) {
         src = (u8 *) func_02097f58(r, 0);
         for (i = 0; i < 50; i++) {

@@ -4,7 +4,7 @@
 
 extern void func_ov004_0220d280(void *, int, int);
 extern void func_ov004_02210054(void *, int, int, int);
-extern void func_ov004_02210744(void *);
+extern int func_ov004_02210744(void *);
 
 int func_ov004_02218b5c(char *self)
 {

@@ -17,7 +17,7 @@ typedef struct {
 extern int func_0203fdc4(int);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(UnkStruct_0201f69c *, char *, unsigned char *, int, int, int, int, int, int);
+extern int func_0202da38(UnkStruct_0201f69c *, char *, unsigned char *, int, int, int, int, int, int);
 extern int data_020c8bd8;
 
 void func_0201f69c(UnkStruct_0201f69c *base, UnkStruct_0201f69c_2 *out)

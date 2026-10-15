@@ -7,24 +7,24 @@ struct UnkStruct_022748f0 {
     int unk_730;
 };
 
-extern void func_ov068_022739f4(struct UnkStruct_022748f0 *p, int field);
-extern void func_020ee470(struct UnkStruct_022748f0 *p, int field);
-extern void func_ov004_0222daf0(struct UnkStruct_022748f0 *p, int field);
-extern void func_ov004_0222dad8(int field);
+extern int func_ov068_022739f4(struct UnkStruct_022748f0 *p);
+extern void func_020ee470(struct UnkStruct_022748f0 *p);
+extern void func_ov004_0222daf0(void);
+extern void func_ov004_0222dad8(void);
 
 int func_ov068_022748f0(struct UnkStruct_022748f0 *p)
 {
     int field = p->unk_730;
     if (field == 8) {
-        func_020ee470(p, field);
+        func_020ee470(p);
         return 1;
     } else if (field == 7) {
-        func_ov068_022739f4(p, field);
+        func_ov068_022739f4(p);
     } else {
-        func_ov004_0222daf0(p, field);
+        func_ov004_0222daf0();
     }
     if (p->unk_730 == 6) {
-        func_ov004_0222dad8(p->unk_730);
+        func_ov004_0222dad8();
     }
     return 1;
 }

@@ -3,7 +3,7 @@
  */
 
 extern int func_ov002_0220b8ac(void *p, int x);
-extern void func_ov002_02208098(void *p, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_0208e5cc(void *p);
 
 typedef struct {
@@ -18,7 +18,7 @@ typedef struct {
 void func_ov106_0229dd10(St *self)
 {
     if (func_ov002_0220b8ac(&self->field_at_26f8, 1)) {
-        func_ov002_02208098(self, self->byte_at_bb);
+        func_ov002_02208098((void *) (self), self->byte_at_bb);
         func_0208e5cc(&self->field_at_22a0);
     }
 }

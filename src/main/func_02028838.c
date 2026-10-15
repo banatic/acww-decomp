@@ -26,11 +26,11 @@ typedef struct {
 
 extern UnkStruct_02028838_3 data_020c8c30;
 extern UnkStruct_02028838_3 data_020c8c10;
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
-extern void func_0208150c(unsigned int);
-extern unsigned int func_020036e8(void);
-extern void func_0202da38(void *a, void *b, void *c, int d, unsigned int e, unsigned int f, unsigned char g, int h, int i);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
+extern unsigned int func_0208150c(unsigned int);
+extern unsigned int func_020036e8(unsigned char *);
+extern int func_0202da38(void *a, void *b, void *c, int d, int base, int offset, int scale, int h, int i);
 
 void func_02028838(UnkStruct_02028838_2 *p1, OutputStruct *p2)
 {
@@ -38,8 +38,7 @@ void func_02028838(UnkStruct_02028838_2 *p1, OutputStruct *p2)
     int x;
     unsigned int v;
 
-    func_0202d9c4();
-    x = func_0209bc40();
+    x = func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) p1));
     switch (x) {
         case 10:
             dp = &data_020c8c30;
@@ -49,8 +48,7 @@ void func_02028838(UnkStruct_02028838_2 *p1, OutputStruct *p2)
             break;
     }
     if (dp) {
-        func_0208150c(p1->sub->unk_830);
-        v = func_020036e8();
+        v = func_020036e8((unsigned char *) func_0208150c(p1->sub->unk_830));
         func_0202da38(p1, (char *) p1 + 0x104, (char *) p1 + 0x122, 30, v, dp->unk_00, dp->unk_04, 0, 0);
     }
     p2->ptr = (char *) p1 + 0x104;

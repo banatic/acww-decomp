@@ -4,8 +4,8 @@
 
 extern int func_02046154(int *);
 extern int func_02045c48(void);
-extern void func_02046194(int, int, int *, int, int, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char,
-                          signed char);
+extern int func_02046194(int, int, int *, int, int, unsigned char, unsigned char, unsigned char, unsigned char, unsigned char,
+                         signed char);
 
 int func_020460ec(int a1, int *a2, int a3, int a4, unsigned char p5, unsigned char p6, unsigned char p7, unsigned char p8,
                   unsigned char p9, signed char p10)

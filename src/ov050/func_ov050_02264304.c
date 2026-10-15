@@ -7,8 +7,8 @@ extern int func_020ada40(void);
 extern int func_0208602c(void);
 extern int func_02086108(int a, int b);
 extern int func_020b5e10(void);
-extern void func_020b6098(int a, int b);
-extern void func_0203e020(void *ptr);
+extern int func_020b6098(int a, int b);
+extern int func_0203e020(void *ptr);
 extern void func_ov050_02264834(void *ptr, int a);
 
 int func_ov050_02264304(unsigned char *p)

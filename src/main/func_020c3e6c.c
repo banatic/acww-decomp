@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec58(void);
-extern int func_020c3dac(void *param1, int param2);
+extern int func_0202ec58(void *);
+extern void func_020c3dac(void *param1, int param2);
 
 int func_020c3e6c(void *param0)
 {
@@ -11,7 +11,7 @@ int func_020c3e6c(void *param0)
     void *r4 = param0;
     int r0;
 
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58(param0) == 0) {
         return 0;
     }
 

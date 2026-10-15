@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204482c(int a, int b);
+extern int func_0204482c(int a);
 extern unsigned short *func_02045b5c(int a);
 extern int func_02043db4(int a, int *b, int c, int d, int e);
 
 int func_02043d34(int a, int b, int c, int d)
 {
     int result = -1;
-    if (func_0204482c(a, 0) == 0) {
+    if (func_0204482c(a) == 0) {
         return -1;
     }
     {

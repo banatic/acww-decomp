@@ -16,7 +16,7 @@ extern void *func_ov004_0223ce84(void);
 extern int func_ov004_0223cd78(void *y, void *x);
 extern void func_0204f794(Vec3 *v, int a, int b);
 extern void func_ov004_0220fc98(void *x, int a, int b);
-extern void MTX_Inverse43(Mtx43 *a, Mtx43 *b);
+extern int MTX_Inverse43(Mtx43 *a, Mtx43 *b);
 extern void MTX_MultVec43(Vec3 *v, Mtx43 *m, Vec3 *out);
 
 int func_ov004_0220d3c8(int *p0, int *p1, short *p2, int p3, int p4, short p5)

@@ -4,15 +4,15 @@
 
 #include "types.h"
 
-extern void func_02062fbc(void *);
-extern void func_02070c08(void *);
-extern void func_02062ea4(void *, u16 const *);
-extern void func_020a8bb8(void *, void *);
+extern void *func_02062fbc(void *);
+extern void *func_02070c08(void *);
+extern int func_02062ea4(void *, u16 const *);
+extern void *func_020a8bb8(void *, void *);
 extern int func_020707e8(void *, void *, int);
 extern void func_0206fc80(int);
 extern void func_0206fc4c(int);
-extern void func_02070be8(void *);
-extern void func_02062f4c(void *);
+extern int **func_02070be8(void *);
+extern void *func_02062f4c(void *);
 
 typedef struct {
     u32 data[10];

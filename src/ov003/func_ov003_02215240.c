@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200e92c(void *s);
+extern unsigned int func_0200e92c(void *s);
 extern void func_0200e90c(void *s, int size, int c, int d);
 extern int func_0200e894(void *a, void *s);
-extern void func_0200e91c(void *s);
+extern int func_0200e91c(void *s);
 
 struct UnkStruct_02215240 {
     char data[0xc];

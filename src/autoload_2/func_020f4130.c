@@ -3,7 +3,7 @@
  */
 
 extern int func_020eef70(void);
-extern void NNS_SndPlayerCreateHeap(int, int, int);
+extern int NNS_SndPlayerCreateHeap(int, int, int);
 
 void func_020f4130(void)
 {

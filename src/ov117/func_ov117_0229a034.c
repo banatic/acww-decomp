@@ -6,8 +6,8 @@
 
 #include "types.h"
 
-extern void *func_0204e414(int);
-extern void func_02060e78(void *);
+extern void *func_0204e414(void);
+extern unsigned int func_02060e78(void *);
 extern int func_0204f3e4(void *, int *, int *, int *, int *, u16 *, u16 *, int, int);
 extern void func_0204f800(int *, int *, int, int, int, int);
 extern int func_0204f5e0(void *, int, int, int, int, int);
@@ -35,7 +35,7 @@ void func_ov117_0229a034(int param)
     int ry;
     int ret;
     int ret2;
-    p = func_0204e414(param);
+    p = func_0204e414();
     if (p == 0) {
         return;
     }
@@ -51,7 +51,7 @@ void func_ov117_0229a034(int param)
         int yv = y;
         sx = xv >> 4;
         sy = yv >> 4;
-        if (((!ret) && (!ret)) && (!ret)) {
+        if (((!param) && (!param)) && (!param)) {
         }
         rx = xv - (sx << 4);
         ry = yv - (sy << 4);

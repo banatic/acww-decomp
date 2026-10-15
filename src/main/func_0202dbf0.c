@@ -2,12 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_0202dbf0(int *p, int x, int y)
+typedef struct Pair {
+    int x;
+    int y;
+} Pair;
+
+void func_0202dbf0(int *p, Pair value)
 {
     int a;
     int b;
-    a = *(volatile int *) &x;
-    b = *(volatile int *) &y;
+    a = *(volatile int *) &value.x;
+    b = *(volatile int *) &value.y;
     p[0x36] = a;
     p[0x37] = b;
 }

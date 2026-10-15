@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02063084(int a, int b);
+extern int func_02063084(int a);
 extern int func_02063eb0(void *addr, int x);
 extern int func_02063f94(int a, int b, int c);
 
@@ -26,7 +26,7 @@ int func_0206300c(int arg1, int arg2)
     char *base;
     Entry20 *e;
 
-    x = func_02063084(arg1, arg2);
+    x = func_02063084(arg1);
     if (x == 9) {
         goto ret18;
     }

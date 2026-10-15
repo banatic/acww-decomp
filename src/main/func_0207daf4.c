@@ -7,7 +7,7 @@ extern int func_02003704(int);
 extern int func_02080814(int);
 extern int func_0207f1c8(int);
 extern int func_0209b5ec(int);
-extern int func_0209beb0(int, int, int);
+extern void func_0209beb0(int, int, int);
 
 void func_0207daf4(int arg0, int arg1)
 {

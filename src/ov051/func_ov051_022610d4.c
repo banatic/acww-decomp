@@ -5,7 +5,7 @@
 extern unsigned char data_021c75b8;
 extern int data_021dc7a8;
 
-extern void func_02041c88(int, int, int);
+extern int func_02041c88(int, int, int);
 extern void func_020b22d0(void);
 extern int func_020a12ac(void);
 extern int func_020a12d4(void);
@@ -16,9 +16,9 @@ extern void func_0209e6ec(int *, int);
 extern void func_0209e604(int *);
 extern void func_0209f100(int *, int);
 extern int func_0204e414(void);
-extern void func_0204dfe0(int, int *, int, int);
+extern int func_0204dfe0(int, int *, int, int);
 extern int func_020b5e10(void);
-extern void func_020b63f4(int, int, int *, int, int, int, int);
+extern int func_020b63f4(int, int, int *, int, int, int, int);
 extern void func_ov051_0226122c(int, int);
 
 int func_ov051_022610d4(int param)

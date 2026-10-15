@@ -4,7 +4,7 @@
 
 extern void *func_020961a8(int k);
 extern int func_0200322c(void *a, void *b);
-extern void func_020e8870(short *v, int ang, int k);
+extern int func_020e8870(short *v, int ang, int k);
 extern void func_ov003_0223597c(int *out, int ang);
 extern int FX_MulFunc(int a, int b);
 extern int FX_Div(int a, int b);

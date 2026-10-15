@@ -7,7 +7,7 @@ extern int func_020984e8(void);
 extern int func_02066648(int);
 extern int func_0204bd20(int, int);
 extern int func_020996ac(int);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
 
 void func_ov106_0229d1b8(int a, int b)
 {

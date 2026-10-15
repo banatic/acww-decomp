@@ -3,7 +3,7 @@
  */
 
 extern int func_02078d1c(int *p, int value);
-extern void func_02064af4(int a, int b, int c);
+extern int func_02064af4(int a, int b, int c);
 extern int data_021d12dc;
 
 void func_02078ab0(int *a, int b)

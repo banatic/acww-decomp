@@ -10,7 +10,7 @@ struct Object {
 };
 
 extern Vtbl data_020def64;
-extern void func_020a9a40(Object *this);
+extern void *func_020a9a40(Object *this);
 extern void func_020edb3c(Object *this);
 
 Object *func_0206d650(Object *this)

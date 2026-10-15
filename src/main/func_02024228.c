@@ -19,7 +19,7 @@ struct UnkStruct_02024228_3 {
     int unk_64;
 };
 
-extern int func_0209b91c(int, struct UnkStruct_02024228 *);
+extern int func_0209b91c(int);
 extern void func_0209bb90(int, int);
 extern void func_02078648(int, int);
 extern int func_02073dd4(struct UnkStruct_02024228_3 *, int);
@@ -34,7 +34,7 @@ void func_02024228(struct UnkStruct_02024228_2 *self)
     int v1;
 
     v1 = self->unk_100->unk_830;
-    func_0209bb90(func_0209b91c(self->unk_164, self->unk_100), 3);
+    func_0209bb90(func_0209b91c(self->unk_164), 3);
     func_02078648(self->unk_100->unk_830, 3);
     if (func_02073dd4(data_020ccf94, data_020ccf94->unk_64) == 0) {
         func_0207d71c(v1);

@@ -45,7 +45,7 @@ extern void func_020e9684(void *mtx, int angle);
 extern void func_020e9868(void *mtx, int x, int y, int z);
 extern void func_020e9774(void *mtx, int angle);
 extern void MTX_MultVec43(const Vec3 *v, const void *m, Vec3 *dst);
-extern void func_0202fc5c(Vec3 *nrm, Vec3 *a, Vec3 *b, Vec3 *c);
+extern int func_0202fc5c(Vec3 *nrm, Vec3 *a, Vec3 *b, Vec3 *c);
 extern void *func_0202feb4(void *obj, Vec3 *a, Vec3 *b, Vec3 *c, Vec3 *nrm);
 extern int func_0202fb28(void *tri, const Vec3 *p);
 extern int func_0202f9d0(void *tri, Vec3 *out, Vec3 *a, Vec3 *b);

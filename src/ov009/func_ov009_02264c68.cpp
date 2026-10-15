@@ -42,10 +42,10 @@ class UnkStruct_02264c68 {
     virtual int target();
 };
 
-extern "C" int func_ov009_02264c40(UnkStruct_02264c68 *);
+extern "C" int func_ov009_02264c40(void);
 extern "C" int func_ov009_02264c68(UnkStruct_02264c68 *self)
 {
-    if (func_ov009_02264c40(self) && self->target()) {
+    if (func_ov009_02264c40() && self->target()) {
         return 1;
     }
     return 0;

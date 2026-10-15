@@ -16,7 +16,7 @@ extern char data_ov003_0223c144[];
 extern int func_020960d8(int i);
 extern void func_0209129c(int a);
 extern void func_ov003_0222fe18(void *a0, void *e, int n);
-extern void func_ov003_0222ffdc(void *a0, void *e);
+extern int func_ov003_0222ffdc(void *a0, void *e);
 extern void func_ov003_0222fa20(void *a0, void *e, int n);
 extern void func_02031288(void *a, int *b, int *c, int d, int e, int f, int g);
 extern void func_ov003_0222f6b0(void *a0, void *e, int i, int n);

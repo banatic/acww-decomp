@@ -6,7 +6,7 @@ extern void func_0209e474(unsigned int *a);
 extern void MI_CpuCopy8(unsigned int *src, unsigned int *dst, unsigned int size);
 extern int func_0203fc78(int a, unsigned int *b, int c);
 extern void *func_020b65c4(void);
-extern void func_02084cd0(const void *a, void *b, void *c);
+extern int func_02084cd0(const void *a, void *b, void *c);
 extern char data_ov003_02238784[];
 
 int func_ov003_0221c314(void *param)

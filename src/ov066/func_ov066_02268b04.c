@@ -21,7 +21,7 @@ typedef struct UnkStruct_02268b04 {
 extern UnkStruct_02268b04 *data_ov066_0226bdf4;
 int func_ov066_02266e08(void);
 void func_ov066_0226686c(u16 err);
-void func_ov066_02269154(Pkt *p);
+void func_ov066_02269154(void);
 void func_ov066_0226908c(Pkt *p);
 void func_ov066_02266e64(void);
 void func_ov066_02268f98(Pkt *p);
@@ -36,7 +36,12 @@ void func_ov066_02268b04(Pkt *p)
             case 0:
                 break;
             case 2:
-                func_ov066_02269154(p);
+                // clang-format off
+                asm {
+                    mov r0, p
+                }
+                // clang-format on
+                func_ov066_02269154();
                 break;
             case 7:
                 func_ov066_0226908c(p);

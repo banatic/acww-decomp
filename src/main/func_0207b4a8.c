@@ -15,7 +15,7 @@ extern int func_0209bba0(void *);
 extern int func_0209bc20(void *);
 extern int func_0209e380(int, int);
 extern void func_0209af04(void *);
-extern int func_0209bb90(void *, int);
+extern void func_0209bb90(void *, int);
 extern int func_02059e1c(int, int, void *);
 
 typedef struct {

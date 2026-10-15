@@ -4,13 +4,13 @@
 
 extern "C" {
 extern unsigned int __ptmf_null[2];
-void func_02030864(int);
+int func_02030864(int);
 void func_0205ba64(void *);
 void *func_0205b91c(void *, void *);
-void func_020b23d4(void *);
+void func_020b23d4(void);
 int func_0207f270(int);
-int func_02079540(int, int);
-void func_020044c0(void *, unsigned int, unsigned int, unsigned int);
+void func_02079540(int, int);
+int func_020044c0(void *, unsigned int, unsigned int, unsigned int);
 void func_0205ba60(void *);
 }
 
@@ -68,7 +68,7 @@ extern "C" int func_ov068_02275a34(UnkStruct_02275a34 *self)
     func_0205ba64(tmp);
     p = func_0205b91c(tmp, &self->unk_A4C);
     self->unk_A54 = p;
-    func_020b23d4(p);
+    func_020b23d4();
 
     if (self->v25()) {
         func_02079540(func_0207f270(self->v25()), 2);

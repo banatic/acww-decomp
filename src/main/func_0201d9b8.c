@@ -2,11 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202d8f8(void *, void *, void *, void *);
+extern void func_0202d8f8(void *, void *, void *, void *, int);
 
-int func_0201d9b8(void *p)
+void func_0201d9b8(void *p, void *event)
 {
-    volatile int unused = 0;
-    return func_0202d8f8(p, (char *) p + 0x12c, (char *) p + 0x128,
-                         *(void **) ((char *) *(void **) ((char *) p + 0x100) + 0x830));
+    func_0202d8f8(p, (char *) p + 0x12c, (char *) p + 0x128, *(void **) ((char *) *(void **) ((char *) p + 0x100) + 0x830), 0);
 }

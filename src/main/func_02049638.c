@@ -7,7 +7,7 @@
 extern int data_020cac3c[][2];
 
 extern void *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
-extern int func_0204ba94(void *o);
+extern int func_0204ba94(unsigned short *);
 
 struct UnkStruct_02049638 {
     int w;
@@ -18,7 +18,7 @@ struct Pair {
     int b;
 };
 
-extern void func_020496cc(void *a, void *ctx, struct Pair *pa, struct Pair *pb);
+extern int func_020496cc(void *a, void *ctx, struct Pair *pa, struct Pair *pb);
 
 void func_02049638(void *a, void *ctx, struct UnkStruct_02049638 *p)
 {

@@ -6,14 +6,13 @@ typedef struct {
     char data[0x0a04];
 } UnkStruct_02098930;
 extern UnkStruct_02098930 data_021ef8ec[4];
-extern int func_0209985c(int a, int b);
-extern int func_02098050(UnkStruct_02098930 *ptr, int b);
+extern int func_0209985c(int);
+extern void func_02098050(UnkStruct_02098930 *ptr, unsigned int value);
 
-int func_02098930(int a, int b)
+void func_02098930(int a, int b)
 {
-    int idx = func_0209985c(a, b);
+    int idx = func_0209985c(a);
     if (idx >= 0 && idx < 4) {
-        return func_02098050(&data_021ef8ec[idx], b);
+        func_02098050(&data_021ef8ec[idx], b);
     }
-    return idx;
 }

@@ -11,7 +11,7 @@ struct UnkStruct_0229929c {
     u8 unk_91;
 };
 
-extern void func_ov002_022080a0(struct UnkStruct_0229929c *self, int mode);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_02001c08(int on);
 extern void func_0206ef8c(void);
 extern void func_0206ef98(void);
@@ -21,10 +21,10 @@ void func_ov092_0229929c(struct UnkStruct_0229929c *self)
 {
     switch (self->unk_91) {
         case 0x43:
-            func_ov002_022080a0(self, 5);
+            func_ov002_022080a0((void *) (self), 5);
             break;
         case 0x44:
-            func_ov002_022080a0(self, 0);
+            func_ov002_022080a0((void *) (self), 0);
             func_02001c08(1);
             func_0206ef8c();
             break;

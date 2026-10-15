@@ -3,7 +3,7 @@
  */
 
 extern char data_0213eb08;
-extern void func_020f4514(void *p);
+extern void *func_020f4514(void *p);
 
 typedef struct {
     void *unk_00;

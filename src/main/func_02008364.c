@@ -3,16 +3,16 @@
  */
 
 extern void func_020109fc(int a, int b, unsigned short c, unsigned short d);
-extern int func_0200eebc(int a);
+extern void func_0200eebc(int a);
 
 struct UnkStruct_02008364 {
     char pad_00[0xc];
     unsigned short unk_0C;
 };
 
-int func_02008364(int a, struct UnkStruct_02008364 *b)
+void func_02008364(int a, struct UnkStruct_02008364 *b, int previous)
 {
     unsigned short val = b->unk_0C;
     func_020109fc(a, 0, val, val);
-    return func_0200eebc(a);
+    func_0200eebc(a);
 }

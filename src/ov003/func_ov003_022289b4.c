@@ -12,8 +12,8 @@ extern void *data_021c67a4;
 extern Vec3 data_021c67d0;
 
 extern int func_ov003_0222799c(void *p, Vec3 *v, int a, int b, int c);
-extern void func_ov003_02228dfc(void *a0, void *c);
-extern void func_ov003_02228d1c(void *a0);
+extern int func_ov003_02228dfc(void *a0, void *c);
+extern int func_ov003_02228d1c(void *a0);
 
 void func_ov003_022289b4(void *a0, char *b, void *c)
 {

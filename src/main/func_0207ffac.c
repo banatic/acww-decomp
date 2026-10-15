@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02080b64(void);
+extern void *func_02080b64(int);
 
-int func_0207ffac(void)
+int func_0207ffac(int argument0)
 {
-    unsigned char *p = (unsigned char *) func_02080b64();
+    unsigned char *p = (unsigned char *) func_02080b64((int) argument0);
     int shift = 0;
     if (p != 0) {
         shift = ((int) ((unsigned) (p[0] << 27) >> 27)) >> 2;

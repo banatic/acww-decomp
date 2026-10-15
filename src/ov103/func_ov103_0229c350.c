@@ -7,7 +7,7 @@ struct UnkStruct_0229c350 {
     unsigned char flags;
 };
 
-extern int func_ov103_0229c2d4(struct UnkStruct_0229c350 *self, int x);
+extern void func_ov103_0229c2d4(struct UnkStruct_0229c350 *self, int x);
 extern int func_ov103_0229cdfc(struct UnkStruct_0229c350 *self, unsigned char x);
 extern void func_ov103_0229c3a0(struct UnkStruct_0229c350 *self, int a, int b);
 

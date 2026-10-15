@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_SndPlayerWriteVariable(void *p, int a, int b, int c);
+extern int NNS_SndPlayerWriteVariable(void *handle, int index, short value);
 
-void func_020f503c(void *p, int a, int b, int c)
+void func_020f503c(void *p, short value)
 {
-    NNS_SndPlayerWriteVariable((char *) p + 8, 0, a, c);
+    NNS_SndPlayerWriteVariable((char *) p + 8, 0, value);
 }

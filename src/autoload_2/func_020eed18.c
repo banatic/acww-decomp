@@ -3,12 +3,12 @@
  */
 
 extern void OS_Terminate(void);
-extern void NNS_SndPlayerStopSeq(int, int);
+extern int NNS_SndPlayerStopSeq(int, int);
 
-void func_020eed18(int a, int b)
+int func_020eed18(int a, int b)
 {
     if (a == 0) {
         OS_Terminate();
     }
-    NNS_SndPlayerStopSeq(a, b);
+    return NNS_SndPlayerStopSeq(a, b);
 }

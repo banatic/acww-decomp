@@ -3,11 +3,11 @@
  */
 
 extern int func_ov134_02299a60(void *);
-extern int func_ov002_02208098(void *, int);
-extern int func_ov137_0229c628(void *);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
+extern void func_ov137_0229c628(void *);
 extern int func_ov137_0229c794(void *);
 extern int func_ov137_0229c750(void *);
-extern int func_ov002_0220a0b4(void *, int, int);
+extern void func_ov002_0220a0b4(void *, int, int);
 
 void func_ov137_0229cb48(void *arg0)
 {

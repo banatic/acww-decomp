@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02057a50(int);
+extern int func_02057a50(int, const char *name);
 
 typedef struct {
     char pad_00[0x22];
@@ -20,13 +20,13 @@ typedef struct {
     UnkStruct_02056658_2 *arr;
 } UnkStruct_02056658;
 
-void func_02056658(UnkStruct_02056658 *self)
+void func_02056658(UnkStruct_02056658 *self, const char *name)
 {
-    int value;
     unsigned char count;
+    int value;
     int i;
 
-    value = func_02057a50(self->unk_18);
+    value = func_02057a50(self->unk_18, name);
     if (value == -1) {
         return;
     }

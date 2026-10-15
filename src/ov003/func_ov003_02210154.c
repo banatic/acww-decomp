@@ -3,9 +3,9 @@
  */
 
 extern int func_0200e92c(char *buf);
-extern int func_0200e90c(char *buf, int size, int a, int b);
+extern void func_0200e90c(char *buf, int size, int a, int b);
 extern int func_0200e894(int a, char *buf);
-extern void func_0200e91c(char *buf);
+extern int func_0200e91c(char *buf);
 
 int func_ov003_02210154(int a, int b, int c)
 {

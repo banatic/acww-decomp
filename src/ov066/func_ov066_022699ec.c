@@ -4,7 +4,9 @@
 
 extern unsigned int data_ov066_0226bdf8;
 
-void func_ov066_022699ec(void)
+unsigned int func_ov066_022699ec(void)
 {
-    data_ov066_0226bdf8 = data_ov066_0226bdf8 * 0x5eedf715u + 0x1b0cb173u;
+    unsigned int next = data_ov066_0226bdf8 * 0x5eedf715u + 0x1b0cb173u;
+    data_ov066_0226bdf8 = next;
+    return next;
 }

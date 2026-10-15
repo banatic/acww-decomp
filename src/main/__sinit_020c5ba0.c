@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020e930c(void *, int, void *);
+extern void func_020e930c(void *, int);
 extern void __register_global_object(void *, void *, void *);
 extern struct {
     unsigned char f0;
@@ -41,7 +41,7 @@ extern struct {
     unsigned char f3;
 } data_021cfb7c;
 extern unsigned char data_021cfb80;
-extern void func_0206154c(void);
+extern void func_0206154c(void *);
 extern unsigned char data_021cfba0;
 
 void __sinit_020c5ba0(void)
@@ -70,6 +70,7 @@ void __sinit_020c5ba0(void)
     data_021cfb7c.f1 = 24;
     data_021cfb7c.f2 = 24;
     data_021cfb7c.f3 = 31;
-    func_020e930c((void *) &data_021cfb80, 1, (void *) &data_021cfb7c);
-    __register_global_object((void *) &data_021cfb80, (void *) &func_0206154c, (void *) &data_021cfba0);
+    func_020e930c((void *) &data_021cfb80, 1);
+    __register_global_object((void *) ((void *) &data_021cfb80), (((void *) func_0206154c)),
+                             (void *) ((void *) &data_021cfba0));
 }

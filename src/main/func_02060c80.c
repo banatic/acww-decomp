@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02060e28(void);
+extern int func_02060e28(void *);
 
 int func_02060c80(int param1, int param2)
 {
@@ -13,7 +13,7 @@ int func_02060c80(int param1, int param2)
     int value;
     int *ptr;
 
-    result = func_02060e28();
+    result = func_02060e28((void *) param1);
     if (result != 0) {
         ptr = (int *) (param1 + 0x15a0);
         value = *ptr;

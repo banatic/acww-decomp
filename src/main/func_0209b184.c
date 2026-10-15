@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020ad7a4(int a, int b);
+extern int func_020ad7a4(void);
 extern int func_020af950(void *p);
 extern int func_0209b218(int a, int b);
 extern int func_020644cc(int x);
@@ -13,7 +13,7 @@ int func_0209b184(int a, int b)
     int i;
     int r;
 
-    if (func_020ad7a4(a, b) == 0) {
+    if (func_020ad7a4() == 0) {
         b = (unsigned char) (b & ~3);
     } else {
         if (func_020af950(&data_021f395c) != 0) {

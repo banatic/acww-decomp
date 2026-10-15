@@ -4,7 +4,7 @@
 
 extern int func_02098c2c(void *p, int n);
 extern unsigned short *func_02098f48(void *p, int n);
-extern void func_02098f0c(void *p, unsigned short *ptr, int n, int m);
+extern int func_02098f0c(void *p, unsigned short *ptr, int n, int m);
 extern int func_0204c878(unsigned short *ptr);
 
 int func_02098adc(void *p, int n)

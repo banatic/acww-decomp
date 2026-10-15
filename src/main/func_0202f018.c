@@ -2,22 +2,22 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02082f48(void *);
+extern void *func_02082f48(void *);
 extern void func_02014898(void *);
 extern void func_02019eac(void *);
 extern void func_02013c28(void *);
-extern void func_020f5914(void *) __attribute__((target("arm")));
-extern void func_02089c70(void *);
-extern void func_02032c50(void *);
+extern void func_020f5914(void *);
+extern void *func_02089c70(void *);
+extern void *func_02032c50(void *);
 extern void func_0201a790(void *);
 extern void func_0201a7e8(void *);
 extern void func_0201ade4(void *);
 extern void func_0201b320(void *);
-extern void func_02016998(void *);
-extern void func_0201a3f8(void *);
+extern int func_02016998(void *);
+extern void *func_0201a3f8(void *);
 extern void func_0201b390(void *);
-extern void func_02054630(void *);
-extern void func_0203f080(void *);
+extern void *func_02054630(void *);
+extern void *func_0203f080(void *);
 
 typedef struct UnkStruct_0202f018 {
     void *unk_00;       // 0x00

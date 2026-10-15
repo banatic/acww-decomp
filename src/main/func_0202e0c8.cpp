@@ -32,8 +32,8 @@ class UnkStruct_0202e0c8 {
     virtual int f25();
 };
 
-extern "C" void func_0208150c(int);
-extern "C" int func_02003704(void);
+extern "C" unsigned int func_0208150c(int);
+extern "C" int func_02003704(void *);
 extern "C" int func_0207f270(int);
 extern "C" void func_0207945c(int, int);
 
@@ -42,8 +42,7 @@ extern "C" void func_0202e0c8(UnkStruct_0202e0c8 *obj, int param2)
     if (obj->f25() == 0) {
         return;
     }
-    func_0208150c(obj->f25());
-    if (func_02003704() == 0) {
+    if (func_02003704((void *) func_0208150c(obj->f25())) == 0) {
         return;
     }
     if (func_0207f270(obj->f25()) == 0) {

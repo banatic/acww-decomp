@@ -43,7 +43,7 @@ extern int func_020b65c4(void);
 extern int func_020b5e10(void);
 extern int func_020b5e84(unsigned char *p);
 extern int func_0203df10(void);
-extern void func_0203dee8(void);
+extern int func_0203dee8(void);
 extern void func_0206f5b0(void);
 extern void func_020b8df0(unsigned long i);
 extern void func_020b8e10(unsigned long i);
@@ -61,10 +61,10 @@ extern int func_02098420(unsigned long a);
 extern void *func_0209847c(unsigned long a);
 extern void *func_02099688(void *p);
 extern int func_0208829c(void *p);
-extern struct Nm *func_020882ec(void *p);
+extern struct Nm *func_020882ec(void *record);
 extern int memcmp(const void *a, const void *b, int n);
-extern void __register_global_object(struct Thr *t, void (*f)(void), int *arg);
-extern void func_020012dc(void);
+extern void __register_global_object(void *, void *, void *);
+extern void func_020012dc(void *);
 extern int func_020ec1f8(void);
 extern int func_020732c0(struct UnkStruct_020a5750 *g);
 extern void func_020732cc(struct UnkStruct_020a5750 *g, int v);
@@ -72,7 +72,7 @@ extern int func_020b6434(int a, int b, int c, int d);
 extern int func_020b63f4(int dst, unsigned char val, struct Thr *src, unsigned int extra, short p1, unsigned char p2,
                          unsigned char p3);
 extern void func_020a13c4(unsigned long a);
-extern void func_020b5ee4(int a, int b);
+extern int func_020b5ee4(int a, int b);
 extern void func_020a18e8(void);
 extern void func_020a18c4(void);
 extern void func_020a18dc(void);
@@ -216,15 +216,16 @@ void func_020a5750(struct UnkStruct_020a5750_2 *self)
             if (func_020a5bd8(self) == 0) {
                 nm = &data_021dc7aa;
                 q = func_0209847c(OSi_GetSystemErrno(self) + 3);
-                if (q != 0 && func_0208829c(func_02099688(q)) != 0 && ((r = func_020882ec(func_02099688(q))), r->h == nm->h) &&
-                    memcmp(r->rest, nm->rest, 0xc) == 0) {
+                if (q != 0 && func_0208829c(func_02099688(q)) != 0 &&
+                    ((r = func_020882ec((void *) func_02099688(q))), r->h == nm->h) && memcmp(r->rest, nm->rest, 0xc) == 0) {
                     func_020b6434(func_020b5e10(), 0x2f, 2, 2);
                 } else {
                     if ((data_021f42f8 & 1) == 0) {
                         data_021f4314.unk_00 = 0x10000;
                         data_021f4314.unk_04 = 0;
                         data_021f4314.unk_08 = 0x5000;
-                        __register_global_object(&data_021f4314, func_020012dc, &data_021f4308);
+                        __register_global_object((void *) (&data_021f4314), (((void *) func_020012dc)),
+                                                 (void *) (&data_021f4308));
                         data_021f42f8 |= 1;
                     }
                     func_020b63f4(func_020b5e10(), 0xd, &data_021f4314, 0x800000, 0, 2, 2);

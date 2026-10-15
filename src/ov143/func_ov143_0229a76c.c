@@ -11,7 +11,7 @@ extern u8 data_021fbddc;
 extern u8 data_021f6c58;
 extern u8 data_021f6c54;
 extern int func_ov143_02299ed8(void *self, int a, int b);
-extern void func_ov143_02299e18(void *self, int n);
+extern int func_ov143_02299e18(void *self, int n);
 extern int func_ov002_0220a784(void *p, int a);
 extern void func_ov143_0229a230(void *self);
 extern void func_ov143_0229a200(void *self);

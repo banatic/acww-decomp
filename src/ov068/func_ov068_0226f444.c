@@ -3,7 +3,7 @@
  */
 
 extern void func_0204f7e0(void *a, void *b);
-extern void *func_020b03f8(int param);
+extern void *func_020b03f8(void);
 
 struct UnkStruct_0226f444 {
     char pad_00[8];
@@ -33,7 +33,7 @@ int func_ov068_0226f444(struct UnkStruct_0226f444 *self)
     self->u16field |= 0x20;
     func_0204f7e0(&self->unk_388, &self->unk_5C);
     flag = (self->flag & 1);
-    p = func_020b03f8(1);
+    p = func_020b03f8();
     flag &= 1;
     arr = (struct Quad *) p;
     arr[flag].a = 0;

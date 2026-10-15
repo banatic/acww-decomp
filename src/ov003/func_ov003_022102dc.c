@@ -16,12 +16,12 @@ extern int data_020ccf94;
 extern int func_02073908(int, int);
 extern int func_0203e168(void);
 extern int func_02008258(struct UnkStruct_022102dc *, int);
-extern void func_0200d4e8(struct UnkStruct_022102dc *, int, int, int);
+extern int func_0200d4e8(struct UnkStruct_022102dc *, int, int, int);
 extern void func_020ba35c(int);
-extern void func_020109a0(struct UnkStruct_022102dc *, int, int, int);
+extern void func_020109a0(struct UnkStruct_022102dc *, int b, int c, unsigned short d);
 extern void func_0205eae0(int *, int, int, int);
 
-void func_ov003_022102dc(struct UnkStruct_022102dc *a)
+void func_ov003_022102dc(struct UnkStruct_022102dc *a, void *message, int previous)
 {
     if (func_02073908(data_020ccf94, a->unk_800) != 0 && func_0203e168() == 0) {
         a->unk_7FC = func_02008258(a, a->unk_7F0);

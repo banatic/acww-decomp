@@ -10,10 +10,10 @@ extern unsigned char data_ov120_0229c760[];
 
 extern void *data_021fbe94;
 
-extern void func_02002d14(const unsigned char *a, void *b, int c, int d, int e, int f);
-extern void func_02002c6c(const unsigned char *a, void *b, int c, int d, int e, int f);
-extern void func_02064af4(const unsigned char *a, unsigned char *b, int c);
-extern void func_02002b40(unsigned char *a, int b, int c, int d);
+extern int func_02002d14(const unsigned char *a, void *b, int c, int d, int e, int f);
+extern int func_02002c6c(const unsigned char *a, void *b, int c, int d, int e, int f);
+extern int func_02064af4(const unsigned char *a, unsigned char *b, int c);
+extern int func_02002b40(unsigned char *a, int b, int c, int d);
 extern void func_0206fdd4(unsigned char *a, int b, int c, int d, int e, int f);
 
 void func_ov120_0229ba68(unsigned char *self)

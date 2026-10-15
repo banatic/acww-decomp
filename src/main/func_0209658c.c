@@ -7,7 +7,7 @@ extern void *func_02096718(int val);
 extern int func_020966c4(int val);
 extern int func_02096518(int *a, int b, int c);
 extern int func_020966e0(int val);
-extern int func_020778f8(void);
+extern int func_020778f8(int object);
 
 struct GStruct_020ccf94 {
     char pad_00[0x68];
@@ -17,6 +17,8 @@ extern struct GStruct_020ccf94 *data_020ccf94;
 
 int func_0209658c(short *out, int p1, int p2)
 {
+    int forwarded_value;
+
     int r4 = p2;
 
     if (r4 == 4) {
@@ -42,10 +44,10 @@ int func_0209658c(short *out, int p1, int p2)
         if (local >= 0x93) {
             return 0;
         }
-        if (func_020966e0(r4) == 0) {
+        if ((forwarded_value = (int) func_020966e0(r4)) == 0) {
             return 0;
         }
-        *out = (short) func_020778f8();
+        *out = (short) func_020778f8((int) forwarded_value);
         return 1;
     }
 }

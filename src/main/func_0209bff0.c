@@ -3,10 +3,10 @@
  */
 
 extern int func_0209c38c(int b);
-extern void func_020b4a20(void *self, unsigned char *p, void *g);
+extern int func_020b4a20(void *self, unsigned char *p, void *g);
 extern char data_020e35cc;
 
-void func_0209bff0(void *self, int b)
+int func_0209bff0(void *self, int b)
 {
     int temp;
     unsigned char v;
@@ -16,5 +16,5 @@ void func_0209bff0(void *self, int b)
         temp = 7;
     }
     v = (unsigned char) temp;
-    func_020b4a20(self, &v, &data_020e35cc);
+    return func_020b4a20(self, &v, &data_020e35cc);
 }

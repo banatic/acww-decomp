@@ -9,13 +9,16 @@ struct UnkStruct_0229a09c {
     int value_e8;
 };
 extern int func_ov002_02209eec(int *ptr);
-void func_ov142_0229a09c(struct UnkStruct_0229a09c *self)
+int func_ov142_0229a09c(struct UnkStruct_0229a09c *self)
 {
     if (func_ov002_02209eec(&self->value_e8) < 0x2b) {
         self->unk_C0 = 0x15;
+        return 0x15;
     } else if (func_ov002_02209eec(&self->value_e8) > 0x93) {
         self->unk_C0 = 0x16;
+        return 0x16;
     } else {
         self->unk_C0 = 0x14;
+        return 0x14;
     }
 }

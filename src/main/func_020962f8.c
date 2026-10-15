@@ -4,9 +4,9 @@
 
 extern void func_02096408(void *arg, int index);
 extern void func_020963e4(void *arg, int index);
-extern void func_020012dc(void);
-extern void func_020012e8(void);
-extern void __cxa_vec_ctor(void *ptr, int a, int b, void *f2, void *f1);
+extern void func_020012dc(void *);
+extern void func_020012e8(void *);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 
 typedef struct {
     unsigned int v[3];
@@ -33,7 +33,7 @@ extern unsigned char data_021d5684[];
 UnkStruct_020962f8 *func_020962f8(UnkStruct_020962f8 *p)
 {
     unsigned int i;
-    __cxa_vec_ctor((char *) p + 0x34, 4, 0xc, (void *) func_020012e8, (void *) func_020012dc);
+    __cxa_vec_ctor((void *) ((char *) p + 0x34), 4, 0xc, (void (*)(void *)) func_020012e8, (void (*)(void *)) func_020012dc);
     for (i = 0; i < 4; i++) {
         func_02096408((void *) data_021d5684, i);
         func_020963e4((void *) data_021d5684, i);

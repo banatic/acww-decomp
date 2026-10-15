@@ -6,8 +6,8 @@ extern void *data_020ccf94;
 extern void func_020736bc(void *, unsigned char *, int);
 extern void func_020786d8(int *, unsigned char *, unsigned char *, unsigned char *);
 extern int func_0207cec0(void *, int);
-extern void func_0207f1c8(int);
-extern void *func_0209b5e8(void);
+extern unsigned int func_0207f1c8(int);
+extern void *func_0209b5e8(int);
 extern void *func_0209b91c(void *);
 extern int func_0209bd44(void *);
 extern void func_0209bb90(void *, int);
@@ -25,7 +25,7 @@ typedef struct {
 
 extern unsigned char data_021e5a2c[];
 
-void func_020767ac(void)
+void func_020767ac(int length, int sequence, unsigned char category, unsigned int player)
 {
     UnkStruct_020767ac local;
     void *r4;
@@ -44,9 +44,7 @@ void func_020767ac(void)
         return;
     }
 
-    func_0207f1c8(result);
-
-    r4 = func_0209b5e8();
+    r4 = func_0209b5e8((int) func_0207f1c8(result));
 
     switch (local.unk_00) {
         case 0:

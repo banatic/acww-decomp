@@ -3,7 +3,7 @@
  */
 
 extern void func_ov003_02212bec(void *p, unsigned char a, unsigned char b, int c);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
 extern void func_0204f794(int *out, int a, int b);
 extern void func_0200fa1c(void *out, void *self, void *a, void *b, int *acc);
 extern void func_0204f7e0(void *a, void *b);
@@ -36,7 +36,7 @@ typedef struct {
     unsigned char b0, b1, b2;
 } UnkStruct_02212afc;
 
-void func_ov003_02212afc(UnkStruct_02212afc_2 *self, UnkStruct_02212afc *a)
+void func_ov003_02212afc(UnkStruct_02212afc_2 *self, UnkStruct_02212afc *a, int previous)
 {
     void *q;
     int b, c, d;

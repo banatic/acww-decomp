@@ -17,7 +17,7 @@ typedef struct UnkStruct_02242228 {
     Vec3 pos;
 } UnkStruct_02242228;
 
-extern UnkStruct_02242228 *func_ov004_0223ee38(UnkStruct_02242228 *self);
+extern UnkStruct_02242228 *func_ov004_0223ee38(void);
 extern int func_020ea990(Vec3 *a, Vec3 *b);
 extern int func_0200322c(Vec3 *a, Vec3 *b);
 extern void func_ov004_02244fb8(Vec3 *d, int a);
@@ -37,7 +37,7 @@ void func_ov004_02242228(UnkStruct_02242228 *self)
     Vec3 *p, *q;
     short *n;
 
-    o = func_ov004_0223ee38(self);
+    o = func_ov004_0223ee38();
     p = &self->pos;
     q = &o->pos;
     n = &self->unk_168;

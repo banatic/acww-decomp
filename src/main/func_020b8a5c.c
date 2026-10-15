@@ -4,7 +4,7 @@
 
 extern struct UnkStruct_020b8a5c *func_0203ab20(void);
 extern int *func_02095794(int);
-extern void func_0203f844(void *, void *);
+extern int func_0203f844(void *, void *);
 extern void MTX_MultVec43(void *, void *, void *);
 extern int func_0203c53c(void *);
 extern int FX_Div(int, int);

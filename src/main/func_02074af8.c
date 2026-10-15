@@ -9,10 +9,10 @@ typedef struct UnkStruct_02074af8 {
 
 extern UnkStruct_02074af8 *data_020ccf94;
 
-extern void func_02073044(void);
-extern void func_02077afc(void);
+extern unsigned int func_02073044(void);
+extern int func_02077afc(int size, int type);
 extern void func_02077ae8(int r);
-extern void func_020ece54(int code, int a, int b, long long size, int n, void (*f1)(void), void (*f2)(int));
+extern void func_020ece54(int code, int a, int b, long long size, int n, int (*f1)(int, int), void (*f2)(int));
 
 void func_02074af8(void)
 {

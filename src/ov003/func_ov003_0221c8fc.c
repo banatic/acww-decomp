@@ -22,7 +22,7 @@ extern int func_ov009_02264cf8(UnkStruct_0221c8fc *self, int a);
 extern void func_02056478(void *p, int a, int b, int c, int d);
 extern int func_02055e00(void *p);
 extern void func_020563dc(void *p, int a);
-extern int func_ov003_0221c724(UnkStruct_0221c8fc *self);
+extern void func_ov003_0221c724(UnkStruct_0221c8fc *self);
 
 extern unsigned char data_ov003_0223c8b0;
 extern int data_021c9b1c;

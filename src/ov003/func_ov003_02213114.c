@@ -3,11 +3,11 @@
  */
 
 extern void func_ov003_022131a8(void *a, unsigned char b, unsigned char c, int d);
-extern void func_020109a0(void *a, int b, int c, int d);
+extern void func_020109a0(void *a, int b, int c, unsigned short d);
 extern void func_0205eae0(void *a, int b, int c, int d);
-extern void func_0200f328(void *a, int b);
+extern int func_0200f328(void *a, int b);
 
-void func_ov003_02213114(void *self, void *data)
+void func_ov003_02213114(void *self, void *data, int previous)
 {
     unsigned char *p = (unsigned char *) data + 0xc;
     unsigned char *dst = (unsigned char *) self + 0x7d4;

@@ -3,7 +3,7 @@
  */
 
 extern char data_020d5b3c[];
-extern void func_0208c890(void *obj, int val);
+extern void func_0208c890(void *obj);
 extern void func_0208a1f0(void *sub, void *src);
 extern void func_0208a1ec(void *sub, int val);
 extern void func_0208a144(void *sub);
@@ -21,7 +21,7 @@ void func_0208cfb0(UnkStruct_0208cfb0 *obj)
 {
     int idx;
     obj->unk_20 = 1;
-    func_0208c890(obj, 1);
+    func_0208c890(obj);
     if (obj->unk_A9) {
         idx = 0x2b;
     } else {

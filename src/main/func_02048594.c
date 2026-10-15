@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020485d4(void *dst, int src);
-extern void func_02048cb8(int a, int b, int c, int d, int e, void (*fp)(void), int g);
-extern void func_02048ee4(void);
+extern void func_020485d4(void *dst, int src, int, int);
+extern int func_02048cb8(int a, int b, int c, int d, int e, int (*predicate)(int, int, int), int g);
+extern int func_02048ee4(void *, int, int);
 
-void func_02048594(int p0, int p1)
+void func_02048594(int p0, int p1, int argument2, int argument3)
 {
     struct {
         int x;
@@ -14,11 +14,11 @@ void func_02048594(int p0, int p1)
     } s;
     int a, b;
 
-    func_020485d4(&s, p0);
+    func_020485d4(&s, p0, (int) argument2, (int) argument3);
     a = s.x;
     b = s.y;
     if (a == -1) {
         return;
     }
-    func_02048cb8(p0, p1, a + 1, b + 1, 26, func_02048ee4, 0);
+    func_02048cb8(p0, p1, a + 1, b + 1, 26, (((int (*)(int, int, int)) func_02048ee4)), 0);
 }

@@ -5,7 +5,7 @@
 extern int func_020b6660(void);
 extern int func_02073d90(int);
 extern int *func_02079350(void);
-extern void func_02079640(int);
+extern void func_02079640(void);
 extern int data_020ccf94;
 
 void func_020795f4(void)
@@ -19,7 +19,7 @@ void func_020795f4(void)
     {
         int *p = func_02079350();
         if ((unsigned) p[0x5A] > 0x4b0u) {
-            func_02079640(0x4b0);
+            func_02079640();
         }
         p = func_02079350();
         p[0x5A]++;

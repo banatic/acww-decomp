@@ -7,7 +7,7 @@ struct UnkStruct_02062f2c {
 };
 
 extern int data_020de62c;
-extern void func_020a8c38(struct UnkStruct_02062f2c *self);
+extern void *func_020a8c38(struct UnkStruct_02062f2c *self);
 extern void func_020edb3c(struct UnkStruct_02062f2c *self);
 
 struct UnkStruct_02062f2c *func_02062f2c(struct UnkStruct_02062f2c *self)

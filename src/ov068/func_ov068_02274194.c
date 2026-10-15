@@ -15,7 +15,7 @@ struct UnkStruct_02274194_2 {
     struct UnkStruct_02274194 *inner;
 };
 
-extern int func_ov068_02273980(struct UnkStruct_02274194 *);
+extern unsigned short func_ov068_02273980(void);
 
 void func_ov068_02274194(struct UnkStruct_02274194_2 *obj, int cond)
 {
@@ -24,6 +24,7 @@ void func_ov068_02274194(struct UnkStruct_02274194_2 *obj, int cond)
     } else {
         obj->inner->unk_74C = 0;
         obj->inner->unk_74B = 0;
-        obj->inner->unk_652 = (unsigned short) func_ov068_02273980(obj->inner);
+        obj->inner->unk_652 =
+            (unsigned short) ((void) *(struct UnkStruct_02274194 *volatile *) &obj->inner, func_ov068_02273980());
     }
 }

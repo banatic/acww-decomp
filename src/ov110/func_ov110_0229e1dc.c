@@ -18,9 +18,9 @@ extern u8 data_ov110_0229edd4[];
 extern u8 data_ov110_0229edec[];
 extern u8 data_ov110_0229ee04[];
 
-extern void func_02002ca4(u8 *, void *, int);
-extern void func_02002c6c(u8 *, void *, int, int, int, int);
-extern void func_02002d14(u8 *, void *, int, int, int, int);
+extern int func_02002ca4(u8 *, void *, int);
+extern int func_02002c6c(u8 *, void *, int, int, int, int);
+extern int func_02002d14(u8 *, void *, int, int, int, int);
 extern int func_0206fca4(void);
 extern void func_ov110_0229c4f8(void *, int);
 

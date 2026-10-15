@@ -3,12 +3,12 @@
  */
 
 extern int data_020ccf94;
-extern void func_0200e92c(void *p);
+extern unsigned int func_0200e92c(void *p);
 extern void func_0200e90c(void *p, int a, int b, short c);
 extern void func_ov003_022119d8(void *out, const void *in, int a, int b);
 extern int func_02073908(int a, int b);
 extern int func_0200e894(void *a, void *b);
-extern void func_0200e91c(void *p);
+extern int func_0200e91c(void *p);
 
 struct UnkStruct_022118f8 {
     int a, b, c;

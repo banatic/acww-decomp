@@ -3,10 +3,10 @@
  */
 
 extern int func_020379ac(void *p);
-extern void func_02064328(char *buf, const char *fmt, int a, int b, int c);
+extern int func_02064328(char *buf, const char *fmt, int a, int b, int c);
 extern int func_02064b2c(char *buf, void *p, int a, int b);
 extern void *func_021077e8(int c);
-extern void func_02056064(void *p, int a);
+extern int func_02056064(void *p, int a);
 extern void *func_020561cc(void *p, void *q);
 extern void func_020e9898(int c);
 

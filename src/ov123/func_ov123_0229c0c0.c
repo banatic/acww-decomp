@@ -7,7 +7,7 @@ typedef struct {
     int unk_98;
 } UnkStruct_0229c0c0;
 extern int func_ov002_02207f48(void *, int);
-extern void func_ov002_022080a0(void *, int);
+extern unsigned char *func_ov002_022080a0(void *, unsigned char value);
 extern void func_ov123_0229b65c(void *);
 extern void func_ov123_0229c044(void *);
 void func_ov123_0229c0c0(UnkStruct_0229c0c0 *self)

@@ -11,7 +11,7 @@ typedef struct {
 extern int func_02019e00(void *p);
 extern int func_02019de8(void *p);
 extern void func_0201b044(void *p, Entry12 *e);
-extern void func_02019d0c(void *p, int a, int b, int tv, int tv2, int c800, int z1, int z2, int z3, u16 halfw, int z4);
+extern int func_02019d0c(void *p, int a, int b, int tv, int tv2, int c800, int z1, int z2, int z3, u16 halfw, int z4);
 extern void func_ov053_02261524(void *self, int v);
 
 extern Entry12 data_ov053_02261814[];

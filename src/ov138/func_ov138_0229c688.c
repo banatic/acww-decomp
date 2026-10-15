@@ -4,7 +4,7 @@
 
 extern int func_ov138_0229c574(void *self, int cmd);
 extern void func_ov002_0220a05c(void *obj, int a, int b, int c, int d);
-extern void func_ov002_02208098(void *self, int cmd);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov138_0229c554(void *self, int cmd);
 
 typedef struct {
@@ -23,6 +23,6 @@ void func_ov138_0229c688(UnkStruct_0229c688 *self, int a, int b)
         func_ov002_0220a05c((char *) self + 0x98, a, b, 3, 1);
     }
     self->unk_94 = self->unk_8D;
-    func_ov002_02208098(self, 8);
+    func_ov002_02208098((void *) (self), 8);
     func_ov138_0229c554(self, 4);
 }

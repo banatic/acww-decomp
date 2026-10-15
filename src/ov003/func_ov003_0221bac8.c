@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02096174(void *self);
+extern int func_02096174(void);
 extern int func_ov009_02264c90(void *self);
 extern int func_ov009_022631b4(void *self);
 extern int func_ov009_0226321c(void *self, void *local, short *shortp);
 extern int func_020b5e10(void);
 extern int func_020b6098(int a, int b);
 extern int func_020b65c4(void);
-extern void func_020b5ea0(int a, int b, void *c, int d, int e, int f, int g);
+extern int func_020b5ea0(int a, int b, void *c, int d, int e, int f, int g);
 extern int func_020310c8(int a);
 
 typedef struct {
@@ -26,7 +26,7 @@ void func_ov003_0221bac8(void *self)
     int a, b;
     unsigned char temp;
 
-    if (func_02096174(self)) {
+    if (func_02096174()) {
         *(unsigned short *) ((char *) self + 0x2b8) += 1;
     }
 

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_0223b22c(void *);
+extern int func_ov004_0223b22c(void);
 extern int func_ov004_0223b004(int, void *, void *);
-extern void func_ov004_0220ccf8(void *, int);
+extern int func_ov004_0220ccf8(void *, int);
 extern void func_ov004_0220d4ec(void *, void *);
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
 void func_ov004_0220c774(UnkStruct_0220c774 *self)
 {
     int ret;
-    ret = func_ov004_0223b22c(self);
+    ret = func_ov004_0223b22c();
     if (ret) {
         int buffer[3];
         if (func_ov004_0223b004(ret, &self->unk_250, buffer)) {

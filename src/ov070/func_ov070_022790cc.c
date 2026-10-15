@@ -23,8 +23,8 @@ typedef struct UnkStruct_022790cc {
     UnkStruct_022790cc_2 q;
 } UnkStruct_022790cc;
 
-extern void func_02099f1c(UnkStruct_022790cc_2 *q, void (*fn)(void));
-extern void func_ov070_02279224(void);
+extern unsigned char func_02099f1c(void *flags, int (*callback)(void *));
+extern int func_ov070_02279224(void *element);
 extern void func_ov070_02279238(UnkStruct_022790cc_3 *self);
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);

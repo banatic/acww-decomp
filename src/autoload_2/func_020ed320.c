@@ -4,9 +4,9 @@
 
 extern unsigned int data_021fbf14;
 extern int data_0213e6c0;
-extern void MI_CpuCopy8(void *dst, const void *src, unsigned int size);
+extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 
-void func_020ed320(void *a, void *b, void *c, void *d)
+void func_020ed320(const void *a, int b, int c, void *d)
 {
     if (a != 0 && b != 0 && c == 0) {
         MI_CpuCopy8(a, d, data_021fbf14);

@@ -2,17 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a182c();
-extern int func_ov004_02245cf4();
+extern int func_020a182c(void);
+extern void func_ov004_02245cf4(void *self, int i);
 
-int func_ov004_02245850(char *self)
+void func_ov004_02245850(char *self)
 {
     // DECLS
     int v1;
     // ENDDECLS
-    v1 = func_020a182c(self);
+    v1 = func_020a182c();
     if (v1 != 0x0) {
-        return func_ov004_02245cf4(self, 0x6);
+        func_ov004_02245cf4(self, 0x6);
+        return;
     }
-    return v1;
+    return;
 }

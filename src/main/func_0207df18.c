@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0207df88(void *a, unsigned short *v);
+extern void func_0207df88(void *a);
 extern int func_0207deb4(void *a, unsigned short *v);
 extern int func_0207dfd4(void *a, int x);
 extern void func_020782d8(void *a, int x);
@@ -18,7 +18,7 @@ void func_0207df18(UnkStruct_0207df18 *a, unsigned short *newVal)
     int i;
     unsigned short empty;
 
-    func_0207df88(a, newVal);
+    func_0207df88(a);
     empty = 0xfff1;
     idx = func_0207deb4(a, &empty);
     if (idx != -1) {

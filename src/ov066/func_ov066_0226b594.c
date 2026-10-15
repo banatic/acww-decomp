@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void func_ov066_0226b5c4(void *p);
+extern unsigned short func_ov066_0226b5c4(void *p);
 extern void func_ov066_0226b7ac(void);
 
 struct UnkStruct_0226b594 {

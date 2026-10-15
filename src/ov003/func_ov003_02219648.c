@@ -3,7 +3,7 @@
  */
 
 extern int func_02096718(int);
-extern void func_020109a0(int, int, int, int);
+extern void func_020109a0(int, int b, int c, unsigned short d);
 
 void func_ov003_02219648(void)
 {

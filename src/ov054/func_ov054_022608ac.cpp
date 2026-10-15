@@ -11,16 +11,15 @@ typedef void (S::*PMF)();
 extern int data_ov054_022629a0[];
 extern PMF *data_ov054_02262f3c[];
 
-extern "C" void func_020160b4(S *self);
-extern "C" int func_020ab504(void);
+extern "C" int func_020160b4(S *self);
+extern "C" int func_020ab504(void *);
 
 // The result code of the caller is handed on but never read here.
 void Obj_ov054_02263004::func_ov054_022608ac(unsigned int arg)
 {
     int n;
 
-    func_020160b4(this);
-    n = func_020ab504();
+    n = func_020ab504((void *) func_020160b4(this));
 
     static PMF t0[2] = {&S::func_ov054_02260894, &S::func_ov054_02260860};
     static PMF t1[4] = {&S::func_ov054_02260894, &S::func_ov054_022607b8, &S::func_ov054_0226083c, &S::func_ov054_02260860};

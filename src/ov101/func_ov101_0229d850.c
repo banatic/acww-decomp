@@ -2,11 +2,19 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov094_0229a098(void *p);
-extern void func_ov002_0220af94(void *p);
+extern int func_ov094_0229a098(void);
+extern void func_ov002_0220af94(void);
 
 void func_ov101_0229d850(void *self)
 {
-    func_ov094_0229a098((char *) self + 0xb7c);
-    func_ov002_0220af94((char *) self + 0x2810);
+    asm {
+        ldr r0, =0xb7c
+        add r0, self, r0
+    }
+    func_ov094_0229a098();
+    asm {
+        ldr r0, =0x2810
+        add r0, self, r0
+    }
+    func_ov002_0220af94();
 }

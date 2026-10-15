@@ -10,12 +10,12 @@ typedef struct {
 } Src;
 
 extern void func_0200a694(void *out, const Src *src, u8 val);
-extern void func_0200f328(void *self, int a);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern int func_0200f328(void *self, int a);
+extern void func_020109a0(void *self, int a, int b, unsigned short c);
 extern int func_0200fbe0(void *self);
 extern void func_0205eae0(void *ptr, int a, int b, int c);
 
-void func_0200a5f8(void *selfv, u8 *param2)
+void func_0200a5f8(void *selfv, u8 *param2, int previous)
 {
     u8 *self = (u8 *) selfv;
     u8 *p;

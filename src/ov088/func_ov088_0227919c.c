@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov088_02279640(void);
-extern int func_ov088_02279784(int, int);
+extern int func_ov088_02279640(void *argument0);
+extern void func_ov088_02279784(int, int);
 
 int func_ov088_0227919c(int param)
 {
     int r4 = param;
-    if (func_ov088_02279640() != 0) {
+    if (func_ov088_02279640((void *) param) != 0) {
         func_ov088_02279784(r4, 2);
     }
     return 1;

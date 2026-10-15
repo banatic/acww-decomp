@@ -12,7 +12,7 @@ extern int func_ov002_02208054(void *, int);
 extern int func_ov002_02208b00(void *, int, int);
 extern int func_ov105_0229c340(void *, int);
 extern void func_ov002_02209114(void *, int, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_ov105_0229cbb0(void *);
 extern void RtcSendPxiCommand(int);
 

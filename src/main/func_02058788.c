@@ -31,13 +31,13 @@ extern UnkStruct_02058788_2 data_021c93cc;
 extern int data_021c93c0;
 
 extern void func_0205967c(UnkStruct_02058788_3 *self, int *p);
-extern void func_020e895c(int *dst, int a, int b);
+extern int func_020e895c(int *dst, int a, int b);
 extern void func_020ea6e0(int *v, int a);
 extern void VEC_Add(int *dst, int *a, int *b);
-extern void __register_global_object(UnkStruct_02058788_2 *a, void *cb, void *c);
+extern void __register_global_object(void *, void *, void *);
 extern int func_020b65c4(void);
 extern void func_0204f7e0(int *dst, UnkStruct_02058788_2 *v);
-extern void func_020012dc(void);
+extern void func_020012dc(void *);
 
 void func_02058788(UnkStruct_02058788_3 *self)
 {
@@ -77,7 +77,7 @@ void func_02058788(UnkStruct_02058788_3 *self)
         data_021c93cc.unk_00 = 0x10000;
         data_021c93cc.unk_04 = 0;
         data_021c93cc.unk_08 = 0x17000;
-        __register_global_object(&data_021c93cc, func_020012dc, &data_021c93c0);
+        __register_global_object((void *) (&data_021c93cc), (((void *) func_020012dc)), (void *) (&data_021c93c0));
         data_021c9354 |= 1;
     }
     v.unk_00 = 0;

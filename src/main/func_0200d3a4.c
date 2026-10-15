@@ -8,7 +8,7 @@ extern int func_0200e9a8(void *self, void *loc, s32 *x, s32 *y, s16 *v);
 extern int func_020b65c4(void);
 extern int FX_MulFunc(s32 a, s32 b);
 extern int func_0200e93c(void *self, s32 dx, s32 dy, s32 sum, s32 v, s16 *arr);
-extern void func_020113bc(s16 *p, s32 v);
+extern int func_020113bc(s16 *p, s32 v);
 extern void func_020110a0(void *self, s16 *p);
 extern void func_02011490(s32 *p, s32 val);
 

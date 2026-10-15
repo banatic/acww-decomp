@@ -10,12 +10,12 @@ struct UnkStruct_0201596c {
     unsigned char unk_AD;
 };
 
-extern int func_0201595c(struct UnkStruct_0201596c *ptr, unsigned int value);
+extern int func_0201595c(struct UnkStruct_0201596c *ptr);
 
 int func_0201596c(struct UnkStruct_0201596c *ptr, unsigned int value)
 {
     int ret = 0;
-    if (ptr->unk_64 == 0xc || func_0201595c(ptr, ptr->unk_64) == 0) {
+    if (ptr->unk_64 == 0xc || func_0201595c(ptr) == 0) {
         ptr->unk_64 = value;
         ptr->unk_AC = 0;
         ptr->unk_AD = 1;

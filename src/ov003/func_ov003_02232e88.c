@@ -15,7 +15,7 @@ extern int func_ov003_02232210(void *self);
 extern int func_ov003_02232414(void *self);
 extern void func_0204f818(int *x, int *y, int *p);
 extern int func_02031acc(int x, int y);
-extern void func_02090c2c(int a, int *p, int b, void *c);
+extern int func_02090c2c(int a, int *p, int b, void *c);
 extern void func_ov003_02230f60(void *self);
 extern int data_020e25d4;
 

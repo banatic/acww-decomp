@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02053ea4(void *ptr);
+extern int func_02053ea4(void *ptr);
 
 extern unsigned char data_021c8c48[];
 

@@ -18,7 +18,7 @@ extern int func_0204f5e0(int, int, int, int, int, int);
 extern int func_02045cec(int *, int);
 extern void func_ov003_02222d68(UnkStruct_022230a0 *, int);
 extern void func_02045ea8(int *, int, int);
-extern void func_020044c0(char *, int, int, int);
+extern int func_020044c0(char *, int, int, int);
 
 void func_ov003_022230a0(UnkStruct_022230a0 *s, int flag)
 {

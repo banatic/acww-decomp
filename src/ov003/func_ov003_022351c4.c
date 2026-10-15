@@ -5,8 +5,8 @@
 typedef struct {
     int x, y, z;
 } Vec3;
-extern void *func_0200322c(void *a);
-extern void func_020e8870(short *a, void *b, int c);
+extern void *func_0200322c(void *a, void *argument1);
+extern int func_020e8870(short *a, void *b, int c);
 extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *c);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *c);
 extern void func_ov003_022321b8(Vec3 *dst, const Vec3 *src, int t);
@@ -20,7 +20,7 @@ void func_ov003_022351c4(char *self, const Vec3 *v, int t)
     d.y = v->y;
     d.z = v->z;
     o = self + 0x204;
-    func_020e8870(&a, func_0200322c(o), t);
+    func_020e8870(&a, func_0200322c(o, (void *) v), t);
     *(short *) (self + 0x23a) = a;
     VEC_Subtract(&d, (Vec3 *) o, &d);
     func_ov003_022321b8(&d, &d, 1);

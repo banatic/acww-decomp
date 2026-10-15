@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02033cec(int param);
+extern void func_02033cec(int param, void *, int, int);
 
-int func_02034270(int param)
+int func_02034270(int param, void *argument1, int argument2, int argument3)
 {
-    func_02033cec(param);
+    func_02033cec(param, (void *) argument1, (int) argument2, (int) argument3);
     return param;
 }

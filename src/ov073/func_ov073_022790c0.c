@@ -20,7 +20,7 @@ extern int data_021cb5a0;
 extern int data_021fbee8[3];
 
 extern int func_ov073_022794f8(UnkStruct_022790c0 *self);
-extern void func_020e8858(unsigned char *p);
+extern unsigned char func_020e8858(unsigned char *p);
 extern int func_ov073_02279308(UnkStruct_022790c0 *self);
 extern int func_02019de8(void *p);
 extern int func_0201b354(void *p);
@@ -30,7 +30,7 @@ extern int func_0200322c(void *p, int *v);
 extern int func_0201c3dc(int a);
 extern int func_020644cc(int a);
 extern int func_02019e00(void *p);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern void func_ov073_02279608(UnkStruct_022790c0 *self, int a);
 extern int *func_0201afd0(void *p);
 

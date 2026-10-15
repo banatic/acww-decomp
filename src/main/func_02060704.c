@@ -12,11 +12,12 @@ typedef struct {
 } UnkStruct_02060704;
 
 extern void func_02055b40(void *ptr);
-extern void func_020e9b9c(void);
+extern void func_020e9b9c(void *);
 extern int data_021c9ac8;
 
 void func_02060704(UnkStruct_02060704 *p)
 {
+    void *condition_value0;
     int i;
 
     for (i = 0; i < 9; i++) {
@@ -28,7 +29,7 @@ void func_02060704(UnkStruct_02060704 *p)
         p->arr1[i] = 0;
     }
 
-    if (data_021c9ac8) {
-        func_020e9b9c();
+    if ((condition_value0 = (void *) (data_021c9ac8))) {
+        func_020e9b9c(condition_value0);
     }
 }

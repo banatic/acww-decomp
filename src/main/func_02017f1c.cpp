@@ -45,7 +45,7 @@ extern int func_020164a0(void *p, int x);
 extern int func_020164cc(void *p, void *q);
 extern void func_02016764(void *a, void *b, int c, unsigned short d, int e, int f, int g, int h);
 extern void func_02012444(int a, unsigned short b, int c);
-extern void func_020912d4(int a, void *b, void *c, int d);
+extern int func_020912d4(int a, void *b, void *c, int d);
 extern volatile unsigned short data_020c80f8;
 
 int func_02017f1c(int unused, UnkStruct_02017f1c *arg1, void *arg2, int check, unsigned char flag)

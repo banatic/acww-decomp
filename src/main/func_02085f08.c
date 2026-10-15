@@ -8,8 +8,8 @@ extern struct DataCCF94 {
     int unk_64;
 } *data_020ccf94;
 extern int func_02073dd4(struct DataCCF94 *, int);
-extern void func_020b65c4(void);
-extern int func_020b5dec(void);
+extern unsigned char func_020b65c4(void);
+extern int func_020b5dec(unsigned int);
 
 int func_02085f08(void)
 {
@@ -21,6 +21,5 @@ int func_02085f08(void)
             return 0;
         }
     }
-    func_020b65c4();
-    return func_020b5dec();
+    return func_020b5dec((unsigned int) func_020b65c4());
 }

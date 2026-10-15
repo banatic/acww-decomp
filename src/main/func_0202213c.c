@@ -4,19 +4,19 @@
 
 #include "types.h"
 
-extern void func_02137550(void *, int);
+extern char *func_02137550(void *, int);
 extern u32 func_0208150c(u32);
 extern u32 func_0207cc94(void *, u32 *, int);
 extern u32 func_0207cf14(void *, u32);
 extern s8 func_020036c0(u32);
-extern void func_02094fd4(void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fd4(void *);
+extern void *func_02094fbc(void *);
 extern void func_020a8c1c(void *);
-extern void func_02003618(u32, void *);
+extern int func_02003618(u32, void *);
 extern void func_02068404(u32, int, void *);
 extern int func_0207bb84(void *, u32, u32);
 extern u32 func_020036e8(u32);
-extern void func_0202da38(void *, void *, void *, int, int, int, int, int, int);
+extern int func_0202da38(void *, void *, void *, int, int, int, int, int, int);
 
 typedef struct UnkStruct_0202213c {
     u32 x, y;

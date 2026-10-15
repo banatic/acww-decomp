@@ -10,7 +10,7 @@ typedef struct {
 extern int func_020ea990(void *a, void *b);
 extern void func_0201b458(Vec3 *out, void *s, void *b);
 extern int func_0200322c(void *a, void *b);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern u16 data_020c80f8;
 
 int func_ov004_02221138(char *s)

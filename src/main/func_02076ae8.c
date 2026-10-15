@@ -4,11 +4,11 @@
 
 extern void *data_020ccf94;
 extern void func_020736bc(void *src, char *dst, int len);
-extern int func_02044e28(char *src, int param);
+extern void func_02044e28(char *src, int param);
 
-int func_02076ae8(int a, int b, int c)
+void func_02076ae8(int a, int b, int c, unsigned int player)
 {
     char buffer[16];
     func_020736bc(data_020ccf94, buffer, 14);
-    return func_02044e28(buffer, c);
+    func_02044e28(buffer, c);
 }

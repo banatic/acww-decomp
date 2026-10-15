@@ -22,10 +22,10 @@ extern int func_ov053_02260488(UnkStruct_022612a4 *self);
 extern void func_ov053_02260bb0(void *p, int a);
 extern int func_020960f8(int a, int b);
 extern int func_ov004_0222c070(int a);
-extern void func_0203e020(UnkStruct_022612a4 *self);
+extern int func_0203e020(UnkStruct_022612a4 *self);
 extern void *func_020b5e10(void);
-extern void func_020b6098(void *h, int a);
-extern void func_0203b144(void);
+extern int func_020b6098(void *h, int a);
+extern int func_0203b144(void);
 
 int func_ov053_022612a4(UnkStruct_022612a4 *self)
 {

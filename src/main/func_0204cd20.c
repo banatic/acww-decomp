@@ -8,8 +8,8 @@ extern unsigned short data_020cb758[];
 
 extern void *func_0204e414(void);
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
-extern void func_0204f538(void *ctx, unsigned short *h, int x, int z, int m);
-extern void func_0204f31c(void *ctx, int x, int z);
+extern int func_0204f538(void *ctx, unsigned short *h, int x, int z, int m);
+extern int func_0204f31c(void *ctx, int x, int z);
 
 struct Vec2 {
     int x;

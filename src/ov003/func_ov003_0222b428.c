@@ -48,7 +48,7 @@ extern int func_ov003_0222793c(int a, int b);
 extern int func_ov003_0222791c(int a, int b);
 extern void func_02060480(UnkStruct_0222b428_2 *h);
 extern int func_ov003_0222a398(UnkStruct_0222b428_4 *s);
-extern void func_ov003_0222a784(UnkStruct_0222b428_4 *s);
+extern int func_ov003_0222a784(UnkStruct_0222b428_4 *s);
 
 int func_ov003_0222b428(UnkStruct_0222b428_4 *self)
 {

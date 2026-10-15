@@ -34,10 +34,10 @@ struct UnkStruct_02218fb4 {
     virtual int v28(int, int);
 };
 extern "C" {
-extern void func_0205265c(void *, int, int, int);
+extern int func_0205265c(void *, int, int, int);
 extern int func_ov004_0220d2a8(void *);
 extern int func_ov004_0220e5c8(void *);
-extern void func_ov004_022107d4(void *);
+extern int func_ov004_022107d4(void *);
 }
 
 extern "C" void func_ov004_02218fb4(char *self)

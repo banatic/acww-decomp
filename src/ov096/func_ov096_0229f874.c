@@ -10,8 +10,8 @@ typedef struct {
 } Ov096Struct;
 
 extern volatile unsigned char data_021f43ec;
-extern void func_ov002_0220b9b8(void *, unsigned char *, unsigned int, int);
-extern void func_ov002_02208098(void *, unsigned int);
+extern int func_ov002_0220b9b8(void *, unsigned char *, unsigned int, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_0208e5c4(void *);
 
 void func_ov096_0229f874(Ov096Struct *self, int a, int b, unsigned int size)
@@ -28,6 +28,6 @@ void func_ov096_0229f874(Ov096Struct *self, int a, int b, unsigned int size)
     data = a;
 
     func_ov002_0220b9b8((char *) self + 0x2958, (unsigned char *) &data, size, 0);
-    func_ov002_02208098(self, 0x20);
+    func_ov002_02208098((void *) (self), 0x20);
     func_0208e5c4((char *) self + 0x2500);
 }

@@ -4,7 +4,7 @@
 
 extern unsigned short data_ov123_0229cbac[];
 extern int _s32_div_f(int a, int b);
-extern void func_ov123_0229adc8(void *dst, unsigned char x, unsigned char y, int col);
+extern int func_ov123_0229adc8(void *dst, unsigned char x, unsigned char y, int col);
 
 void func_ov123_0229a9b0(void *dst, int l, int t, int r, unsigned char b, int col, int mode)
 {

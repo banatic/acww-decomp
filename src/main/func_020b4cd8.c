@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int strcmp(int a, void *b, void *c);
+extern int strcmp(int a, void *b);
 
 typedef struct {
     char pad_00[0x24];
@@ -13,5 +13,5 @@ int func_020b4cd8(func_020b4cd8_param *param)
 {
     void *q = *(void **) ((char *) param->unk_24 + 0x18f0);
     int r = (*(int (**)(void *))((char *) *(void **) q + 0xc))(q);
-    return strcmp(r, (char *) param->unk_24 + 0xafc, param->unk_24) != 0;
+    return strcmp(r, (char *) param->unk_24 + 0xafc) != 0;
 }

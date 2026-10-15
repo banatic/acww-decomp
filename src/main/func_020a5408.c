@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_01ffd3e4(void);
+extern void func_01ffd3e4(void *object);
 
-void func_020a5408(void)
+void func_020a5408(void *object, int status)
 {
-    func_01ffd3e4();
+    func_01ffd3e4(object);
 }

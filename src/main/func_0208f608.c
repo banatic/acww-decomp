@@ -3,7 +3,7 @@
  */
 
 extern int data_020e2388;
-extern void func_020a8c38(void *);
+extern void *func_020a8c38(void *);
 extern void *func_020edb3c(void *) __attribute__((arm));
 
 void *func_0208f608(void *obj)

@@ -39,19 +39,19 @@ typedef struct UnkStruct_02278ba4_2 {
 extern int data_021f3278;
 extern int data_ov074_02279d14;
 
-extern void func_020160b4(void);
-extern int func_020ab504(void);
-extern void func_02088220(int *p);
-extern Rec *func_02072d4c(void);
+extern int func_020160b4(void *argument0);
+extern int func_020ab504(void *argument0);
+extern void *func_02088220(void *record);
+extern Rec *func_02072d4c(void *record);
 extern Hdr *func_02072ee8(Rec *r);
 extern int func_020951bc(Hdr *h);
-extern void func_020984e8(void);
-extern Hdr *func_02099870(void);
+extern int func_020984e8(void);
+extern Hdr *func_02099870(int argument0);
 extern int memcmp(const void *a, const void *b, unsigned long n);
 extern int func_0209518c(Hdr *h, Hdr *q);
 extern void func_0206844c(int a, unsigned char *p, int *t);
-extern void func_0209526c(Hdr *h);
-extern void func_02072fac(Rec *r);
+extern int func_0209526c(Hdr *h);
+extern int func_02072fac(Rec *r);
 
 void func_ov074_02278ba4(UnkStruct_02278ba4_2 *self)
 {
@@ -65,10 +65,8 @@ void func_ov074_02278ba4(UnkStruct_02278ba4_2 *self)
     int *tail;
     int status;
 
-    func_020160b4();
-    ok = func_020ab504();
-    func_02088220(&data_021f3278);
-    r = func_02072d4c();
+    ok = func_020ab504((void *) func_020160b4(self));
+    r = func_02072d4c(func_02088220(&data_021f3278));
     a.a = r->a;
     a.b = r->b;
     a.c = r->c;
@@ -90,8 +88,8 @@ void func_ov074_02278ba4(UnkStruct_02278ba4_2 *self)
         case 3:
             if (ok == 0) {
                 if (func_020951bc(&b) != 0) {
-                    func_020984e8();
-                    q = func_02099870();
+
+                    q = func_02099870((int) func_020984e8());
                     if (b.a == q->a) {
                         if (memcmp(&b.b, &q->b, 0xc) == 0) {
                             if (func_0209518c(&b, q) != 0) {
@@ -104,8 +102,8 @@ void func_ov074_02278ba4(UnkStruct_02278ba4_2 *self)
                 status = 9;
             } else {
                 if (func_020951bc(&b) != 0) {
-                    func_020984e8();
-                    q = func_02099870();
+
+                    q = func_02099870((int) func_020984e8());
                     if (b.a == q->a) {
                         if (memcmp(&b.b, &q->b, 0xc) == 0) {
                             if (func_0209518c(&b, q) != 0) {

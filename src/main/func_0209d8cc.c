@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d970(int, int);
+extern void func_0209d970(int, int);
 
-int func_0209d8cc(int a, unsigned int b, int c)
+void func_0209d8cc(int a, unsigned int b, int c)
 {
     if (b >= 0x33) {
-        return a;
+        return;
     }
-    return func_0209d970(a + b, c);
+    func_0209d970(a + b, c);
 }

@@ -9,7 +9,7 @@ extern u8 data_021f6c54;
 
 extern void func_ov126_022a0854(void *self, int arg);
 extern void func_ov126_022a06b4(void *self);
-extern void func_ov002_02208098(void *self, int v);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov095_0229b3ec(void *p);
 extern void func_ov126_022a0168(void *self);
 
@@ -29,7 +29,7 @@ int func_ov126_022a07e8(void *obj)
     }
     func_ov126_022a0854(obj, v);
     func_ov126_022a06b4(obj);
-    func_ov002_02208098(obj, 1);
+    func_ov002_02208098((void *) (obj), 1);
     func_ov095_0229b3ec((char *) obj + 0x19c);
     func_ov126_022a0168(obj);
     return 1;

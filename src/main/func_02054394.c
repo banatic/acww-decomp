@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_01ffcc10(void);
+extern int func_01ffcc10(void *, void *);
 extern int func_02054548(void *, int);
 extern int func_020549fc(void *, int);
 extern void func_02054430(void *, void *);
@@ -15,7 +15,7 @@ void func_02054394(void *a0, void *a1)
     unsigned char c;
     unsigned int shifted;
 
-    if (func_01ffcc10()) {
+    if (func_01ffcc10(a0, a1)) {
         return;
     }
 

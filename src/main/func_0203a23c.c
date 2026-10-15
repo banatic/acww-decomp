@@ -4,8 +4,8 @@
 
 extern void func_0208af30(void *);
 extern void func_0208a1f8(void *);
-extern void func_0203a404(void *);
-extern void func_0203a344(void *);
+extern void *func_0203a404(void *);
+extern void *func_0203a344(void *);
 
 extern unsigned char data_020da658[];
 

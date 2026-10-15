@@ -4,8 +4,8 @@
 
 extern int data_ov003_0223c0d4;
 void func_0209d34c(void *p);
-void func_0209d11c(void *p);
-void func_02055210(void *p);
+void *func_0209d11c(void *p);
+void *func_02055210(void *p);
 void func_020565ec(void *p);
 void func_0209d0a4(void *p);
 

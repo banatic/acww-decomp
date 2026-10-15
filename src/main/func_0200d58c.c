@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200d900(int a, int b);
+extern int func_0200d900(int a);
 extern void func_0200d5ac(int a, int *b);
 
 void func_0200d58c(int a)
 {
     int x = 0;
-    x = func_0200d900(a, 0);
+    x = func_0200d900(a);
     func_0200d5ac(a, &x);
 }

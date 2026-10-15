@@ -15,11 +15,11 @@ struct Msg {
     u8 pad_0E[0x1c - 0xe];
 };
 
-extern void func_0200e92c(struct Msg *m);
+extern unsigned int func_0200e92c(struct Msg *m);
 extern void func_0200e90c(struct Msg *m, int kind, int arg, short v);
 extern void func_ov004_0222b270(struct Pair *p, int a, int b, int c, int d, int e);
 extern int func_0200e894(void *self, struct Msg *m);
-extern void func_0200e91c(struct Msg *m);
+extern int func_0200e91c(struct Msg *m);
 
 int func_ov004_0222b214(void *self, int a, int b, int c, u8 e, int f, short g)
 {

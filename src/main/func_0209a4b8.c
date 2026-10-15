@@ -21,7 +21,7 @@ typedef struct UnkStruct_0209a4b8_2 {
 } UnkStruct_0209a4b8_2;
 
 extern int func_0209a654(void *self);
-extern void *MI_CpuFill8(void *d, int c, int n);
+extern void MI_CpuFill8(void *d, int c, int n);
 extern int func_020951bc(UnkStruct_0209a4b8 *e);
 extern int memcmp(const void *a, const void *b, int n);
 extern int func_0209518c(UnkStruct_0209a4b8 *a, UnkStruct_0209a4b8 *b);

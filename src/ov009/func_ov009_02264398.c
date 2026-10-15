@@ -16,7 +16,7 @@ typedef struct UnkStruct_02264398 {
     u8 count;
 } UnkStruct_02264398;
 
-extern void func_02032658(void *);
+extern int func_02032658(void *);
 
 void func_ov009_02264398(UnkStruct_02264398 *self)
 {

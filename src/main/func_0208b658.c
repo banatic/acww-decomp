@@ -12,7 +12,7 @@ struct UnkStruct_0208b658 {
 
 extern int func_0206fd04(void);
 extern int func_02039860(void);
-extern void func_020e8bb0(void *a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
+extern int func_020e8bb0(void *a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
 extern void func_0208b648(struct UnkStruct_0208b658 *s);
 
 void func_0208b658(struct UnkStruct_0208b658 *self)

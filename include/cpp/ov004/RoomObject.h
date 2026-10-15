@@ -29,7 +29,7 @@ struct RoomObject : public Base_0203f080, public Base_02066994 {
     virtual void vfunc_64();
     virtual void vfunc_68();
     virtual void vfunc_6c();
-    virtual void vfunc_70(int a, int b);
+    virtual int vfunc_70(int a, int b);
 
     // update entry: runs the state handler dispatch below, then returns 1
     int func_ov004_02210abc();

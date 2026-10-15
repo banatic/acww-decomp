@@ -6,10 +6,10 @@ extern void *func_020984e8(void);
 extern void *func_02099734(void *);
 extern void func_02098a24(void *, int, int);
 extern int func_02098eb8(void *);
-extern void func_02098f0c(void *, void *, int, int);
+extern int func_02098f0c(void *, void *, int, int);
 extern void *func_020996ac(void *);
-extern void OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
-extern void func_020154b4(void *, void *, int, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
+extern int func_020154b4(void *, void *, int, int, int);
 
 void func_02026a1c(void *obj)
 {

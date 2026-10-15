@@ -18,14 +18,14 @@ extern void func_020109fc(void *p, int a, int b, int c);
 extern int func_0200faf0(void *p, int x);
 extern void func_02035a70(void *p);
 extern void func_0200f3e8(void *p);
-extern void func_0203e110(void);
+extern int func_0203e110(void);
 extern int func_02008258(void *p, int v);
 extern void func_020110c4(void *buf, void *p);
 extern int func_0204bcdc(void *buf);
 extern int func_0204bc64(void *p);
-extern void func_ov003_02217c5c(void *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_0200d4e8(void *p, int a, int b, int c);
-extern void func_0200f27c(void *p, int a);
+extern int func_ov003_02217c5c(void *p, int a, int b, int c, int d, int e, int f, int g);
+extern int func_0200d4e8(void *p, int a, int b, int c);
+extern unsigned int *func_0200f27c(void *p, int a);
 
 void func_ov003_0220ee20(void *self)
 {

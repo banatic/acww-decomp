@@ -10,11 +10,23 @@ typedef struct {
 } UnkStruct_0222050c;
 #define W(p, o) (*(int *) ((p) + (o)))
 #define P(p, o) (*(u8 **) ((p) + (o)))
-extern void *func_020160b4(void *), *func_0208150c(void *), *func_020984e8(void), *func_02099734(void *);
-extern int func_020ab504(void *), func_0200366c(void *, void *, int, void *), func_02015828(void *, int), func_020644cc(int),
-    func_0201b3c0(void *, int, int), func_0204c120(int, int, void *), func_02098a6c(void *, int, int, int);
-extern void func_020157c8(void *, int, int), func_ov004_02220c34(void *, int), func_ov004_022206c0(void *),
-    func_0201b3a4(void *, int), func_ov004_022209b4(void *), func_0206844c(void *, u8 *, void *);
+extern void *func_020160b4(void *);
+extern void *func_0208150c(void *);
+extern void *func_020984e8(void);
+extern void *func_02099734(void *);
+extern int func_020ab504(void *);
+extern int func_0200366c(void *, void *, int, void *);
+extern int func_02015828(void *, int);
+extern int func_020644cc(int);
+extern int func_0201b3c0(void *, int, int);
+extern int func_0204c120(int, int, void *);
+extern int func_02098a6c(void *, int, int, int);
+extern void func_020157c8(void *, int, int);
+extern void func_ov004_02220c34(void *, int);
+extern int func_ov004_022206c0(void *);
+extern void func_0201b3a4(void *, int);
+extern void func_ov004_022209b4(void *);
+extern void func_0206844c(void *, u8 *, void *);
 extern int func_020154b4(void *, u16 *, int, int, int);
 extern u8 data_ov004_02257e18[], data_ov004_02253ed0[];
 void func_ov004_0222050c(u8 *self)

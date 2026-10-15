@@ -14,16 +14,19 @@ extern void func_ov096_0229c434(struct UnkStruct_0229fdb0 *self);
 extern u16 func_ov096_0229f0dc(struct UnkStruct_0229fdb0 *self, u8 b);
 extern int func_02095aec(u16 *p);
 extern void func_ov096_0229f5ac(struct UnkStruct_0229fdb0 *self, u8 b);
-extern void func_ov002_02208098(struct UnkStruct_0229fdb0 *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
-void func_ov096_0229fdb0(struct UnkStruct_0229fdb0 *self)
+unsigned char *func_ov096_0229fdb0(struct UnkStruct_0229fdb0 *self)
 {
     u16 temp;
+    int result;
     RtcSendPxiCommand(0x40);
     func_ov096_0229c434(self);
     temp = func_ov096_0229f0dc(self, self->unk_B6);
-    if (func_02095aec(&temp) != 0) {
+    result = func_02095aec(&temp);
+    if (result != 0) {
         func_ov096_0229f5ac(self, self->unk_B6);
-        func_ov002_02208098(self, 0x2f);
+        return func_ov002_02208098((void *) (self), 0x2f);
     }
+    return (unsigned char *) result;
 }

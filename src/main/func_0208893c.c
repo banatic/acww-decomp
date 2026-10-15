@@ -9,7 +9,7 @@ extern void func_02066694(void *);
 extern int func_020984e8(void);
 extern int func_02099870(int);
 extern void func_02066024(void *, unsigned char *, void *, void *, void *, int);
-extern void func_02065ed0(void *, unsigned int, int);
+extern unsigned short func_02065ed0(void *, unsigned int, int);
 extern int func_020979f0(void *, int);
 extern void func_02066688(void *);
 

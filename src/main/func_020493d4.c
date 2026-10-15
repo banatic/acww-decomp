@@ -4,7 +4,7 @@
 
 extern int func_0204f5e0(int, int, int, int, int, int);
 extern int func_0204ba94(int);
-extern int func_0204a198(int, int, int, int);
+extern void func_0204a198(int, int, int, int);
 extern unsigned char data_020cacc0[];
 
 typedef struct {

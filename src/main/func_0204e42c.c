@@ -16,9 +16,9 @@ typedef struct {
 
 extern int data_021c9ab0;
 extern void func_020e9b9c(int);
-extern void func_02030ddc(int, int, int, int);
+extern int func_02030ddc(int, int, int, int);
 extern int func_02037e84(Elem *);
-extern void func_0203750c(int);
+extern int func_0203750c(void);
 extern int func_020377d8(int, int);
 extern void func_02037ecc(Elem *, int, int, int);
 
@@ -51,7 +51,7 @@ void func_0204e42c(UnkStruct_0204e42c *self)
             if (ptr != 0) {
                 a = func_02037e84(ptr);
                 gv = data_021c9ab0;
-                func_0203750c(gv);
+                func_0203750c();
                 b = func_020377d8(a, gv);
                 func_02037ecc(ptr, arg, b, self->unk_1C);
             }

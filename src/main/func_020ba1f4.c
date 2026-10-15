@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02064328(void *dst, void *src, int n);
+extern int func_02064328(void *dst, void *src, int n);
 extern int func_02064af4(void *dst, void *self, int mode);
-extern void func_020051b0(void);
-extern void __register_global_object(void *a, void *b, void *c);
+extern void func_020051b0(void *);
+extern void __register_global_object(void *, void *, void *);
 extern unsigned short data_021f6ca8;
 extern unsigned int data_021f6cac;
 extern unsigned int data_021f6cb0;
@@ -38,7 +38,7 @@ int func_020ba1f4(int a, unsigned short *b)
     } else {
         if ((data_021f6cac & 1) == 0) {
             data_021f6ca8 = 0x1100;
-            __register_global_object(&data_021f6ca8, func_020051b0, &data_021f6cb0);
+            __register_global_object((void *) (&data_021f6ca8), (((void *) func_020051b0)), (void *) (&data_021f6cb0));
             data_021f6cac |= 1;
         }
         return func_020ba1f4(a, &data_021f6ca8);

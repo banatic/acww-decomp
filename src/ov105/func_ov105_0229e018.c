@@ -3,10 +3,10 @@
  */
 
 extern int func_ov002_02209f9c(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_ov094_022999d8(void);
 extern void func_ov105_0229d17c(void *);
-extern void func_ov105_0229d650(void *);
+extern int func_ov105_0229d650(void *, int arg1);
 extern void func_ov105_0229d230(void *);
 extern void func_ov105_0229d870(void *, int, int);
 
@@ -16,7 +16,7 @@ void func_ov105_0229e018(unsigned char *p)
         unsigned char bc = p[0x2bc];
         unsigned char ba = p[0x2ba];
         if (ba == bc) {
-            func_ov105_0229d650(p);
+            func_ov105_0229d650(p, bc);
             func_ov105_0229d230(p);
             func_ov002_02208098(p, 7);
             func_ov094_022999d8();

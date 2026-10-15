@@ -9,16 +9,16 @@ struct Vec {
 };
 struct Collider;
 extern "C" {
-void func_020324fc(Collider *);
-void func_020324c4(Collider *);
+void *func_020324fc(Collider *);
+void *func_020324c4(Collider *);
 int FX_Div(int, int);
 int FX_MulFunc(int, int);
 int func_020b6804(void);
 int func_020321bc(Collider *, int, int, int, Vec *, short, Vec *);
-void func_ov004_0223d63c(char *);
+int func_ov004_0223d63c(char *);
 void func_02003244(void *, void *);
 void func_02031288(void *, Vec *, Vec *, int, int, void *, int);
-void func_02032180(Collider *);
+int func_02032180(Collider *);
 }
 struct Collider {
     int storage[39];

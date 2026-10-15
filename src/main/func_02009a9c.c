@@ -8,10 +8,16 @@ typedef struct {
     int c;
     int d;
 } UnkStruct_02009a9c;
-void func_02009a9c(UnkStruct_02009a9c *out, UnkStruct_02009a9c v)
+typedef struct Triple_02009a9c {
+    int a;
+    int b;
+    int c;
+} Triple_02009a9c;
+
+void func_02009a9c(UnkStruct_02009a9c *out, Triple_02009a9c v, int arg)
 {
     out->a = v.a;
     out->b = v.b;
     out->c = v.c;
-    out->d = v.d;
+    out->d = arg;
 }

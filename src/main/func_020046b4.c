@@ -2,10 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f2378(void *arg);
+extern int func_020f2378(void);
 extern char data_021fd1bc;
 
 void func_020046b4(void)
 {
-    func_020f2378(&data_021fd1bc);
+    asm { ldr r0, =data_021fd1bc }
+    func_020f2378();
 }

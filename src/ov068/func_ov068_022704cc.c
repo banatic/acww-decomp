@@ -7,7 +7,7 @@ extern int NNS_G3dMdlGetMdlAlpha(void *m, int i);
 extern void func_ov003_022353a4(void *self, int a, int b);
 extern int func_0200322c(void *a, void *b);
 extern int func_020ea990(void *a, void *b);
-extern void func_020e8870(short *v, int ang, int k);
+extern int func_020e8870(short *v, int ang, int k);
 extern void func_02056fcc(void *p, int a, int b, int c, int d);
 
 int func_ov068_022704cc(char *self, int mode, void *arg)

@@ -69,8 +69,8 @@ struct UnkStruct_02279a78 {
 extern "C" void func_ov071_02279d04(UnkStruct_02279a78 *, int);
 extern "C" int func_02019de8(u8 *);
 extern "C" int func_ov071_02279b2c(UnkStruct_02279a78 *, int);
-extern "C" void func_02019c20(u8 *, int, int, int, int, int);
-extern "C" void func_02019d0c(u8 *, int, int, int, int, int, int, int, int, int, int);
+extern "C" int func_02019c20(u8 *, int, int, int, int, int);
+extern "C" int func_02019d0c(u8 *, int, int, int, int, int, int, int, int, int, int);
 extern u16 data_020c80f8;
 
 extern "C" void func_ov071_02279a78(UnkStruct_02279a78 *self)

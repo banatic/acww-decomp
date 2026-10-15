@@ -23,11 +23,11 @@ typedef struct UnkStruct_02214644 {
     int unk_6FC;
 } UnkStruct_02214644;
 
-extern void func_0200e92c(UnkStruct_02214644_2 *local);
+extern unsigned int func_0200e92c(UnkStruct_02214644_2 *local);
 extern void func_0200e90c(UnkStruct_02214644_2 *local, int x, int y, int z);
 extern int func_020e8ed8(int a, int b);
 extern int func_0200e894(UnkStruct_02214644 *s, UnkStruct_02214644_2 *local);
-extern void func_0200e91c(UnkStruct_02214644_2 *local);
+extern int func_0200e91c(UnkStruct_02214644_2 *local);
 
 int func_ov003_02214644(UnkStruct_02214644 *s, int a, int b)
 {

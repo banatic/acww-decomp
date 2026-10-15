@@ -12,8 +12,8 @@ typedef struct MainObj {
     UnkStruct_02278a28 sub;
 } MainObj;
 
-extern "C" void func_ov070_022796c0(UnkStruct_02278a28 *);
-extern "C" void func_0202ee5c(MainObj *);
+extern "C" void *func_ov070_022796c0(UnkStruct_02278a28 *);
+extern "C" void *func_0202ee5c(MainObj *);
 extern "C" void __attribute__((arm)) func_020edf54(MainObj *);
 extern int data_ov070_02279e4c;
 

@@ -5,8 +5,8 @@
 
 #include "cpp/ov125/Obj_ov125_022a0ab8.h"
 
-extern "C" int func_ov125_022a04c8(int arg);
-extern "C" int func_ov125_022a04c0(int arg);
+extern "C" void func_ov125_022a04c8(int arg);
+extern "C" void func_ov125_022a04c0(int arg);
 
 int Obj_ov125_022a0ab8::func_ov125_022a06f8()
 {

@@ -17,7 +17,7 @@ extern int func_0201b43c(char *a, int b);
 extern void func_0201b420(char *a, int b);
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
-extern void func_020ad944(u16 *p);
+extern int func_020ad944(u16 *p);
 
 void func_ov050_022613d8(UnkStruct_022613d8 *self, int mode)
 {

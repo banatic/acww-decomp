@@ -8,14 +8,14 @@ extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
 extern int func_ov002_02208e28(const char *);
-extern int func_0206f56c(int);
+extern int func_0206f56c(void);
 extern int func_ov002_02208054(const void *, int);
 extern int func_ov002_02208b00(const char *, unsigned char, unsigned char);
 extern int func_ov106_0229c364(const void *, int);
 extern void func_ov106_0229c868(const void *);
 extern void RtcSendPxiCommand(int);
 extern void func_ov002_02209114(const char *, int, int);
-extern void func_ov002_02208098(const void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct UnkStruct_0229e430 {
     unsigned char pad_00[0xbc];
@@ -38,7 +38,7 @@ void func_ov106_0229e430(UnkStruct_0229e430 *self)
         return;
     }
 
-    if (func_0206f56c(r1) != 0) {
+    if (func_0206f56c() != 0) {
         func_ov106_0229c868(self);
         return;
     }
@@ -70,5 +70,5 @@ void func_ov106_0229e430(UnkStruct_0229e430 *self)
     }
 
     func_ov002_02209114(self->unk_2304, res, r6);
-    func_ov002_02208098(self, 0x17);
+    func_ov002_02208098((void *) (self), 0x17);
 }

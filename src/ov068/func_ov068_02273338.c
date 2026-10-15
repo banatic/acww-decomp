@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov004_0222c5c8(void *self, void *data);
+extern int func_ov004_0222c5c8(void *self, void *data);
 extern int func_ov004_0222c3c4(void *ptr, int flags);
 extern int func_02055140(void *ptr, void *g);
 extern void func_02055060(void *ptr, int val, int mode, int size, int arg4, int arg5);
@@ -13,7 +13,7 @@ extern int func_0205650c(void *ptr, int val, void *g);
 extern void func_02056478(void *ptr, int val, int mode, int size, int arg4);
 extern int func_02055e00(void *ptr);
 extern void func_020563dc(void *ptr, int val);
-extern void func_ov004_0222c62c(void *data, void *p1, void *p2, void *p3);
+extern int func_ov004_0222c62c(void *data, void *p1, void *p2, void *p3);
 
 extern unsigned char data_ov068_0227795c;
 extern unsigned char data_ov068_02277968;

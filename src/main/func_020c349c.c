@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(int, int, int, int, int, int, int, int, int, int, int);
 extern void func_0201af1c(int, int);
 
 int func_020c349c(char *p)

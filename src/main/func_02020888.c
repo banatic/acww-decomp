@@ -27,7 +27,7 @@ typedef struct {
 extern GlobalData data_020c8ab0;
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(UnkStruct_02020888_2 *, char *, unsigned char *, int, int, int, int, int, unsigned char);
+extern int func_0202da38(UnkStruct_02020888_2 *, char *, unsigned char *, int, int, int, int, int, int selected);
 
 void func_02020888(UnkStruct_02020888_2 *obj, UnkStruct_02020888_3 *out)
 {

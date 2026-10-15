@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ab51c(void *arg0);
+extern unsigned int func_020ab51c(void *arg0);
 
 void func_020ab354(void *arg0, void *arg1)
 {

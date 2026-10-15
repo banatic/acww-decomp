@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_0209129c(unsigned int);
-unsigned int func_ov068_02272bd4(unsigned int *arg)
+extern void func_0209129c(unsigned int);
+void func_ov068_02272bd4(unsigned int *arg)
 {
-    return func_0209129c(arg[185]);
+    func_0209129c(arg[185]);
 }

@@ -39,7 +39,7 @@ extern Pair data_020d8f68;
 void func_0202da74(UnkStruct_0202a940_3 *, Pair);
 void func_02068388(u32, int);
 void func_0202da88(UnkStruct_0202a940_3 *, char *);
-void func_02068484(u32, UnkStruct_0202a940 *, u32);
+int func_02068484(u32, UnkStruct_0202a940 *, u32);
 extern char data_021c27c4;
 extern char data_021c280c;
 }

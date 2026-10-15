@@ -2,16 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov117_02299aa4(int a, unsigned int i, int mask);
-extern int func_ov117_02299b40(int a, unsigned int i, int mask);
+extern void *func_ov117_02299aa4(void *a, unsigned int i, unsigned int mask);
+extern void func_ov117_02299b40(void *a, int i, int mask);
+extern void *data_020da1a8;
 
-int func_ov117_02299adc(int a, int b)
+void func_ov117_02299adc(int a, int b)
 {
     unsigned int i = 0;
-    int mask = 3 & b;
-    int result;
+    unsigned int mask = b & 3;
     for (; i < 4; i++) {
-        result = func_ov117_02299b40(func_ov117_02299aa4(a, i, mask), i, mask);
+        func_ov117_02299b40(func_ov117_02299aa4((void *) a, i, mask), i, mask);
     }
-    return result;
 }

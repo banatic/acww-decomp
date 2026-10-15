@@ -9,7 +9,7 @@ extern int func_020a72d0(int dir);
 extern int func_020a6338(void *self);
 extern int func_02073918(void *g, int dir);
 extern int func_020a7330(int dir);
-extern int func_020b65c4(int x);
+extern int func_020b65c4(void);
 extern int func_020a7300(int dir);
 extern int func_020a6c98(int x);
 extern void func_02073820(void *g);
@@ -33,10 +33,10 @@ void func_020a6294(void *self)
         if (best < 4) {
             if (func_02073918(g, best) == 0) {
                 int v = func_020a7330(best);
-                if (v == func_020b65c4(v)) {
+                if (v == func_020b65c4()) {
                     int r = func_020a7300(best);
                     if (r != 0) {
-                        if (func_020a6c98(func_020b65c4(r)) == 0) {
+                        if (func_020a6c98(func_020b65c4()) == 0) {
                             void *g2 = data_020ccf94;
                             func_02073820(g2);
                             func_02073770(g2, 0xd, best);

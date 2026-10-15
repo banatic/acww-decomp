@@ -8,7 +8,7 @@ extern short *func_0209d358(int, int);
 extern int *func_02095794(int);
 extern int func_02030818(int *);
 extern void func_ov049_0226208c(char *, int);
-extern void func_0203e0a8(char *, int);
+extern int func_0203e0a8(char *, int);
 extern void func_ov049_02262a94(char *, int);
 
 int func_ov049_0226048c(char *param)

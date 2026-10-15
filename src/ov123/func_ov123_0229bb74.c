@@ -14,7 +14,7 @@ typedef struct {
     u8 unk_AC;
 } UnkStruct_0229bb74;
 
-extern int func_ov002_02208014(UnkStruct_0229bb74 *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(UnkStruct_0229bb74 *self);
 extern void func_ov123_0229b6d0(UnkStruct_0229bb74 *self);
 extern int func_ov123_02299adc(UnkStruct_0229bb74 *self, int arg);
@@ -35,7 +35,7 @@ extern struct {
 
 void func_ov123_0229bb74(UnkStruct_0229bb74 *self)
 {
-    if (func_ov002_02208014(self)) {
+    if (func_ov002_02208014()) {
         func_ov123_0229b6d0(self);
         return;
     }

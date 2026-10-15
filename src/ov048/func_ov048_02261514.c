@@ -7,12 +7,12 @@ typedef struct {
     int count;
 } UnkStruct_02261514;
 
-extern int func_0209ff0c(UnkStruct_02261514 *p);
+extern int func_0209ff0c(void);
 extern void func_ov048_022616b8(UnkStruct_02261514 *p, int value);
 
 void func_ov048_02261514(UnkStruct_02261514 *p)
 {
-    if (func_0209ff0c(p)) {
+    if (func_0209ff0c()) {
         func_ov048_022616b8(p, p->count + 1);
     } else {
         func_ov048_022616b8(p, p->count + 2);

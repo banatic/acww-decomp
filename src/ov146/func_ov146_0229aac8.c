@@ -3,8 +3,8 @@
  */
 
 extern void *data_021fbe94;
-extern void func_02002c6c(void *, void *, int, int, int, int);
-extern void func_02002d14(void *, void *, int, int, int, int);
+extern int func_02002c6c(void *, void *, int, int, int, int);
+extern int func_02002d14(void *, void *, int, int, int, int);
 
 extern unsigned char data_ov146_0229b6e0[];
 extern unsigned char data_ov146_0229b6f4[];

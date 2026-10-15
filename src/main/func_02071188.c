@@ -4,18 +4,18 @@
 
 #include "types.h"
 
-extern void func_020641c8(void *p);
+extern void *func_020641c8(void *p);
 extern void func_02064210(void *a, void *b);
-extern void func_0203d7c4(int a, void *b);
+extern int func_0203d7c4(int a, void *b);
 extern void *func_02098844(const char *s, int idx);
-extern int func_02099a28(void);
+extern int func_02099a28(unsigned int);
 extern void func_02066694(void *p);
 extern int func_02099870(void *p);
 extern void func_02066024(void *a, void *b, void *c, void *d, void *e, int f);
-extern void func_02065ed0(void *a, int b, int c);
+extern unsigned short func_02065ed0(void *a, int b, int c);
 extern int func_02097a54(void *p);
 extern void func_02066688(void *p);
-extern void func_020641b0(void *p);
+extern void *func_020641b0(void *p);
 
 extern char data_021dc7aa[];
 extern char data_021dc7bc[];
@@ -45,7 +45,7 @@ int func_02071188(void)
         if (p == 0) {
             continue;
         }
-        if (func_02099a28() == 0) {
+        if (func_02099a28((unsigned int) p) == 0) {
             continue;
         }
 

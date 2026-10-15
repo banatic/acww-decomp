@@ -7,8 +7,8 @@ typedef struct {
     unsigned char unk_04;
 } UnkStruct_02278f2c;
 
-extern void *func_020984e8(void *);
-extern void func_02099640(void *);
+extern void *func_020984e8(void);
+extern int func_02099640(void *);
 extern int func_02099020(void *, int);
 extern void func_02098ff8(void *, int);
 extern int func_0202ea80(int, int);
@@ -19,7 +19,7 @@ void func_ov087_02278f2c(void *self, UnkStruct_02278f2c *out)
 {
     void *obj;
 
-    obj = func_020984e8(self);
+    obj = func_020984e8();
     func_02099640(obj);
     out->unk_00 = (void *) &data_ov087_02279598;
     if (func_02099020(obj, 0xf) == 0) {

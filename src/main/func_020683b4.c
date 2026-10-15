@@ -6,7 +6,7 @@ typedef struct {
     char data[0x5c];
 } Elem;
 
-extern void func_020a8bb8(Elem *elem, int value);
+extern void *func_020a8bb8(Elem *elem, int value);
 
 void func_020683b4(char *base, int index, int val1, int val2)
 {

@@ -9,7 +9,7 @@ struct UnkStruct_022264f4 {
 };
 
 extern void func_ov004_022265b0(void *a, int *x, int *z);
-extern void func_ov004_022265dc(void *self, struct UnkStruct_022264f4 *p, int k, int arg);
+extern int func_ov004_022265dc(void *self, struct UnkStruct_022264f4 *p, int k, int arg);
 
 void func_ov004_022264f4(char *self, int arg)
 {

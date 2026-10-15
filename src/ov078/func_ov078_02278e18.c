@@ -20,11 +20,11 @@ typedef struct UnkStruct_02278e18 {
 
 extern int data_ov078_02279bd8;
 
-extern void func_020984e8(void);
-extern void func_02099640(void);
-extern void *func_0209a850(void);
-extern void func_02094fd4(UnkStruct_02278e18 *t);
-extern void func_02094fbc(UnkStruct_02278e18 *t);
+extern int func_020984e8(void);
+extern int func_02099640(int);
+extern void *func_0209a850(int);
+extern void *func_02094fd4(UnkStruct_02278e18 *t);
+extern void *func_02094fbc(UnkStruct_02278e18 *t);
 extern int func_02099e9c(unsigned short *p);
 extern void *func_0209b0f0(void *p);
 extern int func_0209bd44(void *p);
@@ -42,9 +42,7 @@ void func_ov078_02278e18(UnkStruct_02278e18_2 *self, UnkStruct_02278e18_3 *out)
     UnkStruct_02278e18 tmp;
     void *obj;
 
-    func_020984e8();
-    func_02099640();
-    obj = func_0209a850();
+    obj = func_0209a850((int) func_02099640((int) func_020984e8()));
     func_02094fd4(&tmp);
     out->unk_00 = (int) &data_ov078_02279bd8;
     if (self->unk_B4 == -1) {

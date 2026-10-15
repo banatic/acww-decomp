@@ -3,23 +3,25 @@
  */
 
 extern char data_ov100_0229ecb8[];
-extern void func_02070be8(void);
-extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
-extern void func_ov002_0220ba0c(void *);
-extern void func_ov002_02209ac8(void *);
-extern void func_ov002_02209cb4(void *);
+extern int **func_02070be8(void *unused0);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern void *func_ov002_0220ba0c(void *);
+extern void *func_ov002_02209ac8(void *);
+extern void *func_ov002_02209cb4(void *);
 extern void func_ov002_02209e38(void *);
-extern void func_ov002_02207e28(void *);
-extern void func_ov094_0229a2d0(void *);
+extern void *func_ov002_02207e28(void *);
+extern void *func_ov094_0229a2d0(void *);
 extern void func_ov094_0229bc30(void *);
-extern void func_ov094_0229afe0(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov094_0229afe0(void *);
+extern void *func_ov002_0220826c(void *);
+
+#define VisitElement_02070be8 (void (*)(void *)) func_02070be8
 
 void *func_ov100_0229c180(void *obj)
 {
     char *base = (char *) obj;
     *(void **) obj = data_ov100_0229ecb8;
-    __cxa_vec_cleanup(base + 0x27e8, 2, 0x6c, func_02070be8);
+    __cxa_vec_cleanup(base + 0x27e8, 2, 0x6c, VisitElement_02070be8);
     func_ov002_0220ba0c(base + 0x26cc);
     func_ov002_02209ac8(base + 0x22d8);
     func_ov002_02209cb4(base + 0x2274);
@@ -31,3 +33,5 @@ void *func_ov100_0229c180(void *obj)
     func_ov002_0220826c(obj);
     return obj;
 }
+
+#undef VisitElement_02070be8

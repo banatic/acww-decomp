@@ -9,11 +9,11 @@ typedef void (Actor::*Method)();
 #define W(p, o) (*(int *) ((p) + (o)))
 extern "C" {
 extern Method data_ov004_0225949c[];
-extern void func_ov004_02239424(void *, void *, void *, int);
+extern int func_ov004_02239424(void *, void *, void *, int);
 extern void func_ov004_02238fe4(void *, void *, void *, int, int);
 extern void func_ov004_0223592c(void *);
 extern void func_ov004_022394c4(void *, int, int, int);
-extern void func_ov004_02236418(void *);
+extern int func_ov004_02236418(void *);
 extern int func_ov004_02239460(int, int);
 void func_ov004_02237f38(u8 *self)
 {

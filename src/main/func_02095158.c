@@ -3,7 +3,7 @@
  */
 
 extern void MI_CpuCopy8(const void *src, void *dest, unsigned int size);
-extern void *func_020642d0(void *self, void *ptr);
+extern void func_020642d0(void *self, void *ptr);
 extern char data_021dc7aa;
 
 typedef struct {
@@ -13,7 +13,7 @@ typedef struct {
     unsigned char unk_1C;
 } UnkStruct_02095158;
 
-void *func_02095158(UnkStruct_02095158 *self, void *src, unsigned short val1, unsigned char val2, void *ptr)
+void func_02095158(UnkStruct_02095158 *self, void *src, unsigned short val1, unsigned char val2, void *ptr)
 {
     MI_CpuCopy8(src, self->data, 12);
     self->unk_0E = val1;
@@ -21,5 +21,5 @@ void *func_02095158(UnkStruct_02095158 *self, void *src, unsigned short val1, un
     if (ptr == 0) {
         ptr = &data_021dc7aa;
     }
-    return func_020642d0(self, ptr);
+    func_020642d0(self, ptr);
 }

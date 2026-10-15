@@ -15,7 +15,7 @@ extern unsigned char data_020cbaf4;
 extern unsigned char data_021c9340;
 extern int data_021c9390[3];
 extern void func_0205967c(UnkStruct_02058064 *self, int *p);
-extern void func_020ea6e0(void *dst, short val, PtrStruct *p);
+extern void func_020ea6e0(void *dst, short val);
 extern void VEC_Add(void *a, void *b, void *c);
 struct UnkStruct_02058064 {
     u8 pad_00[0x60];
@@ -62,7 +62,7 @@ void func_02058064(UnkStruct_02058064 *self)
         if (self && self) {
         }
         p = self->unk_CC;
-        func_020ea6e0(dst, p->unk_8E, p);
+        func_020ea6e0(dst, p->unk_8E);
     }
     VEC_Add(&self->unk_6C, &self->unk_78, &self->unk_6C);
     c = (self->unk_74 - self->unk_68) / ((int) data_021c9340);

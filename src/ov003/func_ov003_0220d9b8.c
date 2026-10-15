@@ -3,9 +3,9 @@
  */
 
 extern void func_02010f5c(void *self);
-extern void func_0203f7d0(void *a, void *b);
+extern int func_0203f7d0(void *a, void *b);
 extern void func_020110c4(unsigned short *dest, void *self);
-extern void func_0200f328(void *self, int code);
+extern int func_0200f328(void *self, int code);
 extern void func_0200fa6c(unsigned int *dest, void *self);
 extern unsigned int func_020912d4(unsigned int kind, void *src, void *dst, unsigned int flag);
 extern void func_02091278(unsigned int kind, void *src, void *dst, unsigned int flag);

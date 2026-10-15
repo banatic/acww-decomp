@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208150c(void);
-extern int func_02003704(void);
-extern void func_0207f1c8(void *);
-extern void *func_0209b5ec(void);
-extern int func_0209c330(void);
+extern unsigned int func_0208150c(unsigned int argument0);
+extern int func_02003704(void *argument0);
+extern unsigned int func_0207f1c8(void *);
+extern void *func_0209b5ec(void *argument0);
+extern int func_0209c330(void *argument0);
 extern int func_020644cc(int);
 extern void func_0209e474(int *);
 extern int func_0209c1cc(void *, int *, int);
@@ -37,14 +37,14 @@ void func_ov068_0226d408(struct Self0 *self)
     if (v6 == 0) {
         return;
     }
-    func_0208150c();
-    if (func_02003704() == 0) {
+
+    if (func_02003704((void *) func_0208150c((unsigned int) v6)) == 0) {
         return;
     }
     v5 = 8;
-    func_0207f1c8(v6);
-    p1 = func_0209b5ec();
-    v4 = func_0209c330();
+
+    p1 = func_0209b5ec((void *) func_0207f1c8(v6));
+    v4 = func_0209c330(p1);
     v7 = func_020644cc(0x64);
     local[0] = 0;
     local[1] = 0;

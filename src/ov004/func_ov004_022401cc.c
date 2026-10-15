@@ -4,7 +4,8 @@
 
 #include "types.h"
 
-extern void func_ov004_02240f2c();
+extern int func_ov004_02240f2c(void *argument0, short argument1, int argument2, short argument3, short argument4,
+                               int argument5, int argument6);
 
 int func_ov004_022401cc(char *self)
 {

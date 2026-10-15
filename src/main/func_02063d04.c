@@ -3,7 +3,7 @@
  */
 
 extern void *func_02063eb0(void *, int);
-extern int func_02063f3c(void);
+extern int func_02063f3c(unsigned char *);
 
 extern char data_021f3b7c[];
 
@@ -20,23 +20,17 @@ unsigned int func_02063d04(unsigned int a, unsigned int b, unsigned int c)
     unsigned int r1;
     unsigned int r0;
 
-    func_02063eb0(data_021f3b7c, 0);
-    v0 = (unsigned char) func_02063f3c();
+    v0 = (unsigned char) func_02063f3c((unsigned char *) func_02063eb0(data_021f3b7c, 0));
 
-    func_02063eb0(data_021f3b7c, 4);
-    v4 = (unsigned int) func_02063f3c() << 24;
+    v4 = (unsigned int) func_02063f3c((unsigned char *) func_02063eb0(data_021f3b7c, 4)) << 24;
 
-    func_02063eb0(data_021f3b7c, 1);
-    v1 = (unsigned char) func_02063f3c();
+    v1 = (unsigned char) func_02063f3c((unsigned char *) func_02063eb0(data_021f3b7c, 1));
 
-    func_02063eb0(data_021f3b7c, 6);
-    v6 = (unsigned char) func_02063f3c();
+    v6 = (unsigned char) func_02063f3c((unsigned char *) func_02063eb0(data_021f3b7c, 6));
 
-    func_02063eb0(data_021f3b7c, 3);
-    v3 = (unsigned char) func_02063f3c();
+    v3 = (unsigned char) func_02063f3c((unsigned char *) func_02063eb0(data_021f3b7c, 3));
 
-    func_02063eb0(data_021f3b7c, 2);
-    v2 = (unsigned char) func_02063f3c();
+    v2 = (unsigned char) func_02063f3c((unsigned char *) func_02063eb0(data_021f3b7c, 2));
 
     a |= (c << 11) | (b << 7);
     b = c << 30;

@@ -3,7 +3,7 @@
  */
 
 extern int func_020984e8(void);
-extern int func_02099688(void);
+extern int func_02099688(unsigned int);
 extern void MI_CpuCopy8(char *p, int a, int b);
 extern int func_020882dc(char *p);
 extern int func_020e8b0c(int a, int b, int c);
@@ -22,7 +22,7 @@ void func_02088318(void)
     if (a == 0 || base == 0) {
         return;
     }
-    b = func_02099688();
+    b = func_02099688(a);
     MI_CpuCopy8(base + 0x173e2, b, 0x10);
     c = func_020882dc(base + 0x173e2);
     if (func_020e8b0c(c, 1, 7) == 0) {

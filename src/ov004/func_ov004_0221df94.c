@@ -7,9 +7,9 @@
 typedef struct {
     int x, y, z;
 } Vec3;
-extern void func_0203af80(Vec3 *v);
-extern void func_0203b144(int a);
-extern int func_ov004_0221e048(void *self);
+extern int func_0203af80(Vec3 *v);
+extern int func_0203b144(void);
+extern void func_ov004_0221e048(void *self);
 extern int func_ov004_0221dd24(void *self, int a);
 
 void func_ov004_0221df94(char *self, unsigned int sel, int a2)
@@ -30,7 +30,8 @@ void func_ov004_0221df94(char *self, unsigned int sel, int a2)
             func_ov004_0221dd24(self, 5);
             break;
         case 8:
-            func_0203b144(func_ov004_0221e048(self));
+            func_ov004_0221e048(self);
+            func_0203b144();
             func_ov004_0221dd24(self, 0);
             break;
         case 4:

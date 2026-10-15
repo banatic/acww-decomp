@@ -32,19 +32,19 @@ class UnkStruct_02025b54_3 {
 extern int data_021c2adc;
 extern Pair data_020d92e8;
 
-extern "C" int func_0206fc6c(UnkStruct_02025b54_3 *self);
+extern "C" int func_0206fc6c(void);
 extern "C" void func_0202da88(UnkStruct_02025b54_3 *self, void *arg);
 extern "C" void func_0206844c(UnkStruct_02025b54_2 *sub, u8 *byte, u32 word);
 extern "C" u32 func_0206fc8c(void);
-extern "C" void func_020984e8(void);
-extern "C" u32 func_02099734(void);
+extern "C" int func_020984e8(void);
+extern "C" u32 func_02099734(int);
 extern "C" u16 *func_02098f48(u32 a, u32 b);
-extern "C" void func_02015330(UnkStruct_02025b54_3 *self, u16 *ptr, u32 a, u32 b, u32 c);
+extern "C" int func_02015330(UnkStruct_02025b54_3 *self, u16 *ptr, u32 a, u32 b, u32 c);
 extern "C" void func_0202dbdc(UnkStruct_02025b54_3 *self, Pair p);
 
 extern "C" void func_02025b54(UnkStruct_02025b54_3 *self)
 {
-    if (func_0206fc6c(self) == 0) {
+    if (func_0206fc6c() == 0) {
         if (self->unk_40) {
             self->unk_40->flag = 1;
         }
@@ -60,8 +60,7 @@ extern "C" void func_02025b54(UnkStruct_02025b54_3 *self)
         func_0206844c(self->unk_40, &byte, tmp.a);
     } else {
         u32 r5 = func_0206fc8c();
-        func_020984e8();
-        u32 a = func_02099734();
+        u32 a = func_02099734((int) func_020984e8());
         u16 w = *func_02098f48(a, r5);
         self->unk_124 = w;
         func_02015330(self, &self->unk_124, 0, 4, 0);

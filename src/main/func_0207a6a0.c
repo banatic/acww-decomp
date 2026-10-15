@@ -8,8 +8,8 @@ struct UnkStruct_0207a6a0_2 {
     u16 id;
 };
 
-extern int func_020791a4(int);
-extern int func_020b65c4(int);
+extern void func_020791a4(char);
+extern int func_020b65c4(void);
 extern void *func_020984e8(void);
 extern int func_02099020(void *, int);
 extern int func_02099734(void *);
@@ -33,7 +33,7 @@ void func_0207a6a0(void *self, void *arg1)
     u8 b5;
     int cmp;
 
-    if (func_020b65c4(func_020791a4(-1)) != 6) {
+    if ((func_020791a4(-1), func_020b65c4()) != 6) {
         return;
     }
 
@@ -86,5 +86,5 @@ void func_0207a6a0(void *self, void *arg1)
     if (func_0207cf74(r4) != 0) {
         func_0207a180((char *) self + 0x3f7c);
     }
-    func_020791a4((signed char) r4);
+    func_020791a4((signed char) (int) r4);
 }

@@ -16,7 +16,7 @@ extern char *func_02107828(void *);
 extern int func_02064328(char *, const char *, ...);
 extern void *NNS_G3dGetJntAnmSet(void *), *NNS_G3dGetMatCAnmSet(void *), *NNS_G3dGetTexSRTAnmSet(void *);
 extern void *func_02107b44(void *, int), *func_02107b80(void *, int), *func_02107bbc(void *, int);
-extern void func_0210285c(void *);
+extern int func_0210285c(void *);
 int func_ov004_0222c3f4(RmoHolder *self, const char *name)
 {
     // Preserve the ROM sprintf scratch and archive frame offsets.

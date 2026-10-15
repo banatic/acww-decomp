@@ -6,7 +6,7 @@
 extern int func_020ee45c(int arg);
 #pragma thumb
 
-extern void func_ov090_0229936c(int arg);
+extern unsigned char func_ov090_0229936c(int arg);
 extern void func_ov090_022990d0(int arg);
 extern void func_ov122_022a18c4(int arg);
 

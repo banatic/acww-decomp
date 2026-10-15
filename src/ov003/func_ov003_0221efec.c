@@ -4,9 +4,9 @@
 
 extern void func_ov003_0221efa4(void *p);
 extern void *func_ov003_0221f0b8(void *p, int a, int b);
-extern int func_02037544(void);
+extern int func_02037544(void *argument0);
 extern int func_020ea990(void *v, void *pos);
-extern void func_ov003_0221efc4(void *p, int d, void *v, int kind);
+extern int func_ov003_0221efc4(void *p, int d, void *v, int kind);
 
 typedef struct {
     int x, y, z;
@@ -17,7 +17,7 @@ typedef struct {
     int unk_08;
 } UnkStruct_0221efec;
 
-extern UnkStruct_0221efec func_02037514(void *c, int k);
+extern void func_02037514(UnkStruct_0221efec *out, const unsigned char *c, int k);
 
 void *func_ov003_0221efec(void *p, Vec3 *pos)
 {
@@ -46,9 +46,9 @@ void *func_ov003_0221efec(void *p, Vec3 *pos)
             base.z = wz0;
             c = func_ov003_0221f0b8(p, xj, zi);
             if (c != 0) {
-                n = func_02037544();
+                n = func_02037544(c);
                 for (k = 0; k < n; k++) {
-                    tmp = func_02037514(c, k);
+                    func_02037514(&tmp, c, k);
                     e = tmp;
                     switch (e.kind) {
                         case 5:

@@ -4,9 +4,9 @@
 
 extern int data_ov003_0223948c;
 extern int data_ov003_02239550;
-extern void func_020b7f60(void *);
-extern void func_020565b0(void *);
-extern void func_ov009_0226539c(void *);
+extern int func_020b7f60(void *);
+extern void *func_020565b0(void *);
+extern void *func_ov009_0226539c(void *);
 extern void func_020edf54(void *);
 
 typedef struct {

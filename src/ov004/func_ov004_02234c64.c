@@ -16,16 +16,16 @@ extern void *func_020e9948(void *, int);
 extern int func_ov004_02234be0(void *, char **, int, int);
 extern void func_ov004_02235374(void *, int);
 extern void func_ov004_02234418(void *);
-extern void func_ov004_0223a31c(void *);
-extern void func_ov004_0223a2c0(void *);
-extern void func_ov004_0223a25c(void *);
-extern void func_ov004_0223a114(void *);
-extern void func_ov004_0223a09c(void *);
-extern void func_ov004_02239fd4(void *);
-extern void func_ov004_02239e9c(void *);
-extern void func_ov004_02239e40(void *);
-extern void func_ov004_02239df0(void *);
-extern void func_ov004_0223a3c4(void *);
+extern void *func_ov004_0223a31c(void *);
+extern void *func_ov004_0223a2c0(void *);
+extern void *func_ov004_0223a25c(void *);
+extern void *func_ov004_0223a114(void *);
+extern void *func_ov004_0223a09c(void *);
+extern void *func_ov004_02239fd4(void *);
+extern void *func_ov004_02239e9c(void *);
+extern void *func_ov004_02239e40(void *);
+extern void *func_ov004_02239df0(void *);
+extern void *func_ov004_0223a3c4(void *);
 int func_ov004_02234c64(void *self)
 {
     int i;

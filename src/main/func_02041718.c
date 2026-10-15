@@ -4,7 +4,7 @@
 
 extern volatile unsigned char data_021c75b8;
 extern int func_020b65c4(void);
-extern int func_020a6c98(void);
+extern int func_020a6c98(int);
 
 typedef struct {
     unsigned char pad_00[0xc];
@@ -29,8 +29,7 @@ int func_02041718(void)
     if (func_020b65c4() == 6) {
         return 0;
     }
-    func_020b65c4();
-    if (func_020a6c98() != 0) {
+    if (func_020a6c98((int) func_020b65c4()) != 0) {
         return 0;
     }
     if (data_021f42f4 != 0) {

@@ -4,19 +4,18 @@
 
 extern unsigned int data_020c8c48[];
 extern unsigned int data_020c8a90[];
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, unsigned int f, unsigned char g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int offset, int scale, int h, int i);
 
 void func_020284c0(char *p1, char *p2)
 {
     unsigned int *msg = 0;
     int val;
 
-    func_0202d9c4();
-    switch (func_0209bc40()) {
+    switch (func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) p1))) {
         case 0xa:
             msg = data_020c8c48;
             break;

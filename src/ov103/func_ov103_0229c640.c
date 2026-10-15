@@ -3,7 +3,7 @@
  */
 
 extern void func_ov002_0220a374(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 struct UnkStruct_0229c640 {
     char pad_00[0x2274];

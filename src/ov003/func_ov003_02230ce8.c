@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_02034270(int *st, int *v, int a, int b);
+extern int func_02034270(int *st, int *v, int a, int b);
 extern void func_0203423c(int *st);
 extern int FX_Div(int a, int b);
 

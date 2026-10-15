@@ -6,9 +6,9 @@ extern unsigned short data_020da24c;
 extern unsigned short data_020da248;
 extern unsigned short data_020da250;
 
-extern int func_02036648(void *self);
+extern int func_02036648(void);
 extern int func_020373c8(int h, int a, int b, int c, int d);
-extern void func_02137550(short *p, int n);
+extern char *func_02137550(short *p, int n);
 extern int func_02037404(int h, short *a, short *b);
 extern void func_020371ac(void *self, int v);
 extern void func_02037190(void *self);
@@ -20,7 +20,7 @@ void func_0203710c(void *self)
     short x[2];
     short y[2];
 
-    h = func_02036648(self);
+    h = func_02036648();
     ok = func_020373c8(h, 0x3b, 0x32, 0, 0x10);
     x[0] = data_020da24c;
     x[1] = data_020da248;

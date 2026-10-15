@@ -12,7 +12,7 @@ struct St {
     char data[20];
 };
 
-extern UnkStruct_0207ac40 *func_0207cec0(int a);
+extern UnkStruct_0207ac40 *func_0207cec0(int a, int);
 extern void *func_0208150c(UnkStruct_0207ac40 *p);
 extern int func_02003704(void *p);
 extern UnkStruct_0207ac40 *func_0207f270(UnkStruct_0207ac40 *p);
@@ -29,7 +29,7 @@ void func_0207ac40(int param1, int param2)
     struct St st;
     UnkStruct_0207ac40 *r5;
 
-    r5 = func_0207cec0(param1);
+    r5 = func_0207cec0(param1, param2);
     if (r5 == 0) {
         return;
     }

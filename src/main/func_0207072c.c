@@ -9,7 +9,7 @@ extern void func_020e993c(void *, void *);
 
 extern unsigned char data_021fbe94[];
 
-void func_0207072c(void *arg0)
+void func_0207072c(void *arg0, int player)
 {
     void *r6;
     void *r4;

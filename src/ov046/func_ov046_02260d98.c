@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b1580(void *p);
+extern int func_020b1580(void);
 extern void func_020157b0(void *p, int a, int b, int c);
-extern void func_02015828(void *p, int a);
+extern int func_02015828(void *p, int a);
 extern void func_ov046_02261508(void *p, int a);
 
 struct UnkStruct_02260d98 {
@@ -16,7 +16,7 @@ struct UnkStruct_02260d98 {
 
 void func_ov046_02260d98(struct UnkStruct_02260d98 *p)
 {
-    p->unk_C0 = func_020b1580(p);
+    p->unk_C0 = func_020b1580();
     if (p->unk_C0 >= 0) {
         func_020157b0(p, 46, (unsigned char) p->unk_C0, 0);
         func_02015828(p, 3);

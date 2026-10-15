@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a9484(void *);
+extern void *func_020a9484(void *);
 
 typedef struct {
     volatile unsigned int unk_00;

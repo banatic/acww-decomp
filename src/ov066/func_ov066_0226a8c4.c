@@ -27,7 +27,7 @@ extern void *data_ov066_0226bdf4;
 extern Lim *data_ov066_0226bdec;
 
 int OS_DisableInterrupts(void);
-void OS_RestoreInterrupts(int state);
+unsigned int OS_RestoreInterrupts(int state);
 
 int func_ov066_0226a8c4(int idx, void *a, void *b)
 {

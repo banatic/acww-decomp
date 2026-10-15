@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov118_0229a450(void *self, int flag, unsigned short value);
+extern void func_ov118_0229a450(void *self, int flag);
 
 typedef struct {
     char pad_00[0x98];
@@ -16,5 +16,5 @@ void func_ov118_0229adf0(FuncoV118 *self, unsigned short value)
     self->unk_98 = value;
     tmp = self->unk_98;
     self->unk_9A = tmp;
-    func_ov118_0229a450(self, 0x10, tmp);
+    func_ov118_0229a450(self, 0x10);
 }

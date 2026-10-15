@@ -4,10 +4,9 @@
 
 extern void *data_021c526c;
 
-int func_ov004_0222f4e4(char *self)
+void func_ov004_0222f4e4(char *self)
 {
     // DECLS
     // ENDDECLS
     *(int *) ((char *) *(int *) ((char *) &data_021c526c) + 0x248) = 0x1a;
-    return 0x248;
 }

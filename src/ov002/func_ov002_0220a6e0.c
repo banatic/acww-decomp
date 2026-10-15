@@ -3,9 +3,9 @@
  */
 
 extern int func_ov002_0220a674(char *self, int i);
-extern void func_ov002_0220b280(char *p);
+extern int func_ov002_0220b280(char *p);
 
-void func_ov002_0220a6e0(char *self)
+int func_ov002_0220a6e0(char *self)
 {
-    func_ov002_0220b280(self + 4 + func_ov002_0220a674(self, -1) * 0x7c);
+    return func_ov002_0220b280(self + 4 + func_ov002_0220a674(self, -1) * 0x7c);
 }

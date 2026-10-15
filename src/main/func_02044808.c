@@ -2,18 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984fc(void);
-extern int func_02099728(void);
+extern int func_020984fc(void *);
+extern int func_02099728(unsigned int);
 
-int func_02044808(void)
+int func_02044808(void *argument0)
 {
     int r4;
     int r0;
 
     r4 = 0x0000fff1;
-    r0 = func_020984fc();
+    r0 = func_020984fc((void *) argument0);
     if (r0 != 0) {
-        r0 = func_02099728();
+        r0 = func_02099728(r0);
         if (r0 != 0) {
             r4 = *(unsigned short *) r0;
         }

@@ -3,18 +3,18 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void);
+extern void *func_ov002_0220830c(void *argument0);
 extern void func_02066694(void *p);
-extern void func_020b9af4(void *p);
-extern void func_ov094_0229b000(void *p);
+extern void *func_020b9af4(void *p);
+extern void *func_ov094_0229b000(void *p);
 extern void func_ov094_0229bc3c(void *p);
-extern void func_ov094_0229a2ec(void *p);
-extern void func_ov002_02207e40(void *p);
+extern void *func_ov094_0229a2ec(void *p);
+extern void *func_ov002_02207e40(void *p);
 extern void func_ov002_02209e44(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_ov002_02209b14(void *p);
-extern void func_ov002_0220ba24(void *p);
-extern void func_ov002_0220b008(void *p);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_ov002_02209b14(void *p);
+extern void *func_ov002_0220ba24(void *p);
+extern void *func_ov002_0220b008(void *p);
 extern unsigned char data_ov108_0229e098[];
 
 void *func_ov108_0229dec4(void)
@@ -25,7 +25,7 @@ void *func_ov108_0229dec4(void)
 
     p = (char *) func_ov002_02207f80(0x2bd8);
     if (p != 0) {
-        func_ov002_0220830c();
+        func_ov002_0220830c(p);
         *(void **) p = (void *) data_ov108_0229e098;
         func_02066694(p + 0xac);
         func_02066694(p + 0x1ac);

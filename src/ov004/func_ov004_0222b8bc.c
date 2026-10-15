@@ -8,13 +8,13 @@ struct UnkStruct_0222b8bc {
     int c;
 };
 extern void func_ov004_0223a6ac(void *p);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
 extern int FX_MulFunc(int a, int b);
 extern void func_ov004_0222b9c0(void *dst, int x, int z, short ang, int k);
 extern void func_ov004_0222b9bc(void *dst, int b);
 extern short FX_SinCosTable_[];
 extern unsigned char data_020e54a8;
-void func_ov004_0222b8bc(unsigned char *self, unsigned char *p)
+void func_ov004_0222b8bc(unsigned char *self, unsigned char *p, int previous)
 {
     unsigned char *q, *w;
     struct UnkStruct_0222b8bc *s;

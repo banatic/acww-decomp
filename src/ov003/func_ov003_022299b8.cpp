@@ -14,7 +14,7 @@ extern "C" {
 UnkStruct_022299b8 *func_02096190(void *obj);
 void func_ov003_0222933c(char *self, UnkStruct_022299b8 *o, Vec3 *v);
 int func_0205fb28(Vec3 *w, int a, void *b, void *c, int d);
-void func_ov003_0222a88c(char *self, void *obj);
+int func_ov003_0222a88c(char *self, void *obj);
 
 int func_ov003_022299b8(char *self, void *obj)
 {

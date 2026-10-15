@@ -17,7 +17,7 @@ extern int func_ov004_0223cb20(void *o);
 extern int func_ov004_0221078c(void *self);
 extern void func_ov004_022101e4(void *self, int a, int b, int c, int d);
 extern int func_ov004_0220ec8c(void *self);
-extern void func_02095380(int v);
+extern int func_02095380(int v);
 
 void func_ov004_02215504(char *self, int flag)
 {

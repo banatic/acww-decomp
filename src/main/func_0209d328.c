@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02055cf4(void *);
+extern void *func_02055cf4(void *);
 
 typedef struct {
     unsigned char flag;

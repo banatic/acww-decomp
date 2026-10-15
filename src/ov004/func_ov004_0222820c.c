@@ -4,12 +4,12 @@
 
 extern void func_ov004_022282bc(void *dst, int b);
 extern void func_ov004_022282b8(void *dst, unsigned char b);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
 extern void func_02056fcc(void *p, unsigned int h, int a, int b, unsigned short g);
 extern int func_02073908(int a, int b);
-extern void func_ov004_0223b334(void *p, short a);
+extern int func_ov004_0223b334(void *p, short a);
 extern int data_020ccf94;
-void func_ov004_0222820c(unsigned char *self, unsigned char *p)
+void func_ov004_0222820c(unsigned char *self, unsigned char *p, int previous)
 {
     int b, k;
     unsigned int h;

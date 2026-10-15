@@ -9,10 +9,10 @@ extern int func_020afb48(void *p, void *buf);
 extern void func_0209e474(void *ptr);
 extern void func_0209e29c(void *ptr, int mode);
 extern void func_0209e140(void *ptr, int mode);
-extern void func_020afcf4(int a, int b);
+extern int func_020afcf4(int a, int b);
 extern int func_02073d90(unsigned int x);
 extern unsigned int data_020ccf94;
-extern void *MI_CpuCopy8(void *dest, const void *src, unsigned int n);
+extern void MI_CpuCopy8(void *dest, const void *src, unsigned int n);
 
 struct UnkStruct_020af788 {
     unsigned char unk_00;

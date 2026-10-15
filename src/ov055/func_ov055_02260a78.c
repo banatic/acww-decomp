@@ -9,7 +9,7 @@ typedef struct {
 
 extern int func_02014868(const void *);
 extern int func_020b5e10(void);
-extern void func_020b6434(int, int, int, int);
+extern int func_020b6434(int, int, int, int);
 extern void func_ov055_02260b24(void *, int);
 
 int func_ov055_02260a78(UnkStruct_02260a78 *self)

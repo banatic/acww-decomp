@@ -7,7 +7,7 @@ typedef struct {
     short s;
 } UnkStruct_020ff6bc;
 
-void func_020ff6bc(UnkStruct_020ff6bc *p0, int *p1, int *p2)
+void func_020ff6bc(UnkStruct_020ff6bc *p0, int *p1, int *p2, void *emitter)
 {
     p2[0] += p0->s * (p0->arr[0] - p1[2] - p1[5]) >> 12;
     p2[1] += p0->s * (p0->arr[1] - p1[3] - p1[6]) >> 12;

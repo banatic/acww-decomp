@@ -33,12 +33,12 @@ extern PMF data_020d90c0;
 extern PMF data_020d90a8;
 
 extern "C" {
-extern void func_02137550(void *, unsigned int);
+extern char *func_02137550(void *, unsigned int);
 extern void func_0209e474(UnkStruct_020214e0 *);
 extern int func_020644cc(int);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(UnkStruct_020214e0_3 *, u8 *, u8 *, int, int, int, int, int, int);
+extern int func_0202da38(UnkStruct_020214e0_3 *, u8 *, u8 *, int, int, int, int, int, int);
 
 int func_020214e0(UnkStruct_020214e0_3 *obj)
 {

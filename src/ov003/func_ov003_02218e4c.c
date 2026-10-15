@@ -7,7 +7,7 @@ extern void func_020109fc(void *, int, int, int);
 extern int func_0200fbe0(void *);
 extern void func_0205eae0(void *, int, int, int);
 
-void func_ov003_02218e4c(void *self, void *data)
+void func_ov003_02218e4c(void *self, void *data, int previous)
 {
     unsigned char *p = (unsigned char *) data + 0xc;
     unsigned char b0 = p[0];

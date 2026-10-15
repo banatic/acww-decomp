@@ -23,7 +23,7 @@ extern int FX_MulFunc(int a, int b);
 extern int func_ov003_02235b54(unsigned char *self, int a, int b);
 extern short func_ov003_0223418c(int ang, int a);
 extern int func_ov003_022350cc(unsigned char *self);
-extern void func_ov003_02235834(unsigned char *self, int ang, int a);
+extern int func_ov003_02235834(unsigned char *self, int ang, int a);
 extern void func_ov003_0223597c(Vec3 *d, int ang);
 extern int func_ov003_02235130(unsigned char *self);
 extern void func_ov003_022351c4(unsigned char *self, Vec3 *v, int a);

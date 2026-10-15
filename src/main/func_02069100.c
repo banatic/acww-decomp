@@ -4,8 +4,8 @@
 
 extern void func_0208fc00(void *);
 extern void func_02068e44(void *);
-extern void func_0208fd68(void *);
-extern void func_0208a41c(void *);
+extern void *func_0208fd68(void *);
+extern void *func_0208a41c(void *);
 
 typedef struct {
     char pad_00[0xc];

@@ -3,14 +3,14 @@
  */
 
 extern int func_0206fe60(void);
-extern void func_ov122_022a0054(void *);
-extern void func_ov122_022a0038(void *);
+extern unsigned char *func_ov122_022a0054(void *);
+extern unsigned char *func_ov122_022a0038(void *);
 
-void func_ov122_022a0018(void *p)
+unsigned char *func_ov122_022a0018(void *p)
 {
     if (func_0206fe60()) {
-        func_ov122_022a0054(p);
+        return func_ov122_022a0054(p);
     } else {
-        func_ov122_022a0038(p);
+        return func_ov122_022a0038(p);
     }
 }

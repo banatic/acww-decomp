@@ -13,7 +13,7 @@ struct UnkStruct_0223a818 {
 };
 
 extern u8 data_ov004_022595b8;
-extern void func_02003e80(int h);
+extern void *func_02003e80(int h);
 extern void func_020e9fc8(int h);
 extern void func_ov004_0223ac14(void *p);
 

@@ -4,26 +4,26 @@
 
 extern int func_ov048_02260e78(void *);
 extern int func_02074308(void);
-extern int func_020ec148(int);
-extern int func_020730c8(void);
-extern void *func_020eb92c(int);
-extern void func_020641c8(void *);
-extern void func_02064170(void *);
-extern void func_02094fd4(void *);
-extern void func_02094f7c(void *);
+extern int func_020ec148(void);
+extern void func_020730c8(void);
+extern void *func_020eb92c(void);
+extern void *func_020641c8(void *);
+extern void *func_02064170(void *);
+extern void *func_02094fd4(void *);
+extern void *func_02094f7c(void *);
 extern int func_020eb998(void *);
 extern void *func_020eb9c4(void *);
 extern void MI_CpuCopy8(void *, void *, int);
 extern void func_020a8874(void *, void *, int);
-extern void func_020a8a70(void *, void *, int, int);
+extern int func_020a8a70(void *, void *, int, int);
 extern void func_02068404(void *, int, void *);
 extern void func_0206844c(void *, void *, void *);
 extern void func_ov048_02262378(void *);
 extern void func_ov048_022616b8(void *, int);
-extern void func_02094f64(void *);
-extern void func_02094fbc(void *);
-extern void func_02064158(void *);
-extern void func_020641b0(void *);
+extern void *func_02094f64(void *);
+extern void *func_02094fbc(void *);
+extern void *func_02064158(void *);
+extern void *func_020641b0(void *);
 extern void *data_ov048_02263d20;
 
 void func_ov048_0226125c(void *param)
@@ -44,12 +44,14 @@ void func_ov048_0226125c(void *param)
         return;
     }
 
-    n = func_020ec148(func_02074308());
+    func_02074308();
+    n = func_020ec148();
     if (n <= 0) {
         return;
     }
 
-    arr = func_020eb92c(func_020730c8());
+    func_020730c8();
+    arr = func_020eb92c();
 
     func_020641c8(buf1);
     func_02064170(buf2);

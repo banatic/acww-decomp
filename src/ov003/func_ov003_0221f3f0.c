@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_0221f5ac(void);
-extern void func_02055f1c(int);
+extern int func_ov003_0221f5ac(int unused0);
+extern int func_02055f1c(int);
 
 int func_ov003_0221f3f0(int param)
 {
@@ -12,7 +12,7 @@ int func_ov003_0221f3f0(int param)
     int r1;
 
     r4 = param;
-    if (func_ov003_0221f5ac() != 0) {
+    if (func_ov003_0221f5ac(param) != 0) {
         func_02055f1c(r4);
         r0 = 0;
         r1 = ~r0;

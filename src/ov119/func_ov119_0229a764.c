@@ -2,21 +2,21 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020641c8(void *);
-extern void func_02064170(void *);
-extern void func_02064158(void *);
-extern void func_020641b0(void *);
-extern void *func_ov119_0229ae50(void *);
+extern void *func_020641c8(void *);
+extern void *func_02064170(void *);
+extern void *func_02064158(void *);
+extern void *func_020641b0(void *);
+extern void *func_ov119_0229ae50(void);
 extern void *func_ov119_0229bb44(void *);
-extern int func_02077c3c(void *);
-extern int func_02077e50(int);
+extern void *func_02077c3c(void *object);
+extern int func_02077e50(void *friend_data);
 extern int func_02077c34(void *);
 extern int func_02077c38(void *);
-extern int func_02077d6c(int);
+extern int func_02077d6c(void *friend_data);
 extern void func_020a8874(void *, int, int);
-extern void func_020a8a70(void *, void *, int, int);
-extern void func_020b496c(int, void *);
-extern void func_0207094c(void *, int);
+extern int func_020a8a70(void *, void *, int, int);
+extern void *func_020b496c(int, void *);
+extern int func_0207094c(void *, int);
 extern void func_020708e4(void *, int, int);
 extern void func_020a8c1c(void *);
 extern void func_02070adc(void *, int, int, int, int, int, int);
@@ -34,7 +34,7 @@ void func_ov119_0229a764(unsigned char *self)
     int buf1[8];
     int buf2[7];
 
-    base = func_ov119_0229ae50(self);
+    base = func_ov119_0229ae50();
     k = self[0x9c] << 3;
     incA = 0x1ce;
     incB = 0x14e;

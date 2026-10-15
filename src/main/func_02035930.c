@@ -3,8 +3,8 @@
  */
 
 extern int func_020b65c4(void);
-extern void func_020b5e10(void);
-extern int func_020b5e84(void);
+extern int func_020b5e10(void);
+extern int func_020b5e84(unsigned char *);
 extern void func_0200423c(int);
 
 void func_02035930(void)
@@ -15,8 +15,7 @@ void func_02035930(void)
     int result;
 
     a = func_020b65c4();
-    func_020b5e10();
-    b = func_020b5e84();
+    b = func_020b5e84((unsigned char *) func_020b5e10());
 
     a22 = (a == 0x22);
     a25 = (a == 0x25);

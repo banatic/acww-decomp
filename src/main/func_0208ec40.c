@@ -21,13 +21,13 @@ typedef struct UnkStruct_0208ec40_2 {
     int unk_44;
 } UnkStruct_0208ec40_2;
 
-extern void func_0208af30(void);
+extern void func_0208af30(void *);
 extern void func_0208a1f8(UnkStruct_0208ec40 *);
-extern void func_0208e95c(UnkStruct_0208ec40_2 *);
+extern void func_0208e95c(void *, int);
 
 UnkStruct_0208ec40_2 *func_0208ec40(UnkStruct_0208ec40_2 *self, char param)
 {
-    func_0208af30();
+    func_0208af30(self);
     self->unk_00 = &data_020e2330;
     self->unk_0C = 0;
     self->unk_10 = 0;
@@ -36,6 +36,6 @@ UnkStruct_0208ec40_2 *func_0208ec40(UnkStruct_0208ec40_2 *self, char param)
     self->unk_3C = 0;
     self->unk_40 = param;
     self->unk_44 = -1;
-    func_0208e95c(self);
+    func_0208e95c(self, 0);
     return self;
 }

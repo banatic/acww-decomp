@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int data_ov004_0225395c[2];
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern u16 data_020c80f8;
 
 int func_ov004_0221ea40(char *a, char *b)

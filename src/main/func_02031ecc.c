@@ -32,10 +32,10 @@ extern void func_020eaca0(Vec3 *dst, Vec3 *a, Vec3 *b);
 extern int FX_MulFunc(int a, int b);
 extern int func_020320e0(Vec3 *a, Vec3 *b, Vec3 *c, Vec3 *d);
 extern void func_0202f8fc(Pair *p, int a, int b);
-extern void func_0203394c(int *w, Pair *a, Pair *b, Pair *c, int d, int e, int f, UnkStruct_02031ecc *g);
-extern void func_0203364c(void *p, int *w);
-extern void func_020339b8(int *w);
-extern void func_02033a24(void *a, Vec3 *b, Vec3 *c, Vec3 *d, int *e, int f, UnkStruct_02031ecc *g);
+extern int *func_0203394c(int *w, Pair *a, Pair *b, Pair *c, int d, int e, int f, UnkStruct_02031ecc *g);
+extern int func_0203364c(void *p, int *w);
+extern void *func_020339b8(int *w);
+extern int func_02033a24(void *a, Vec3 *b, Vec3 *c, Vec3 *d, int *e, int f, UnkStruct_02031ecc *g);
 
 void func_02031ecc(int a0, Vec3 *p1, Vec3 *p2, void *p3, void *a4, int flags, int a6)
 {

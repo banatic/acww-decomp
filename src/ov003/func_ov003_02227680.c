@@ -23,7 +23,7 @@ extern void *data_ov003_0223bdbc;
 extern void *func_0209d238(void *p, int *q);
 extern int func_0209d0ac(void *p, void *h, void *g);
 extern void *func_0209d088(void *p);
-extern void func_02055f2c(UnkStruct_02227680 *a, void *x, int f);
+extern int func_02055f2c(UnkStruct_02227680 *a, void *x, int f);
 extern void *func_0209d324(void *h);
 extern void *func_02064b2c(void *g, void *m, int n, int f);
 extern void *NNS_G3dGetJntAnmSet(void *p);

@@ -3,7 +3,7 @@
  */
 
 extern void func_ov002_0220a164(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov145_02299e08(void *self)
 {
@@ -12,5 +12,5 @@ void func_ov145_02299e08(void *self)
     func_ov002_0220a164((char *) self + 0xc8);
     b = *(unsigned char *) ((char *) self + 0x8d);
     *(unsigned char *) ((char *) self + 0xc3) = b;
-    func_ov002_02208098(self, 8);
+    func_ov002_02208098((void *) (self), 8);
 }

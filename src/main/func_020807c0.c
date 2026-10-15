@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02080808(void);
+extern int func_02080808(int, unsigned int);
 
 int func_020807c0(int param1, int param2)
 {
@@ -10,7 +10,7 @@ int func_020807c0(int param1, int param2)
     int temp;
 
     result = 0;
-    temp = func_02080808();
+    temp = func_02080808(param1, param2);
     if (temp != 0) {
         result = param1 + (param2 << 7);
     }

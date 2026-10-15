@@ -4,9 +4,9 @@
 
 int g_021f450c;
 extern void func_020a8d20(int *g, int a, int b, int c, int d);
-extern void func_020a922c(int *g, int x);
+extern int func_020a922c(int *g, int x);
 extern int func_020a8d08(int *g);
-extern int func_020a8d10(int *g);
+extern void func_020a8d10(int *g);
 
 int func_020a8a34(int param0, int param1)
 {

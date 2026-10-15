@@ -3,12 +3,12 @@
  */
 
 extern int func_02014868(void *ptr);
-extern void func_0208602c(void);
-extern int func_020860d0(void);
+extern int func_0208602c(void);
+extern int func_020860d0(int argument0);
 extern int func_ov050_022604bc(void *self);
 extern int func_02087ec0(int x);
 extern int func_020b5e10(void);
-extern void func_020b6098(int first, int flag);
+extern int func_020b6098(int first, int flag);
 extern void func_ov050_02264834(void *self, int x);
 
 int func_ov050_02264258(void *self)
@@ -17,8 +17,8 @@ int func_ov050_02264258(void *self)
     if (func_02014868((char *) self + 0x618) != 0) {
         goto done;
     }
-    func_0208602c();
-    r5 = func_020860d0();
+
+    r5 = func_020860d0((int) func_0208602c());
     if (func_ov050_022604bc(self) != 0 && func_02087ec0(r5) != 0) {
         func_020b6098(func_020b5e10(), 1);
     } else {

@@ -14,7 +14,7 @@ struct UnkStruct_0220cbb4 {
 
 extern int func_0200f290(struct UnkStruct_0220cbb4 *self, int param);
 extern void func_0200f268(struct UnkStruct_0220cbb4 *self, int param);
-extern void func_ov003_0220e8f4(struct UnkStruct_0220cbb4 *self, u32 *arr, int a, int b);
+extern int func_ov003_0220e8f4(struct UnkStruct_0220cbb4 *self, u32 *arr, int a, int b);
 
 void func_ov003_0220cbb4(struct UnkStruct_0220cbb4 *self)
 {

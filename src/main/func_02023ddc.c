@@ -6,14 +6,14 @@ typedef struct {
     int a, b;
 } Pair;
 
-extern void func_0202d9c4(void *);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(void *);
+extern int func_0209bc40(unsigned char *);
 extern int func_02099fe8(void);
 extern void func_0209a088(void *, int, int);
 extern void *func_020984e8(void);
 extern void *func_020996ac(void *);
-extern void OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
-extern void func_020154b4(void *, void *, int, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
+extern int func_020154b4(void *, void *, int, int, int);
 extern void func_0202dbf0(void *, Pair);
 extern void func_0202dac0(void *);
 extern const Pair data_020d9100;
@@ -22,8 +22,7 @@ void func_02023ddc(void *obj)
 {
     int st;
 
-    func_0202d9c4(obj);
-    switch (func_0209bc40()) {
+    switch (func_0209bc40((unsigned char *) func_0202d9c4(obj))) {
         case 0xe:
         case 0x10:
             st = func_02099fe8();

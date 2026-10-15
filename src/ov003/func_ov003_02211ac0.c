@@ -37,14 +37,14 @@ struct UnkStruct_02211ac0 {
     Vec c;
     Vec d;
 };
-extern void func_020912d4(int, void *, void *, int);
-extern void func_0200f328(void *, int);
-extern void func_0200f27c(void *, int);
+extern int func_020912d4(int, void *, void *, int);
+extern int func_0200f328(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
 extern void func_0200f268(void *, int);
-extern void func_ov003_02221294(void *, void *, int);
+extern int func_ov003_02221294(void *, void *, int);
 extern void func_0204f818(int *, int *, void *);
-extern void func_02030db8(int, int);
-extern void func_ov003_02220f40(void *, void *, short);
+extern int func_02030db8(int, int);
+extern int func_ov003_02220f40(void *, void *, short);
 extern void func_02010f5c(void *);
 void func_ov003_02211ac0(struct UnkStruct_02211ac0_2 *o)
 {

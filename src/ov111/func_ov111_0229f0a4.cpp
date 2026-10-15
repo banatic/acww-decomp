@@ -16,11 +16,11 @@ struct UnkStruct_0229f0a4_2 {
 };
 
 extern "C" void func_ov002_0220a0ec(UnkStruct_0229f0a4 *b);
-extern "C" void func_ov002_02208098(UnkStruct_0229f0a4_2 *w, int n);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 extern "C" void func_ov111_0229f0a4(UnkStruct_0229f0a4_2 *w)
 {
     func_ov002_0220a0ec(&w->obj);
     w->obj.v3();
-    func_ov002_02208098(w, 3);
+    func_ov002_02208098((void *) (w), 3);
 }

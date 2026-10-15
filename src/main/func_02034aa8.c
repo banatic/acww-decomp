@@ -4,7 +4,7 @@
 
 extern unsigned char data_020e54a8;
 extern int func_ov004_02232054(int);
-extern void func_02034b80(int, int, int, int);
+extern int func_02034b80(int, int, int, int);
 
 int func_02034aa8(int arg0)
 {

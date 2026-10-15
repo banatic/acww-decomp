@@ -3,7 +3,7 @@
  */
 
 extern int func_0202ec14(void *p);
-extern int func_0208602c(int a);
+extern int func_0208602c(void);
 extern int func_020860b8(int a);
 extern void func_02087864(int a, int b, int c);
 
@@ -22,6 +22,6 @@ int func_ov073_022796c8(struct S_022796c8 *p)
     if (v == 0) {
         return 0;
     }
-    func_02087864(func_020860b8(func_0208602c(v)), p->unk_5C, p->unk_64);
+    func_02087864(func_020860b8(func_0208602c()), p->unk_5C, p->unk_64);
     return 1;
 }

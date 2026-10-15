@@ -9,7 +9,7 @@ extern void func_02073820(void *);
 extern void func_020737f0(void *, void *, int);
 extern void func_02073770(void *, int, int);
 
-void func_0207880c(int a, int b, int c, int d)
+void func_0207880c(int a, int b, int c)
 {
     if (func_02073d90(data_020ccf94)) {
         int temp;

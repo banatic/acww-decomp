@@ -16,14 +16,14 @@ typedef struct {
     u8 subA90[4];
 } UnkStruct_0229a4c8;
 
-extern void func_ov130_0229a678(u8);
+extern int func_ov130_0229a678(u8);
 extern void *data_ov130_0229aa90[];
-extern void func_02064af4(void *, void *, int);
+extern int func_02064af4(void *, void *, int);
 extern void func_0206fdd4(void *, int, int, int, int, int);
-extern void func_02002b40(void *, u8, int, int);
+extern int func_02002b40(void *, u8, int, int);
 extern void *data_ov130_0229aa78[];
 extern void *func_ov130_022999c0(UnkStruct_0229a4c8 *);
-extern void func_0207094c(void *, int);
+extern int func_0207094c(void *, int);
 extern void func_02070adc(void *, u8, int, int, int, int, int);
 extern void func_02070a04(void *, int, int);
 extern u8 data_ov130_0229a804[];

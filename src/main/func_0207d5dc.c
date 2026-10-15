@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207ffa0(void);
+extern int func_0207ffa0(int, unsigned int);
 
 void func_0207d5dc(int param1, int param2)
 {
@@ -15,7 +15,7 @@ void func_0207d5dc(int param1, int param2)
 
     r5 = param1;
     r4 = param2;
-    r0 = func_0207ffa0();
+    r0 = func_0207ffa0(param1, param2);
     if (r0 != 0) {
         r0_ptr = (unsigned short *) (r5 + 0x7d0);
         r2 = *r0_ptr;

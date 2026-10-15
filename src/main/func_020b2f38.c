@@ -3,7 +3,7 @@
  */
 
 extern unsigned short *func_020b3038(int *a, int *b);
-extern int func_0204bcdc(void);
+extern int func_0204bcdc(void *);
 extern int func_0204bc64(const unsigned short *ptr);
 extern int func_0204e414(void);
 extern int func_0204e3f4(int a, int b, int c, int d);
@@ -30,7 +30,7 @@ int func_020b2f38(int input)
         goto fail;
     }
 
-    if (func_0204bcdc() != 0) {
+    if (func_0204bcdc(p) != 0) {
         arr[1] = (unsigned short) input;
         if (func_0204bc64(p) == func_0204bc64(&arr[1])) {
             res = 1;

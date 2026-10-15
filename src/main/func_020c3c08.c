@@ -9,9 +9,8 @@ struct UnkStruct_020c3c08 {
     char flag;
 };
 
-int func_020c3c08(int unused, struct UnkStruct_020c3c08 *s)
+void func_020c3c08(int unused, struct UnkStruct_020c3c08 *s)
 {
     s->ptr = &data_020d315c;
     s->flag = 0;
-    return 0;
 }

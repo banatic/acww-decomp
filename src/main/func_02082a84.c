@@ -7,11 +7,11 @@ struct Entry {
     unsigned short b;
 };
 
-extern int func_02082afc(struct Entry *arr);
+extern int func_02082afc(struct Entry *arr, unsigned short *);
 
-int func_02082a84(struct Entry *arr)
+int func_02082a84(struct Entry *arr, unsigned short *argument1)
 {
-    int idx = func_02082afc(arr);
+    int idx = func_02082afc(arr, (unsigned short *) argument1);
     int ret = 0;
     if (idx >= 0 && idx < 8) {
         arr[idx].a = 0;

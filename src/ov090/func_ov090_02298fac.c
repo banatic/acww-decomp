@@ -22,11 +22,11 @@ struct UnkStruct_02298fac_2 {
     u8 p3[0x1144 - 0xc44];
     u8 unk_1144[0x20];
 };
-extern void func_020b9c10(u8 *, u8 *, int, int, int, int);
-extern void func_020b9a18(u8 *, UnkStruct_02298fac *, u8 *, int, int, int, int, int);
-extern void func_02064328(u8 *, void *, int);
-extern void func_02064af4(u8 *, u8 *, int);
-extern void func_020b9b6c(u8 *, u8 *, int, int);
+extern int func_020b9c10(u8 *, u8 *, int, int, int, int);
+extern int func_020b9a18(u8 *, UnkStruct_02298fac *, u8 *, int, int, int, int, int);
+extern int func_02064328(u8 *, void *, int);
+extern int func_02064af4(u8 *, u8 *, int);
+extern int func_020b9b6c(u8 *, u8 *, int, int);
 extern u8 data_ov090_02299900[];
 
 void func_ov090_02298fac(UnkStruct_02298fac_2 *self, int idx)

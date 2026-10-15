@@ -44,8 +44,8 @@ extern int data_020c8924;
 extern int data_021c1d6c;
 extern UnkStruct_02028c04_2 data_020d8eb8;
 
-extern void func_0207f270(void *);
-extern int func_020794d0(void);
+extern int func_0207f270(void *);
+extern int func_020794d0(int);
 extern void func_0209e474(UnkStruct_02028c04 *);
 extern int func_02073dd4(GS *, int);
 extern int func_0209bd44(int *);
@@ -68,8 +68,7 @@ int func_02028c04(CTX *a1, void *a2, UnkStruct_02028c04_3 *a3)
     ST st;
     SUB *p;
 
-    func_0207f270(a2);
-    x = func_020794d0();
+    x = func_020794d0((int) func_0207f270(a2));
     p = &a3->sub;
     s.a = 0;
     s.b = 0;

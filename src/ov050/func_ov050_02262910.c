@@ -3,7 +3,7 @@
  */
 
 extern int func_0209a000(void *ptr, int val);
-extern void func_020154b4(void *self, void *ptr, int a, int b, int c);
+extern int func_020154b4(void *self, void *ptr, int a, int b, int c);
 
 typedef struct {
     char pad_00[0x1e];
@@ -14,7 +14,7 @@ typedef struct {
     unsigned int unk_D0;
 } SelfType;
 
-void func_ov050_02262910(SelfType *self)
+void func_ov050_02262910(SelfType *self, int event)
 {
     int sp_arg;
     unsigned short local[2];

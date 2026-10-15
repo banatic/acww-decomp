@@ -10,7 +10,7 @@ typedef struct Unk9A14 {
     char pad_96[2];
     unsigned short unk_98;
     char pad_9A[2];
-    void (*fn0x9c)(void);
+    unsigned int (*fn0x9c)(void);
     char pad_A0[0x20];
     unsigned int fl0xc0;
 } Unk9A14;

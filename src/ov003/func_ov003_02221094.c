@@ -3,7 +3,7 @@
  */
 
 extern char data_ov003_0223cfe4;
-extern void func_ov003_022213f8(void *, int, void *, void *, int, int, int, int);
+extern int func_ov003_022213f8(void *, int, void *, void *, int, int, int, int);
 
 struct UnkStruct_02221094 {
     int a;

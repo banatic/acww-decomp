@@ -24,7 +24,7 @@ extern void func_ov127_0229a0bc(void *ptr);
 extern void func_ov129_0229c118(UnkStruct_0229d2d0 *self);
 extern void func_ov129_0229c094(UnkStruct_0229d2d0 *self);
 extern void func_ov129_0229bfbc(UnkStruct_0229d2d0 *self);
-extern void func_ov004_0222be7c(void);
+extern int func_ov004_0222be7c(void);
 extern void func_0203584c(char *ptr);
 extern char *data_021c526c;
 

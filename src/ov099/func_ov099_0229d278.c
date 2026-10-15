@@ -10,7 +10,7 @@ struct UnkStruct_0229d278 {
 };
 extern int func_0208e484(const void *ptr);
 extern int func_ov002_02209f9c(const void *ptr);
-extern void func_ov002_02208098(UnkStruct_0229d278 *self, unsigned char byte);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229d278 *self, unsigned char byte);
 extern void func_ov099_0229c28c(UnkStruct_0229d278 *self, int value);
 extern void func_ov099_0229c928(UnkStruct_0229d278 *self);
 

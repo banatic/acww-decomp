@@ -25,8 +25,8 @@ extern void *func_0209b4d4(void *h);
 extern void func_0202d9d0(UnkStruct_0202a1cc_2 *p, void *x);
 extern void *func_0209b4cc(void *h, int i);
 extern void func_02015e10(UnkStruct_0202a1cc_2 *p, void *x, int i);
-extern void func_0202d9c4(UnkStruct_0202a1cc_2 *p);
-extern void *func_0209bb70(void);
+extern unsigned int func_0202d9c4(UnkStruct_0202a1cc_2 *p);
+extern void *func_0209bb70(int);
 extern void func_02015de4(UnkStruct_0202a1cc_2 *p, void *x, int a, int b);
 extern int func_0209b414(void *h);
 extern void func_0201cf90(UnkStruct_0202a1cc_2 *p, UnkStruct_0202a1cc *loc, int a, int b, int c, void *s);
@@ -58,8 +58,7 @@ int func_0202a1cc(UnkStruct_0202a1cc_2 *p, int a2, int a3, int a4)
         func_0202d9d0(p, func_0209b4d4(p->unk_160));
         func_02015e10(p, func_0209b4cc(p->unk_160, 0), 0);
         func_02015e10(p, func_0209b4cc(p->unk_160, 1), 1);
-        func_0202d9c4(p);
-        func_02015de4(p, func_0209bb70(), 0, 7);
+        func_02015de4(p, func_0209bb70((int) func_0202d9c4(p)), 0, 7);
         if (func_0209b414(p->unk_160)) {
             func_0201cf90(p, &loc, 0, 0x23, 0x23, data_021c2be4);
         } else {

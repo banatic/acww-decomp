@@ -15,9 +15,9 @@ typedef struct {
 extern int func_020984e8(void);
 extern int func_02099020(int, int);
 extern int func_02099670(int);
-extern int func_02088a9c(int);
+extern void *func_02088a9c(void *record);
 extern void func_0209df64(void *);
-extern int func_0209dcdc(void *, int);
+extern int func_0209dcdc(void *, const void *date);
 extern int func_0202ea80(int, int);
 extern int func_020644cc(int);
 
@@ -34,13 +34,13 @@ extern const Table2Entry data_ov071_02279fbc[];
 
 void func_ov071_02278e40(UnkStruct_02278e40 *p, UnkStruct_02278e40_2 *q)
 {
-    int x;
+    void *x;
     int y;
     int r6 = 0;
     int t = func_020984e8();
 
     if (func_02099020(t, 0x17) != 0) {
-        x = func_02088a9c(func_02099670(t));
+        x = func_02088a9c((void *) func_02099670(t));
         func_0209df64(&y);
         if (func_0209dcdc(&y, x) < 1) {
             p->unk_B0 = 1;

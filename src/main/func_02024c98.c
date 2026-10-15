@@ -41,9 +41,9 @@ extern struct Pair data_020d9018;
 
 extern int func_0202d9c4(void *);
 extern int func_0209bc40(int);
-extern int func_0208150c(void *, void *);
+extern int func_0208150c(void *);
 extern int func_020036e8(int);
-extern void func_0202da38(void *, void *, void *, int, int, int, int, int, int);
+extern int func_0202da38(void *, void *, void *, int, int, int, int, int, int);
 
 void func_02024c98(struct UnkStruct_02024c98_2 *self, struct UnkStruct_02024c98 *out)
 {
@@ -60,7 +60,7 @@ void func_02024c98(struct UnkStruct_02024c98_2 *self, struct UnkStruct_02024c98 
         self->unk_40->value = 1;
     }
 
-    tmp2 = func_020036e8(func_0208150c(self->unk_100->ptr, self->unk_100));
+    tmp2 = func_020036e8(func_0208150c(self->unk_100->ptr));
 
     func_0202da38(self, self->buf104, &self->unk_122, 0x1e, tmp2, local.a, ((u8 *) &local)[4], 0, 0);
 

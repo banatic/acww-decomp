@@ -12,7 +12,7 @@ extern int func_ov002_0220889c(void *ctx);
 extern int func_ov002_022088cc(void *ctx);
 extern int func_ov002_022088bc(void *ctx);
 extern int func_ov106_0229d390(void *self, int b);
-extern int func_ov106_0229c354(void *self, int val);
+extern void func_ov106_0229c354(void *self, int val);
 extern int func_ov106_0229c364(void *self, int val);
 extern void func_ov002_0220a314(void *ptr);
 

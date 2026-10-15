@@ -3,9 +3,9 @@
  */
 
 extern void *data_021d52c4;
-extern int func_020907c4(void *, int, int);
+extern void func_020907c4(void *, int, void (*callback)(void *));
 
-int func_02090aa4(int a, int b)
+void func_02090aa4(int index, void (*callback)(void *))
 {
-    return func_020907c4((char *) data_021d52c4 + 0x35c, a, b);
+    func_020907c4((char *) data_021d52c4 + 0x35c, index, callback);
 }

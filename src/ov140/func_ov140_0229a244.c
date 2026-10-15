@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern char *func_ov140_0229a15c(void *p);
+extern char *func_ov140_0229a15c(void);
 extern int func_ov140_0229a1a4(void *p, char *entry);
 
 int func_ov140_0229a244(void *p)
@@ -10,7 +10,7 @@ int func_ov140_0229a244(void *p)
     char *base;
     int i, count;
 
-    base = func_ov140_0229a15c(p);
+    base = func_ov140_0229a15c();
     count = 0;
     i = count;
     for (; i < 0x20; i++) {

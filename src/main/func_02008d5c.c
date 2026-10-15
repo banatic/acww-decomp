@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0(void *, unsigned int, unsigned int, unsigned int);
-extern void func_020912d4(int, void *, int, int);
-extern void func_0200f328(void *, int);
+extern void func_020109a0(void *, unsigned int, unsigned int, unsigned short);
+extern int func_020912d4(int, void *, int, int);
+extern int func_0200f328(void *, int);
 extern void func_02008db8(void *, int);
 
 struct UnkStruct_02008d5c {
@@ -20,7 +20,7 @@ struct UnkStruct_02008d5c_2 {
     char unk_8F0[1];
 };
 
-void func_02008d5c(struct UnkStruct_02008d5c_2 *a, struct UnkStruct_02008d5c *b)
+void func_02008d5c(struct UnkStruct_02008d5c_2 *a, struct UnkStruct_02008d5c *b, int previous)
 {
     short val = b->unk_0C;
     func_020109a0(a, 0x70, 3, 0);

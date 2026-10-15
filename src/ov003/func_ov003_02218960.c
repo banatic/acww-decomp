@@ -4,9 +4,9 @@
 
 extern int func_02056f94(void *);
 extern unsigned int func_02008258(void *, unsigned int);
-extern void func_0200d4e8(void *, int, int, int);
+extern int func_0200d4e8(void *, int, int, int);
 extern int func_02073908(void *, unsigned int);
-extern void func_ov003_0220d268(void *);
+extern int func_ov003_0220d268(void *);
 extern void func_0200f268(void *, int);
 extern void *data_020ccf94;
 

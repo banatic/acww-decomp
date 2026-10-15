@@ -5,7 +5,7 @@
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 extern int func_ov002_02208054(void *arg, int n);
-extern void func_ov002_02208098(void *arg, int n);
+extern unsigned char *func_ov002_02208098(void *arg, unsigned char value);
 extern void func_ov120_0229b604(void *arg);
 extern int func_ov120_0229a9b4(void *arg);
 extern int func_ov120_0229aacc(void *arg);

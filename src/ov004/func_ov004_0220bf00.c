@@ -7,8 +7,8 @@
 extern int func_0206837c(u32);
 extern int func_020ab504(int);
 extern int func_020984e8(void);
-extern int func_020996a0(int);
-extern u16 *func_020adf50(int);
+extern unsigned int func_020996a0(unsigned int);
+extern unsigned short *func_020adf50(void *record);
 extern int func_020adde4(u16);
 extern void func_0206844c(u32, void *, u32);
 extern u32 data_ov004_0224fbe0;
@@ -16,6 +16,7 @@ extern u32 data_ov004_0224fbe0;
 void func_ov004_0220bf00(void *self)
 {
     u8 arr[4];
+    register u16 *selected;
     u8 b = *(u8 *) ((char *) self + 0x10a);
     int r = func_020ab504(func_0206837c(*(u32 *) ((char *) self + 0x12c)));
 
@@ -25,7 +26,8 @@ void func_ov004_0220bf00(void *self)
 
     switch (r) {
         case 0:
-            if (func_020adde4(*(u16 *) func_020adf50(func_020996a0(func_020984e8()))) == 0) {
+            selected = func_020adf50((void *) func_020996a0((unsigned int) func_020984e8()));
+            if (func_020adde4(*selected) == 0) {
                 arr[0] = 1;
                 func_0206844c(*(u32 *) ((char *) self + 0x12c), &arr[0], data_ov004_0224fbe0);
             } else {

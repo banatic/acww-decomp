@@ -12,7 +12,7 @@ struct OBJ {
     int d[16];
 };
 
-extern void *func_0208150c(void);
+extern void *func_0208150c(unsigned int);
 extern void *func_020984e8(void);
 extern int func_02003704(void *);
 extern void *func_02099870(void *);
@@ -23,15 +23,15 @@ extern void func_0209e474(struct UnkStruct_02080ea4 *);
 extern void MI_CpuCopy8(const void *, void *, int);
 extern int func_0203fc78(int, struct UnkStruct_02080ea4 *, int);
 extern void *func_020807a8(void *, void *);
-extern int func_02081d20(void);
+extern int func_02081d20(signed char *);
 extern int func_020818d4(void *);
-extern void func_020b5630(struct OBJ *);
-extern void func_020b45d0(struct OBJ *, int, int, int, int, int);
-extern void func_0203d7c4(int, struct OBJ *);
+extern void *func_020b5630(struct OBJ *);
+extern int func_020b45d0(struct OBJ *, int, int, int, int, int);
+extern int func_0203d7c4(int, struct OBJ *);
 extern int func_020644cc(int);
 extern int func_0205a240(void *, int, void *, void *, int, int);
 extern void func_020818fc(void *);
-extern void func_020b5618(struct OBJ *);
+extern void *func_020b5618(struct OBJ *);
 extern u8 data_020e197c[];
 
 void func_02080ea4(void *a0, void *a1, void *a2)
@@ -44,7 +44,7 @@ void func_02080ea4(void *a0, void *a1, void *a2)
     void *w;
     int ok;
 
-    h = func_0208150c();
+    h = func_0208150c((unsigned int) a0);
     if (a1 == 0) {
         a1 = func_020984e8();
     }
@@ -85,7 +85,7 @@ void func_02080ea4(void *a0, void *a1, void *a2)
     if (w == 0) {
         return;
     }
-    if (func_02081d20() < 0x40) {
+    if (func_02081d20(w) < 0x40) {
         return;
     }
     if (func_020818d4(w) != 0) {

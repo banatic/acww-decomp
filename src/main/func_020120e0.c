@@ -11,17 +11,17 @@ extern void func_02014898(void *p);
 extern void func_02019eac(void *p);
 extern void func_02013c28(void *p);
 extern void func_020f5914(void *p);
-extern void func_02089c70(void *p);
-extern void func_02032c50(void *p);
+extern void *func_02089c70(void *p);
+extern void *func_02032c50(void *p);
 extern void func_0201a790(void *p);
 extern void func_0201a7e8(void *p);
 extern void func_0201ade4(void *p);
 extern void func_0201b320(void *p);
-extern void func_02016998(void *p);
-extern void func_0201a3f8(void *p);
+extern int func_02016998(void *p);
+extern void *func_0201a3f8(void *p);
 extern void func_0201b390(void *p);
-extern void func_02054630(void *p);
-extern void func_0203f080(void *p);
+extern void *func_02054630(void *p);
+extern void *func_0203f080(void *p);
 
 struct UnkStruct_020120e0 {
     u8 pad_00[0x514];

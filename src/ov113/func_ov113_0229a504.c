@@ -5,7 +5,7 @@
 extern void func_ov113_02299c44(void *self, int a);
 extern int func_ov113_02299da4(void *self, int a);
 extern void func_02002708(int a);
-extern void AOSS_Disconnect(void *self, int a, int b, int c, int d);
+extern void func_ov002_02207ee8(char *, int, int, int, int);
 extern void func_ov002_02207e80(void *self, int a, int b, int c);
 extern void func_ov002_02208090(void *self, int a);
 extern void func_ov113_02299df4(void *self, int a);
@@ -42,7 +42,7 @@ void func_ov113_0229a504(struct UnkStruct_0229a504 *self)
             break;
     }
 
-    AOSS_Disconnect(self, 8, 6, v, 0x30);
+    func_ov002_02207ee8((char *) (self), 8, 6, v, 0x30);
     func_02002708(2);
     func_ov002_02207e80(self, 2, 0, 0);
     func_ov002_02208090(self, 8);

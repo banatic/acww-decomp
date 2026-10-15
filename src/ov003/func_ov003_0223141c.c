@@ -3,7 +3,7 @@
  */
 
 #pragma opt_propagation off
-extern void *func_0204e414(int a);
+extern void *func_0204e414(void);
 extern void func_0204f818(int *x, int *y, int a);
 extern unsigned short *func_0204f5e0(void *hnd, int i, int j, int u, int v, int w);
 
@@ -15,7 +15,7 @@ int func_ov003_0223141c(int a)
     unsigned int h, g, f, ee, d, c, b, aa;
     unsigned short lo;
 
-    hnd = func_0204e414(a);
+    hnd = func_0204e414();
     if (hnd != 0) {
         func_0204f818(&x, &y, a);
         px = x;

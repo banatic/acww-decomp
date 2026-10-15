@@ -17,15 +17,15 @@ typedef enum {
 
 typedef enum { GX_VRAM_SUB_OBJEXTPLTT_NONE = 0x0000, GX_VRAM_SUB_OBJEXTPLTT_0_I = GX_VRAM_I } GXVRamSubOBJExtPltt;
 
-GXVRamSubOBJExtPltt GX_ResetBankForSubOBJExtPltt(void);
+void *GX_ResetBankForSubOBJExtPltt(int size, void *heap);
 
-void GXS_BeginLoadOBJExtPltt(void);
+void GXS_BeginLoadOBJExtPltt(int size, void *heap);
 
-extern GXVRamSubOBJExtPltt sSubOBJExtPltt;
+extern void *sSubOBJExtPltt;
 
-void GXS_BeginLoadOBJExtPltt()
+void GXS_BeginLoadOBJExtPltt(int size, void *heap)
 {
     ((void) 0);
-    sSubOBJExtPltt = GX_ResetBankForSubOBJExtPltt();
+    sSubOBJExtPltt = GX_ResetBankForSubOBJExtPltt(size, heap);
     ((void) 0);
 }

@@ -2,6 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern unsigned int func_020644cc(int bound);
+
 int func_02041110(int a, int *array, int b)
 {
     int i;

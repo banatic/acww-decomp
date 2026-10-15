@@ -11,7 +11,7 @@ typedef struct {
 
 extern int func_0208e484(void *p);
 extern int func_ov002_02209f9c(void *p);
-extern void func_ov002_02208098(void *p, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char c);
 extern void func_ov101_0229c28c(void *p, int n);
 extern void func_ov101_0229ca00(void *p);
 

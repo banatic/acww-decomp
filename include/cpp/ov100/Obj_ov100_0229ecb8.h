@@ -27,7 +27,7 @@ class Obj_ov100_0229ecb8 : public Obj_ov002_0220bb24 {
     void func_ov100_0229da7c();
     void func_ov100_0229da40();
     void func_ov100_0229da04();
-    void func_ov100_0229d9c0();
+    int func_ov100_0229d9c0();
     void func_ov100_0229d9a0();
     void func_ov100_0229d968();
     void func_ov100_0229d928();

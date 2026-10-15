@@ -33,7 +33,7 @@ extern void func_ov134_0229a918(UnkStruct_0229a24c *, u8, int);
 extern int func_ov134_02299d10(UnkStruct_0229a24c *);
 extern void func_02004658(int);
 extern void func_ov134_0229a804(UnkStruct_0229a24c *);
-extern int func_ov134_0229ac38(void);
+extern int func_ov134_0229ac38(void *unused0);
 extern void func_ov134_0229af60(UnkStruct_0229a24c *);
 
 int func_ov134_0229a24c(UnkStruct_0229a24c *o)
@@ -88,7 +88,7 @@ int func_ov134_0229a24c(UnkStruct_0229a24c *o)
             }
             break;
         case 7:
-            if (func_ov134_0229ac38()) {
+            if (func_ov134_0229ac38(o)) {
                 func_ov134_0229af60(o);
                 o->unk_A9 = 8;
             }

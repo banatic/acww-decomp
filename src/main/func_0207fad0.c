@@ -6,7 +6,7 @@ extern int func_0207fe94(void *self, int *outx, int *outy, int arg1, int arg2, i
 extern int func_0207fe28(void *self, int x, int y);
 extern int func_0207fbb4(void *self, int arg2, int x, int y);
 extern int func_0207fdbc(void *self, int x, int y);
-extern void func_0207fb70(void *entry);
+extern int func_0207fb70(void *entry);
 
 struct UnkStruct_0207fad0 {
     char pad_00[0x78c];

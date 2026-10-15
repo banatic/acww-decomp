@@ -3,14 +3,14 @@
  */
 
 extern int data_020d266c[];
-extern int func_020bdd9c(int *array, int index, int flags);
+extern int func_020bdd9c(void);
 extern int func_020644cc(int param);
 
 int func_020bdd10(int arg0, int index, int flags)
 {
     int ret = data_020d266c[index];
     if (index == 4) {
-        ret = func_020bdd9c(data_020d266c, index, flags);
+        ret = func_020bdd9c();
     } else if (index == 7) {
         if (func_020644cc(2) != 0) {
             ret = 40;

@@ -4,7 +4,8 @@
 
 extern unsigned short data_020c80f8;
 
-unsigned short func_0201c148(void)
+unsigned short func_0201c148(void *object)
 {
+    (void) object;
     return data_020c80f8;
 }

@@ -30,7 +30,7 @@ typedef struct {
 
 extern s16 FX_SinCosTable_[];
 extern UnkStruct_02229f2c_3 data_ov003_0223c024[];
-extern void func_02034270(UnkStruct_02229f2c_2 *out, UnkStruct_02229f2c *p, int a, int b);
+extern int func_02034270(UnkStruct_02229f2c_2 *out, UnkStruct_02229f2c *p, int a, int b);
 extern void func_0203423c(UnkStruct_02229f2c_2 *p);
 
 void func_ov003_02229f2c(UnkStruct_02229f2c_4 *self, int *o1, int *o2, int *o3)

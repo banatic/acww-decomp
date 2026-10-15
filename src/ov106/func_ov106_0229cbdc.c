@@ -8,7 +8,7 @@ extern int func_ov106_0229cc74(void *self);
 extern void func_ov106_0229c344(void *self, int n);
 extern void func_ov002_0220a0b4(char *ptr, int a, int b);
 extern void func_ov002_0220a05c(char *ptr, int a, int b, int c, int d);
-extern void func_ov002_02208098(void *self, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct {
     char pad_00[0x8d];
@@ -33,6 +33,6 @@ void func_ov106_0229cbdc(UnkStruct_0229cbdc *self)
         flag = 1;
         func_ov002_0220a05c(self->unk_22A0, a, b, 3, flag);
         self->unk_BB = self->unk_8D;
-        func_ov002_02208098(self, 13);
+        func_ov002_02208098((void *) (self), 13);
     }
 }

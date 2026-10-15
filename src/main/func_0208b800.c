@@ -10,12 +10,12 @@ typedef struct {
     unsigned char unk_82;
 } ExampleStruct;
 
-extern unsigned int func_0208b720(ExampleStruct *self);
+extern unsigned int func_0208b720(void);
 extern void func_0208b77c(ExampleStruct *self);
 
 void func_0208b800(ExampleStruct *self)
 {
-    self->unk_7C = func_0208b720(self);
+    self->unk_7C = func_0208b720();
     func_0208b77c(self);
     self->unk_81 = 0;
     self->unk_82 = 0;

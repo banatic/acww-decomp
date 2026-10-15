@@ -5,13 +5,13 @@
 extern int func_0209f150(int *arg1, int arg2);
 extern void func_0209f128(int *arg1, int arg2);
 extern int func_02098844(int *arg1, int arg2);
-extern int func_02099a28(void);
+extern int func_02099a28(unsigned int);
 extern int func_02099020(int arg1, int arg2);
 extern int func_02097ad0(int arg1);
 extern void func_02066694(void *arg1);
 extern int func_02099870(int arg1);
 extern void func_02066024(void *arg1, void *arg2, void *arg3, void *arg4, void *arg5, int arg6);
-extern void func_02065ed0(void *arg1, int arg2, int arg3);
+extern unsigned short func_02065ed0(void *arg1, int arg2, int arg3);
 extern int func_02097a54(void *arg1);
 extern int func_020979f0(void *arg1, int arg2);
 extern void func_02066688(void *arg1);
@@ -63,7 +63,7 @@ void func_0205a41c(int arg1, int arg2)
         if (temp == 0) {
             continue;
         }
-        if (func_02099a28() == 0) {
+        if (func_02099a28(temp) == 0) {
             continue;
         }
         if (func_02099020(temp, 0xe) == 0) {

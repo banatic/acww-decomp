@@ -11,13 +11,13 @@ struct UnkStruct_02015654 {
     unsigned char unk_AC;
 };
 
-extern int func_0206fbc0(void *param);
+extern int func_0206fbc0(void);
 
 int func_02015654(void *param)
 {
     struct UnkStruct_02015654 *s = (struct UnkStruct_02015654 *) param;
     int ret = 0;
-    if (func_0206fbc0(s) != 0) {
+    if (func_0206fbc0() != 0) {
         if (s->unk_88 != 1) {
             *(int *) ((char *) s->ptr + 8) = 1;
         }

@@ -66,9 +66,9 @@ struct Ctl {
     unsigned char unk_0C;
     unsigned char unk_0D;
 };
-extern "C" void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern "C" int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern "C" void func_0203af08(Trio *, Trio *);
-extern "C" void func_0203af80(Trio *);
+extern "C" int func_0203af80(Trio *);
 extern "C" void func_02014060(Ctl *c, UnkStruct_02014060 *o)
 {
     Trio t;

@@ -15,14 +15,14 @@ extern const char data_021c675e[];
 extern const char data_021c676a[];
 extern void func_0203a2f0(char *dst, const char *src, int n);
 extern void func_0203a2dc(char *dst);
-extern void func_0203a3a4(char *dst, const char *src, int n);
-extern void func_0203a38c(char *dst);
-extern void func_0203a344(void *p);
+extern void *func_0203a3a4(char *dst, const char *src, int n);
+extern void *func_0203a38c(char *dst);
+extern void *func_0203a344(void *p);
 extern void func_0203a330(void *p);
-extern void func_0203a404(void *p);
-extern void func_0203a3ec(void *p);
-extern void func_02051984(void *a, void *b);
-extern void func_020a8a70(void *a, void *b, int c, int d);
+extern void *func_0203a404(void *p);
+extern void *func_0203a3ec(void *p);
+extern int func_02051984(void *a, void *b);
+extern int func_020a8a70(void *a, void *b, int c, int d);
 extern void func_020398e8(int i, void *a, void *b);
 
 void func_020391fc(void)

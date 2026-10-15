@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b3670(int a, int b, int c, int d, int e);
+extern int func_020b3670(int a, int b, int c, int d, int e);
 
-void func_ov004_0220d208(int a, int b, int c, int d)
+int func_ov004_0220d208(int a, int b, int c, int d)
 {
-    func_020b3670(a, b, c, d, 0x800);
+    return func_020b3670(a, b, c, d, 0x800);
 }

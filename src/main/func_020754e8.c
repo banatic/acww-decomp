@@ -6,7 +6,7 @@ extern int func_020b65c4(void);
 extern int func_020a132c(void);
 extern void func_020a125c(int, int);
 
-void func_020754e8(void)
+void func_020754e8(unsigned char *payload, unsigned int length, int player)
 {
     if (func_020b65c4() == 0xd || func_020b65c4() == 0x2f) {
         if (func_020a132c() != 0) {

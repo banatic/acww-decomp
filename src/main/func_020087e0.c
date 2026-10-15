@@ -29,14 +29,14 @@ extern int data_020d83a4;
 extern int func_02073908(void *a, int b);
 extern int func_0203e1c4(void);
 extern void func_0203ee14(void *self, void *b);
-extern void func_0200f27c(void *self, int code);
+extern unsigned int *func_0200f27c(void *self, int code);
 extern void func_020a8164(void *p, void *g);
 extern void func_0202f17c(void);
 extern unsigned char func_02008258(void *arg0, int index);
-extern void func_0200d4e8(void *self, int a, int b, int c);
+extern int func_0200d4e8(void *self, int a, int b, int c);
 extern void func_0203ee08(void *self, void *b);
 extern void func_0200f268(void *self, int code);
-extern void func_0203e19c(void);
+extern int func_0203e19c(void);
 
 void func_020087e0(struct UnkStruct_020087e0 *self)
 {

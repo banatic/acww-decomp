@@ -3,7 +3,7 @@
  */
 
 extern int func_02056f94(void *);
-extern int func_020109a0(void *, int, int, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
 extern int func_02008258(void *, int);
 extern int func_0200d4e8(void *, int, int, int);
 

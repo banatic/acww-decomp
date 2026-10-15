@@ -12,9 +12,11 @@ void func_ov133_0229c150(void *self);
 
 typedef void (Obj_ov133_0229c908::*PMF)();
 
+#define DISCARD_HANDLER(Class, Method) (PMF) & Class::Method
+
 int Obj_ov133_0229c908::func_ov133_0229c58c()
 {
-    static PMF table[5] = {&Obj_ov133_0229c908::func_ov133_0229c39c, &Obj_ov133_0229c908::func_ov133_0229c340,
+    static PMF table[5] = {DISCARD_HANDLER(Obj_ov133_0229c908, func_ov133_0229c39c), &Obj_ov133_0229c908::func_ov133_0229c340,
                            &Obj_ov133_0229c908::func_ov133_0229c2fc, &Obj_ov133_0229c908::func_ov133_0229c2b0,
                            &Obj_ov133_0229c908::func_ov133_0229c25c};
     func_ov133_0229c158(this);
@@ -22,3 +24,5 @@ int Obj_ov133_0229c908::func_ov133_0229c58c()
     func_ov133_0229c150(this);
     return 1;
 }
+
+#undef DISCARD_HANDLER

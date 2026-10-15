@@ -3,9 +3,9 @@
  */
 
 extern void func_0204f800(void *a, void *b, int c, int d, int e, int f);
-extern void func_0204e3f4(int a, int b, int c, int d);
+extern int func_0204e3f4(int a, int b, int c, int d);
 
-void func_0204e3bc(int a, int b, int c, int d, int e, int f)
+int func_0204e3bc(int a, int b, int c, int d, int e, int f)
 {
     int local1;
     int local2;
@@ -17,5 +17,5 @@ void func_0204e3bc(int a, int b, int c, int d, int e, int f)
     local3 = d;
     local4 = e;
     func_0204f800(&local1, &local2, b, c, local3, local4);
-    func_0204e3f4(a, local1, local2, f);
+    return func_0204e3f4(a, local1, local2, f);
 }

@@ -4,7 +4,7 @@
 
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 extern struct Global data_020c8b18;
 
 struct UnkStruct_0202ac64 {

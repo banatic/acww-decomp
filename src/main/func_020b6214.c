@@ -26,7 +26,7 @@ typedef struct UnkStruct_020b6214_2 {
 extern GObj *data_021f6948;
 extern UnkStruct_020b6214_2 data_021f69a0;
 extern UnkStruct_020b6214_2 data_021f69b8;
-extern int func_0204e414(UnkStruct_020b6214 *base, Desc *desc);
+extern int func_0204e414(void);
 extern int func_0204e108(int ret, u32 *v, u32 *w1, u32 *w2);
 extern int func_0204e08c(int ret, u32 *v, u32 *w1, u32 *w2);
 extern u8 func_020b64dc(UnkStruct_020b6214_2 *obj);
@@ -71,7 +71,7 @@ int func_020b6214(int unused, int idx, u8 *status, u32 *outVec, u32 *outWord, u1
         goto fail;
     }
     el = &base[idx];
-    ret = func_0204e414(base, desc);
+    ret = func_0204e414();
     kind = el->kind - 0x3c;
     switch (kind) {
         case 2:

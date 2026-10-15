@@ -4,7 +4,7 @@
 
 extern int func_0208e484(const char *p);
 extern void func_ov002_02209114(char *p, int b, int n);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 
 struct UnkStruct_0229d364 {
     char pad_00[0x26c5];

@@ -13,14 +13,14 @@ typedef struct {
 
 extern void func_ov133_0229ae1c(UnkStruct_0229ae94 *self);
 extern void func_ov133_0229adb8(UnkStruct_0229ae94 *self, unsigned char b);
-extern void func_ov133_0229b3f8(UnkStruct_0229ae94 *self, int n);
+extern int func_ov133_0229b3f8(UnkStruct_0229ae94 *self, int n);
 
-void func_ov133_0229ae94(UnkStruct_0229ae94 *self)
+int func_ov133_0229ae94(UnkStruct_0229ae94 *self)
 {
     func_ov133_0229ae1c(self);
     self->unk_A0 = self->unk_9C;
     func_ov133_0229adb8(self, self->unk_A0);
     self->unk_9D = 0xd;
     self->unk_9E = 0x5;
-    func_ov133_0229b3f8(self, 1);
+    return func_ov133_0229b3f8(self, 1);
 }

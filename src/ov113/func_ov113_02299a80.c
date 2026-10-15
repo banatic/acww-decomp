@@ -8,10 +8,10 @@ struct UnkStruct_02299a80 {
     unsigned char unk_9E;
 };
 
-extern int func_02077ec4(struct UnkStruct_02299a80 *self);
+extern int func_02077ec4(void);
 
 void func_ov113_02299a80(struct UnkStruct_02299a80 *self)
 {
-    self->unk_9D = func_02077ec4(self);
+    self->unk_9D = func_02077ec4();
     self->unk_9E = (0xf - self->unk_9D) << 2;
 }

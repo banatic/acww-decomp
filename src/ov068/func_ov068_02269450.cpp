@@ -45,7 +45,7 @@ struct UnkStruct_02269450_2 {
 
 extern "C" int func_ov068_022697cc(UnkStruct_02269450_2 *, UnkStruct_02269450 *, int);
 extern "C" int func_0201c314(UnkStruct_02269450 *, int);
-extern "C" void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern "C" int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern "C" void func_ov068_0226cce8(UnkStruct_02269450_2 *, UnkStruct_02269450 *, int);
 extern "C" int func_ov068_0226c0e0(UnkStruct_02269450_2 *, UnkStruct_02269450 *);
 extern "C" void func_0207d148(int);

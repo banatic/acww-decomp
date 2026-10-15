@@ -11,7 +11,7 @@ typedef struct UnkStruct_0229a220 {
     int unk_12C;
 } UnkStruct_0229a220;
 
-extern void func_020e895c(void *ptr, int value, int size);
+extern int func_020e895c(void *ptr, int value, int size);
 extern void func_ov002_0220a4c8(void *ptr);
 extern void func_ov145_0229a0fc(UnkStruct_0229a220 *self);
 extern void func_ov145_0229a134(UnkStruct_0229a220 *self);

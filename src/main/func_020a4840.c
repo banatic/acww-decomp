@@ -18,15 +18,15 @@ extern int data_020e3c54;
 
 extern int func_020682e0(int a);
 extern void *func_02098844(int *p, int v);
-extern void func_02094fd4(struct Buf *b);
+extern void *func_02094fd4(struct Buf *b);
 extern void *func_02099870(void *p);
-extern void func_02095074(void *p, struct Buf *b);
+extern void *func_02095074(void *p, struct Buf *b);
 extern void func_02068404(int a, int b, struct Buf *c);
 extern void func_02099a38(void *p);
 extern void func_0209ef10(unsigned char *p, int v);
-extern void func_020a1954(struct UnkStruct_020a4840 *o, int *p, int n);
+extern int func_020a1954(struct UnkStruct_020a4840 *o, int *p, int n);
 extern int func_02098880(int *p);
-extern void func_02094fbc(struct Buf *b);
+extern void *func_02094fbc(struct Buf *b);
 
 void func_020a4840(struct UnkStruct_020a4840 *self)
 {

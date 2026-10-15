@@ -9,7 +9,7 @@ extern void func_ov002_0220a2b4(char *p);
 extern int func_ov133_0229ba84(char *self);
 extern int func_ov133_0229ba34(char *self);
 extern void func_ov002_0220a05c(char *p, int a, int b, int c, int d);
-extern void func_ov002_02208098(char *self, int v);
+extern unsigned char *func_ov002_02208098(char *self, unsigned char value);
 
 void func_ov133_0229b9a8(char *self)
 {

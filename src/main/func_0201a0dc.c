@@ -16,11 +16,11 @@ typedef struct UnkStruct_0201a0dc {
     u32 unk_7C;
 } UnkStruct_0201a0dc;
 
-extern int func_0201a3e8(void *self, int a, int b, int c);
+extern int func_0201a3e8(void *self);
 extern void *func_02082da8(void *p);
 extern void func_0205d7b8(void *p, int a, int b, int c);
 extern int func_0205d8a0(void *p);
-extern void NNS_G3dGetAnmByIdx(int a, int b);
+extern unsigned char *NNS_G3dGetAnmByIdx(int a, int b);
 extern void func_0205678c(void *dst, int src, int a, int b, int c, int d);
 extern void func_02056730(void *p);
 extern int func_0201a2e8(void *self, int field);
@@ -30,7 +30,7 @@ void func_0201a0dc(UnkStruct_0201a0dc *self, int a, int b, int c, int d)
 {
     void *r7;
 
-    if (func_0201a3e8(self, a, b, c) == 0) {
+    if (func_0201a3e8(self) == 0) {
         return;
     }
 

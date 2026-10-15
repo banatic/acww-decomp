@@ -8,9 +8,9 @@ typedef struct {
 } UnkStruct_02260484;
 
 extern UnkStruct_02260484 *data_020ccf94;
-extern void func_02073dd4(UnkStruct_02260484 *p, int val);
+extern unsigned char func_02073dd4(UnkStruct_02260484 *p, int val);
 
-void func_ov054_02260484(void)
+unsigned char func_ov054_02260484(void)
 {
-    func_02073dd4(data_020ccf94, data_020ccf94->unk_64);
+    return func_02073dd4(data_020ccf94, data_020ccf94->unk_64);
 }

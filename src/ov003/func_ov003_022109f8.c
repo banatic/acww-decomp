@@ -17,10 +17,10 @@ typedef struct {
     u8 pad_12[0xa];
 } Buf;
 
-extern void func_0200e92c(Buf *);
+extern unsigned int func_0200e92c(Buf *);
 extern void func_0200e90c(Buf *, int, u32, short);
 extern void *func_0200e894(void *, Buf *);
-extern void func_0200e91c(Buf *);
+extern int func_0200e91c(Buf *);
 
 void *func_ov003_022109f8(void *a0, u32 a1, u32 *a2, u16 a3, u32 a4, short a5)
 {

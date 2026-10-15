@@ -4,9 +4,9 @@
 
 extern void func_ov109_0229c8a4(void *);
 extern void func_ov109_0229c934(void *);
-extern void func_ov109_0229c9f0(void *, unsigned char);
+extern void func_ov109_0229c9f0(void *object, unsigned int index);
 extern void func_ov002_02207fc0(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 void func_ov109_0229cdbc(void *r0)
 {

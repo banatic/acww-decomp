@@ -5,7 +5,7 @@
 /* FAKEMATCH: the no-op 64-bit mask keeps val in r5 and ret in r4; without it the registers swap */
 
 extern int func_020e9a3c(int, int);
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ec4a8(void);
 extern void func_020b8d6c(void);
 extern void func_02073f00(void *);
@@ -26,8 +26,7 @@ void func_02074958(void)
     val = data_021c9b30;
     ret = func_020e9a3c(val, 0x8000);
     ret = ret & 0xFFFFFFFFFFFFFFFFu;
-    func_020e9a3c(val, ret | 0x2000);
-    func_02073044();
+    ((unsigned int) func_020e9a3c(val, ret | 0x2000), func_02073044());
     if (func_020ec4a8() == 0) {
         func_020b8d6c();
     }

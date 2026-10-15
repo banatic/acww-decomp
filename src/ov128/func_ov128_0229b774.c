@@ -8,12 +8,12 @@ typedef struct UnkWork {
 
 extern char data_ov128_0229cbc0;
 
-extern void func_02070be8(void *);
+extern int **func_02070be8(void *);
 extern void func_ov127_0229a0e8(void *);
 extern void func_020b18a8(void *);
-extern void func_ov002_02209cb4(void *);
-extern void func_ov002_0220b3a4(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov002_02209cb4(void *);
+extern void *func_ov002_0220b3a4(void *);
+extern void *func_ov002_0220826c(void *);
 extern void func_ov002_02207f6c(void *);
 
 UnkWork *func_ov128_0229b774(UnkWork *self)

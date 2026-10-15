@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020e993c(int a);
+extern void func_020e993c(void *heap, void *block);
 
-int func_ov004_0223ce8c(int *p)
+void func_ov004_0223ce8c(void **p, void *block)
 {
-    return func_020e993c(*p);
+    func_020e993c(*p, block);
 }

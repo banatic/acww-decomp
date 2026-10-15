@@ -7,7 +7,7 @@ extern int func_ov110_0229d5d4(void *, int);
 extern int func_ov110_0229d0b8(void *, int);
 extern int func_ov110_0229d078(void *, int);
 extern void func_ov110_0229d458(void *, int, int, int);
-extern void func_ov110_0229cce8(void *, int);
+extern int func_ov110_0229cce8(void *, int);
 
 int func_ov110_0229d4a8(void *p0, int p1)
 {

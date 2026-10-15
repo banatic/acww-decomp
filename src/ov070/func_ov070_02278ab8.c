@@ -6,7 +6,7 @@ extern int func_020160b4(void *p);
 extern int func_020ab504(int x);
 extern int func_ov070_02279724(void *a, void *b, int n);
 extern void MI_CpuFill8(void *dest, int val, int size);
-extern void func_0202ea80(int a, int b);
+extern int func_0202ea80(int a, int b);
 extern int func_0209a1e8(void);
 extern void func_0206844c(void *a, void *b, void *c);
 extern unsigned char data_ov070_02279d58[];

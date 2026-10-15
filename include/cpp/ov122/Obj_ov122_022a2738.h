@@ -23,7 +23,7 @@ class Obj_ov122_022a2738 : public Obj_ov002_0220bb24 {
     void func_ov122_022a1b50();
     void func_ov122_022a1b24();
     void func_ov122_022a1ac4();
-    void func_ov122_022a1a84();
+    int func_ov122_022a1a84();
     void func_ov122_022a1a58();
     void func_ov122_022a1a04();
     void func_ov122_022a1998();
@@ -55,7 +55,7 @@ class Obj_ov122_022a2738 : public Obj_ov002_0220bb24 {
     void func_ov122_022a0488();
     void func_ov122_022a03b0();
     void func_ov122_022a02c8();
-    void func_ov122_022a02a0();
+    int func_ov122_022a02a0();
 
     // dispatchers and helpers
     void func_ov122_022a1f40();

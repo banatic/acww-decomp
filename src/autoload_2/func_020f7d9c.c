@@ -4,7 +4,7 @@
 
 void func_020f7d9c(unsigned short *r4)
 {
-    extern void func_020f7bc4(void *r0, int r1, void *r2);
+    extern int func_020f7bc4(void *r0, int r1, void *r2);
     unsigned short r0;
 
     func_020f7bc4(r4, 0x526, (void *) (r4 + 2));

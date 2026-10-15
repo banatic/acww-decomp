@@ -5,7 +5,7 @@
 #pragma opt_loop_invariants off
 
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
-extern int func_0204ba94(void *o);
+extern int func_0204ba94(unsigned short *);
 
 struct UnkStruct_020496f8 {
     int w;

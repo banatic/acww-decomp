@@ -4,8 +4,8 @@
 
 extern int func_02042a08(void *a, void *b, void *c, int d);
 extern int func_020644cc(int a);
-extern void *MI_CpuFill8(void *s, int c, int n);
-extern void func_02042954(void *a, int b, void *c, void *d, int e, void *f);
+extern void MI_CpuFill8(void *s, int c, int n);
+extern int func_02042954(void *a, int b, void *c, void *d, int e, void *f);
 extern void func_020429a0(void *a, void *b, void *c, int d);
 extern unsigned char data_020db870;
 extern void MI_CpuCopy8(void *src, void *dst, int n);

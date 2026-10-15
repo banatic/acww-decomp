@@ -5,7 +5,7 @@
 extern void *func_0207ba04(void *a, void *b);
 extern void *func_0208150c(void *p);
 extern int func_02003704(void *p);
-extern void func_02003618(void *a, void *b);
+extern int func_02003618(void *a, void *b);
 
 extern unsigned char data_021e5a2c[];
 

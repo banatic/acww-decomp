@@ -21,7 +21,7 @@ extern int func_ov004_0223cb10(void);
 extern int func_ov004_0223ca9c(int a, char *self);
 extern int func_ov004_0220d2a8(char *p);
 extern int func_ov004_0223cb20(int e);
-extern void func_ov004_0220db94(List *l);
+extern char *func_ov004_0220db94(List *l);
 extern void func_ov004_0220db90(List *l);
 extern unsigned int func_ov004_0220db68(List *l);
 extern UnkStruct_02217420 *func_ov004_0220db5c(List *l, unsigned int i);
@@ -30,8 +30,8 @@ extern void func_020ea6e0(Vec3 *v, int ang);
 extern int func_ov004_0223c5b8(int a, int b);
 extern int func_020308a4(int a, int b);
 extern void func_ov004_0220d280(char *p, int a, int b);
-extern void func_0203e0a8(char *self, int n);
-extern void func_02095ec4(void);
+extern int func_0203e0a8(char *self, int n);
+extern int func_02095ec4(void);
 extern int func_ov004_0220e5c8(char *self);
 
 void func_ov004_02217420(Obj_ov004_0225211c *obj)

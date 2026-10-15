@@ -4,7 +4,7 @@
 
 int func_ov003_022282e8(void *a, int k, void *b);
 int func_02095794(int k);
-void func_ov003_022282b8(void *b, void *q);
+int func_ov003_022282b8(void *b, void *q);
 
 int func_ov003_02228348(void *a, void *b)
 {

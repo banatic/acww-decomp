@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(void *param, unsigned char b);
+extern unsigned char *func_ov002_02208098(void *param, unsigned char b);
 extern void func_ov112_0229f488(void *param);
 
 typedef struct {

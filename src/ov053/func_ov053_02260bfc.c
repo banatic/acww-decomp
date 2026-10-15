@@ -3,11 +3,11 @@
  */
 
 extern int data_ov053_02261b08;
-extern void func_0202eb20(void *, int);
+extern void *func_0202eb20(void *);
 
 void *func_ov053_02260bfc(void *p)
 {
     *(int *) p = (int) &data_ov053_02261b08;
-    func_0202eb20(p, (int) &data_ov053_02261b08);
+    func_0202eb20(p);
     return p;
 }

@@ -15,21 +15,21 @@ extern int func_ov104_0229c364(UnkStruct_0229eef8 *self, int a);
 extern void func_ov104_0229cb04(UnkStruct_0229eef8 *self);
 extern void func_0206fc4c(int a);
 extern void func_ov104_0229caa0(UnkStruct_0229eef8 *self, int a);
-extern int func_0206f990(int a);
-extern int func_0206f8e0(int a);
-extern int func_0206f860(int a);
+extern void func_0206f990(int a);
+extern int func_0206f8e0(void);
+extern int func_0206f860(void);
 extern void func_0209aa80(void);
 extern void func_0209788c(void);
 extern void func_020ee470(UnkStruct_0229eef8 *self);
 extern int func_020978bc(void *p, int a);
-extern int func_020984e8(int a);
+extern int func_020984e8(void);
 extern int func_02099020(int a, int b);
 extern int func_ov104_0229c648(UnkStruct_0229eef8 *self, void *p);
 extern int func_ov104_0229c944(UnkStruct_0229eef8 *self, void *p);
 extern int func_ov104_0229c870(UnkStruct_0229eef8 *self, void *p, int a);
 extern int func_ov104_0229c7e8(UnkStruct_0229eef8 *self, void *p);
 extern int func_ov104_0229c6a0(UnkStruct_0229eef8 *self, void *p);
-extern void func_02097b24(int a);
+extern int func_02097b24(void);
 
 int func_ov104_0229eef8(UnkStruct_0229eef8 *self)
 {
@@ -70,7 +70,7 @@ int func_ov104_0229eef8(UnkStruct_0229eef8 *self)
             r4 = 4;
         }
 
-        r10 = func_02099020(func_020984e8(r9), 1);
+        r10 = func_02099020(func_020984e8(), 1);
         if (r10 != 0) {
             r4 |= func_ov104_0229c648(self, self->sub);
         }
@@ -80,7 +80,7 @@ int func_ov104_0229eef8(UnkStruct_0229eef8 *self)
         if (r4 & 4) {
             func_0206fc4c(0);
         } else if (r4 & 0x10) {
-            func_02097b24(0x10);
+            func_02097b24();
             r4 |= func_ov104_0229c7e8(self, self->sub);
             if (r4 & 0x20) {
                 r4 |= func_ov104_0229c6a0(self, self->sub);
@@ -88,8 +88,8 @@ int func_ov104_0229eef8(UnkStruct_0229eef8 *self)
         }
 
         func_ov104_0229caa0(self, 0);
-        z = func_0206f8e0(func_0206f990(r4));
-        if (z == 1 || func_0206f860(z) != 0) {
+        z = ((void) (func_0206f990(r4)), func_0206f8e0());
+        if (z == 1 || func_0206f860() != 0) {
             func_0209aa80();
         }
     }

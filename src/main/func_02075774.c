@@ -7,17 +7,15 @@ extern struct UnkStruct_02075774 {
     void *unk_68;
 } *data_020ccf94;
 
-extern void func_02096284(void *a);
-extern void func_0209847c(void);
-extern int func_020989e0(void);
+extern unsigned char func_02096284(void *a);
+extern int func_0209847c(int index);
+extern int func_020989e0(int object);
 extern int func_02075ff8(int a, int b, int c, int d, int e);
 
 int func_02075774(int param1)
 {
     int ret;
 
-    func_02096284(data_020ccf94->unk_68);
-    func_0209847c();
-    ret = func_020989e0();
+    ret = func_020989e0(func_0209847c((int) func_02096284(data_020ccf94->unk_68)));
     return func_02075ff8(param1, ret, 0x3200, 0x16, 1);
 }

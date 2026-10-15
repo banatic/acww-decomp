@@ -6,7 +6,7 @@
 
 extern char data_ov003_0225f4dc[];
 int func_ov003_022298c4(void *p, u8 i);
-void func_020044a0(void *p);
+int func_020044a0(void *p);
 
 void func_ov003_0222847c(void)
 {

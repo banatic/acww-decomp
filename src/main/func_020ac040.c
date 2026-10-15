@@ -3,10 +3,10 @@
  */
 
 extern char data_020e3fe4;
-extern void func_020acb70(void *);
-extern void func_0208f4e0(void *);
-extern void func_020ac9ec(void *);
-extern void func_020ac954(void *);
+extern void *func_020acb70(void *);
+extern void *func_0208f4e0(void *);
+extern void *func_020ac9ec(void *);
+extern void *func_020ac954(void *);
 extern void func_020edb3c(void *);
 
 void *func_020ac040(void *param)

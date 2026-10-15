@@ -4,7 +4,7 @@
 
 extern unsigned short data_ov068_022786c8;
 
-int func_ov068_02272104(void)
+int func_ov068_02272104(void *receiver)
 {
     data_ov068_022786c8 = 0x41;
     return 1;

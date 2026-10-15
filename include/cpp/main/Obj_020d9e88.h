@@ -7,26 +7,26 @@
 class Obj_020d9e88 : public Obj_020d8c64 {
   public:
     virtual ~Obj_020d9e88();
-    virtual void vfunc_6c();
-    virtual void vfunc_70();
-    virtual void vfunc_74();
-    virtual void vfunc_78();
-    virtual void vfunc_7c();
+    virtual void *vfunc_6c();
+    virtual void *vfunc_70();
+    virtual void vfunc_74(int state);
+    virtual int vfunc_78();
+    virtual int vfunc_7c();
     virtual void vfunc_80();
-    virtual void vfunc_84();
-    virtual void vfunc_88();
+    virtual int vfunc_84();
+    virtual void vfunc_88(unsigned short *message, int flag);
     virtual void vfunc_8c();
     virtual void vfunc_90();
-    virtual void vfunc_94();
-    virtual void vfunc_98();
-    virtual void vfunc_9c();
-    virtual void vfunc_a0();
-    virtual void vfunc_a4();
-    virtual void vfunc_a8();
-    virtual void vfunc_ac();
-    virtual void vfunc_b0();
-    virtual void vfunc_b4();
-    virtual void vfunc_b8();
+    virtual int vfunc_94();
+    virtual int vfunc_98();
+    virtual unsigned short vfunc_9c();
+    virtual int vfunc_a0();
+    virtual void vfunc_a4(int first, int second);
+    virtual int vfunc_a8();
+    virtual int vfunc_ac();
+    virtual int vfunc_b0();
+    virtual int vfunc_b4();
+    virtual int vfunc_b8();
     virtual int vfunc_bc(); // func_0201ce2c, returns 0 here
 };
 

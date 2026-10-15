@@ -10,7 +10,7 @@ typedef struct UnkStruct_02266a4c {
 } UnkStruct_02266a4c;
 
 extern UnkStruct_02266a4c *data_ov066_0226bdec;
-extern void func_ov066_0226686c(void);
+extern void func_ov066_0226686c(int status);
 
 void func_ov066_02266a4c(UnkStruct_02266a4c *arg)
 {
@@ -18,5 +18,5 @@ void func_ov066_02266a4c(UnkStruct_02266a4c *arg)
         data_ov066_0226bdec->unk_04 = 3;
         return;
     }
-    func_ov066_0226686c();
+    func_ov066_0226686c(arg->unk_02);
 }

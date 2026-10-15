@@ -10,7 +10,7 @@ extern char *data_020ccf94;
 extern u16 data_021fbe40[];
 extern void func_ov004_02245cf4(char *, int);
 extern int func_ov004_02230d94(void);
-extern void func_ov004_02230d70(void);
+extern int func_ov004_02230d70(void);
 extern void func_0208ffc0(void);
 extern int func_02096190(int);
 }

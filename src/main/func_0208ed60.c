@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0208ecd0(void *p);
+extern int func_0208ecd0(void);
 extern void func_0208a1f0(void *dest, void *src);
 extern void func_0208a1ec(void *dest, int value);
 extern void func_0208a144(void *p);
@@ -16,7 +16,7 @@ typedef struct UnkStruct_0208ed60 {
 
 void func_0208ed60(UnkStruct_0208ed60 *arg)
 {
-    if (func_0208ecd0(arg)) {
+    if (func_0208ecd0()) {
         return;
     }
     arg->unk_20 = 3;

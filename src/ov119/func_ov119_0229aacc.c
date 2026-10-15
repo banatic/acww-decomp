@@ -10,20 +10,20 @@ struct UnkStruct_0229aacc {
 
 extern UnkStruct_0229aacc *data_020ccf94;
 
-extern void func_020641c8(void *);
-extern void func_020641b0(void *);
+extern void *func_020641c8(void *);
+extern void *func_020641b0(void *);
 extern void func_02064210(int, void *);
-extern void func_02094fd4(void *);
-extern void func_02094fbc(void *);
-extern int func_02095040(int);
-extern void func_02095074(int, void *);
+extern void *func_02094fd4(void *);
+extern void *func_02094fbc(void *);
+extern int func_02095040(void *object);
+extern void *func_02095074(int, void *);
 extern void *func_ov119_0229bb44(void *);
 extern int func_02073d90(UnkStruct_0229aacc *);
 extern void *func_020984fc(int);
 extern int func_02099870(void *);
-extern void func_020b496c(int, void *);
-extern void func_0207094c(void *, int);
-extern void func_020a8bb8(void *, void *);
+extern void *func_020b496c(int, void *);
+extern int func_0207094c(void *, int);
+extern void *func_020a8bb8(void *, void *);
 extern void func_020a8c1c(void *);
 extern void func_02070adc(void *, int, int, int, int, int, int);
 extern void func_02070a04(void *, int, int);
@@ -68,7 +68,7 @@ void func_ov119_0229aacc(unsigned char *self)
         }
         if (entry != 0) {
             tmp = func_02099870(entry);
-            func_02064210(func_02095040(tmp), buf1);
+            func_02064210(func_02095040((void *) tmp), buf1);
             func_020b496c(0, buf1);
             func_0207094c(objA, 0x66);
             func_02095074(tmp, buf2);

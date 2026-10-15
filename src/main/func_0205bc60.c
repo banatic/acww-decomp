@@ -14,7 +14,7 @@ typedef struct {
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
 extern int func_0204bcdc(void *p);
 extern int func_0204bc64(void *p);
-extern void func_02052e3c(It *it, void *src);
+extern int *func_02052e3c(It *it, void *src);
 extern unsigned int func_02052e20(It *it);
 extern Pt *func_02052dc0(It *it, unsigned int i);
 extern void func_02052e38(It *it);

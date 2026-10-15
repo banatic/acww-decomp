@@ -3,13 +3,12 @@
  */
 
 extern int func_020807a8(int a, int b);
-extern int func_02081ac8(int a, int b, int c);
+extern void func_02081ac8(void *object, void *source, int count);
 
-int func_02080108(int p1, int p2, int p3, int p4)
+void func_02080108(int p1, int p2, int p3, int p4)
 {
     int ret = func_020807a8(p1, p4);
     if (ret != 0) {
-        ret = func_02081ac8(ret, p2, p3);
+        func_02081ac8((void *) ret, (void *) p2, p3);
     }
-    return ret;
 }

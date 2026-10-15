@@ -4,17 +4,17 @@
 
 extern unsigned char data_020e54a8;
 
-extern void func_020984e8(void);
-extern int func_02099784(void);
+extern int func_020984e8(void);
+extern int func_02099784(unsigned char *);
 extern void func_020112f8(void *dst, void *src);
 extern int func_020644cc(int);
-extern void func_ov003_0220edcc(void *self, int a, int b);
-extern void func_0200d4e8(void *self, int a, int b, int c);
+extern int func_ov003_0220edcc(void *self, int a, int b);
+extern int func_0200d4e8(void *self, int a, int b, int c);
 extern int func_0200dc8c(void *self);
 extern int func_0200dc48(void *self);
 extern int func_020e8b4c(int a, signed short b);
-extern void func_0200cc00(void *self, int a, int b, int c);
-extern void func_02010538(void *self);
+extern int func_0200cc00(void *self, int a, int b, int c);
+extern int func_02010538(void *self);
 
 typedef struct self_t {
     unsigned char pad_00[0x98];
@@ -27,7 +27,7 @@ typedef struct self_t {
     unsigned char unk_8E8;
 } UnkStruct_0200cce8;
 
-void func_0200cce8(UnkStruct_0200cce8 *self, signed short *p)
+int func_0200cce8(UnkStruct_0200cce8 *self, signed short *p)
 {
     unsigned int cond = (data_020e54a8 == 0) ? 1 : 0;
 
@@ -39,9 +39,7 @@ void func_0200cce8(UnkStruct_0200cce8 *self, signed short *p)
             goto other;
         }
 
-        func_020984e8();
-
-        if (func_02099784() != 2) {
+        if (func_02099784((unsigned char *) func_020984e8()) != 2) {
             unsigned short tmp[4];
             func_020112f8(tmp, self);
             if (tmp[0] != 0x13c3) {
@@ -53,8 +51,7 @@ void func_0200cce8(UnkStruct_0200cce8 *self, signed short *p)
             goto other;
         }
 
-        func_ov003_0220edcc(self, 6, -1);
-        return;
+        return func_ov003_0220edcc(self, 6, -1);
     }
 
 other:
@@ -71,5 +68,5 @@ other:
         }
     }
 
-    func_02010538(self);
+    return func_02010538(self);
 }

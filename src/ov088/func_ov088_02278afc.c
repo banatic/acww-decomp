@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020160b4(void *p);
-extern int func_020ab504(void);
+extern int func_020160b4(void *p);
+extern int func_020ab504(void *argument0);
 extern unsigned char func_0203fa14(int _x);
-extern void func_020683e4(void *a, int b, unsigned char *c, unsigned char *d);
+extern int func_020683e4(void *a, int b, unsigned char *c, unsigned char *d);
 extern void func_0206844c(void *a, unsigned char *b, unsigned char *c);
 extern void func_ov088_02278a54(void *a, int b, unsigned char c);
 extern unsigned char data_ov088_02279d98[];
@@ -28,8 +28,7 @@ void func_ov088_02278afc(UnkStruct_02278afc *p)
     int r4;
     unsigned char *d98;
 
-    func_020160b4(p);
-    r4 = func_020ab504();
+    r4 = func_020ab504((void *) func_020160b4(p));
 
     d98 = data_ov088_02279d98;
     r1 = 0xff;

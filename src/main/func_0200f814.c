@@ -6,7 +6,7 @@ extern int func_02011368(int);
 extern int func_020997a8(int);
 extern void func_0209e474(void *);
 extern void MI_CpuCopy8(void *, void *, int);
-extern void func_0209e3ac(void *, void *, int);
+extern int func_0209e3ac(void *, void *, int);
 
 struct UnkStruct_0200f814 {
     unsigned char pad_00[3];
@@ -15,7 +15,7 @@ struct UnkStruct_0200f814 {
     unsigned char unk_05;
 };
 
-void func_0200f814(int a, void *b, struct UnkStruct_0200f814 *dst)
+int func_0200f814(int a, void *b, struct UnkStruct_0200f814 *dst)
 {
     volatile unsigned short arr[3];
 
@@ -27,5 +27,5 @@ void func_0200f814(int a, void *b, struct UnkStruct_0200f814 *dst)
     dst->unk_05 = (unsigned char) (((unsigned int) arr[1] << 25) >> 25);
     dst->unk_04 = (unsigned char) (((unsigned int) arr[1] << 21) >> 28);
     dst->unk_03 = (unsigned char) (((unsigned int) arr[1] << 16) >> 27);
-    func_0209e3ac(b, dst, 0x3f);
+    return func_0209e3ac(b, dst, 0x3f);
 }

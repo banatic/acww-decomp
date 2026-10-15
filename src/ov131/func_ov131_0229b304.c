@@ -4,14 +4,14 @@
 
 extern unsigned char data_021fbdd8;
 extern void func_ov130_0229a24c(void *p);
-extern void func_ov002_02208098(void *p, int n);
-extern void func_ov130_0229a224(void *p);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+extern int func_ov130_0229a224(void *p);
 
 void func_ov131_0229b304(void *param)
 {
     if (data_021fbdd8 == 0) {
         func_ov130_0229a24c((char *) param + 0x2c4);
-        func_ov002_02208098(param, 0);
+        func_ov002_02208098((void *) (param), 0);
     } else {
         func_ov130_0229a224((char *) param + 0x2c4);
     }

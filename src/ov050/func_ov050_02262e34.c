@@ -6,7 +6,7 @@ extern int func_ov050_02263394(void *p0, void *p1);
 extern int func_020984e8(void);
 extern int func_02099640(int a);
 extern int func_0209ad9c(int a, int b);
-extern int func_0209b4d4(int a);
+extern int func_0209b4d4(void *object);
 extern int func_0209bba0(int a);
 
 typedef struct {
@@ -27,7 +27,7 @@ void func_ov050_02262e34(P0Struct *p0, P1Struct *p1)
     r = func_020984e8();
     r = func_02099640(r);
     r = func_0209ad9c(r, 0);
-    r = func_0209b4d4(r);
+    r = func_0209b4d4((void *) r);
     r = func_0209bba0(r);
     if (r == 1) {
         p1->mode = 0x33;

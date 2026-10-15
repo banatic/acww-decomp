@@ -3,8 +3,8 @@
  */
 
 extern char data_ov004_022546e0;
-extern void func_ov004_02224580(void *ptr);
-extern void func_0202ee5c(void *ptr);
+extern void *func_ov004_02224580(void *ptr);
+extern void *func_0202ee5c(void *ptr);
 
 typedef struct {
     void *unk_00;

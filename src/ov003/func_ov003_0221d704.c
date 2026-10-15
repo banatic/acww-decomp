@@ -21,14 +21,14 @@ struct UnkStruct_0221d704 {
     int *unk_384;
 };
 
-extern void func_ov003_022203b8(struct UnkStruct_0221d704 *self);
-extern int func_ov003_0221fe9c(void);
+extern int func_ov003_022203b8(void);
+extern int func_ov003_0221fe9c(void *argument0);
 extern void func_02056ffc(void *ptr);
 
 int func_ov003_0221d704(struct UnkStruct_0221d704 *self)
 {
-    func_ov003_022203b8(self);
-    if (func_ov003_0221fe9c()) {
+
+    if (func_ov003_0221fe9c((void *) func_ov003_022203b8())) {
         self->right = self->left;
         if ((self->flag & 1) == 0) {
             func_02056ffc(&self->unk_36C);

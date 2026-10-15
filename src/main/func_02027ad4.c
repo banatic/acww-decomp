@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *, void *, void *, int, int, int, int, int, int);
+extern int func_0202da38(void *, void *, void *, int, int, int, int, int, int);
 
 typedef struct {
     int value;
@@ -27,8 +27,7 @@ void func_02027ad4(char *self, UnkStruct_02027ad4 *out)
     int x;
     int a, v, b;
 
-    func_0202d9c4();
-    x = func_0209bc40();
+    x = func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) self));
 
     switch (x) {
         case 0xa:

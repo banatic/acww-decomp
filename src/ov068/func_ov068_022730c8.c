@@ -4,7 +4,7 @@
 
 extern int func_02056f28(void *, int);
 extern void RtcSendPxiCommand(int);
-extern void func_ov068_02273230(void *, int);
+extern int func_ov068_02273230(void *, int);
 
 typedef struct {
     char pad_00[0x598];

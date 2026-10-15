@@ -7,7 +7,7 @@ struct UnkStruct_020f35fc {
     unsigned char unk_04;
 };
 
-extern void func_020f45c4(struct UnkStruct_020f35fc *);
+extern void *func_020f45c4(struct UnkStruct_020f35fc *);
 extern char data_0213eb3c;
 
 struct UnkStruct_020f35fc *func_020f35fc(struct UnkStruct_020f35fc *self)

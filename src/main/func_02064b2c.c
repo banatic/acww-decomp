@@ -21,7 +21,7 @@ extern unsigned int func_020e9a3c(void *g, unsigned int v);
 extern void *func_020e9948(void *g, unsigned int size);
 extern unsigned int func_020e9dd0(void *g);
 extern int FS_ReadFile(File *f, void *dst, unsigned int len);
-extern void FS_CloseFile(File *f);
+extern int FS_CloseFile(File *f);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int len);
 extern void DC_StoreAll(void);
 extern void DC_FlushAll(void);

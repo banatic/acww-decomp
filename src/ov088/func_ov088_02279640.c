@@ -4,7 +4,7 @@
 
 extern int data_021c67a4;
 extern int data_021c67d0[3];
-extern int func_ov088_02279678(void *p, int *d, char *f, int v);
+extern int func_ov088_02279678(void *p, int *d, char *f);
 
 int func_ov088_02279640(void *param)
 {
@@ -17,7 +17,7 @@ int func_ov088_02279640(void *param)
         local[1] = data_021c67d0[1];
         local[2] = data_021c67d0[2];
 
-        result = func_ov088_02279678(param, local, field, local[1]);
+        result = func_ov088_02279678(param, local, field);
     }
 
     return result;

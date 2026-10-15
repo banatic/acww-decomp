@@ -42,7 +42,7 @@ extern int func_02050920(void *, int);
 extern int func_0209e5f0(void *);
 extern void MI_CpuFill8(void *, int, int);
 extern void func_0209e5d8(void *);
-extern void func_020a008c(void *);
+extern int func_020a008c(void *);
 extern void func_0209fb5c(int);
 
 int func_020a503c(struct UnkStruct_020a503c *o)

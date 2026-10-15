@@ -6,7 +6,7 @@ extern int data_020df2a0;
 
 extern int func_ov143_02299650(char *param, int x);
 extern void func_ov143_02299b04(char *param);
-extern int func_ov143_02299630(char *param, int x);
+extern void func_ov143_02299630(char *param, int x);
 
 void func_ov143_0229a334(char *param)
 {

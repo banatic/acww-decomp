@@ -11,11 +11,11 @@ typedef struct Work {
     unsigned int height;
 } Work;
 extern void func_020b38dc(void *);
-extern void *func_020b3880(void *);
-extern Work *func_0204e414(void *);
+extern void func_020b3880(void *);
+extern Work *func_0204e414(void);
 extern unsigned short *func_02037e0c(Cell *, int, int, int);
 extern void func_0204f800(int *, int *, unsigned int, unsigned int, int, int);
-extern void func_0204e404(Work *, unsigned short *, int, int);
+extern int func_0204e404(Work *, unsigned short *, int, int);
 inline unsigned short inline_fn(unsigned short *arg0)
 {
     return *arg0;
@@ -35,7 +35,8 @@ void func_020b3754(void *arg)
     unsigned short *res;
     int ok;
     func_020b38dc(arg);
-    work = func_0204e414(func_020b3880(((char *) arg) + 4));
+    func_020b3880(((char *) arg) + 4);
+    work = func_0204e414();
     for (y = 1; y <= 4; y++) {
         for (x = 1; x <= 4; x++) {
             if (((x < work->width) && (y < work->height)) && work->base) {

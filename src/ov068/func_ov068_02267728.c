@@ -21,7 +21,7 @@ typedef struct UnkStruct_02267728_2 {
 extern int func_02014868(const void *ptr);
 extern void func_ov068_0226ad78(UnkStruct_02267728 *a, UnkStruct_02267728_2 *b, int, int, int);
 extern void func_0203eddc(UnkStruct_02267728_2 *b);
-extern void func_0203e020(UnkStruct_02267728_2 *b);
+extern int func_0203e020(UnkStruct_02267728_2 *b);
 extern void func_0201ce5c(UnkStruct_02267728_2 *b, int);
 extern void func_0201ce44(UnkStruct_02267728_2 *b, int);
 extern void func_ov068_0226cce4(UnkStruct_02267728 *a, int);

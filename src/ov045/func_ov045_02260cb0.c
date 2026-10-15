@@ -5,10 +5,10 @@
 extern int func_02019df8(unsigned int);
 extern int func_02019e00(unsigned int);
 extern void func_02035624(int);
-extern void func_02016014(void *, int);
-extern void func_ov004_02230518(void);
-extern void func_ov004_022304f8(void);
-extern void func_ov004_022304d8(void);
+extern int func_02016014(void *, int);
+extern int func_ov004_02230518(void);
+extern int func_ov004_022304f8(void);
+extern int func_ov004_022304d8(void);
 
 typedef struct {
     unsigned char pad_00[0xb4];

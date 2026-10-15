@@ -29,7 +29,7 @@ extern "C" int func_02056f94(void *);
 extern "C" void func_020109fc(struct UnkStruct_02212968 *, int, int, int);
 extern "C" int func_ov003_02212574(struct UnkStruct_02212968 *, struct Vec *, int);
 extern "C" void func_0204f818(int *, int *, struct Vec *);
-extern "C" void func_ov003_02212830(struct UnkStruct_02212968 *, struct Vec2 *, int, int);
+extern "C" void *func_ov003_02212830(struct UnkStruct_02212968 *, struct Vec2 *, int, int);
 
 extern "C" void func_ov003_02212968(struct UnkStruct_02212968 *o)
 {

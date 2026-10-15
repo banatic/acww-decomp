@@ -4,9 +4,9 @@
 
 extern int func_0209b4d4(int);
 extern void func_0209bb90(int, int);
-extern void func_0208150c(int);
-extern int func_020036e8(void);
-extern void func_0202da38(void *, void *, void *, int, int, int, int, int, int);
+extern unsigned int func_0208150c(int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *, void *, void *, int, int, int, int, int, int);
 extern struct {
     int field0;
     unsigned char field4;
@@ -34,9 +34,9 @@ typedef struct UnkStruct_0202777c_2 {
 void func_0202777c(UnkStruct_0202777c *self, UnkStruct_0202777c_2 *out)
 {
     func_0209bb90(func_0209b4d4(self->unk_160), 1);
-    func_0208150c(*((int *) (((char *) self->unk_100) + 0x830)));
-    func_0202da38(self, ((char *) self) + 0x104, ((char *) self) + 0x122, 0x1e, func_020036e8(), data_020c8e28.field0,
-                  data_020c8e28.field4, 0, 0);
+    func_0202da38(self, ((char *) self) + 0x104, ((char *) self) + 0x122, 0x1e,
+                  func_020036e8((unsigned char *) func_0208150c(*((int *) (((char *) self->unk_100) + 0x830)))),
+                  data_020c8e28.field0, data_020c8e28.field4, 0, 0);
     out->field0 = ((char *) self) + 0x104;
     out->field4 = self->unk_122;
     self->unk_C8 = data_020d9080;

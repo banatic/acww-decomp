@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void func_020eed18(void *h, int a);
-extern void func_020eedb8(int seq, int a, void *h);
+extern int func_020eed18(void *h, int a);
+extern int func_020eedb8(int seq, int a, void *h);
 extern void func_020eed68(void *h, int a, int b, int c, int d, int e);
 extern int func_020f5e50(void *obj, int n);
 extern int func_020f5c64(void *obj, int n);

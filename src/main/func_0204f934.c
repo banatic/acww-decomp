@@ -15,7 +15,11 @@ struct Entry {
 extern struct Entry data_021c80f4[12];
 
 extern void func_0204fa5c(void *, u8);
-extern void FS_GetOverlayFileID(void *, void *);
+typedef struct FSFileID {
+    void *archive;
+    u32 file_id;
+} FSFileID;
+extern FSFileID FS_GetOverlayFileID(const void *overlay);
 extern void func_0204f9ec(struct Entry *);
 extern void OS_Terminate(void);
 extern void func_0204fa18(struct Entry *, u8);
@@ -24,7 +28,7 @@ void func_0204f934(u8 id)
 {
     struct Entry *found = 0;
     unsigned int i;
-    char path[8];
+    FSFileID path;
     char buffer[44];
     u32 f4;
     u32 sum;
@@ -39,7 +43,7 @@ void func_0204f934(u8 id)
         }
     }
     func_0204fa5c(buffer, id);
-    FS_GetOverlayFileID(path, buffer);
+    path = FS_GetOverlayFileID(buffer);
     {
         unsigned int j;
         u32 f4;

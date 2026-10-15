@@ -8,12 +8,12 @@ struct UnkStruct_022280b0 {
     int c;
     int d;
 };
-extern void func_02057d58(void *dst, int a, int b, int c, void *self, int d);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_02057d0c(int k, void *self);
+extern int func_02057d58(void *dst, int a, int b, int c, void *self, int d);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
+extern int func_02057d0c(int k, void *self);
 extern int func_020b65c4(void);
-extern void func_0200f328(void *self, int msg);
-void func_ov004_022280b0(unsigned char *self, unsigned char *p)
+extern int func_0200f328(void *self, int msg);
+void func_ov004_022280b0(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_022280b0 *q;
     q = (struct UnkStruct_022280b0 *) (p + 0xc);

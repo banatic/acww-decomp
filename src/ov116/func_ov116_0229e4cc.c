@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020ee45c(void *obj, int x);
+extern int func_020ee45c(void *obj);
 extern void func_ov090_022993cc(int r, unsigned char c);
-extern void func_ov002_022080a0(void *obj, int v);
+extern unsigned char *func_ov002_022080a0(void *obj, unsigned char value);
 
 typedef struct {
     char pad_00[0x8c];
@@ -14,7 +14,7 @@ typedef struct {
 int func_ov116_0229e4cc(Object *obj, int x)
 {
     int r;
-    r = func_020ee45c(obj, x);
+    r = func_020ee45c(obj);
     if (x != -1 && x != 3) {
         func_ov090_022993cc(r, (unsigned char) x);
         obj->unk_8C = 2;

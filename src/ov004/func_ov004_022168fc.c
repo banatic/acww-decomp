@@ -9,12 +9,13 @@
 #define H(p, o) (*(u16 *) ((p) + (o)))
 extern void func_0209def4(u16 *);
 extern int func_ov004_0220e5c8(void *), func_ov004_0223c10c(void), func_ov004_0223c1e0(void);
-extern void func_ov004_0223cf18(void *, int), func_ov004_0223cf40(void *, int, void *),
+extern void func_ov004_0223cf18(void *, short), func_ov004_0223cf40(void *, int, void *),
     func_ov004_0223cf54(void *, int, void *);
 extern void *func_ov004_0220e220(void *), *func_ov004_0220da04(void *, int);
 extern void func_02055060(void *, void *, int, int, int, int), func_02054cdc(void *), func_020550e4(void *, int);
 extern int func_02056f94(void *);
-extern void func_ov004_0220ffbc(void *), func_ov004_022106fc(void *);
+extern int func_ov004_0220ffbc(void *);
+extern int func_ov004_022106fc(void *);
 int func_ov004_022168fc(u8 *self)
 {
     int frame;

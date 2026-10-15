@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02019de4(void *a, void *b);
-extern void func_0201b1a4(void *a, void *b, int c, int d);
+extern void *func_02019de4(void *a);
+extern void func_0201b1a4(void *a, void *b, int c, int d, unsigned short p5);
 extern void func_0201b044(void *a, void *b);
 extern void func_0201afd4(void *a, void *b);
 extern void func_0201aff4(void *a, int b);
@@ -26,13 +26,13 @@ typedef struct {
 
 int func_020198bc(void *first, void *second)
 {
-    volatile int hw;
+    unsigned short hw;
     void *ptr;
     int val;
 
-    ptr = func_02019de4(first, second);
+    ptr = func_02019de4(first);
     hw = *(unsigned short *) ((char *) ptr + 0x1c);
-    func_0201b1a4((char *) second + 0x350, second, 0, 0);
+    func_0201b1a4((char *) second + 0x350, second, 0, 0, hw);
     func_0201b044((char *) second + 0x350, &data_021fbee8);
     func_0201afd4((char *) second + 0x350, &data_021fbee8);
     func_0201aff4((char *) second + 0x350, *(short *) ((char *) second + 0x8e));

@@ -9,7 +9,7 @@ extern int func_ov050_02260718(char *self);
 extern int *func_02095794(int a);
 extern int func_0201c378(char *self, int a);
 extern int func_0201c2c8(char *self, int a);
-extern void func_020e8b4c(short s, int a);
+extern int func_020e8b4c(short s, int a);
 extern int func_ov050_02260498(char *self);
 extern void func_0201b458(void *dst, char *src, int *data);
 extern int func_020960f8(int a, int b);

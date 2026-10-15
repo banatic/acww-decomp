@@ -12,7 +12,7 @@ typedef struct {
 
 extern UnkStruct_02299de8 data_ov127_0229b614[4];
 
-extern void func_020896b8(int, UnkStruct_02299de8 *, int, int, int, int, int);
+extern int func_020896b8(int, UnkStruct_02299de8 *, int, int, int, int, int);
 
 #pragma opt_loop_invariants off
 void func_ov127_02299de8(unsigned char *obj, int a2, int a3)

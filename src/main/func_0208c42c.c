@@ -15,7 +15,7 @@ extern unsigned char data_020d0a99[];
 extern unsigned char data_020d0a98[];
 extern signed char data_020d0a85[];
 
-extern void func_0203aad0(int, int);
+extern int func_0203aad0(int, int);
 extern void RtcSendPxiCommand(int);
 
 void func_0208c42c(struct UnkStruct_0208c42c *self)

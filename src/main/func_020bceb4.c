@@ -21,7 +21,7 @@ extern int func_020ba4e4(void);
 extern void func_0209e474(DT *);
 extern void MI_CpuCopy8(DT *, DT *, u32);
 extern u32 func_0209e3ac(DT *, DT *, int);
-extern void func_020bdc50(struct UnkStruct_020bceb4 *, int, int, int, int);
+extern void *func_020bdc50(struct UnkStruct_020bceb4 *, int, int, int, int);
 
 void func_020bceb4(struct UnkStruct_020bceb4 *p)
 {

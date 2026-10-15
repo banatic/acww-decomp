@@ -31,14 +31,14 @@ struct UnkStruct_02027e4c_4 {
 extern struct UnkStruct_02027e4c_3 data_020c8998;
 extern struct UnkStruct_02027e4c_3 data_020c8a40;
 extern struct Pair data_020d8df0;
-extern void func_0202d9c4(void *self);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(void *self);
+extern int func_0209bc40(unsigned char *);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *self, char *buf, unsigned char *byte, int count, int v1, int v2, int v3, int zero1, int zero2);
+extern int func_0202da38(void *self, char *buf, unsigned char *byte, int count, int v1, int v2, int v3, int zero1, int zero2);
 extern int func_0209b4cc(void *ptr, int idx);
 extern void func_02015e10(void *self, int value, int idx);
-extern int func_0209bb70(void);
+extern int func_0209bb70(int);
 extern void func_02015de4(void *self, int value, int a, int b);
 void func_02027e4c(struct UnkStruct_02027e4c_2 *self, struct UnkStruct_02027e4c_4 *out)
 {
@@ -46,8 +46,7 @@ void func_02027e4c(struct UnkStruct_02027e4c_2 *self, struct UnkStruct_02027e4c_
     int v;
     int res;
     int tmp;
-    func_0202d9c4(self);
-    v = func_0209bc40();
+    v = func_0209bc40((unsigned char *) func_0202d9c4(self));
     switch (v) {
         case 10:
             dp = &data_020c8998;
@@ -67,8 +66,7 @@ void func_02027e4c(struct UnkStruct_02027e4c_2 *self, struct UnkStruct_02027e4c_
             func_02015e10(self, tmp, 0);
             tmp = func_0209b4cc(self->ptr, 1);
             func_02015e10(self, tmp, 1);
-            func_0202d9c4(self);
-            tmp = func_0209bb70();
+            tmp = func_0209bb70((int) func_0202d9c4(self));
             func_02015de4(self, tmp, 0, 7);
         }
     }

@@ -20,8 +20,8 @@ class Obj_ov009_022658dc : public Base_0203f080, public Base_02066994 {
     virtual void vfunc_60();
     virtual int vfunc_64();
     virtual int vfunc_68();
-    virtual void vfunc_6c(int mode); // func_ov009_0226418c
-    virtual void vfunc_70();
+    virtual int vfunc_6c(int mode); // func_ov009_0226418c
+    virtual int vfunc_70();
     virtual void vfunc_74(); // func_ov009_022640d8: runs the mode handler
     virtual void vfunc_78();
     virtual void vfunc_7c();
@@ -31,15 +31,15 @@ class Obj_ov009_022658dc : public Base_0203f080, public Base_02066994 {
     virtual int vfunc_8c();
     virtual int vfunc_90();
     virtual int vfunc_94();
-    virtual void vfunc_98();
-    virtual void vfunc_9c();
-    virtual void vfunc_a0();
-    virtual void vfunc_a4();
-    virtual void vfunc_a8();
-    virtual void vfunc_ac();
-    virtual void vfunc_b0();
-    virtual void vfunc_b4();
-    virtual void vfunc_b8();
+    virtual int vfunc_98();
+    virtual int vfunc_9c();
+    virtual int vfunc_a0();
+    virtual int *vfunc_a4();
+    virtual char *vfunc_a8();
+    virtual void *vfunc_ac();
+    virtual int vfunc_b0();
+    virtual Vec_0203f080 vfunc_b4();
+    virtual int vfunc_b8();
 
     // update states, indexed by state_27c
     void func_ov009_022638c8();

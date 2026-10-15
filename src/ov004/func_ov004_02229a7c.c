@@ -3,9 +3,9 @@
  */
 
 extern void func_02010f5c(void *);
-extern void func_0201100c(void *);
+extern int func_0201100c(void *);
 extern void func_02010d64(void *);
-extern void func_02010ca4(void *);
+extern int func_02010ca4(void *);
 extern void func_ov004_02229aa4(void *);
 
 void func_ov004_02229a7c(void *p)

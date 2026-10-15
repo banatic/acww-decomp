@@ -20,18 +20,18 @@ typedef struct {
 
 extern char data_021f38f8[];
 
-extern void func_02094fd4(Ctx2 *c);
-extern void func_02094fbc(Ctx2 *c);
-extern void func_02062fbc(UnkStruct_02299c40_2 *c);
-extern void func_02062f4c(UnkStruct_02299c40_2 *c);
+extern void *func_02094fd4(Ctx2 *c);
+extern void *func_02094fbc(Ctx2 *c);
+extern void *func_02062fbc(UnkStruct_02299c40_2 *c);
+extern void *func_02062f4c(UnkStruct_02299c40_2 *c);
 extern u16 *func_ov145_022999c4(UnkStruct_02299c40 *self, int row);
 extern int func_ov145_02299a24(UnkStruct_02299c40 *self);
 extern void *func_ov145_02299dd0(UnkStruct_02299c40 *self);
 extern void func_020a8c1c(void *h);
-extern void func_02062ea4(UnkStruct_02299c40_2 *c, u16 *p);
-extern void func_020a8bb8(void *h, void *c);
+extern int func_02062ea4(UnkStruct_02299c40_2 *c, u16 *p);
+extern void *func_020a8bb8(void *h, void *c);
 extern int func_02070fe4(char *t, Ctx2 *c, u16 *p);
-extern void func_0207094c(void *h, int a);
+extern int func_0207094c(void *h, int a);
 extern void func_02070adc(void *h, int a, int b, int c, int d, int e, int f);
 extern void func_02070a04(void *h, int a, int b);
 

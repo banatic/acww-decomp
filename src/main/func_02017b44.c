@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020164cc(const void *);
+extern int func_020164cc(const void *, int);
 extern int func_02057cf4(void);
 extern int func_02057d0c(int, const void *);
 extern void func_02016764(const void *, const void *, int, unsigned short, int, int, int, int);
-extern void func_0200442c(const void *, int, int, int);
+extern int func_0200442c(const void *, int, int, int);
 extern void func_02019af0(const void *, int);
 extern unsigned short data_020c80f8;
 
@@ -14,7 +14,7 @@ void func_02017b44(unsigned char *arg0, unsigned char *arg1)
 {
     int state;
 
-    if (func_020164cc(arg1 + 0x334) == 0) {
+    if (func_020164cc(arg1 + 0x334, (int) arg1) == 0) {
         return;
     }
 

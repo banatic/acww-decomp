@@ -19,11 +19,11 @@ extern int func_02095040(int arg);
 extern int func_020642a4(int arg);
 extern int func_02077c34(char *elem);
 extern int func_020ee45c(void *self);
-extern int func_ov090_02298fa4(int arg);
+extern void func_ov090_02298fa4(int arg);
 extern int func_ov119_0229ae68(void *self);
 extern int func_02077d68(int arg);
 extern int func_020eaf48(int a, int b);
-extern void func_ov002_02208098(void *self, int arg);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov119_0229b248(void *self, int arg);
 
 void func_ov119_0229b284(void *self)

@@ -2,19 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-typedef struct {
-    int a;
-    int b;
-    unsigned short c;
-} UnkStruct_02019ac0;
-
 extern void func_020779b8(void *, int, int);
 extern void MI_CpuCopy8(void *, void *, int);
 
-void func_02019ac0(unsigned char *out, int x, int y, int z, UnkStruct_02019ac0 s)
+void func_02019ac0(unsigned char *out, int x, int y, int z, int d, short e, unsigned short f)
 {
     func_020779b8(out, x, y);
-    func_020779b8(out + 5, z, s.a);
-    MI_CpuCopy8(&s.b, out + 10, 2);
-    out[12] = (unsigned char) s.c;
+    func_020779b8(out + 5, z, d);
+    MI_CpuCopy8(&e, out + 10, 2);
+    out[12] = (unsigned char) f;
 }

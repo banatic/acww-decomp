@@ -4,10 +4,10 @@
 
 extern unsigned char data_ov068_022771c0;
 extern void func_ov068_02266f3c(void *);
-extern void func_02012588(void *);
-extern void func_ov068_0226ce48(void *);
+extern void *func_02012588(void *);
+extern void *func_ov068_0226ce48(void *);
 extern void func_ov068_02266cec(void *);
-extern void func_0202e5e0(void *);
+extern void *func_0202e5e0(void *);
 
 void *func_ov068_022667e0(void *param)
 {

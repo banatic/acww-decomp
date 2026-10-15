@@ -18,7 +18,7 @@ extern void *data_020ccf94;
 extern int func_020b22b8(void);
 extern int func_020b22dc(void);
 extern int func_02037e84(char *e);
-extern void func_02037e44(char *e, u16 *p, int a, int b, int c);
+extern int func_02037e44(char *e, u16 *p, int a, int b, int c);
 extern u16 *func_02037e0c(char *e, int i, int j, int k);
 extern void func_0204f800(int *px, int *py, int x, int y, int i, int j);
 extern void func_020b2a68(void *o, char *p);

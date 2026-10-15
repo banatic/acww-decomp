@@ -36,7 +36,7 @@ class UnkStruct_02215e08 {
 };
 
 extern "C" int func_ov004_0220d2b8(void *p);
-extern "C" void func_ov004_0220d220(void *p, int a, void *b, int c);
+extern "C" int func_ov004_0220d220(void *p, int a, void *b, int c);
 extern "C" int func_ov004_0223c10c(void);
 extern int data_ov004_022531d8;
 

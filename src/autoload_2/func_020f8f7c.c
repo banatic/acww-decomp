@@ -9,7 +9,7 @@ struct Func020f8f7cStruct {
     int unk_10;
 };
 
-extern void NNS_SndArcPlayerStartSeq(void *ptr, int value);
+extern int NNS_SndArcPlayerStartSeq(void *ptr, int value);
 
 void func_020f8f7c(struct Func020f8f7cStruct *self)
 {

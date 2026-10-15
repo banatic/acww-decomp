@@ -11,9 +11,9 @@ typedef struct UnkStruct_02047dd4 {
     unsigned char unk_07;
 } UnkStruct_02047dd4;
 
-extern int func_0204cb90(char *p1, int p2, char *p3, UnkStruct_02047dd4 *p4);
+extern int func_0204cb90(char *p1, int p2);
 extern int func_0209e380(char *p, UnkStruct_02047dd4 *p2);
-extern int func_0209dcdc(char *p1, char *p2, char *p3);
+extern int func_0209dcdc(char *p1, char *p2);
 
 int func_02047dd4(int arg1, int arg2, UnkStruct_02047dd4 *a3, UnkStruct_02047dd4 *a4, int a5, int a6, char *a7)
 {
@@ -23,7 +23,7 @@ int func_02047dd4(int arg1, int arg2, UnkStruct_02047dd4 *a3, UnkStruct_02047dd4
 
     if (a5 != 0) {
         char *b7 = a7;
-        if (func_0204cb90(b7 + 0x17254, arg2, b7, a4) < 0) {
+        if (func_0204cb90(b7 + 0x17254, arg2) < 0) {
             if (a6 != 0) {
                 return 1;
             }
@@ -44,7 +44,7 @@ int func_02047dd4(int arg1, int arg2, UnkStruct_02047dd4 *a3, UnkStruct_02047dd4
             local2[1] = a4->unk_04;
             local2[0] = a4->unk_03;
 
-            result = func_0209dcdc(local2, a7 + 0x172a8, a7);
+            result = func_0209dcdc(local2, a7 + 0x172a8);
             if (result >= 0) {
                 return result;
             }

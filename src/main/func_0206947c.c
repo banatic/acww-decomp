@@ -7,10 +7,17 @@ typedef struct {
     unsigned int unk_24;
 } UnkStruct_0206947c;
 
-extern int func_0206b97c(UnkStruct_0206947c *self, unsigned int a, unsigned int b);
+extern void func_0206b97c(void);
 
-int func_0206947c(UnkStruct_0206947c *self)
+// clang-format off
+asm int func_0206947c(register UnkStruct_0206947c *self)
 {
-    unsigned int inter = self->unk_24 + 0x14b8;
-    return func_0206b97c(self, inter + 0x170, inter);
+    ldr r2, [r0, #0x24]
+    ldr r1, =0x14b8
+    add r2, r2, r1
+    ldr r1, =0x170
+    add r1, r2, r1
+    ldr r3, =func_0206b97c
+    bx r3
 }
+// clang-format on

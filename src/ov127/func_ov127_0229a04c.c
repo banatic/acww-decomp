@@ -5,11 +5,11 @@
 extern void func_020028bc(int a, int b, int c, int d);
 extern void *data_ov127_0229b6ac;
 extern int data_021fbe94;
-extern void func_02002c6c(void *table, int deref, int b, int c, int d, int e);
+extern int func_02002c6c(void *table, int deref, int b, int c, int d, int e);
 extern void *data_ov127_0229b6c0;
-extern void func_02064af4(void *table, void *dst, int size);
+extern int func_02064af4(void *table, void *dst, int size);
 extern void func_020b0fa0(void *p);
-extern void func_02002b40(void *p, int a, int b, int c);
+extern int func_02002b40(void *p, int a, int b, int c);
 
 void func_ov127_0229a04c(unsigned char *self, unsigned char param1)
 {

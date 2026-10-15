@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02050974(void *p);
+extern int func_02050974(void *p);
 extern char data_021c8188;
 extern void FS_InitFile(void *buf);
 typedef struct {
@@ -10,8 +10,8 @@ typedef struct {
     unsigned int file_id;
 } FSFileID;
 extern int FS_OpenFileFast(void *buf, FSFileID id);
-extern int func_02064658(void *buf, int a, int b, int c);
-extern void FS_CloseFile(void *buf);
+extern void func_02064658(void *buf, int a, int b, int c);
+extern int FS_CloseFile(void *buf);
 
 struct UnkStruct_0206e778 {
     FSFileID id;

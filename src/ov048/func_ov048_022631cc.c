@@ -10,8 +10,8 @@ typedef struct {
 } UnkStruct_022631cc;
 
 extern int DWCi_GsMalloc(int);
-extern void func_02095a8c(int, int);
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02095a8c(int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern int func_020644cc(int);
 extern unsigned short data_020c80f8;
 

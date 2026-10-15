@@ -11,7 +11,7 @@ typedef struct UnkStruct_02299878 {
     unsigned char b5;
 } UnkStruct_02299878;
 
-extern void func_ov002_02208098(UnkStruct_02299878 *p, int a);
+extern unsigned char *func_ov002_02208098(UnkStruct_02299878 *p, unsigned char value);
 extern void func_ov123_02299630(UnkStruct_02299878 *p, int a);
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;

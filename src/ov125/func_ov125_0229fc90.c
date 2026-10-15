@@ -2,14 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_ov002_02208d30(char *p, int a);
-extern unsigned int func_0206fca4(unsigned int a);
-extern void func_ov002_02208d4c(char *p, int a, int b);
+extern void func_ov002_02208d30(char *p, int a);
+extern unsigned char func_0206fca4(void);
+extern int func_ov002_02208d4c(char *p, int a, int b);
 
 void func_ov125_0229fc90(char *self)
 {
     unsigned int v;
-    v = func_0206fca4(func_ov002_02208d30(self + 0x568, 1)) - 4;
+    func_ov002_02208d30(self + 0x568, 1);
+    v = func_0206fca4() - 4;
     switch (v) {
         case 1:
         case 4:

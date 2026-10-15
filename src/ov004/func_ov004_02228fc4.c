@@ -7,11 +7,11 @@ typedef struct {
     char b[0x14];
 } UnkStruct_02228fc4;
 
-extern void func_0200e92c(UnkStruct_02228fc4 *t);
+extern unsigned int func_0200e92c(UnkStruct_02228fc4 *t);
 extern void func_0200e90c(UnkStruct_02228fc4 *t, int x, int y, int z);
 extern void func_ov004_02229078(void *p, int a, int b, int c);
 extern int func_0200e894(void *self, UnkStruct_02228fc4 *t);
-extern void func_0200e91c(UnkStruct_02228fc4 *t);
+extern int func_0200e91c(UnkStruct_02228fc4 *t);
 
 int func_ov004_02228fc4(void *self, int *b, int *c, short *d, int e, short g)
 {

@@ -26,16 +26,16 @@ class UnkStruct_0203ead0 {
     virtual void v19(int, int);
 };
 
-extern "C" int func_0203ed8c(UnkStruct_0203ead0 *, int);
-extern "C" int func_0203f338(int);
+extern "C" int func_0203ed8c(UnkStruct_0203ead0 *);
+extern "C" int func_0203f338(void);
 extern "C" int func_0203efbc(UnkStruct_0203ead0 *);
-extern "C" int func_0203f320(int, int);
+extern "C" void func_0203f320(int, int);
 
 extern "C" void func_0203ead0(UnkStruct_0203ead0 *obj, int arg1)
 {
-    int r = func_0203ed8c(obj, arg1);
+    int r = func_0203ed8c(obj);
     if (r) {
-        if (func_0203f338(r) == 1) {
+        if (func_0203f338() == 1) {
             func_0203f320(func_0203efbc(obj), arg1);
         }
     }

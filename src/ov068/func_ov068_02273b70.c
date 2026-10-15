@@ -35,7 +35,7 @@ typedef struct UnkStruct_02273b70_3 {
 extern int func_020e8840(void *);
 extern void func_0206844c(u32, void *, u32);
 extern int func_0209a000(void *, int _x);
-extern void func_0202ea80(int, int);
+extern int func_0202ea80(int, int);
 extern void func_ov004_02246988(void);
 extern void func_02035638(u16);
 extern void func_02064da0(int, int);

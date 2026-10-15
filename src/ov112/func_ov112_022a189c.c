@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov112_022a11f4(void *self);
+extern void func_ov112_022a11f4(void);
 extern void func_ov112_022a1104(void *self);
 extern void func_ov112_0229fbc0(void *self);
 extern void func_ov112_0229fe60(void *self, int arg);
@@ -13,13 +13,13 @@ extern void func_02002708(int a);
 extern void func_ov002_02207e80(void *self, int a, int b, int c);
 extern void func_ov002_02208090(void *self, int a);
 extern int func_ov002_02207f60(void *self);
-extern void func_ov002_0220acc4(void *ptr);
+extern int func_ov002_0220acc4(void *ptr);
 extern void func_ov112_0229fd20(void *self);
 extern void func_ov112_022a122c(void *self);
 
 void func_ov112_022a189c(void *self)
 {
-    func_ov112_022a11f4(self);
+    func_ov112_022a11f4();
     func_ov112_022a1104(self);
     func_ov112_0229fbc0(self);
     func_ov112_0229fe60(self, 0x4000);

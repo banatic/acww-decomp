@@ -3,11 +3,11 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern int func_ov002_02208014(void *p);
-extern void func_ov002_02208008(void *p);
+extern int func_ov002_02208014(void);
+extern char *func_ov002_02208008(void *p);
 extern int func_ov002_02207ffc(void *p);
 extern int func_ov002_02207ff0(void *p);
-extern void func_ov132_0229b140(void *p);
+extern int func_ov132_0229b140(void *p);
 extern void func_ov132_0229ae4c(void *p);
 extern void func_ov132_0229ae90(void *p);
 extern void func_ov132_0229b0d0(void *p);
@@ -22,7 +22,7 @@ void func_ov132_0229b2a4(struct UnkStruct_0229b2a4 *p)
 {
     unsigned char orig;
 
-    if (func_ov002_02208014(p) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov132_0229b140(p);
         return;
     }

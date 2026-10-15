@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fc8c(void *p);
+extern int func_0206fc8c(void);
 extern void *func_020b1530(int idx);
 
 typedef struct Entry {
@@ -12,7 +12,7 @@ typedef struct Entry {
 
 void func_ov129_0229c094(void *arg)
 {
-    int count = func_0206fc8c(arg);
+    int count = func_0206fc8c();
     int i;
     for (i = 0; i < 16; i++) {
         Entry *p;

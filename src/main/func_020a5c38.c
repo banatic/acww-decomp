@@ -36,7 +36,7 @@ extern void func_02073820(struct UnkStruct_020a5c38 *g);
 extern void func_020737f0(struct UnkStruct_020a5c38 *g, unsigned char *p, int n);
 extern void func_02073770(struct UnkStruct_020a5c38 *g, int a, int b);
 extern void func_020a6cd4(void *p);
-extern void func_020eae40(void);
+extern int func_020eae40(void);
 
 void func_020a5c38(struct UnkStruct_020a5c38_2 *self)
 {

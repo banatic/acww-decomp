@@ -6,10 +6,10 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern void func_02032adc(void *ctx);
-extern void func_02032acc(void *ctx);
+extern void *func_02032adc(void *ctx);
+extern int func_02032acc(void *ctx);
 extern int func_020311bc(void *ctx, Vec3 *b, Vec3 *a, int flags);
-extern void func_02034270(void *big, Vec3 *pos, int c, int d);
+extern int func_02034270(void *big, Vec3 *pos, int c, int d);
 extern int func_020341c8(void *big, int flag);
 extern void func_0203423c(void *big);
 

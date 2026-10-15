@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void *func_020160b4(void *p0, char *p1);
+void *func_020160b4(void *p0);
 void func_0201cf54(void *p0);
 void func_020ab670(void *p, unsigned char a, signed char b);
 int func_020644cc(int);
@@ -22,7 +22,7 @@ void func_0201cec8(void *p0, char *p1)
     int add;
     unsigned char b;
 
-    result = func_020160b4(p0, p1);
+    result = func_020160b4(p0);
     if (result == 0) {
         return;
     }

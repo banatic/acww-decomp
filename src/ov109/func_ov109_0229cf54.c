@@ -3,8 +3,8 @@
  */
 
 extern int func_0208e484(void *);
-extern void func_ov109_0229c658(void *);
-extern void func_ov002_02208098(void *, int);
+extern int func_ov109_0229c658(void *);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 void func_ov109_0229cf54(void *arg0)
 {

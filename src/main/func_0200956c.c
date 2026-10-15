@@ -5,9 +5,9 @@
 extern int func_0200f290(void *, int);
 extern void func_020109fc(void *, int, int, int);
 extern void func_020095ac(void *, int);
-extern void func_0200f27c(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
 
-void func_0200956c(void *a, void *b)
+void func_0200956c(void *a, void *b, int previous)
 {
     signed short *s;
     char *p;

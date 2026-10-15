@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_02222d8c(int a, unsigned int b, unsigned int *c);
+extern void func_ov003_02222d8c(int a, unsigned int b, unsigned int *c);
 
 typedef struct {
     unsigned char pad_00[4];
@@ -12,10 +12,10 @@ typedef struct {
     unsigned int unk_D0;
 } UnkStruct_02222d68;
 
-int func_ov003_02222d68(UnkStruct_02222d68 *obj, int arg2)
+void func_ov003_02222d68(UnkStruct_02222d68 *obj, int arg2)
 {
     unsigned int arr[2];
     arr[0] = obj->unk_CC;
     arr[1] = obj->unk_D0;
-    return func_ov003_02222d8c(arg2, obj->unk_04, arr);
+    func_ov003_02222d8c(arg2, obj->unk_04, arr);
 }

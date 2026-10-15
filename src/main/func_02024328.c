@@ -41,7 +41,7 @@ extern int func_0202d9c4(UnkStruct_02024328_2 *self);
 extern int func_0209bc40(int x);
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
-extern void func_0202da38(UnkStruct_02024328_2 *self, char *a, unsigned char *b, int n, int e, void *f, int g, int h, int i);
+extern int func_0202da38(UnkStruct_02024328_2 *self, char *a, unsigned char *b, int n, int e, void *f, int g, int h, int i);
 
 void func_02024328(UnkStruct_02024328_2 *self, UnkStruct_02024328_3 *out)
 {

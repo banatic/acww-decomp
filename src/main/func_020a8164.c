@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void strncpy(int, int, int);
+extern char *strncpy(int, int, int);
 void func_020a8164(int a, int b)
 {
     strncpy(a + 4, b, 25);

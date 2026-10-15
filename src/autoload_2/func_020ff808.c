@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020ff808(short *src, int unused, int *dst)
+void func_020ff808(short *src, void *unused, int *dst, void *emitter)
 {
     dst[0] += src[0];
     dst[1] += src[1];

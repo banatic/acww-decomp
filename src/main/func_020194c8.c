@@ -15,7 +15,7 @@ typedef struct {
 } UnkStruct_020194c8_2;
 
 extern int func_0201afec(void *addr);
-extern void func_02019804(UnkStruct_020194c8_2 *a1, UnkStruct_020194c8 *a2);
+extern int func_02019804(UnkStruct_020194c8_2 *a1, UnkStruct_020194c8 *a2);
 
 void func_020194c8(UnkStruct_020194c8_2 *a1, UnkStruct_020194c8 *a2)
 {

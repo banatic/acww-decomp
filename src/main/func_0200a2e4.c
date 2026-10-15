@@ -3,9 +3,9 @@
  */
 
 extern void func_020109fc(int a, int b, int c, int d);
-extern void func_02057d0c(int a, int b);
+extern int func_02057d0c(int a, int b);
 
-void func_0200a2e4(int arg)
+void func_0200a2e4(int arg, void *message, int previous)
 {
     func_020109fc(arg, 0x29, 3, 0);
     func_02057d0c(2, arg);

@@ -22,13 +22,13 @@ extern char data_ov003_0223c48c[], data_ov003_0223c4a0[], data_ov003_0223c4b4[],
 extern char data_ov003_0223c4dc[], data_ov003_0223c4f0[], data_ov003_0223c504[], data_ov003_0223c510[];
 extern char data_ov003_0223c51c[], data_ov003_0223c528[];
 
-extern void func_02137550(char *p, int n);
-extern void func_02064328(char *dst, char *fmt, int a);
+extern char *func_02137550(char *p, int n);
+extern int func_02064328(char *dst, char *fmt, int a);
 extern int func_02064858(char *p);
 extern void *func_0209d238(char *p, char *q);
 extern int func_0209d0ac(char *p, void *h, char *g);
 extern void *func_0209d088(char *p);
-extern void func_02055f2c(char *a, void *x, int f);
+extern int func_02055f2c(char *a, void *x, int f);
 extern void *func_0209d324(void *h);
 extern void *func_02064b2c(char *g, void *m, int n, int f);
 extern void *NNS_G3dGetVisAnmSet(void *p);
@@ -45,7 +45,7 @@ extern int func_0205650c(char *p, int q, void *m);
 extern void func_02056478(char *p, void *q, int b, int c, int d);
 extern void *func_02055e00(char *a);
 extern void func_020563dc(char *p, void *q);
-extern void func_0200430c(char *p);
+extern int func_0200430c(char *p);
 extern void func_ov003_0222e0ec(char *a, char *self, int k);
 
 void func_ov003_0222fa20(char *a, char *self, int mode)

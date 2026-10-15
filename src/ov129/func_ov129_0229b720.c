@@ -5,10 +5,10 @@
 extern char data_ov129_0229dc38;
 extern void func_ov127_0229a0e8(void *p);
 extern void func_020b18a8(void *p);
-extern void func_ov002_02209cb4(void *p);
-extern void func_ov002_0220afdc(void *p);
-extern void func_ov002_0220ba0c(void *p);
-extern void func_ov002_0220826c(void *p);
+extern void *func_ov002_02209cb4(void *p);
+extern void *func_ov002_0220afdc(void *p);
+extern void *func_ov002_0220ba0c(void *p);
+extern void *func_ov002_0220826c(void *p);
 
 typedef struct {
     void *unk_00;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020aea28(void);
+extern void func_020aea28(void *);
 extern void func_02063ce0(void *, int, int, int);
 extern void func_020ae834(int, int *);
 extern void func_020ae814(int, int *);
@@ -16,7 +16,7 @@ void func_020ae96c(int a0, int a1, int a2, int a3)
 {
     int local;
 
-    func_020aea28();
+    func_020aea28((void *) a0);
     func_02063ce0((void *) data_021f4a80, a1, a2, a3);
     local = 0;
     func_020ae834(a0, &local);

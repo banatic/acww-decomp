@@ -5,7 +5,7 @@
 extern int func_ov096_0229d8ec(int arg);
 extern int func_ov096_0229c4dc(int arg);
 extern void func_0206fcb0(int ret);
-extern void func_ov096_0229cc10(int arg);
+extern int func_ov096_0229cc10(int arg);
 extern void func_ov096_0229c2ec(int arg, int flags);
 
 void func_ov096_0229d8bc(int arg)

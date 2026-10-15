@@ -26,11 +26,11 @@ struct UnkStruct_0220fa5c_2 {
 extern "C" int func_020e8ed8(int, int);
 extern "C" void func_ov003_0220fb14(void *, int, int, int, int, int);
 extern "C" void func_ov003_0220fafc(void *, int, int, int);
-extern "C" void func_020109a0(struct UnkStruct_0220fa5c_2 *, int, int, int);
+extern "C" void func_020109a0(struct UnkStruct_0220fa5c_2 *, int b, int c, unsigned short d);
 extern "C" void func_020109fc(struct UnkStruct_0220fa5c_2 *, int, int, int);
-extern "C" void func_0200f27c(struct UnkStruct_0220fa5c_2 *, int);
+extern "C" unsigned int *func_0200f27c(struct UnkStruct_0220fa5c_2 *, int);
 
-extern "C" void func_ov003_0220fa5c(struct UnkStruct_0220fa5c_2 *o, struct In *p)
+extern "C" void func_ov003_0220fa5c(struct UnkStruct_0220fa5c_2 *o, struct In *p, int previous)
 {
     volatile struct Vec d;
     volatile struct Vec b;

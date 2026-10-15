@@ -61,7 +61,7 @@ struct GTable {
 extern u32 data_021d5658[3];
 extern struct GTable data_021d52d8[];
 extern void func_02090db0(struct Entry *p);
-extern void func_02034270(struct UnkStruct_02093f0c_4 *out, struct In *in, int x, int y);
+extern int func_02034270(struct UnkStruct_02093f0c_4 *out, struct In *in, int x, int y);
 extern int func_020ea838(struct UnkStruct_02093f0c *d);
 extern void MI_CpuCopy8(u32 *vals, struct GTable *t, int len);
 extern void func_0203423c(struct UnkStruct_02093f0c_4 *out);

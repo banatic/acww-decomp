@@ -17,12 +17,12 @@ extern int func_0206fc6c(void);
 extern int func_0206fc8c(void);
 extern int func_0209a034(int a);
 extern int func_02086564(u16 *p);
-extern void func_02015330(UnkStruct_02279068 *self, u16 *p, int a, int b, int c);
+extern int func_02015330(UnkStruct_02279068 *self, u16 *p, int a, int b, int c);
 extern void func_ov081_0227914c(UnkStruct_02279068 *self, int a);
 extern void func_02015de4(UnkStruct_02279068 *self, u16 *p, int a, int b);
 extern void func_02015f00(UnkStruct_02279068 *self, int a, int b, int c, int d);
 extern void func_0209a050(int a);
-extern void func_020155cc(UnkStruct_02279068 *self);
+extern int func_020155cc(UnkStruct_02279068 *self);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov081_02279868;
 

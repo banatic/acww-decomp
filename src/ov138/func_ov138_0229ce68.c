@@ -8,7 +8,7 @@ extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
 extern int func_ov002_02208054(void *self, int arg);
-extern void func_ov138_0229c9e0(void *self);
+extern unsigned char *func_ov138_0229c9e0(void *self);
 extern int func_ov002_0220a784(void *ptr, int idx);
 extern void func_ov138_0229c978(void *self);
 extern void func_ov138_0229c950(void *self);

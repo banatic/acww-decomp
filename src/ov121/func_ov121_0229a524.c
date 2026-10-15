@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern BOOL CARD_IsEnabled(void);
-extern void func_0203ac44(void);
+extern int func_0203ac44(void);
 
 void func_ov121_0229a524(void)
 {

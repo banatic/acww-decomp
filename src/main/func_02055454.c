@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02055f1c(void);
+extern int func_02055f1c(void *);
 
 int func_02055454(int param)
 {
@@ -12,7 +12,7 @@ int func_02055454(int param)
 
     r5 = param;
     r4 = 1;
-    result = func_02055f1c();
+    result = func_02055f1c((void *) param);
     r4 &= result;
     *(unsigned int *) (r5 + 0x98) = 0x4e554c4c;
     return r4;

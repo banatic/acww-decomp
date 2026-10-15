@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *, void *, void *, int, int, void *, int, int, unsigned char);
+extern int func_0202da38(void *, void *, void *, int, int, void *, int, int, int selected);
 extern char data_020c8e50;
 extern char data_020c8e5c;
 struct Pair {
@@ -21,8 +21,7 @@ void func_02024bf8(void *p, void *out)
     void *data = (void *) &data_020c8e50;
     int res;
 
-    func_0202d9c4();
-    if (func_0209bc40() == 4) {
+    if (func_0209bc40((unsigned char *) func_0202d9c4(p)) == 4) {
         data = (void *) &data_020c8e5c;
         mode = 3;
     }

@@ -2,9 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0204eea4(int a, int b, int c, int d);
-void func_0204e3f4(void)
+extern int func_0204eea4(int a, int b, int c, int d);
+int func_0204e3f4(int a, int b, int c, int d)
 {
-    int a, b, c, d;
-    func_0204eea4(a, b, c, d);
+    return func_0204eea4(a, b, c, d);
 }

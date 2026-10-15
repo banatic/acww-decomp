@@ -7,7 +7,7 @@ extern int func_ov096_0229f150(void *, int);
 extern int func_ov096_0229f830(void *, int);
 extern unsigned short func_ov096_0229f0dc(void *, int);
 extern int func_ov096_0229f088(void *, int);
-extern void func_ov096_0229defc(void *, void *, unsigned char, unsigned short *, int);
+extern int func_ov096_0229defc(void *, void *, unsigned char, unsigned short *, int);
 extern void func_ov096_0229f5e0(void *, unsigned char, unsigned short, int);
 extern void func_ov096_0229e898(void *, int, int);
 extern int func_ov096_0229e71c(void *);

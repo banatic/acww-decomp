@@ -21,7 +21,7 @@ typedef struct {
 } UnkStruct_0200f95c_2;
 
 extern int func_02056f28(void *flags, int bit);
-extern void func_020912d4(int type, void *a, void *b, int c);
+extern int func_020912d4(int type, void *a, void *b, int c);
 extern void func_0200f888(UnkStruct_0200f95c_2 *self);
 
 void func_0200f95c(UnkStruct_0200f95c_2 *self)

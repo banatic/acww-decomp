@@ -3,7 +3,7 @@
  */
 
 extern int func_0208e484(void *ptr);
-extern void func_ov002_02208098(void *obj, unsigned char byte);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char byte);
 extern void func_ov105_0229d17c(void *obj);
 
 struct UnkStruct_0229e070 {

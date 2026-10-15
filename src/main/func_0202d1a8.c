@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202d1cc(int, int, int, int, int, int, int, int, int);
+extern int func_0202d1cc(int, int, int, int, int, int, int, int, int);
 
-void func_0202d1a8(int a, int b, int c, int d, int e, int f, int g)
+int func_0202d1a8(int a, int b, int c, int d, int e, int f, int g)
 {
-    func_0202d1cc(a, b, c, d, e, f, g, 0, 23);
+    return func_0202d1cc(a, b, c, d, e, f, g, 0, 23);
 }

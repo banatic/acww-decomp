@@ -49,19 +49,19 @@ extern int memcmp(const char *, const char *, int);
 extern int func_0209518c(Rec *, Rec *);
 extern int func_02094ffc(Rec *);
 extern int func_02094fec(Rec *);
-extern void func_0208150c(void *);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_02021284_3 *, char *, char *, int, int, void *, int, int, int);
-extern void func_020b18fc(UnkStruct_02021284 *);
-extern void func_020b1954(UnkStruct_02021284_2 *);
+extern unsigned int func_0208150c(void *);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_02021284_3 *, char *, char *, int, int, void *, int, int, int);
+extern void *func_020b18fc(UnkStruct_02021284 *);
+extern void *func_020b1954(UnkStruct_02021284_2 *);
 extern void func_020a8874(UnkStruct_02021284 *, void *, int);
-extern void func_020a8a70(UnkStruct_02021284_2 *, UnkStruct_02021284 *, int, int);
+extern int func_020a8a70(UnkStruct_02021284_2 *, UnkStruct_02021284 *, int, int);
 extern void func_02068404(void *, int, UnkStruct_02021284_2 *);
-extern void func_020b193c(UnkStruct_02021284_2 *);
-extern void func_020b18e4(UnkStruct_02021284 *);
+extern void *func_020b193c(UnkStruct_02021284_2 *);
+extern void *func_020b18e4(UnkStruct_02021284 *);
 extern void func_02015e40(UnkStruct_02021284_3 *, void *, int);
 extern int func_02095040(void *);
-extern void func_02015e70(UnkStruct_02021284_3 *, int, int);
+extern void *func_02015e70(UnkStruct_02021284_3 *, int, int);
 
 int func_02021284(UnkStruct_02021284_3 *self)
 {
@@ -121,9 +121,9 @@ int func_02021284(UnkStruct_02021284_3 *self)
     if (st == -1) {
         goto done;
     }
-    func_0208150c(self->unk_100->unk_830);
-    func_0202da38(self, self->unk_104, self->unk_122, 0x1e, func_020036e8(), data_020c8b98.unk_00, data_020c8b98.unk_04, st,
-                  0);
+    func_0202da38(self, self->unk_104, self->unk_122, 0x1e,
+                  func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830)), data_020c8b98.unk_00,
+                  data_020c8b98.unk_04, st, 0);
     ret = 1;
     if (pb != 0) {
         func_020b18fc(&o1);

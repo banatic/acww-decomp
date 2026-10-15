@@ -15,16 +15,17 @@ typedef struct {
     short b, c, d;
 } Id;
 
-extern void func_0200faf0(void *self, int k);
+extern int func_0200faf0(void *self, int k);
 extern int _s32_div_f(int a, int b);
 extern void func_ov003_02219668(Mtx43 *m, Vec3 *v);
-extern void func_0203f7d0(Vec3 *a, Vec3 *b);
+extern int func_0203f7d0(Vec3 *a, Vec3 *b);
 extern void func_02091278(int h, Vec3 *v, int a, int b);
 extern int func_0209120c(int k, Vec3 *v, int a, int b);
-extern void func_ov003_0222d83c(int a, unsigned short *p, Mtx43 *m, int c);
+extern int func_ov003_0222d83c(int a, unsigned short *p, Mtx43 *m, int c);
 extern void func_ov003_0222aaa0(Vec3 *v, int k);
 extern int FX_MulFunc(int a, int b);
-extern void func_0204fdec(int h, int k, Vec3 *w, Vec3 *v, int a, int b, int c, int d, int e, int f);
+extern int func_0204fdec(int x, int y, void *position, void *scale, short rotation_x, short rotation_y, short rotation_z,
+                         unsigned char flag0, unsigned char flag1, unsigned int tag);
 
 void func_ov003_022191c0(char *self)
 {

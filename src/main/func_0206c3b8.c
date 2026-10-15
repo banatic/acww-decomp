@@ -8,16 +8,16 @@ struct UnkStruct_0206c3b8 {
     int unk_48;
 };
 
-extern int func_02068114(int);
-extern int func_020a8328(char *, int *, int *, int *);
+extern int func_02068114(void);
+extern void func_020a8328(char *, int *, int *, int *);
 extern void func_020a93e8(struct UnkStruct_0206c3b8 *, int);
 extern void func_020a9334(struct UnkStruct_0206c3b8 *, int);
 
 void func_0206c3b8(struct UnkStruct_0206c3b8 *self)
 {
     int a, b, c;
-    int ret = func_020a8328(self->unk_34, &a, &b, &c);
-    if (func_02068114(ret) == 0) {
+    int ret = ((int) (func_020a8328(self->unk_34, &a, &b, &c), self->unk_34));
+    if (func_02068114() == 0) {
         func_020a93e8(self, a << 1);
         func_020a9334(self, c);
         self->unk_48 = c + ((b - c) ^ 1);

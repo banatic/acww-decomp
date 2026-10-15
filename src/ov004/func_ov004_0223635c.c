@@ -28,7 +28,7 @@ struct UnkStruct_0223635c {
 
 extern int func_0200322c(void *a, void *b);
 extern int func_ov004_02239460(int a, int b);
-extern void func_ov004_022397ec(struct UnkStruct_0223635c *self);
+extern int func_ov004_022397ec(struct UnkStruct_0223635c *self);
 
 void func_ov004_0223635c(struct UnkStruct_0223635c *self, void *p)
 {

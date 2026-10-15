@@ -11,7 +11,7 @@ struct UnkStruct_020b4044 {
     char unk_29;
 };
 
-extern void func_020a81b8(void *param);
+extern void *func_020a81b8(void *param);
 
 extern unsigned char data_020e5200[];
 

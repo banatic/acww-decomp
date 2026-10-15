@@ -3,12 +3,12 @@
  */
 
 extern int func_ov103_0229cce8(unsigned char *self, int value);
-extern int func_0206fe54(int value);
+extern int func_0206fe54(void);
 extern int func_02065ec0(int value);
 extern int func_02065f18(int value);
 extern void func_ov002_02208d30(unsigned char *base, int arg);
-extern void func_ov002_02208d4c(unsigned char *base, int arg1, int arg2);
-extern void func_ov002_02207d24(unsigned char *base, int arg);
+extern int func_ov002_02208d4c(unsigned char *base, int arg1, int arg2);
+extern int func_ov002_02207d24(unsigned char *base, int arg);
 extern void func_ov103_0229c7ec(unsigned char *self);
 extern void func_ov103_0229c52c(unsigned char *self);
 
@@ -22,7 +22,7 @@ void func_ov103_0229c444(unsigned char *self, int value)
 
     r6 = func_ov103_0229cce8(self, value);
 
-    if (func_0206fe54(r6) != 0) {
+    if (func_0206fe54() != 0) {
         func_ov002_02208d4c(self + 0x26c0, 0, 0);
     }
 

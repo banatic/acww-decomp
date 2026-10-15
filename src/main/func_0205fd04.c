@@ -14,21 +14,19 @@ typedef struct {
     int unk_24;
 } Param;
 
-extern int func_0205fb28(int *vec, int a, void *b, void *c);
+extern int func_0205fb28(int *vec, int a, void *b, void *c, unsigned char flag);
 extern void func_0206026c(Param *param, int a);
 
 void func_0205fd04(Param *param)
 {
     struct {
-        int flag;
         int vec[3];
     } local;
 
     local.vec[0] = param->unk_1C;
     local.vec[1] = param->unk_20;
     local.vec[2] = param->unk_24;
-    local.flag = 1;
-    if (func_0205fb28(local.vec, param->unk_14, &param->unk_08, &param->unk_18) != 0) {
+    if (func_0205fb28(local.vec, param->unk_14, &param->unk_08, &param->unk_18, 1) != 0) {
         func_0206026c(param, 1);
     }
 }

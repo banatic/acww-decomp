@@ -5,7 +5,7 @@
 typedef struct {
     unsigned char b[0x40];
 } UnkStruct_02239354;
-extern void func_02034270(UnkStruct_02239354 *, void *, int, int);
+extern int func_02034270(UnkStruct_02239354 *, void *, int, int);
 extern int func_020341c8(UnkStruct_02239354 *, int);
 extern void func_0203423c(UnkStruct_02239354 *);
 

@@ -3,7 +3,7 @@
  */
 
 extern void func_02095944(int arg);
-int func_ov009_02263568(void)
+int func_ov009_02263568(void *receiver)
 {
     func_02095944(0);
     return 1;

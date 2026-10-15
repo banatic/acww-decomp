@@ -39,10 +39,10 @@ extern void func_0209e474(void *p);
 extern int func_0202d060(unsigned short *a, int *b, int *c, int *d, void *e);
 extern int func_0202c9c0(int x);
 extern void func_02015de4(UnkStruct_02023124_2 *self, unsigned short *a, int b, int c);
-extern void func_02015dd4(UnkStruct_02023124_2 *self, int n, Agg *a, void *tbl, u8 *e);
+extern int func_02015dd4(UnkStruct_02023124_2 *self, int n, Agg *a, void *tbl, u8 *e);
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
-extern void func_0202da38(UnkStruct_02023124_2 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
+extern int func_0202da38(UnkStruct_02023124_2 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
 
 int func_02023124(UnkStruct_02023124_2 *self)
 {

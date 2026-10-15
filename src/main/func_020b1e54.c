@@ -19,12 +19,12 @@ typedef struct UnkStruct_020b1e54 {
 extern int data_021f4b40;
 extern u16 data_021f4b28;
 extern int data_021f4ba0;
-extern void func_020051b0(void *p);
+extern void func_020051b0(void *);
 
-extern void __register_global_object(void *o, void (*d)(void *), void *n);
+extern void __register_global_object(void *, void *, void *);
 extern World *func_0204e414(void);
 extern int func_02037e84(void *t);
-extern int func_02037bd8(int kind);
+extern int func_02037bd8(unsigned int);
 extern UnkStruct_020b1e54 *func_02037e0c(void *t, int a, int b, int c);
 extern int func_0204bb00(UnkStruct_020b1e54 *o);
 extern int func_0204bba8(UnkStruct_020b1e54 *o);
@@ -34,7 +34,7 @@ extern void func_0204f800(int *px, int *py, int a, int b, int c, int d);
 extern void *func_020b3b50(UnkStruct_020b1e54 *o);
 extern unsigned int func_020b3eb8(void *l);
 extern int func_020b3e08(void *l, int *a, int *b, unsigned int k);
-extern void func_0204f538(World *w, u16 *st, int x, int y, int f);
+extern int func_0204f538(World *w, u16 *st, int x, int y, int f);
 
 void func_020b1e54(void)
 {
@@ -63,7 +63,7 @@ void func_020b1e54(void)
 
     if ((data_021f4b40 & 1) == 0) {
         data_021f4b28 = 0xfff1;
-        __register_global_object(&data_021f4b28, func_020051b0, &data_021f4ba0);
+        __register_global_object((void *) (&data_021f4b28), (((void *) func_020051b0)), (void *) (&data_021f4ba0));
         data_021f4b40 |= 1;
     }
     w = func_0204e414();
@@ -78,7 +78,7 @@ void func_020b1e54(void)
                 tile = (void *) 0;
             }
             kind = func_02037e84(tile);
-            flags = func_02037bd8(kind);
+            flags = func_02037bd8((unsigned int) kind);
             x = 0;
             m1 = flags;
             m1 &= 1;

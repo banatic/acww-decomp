@@ -8,7 +8,7 @@ typedef struct {
     fx32 x, y, z;
 } Vec;
 
-extern void func_020109a0(void *, int, int, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
 extern void func_0205eae0(void *, int, int, int);
 extern void func_02060438(void *, Vec *);
 extern void func_ov003_02215ef8(void *, fx32, fx32);
@@ -25,7 +25,7 @@ typedef struct {
     fx32 z;
 } UnkStruct_02215e78_2;
 
-void func_ov003_02215e78(UnkStruct_02215e78 *self, void *data)
+void func_ov003_02215e78(UnkStruct_02215e78 *self, void *data, int previous)
 {
     Vec v[2];
     UnkStruct_02215e78_2 *p;

@@ -4,7 +4,7 @@
 
 extern void func_ov105_0229c330(unsigned char *param1, int param2);
 extern void func_ov002_02208d30(unsigned char *param1, int param2);
-extern void func_ov002_02208d4c(unsigned char *param1, int param2, int param3);
+extern int func_ov002_02208d4c(unsigned char *param1, int param2, int param3);
 extern void func_ov105_0229cbe0(unsigned char *param1, int param2);
 
 void func_ov105_0229ca8c(unsigned char *base)

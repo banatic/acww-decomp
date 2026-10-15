@@ -3,8 +3,8 @@
  */
 
 extern unsigned char data_ov088_02279cec;
-extern void func_ov088_02278cf8(void *);
-extern void func_0202ee5c(void *);
+extern void *func_ov088_02278cf8(void *);
+extern void *func_0202ee5c(void *);
 extern void func_020edf54(void *);
 
 struct Main {

@@ -4,7 +4,7 @@
 
 extern unsigned int data_ov004_022510b4;
 extern unsigned int data_ov004_02251160;
-extern void func_ov004_02210cf0(void *self);
+extern void *func_ov004_02210cf0(void *self);
 extern void func_ov004_02211518(void *self);
 
 typedef struct {

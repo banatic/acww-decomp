@@ -12,7 +12,8 @@ extern int func_020b65c4(void);
 extern int func_0209f150(void *, int);
 extern void func_0209f100(void *, int), func_0209f128(void *, int);
 extern void func_0203d480(int), func_0203d448(int), func_0203d41c(int);
-extern int func_0203d438(void), func_02004634(int);
+extern int func_0203d438(void);
+extern void func_02004634(int effect);
 extern void func_0203d394(void), func_0206844c(void *, u8 *, void *);
 void func_ov004_02231258(u8 *self)
 {

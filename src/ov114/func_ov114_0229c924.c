@@ -8,7 +8,7 @@ extern u32 func_0204c6b8(u32);
 extern u8 *func_ov094_0229b088(u8 *, u32);
 extern int func_ov114_0229cdcc(u8 *);
 extern void MI_CpuCopy8(const void *, void *, u32);
-extern void func_020b9a18(void *, void *, void *, int, u32, u32, u32, u32);
+extern int func_020b9a18(void *, void *, void *, int, u32, u32, u32, u32);
 extern u32 func_ov094_0229b03c(u8 *, u32);
 
 void func_ov114_0229c924(u8 *self, u32 arg1, int idx)

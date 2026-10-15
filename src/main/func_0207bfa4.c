@@ -2,19 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207c048(char *);
+extern int func_0207c048(char *, int);
 extern int func_0207bfdc(char *);
-extern int func_0207dc30(char *, int);
+extern void func_0207dc30(char *, int);
 
-int func_0207bfa4(char *a, int b)
+void func_0207bfa4(char *a, int b)
 {
     int result;
-    result = func_0207c048(a);
+    result = func_0207c048(a, b);
     if (result != 0) {
         result = func_0207bfdc(a);
         if (result != -1) {
-            return func_0207dc30(a + result * 0x7EC, b);
+            func_0207dc30(a + result * 0x7EC, b);
         }
     }
-    return result;
 }

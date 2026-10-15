@@ -6,7 +6,7 @@ extern "C" {
 int func_0207f270(int);
 int func_0207f294(int);
 int func_ov003_02220318(int);
-void func_02019c20(void *, int, int, int, int, int);
+int func_02019c20(void *, int, int, int, int, int);
 void func_02079540(int, int, int _x);
 void func_020794d4(int, int);
 }

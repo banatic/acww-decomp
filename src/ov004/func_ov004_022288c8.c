@@ -4,10 +4,10 @@
 
 extern int func_02051e9c(void);
 extern int func_02008258(void *self, int a);
-extern void func_ov004_02228dfc(void *self, int a, int b, int c);
-extern void func_ov004_02228850(void *self, int a, int b);
-extern void func_ov004_02228b14(void *self, int a, int b);
-extern void func_ov004_02228be0(void *self, int a, int b);
+extern int func_ov004_02228dfc(void *self, int a, int b, int c);
+extern int func_ov004_02228850(void *self, int a, int b);
+extern int func_ov004_02228b14(void *self, int a, int b);
+extern int func_ov004_02228be0(void *self, int a, int b);
 
 void func_ov004_022288c8(char *self)
 {

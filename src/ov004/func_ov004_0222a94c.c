@@ -4,7 +4,7 @@
 
 extern int func_0200f290(void *self, int a);
 extern int func_ov004_0223badc(int a);
-extern void func_0200f27c(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern int _s32_div_f(int a, int b);
 extern void func_0200f268(void *self, int a);
 extern void func_0200f650(void *self, int a);

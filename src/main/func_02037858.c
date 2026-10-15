@@ -22,7 +22,7 @@ extern int func_02107bbc(int a, int b);
 extern int NNS_G3dGetTexPatAnmSet(int a);
 extern int func_02107bf8(int a, int b);
 extern int func_021077e8(int a);
-extern void func_0210285c(void *buf);
+extern int func_0210285c(void *buf);
 
 extern char data_020da418[];
 extern char data_020da390[];

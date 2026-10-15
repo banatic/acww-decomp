@@ -3,12 +3,12 @@
  */
 
 extern void func_02060a90(int arg);
-extern void func_02061444(void);
-extern void __cxa_vec_cleanup(int a, int b, int c, void (*d)(void));
+extern void *func_02061444(void *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 
 int func_02061118(int arg)
 {
     func_02060a90(arg + 0x1594);
-    __cxa_vec_cleanup(arg, 5, 0x450, func_02061444);
+    __cxa_vec_cleanup((void *) (arg), 5, 0x450, (((void (*)(void *)) func_02061444)));
     return arg;
 }

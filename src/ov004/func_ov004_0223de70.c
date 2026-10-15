@@ -16,15 +16,15 @@ typedef struct UnkStruct_0223de70 {
 extern int data_ov004_02259a14;
 
 extern void func_ov004_0223e3ec(UnkStruct_0223de70 *self);
-extern void func_ov004_0223dd90(UnkStruct_0223de70 *self);
+extern int func_ov004_0223dd90(UnkStruct_0223de70 *self);
 extern void func_ov004_0223d82c(UnkStruct_0223de70 *self);
 extern void func_ov004_0223e1f0(UnkStruct_0223de70 *self);
-extern void func_ov004_0223de14(UnkStruct_0223de70 *self);
+extern int func_ov004_0223de14(UnkStruct_0223de70 *self);
 extern void func_02055124(char *p);
 extern void func_ov004_0223df48(UnkStruct_0223de70 *self);
 extern int func_0203f8d0(char *a, char *b);
 extern void func_020031d4(UnkStruct_0223de70 *self, Mtx *m);
-extern void func_ov004_0223dccc(UnkStruct_0223de70 *self);
+extern int func_ov004_0223dccc(UnkStruct_0223de70 *self);
 extern void func_ov004_0223e3d4(UnkStruct_0223de70 *self, int k);
 
 int func_ov004_0223de70(UnkStruct_0223de70 *self)

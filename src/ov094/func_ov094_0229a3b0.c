@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned char func_ov094_0229a39c(void);
-extern void func_ov094_0229a464(void);
+extern unsigned char func_ov094_0229a39c(unsigned char *arg0);
+extern void func_ov094_0229a464(void *arg0);
 extern int func_ov094_0229b048(void *p, unsigned char a, unsigned char b);
 extern void func_ov094_0229a8cc(void *self, const unsigned char *tab, int n, unsigned int m);
 extern void func_ov094_0229a99c(void *self, unsigned short v, int n);
@@ -33,17 +33,17 @@ int func_ov094_0229a3b0(UnkStruct_0229a3b0 *self)
         }
         self->unk_A5A++;
     } else if (state < 8) {
-        self->unk_A59 = func_ov094_0229a39c();
+        self->unk_A59 = func_ov094_0229a39c((unsigned char *) self);
         self->unk_A5A++;
     } else if (state == 8) {
         func_ov094_0229a99c(self, self->unk_A54, 0);
         self->unk_A59 = 0;
         self->unk_A5A++;
     } else if (state < 12) {
-        self->unk_A59 = func_ov094_0229a39c();
+        self->unk_A59 = func_ov094_0229a39c((unsigned char *) self);
         self->unk_A5A++;
     } else {
-        func_ov094_0229a464();
+        func_ov094_0229a464((void *) self);
         return 1;
     }
     return 0;

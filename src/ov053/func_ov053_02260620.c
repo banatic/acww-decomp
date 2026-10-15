@@ -21,7 +21,7 @@ typedef struct UnkStruct_02260620 {
     UnkStruct_02260620_2 sub;
 } UnkStruct_02260620;
 
-extern void func_020984e8(void);
+extern int func_020984e8(void);
 extern void *func_0201c2a4(UnkStruct_02260620 *self, int r);
 extern void func_02016108(UnkStruct_02260620_2 *sub, void *res);
 extern int func_ov053_02260ba8(UnkStruct_02260620_2 *sub);

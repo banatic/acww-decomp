@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int MTX_RotX43_(int a, int b, int c);
+extern void MTX_RotX43_(int a, int b, int c);
 extern short FX_SinCosTable_[];
 
 void func_020e9684(int a, int b)

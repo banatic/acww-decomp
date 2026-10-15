@@ -5,9 +5,9 @@
 extern void func_0209e474(void *);
 extern void func_0209e100(void *, int);
 extern int func_0209dc48(void *);
-extern int func_0204ca8c(int);
+extern void func_0204ca8c(int);
 
-int func_02046bc8()
+void func_02046bc8()
 {
     struct {
         int a;
@@ -18,5 +18,5 @@ int func_02046bc8()
     s.b = 0;
     func_0209e474(&s);
     func_0209e100(&s, 6);
-    return func_0204ca8c((unsigned char) func_0209dc48(&s));
+    func_0204ca8c((unsigned char) func_0209dc48(&s));
 }

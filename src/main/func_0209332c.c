@@ -10,10 +10,11 @@ struct Vec3 {
 
 extern short data_021d5658[];
 extern short FX_SinCosTable_[];
-extern void func_020ea6e0(struct Vec3 *, int, int);
+extern void func_020ea6e0(struct Vec3 *, int);
 extern void VEC_Add(struct Vec3 *, short *, struct Vec3 *);
 extern void func_02090db0(void *);
-extern void func_020933c0(void);
+struct MainObj;
+extern void func_020933c0(struct MainObj *a, int b);
 
 struct UnkStruct_0209332c_2 {
     char pad_00[4];
@@ -38,7 +39,7 @@ struct MainObj {
     short unk_3E;
     short unk_40;
     char pad_42[0x36];
-    void (*unk_78)(void);
+    void (*unk_78)(struct MainObj *a, int b);
 };
 
 void func_0209332c(struct MainObj *self, const struct Vec3 *src, int arg2)
@@ -53,7 +54,7 @@ void func_0209332c(struct MainObj *self, const struct Vec3 *src, int arg2)
     tmp.y = src->y;
     tmp.z = src->z;
 
-    func_020ea6e0(&tmp, base[6], arg2);
+    func_020ea6e0(&tmp, base[6]);
     VEC_Add(&tmp, base, &tmp);
 
     i = ((unsigned short) val >> 4) << 1;

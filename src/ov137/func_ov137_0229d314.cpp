@@ -6,10 +6,10 @@
 // constructors in ov002 and ov134; only the final vtable store is inline.
 extern "C" {
 void *func_ov002_02207f80(unsigned long size); // operator new
-void func_ov002_0220830c(void *self);          // base constructor
-void func_ov002_02209ccc(void *self);
-void func_ov002_0220b008(void *self);
-void func_ov134_0229bed4(void *self);
+void *func_ov002_0220830c(void *self);         // base constructor
+void *func_ov002_02209ccc(void *self);
+void *func_ov002_0220b008(void *self);
+void *func_ov134_0229bed4(void *self);
 extern char data_ov137_0229d440[]; // vtable
 }
 

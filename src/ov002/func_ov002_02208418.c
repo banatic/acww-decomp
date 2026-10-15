@@ -2,22 +2,26 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220882c(void *);
+extern void func_ov002_0220882c(void *, unsigned int);
 
-void func_ov002_02208418(void *r0, int r1, unsigned char r2, int r3)
+void func_ov002_02208418(void *object, int denominator, unsigned char direction, int word)
 {
-    *(unsigned char *) ((char *) r0 + 0x18) = r2;
-    *(int *) ((char *) r0 + 0x14) = r3;
-    func_ov002_0220882c(r0);
-    *(int *) ((char *) r0 + 0xc) = 0;
-    switch (*(unsigned char *) ((char *) r0 + 0x18)) {
+    int result;
+    *(unsigned char *) ((char *) object + 0x18) = direction;
+    *(int *) ((char *) object + 0x14) = word;
+    func_ov002_0220882c(object, (unsigned int) denominator);
+    *(int *) ((char *) object + 0xc) = 0;
+    result = *(unsigned char *) ((char *) object + 0x18);
+    switch (result) {
         case 0:
         case 1:
-            *(int *) ((char *) r0 + 0x10) = 0xc0;
+            result = 0xc0;
+            *(int *) ((char *) object + 0x10) = result;
             break;
         case 2:
         case 3:
-            *(int *) ((char *) r0 + 0x10) = 0x100;
+            result = 0x100;
+            *(int *) ((char *) object + 0x10) = result;
             break;
     }
 }

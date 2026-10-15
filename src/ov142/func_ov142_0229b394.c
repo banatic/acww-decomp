@@ -7,9 +7,9 @@ typedef struct UnkStruct_0229b394 {
     unsigned char byte;
 } UnkStruct_0229b394;
 
-extern int func_ov002_02208014(UnkStruct_0229b394 *self);
+extern int func_ov002_02208014(void);
 extern void func_ov142_0229b1fc(UnkStruct_0229b394 *self);
-extern void func_ov002_02208008(UnkStruct_0229b394 *self);
+extern char *func_ov002_02208008(UnkStruct_0229b394 *self);
 extern int func_ov002_02207fe4(UnkStruct_0229b394 *self);
 extern int func_ov002_02207fd8(UnkStruct_0229b394 *self);
 extern void func_ov142_0229af4c(UnkStruct_0229b394 *self);
@@ -24,7 +24,7 @@ void func_ov142_0229b394(UnkStruct_0229b394 *self)
     unsigned char saved;
     unsigned short flags;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov142_0229b1fc(self);
         return;
     }

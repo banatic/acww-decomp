@@ -3,8 +3,8 @@
  */
 
 extern int func_02073908(int, int);
-extern void func_02095694(int, int);
-extern void func_0200f27c(void *, int);
+extern int func_02095694(int, int);
+extern unsigned int *func_0200f27c(void *, int);
 extern int data_020ccf94;
 
 void func_ov003_02215fa4(int *p)

@@ -3,9 +3,9 @@
  */
 
 extern int data_021ca16c;
-extern void func_0205f130(void *, unsigned char);
+extern int func_0205f130(void *, unsigned char);
 
-void func_0205e8e4(const unsigned char *arg)
+int func_0205e8e4(const unsigned char *arg)
 {
-    func_0205f130(&data_021ca16c, *arg);
+    return func_0205f130(&data_021ca16c, *arg);
 }

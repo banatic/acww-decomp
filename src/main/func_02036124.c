@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b65c4(int param0);
+extern int func_020b65c4(void);
 extern void func_02036558(void *param1, int param2, int param3, int param4);
 
 typedef struct {
@@ -13,7 +13,7 @@ typedef struct {
 void func_02036124(int param0, UnkStruct_02036124 *param1)
 {
     int field = param1->unk_0C;
-    int ret = func_020b65c4(param0);
+    int ret = func_020b65c4();
     int flag27 = (ret == 0x27);
     int flag28 = (ret == 0x28);
 

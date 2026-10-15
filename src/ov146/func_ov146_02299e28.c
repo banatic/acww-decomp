@@ -3,7 +3,7 @@
  */
 
 extern int func_ov146_02299670(char *p, int opt);
-extern int func_ov146_02299650(char *p, int opt);
+extern void func_ov146_02299650(char *p, int opt);
 extern int func_020b9bbc(char *dst, char *src, int size, int mode, int flag);
 extern int func_020b9b6c(char *dst, char *src, int size, int mode);
 

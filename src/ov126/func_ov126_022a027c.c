@@ -17,10 +17,10 @@ typedef struct {
 
 extern int func_ov126_022a0740(UnkStruct_022a027c *self);
 extern void func_ov126_022a06d8(UnkStruct_022a027c *self);
-extern void func_ov126_022a0110(UnkStruct_022a027c *self);
+extern void func_ov126_022a0110(void);
 extern void func_ov126_022a0168(UnkStruct_022a027c *self);
 extern void func_ov126_022a08c4(UnkStruct_022a027c *self);
-extern int func_ov095_0229b3ec(const void *p);
+extern void func_ov095_0229b3ec(const void *p);
 extern int func_ov095_0229b3a0(const void *p, const void *q, int _x);
 extern void RtcSendPxiCommand(int cmd);
 
@@ -41,7 +41,12 @@ int func_ov126_022a027c(UnkStruct_022a027c *self, int b)
         func_ov126_022a06d8(self);
     } else {
         if (b) {
-            func_ov126_022a0110(self);
+            // clang-format off
+            asm {
+                mov r0, self
+            }
+            // clang-format on
+            func_ov126_022a0110();
         }
         return 0;
     }

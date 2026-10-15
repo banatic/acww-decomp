@@ -3,12 +3,12 @@
  */
 
 extern int func_0209ad9c(void *, int);
-extern void func_0209b4d4(int);
-extern void func_02137550(void *, int);
+extern void *func_0209b4d4(void *object);
+extern char *func_02137550(void *, int);
 extern int func_02003704(int *);
 extern int func_0207cb9c(void *, void **, int);
 extern int func_0208150c(int);
-extern void func_0209b4d8(int, int, int, int);
+extern int func_0209b4d8(int, int, int, int);
 extern void func_02003728(void *, int);
 
 typedef struct {
@@ -27,7 +27,7 @@ void func_0209aacc(UnkStruct_0209aacc *p)
     int x, y;
 
     r6 = func_0209ad9c(p, 0);
-    func_0209b4d4(r6);
+    func_0209b4d4((void *) r6);
     func_02137550(&local, 4);
 
     r5 = 0;

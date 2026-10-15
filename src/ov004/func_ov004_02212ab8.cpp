@@ -11,7 +11,7 @@ int func_ov004_0220e5c8(void *self);
 void func_ov004_0223cf40(void *p, int a, void *q);
 void func_ov004_0220d280(void *p, int a, int b);
 int func_02056f28(void *p, int a);
-void func_ov004_0223cf18(void *p, int a);
+void func_ov004_0223cf18(void *object, short value);
 int func_ov004_0220ffbc(void *self);
 }
 

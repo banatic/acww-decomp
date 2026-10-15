@@ -3,7 +3,7 @@
  */
 
 #define g_x0 (*(int *) 0xffffc000)
-extern void func_ov004_0223c994(int, int);
+extern int func_ov004_0223c994(int, int);
 
 void func_ov004_0223c974(int p0)
 {

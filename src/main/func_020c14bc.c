@@ -18,8 +18,8 @@ struct Global48 {
 
 extern struct Global48 data_021fbe48;
 extern int data_021c67a4;
-extern void *func_0203ab20(void *p0, void *p1);
-extern void func_0203f844(struct Mid *a, struct In3 *b);
+extern void *func_0203ab20(void);
+extern int func_0203f844(struct Mid *a, struct In3 *b);
 extern void MTX_MultVec43(struct Mid *a, struct Global48 *b, int *c);
 extern int func_0203c53c(int a);
 extern int FX_Div(int a, int b);
@@ -33,7 +33,7 @@ void func_020c14bc(int *out, struct In3 *in_arg)
     int out2[3];
     int r, res1, res2;
 
-    src = (struct Global48 *) func_0203ab20(out, in_arg);
+    src = (struct Global48 *) func_0203ab20();
     data_021fbe48 = *src;
 
     in.a = in_arg->a;

@@ -5,7 +5,7 @@
 #include "types.h"
 
 #pragma opt_loop_invariants off
-extern int func_020658a0(int, int);
+extern int func_020658a0(void);
 
 void func_ov004_02232a20(void *a0, char *h)
 {
@@ -22,9 +22,8 @@ void func_ov004_02232a20(void *a0, char *h)
         int v = *(int *) (e + 0xc);
         int t = v & m;
         if (t != 0) {
-            v &= ~m;
-            *(int *) (e + 0xc) = v;
-            *(int *) (e + 0xc) = *(int *) (e + 0xc) | func_020658a0(m, v);
+            *(int *) (e + 0xc) &= ~m;
+            *(int *) (e + 0xc) = *(int *) (e + 0xc) | func_020658a0();
         }
     }
 }

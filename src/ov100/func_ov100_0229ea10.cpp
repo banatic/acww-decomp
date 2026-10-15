@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern "C" int func_ov100_0229c2c0(void *self, int mode);
-extern "C" int func_0206fe54(int arg);
+extern "C" int func_0206fe54(void);
 extern "C" void func_ov002_02209eb8(void *ptr);
 extern "C" void func_ov100_0229ce90(void *self);
 extern "C" void func_ov094_0229a7cc(void *ptr, int a, int b);
@@ -27,7 +27,7 @@ extern "C" int func_ov100_0229ea10(void *self)
         return 1;
     }
 
-    if (func_0206fe54(((VtblClass *) ((char *) self + 0x218c))->f2()) != 0) {
+    if (((void) (((VtblClass *) ((char *) self + 0x218c))->f2()), func_0206fe54()) != 0) {
         func_ov002_02209eb8((char *) self + 0x2274);
     }
 

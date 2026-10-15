@@ -6,10 +6,10 @@ extern int func_020644cc(int);
 extern int func_0206837c(int);
 extern int func_020ab504(int);
 extern void func_0206844c(int, char *, int);
-extern void func_0208602c(void);
-extern void func_020860c4(void);
-extern void func_02087f28(void);
-extern void func_02087f20(void);
+extern int func_0208602c(void);
+extern int func_020860c4(int);
+extern void func_02087f28(void *);
+extern void func_02087f20(void *);
 extern int func_020b65c4(void);
 extern int data_020e7ad8;
 
@@ -48,17 +48,13 @@ void func_020c1904(UnkStruct_020c1904 *self)
                 case 0:
                     arr[0] = (char) (func_020644cc(3) + 0x1c);
                     func_0206844c(self->something, arr, data_020e7ad8);
-                    func_0208602c();
-                    func_020860c4();
-                    func_02087f28();
+                    func_02087f28((void *) func_020860c4((int) func_0208602c()));
                     break;
                 case 1:
                     arr[1] = (char) (func_020644cc(3) + 0x1f);
                     func_0206844c(self->something, &arr[1], data_020e7ad8);
                     if (func_020b65c4() == 0) {
-                        func_0208602c();
-                        func_020860c4();
-                        func_02087f20();
+                        func_02087f20((void *) func_020860c4((int) func_0208602c()));
                     }
                     self->unk_B0[0x711] = 1;
                     break;

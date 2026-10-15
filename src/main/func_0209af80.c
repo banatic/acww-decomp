@@ -11,7 +11,7 @@ typedef struct {
     unsigned short h;
 } Func_0209af80_ObjB;
 
-extern int func_020984e8(int);
+extern int func_020984e8(void);
 extern int func_02099870(int);
 extern int func_02094ffc(int);
 extern int func_0209bd44(Func_0209af80_ObjA *);
@@ -32,12 +32,12 @@ int func_0209af80(Func_0209af80_ObjA *a, Func_0209af80_ObjB *b)
         goto fail;
     }
 
-    v = func_020984e8(a->unk_0C);
+    v = func_020984e8();
     if (v == 0) {
         goto fail;
     }
 
-    if (func_02094ffc(func_02099870(func_020984e8(v))) != 0) {
+    if (func_02094ffc(func_02099870(func_020984e8())) != 0) {
         goto fail;
     }
 

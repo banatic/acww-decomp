@@ -3,15 +3,15 @@
  */
 
 extern void func_ov003_02216688(char *, unsigned char, unsigned char, int *);
-extern void func_020109a0(char *, int, int, int);
-extern void func_0200f27c(char *, int);
+extern void func_020109a0(char *, int b, int c, unsigned short d);
+extern unsigned int *func_0200f27c(char *, int);
 
 typedef struct {
     unsigned char pad_00[0xC];
     unsigned char sub[4];
 } QType;
 
-void func_ov003_02216644(char *a, QType *b)
+void func_ov003_02216644(char *a, QType *b, int previous)
 {
     unsigned char *p = b->sub;
     unsigned char v2 = p[2];

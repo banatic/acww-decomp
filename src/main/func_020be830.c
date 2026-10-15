@@ -8,8 +8,8 @@ typedef struct {
 } UnkStruct_020be830;
 
 extern void func_020be6ac(UnkStruct_020be830 *s, int a, int b);
-extern void func_ov003_02219774(void);
-extern void func_0203aeac(void);
+extern int func_ov003_02219774(void);
+extern int func_0203aeac(void);
 extern void *func_02098844(void *base, int index);
 extern int func_02099a28(void *obj);
 extern void *func_0209967c(void *obj);

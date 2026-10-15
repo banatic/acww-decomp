@@ -6,8 +6,8 @@
 #include "cpp/ov121/Obj_ov121_0229c3a8.h"
 
 extern "C" int func_ov121_0229bcc8(void *);
-extern "C" int func_ov121_0229b9e0(void *);
-extern "C" int func_ov121_0229b9d8(void *);
+extern "C" void func_ov121_0229b9e0(void *);
+extern "C" void func_ov121_0229b9d8(void *);
 
 int Obj_ov121_0229c3a8::func_ov121_0229bd94()
 {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_0222aae8(unsigned int);
+extern int func_ov003_0222aae8(unsigned int);
 void func_02060460(void *param)
 {
     unsigned int val = *(unsigned int *) ((char *) param + 0x2c);

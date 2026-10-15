@@ -17,7 +17,7 @@ extern int func_0206fe54(void);
 extern void func_0208aa60(void *ptr, int a, int b);
 extern int func_ov103_0229cdfc(param_t *param, unsigned char byte);
 extern int func_ov103_0229cde8(param_t *param, unsigned char byte);
-extern void func_ov094_0229b9b4(void *a, void *b, int c);
+extern int func_ov094_0229b9b4(void *a, void *b, int c);
 
 void func_ov103_0229ca9c(param_t *param)
 {

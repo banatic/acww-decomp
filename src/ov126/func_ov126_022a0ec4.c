@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov002_02208008(void *self);
 extern int func_ov126_022a0768(void *self, int v);
 extern void func_ov095_0229b3ec(void *p);
@@ -16,7 +16,7 @@ extern void RtcSendPxiCommand(int cmd);
 void func_ov126_022a0ec4(void *self)
 {
     if ((data_021fbe40 & 1) == 0) {
-        func_ov002_02208098(self, 6);
+        func_ov002_02208098((void *) (self), 6);
     } else {
         int ret = func_ov002_02208008(self);
         if (func_ov126_022a0768(self, ret) == 1) {

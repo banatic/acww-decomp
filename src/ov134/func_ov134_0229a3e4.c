@@ -6,7 +6,7 @@ extern void RtcSendPxiCommand(int);
 extern void func_02001b6c(int);
 extern void func_02001d74(int, int);
 extern int func_02002d8c(int);
-extern void func_02001d00(int, int);
+extern void func_02001d00(int);
 extern void func_ov134_0229b6dc(void *);
 extern void func_ov134_022995a0(void *, int);
 
@@ -33,7 +33,7 @@ void func_ov134_0229a3e4(UnkStruct_0229a3e4 *p)
     p->unk_AF = 3;
     func_02001b6c(1);
     func_02001d74(0x1f, 1);
-    func_02001d00(~func_02002d8c(p->unk_A4) & 0x1f, 0x1f);
+    func_02001d00(~func_02002d8c(p->unk_A4) & 0x1f);
     func_ov134_0229b6dc(p);
     p->unk_80 = p->unk_AB + (p->unk_AD << 4) - p->unk_00;
     func_ov134_022995a0(p, 4);

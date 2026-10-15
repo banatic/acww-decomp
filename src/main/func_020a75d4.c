@@ -18,6 +18,7 @@ struct Msg {
 
 void func_020a75d4(void)
 {
+    int d;
     int r7;
     int r6;
     unsigned int r5;
@@ -25,7 +26,6 @@ void func_020a75d4(void)
     int s0;
     int s4;
     int s8;
-    int d;
     struct Msg msg;
 
     p = data_020ccf94;

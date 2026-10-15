@@ -10,13 +10,13 @@ typedef struct {
 
 extern UnkStruct_02268370 *data_ov066_0226bdf4;
 
-extern void func_ov066_0226a00c(int a);
+extern void func_ov066_0226a00c(void);
 extern void func_ov066_02269748(int a);
 
 void func_ov066_02268370(int a)
 {
     if (data_ov066_0226bdf4->fc0_7) {
-        func_ov066_0226a00c(a);
+        func_ov066_0226a00c();
     } else {
         func_ov066_02269748(a);
     }

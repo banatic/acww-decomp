@@ -28,7 +28,7 @@ extern void func_ov123_0229ae24(struct UnkStruct_022996dc *self);
 extern int func_ov123_02299650(struct UnkStruct_022996dc *self, u32 param);
 extern void func_ov123_02299640(struct UnkStruct_022996dc *self, u32 param);
 extern void func_ov123_02299630(struct UnkStruct_022996dc *self, u32 param);
-extern void func_0200459c(int a, int b);
+extern void func_0200459c(int a);
 extern int func_ov123_0229ab80(struct UnkStruct_022996dc *self, u8 cur_a8, u8 cur_a9, u8 orig_a8, u8 orig_a9, u8 a2, u8 a4);
 extern void RtcSendPxiCommand(u16 cmd);
 extern u8 func_ov123_0229afa8(struct UnkStruct_022996dc *self);
@@ -62,7 +62,7 @@ void func_ov123_022996dc(struct UnkStruct_022996dc *self)
                 d2 = self->unk_B5 - g1;
                 sum = d1 - d2;
             }
-            func_0200459c(sum, d2);
+            func_0200459c(sum);
             func_ov123_02299640(self, 0x100000);
         }
 

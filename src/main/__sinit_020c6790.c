@@ -7,10 +7,10 @@ typedef struct {
     int b;
 } UnkStruct_020c6790;
 
-extern void func_0203f674(void *);
+extern int func_0203f674(void *);
 extern void __register_global_object(void *, void *, void *);
 extern void func_0203f5e0(void *);
-extern void func_02088274(void *);
+extern int func_02088274(void *);
 extern struct B021f3ea4 {
     UnkStruct_020c6790 unk_00;
     UnkStruct_020c6790 unk_08;
@@ -78,13 +78,13 @@ extern struct B021f3ea4 {
     UnkStruct_020c6790 unk_1F8;
 } data_021f3ea4;
 extern int data_021f3d90;
-extern int func_0203f664;
+extern int func_0203f664(void *);
 extern int data_021f3c40;
 extern int data_021f3cbc;
-extern int func_0203f5dc;
+extern void func_0203f5dc(void *);
 extern int data_021f3c4c;
 extern int data_021f40a4;
-extern int func_02088264;
+extern int func_02088264(void *);
 extern int data_021f3c58;
 extern UnkStruct_020c6790 data_020e3a48;
 extern UnkStruct_020c6790 data_020e3a40;
@@ -154,11 +154,14 @@ extern UnkStruct_020c6790 data_020e3850;
 void __sinit_020c6790(void)
 {
     func_0203f674((void *) &data_021f3d90);
-    __register_global_object((void *) &data_021f3d90, (void *) &func_0203f664, (void *) &data_021f3c40);
+    __register_global_object((void *) ((void *) &data_021f3d90), (((void *) func_0203f664)),
+                             (void *) ((void *) &data_021f3c40));
     func_0203f5e0((void *) &data_021f3cbc);
-    __register_global_object((void *) &data_021f3cbc, (void *) &func_0203f5dc, (void *) &data_021f3c4c);
+    __register_global_object((void *) ((void *) &data_021f3cbc), (((void *) func_0203f5dc)),
+                             (void *) ((void *) &data_021f3c4c));
     func_02088274((void *) &data_021f40a4);
-    __register_global_object((void *) &data_021f40a4, (void *) &func_02088264, (void *) &data_021f3c58);
+    __register_global_object((void *) ((void *) &data_021f40a4), (((void *) func_02088264)),
+                             (void *) ((void *) &data_021f3c58));
     data_021f3ea4.unk_00 = data_020e3a48;
     data_021f3ea4.unk_08 = data_020e3a40;
     data_021f3ea4.unk_10 = data_020e38c8;

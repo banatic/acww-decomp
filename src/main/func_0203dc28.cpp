@@ -3,7 +3,7 @@
  */
 
 extern "C" {
-void func_020a8764(int *);
+void func_020a8764(int *, int);
 int func_020a835c(int *);
 }
 
@@ -29,9 +29,9 @@ extern PMFUnion data_020da924;
 extern PMFUnion data_020da934;
 extern PMFUnion data_020da92c;
 
-extern "C" void func_0203dc28(UnkStruct_0203dc28 *self)
+extern "C" void func_0203dc28(UnkStruct_0203dc28 *self, int argument1)
 {
-    func_020a8764(&self->sub);
+    func_020a8764(&self->sub, (int) argument1);
     int type = self->sub;
     PMFUnion pmf = __ptmf_null;
     if (type == 4 && func_020a835c(&self->sub) != 0) {

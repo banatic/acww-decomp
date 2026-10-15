@@ -3,11 +3,11 @@
  */
 
 extern void func_020736bc(int, char *, int);
-extern void func_0205fa84(char *);
+extern int func_0205fa84(char *);
 
 extern int data_020ccf94;
 
-void func_020761fc(unsigned int param)
+void func_020761fc(unsigned int param, int sequence, unsigned char category, unsigned int player)
 {
     char buffer[12];
     unsigned int i = 0;

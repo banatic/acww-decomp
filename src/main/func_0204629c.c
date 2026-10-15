@@ -25,7 +25,7 @@ extern int func_020b6660(void);
 extern void *func_0204e414(void);
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
 extern void func_02045d98(int a);
-extern void func_02042c58(void *a, Pt2 *p, int d, int k);
+extern void func_02042c58(void *a, Pt2 *p, int d);
 extern void func_020464d4(UnkStruct_0204629c *p);
 extern void func_020465b0(UnkStruct_0204629c *p);
 extern unsigned char data_021c7c48;
@@ -131,7 +131,7 @@ void func_0204629c(UnkStruct_0204629c *p)
             dir = p->m0;
             pt.x = x;
             pt.y = y;
-            func_02042c58(&data_021c7c48, &pt, (dir + 1) & 3, 3);
+            func_02042c58(&data_021c7c48, &pt, (dir + 1) & 3);
             break;
         case 10:
             result = p->m0;

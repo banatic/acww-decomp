@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02099734(void);
+extern int func_02099734(int);
 extern int func_02098cf8(int, int);
 
-int func_0207e4d8(void)
+int func_0207e4d8(int argument0)
 {
-    return func_02098cf8(func_02099734(), 1) >= 0xea60;
+    return func_02098cf8(func_02099734((int) argument0), 1) >= 0xea60;
 }

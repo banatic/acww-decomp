@@ -3,9 +3,9 @@
  */
 
 extern int func_02071298(void *ctx, unsigned short *val);
-extern void FX_Div(int a, int b);
+extern int FX_Div(int a, int b);
 
-void func_02070dc0(void *ctx)
+int func_02070dc0(void *ctx)
 {
     unsigned short vals[4];
     unsigned int r5;
@@ -47,5 +47,5 @@ void func_02070dc0(void *ctx)
         r5++;
     } while (r5 < 52);
 
-    FX_Div((100 * r4) << 12, 0x000b8000);
+    return FX_Div((100 * r4) << 12, 0x000b8000);
 }

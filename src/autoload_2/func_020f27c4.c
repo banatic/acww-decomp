@@ -6,7 +6,7 @@ struct UnkStruct_020f27c4 {
     void *unk_00;
 };
 
-extern void func_020f4514(struct UnkStruct_020f27c4 *self);
+extern void *func_020f4514(struct UnkStruct_020f27c4 *self);
 extern void func_020edb3c(struct UnkStruct_020f27c4 *self);
 extern char data_0213eeb0;
 

@@ -7,7 +7,7 @@ extern void *func_ov096_0229c4dc(void *a);
 extern void func_020665b8(void *p);
 extern void func_0206fcb0(void *p);
 extern void func_ov096_0229f5ac(void *a, unsigned char b);
-extern void func_ov096_022a18dc(void *a, int x);
+extern int func_ov096_022a18dc(void *a, int x);
 extern void func_ov096_022a1540(void *a);
 
 typedef struct {

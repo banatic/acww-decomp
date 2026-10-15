@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 int func_ov004_0221fdb8(u8 *self)
 {
     self[0xa54] = 0;

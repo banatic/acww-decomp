@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0(void *p, int a, int b, int c);
-extern void func_0200f268(void *p);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
+extern void func_0200f268(char *, int);
 extern int func_02011368(void *p);
 extern void func_0209e474(unsigned int *p);
 extern void func_0209e140(unsigned int *p, int x);
 extern void func_0200f7ac(void *p, int v, void *st);
 
-void func_ov068_02271f80(void *p)
+void func_ov068_02271f80(void *p, void *message, int previous)
 {
     struct {
         unsigned short flags;
@@ -21,7 +21,7 @@ void func_ov068_02271f80(void *p)
 
     func_020109a0(p, 0x82, 0, 0);
     *((unsigned short *) ((char *) p + 0x8e)) = 0;
-    func_0200f268(p);
+    func_0200f268(p, 0);
     val = func_02011368(p);
     if (val != 0) {
         st.a = 0;

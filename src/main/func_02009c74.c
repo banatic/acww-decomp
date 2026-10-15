@@ -17,8 +17,8 @@ extern unsigned char data_020e54a8;
 extern void func_020110c4(UnkStruct_02009c74 *p, void *self);
 extern void *func_02011368(void *self);
 extern void func_0209971c(void *o, unsigned short *p);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f328(void *self, int k);
+extern void func_020109a0(void *self, int a, int b, unsigned short c);
+extern int func_0200f328(void *self, int k);
 extern void func_02009d30(char *p, unsigned short v);
 
 void func_02009c74(void *self, char *a1, int a2)

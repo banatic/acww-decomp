@@ -7,7 +7,7 @@ typedef struct {
 } Packed;
 extern int func_02056f94(void *);
 extern int func_02008258(void *, int);
-extern void func_0200c3b0(void *, int, int, int);
+extern int func_0200c3b0(void *, int, int, int);
 extern unsigned short *func_02096274(void);
 extern void *func_02011368(void *);
 extern short func_020997a8(void *);
@@ -16,7 +16,7 @@ extern int func_0200f86c(void *);
 extern unsigned short *func_0209d358(unsigned short, unsigned short);
 extern int func_020112bc(void *);
 extern unsigned char *func_0209626c(void);
-extern void func_0200d4e8(void *, int, int, int);
+extern int func_0200d4e8(void *, int, int, int);
 void func_ov004_0222b708(unsigned char *self)
 {
     if (func_02056f94(self + 0x2d0)) {

@@ -9,11 +9,11 @@ typedef struct UnkStruct_0221dc7c {
     volatile int unk_2B4;
 } UnkStruct_0221dc7c;
 
-extern int data_021fbe94;
+extern void *data_021fbe94;
 extern int data_021c9b1c;
 
-extern int func_ov003_0221dcd8(UnkStruct_0221dc7c *self);
-extern void *func_02064b2c(int, int, int, int);
+extern void *func_ov003_0221dcd8(void);
+extern void *func_02064b2c(int id, void *heap, int alignment, unsigned int *size);
 extern int func_021077e8(void *);
 extern int func_020560e0(int, int);
 extern int func_020561cc(int, int);
@@ -23,7 +23,7 @@ void func_ov003_0221dc7c(UnkStruct_0221dc7c *self)
 {
     void *p;
 
-    p = func_02064b2c(func_ov003_0221dcd8(self), data_021fbe94, -4, 0);
+    p = func_02064b2c((int) func_ov003_0221dcd8(), data_021fbe94, -4, 0);
     self->unk_2B4 = func_021077e8(p);
     if (func_020560e0(self->unk_2B4, 0) != 0) {
         self->unk_2B4 = func_020561cc(self->unk_2B4, data_021c9b1c);

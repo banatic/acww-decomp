@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0201cbec(int, int, int, int);
+extern int func_0201cbec(int, int, int, int);
 
 void func_0201ca40(int a, int b)
 {

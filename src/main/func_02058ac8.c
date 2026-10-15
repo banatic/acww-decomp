@@ -5,7 +5,7 @@
 extern unsigned char data_020cbaec[];
 extern void func_0205967c(void *a, void *b);
 extern void VEC_Add(void *a, void *b, void *c);
-extern void func_020e895c(unsigned int *p, int zero, unsigned int val);
+extern int func_020e895c(unsigned int *p, int zero, unsigned int val);
 
 typedef struct UnkStruct_02058ac8 {
     unsigned char pad_00[0x60];

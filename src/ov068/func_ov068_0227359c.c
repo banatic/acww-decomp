@@ -10,7 +10,7 @@ extern void func_ov068_022731b4(struct UnkStruct_0227359c *self);
 extern void func_02056ffc(void *p);
 extern void func_02055124(void *p);
 extern int func_ov051_02260474(void);
-extern void func_ov051_02260490(void);
+extern unsigned int func_ov051_02260490(void);
 extern void func_ov068_02272fe8(struct UnkStruct_0227359c *self, u8 kind, void *a, void *b, int c, int d, int e, int f);
 extern void NNS_G3dMdlSetMdlAlpha(void *p, int a, u8 b);
 

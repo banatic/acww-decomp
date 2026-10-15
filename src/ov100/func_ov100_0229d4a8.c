@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov100_0229d630(void);
+extern int func_ov100_0229d630(int unused0, unsigned int unused1);
 extern int func_ov100_0229d620(int, int);
 extern int func_ov100_0229d5d4(int, int);
 extern void func_ov094_0229aa14(int, int, int, int);
@@ -15,7 +15,7 @@ void func_ov100_0229d4a8(int r0, int r1, int r2, int r3)
     int r6 = r2;
     int r7 = r3;
 
-    if (func_ov100_0229d630() == 0) {
+    if (func_ov100_0229d630(r0, r1) == 0) {
         if (func_ov100_0229d620(r4, r5) == 0) {
             return;
         }

@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern void func_02010f5c(void *p);
-extern void func_0203f7d0(void *a, void *b);
+extern int func_0203f7d0(void *a, void *b);
 extern u32 func_020912d4(u32 a, void *b, void *c, int _x);
-extern void func_02091278(u32 a, void *b, void *c);
+extern void func_02091278(void *, void *, void *, void *);
 extern u32 func_02056f28(void *a, u32 b);
 extern u32 func_020984fc(u32 a);
 extern void func_0209971c(u32 a, void *b);
@@ -36,7 +36,7 @@ void func_ov003_0220d760(char *self)
         if (*p == -1) {
             *p = func_020912d4(0x31, arr, self + 0x8e, 0);
         } else {
-            func_02091278(*p, arr, self + 0x8e);
+            func_02091278((void *) (*p), (void *) (arr), (void *) (self + 0x8e), 0);
         }
     }
     if (func_02056f28(self + 0x2d0, 0x18) != 0) {

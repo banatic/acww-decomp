@@ -4,21 +4,21 @@
 
 #include "types.h"
 
-extern void func_02070c08(void *);
-extern void func_0208aecc(void *);
-extern void func_02062fbc(void *);
-extern void func_02094fd4(void *);
-extern void func_0207094c(void *, int);
+extern void *func_02070c08(void *);
+extern void *func_0208aecc(void *);
+extern void *func_02062fbc(void *);
+extern void *func_02094fd4(void *);
+extern int func_0207094c(void *, int);
 extern void func_02051a78(void *, void *);
-extern void func_02062ea4(void *, void *);
+extern int func_02062ea4(void *, void *);
 extern void func_02099e7c(void *, void *);
-extern void func_020b496c(int, void *);
+extern void *func_020b496c(int, void *);
 extern int func_ov094_02299a70(int);
 extern void func_0208aa48(void *, void *);
-extern void func_02094fbc(void *);
-extern void func_02062f4c(void *);
+extern void *func_02094fbc(void *);
+extern void *func_02062f4c(void *);
 extern void func_0208aeb8(void *);
-extern void func_02070be8(void *);
+extern int **func_02070be8(void *);
 
 void func_ov094_0229abf8(int a0, void *arg1, u16 *arg2, int mode)
 {

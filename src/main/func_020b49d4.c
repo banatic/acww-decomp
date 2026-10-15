@@ -3,11 +3,11 @@
  */
 
 extern char data_021f4dac;
-extern void func_020b4044(void *);
+extern void *func_020b4044(void *);
 extern void func_020a8164(void *, int);
 extern void func_020b43f4(void *);
 extern void *func_020b4344(void *, void *);
-extern void func_020b402c(void *);
+extern void *func_020b402c(void *);
 
 typedef struct {
     unsigned char pad_00[0x1e];

@@ -13,8 +13,8 @@ extern int func_ov002_0220a72c(void *p, int x);
 extern void func_ov002_0220a0b4(void *p, int x, int y);
 extern void func_ov122_022a0e04(void *p);
 extern void func_ov122_0229effc(void *p);
-extern void func_ov122_022a1e40(void *p, int x);
-extern void func_ov002_022080a0(void *p, int x);
+extern int func_ov122_022a1e40(void *p, int x);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov122_022a15b8(void *p, int x, int y);
 extern void func_ov122_0229f2d0(void *p);
 
@@ -49,7 +49,7 @@ void func_ov122_022a02c8(void *self)
             break;
         case 4:
             ((u8 *) self)[0x8c] = 8;
-            func_ov002_022080a0(self, 1);
+            func_ov002_022080a0((void *) (self), 1);
             func_ov122_022a15b8(self, 1, 1);
             break;
     }

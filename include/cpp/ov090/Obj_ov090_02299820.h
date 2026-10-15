@@ -12,7 +12,8 @@ class Obj_ov090_02299820 : public Obj_ov002_0220bb24 {
     virtual int func_ov090_02299470();
 
     // sub-states (subState)
-    void func_ov090_02299258();
+    int func_ov090_02299258();
+
     void func_ov090_0229926c();
     void func_ov090_02299348();
 

@@ -12,10 +12,10 @@ typedef struct {
 extern short FX_SinCosTable_[];
 extern int FX_MulFunc(int a, int b);
 extern int func_0203f8d0(Vec3 *out, void *p);
-extern void func_02030678(UnkStruct_020b83ec *obj, Vec3 *v, int c, int d);
+extern void *func_02030678(UnkStruct_020b83ec *obj, Vec3 *v, int c, int d);
 extern int func_0203021c(UnkStruct_020b83ec *obj, Vec3 *a, Vec3 *b);
 extern int func_0203006c(UnkStruct_020b83ec *obj, Vec3 *a, Vec3 *b);
-extern void func_02030668(UnkStruct_020b83ec *obj);
+extern int func_02030668(UnkStruct_020b83ec *obj);
 extern void func_020ea78c(Vec3 *v, int ang);
 
 int func_020b83ec(Vec3 *self, Vec3 *b, void *p2, int p3, int p4)

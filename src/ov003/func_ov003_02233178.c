@@ -10,7 +10,7 @@ typedef struct {
     int unk_64;
 } UnkStruct_02233178;
 
-extern void func_02034270(int *ctx, Vec3 *p, int a, int b);
+extern int func_02034270(int *ctx, Vec3 *p, int a, int b);
 extern int func_020341c8(int *ctx, int a);
 extern int func_02034184(int *ctx, int y);
 extern void func_0203423c(int *ctx);
@@ -22,7 +22,7 @@ extern int FX_MulFunc(int a, int b);
 extern void func_ov003_0223597c(Vec3 *d, int ang);
 extern int func_ov003_02235b54(unsigned char *self, int a, int b);
 extern void func_ov003_02230f60(unsigned char *self);
-extern void func_ov003_02235454(unsigned char *self);
+extern int func_ov003_02235454(unsigned char *self);
 extern int func_ov003_02235834(unsigned char *self, int ang, int a);
 extern UnkStruct_02233178 *data_020ccf94;
 

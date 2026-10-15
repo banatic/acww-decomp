@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204e414(int);
+extern int func_0204e414(void);
 extern int func_0204f3e4(int, void *, void *, void *, void *, void *, void *, int, int);
 extern void func_0204f800(void *, void *, int, int, int, int);
 extern int func_0204bae8(int);
@@ -17,7 +17,7 @@ int func_02061008(int arg1)
     } s;
     int a0;
 
-    a0 = func_0204e414(arg1);
+    a0 = func_0204e414();
     s.y = 0x5014;
     s.z = 0x501A;
 

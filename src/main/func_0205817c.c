@@ -35,7 +35,7 @@ extern int data_021c9364;
 extern unsigned int data_021c9360;
 
 extern void func_0205967c(UnkStruct_0205817c_2 *, void *);
-extern void func_020e895c(void *, int, unsigned int);
+extern int func_020e895c(void *, int, unsigned int);
 extern void func_020ea6e0(void *, int);
 extern void VEC_Add(void *, void *, void *);
 extern void func_02059674(UnkStruct_0205817c_2 *, int);

@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220a5fc(void *p);
-extern void func_020b9cfc(void *p);
-extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void), void (*cb2)(void));
-extern void func_02070be8(void);
-extern void func_02070c08(void);
+extern void *func_ov002_0220a5fc(void *p);
+extern void *func_020b9cfc(void *p);
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void *), void (*cb2)(void *));
+extern int **func_02070be8(void *unused0);
+extern void *func_02070c08(void *unused0);
 
 typedef struct {
     char pad_00[0x18];
@@ -20,6 +20,9 @@ typedef struct {
     char unk_84C;
 } UnkStruct_0229bed4;
 
+#define VisitElement_02070c08 (void (*)(void *)) func_02070c08
+#define VisitElement_02070be8 (void (*)(void *)) func_02070be8
+
 void *func_ov134_0229bed4(UnkStruct_0229bed4 *self)
 {
     func_ov002_0220a5fc(self->sub18);
@@ -31,9 +34,12 @@ void *func_ov134_0229bed4(UnkStruct_0229bed4 *self)
     self->zeros[5] = 0;
     self->zeros[6] = 0;
     self->zeros[7] = 0;
-    __cxa_vec_ctor(self->subD8, 0x11, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(self->subD8, 0x11, 0x6c, VisitElement_02070c08, VisitElement_02070be8);
     func_020b9cfc(&self->unk_804);
     func_020b9cfc(&self->unk_828);
     func_020b9cfc(&self->unk_84C);
     return self;
 }
+
+#undef VisitElement_02070c08
+#undef VisitElement_02070be8

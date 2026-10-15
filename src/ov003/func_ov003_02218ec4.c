@@ -15,11 +15,11 @@ typedef struct UnkStruct_02218ec4_2 {
     int data[3];
 } UnkStruct_02218ec4_2;
 
-extern void func_0200e92c(void *);
+extern unsigned int func_0200e92c(void *);
 extern void func_0200e90c(void *, int, int, int);
 extern void func_ov003_02218f0c(UnkStruct_02218ec4_2 *, Vec2 *);
 extern int func_0200e894(int, void *);
-extern void func_0200e91c(void *);
+extern int func_0200e91c(void *);
 
 int func_ov003_02218ec4(int a0, Vec2 *src, int a2, int a3)
 {

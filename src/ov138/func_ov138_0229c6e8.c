@@ -7,7 +7,7 @@ extern void func_ov002_0220a2b4(void *);
 extern void func_ov002_0220a314(void *);
 extern int func_ov138_0229c7a8(void *);
 extern int func_ov138_0229c754(void *);
-extern int func_ov138_0229c688(void *, int, int);
+extern void func_ov138_0229c688(void *, int, int);
 
 typedef struct {
     unsigned char pad_00[0x95];
@@ -16,7 +16,7 @@ typedef struct {
     unsigned char data[4];
 } UnkStruct_0229c6e8;
 
-int func_ov138_0229c6e8(UnkStruct_0229c6e8 *ptr)
+void func_ov138_0229c6e8(UnkStruct_0229c6e8 *ptr)
 {
     int v;
     int w;
@@ -29,5 +29,5 @@ int func_ov138_0229c6e8(UnkStruct_0229c6e8 *ptr)
 
     v = func_ov138_0229c7a8(ptr);
     w = func_ov138_0229c754(ptr);
-    return func_ov138_0229c688(ptr, v, w);
+    func_ov138_0229c688(ptr, v, w);
 }

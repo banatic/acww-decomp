@@ -3,7 +3,7 @@
  */
 
 extern void func_02009d20(void *src, void *dst);
-extern void func_02009d38(void *src, unsigned short val, int count, void *dst);
+extern int func_02009d38(void *src, unsigned short val, int count, void *dst);
 
 void func_02009c48(void *param0, void *param1)
 {

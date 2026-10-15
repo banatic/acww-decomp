@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void *MI_CpuFill8(void *, int, unsigned int);
+extern "C" void MI_CpuFill8(void *, int, unsigned int);
 
 class UnkStruct_02278c94 {
   public:

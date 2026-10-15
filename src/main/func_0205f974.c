@@ -4,7 +4,7 @@
 
 extern int data_021cacfc;
 extern int data_020dd7b0;
-extern void func_02064328(int *obj, int *tbl, unsigned int hi, unsigned int raw);
+extern int func_02064328(int *obj, int *tbl, unsigned int hi, unsigned int raw);
 
 int *func_0205f974(unsigned int raw)
 {

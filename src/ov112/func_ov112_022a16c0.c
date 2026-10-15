@@ -3,16 +3,17 @@
  */
 
 extern int func_ov002_02207f48(void *p, int a);
-extern int func_ov002_022080a0(void *p, int a);
-extern int func_0206fe60(int a);
+extern unsigned char *func_ov002_022080a0(void *p, unsigned char value);
+extern int func_0206fe60(void);
 extern int func_ov002_02207f60(void *p);
-extern void func_ov112_0229fee4(void *p);
+extern int func_ov112_0229fee4(void *p);
 extern void func_ov112_0229fe84(void *p);
 
 void func_ov112_022a16c0(void *p)
 {
     if (func_ov002_02207f48(p, -1) != 0) {
-        if (func_0206fe60(func_ov002_022080a0(p, 2)) != 0) {
+        (void) func_ov002_022080a0(p, 2);
+        if (func_0206fe60() != 0) {
             func_ov112_0229fee4(p);
         } else {
             func_ov112_0229fe84(p);

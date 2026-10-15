@@ -70,7 +70,7 @@ extern "C" int func_020a8278(void *p);
 extern "C" UnkStruct_02066f8c_2 *func_020668d4(void *obj);
 extern "C" void *func_020668c8(void *obj);
 extern "C" int func_020668cc(void *obj);
-extern "C" void func_02068e78(void *sub, int a, int b, void *c, int d);
+extern "C" int func_02068e78(void *sub, int a, int b, void *c, int d);
 extern "C" void func_02068a00(void *sub, int a);
 extern "C" void func_02068e04(void *sub);
 extern "C" void func_02068db0(void *sub);

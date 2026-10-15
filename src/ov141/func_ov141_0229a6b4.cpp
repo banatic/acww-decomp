@@ -6,7 +6,7 @@
 #include "cpp/ov141/Obj_ov141_0229af48.h"
 
 extern "C" int func_ov002_02209f64(void *);
-extern "C" void func_ov002_02208098(void *, unsigned char);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void Obj_ov141_0229af48::func_ov141_0229a6b4()
 {
@@ -14,6 +14,6 @@ void Obj_ov141_0229af48::func_ov141_0229a6b4()
     if (func_ov002_02209f64((char *) a + 0x0a38) != 0) {
         return;
     }
-    func_ov002_02208098(a, *(unsigned char *) ((char *) a + 0x1a7e));
+    func_ov002_02208098((void *) (a), *(unsigned char *) ((char *) a + 0x1a7e));
     ((Obj_ov141_0229af48 *) a)->func_ov141_0229abc0();
 }

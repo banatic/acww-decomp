@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020807a8(int arg);
+extern int func_020807a8(int arg, void *);
 extern int func_020804e8(int arg);
 extern int func_02081e94(int a, int b, int c, int d);
 
 int func_020804b8(int a, int b)
 {
     int ret;
-    ret = func_020807a8(a);
+    ret = func_020807a8(a, (void *) b);
     if (ret != 0) {
         goto done;
     }

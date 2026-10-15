@@ -2,20 +2,33 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f4318(void);
-extern void func_020f1d84(int, int);
-extern void func_020f4038(int);
-extern void func_020eef70(void);
-extern void NNS_SndHeapSaveState(void);
-
+extern void func_020f4220(void *receiver, void *resource, int count);
+extern void func_020f41a4(void *receiver, int count);
+extern void func_020f4080(void);
+extern int func_020f4038(void);
+extern void *func_020eef70(void);
+extern int NNS_SndHeapSaveState(void *heap);
+extern int func_020f1d84(void *receiver, int sound);
+extern void func_020f1004(void *receiver);
+extern void func_020f4318(unsigned char *receiver);
 extern unsigned char data_021fd1bc[];
 
-void func_020f3a0c(int r4)
+// clang-format off
+asm void func_020f3a0c(register void *receiver)
 {
-    func_020f4318();
-    func_020f1d84((unsigned int) data_021fd1bc, 0x90);
-    func_020f4038(r4);
-    func_020eef70();
-    NNS_SndHeapSaveState();
-    *(unsigned char *) (r4 + 0x1c) = 1;
+    stmfd sp!, {r4, lr}
+    mov r4, r0
+    bl func_020f4318
+    ldr r0, =data_021fd1bc
+    mov r1, #0x90
+    bl func_020f1d84
+    mov r0, r4
+    bl func_020f4038
+    bl func_020eef70
+    bl NNS_SndHeapSaveState
+    mov r0, #1
+    strb r0, [r4, #0x1c]
+    ldmfd sp!, {r4, lr}
+    bx lr
 }
+// clang-format on

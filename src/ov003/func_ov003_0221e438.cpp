@@ -6,13 +6,13 @@
 #include "cpp/ov003/Obj_ov003_0223948c.h"
 
 extern "C" {
-int func_0206fbc0(void *self);
+int func_0206fbc0(void);
 int func_ov003_022199d8(int);
 }
 
 void Obj_ov003_0223948c::func_ov003_0221e438()
 {
-    if (func_0206fbc0(this) != 0) {
+    if (func_0206fbc0() != 0) {
         if (func_ov003_022199d8(2) != 0) {
             func_ov003_0221e580(4);
         }

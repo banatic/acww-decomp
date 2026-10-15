@@ -18,14 +18,14 @@ typedef struct {
     unsigned char unk_41;
 } Obj_t;
 
-extern void func_0208af30(Obj_t *obj, int param);
+extern void func_0208af30(Obj_t *obj);
 extern void func_0208a1f8(void *ptr);
-extern void func_0208a238(Obj_t *obj);
+extern void func_0208a238(void *, int);
 extern char data_020e2058;
 
 Obj_t *func_0208a448(Obj_t *obj, int b)
 {
-    func_0208af30(obj, b);
+    func_0208af30(obj);
     obj->vtable = (unsigned int) &data_020e2058;
     func_0208a1f8(&obj->sub1);
     func_0208a1f8(&obj->sub2);
@@ -34,6 +34,6 @@ Obj_t *func_0208a448(Obj_t *obj, int b)
     obj->unk_3C = 0;
     obj->unk_40 = 0;
     obj->unk_41 = (char) b;
-    func_0208a238(obj);
+    func_0208a238(obj, 0);
     return obj;
 }

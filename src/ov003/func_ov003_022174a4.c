@@ -3,14 +3,14 @@
  */
 
 extern int func_02056f94(void *p);
-extern void func_0200f27c(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern void func_0200f268(void *self, int a);
-extern void func_ov003_022188d0(void *self, int a, int b, short c, int d, int e);
-extern void func_ov003_022186cc(void *self, unsigned char k, int a, int b, short c, int d, int e);
+extern int func_ov003_022188d0(void *self, int a, int b, short c, int d, int e);
+extern int func_ov003_022186cc(void *self, unsigned char k, int a, int b, short c, int d, int e);
 extern int func_02008258(void *self, int a);
-extern void func_0200c3b0(void *self, int a, int b, int c);
-extern void func_0203e110(void);
-extern void func_0200d4e8(void *self, int a, int b, int c);
+extern int func_0200c3b0(void *self, int a, int b, int c);
+extern int func_0203e110(void);
+extern int func_0200d4e8(void *self, int a, int b, int c);
 
 typedef struct {
     int kind;

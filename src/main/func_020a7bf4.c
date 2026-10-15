@@ -21,7 +21,7 @@ extern UnkStruct_020a7bf4_2 data_021f4588;
 
 extern void func_020a7a64(UnkStruct_020a7bf4 *p);
 extern void func_020a9354(UnkStruct_020a7bf4 *p, int a);
-extern void func_020a92d8(UnkStruct_020a7bf4 *p, int a);
+extern int func_020a92d8(UnkStruct_020a7bf4 *p, int a);
 
 int func_020a7bf4(int a, int b)
 {

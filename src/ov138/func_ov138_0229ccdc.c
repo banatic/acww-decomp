@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *p);
+extern int func_ov002_02208014(void);
 extern void *func_ov002_02208008(void *p);
-extern void func_ov138_0229c9fc(void *p);
+extern int func_ov138_0229c9fc(void *p);
 extern int func_ov138_0229c588(void *p, void *x);
 extern void func_ov138_0229c6e8(void *p);
 extern void func_ov138_0229c654(void *p);
-extern void func_ov138_0229c738(void *p);
+extern int func_ov138_0229c738(void *p);
 extern void func_ov138_0229c978(void *p);
 extern void func_ov138_0229c950(void *p);
 
@@ -23,7 +23,7 @@ void func_ov138_0229ccdc(void *p)
 {
     unsigned short flags;
 
-    if (func_ov002_02208014(p)) {
+    if (func_ov002_02208014()) {
         func_ov138_0229c9fc(p);
         return;
     }

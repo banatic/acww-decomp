@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201c390(int a, int b, int c);
+extern int func_0201c390(int a, int b);
 
 int func_0201c350(int a, int b, int c)
 {
     int result = 0;
     if (b != 0) {
         int val;
-        val = func_0201c390(a, b, c);
+        val = func_0201c390(a, b);
         if (val < 0) {
             val = -val;
         }

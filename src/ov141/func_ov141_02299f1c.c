@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220afdc(void *p);
-extern void func_ov002_02209cb4(void *p);
-extern void func_ov139_02299b30(void *p);
-extern void func_ov002_0220826c(void *p);
+extern void *func_ov002_0220afdc(void *p);
+extern void *func_ov002_02209cb4(void *p);
+extern void *func_ov139_02299b30(void *p);
+extern void *func_ov002_0220826c(void *p);
 extern void func_ov002_02207f6c(void *p);
 
 extern unsigned char data_ov141_0229af48[];

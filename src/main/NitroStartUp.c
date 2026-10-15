@@ -4,26 +4,40 @@
 
 #include "types.h"
 
+typedef enum WVRResult {
+    WVR_RESULT_SUCCESS = 0,
+    WVR_RESULT_OPERATING,
+    WVR_RESULT_DISABLE,
+    WVR_RESULT_INVALID_PARAM,
+    WVR_RESULT_FIFO_ERROR,
+    WVR_RESULT_ILLEGAL_STATUS,
+    WVR_RESULT_VRAM_LOCKED,
+    WVR_RESULT_FATAL_ERROR,
+    WVR_RESULT_MAX
+} WVRResult;
+
+typedef enum { GX_VRAM_ARM7_128_C = 4, GX_VRAM_ARM7_128_D = 8, GX_VRAM_ARM7_256_CD = 0xc } GXVRamARM7;
+
 extern void func_020012bc(void);
 extern void OS_InitTick(void);
 extern void func_02110794(void);
 extern void GX_SetBankForLCDC(int);
 extern void MIi_CpuClearFast(u32, u32, u32);
 extern void func_02110aa0(void);
-extern u32 OS_EnableInterrupts(int);
-extern void WVR_StartUpAsync(int, void (*)(void), int);
-extern void OS_RestoreInterrupts(u32);
+extern u32 OS_EnableInterrupts(void);
+extern WVRResult WVR_StartUpAsync(GXVRamARM7, void (*)(void *, WVRResult), void *);
+extern unsigned int OS_RestoreInterrupts(u32);
 extern void FS_Init(int);
 extern void func_020ea48c(void);
-extern void func_020b1b68(void);
+extern void func_020b1b68(void *argument, WVRResult result);
 
 extern volatile u8 data_021f4b10;
 extern volatile u16 data_0213e5a4;
 
-static void func_020b1b48(void) {}
-static void func_02098404(void) {}
-static void func_020b1b0c(void) {}
-static void func_0204f8bc(void) {}
+extern void func_020b1b48(void);
+extern void func_02098404(void);
+extern void func_020b1b0c(void);
+extern void func_0204f8bc(void);
 
 void NitroStartUp(void)
 {
@@ -42,7 +56,7 @@ void NitroStartUp(void)
 
     old_hw = *(volatile u16 *) 0x04000208;
     *(volatile u16 *) 0x04000208 = 1;
-    dmaResult = OS_EnableInterrupts(1);
+    dmaResult = OS_EnableInterrupts();
 
     data_021f4b10 = 0;
     WVR_StartUpAsync(8, func_020b1b68, 0);

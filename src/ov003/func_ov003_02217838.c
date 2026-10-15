@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200e92c(char *p);
+extern unsigned int func_0200e92c(char *p);
 extern void func_0200e90c(char *p, int n, int m, short s);
 extern void func_ov003_02217894(char *p, int a, int b, int c, int d, short e);
 extern void func_0200f268(char *p, int n);
 extern int func_0200e894(char *p, char *q);
-extern void func_0200e91c(char *p);
+extern int func_0200e91c(char *p);
 
 int func_ov003_02217838(char *p0, int p1, int p2, int p3, int p4, short p5, int p6, short p7)
 {

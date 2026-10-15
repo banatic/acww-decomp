@@ -54,7 +54,7 @@ struct UnkStruct_020fac60 {
     UnkStruct_020fac60_2 *b;
 };
 
-extern void func_020fb8e8(UnkStruct_020fac60_6 *elem, int index, UnkStruct_020fac60_6 *base);
+extern void func_020fb8e8(UnkStruct_020fac60_6 *elem);
 extern void func_020fd01c(UnkStruct_020fac60 *self, Node *node, void *arg2);
 extern void func_020fc174(UnkStruct_020fac60 *self, Node *node, void *arg2);
 extern void func_020fb9d4(UnkStruct_020fac60 *self, Node *node, void *arg2);
@@ -75,7 +75,7 @@ void func_020fac60(UnkStruct_020fac60 *self, void *arg2)
     }
     e = c->e;
     idx = e->byte;
-    func_020fb8e8(&self->base[idx], idx, self->base);
+    func_020fb8e8(&self->base[idx]);
     e = c->e;
     switch (e->mode) {
         case 0:

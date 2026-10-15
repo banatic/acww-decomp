@@ -8,8 +8,8 @@ typedef struct {
 
 extern UnkStruct_02077cb4 *func_02077d00(void);
 extern int func_02077c3c(UnkStruct_02077cb4 *p);
-extern int func_02077e50(int v);
-extern void func_02077c64(UnkStruct_02077cb4 *dst, UnkStruct_02077cb4 *src);
+extern int func_02077e50(void *friend_data);
+extern void *func_02077c64(UnkStruct_02077cb4 *dst, UnkStruct_02077cb4 *src);
 extern void func_02077c40(UnkStruct_02077cb4 *p);
 
 void func_02077cb4(void)
@@ -23,7 +23,7 @@ void func_02077cb4(void)
     for (i = k = 0; i < 32; i++) {
         UnkStruct_02077cb4 *cur = base + i;
 
-        if (func_02077e50(func_02077c3c(cur)) != 0) {
+        if (func_02077e50((void *) func_02077c3c(cur)) != 0) {
             if (i != k) {
                 func_02077c64(base + k, cur);
                 func_02077c40(cur);

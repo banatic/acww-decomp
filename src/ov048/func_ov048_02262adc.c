@@ -15,7 +15,7 @@ struct UnkStruct_02262adc {
     int c;
 };
 extern struct UnkStruct_02262adc data_ov048_022639a4;
-extern void func_02095ab0(struct UnkStruct_02262adc *, int, int);
+extern int func_02095ab0(struct UnkStruct_02262adc *, int, int);
 
 int func_ov048_02262adc(void)
 {

@@ -11,7 +11,7 @@ typedef struct UnkStruct_0229a538 {
     u8 unk_A4;
 } UnkStruct_0229a538;
 
-extern void func_ov123_0229ac80(UnkStruct_0229a538 *self, int a, int b, u8 c, int d, int e);
+extern int func_ov123_0229ac80(UnkStruct_0229a538 *self, int a, int b, u8 c, int d, int e);
 extern void func_ov123_0229a5cc(UnkStruct_0229a538 *self, int a, int b, u8 c, int d);
 extern void RtcSendPxiCommand(int a);
 extern void func_ov123_0229a654(UnkStruct_0229a538 *self, int a, int b, u8 c);

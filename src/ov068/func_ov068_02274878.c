@@ -4,9 +4,9 @@
 
 extern unsigned short data_020c80f8;
 extern unsigned int data_020c814c;
-extern void func_02019c20(void *p, int a, int b, int c, int d, int e);
+extern int func_02019c20(void *p, int a, int b, int c, int d, int e);
 extern void func_0201ad18(void *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_020147e0(void *p, int a, int b);
+extern int func_020147e0(void *p, int a, int b);
 
 typedef struct StructWithOffsets {
     unsigned char pad_00[0x3b0];

@@ -8,7 +8,7 @@ typedef struct {
 } Pad;
 
 extern void func_ov002_02208d30(void *ptr, int val);
-extern void func_ov002_02208d4c(void *ptr, int a, int b);
+extern int func_ov002_02208d4c(void *ptr, int a, int b);
 extern void func_ov096_0229ddd8(void *ptr);
 extern void func_ov096_0229d1d4(void *ptr, int val);
 

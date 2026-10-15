@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d368(int a, int b);
+extern int func_0209d368(void);
 extern void RtcSendPxiCommand(int cmd);
 
 struct UnkStruct_020aa3f4 {
@@ -17,6 +17,10 @@ void func_020aa3f4(struct UnkStruct_020aa3f4 *p)
 {
     p->unk_08 = 3;
     p->unk_C0 = 1;
-    p->unk_BC = func_0209d368(0x65, 2) + 2;
+    asm {
+        mov r0, #0x65
+        mov r1, #2
+    }
+    p->unk_BC = func_0209d368() + 2;
     RtcSendPxiCommand(0x14);
 }

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov139_02299744(void);
-extern void func_020a8c1c(void);
+extern int func_ov139_02299744(unsigned char *arg0);
+extern void func_020a8c1c(void *arg0);
 extern void func_020708e4(int, int, int);
 extern void func_02070adc(int, int, int, int, int, int, int);
 extern void func_02070a04(int, int, int);
@@ -14,10 +14,10 @@ void func_ov139_022995e4(int a0, int a1, int a2, int a3)
     int a, b;
     int r2;
 
-    local0 = func_ov139_02299744();
+    local0 = func_ov139_02299744((unsigned char *) a0);
 
     if (a2 == 0) {
-        func_020a8c1c();
+        func_020a8c1c((void *) local0);
     } else {
         func_020708e4(local0, a2, 6);
     }

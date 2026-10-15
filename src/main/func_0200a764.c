@@ -21,11 +21,11 @@ struct Pair {
 
 extern unsigned char data_020e54a8;
 
-extern void func_0200f27c(void *self, int code);
+extern unsigned int *func_0200f27c(void *self, int code);
 extern void func_02045df8(struct Pair *p, int flags);
 extern void func_02045f08(struct Pair *p, int flags);
 extern void func_0200f268(void *self, int code);
-extern void func_0200f328(void *self, int code);
+extern int func_0200f328(void *self, int code);
 extern unsigned char func_02008258(void *self, int idx);
 
 void func_0200a764(struct Self4 *self)

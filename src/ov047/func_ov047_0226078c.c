@@ -20,7 +20,7 @@ extern int func_0206f9d8(void *);
 extern int func_02099020(void *, int);
 extern int func_02070dc0(void *);
 extern int func_02070fa0(void *);
-extern void func_ov047_02261c00(void);
+extern unsigned short func_ov047_02261c00(void *unused0, int unused1);
 
 extern u8 data_021dc7a8[];
 extern void *data_020ccf94;

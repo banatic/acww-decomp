@@ -17,7 +17,7 @@ typedef struct {
 
 extern void MIi_CpuCopy16(void *, const void *, u32);
 extern u16 func_ov142_02299794(SELF *, u16, u16, u32);
-extern void func_020b9b6c(void *, const void *, u32, u32);
+extern int func_020b9b6c(void *, const void *, u32, u32);
 
 void func_ov142_022996f0(SELF *self, u32 param)
 {

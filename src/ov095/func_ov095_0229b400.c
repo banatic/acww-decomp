@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov095_0229b3ec(void *s, int a, int b);
+extern void func_ov095_0229b3ec(void *s);
 
 typedef struct {
     unsigned short arr[6];
@@ -13,7 +13,7 @@ void func_ov095_0229b400(UnkStruct_0229b400 *s, int val, int mode)
 {
     switch (mode) {
         case 0:
-            func_ov095_0229b3ec(s, val, mode);
+            func_ov095_0229b3ec(s);
             s->arr[s->count] = val;
             break;
         case 1:
@@ -23,7 +23,7 @@ void func_ov095_0229b400(UnkStruct_0229b400 *s, int val, int mode)
             unsigned short last;
             if (s->count > 0) {
                 last = s->arr[s->count - 1];
-                func_ov095_0229b3ec(s, (s->count - 1) * 2, mode);
+                func_ov095_0229b3ec(s);
             }
             s->arr[0] = last;
             s->arr[1] = val;

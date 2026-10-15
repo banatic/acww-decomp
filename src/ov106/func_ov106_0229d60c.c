@@ -17,7 +17,7 @@ typedef struct UnkStruct_0229d60c {
 
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
-extern void func_ov002_02208098(void *self, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov106_0229d170(void *self, int);
 extern int func_ov106_0229d128(void *self, int);
 extern void func_ov002_02207cf8(void *);
@@ -33,7 +33,7 @@ void func_ov106_0229d60c(UnkStruct_0229d60c *self, int val)
     unsigned char g54;
 
     self->b5 = val;
-    func_ov002_02208098(self, 1);
+    func_ov002_02208098((void *) (self), 1);
     g58 = data_021f6c58;
     g54 = data_021f6c54;
     self->x = func_ov106_0229d170(self, self->b5) - g58;

@@ -4,10 +4,10 @@
 
 typedef struct UnkStruct_0229df2c UnkStruct_0229df2c;
 
-extern int func_ov110_0229e7ac(UnkStruct_0229df2c *);
-extern void func_ov110_0229cce8(UnkStruct_0229df2c *, int);
+extern int func_ov110_0229e7ac(void);
+extern int func_ov110_0229cce8(UnkStruct_0229df2c *, int);
 extern void func_ov110_0229cbe0(UnkStruct_0229df2c *);
-extern void func_ov002_02207d24(void *, int);
+extern int func_ov002_02207d24(void *, int);
 extern void func_ov110_0229c3b8(UnkStruct_0229df2c *, int);
 extern void func_ov110_0229cde0(UnkStruct_0229df2c *);
 extern void func_ov110_0229cfd4(UnkStruct_0229df2c *);
@@ -17,7 +17,7 @@ extern int func_ov110_0229d5d4(UnkStruct_0229df2c *, int);
 extern int func_ov110_0229d5e4(UnkStruct_0229df2c *, int);
 extern int func_ov110_0229d0b8(UnkStruct_0229df2c *, int);
 extern int func_ov110_0229d13c(UnkStruct_0229df2c *, int);
-extern void func_ov110_0229d680(UnkStruct_0229df2c *, int, void *);
+extern int func_ov110_0229d680(UnkStruct_0229df2c *, int, void *);
 extern int func_ov110_0229d4a8(UnkStruct_0229df2c *, int);
 extern void func_ov094_022999d8(void);
 extern void func_ov110_0229d840(UnkStruct_0229df2c *);
@@ -30,7 +30,7 @@ void func_ov110_0229df2c(UnkStruct_0229df2c *p)
     void *r6;
     void *ptr;
 
-    if (func_ov110_0229e7ac(p) != 0) {
+    if (func_ov110_0229e7ac() != 0) {
         func_ov110_0229cce8(p, *(unsigned char *) ((char *) p + 0xf4));
         func_ov110_0229cbe0(p);
         func_ov002_02207d24((char *) p + 0x21f8, 0);

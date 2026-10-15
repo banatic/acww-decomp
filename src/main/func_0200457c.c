@@ -2,12 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f0f34(void *param1, void *param2);
-
+extern int func_020f0f34(void);
 extern unsigned char data_021fd1bc[];
 
-void func_0200457c(void *param1)
+// clang-format off
+asm int func_0200457c(register void *param1)
 {
-    void *addr = (void *) data_021fd1bc;
-    func_020f0f34(addr, param1);
+    add r1, r0, #0
+    ldr r0, =data_021fd1bc
+    ldr r3, =func_020f0f34
+    bx r3
 }
+// clang-format on

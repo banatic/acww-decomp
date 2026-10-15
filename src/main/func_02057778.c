@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02057a40(int, int);
-extern int func_020579b8(int, int);
+extern int func_02057a40(int, const char *);
+extern int func_020579b8(int, const char *);
 extern int func_020577c8(int, int, int, int, int, int, int);
 
-int func_02057778(int a, int b, int c, int d, int e, int f, int g)
+int func_02057778(int a, int b, const char *c, const char *d, int e, int f, int g)
 {
     int x, y;
 

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_02057a50(unsigned int);
+extern int func_02057a50(unsigned int, int);
 extern int func_02057a40(unsigned int, int);
 extern void func_02056968(void *, unsigned int, unsigned int);
 struct UnkStruct_020566a0 {
@@ -30,7 +30,7 @@ int func_020566a0(struct MainObj *obj, int unused, int param3)
     u8 c;
     int i;
     int res1;
-    res1 = func_02057a50(obj->unk_18);
+    res1 = func_02057a50(obj->unk_18, unused);
     if (res1 == (-1)) {
         return 0;
     }

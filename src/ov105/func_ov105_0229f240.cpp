@@ -5,7 +5,7 @@
 
 #include "cpp/ov105/Obj_ov105_0229fad0.h"
 
-extern "C" void func_ov105_0229eaec(void *);
+extern "C" int func_ov105_0229eaec(void *);
 extern "C" void func_ov105_0229eae4(void *);
 
 int Obj_ov105_0229fad0::func_ov105_0229f240()

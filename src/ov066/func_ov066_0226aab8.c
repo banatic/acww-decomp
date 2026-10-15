@@ -9,7 +9,7 @@ typedef struct UnkStruct_0226aab8 {
 } UnkStruct_0226aab8;
 
 extern int func_ov066_02266e08(void);
-extern void func_ov066_0226ab24(UnkStruct_0226aab8 *p);
+extern void func_ov066_0226ab24(void);
 extern void func_ov066_0226ab28(UnkStruct_0226aab8 *p);
 
 void func_ov066_0226aab8(UnkStruct_0226aab8 *p)
@@ -30,5 +30,10 @@ void func_ov066_0226aab8(UnkStruct_0226aab8 *p)
         func_ov066_0226ab28(p);
         return;
     }
-    func_ov066_0226ab24(p);
+    // clang-format off
+    asm {
+        mov r0, p
+    }
+    // clang-format on
+    func_ov066_0226ab24();
 }

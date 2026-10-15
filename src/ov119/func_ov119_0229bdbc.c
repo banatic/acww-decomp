@@ -3,9 +3,9 @@
  */
 
 extern int func_0206fe54(void);
-extern int func_ov119_0229b828(void *);
+extern void func_ov119_0229b828(void *);
 extern int func_ov002_02208e28(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 void func_ov119_0229bdbc(void *arg0)
 {

@@ -2,19 +2,19 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02032adc(void *);
+extern void *func_02032adc(void *);
 extern int func_020311bc(void *, void *, void *, int);
-extern void func_0200f27c(void *, int);
-extern void func_0200f328(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
+extern int func_0200f328(void *, int);
 extern void func_0205eae0(void *, int, int, int);
 extern int func_02056f28(void *, int);
 extern void func_0204f818(int *, int *, void *);
 extern void func_0204489c(int *);
-extern void func_02032acc(void *);
+extern int func_02032acc(void *);
 extern int func_02073908(unsigned int *, unsigned int);
-extern void func_02034270(void *, void *, int, int);
+extern int func_02034270(void *, void *, int, int);
 extern void func_0203423c(void *);
-extern void func_020912d4(int, void *, int, int);
+extern int func_020912d4(int, void *, int, int);
 
 typedef unsigned char u8;
 typedef unsigned int u32;

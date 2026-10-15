@@ -2,18 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov123_0229bf04(void *);
+extern void func_ov123_0229bf04(void);
 extern void func_ov123_0229be60(void *);
 extern void func_ov123_0229a278(void *, int);
-extern void func_ov123_0229bdfc(void *);
+extern void func_ov123_0229bdfc(void);
 extern int func_0206fca4(void);
 extern void func_ov123_0229b508(void *);
 extern void func_ov123_0229b3c4(void *);
 extern void func_ov123_0229b364(void *);
 extern void func_ov123_0229b228(void *);
-extern void func_ov123_0229b33c(void *);
+extern int func_ov123_0229b33c(void *);
 extern void func_ov123_0229b204(void *);
-extern void func_ov002_0220acc4(unsigned char *);
+extern int func_ov002_0220acc4(unsigned char *);
 extern void func_ov002_02207f20(void *, int, int, int, int);
 extern void func_02002708(int);
 extern void func_ov123_02299954(void *);
@@ -32,11 +32,14 @@ void func_ov123_0229c470(UnkStruct_0229c470 *self)
 {
     int r;
 
-    func_ov123_0229bf04(self);
+    func_ov123_0229bf04();
     func_ov123_0229be60(self);
     self->unk_A4 = 0x22;
     func_ov123_0229a278(self, 0);
-    func_ov123_0229bdfc(self);
+    asm {
+        mov r0, self
+    }
+    func_ov123_0229bdfc();
 
     r = func_0206fca4();
     switch (r) {

@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
-extern void func_0208150c(void *arg);
-extern int func_020036e8(void);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
+extern unsigned int func_0208150c(void *arg);
+extern int func_020036e8(void *object);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 extern void func_0209ba7c(void *arg);
 extern void func_0207863c(void *arg);
 
@@ -34,14 +34,15 @@ extern UnkStruct_02025430 data_020c8cd0;
 
 void func_02025430(UnkStruct_02025430_2 *p, UnkStruct_02025430_3 *out)
 {
+    int forwarded_value;
+
     UnkStruct_02025430 *r4 = &data_020c8d38;
-    func_0202d9c4();
-    if (func_0209bc40() == 1) {
+    if (func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) p)) == 1) {
         r4 = &data_020c8cd0;
     }
-    func_0208150c(*(void **) ((char *) p->unk_100 + 0x830));
+    (forwarded_value = (int) func_0208150c(*(void **) ((char *) p->unk_100 + 0x830)));
     {
-        int res = func_020036e8();
+        int res = func_020036e8((void *) forwarded_value);
         func_0202da38(p, &p->unk_104, &p->unk_122, 0x1e, res, r4->x, r4->y, 0, 0);
     }
     out->ptr = &p->unk_104;

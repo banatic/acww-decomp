@@ -8,10 +8,10 @@ typedef struct {
 } UnkStruct_0200a22c;
 
 extern void func_020109fc(void *p, int a, int b, int c);
-extern int func_0200a24c(void *ptr);
+extern void func_0200a24c(void *ptr);
 
-int func_0200a22c(UnkStruct_0200a22c *p)
+void func_0200a22c(UnkStruct_0200a22c *p, void *message, int previous)
 {
     func_020109fc(p, 1, 3, 0);
-    return func_0200a24c(&p->sub);
+    func_0200a24c(&p->sub);
 }

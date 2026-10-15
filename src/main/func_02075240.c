@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int (*data_020ccff0[])(int, int, int);
+extern void (*data_020ccff0[])(unsigned char *payload, unsigned int length, int player);
 
-int func_02075240(int a, int b, int c, int index)
+void func_02075240(unsigned char *payload, unsigned int length, int player, int index)
 {
-    return data_020ccff0[index](a, b, c);
+    data_020ccff0[index](payload, length, player);
 }

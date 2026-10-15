@@ -36,12 +36,12 @@ extern int data_021ebcd4;
 
 extern void MI_CpuFill8(int *a, int b, int c);
 extern void MIi_CpuClearFast(int a, int *b, int c);
-extern void func_0205a370(UnkStruct_0205b270_2 *a, int *b, int *c, int *d, int e);
-extern void func_0205bd90(u16 *a);
+extern int func_0205a370(UnkStruct_0205b270_2 *a, int *b, int *c, int *d, int e);
+extern int func_0205bd90(u16 *a);
 extern void func_0205bbf4(u16 *a, int b);
-extern void func_0205affc(UnkStruct_0205b270_2 *a, int b, int c);
-extern void func_0205aec0(UnkStruct_0205b270_2 *a, int b);
-extern void func_0205adc0(UnkStruct_0205b270_2 *a, int b);
+extern int func_0205affc(UnkStruct_0205b270_2 *a, int b, int c);
+extern int func_0205aec0(UnkStruct_0205b270_2 *a, int b);
+extern int func_0205adc0(UnkStruct_0205b270_2 *a, int b);
 extern void func_0205a65c(UnkStruct_0205b270_2 *a, int b);
 extern void func_0205ad00(UnkStruct_0205b270_2 *a, int b);
 extern int func_0205ac84(UnkStruct_0205b270_2 *a, int b);

@@ -13,7 +13,7 @@ typedef struct UnkStruct_022450d4 {
     unsigned char unk_196;
 } UnkStruct_022450d4;
 
-extern void func_02034270(void *w, Vec3 *v, int a, int b);
+extern int func_02034270(void *w, Vec3 *v, int a, int b);
 extern int func_020341c8(void *w, int a);
 extern void func_0203423c(void *w);
 extern int func_ov004_02244e38(UnkStruct_022450d4 *self, Vec3 *p);

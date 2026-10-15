@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0203c97c(int a, void *b);
+extern void func_0203c97c(int a, void *b);
 extern char data_020ca1ac[];
 
-int func_0203c99c(int a, int b)
+void func_0203c99c(int a, int b)
 {
-    return func_0203c97c(a, data_020ca1ac + (b << 4));
+    func_0203c97c(a, data_020ca1ac + (b << 4));
 }

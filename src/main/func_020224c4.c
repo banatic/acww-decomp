@@ -29,15 +29,15 @@ extern int func_020984e8(void);
 extern u16 *func_02099870(int a);
 extern int func_02081500(int a);
 extern int func_02072d4c(int a);
-extern u16 *func_02072ee8(int a);
+extern u16 *func_02072ee8(void *record);
 extern int memcmp(const void *a, const void *b, unsigned int n);
 extern int func_0209518c(void *a, void *b);
 extern u16 *func_02095040(u16 *a);
 extern void func_02015e40(UnkStruct_020224c4_2 *self, u16 *p, int n);
-extern void func_02015e70(UnkStruct_020224c4_2 *self, u16 *p, int n);
+extern void *func_02015e70(UnkStruct_020224c4_2 *self, u16 *p, int n);
 extern int func_0208150c(int a);
 extern int func_020036e8(int a);
-extern void func_0202da38(UnkStruct_020224c4_2 *self, void *a, void *b, int n, int c, int d, int e, int f, int g);
+extern int func_0202da38(UnkStruct_020224c4_2 *self, void *a, void *b, int n, int c, int d, int e, int f, int g);
 
 int func_020224c4(UnkStruct_020224c4_2 *self)
 {
@@ -71,7 +71,7 @@ int func_020224c4(UnkStruct_020224c4_2 *self)
         }
         if (ok > 0) {
             x = func_02081500(inner);
-            b = func_02072ee8(func_02072d4c(x));
+            b = func_02072ee8((void *) func_02072d4c(x));
             if (*a == *b && memcmp(a + 1, b + 1, 0xc) == 0 && func_0209518c(a, b) != 0) {
                 state = 1;
             } else if (func_0209518c(a, b) == 0) {
@@ -84,8 +84,8 @@ int func_020224c4(UnkStruct_020224c4_2 *self)
                 }
             }
             if (state != -1) {
-                func_02015e40(self, func_02072ee8(func_02072d4c(x)), 0);
-                func_02015e70(self, func_02095040(func_02072ee8(func_02072d4c(x))), 1);
+                func_02015e40(self, func_02072ee8((void *) func_02072d4c(x)), 0);
+                func_02015e70(self, func_02095040(func_02072ee8((void *) func_02072d4c(x))), 1);
             }
         } else {
             state = 0;

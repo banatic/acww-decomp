@@ -5,7 +5,7 @@
 extern int func_0208e484(void *ptr);
 extern void func_ov002_022090b0(void *ptr, unsigned char b);
 extern unsigned char func_ov002_02208a8c(void *ptr, unsigned char b1, unsigned char b2);
-extern void func_ov002_02208098(void *ptr, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov122_022a04ec(char *param)
 {
@@ -13,6 +13,6 @@ void func_ov122_022a04ec(char *param)
         func_ov002_022090b0((void *) (param + 0x42b0), *(unsigned char *) (param + 0xb6));
         *(unsigned char *) (param + 0xb6) = func_ov002_02208a8c((void *) (param + 0x42b0), *(unsigned char *) (param + 0xb7),
                                                                 *(unsigned char *) (param + 0xb6));
-        func_ov002_02208098((void *) param, 0x17);
+        func_ov002_02208098((void *) ((void *) param), 0x17);
     }
 }

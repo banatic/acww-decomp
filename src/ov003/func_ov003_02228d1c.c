@@ -5,7 +5,7 @@
 extern int data_ov003_0225f220;
 extern int data_ov003_0225f224;
 extern int data_ov003_0225f228;
-void func_0209d238(void *p, void *q);
+void *func_0209d238(void *p, void *q);
 void func_0209d0a4(void *p);
 
 int func_ov003_02228d1c(char *self)

@@ -23,7 +23,7 @@ struct UnkStruct_020efb64 {
 extern void NNS_SndPlayerSetTrackVolume(struct UnkStruct_020efb64_2 *e, unsigned short val, unsigned char b);
 extern void NNS_SndPlayerSetTrackPitch(struct UnkStruct_020efb64_2 *e, unsigned short val, short s);
 
-void func_020efb64(struct UnkStruct_020efb64 *base, int idx)
+void func_020efb64(struct UnkStruct_020efb64 *base, int idx, int code)
 {
     struct UnkStruct_020efb64_2 *e = &base->arr[idx];
     if (base->flag == 0) {

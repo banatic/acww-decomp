@@ -3,9 +3,9 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(void *self, unsigned char byte);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov095_0229bf0c(void *ptr);
-extern void func_ov122_022a0be4(void *self, int value);
+extern int func_ov122_022a0be4(void *self, int value);
 extern int func_ov122_0229efe8(void *self, int value);
 extern void func_ov122_0229f1b4(void *self);
 
@@ -19,7 +19,7 @@ typedef struct UnkStruct_022a0928 {
 void func_ov122_022a0928(UnkStruct_022a0928 *self)
 {
     if ((data_021fbe40 & 2) == 0) {
-        func_ov002_02208098(self, self->unk_B4);
+        func_ov002_02208098((void *) (self), self->unk_B4);
     } else {
         if (func_ov095_0229bf0c(&self->unk_C0) != 0) {
             func_ov122_022a0be4(self, 0x100);

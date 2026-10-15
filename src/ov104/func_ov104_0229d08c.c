@@ -5,7 +5,7 @@
 extern void func_ov104_0229d158(void *);
 extern void func_ov104_0229cc0c(void *);
 extern void func_ov104_0229cb78(void *);
-extern void func_ov104_0229cb70(void *);
+extern void func_ov104_0229cb70(void *argument0);
 extern void func_ov104_0229dd00(void *);
 
 typedef struct UnkStruct_0229d08c {

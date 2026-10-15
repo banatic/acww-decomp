@@ -6,8 +6,8 @@
 
 extern void func_020a8754(int *p);
 extern void func_020a8764(int *p, int param);
-extern void func_020a8308(int *p);
-extern int func_02068bc8(void);
+extern unsigned char func_020a8308(int *p);
+extern int func_02068bc8(int);
 struct UnkStruct_020a8e4c {
     char pad_00[0x38];
     unsigned char unk_38;
@@ -27,8 +27,7 @@ void func_020a8e4c(struct UnkStruct_020a8e4c *self, int param2)
         }
         b = local[1];
         if ((a == 0xff) && (b == 0)) {
-            func_020a8308(local);
-            self->unk_38 = func_02068bc8();
+            self->unk_38 = func_02068bc8((int) func_020a8308(local));
         }
     }
 }

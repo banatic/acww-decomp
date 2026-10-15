@@ -9,7 +9,7 @@ struct UnkStruct_02262368 {
     unsigned short unk_810;
 };
 
-extern int func_ov054_02260474(struct UnkStruct_02262368 *self);
+extern int func_ov054_02260474(void);
 extern int func_ov054_02262494(struct UnkStruct_02262368 *self);
 extern void func_ov054_02262528(struct UnkStruct_02262368 *self, int n);
 extern void func_0201af1c(void *buf, int byteval);
@@ -18,7 +18,7 @@ extern unsigned char data_ov054_0226297c[];
 
 int func_ov054_02262368(struct UnkStruct_02262368 *self)
 {
-    if (func_ov054_02260474(self) != 0) {
+    if (func_ov054_02260474() != 0) {
         goto end;
     }
     if (func_ov054_02262494(self) != 0) {

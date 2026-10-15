@@ -3,8 +3,8 @@
  */
 
 extern char data_ov075_022799fc;
-extern void func_ov075_02278ba0(void *);
-extern void func_0202ee5c(void *);
+extern void *func_ov075_02278ba0(void *);
+extern void *func_0202ee5c(void *);
 extern void func_020edf54(void *);
 
 void *func_ov075_02278a28(void *self)

@@ -19,10 +19,10 @@ struct UnkStruct_02210474 {
 
 extern int func_02056f94(void *);
 extern int func_02008258(UnkStruct_02210474 *, int);
-extern void func_0200d4e8(UnkStruct_02210474 *, int, int, int);
+extern int func_0200d4e8(UnkStruct_02210474 *, int, int, int);
 extern void func_ov003_02210668(void *, int);
 extern int func_ov003_0220d268(UnkStruct_02210474 *);
-extern void func_0209129c(int, int);
+extern void func_0209129c(int);
 
 void func_ov003_02210474(UnkStruct_02210474 *self)
 {
@@ -39,7 +39,7 @@ void func_ov003_02210474(UnkStruct_02210474 *self)
                 int *p = &self->unk_7D4;
                 func_ov003_02210668(sub2, 1);
                 if (self->unk_7D4 != -1) {
-                    func_0209129c(self->unk_7D4, -1);
+                    func_0209129c(self->unk_7D4);
                     *p = -1;
                 }
             }

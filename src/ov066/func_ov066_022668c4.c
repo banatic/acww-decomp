@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int data_ov066_0226bde4;
+extern int (*data_ov066_0226bde4)(int);
 
 void func_ov066_022668c4(void *p)
 {
@@ -12,5 +12,5 @@ void func_ov066_022668c4(void *p)
     if (p == 0) {
         return;
     }
-    ((void (*)(void *)) data_ov066_0226bde4)(p);
+    data_ov066_0226bde4((int) p);
 }

@@ -9,9 +9,9 @@ extern const char data_020df2f8[];
 extern const char data_020df310[];
 
 extern int func_02002ca4(const char *a, int b, int c);
-extern void func_02064328(char *buf, const char *fmt, unsigned char c);
+extern int func_02064328(char *buf, const char *fmt, unsigned char c);
 extern int func_02002d14(char *buf, int a, int b, int c, int d, int e);
-extern void func_02002c6c(char *buf, int a, int b, int c, int d, int e);
+extern int func_02002c6c(char *buf, int a, int b, int c, int d, int e);
 
 int func_0206f0d4(int p)
 {

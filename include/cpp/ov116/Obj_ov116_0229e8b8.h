@@ -12,7 +12,7 @@ class Obj_ov116_0229e8b8 : public Obj_ov002_0220bb24 {
     virtual int func_ov116_0229e6b4();
 
     // runs the handler for `subState`
-    int func_ov116_0229e5e8();
+    void func_ov116_0229e5e8();
 
     // states (state)
     void func_ov116_0229e3e4();
@@ -21,15 +21,15 @@ class Obj_ov116_0229e8b8 : public Obj_ov002_0220bb24 {
     void func_ov116_0229e47c();
 
     // sub-states (subState)
-    int func_ov116_0229dfc0();
-    int func_ov116_0229e010();
-    int func_ov116_0229e074();
-    int func_ov116_0229e0c0();
+    void func_ov116_0229dfc0();
+    void func_ov116_0229e010();
+    void func_ov116_0229e074();
+    void func_ov116_0229e0c0();
     int func_ov116_0229e0e8();
-    int func_ov116_0229e140();
-    int func_ov116_0229e168();
-    int func_ov116_0229e1f0();
-    int func_ov116_0229e228();
+    void func_ov116_0229e140();
+    void func_ov116_0229e168();
+    void func_ov116_0229e1f0();
+    void func_ov116_0229e228();
     // update: runs the handlers between the two frame helpers
     int func_ov116_0229e5bc();
 };

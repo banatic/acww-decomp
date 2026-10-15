@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209f0f0(void);
+extern void func_0209f0f0(int);
 extern void func_0209ef10(void *p, int i);
 extern void func_020642e0(void *p);
 extern void func_02098788(void *p);
@@ -37,7 +37,7 @@ extern void func_02090174(void *p);
 void func_0209ef7c(void *self)
 {
     int i;
-    func_0209f0f0();
+    func_0209f0f0((int) self);
     for (i = 0; i < 4; i++) {
         func_0209ef10(self, i);
     }

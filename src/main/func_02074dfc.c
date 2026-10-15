@@ -7,7 +7,7 @@ extern int func_02074e48(int);
 extern char *func_02073d28(int, int);
 extern void func_02077b3c(void *, int, int);
 extern int func_020a6f64(int);
-extern int func_020740b4(int);
+extern int func_020740b4(void);
 
 int func_02074dfc(int arg)
 {
@@ -18,7 +18,7 @@ int func_02074dfc(int arg)
         p = func_02073d28(data_020ccf94, arg);
         func_02077b3c(p, result, 6);
         t1 = func_020a6f64(arg);
-        t2 = func_020740b4(t1);
+        t2 = func_020740b4();
         p[1] = (char) ((t1 & 7) | ((t2 << 4) & 0xf0));
         result += 2;
     }

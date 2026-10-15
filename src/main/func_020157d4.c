@@ -4,7 +4,7 @@
 
 typedef struct {
     char pad_00[0x78];
-    unsigned int unk_78;
+    int (*unk_78)(unsigned short *, int);
     unsigned short unk_7C;
     unsigned short unk_7E;
     char pad_80[4];
@@ -13,7 +13,7 @@ typedef struct {
     unsigned char unk_88;
 } UnkStruct_020157d4;
 
-void func_020157d4(UnkStruct_020157d4 *s, unsigned int val1, unsigned char val2, unsigned char val3)
+void func_020157d4(UnkStruct_020157d4 *s, int (*val1)(unsigned short *, int), unsigned char val2, unsigned char val3)
 {
     s->unk_7C = 0;
     s->unk_78 = val1;

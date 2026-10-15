@@ -5,7 +5,7 @@
 struct UnkStruct_0202de84 {
     void *unk_00;
 };
-extern void func_0201615c(struct UnkStruct_0202de84 *);
+extern void *func_0201615c(struct UnkStruct_0202de84 *);
 extern unsigned char data_020d9df8[];
 
 struct UnkStruct_0202de84 *func_0202de84(struct UnkStruct_0202de84 *obj)

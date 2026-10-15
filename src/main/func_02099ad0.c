@@ -2,25 +2,25 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209526c(unsigned char *);
-extern void func_02099e40(unsigned char *);
+extern int func_0209526c(unsigned char *);
+extern void *func_02099e40(unsigned char *);
 extern void func_02097dcc(unsigned char *);
-extern void func_02088450(unsigned char *);
+extern void *func_02088450(unsigned char *);
 extern void func_02088760(unsigned char *);
 extern void func_02088c0c(unsigned char *);
-extern void func_020adf64(unsigned char *);
+extern unsigned int func_020adf64(unsigned char *);
 extern void func_02088808(unsigned char *);
 extern void func_020983fc(unsigned char *);
-extern void func_02077d24(unsigned char *);
-extern void func_02077c0c(unsigned char *);
-extern void func_0209ade4(unsigned char *);
-extern void func_02097e18(unsigned char *);
+extern int func_02077d24(unsigned char *);
+extern void *func_02077c0c(unsigned char *);
+extern void *func_0209ade4(unsigned char *);
+extern int func_02097e18(unsigned char *);
 extern void func_0203d388(unsigned char *);
 extern void func_0203cfa0(unsigned char *);
-extern void __cxa_vec_cleanup(unsigned char *, int, int, void (*)(void));
-extern void func_020051b0(void);
-extern void func_02066688(void);
-extern void func_02072ce8(unsigned char *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern void func_020051b0(void *);
+extern void func_02066688(void *);
+extern void *func_02072ce8(unsigned char *);
 
 void *func_02099ad0(unsigned char *self)
 {
@@ -39,8 +39,8 @@ void *func_02099ad0(unsigned char *self)
     func_02097e18(self + 0x1d3c);
     func_0203d388(self + 0x1d3b);
     func_0203cfa0(self + 0x1c18);
-    __cxa_vec_cleanup(self + 0x1bf2, 15, 2, func_020051b0);
-    __cxa_vec_cleanup(self + 0x11a8, 10, 256, func_02066688);
+    __cxa_vec_cleanup((void *) (self + 0x1bf2), 15, 2, (void (*)(void *)) func_020051b0);
+    __cxa_vec_cleanup((void *) (self + 0x11a8), 10, 256, (void (*)(void *)) func_02066688);
     func_02072ce8(self);
     return self;
 }

@@ -14,8 +14,8 @@ typedef struct UnkStruct_0200a02c {
 
 extern void *data_020ccf94;
 extern int func_02073908(void *a, u32 b);
-extern void func_02009fac(UnkStruct_0200a02c *self, int a, int b);
-extern void func_0200c3b0(UnkStruct_0200a02c *self, int a, int b, int c);
+extern int func_02009fac(UnkStruct_0200a02c *self, int a, int b);
+extern int func_0200c3b0(UnkStruct_0200a02c *self, int a, int b, int c);
 
 void func_0200a02c(UnkStruct_0200a02c *self)
 {

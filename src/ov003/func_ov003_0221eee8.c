@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(unsigned int);
-extern void func_ov003_0221eec4(void *);
+extern void *func_ov003_0221eec4(void *);
 
 void func_ov003_0221eee8(void)
 {

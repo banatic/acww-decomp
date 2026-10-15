@@ -16,7 +16,7 @@ extern void func_0209ef7c(const void *);
 extern int func_0209877c(const void *);
 extern void func_020962a4(int, int);
 extern void func_0203d394(void);
-extern void func_020985cc(const void *, const void *, int, int);
+extern void *func_020985cc(const void *, const void *, int, int);
 
 extern unsigned char data_020e3a68[];
 extern unsigned char data_021dc7a8[];

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov104_0229d938(unsigned char *p1, unsigned char p2, unsigned char *p3, unsigned char *p4);
+extern void func_ov104_0229d938(unsigned char *p1, unsigned char p2, unsigned char *p3);
 
 void func_ov104_0229cb04(unsigned char *base)
 {
@@ -13,7 +13,7 @@ void func_ov104_0229cb04(unsigned char *base)
     idx = 0x0b;
 
     do {
-        func_ov104_0229d938(base, idx, base + 0x37b4 + (i << 8), base + 0x37b4);
+        func_ov104_0229d938(base, idx, base + 0x37b4 + (i << 8));
         i++;
         idx = (unsigned char) (idx + 1);
     } while (idx <= 0x14);

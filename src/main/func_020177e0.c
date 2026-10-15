@@ -5,7 +5,7 @@
 extern int func_02057bd4(void);
 extern int func_02057d0c(int, int);
 extern void func_02016764(int, int, int, unsigned short, int, int, int, int);
-extern void func_0200442c(int, int, int, int);
+extern int func_0200442c(int, int, int, int);
 extern int func_020164a0(int, int);
 extern void func_02054768(int, int, int);
 extern void func_02019af0(int, int);

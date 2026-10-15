@@ -5,7 +5,7 @@
 extern int func_02019e00(char *);
 extern int func_02019df8(char *);
 extern int func_ov068_0226c0a4(void *);
-extern void func_02019c6c(char *, int, unsigned short);
+extern int func_02019c6c(char *, int, unsigned short);
 extern void func_ov068_0226cce8(void *, void *, int);
 extern unsigned short data_020c80f8;
 

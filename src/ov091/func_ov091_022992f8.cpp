@@ -5,12 +5,12 @@
 
 #include "cpp/ov091/Obj_ov091_02299530.h"
 
-extern "C" void func_ov091_02299054(Obj_ov091_02299530 *p);
+extern "C" void func_ov091_02299054(void);
 extern "C" void func_ov091_02299050(Obj_ov091_02299530 *p);
 
 int Obj_ov091_02299530::func_ov091_022992f8()
 {
-    func_ov091_02299054(this);
+    func_ov091_02299054();
     static void (Obj_ov091_02299530::*pmfTable[2])() = {&Obj_ov091_02299530::func_ov091_02299004,
                                                         &Obj_ov091_02299530::func_ov091_02298fb4};
     (this->*pmfTable[subState])();

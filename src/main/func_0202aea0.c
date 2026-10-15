@@ -19,13 +19,13 @@ struct Pair {
 
 extern void MI_CpuFill8(void *, int, int);
 extern void func_02015774(struct UnkStruct_0202aea0_2 *, int, void *, int, int);
-extern void func_02015828(struct UnkStruct_0202aea0_2 *, int);
+extern int func_02015828(struct UnkStruct_0202aea0_2 *, int);
 extern void func_0202dbf0(struct UnkStruct_0202aea0_2 *, struct Pair);
 extern struct Pair data_020d9260;
 
 extern unsigned char data_021c1e84[];
 
-void func_0202aea0(struct UnkStruct_0202aea0_2 *arg0)
+void func_0202aea0(struct UnkStruct_0202aea0_2 *arg0, int event)
 {
     MI_CpuFill8((void *) data_021c1e84, 0, 0x40);
     if (arg0->inner->flag == 0) {

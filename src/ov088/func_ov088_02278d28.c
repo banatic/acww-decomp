@@ -9,7 +9,7 @@ typedef struct UnkStruct_02278d28 {
 
 extern int func_020e8858(unsigned int);
 extern void func_ov088_02278f0c(UnkStruct_02278d28 *p, int a);
-extern void func_020155cc(UnkStruct_02278d28 *p);
+extern int func_020155cc(UnkStruct_02278d28 *p);
 
 void func_ov088_02278d28(UnkStruct_02278d28 *p)
 {

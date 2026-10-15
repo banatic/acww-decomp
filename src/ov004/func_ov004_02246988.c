@@ -7,7 +7,7 @@ extern void *data_ov004_0225ff54;
 extern void *data_021c9b28;
 extern int SDK_OVERLAY_ov093_ID;
 extern void func_ov093_0229959c(void *);
-extern void func_ov093_022997b4(void *);
+extern void *func_ov093_022997b4(void *);
 extern void func_020e993c(void *, void *);
 extern void func_0204f8ec(int);
 void func_ov004_02246988(void)

@@ -9,18 +9,18 @@ extern u8 data_ov134_0229c3f4[];
 extern u8 data_ov134_0229c410[];
 extern u8 data_ov134_0229c42c[];
 extern u32 data_ov134_0229c020[];
-extern void func_02002d14(void *data, void *obj, int a, int b, int c, int d);
-extern void func_02002c6c(void *data, void *obj, int a, int b, int c, int d);
+extern int func_02002d14(void *data, void *obj, int a, int b, int c, int d);
+extern int func_02002c6c(void *data, void *obj, int a, int b, int c, int d);
 extern u32 func_02064b2c(u32 val, void *obj, int mask, u32 *out);
 extern u64 _s32_div_f(int a, int b);
-extern void func_02002a88(u32 addr, int a, int b, int c, int d);
+extern int func_02002a88(u32 addr, int a, int b, int c, int d);
 extern void func_020e993c(void *obj, u32 val);
-extern void func_02002cd8(void *data, void *obj, int a, int b, int c);
+extern int func_02002cd8(void *data, void *obj, int a, int b, int c);
 typedef struct {
     u8 pad_00[0xa1];
     u8 b;
 } Params;
-void func_ov134_0229b954(Params *p)
+int func_ov134_0229b954(Params *p)
 {
     u32 prev;
     u32 unused;
@@ -49,5 +49,5 @@ void func_ov134_0229b954(Params *p)
     }
 
     func_020e993c(obj, prev);
-    func_02002cd8(data_ov134_0229c42c, obj, 8, p->b, 4);
+    return func_02002cd8(data_ov134_0229c42c, obj, 8, p->b, 4);
 }

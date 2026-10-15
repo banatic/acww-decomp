@@ -4,8 +4,8 @@
 
 extern int func_020b66b0(void);
 extern int func_0207cec0(void *g, int x);
-extern void func_0208150c(void);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(unsigned int);
+extern int func_02003704(void *);
 extern int func_020852e4(void *p);
 extern int func_020a7278(void);
 extern int func_02085d6c(void *p, void *q);
@@ -15,13 +15,13 @@ extern void MI_CpuCopy8(void *a, void *b, int c);
 extern int func_02073dd4(void *obj, int field);
 extern int func_020791ec(void);
 extern int func_020791bc(void);
-extern int func_0207cf74(void);
+extern int func_0207cf74(unsigned int);
 extern int func_0207b3dc(void *g);
-extern void func_0207b410(void *g);
-extern int func_0209a654(void);
+extern unsigned int func_0207b410(void *g);
+extern int func_0209a654(unsigned char *);
 extern int func_0207af30(void);
 extern int func_0207f150(int st);
-extern void func_02003348(int a, unsigned short b, void *c, void *d, void *e);
+extern int func_02003348(int a, unsigned short b, void *c, void *d, void *e);
 
 extern void *data_020ccf94;
 extern unsigned char data_021e5a2c[];
@@ -42,8 +42,7 @@ void func_020858ac(void *p)
         goto exit;
     }
 
-    func_0208150c();
-    if (!func_02003704()) {
+    if (!func_02003704((void *) func_0208150c(st))) {
         goto exit;
     }
 
@@ -83,14 +82,12 @@ void func_020858ac(void *p)
     if (func_02073dd4(data_020ccf94, *(int *) ((char *) data_020ccf94 + 0x64)) == 0) {
         if (key == func_020791ec()) {
             action = 0x80;
-            func_020791bc();
-            if (func_0207cf74() != 0) {
+            if (func_0207cf74((unsigned int) func_020791bc()) != 0) {
                 cmd[1] = (unsigned short) ((func_020791bc() & 0xfff) | 0xe000);
                 flag = 0x81;
             }
         } else if (key == func_0207b3dc(data_021e5a2c)) {
-            func_0207b410(data_021e5a2c);
-            if (func_0209a654() == 0) {
+            if (func_0209a654((unsigned char *) func_0207b410(data_021e5a2c)) == 0) {
                 action = 0x83;
             }
         } else {

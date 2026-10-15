@@ -3,10 +3,10 @@
  */
 
 extern char data_020e21d4;
-extern void func_0208bb8c(void *p);
-extern void func_0208c1ac(void *p);
-extern void func_0208d2e8(void *p);
-extern void func_0208def4(void *p);
+extern void *func_0208bb8c(void *p);
+extern void *func_0208c1ac(void *p);
+extern void *func_0208d2e8(void *p);
+extern void *func_0208def4(void *p);
 
 struct BigStruct {
     void *unk_00;

@@ -8,7 +8,7 @@ struct Pair {
 };
 
 extern struct Pair data_020d91d0;
-extern void func_020154b4(int p1, unsigned short *p2, int p3, int p4, int p5);
+extern int func_020154b4(int p1, unsigned short *p2, int p3, int p4, int p5);
 extern void func_0202dbf0(int p1, struct Pair p2);
 
 void func_0201dcbc(int param)

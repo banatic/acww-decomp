@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a6ed0(void *p);
+extern int func_020a6ed0(void);
 extern int func_02073dd4(int *p, int v);
 extern void func_020a2444(void *p, int a, int b);
 extern int func_020644cc(int n);
@@ -17,7 +17,7 @@ void func_020a0fac(void *p)
     int arr[4];
     int v;
 
-    x = func_020a6ed0(p);
+    x = func_020a6ed0();
     count = 0;
     i = 3;
     ptr = data_020ccf94;

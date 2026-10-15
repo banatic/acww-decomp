@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020644cc(int, int);
+extern int func_020644cc(int);
 
 typedef struct {
     char pad_00[0x1524];
@@ -25,5 +25,5 @@ void func_020bb7a0(UnkStruct_020bb7a0 *self, int param1)
         flag = 1;
         self->unk_1530 = flag;
     }
-    self->unk_1574 = func_020644cc(2, flag);
+    self->unk_1574 = func_020644cc(2);
 }

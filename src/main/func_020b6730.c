@@ -2,11 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b65c4(void);
-extern void func_020b6744(void);
+extern unsigned char func_020b65c4(void);
+extern int func_020b6744(unsigned int code);
 
-void func_020b6730(void)
+int func_020b6730(void)
 {
-    func_020b65c4();
-    func_020b6744();
+    return func_020b6744(func_020b65c4());
 }

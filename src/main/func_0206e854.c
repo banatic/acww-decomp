@@ -16,7 +16,7 @@ struct UnkStruct_0206e854 {
 };
 
 extern u32 func_020e98b4(u32);
-extern void func_02050974(void *);
+extern int func_02050974(void *);
 extern void func_020647ec(struct Pair, u32, u32, u32);
 extern int data_021c8188;
 

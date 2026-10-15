@@ -14,9 +14,9 @@ struct UnkStruct_020c3838 {
 };
 
 extern int func_0202ec58(struct UnkStruct_020c3838 *self);
-extern void func_020984e8(int a);
-extern int func_020c3690(struct UnkStruct_020c3838 *self, int b);
-extern int func_020b65c4(int c);
+extern int func_020984e8(void);
+extern void func_020c3690(struct UnkStruct_020c3838 *self, int b);
+extern int func_020b65c4(void);
 extern void func_0201ad18(void *p, int a, int b, int c, int d, int e, int f, int g);
 extern int data_020c814c;
 
@@ -29,8 +29,8 @@ int func_020c3838(struct UnkStruct_020c3838 *self)
     if (a == 0) {
         return 0;
     }
-    func_020984e8(a);
-    if (func_020b65c4(func_020c3690(self, 0)) == 0x2f) {
+    func_020984e8();
+    if ((((int) (func_020c3690(self, 0), self)), func_020b65c4()) == 0x2f) {
         self->unk_510 = 0;
         func_0201ad18(&self->unk_3B0, 0, 0, 0, (unsigned int) data_021fbee8, 4, data_020c814c, 1);
         self->unk_5C = 0x10000;

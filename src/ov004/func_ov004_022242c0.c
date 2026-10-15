@@ -20,8 +20,8 @@ extern int data_ov004_02254594;
 
 extern int func_020984e8(void);
 extern int func_02099670(int a);
-extern void func_020160b4(UnkStruct_022242c0_2 *self);
-extern int func_020ab504(void);
+extern int func_020160b4(UnkStruct_022242c0_2 *self);
+extern int func_020ab504(void *);
 extern int func_02088bd4(int h);
 extern void func_ov004_0222421c(UnkStruct_022242c0_2 *self, int k);
 extern int func_0201b43c(int a, int b);
@@ -38,8 +38,7 @@ void func_ov004_022242c0(UnkStruct_022242c0_2 *self)
     unsigned char b;
 
     h = func_02099670(func_020984e8());
-    func_020160b4(self);
-    fl = func_020ab504();
+    fl = func_020ab504((void *) func_020160b4(self));
     v = data_ov004_02254594;
     k = 0xff;
     if ((int) self->unk_1E >= 0x24 && (int) self->unk_1E <= 0x2b) {

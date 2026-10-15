@@ -6,7 +6,7 @@ typedef struct {
     void *vtable;
 } Object;
 extern char data_020e51e8;
-extern void func_020a9a40(Object *self);
+extern void *func_020a9a40(Object *self);
 
 Object *func_020b54b0(Object *self)
 {

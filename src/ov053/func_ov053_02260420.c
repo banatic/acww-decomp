@@ -14,8 +14,8 @@ typedef struct UnkStruct_02260420 {
     Sub658 sub658;
 } UnkStruct_02260420;
 
-extern void func_ov053_02260bfc(Sub658 *);
-extern void func_0202ee5c(UnkStruct_02260420 *);
+extern void *func_ov053_02260bfc(Sub658 *);
+extern void *func_0202ee5c(UnkStruct_02260420 *);
 
 UnkStruct_02260420 *func_ov053_02260420(UnkStruct_02260420 *obj)
 {

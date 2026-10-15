@@ -5,7 +5,7 @@
 extern void G2x_SetBlendBrightnessExt_(unsigned int a0, unsigned int a1, unsigned int a2, unsigned int a3, unsigned int a4,
                                        unsigned int a5);
 extern void func_ov002_02208090(unsigned int a0, unsigned int a1);
-extern void func_ov002_022080a0(unsigned int a0, unsigned int a1);
+extern unsigned char *func_ov002_022080a0(unsigned int a0, unsigned char value);
 extern void func_ov113_0229a474(unsigned int a0);
 
 int func_ov113_0229aaa8(unsigned int arg0)

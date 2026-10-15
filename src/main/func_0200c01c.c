@@ -3,7 +3,7 @@
  */
 
 extern void func_0200c0c8(unsigned char *p, unsigned char *a, unsigned char *b);
-extern void func_0200c0dc(unsigned char *p, unsigned char a, unsigned char b, int n, int v);
+extern int func_0200c0dc(unsigned char *p, unsigned char a, unsigned char b, int n, int v);
 
 void func_0200c01c(unsigned char *p, int v)
 {

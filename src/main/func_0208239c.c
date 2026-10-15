@@ -3,9 +3,9 @@
  */
 
 extern unsigned char data_021e5a2c;
-extern void *func_020824d0(const void *p, unsigned int low);
+extern void *func_020824d0(const void *p);
 extern int func_0207cec0(const void *p, unsigned int low);
-extern int func_020808d0(int x);
+extern int func_020808d0(unsigned int);
 
 typedef struct {
     unsigned short flags;
@@ -22,11 +22,11 @@ int func_0208239c(const S_0208239c *p)
         if (kind == 0xe) {
             int tmp = func_0207cec0(&data_021e5a2c, low);
             if (tmp) {
-                ret = func_020808d0(tmp);
+                ret = func_020808d0((unsigned int) tmp);
             }
         }
     } else {
-        void *q = func_020824d0(p, low);
+        void *q = func_020824d0(p);
         if (q) {
             ret = ((unsigned char *) q)[2];
         }

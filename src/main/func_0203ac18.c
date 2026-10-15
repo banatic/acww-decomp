@@ -3,9 +3,9 @@
  */
 
 extern int data_021c67a4;
-extern int func_ov068_0226dc64(int, int);
+extern void func_ov068_0226dc64(int, int);
 
-int func_0203ac18(void)
+void func_0203ac18(void)
 {
-    return func_ov068_0226dc64(data_021c67a4, 3);
+    func_ov068_0226dc64(data_021c67a4, 3);
 }

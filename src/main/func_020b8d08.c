@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b91c4(void *);
+extern void *func_020b91c4(void *);
 
 typedef struct UnkStruct_020b8d08 {
     void *unk_00;          // 0x00

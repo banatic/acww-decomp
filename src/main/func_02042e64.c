@@ -5,7 +5,7 @@
 extern void *data_020ccf94;
 extern int func_02073d90(void *);
 extern int func_02045cec(int *, int);
-extern int func_0204e414(int);
+extern int func_0204e414(void);
 extern unsigned short *func_0204f5e0(int, int, int, int, int, int);
 extern void func_0204a330(int, int, int, int);
 
@@ -45,7 +45,7 @@ void func_02042e64(struct UnkStruct_02042e64 *p)
     }
 
     v = 0xe3;
-    ret2 = func_0204e414(ret);
+    ret2 = func_0204e414();
     p->unk_04 = -1;
     if (ret2 != 0) {
         h = hi >> 4;

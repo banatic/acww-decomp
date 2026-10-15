@@ -38,7 +38,7 @@ extern void func_0202da74(struct UnkStruct_0202703c *a, struct Pair p);
 extern void func_02068388(int a, int b);
 extern int func_020644cc(int a);
 extern void func_0207de14(u16 *out, int p);
-extern void func_0207de70(int p, u16 *out);
+extern int func_0207de70(int p, u16 *out);
 extern int func_0205be38(void);
 extern int func_0202b510(int a);
 extern void func_02027170(u16 *out, int p);

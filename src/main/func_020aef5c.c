@@ -3,14 +3,14 @@
  */
 
 extern unsigned char data_020d1e1c[];
-extern int func_020af028(void);
+extern int func_020af028(unsigned short *);
 
-int func_020aef5c(void)
+int func_020aef5c(unsigned short *argument0)
 {
     int result;
     unsigned char value;
 
-    result = func_020af028();
+    result = func_020af028((unsigned short *) argument0);
     value = data_020d1e1c[result];
     return value;
 }

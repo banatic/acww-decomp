@@ -28,12 +28,12 @@ static inline short sine(unsigned short idx)
     return FX_SinCosTable_[(idx >> 4) * 2];
 }
 
-extern void func_020e895c(int *p, int a, int b);
-extern void func_02095380(int a);
+extern int func_020e895c(int *p, int a, int b);
+extern int func_02095380(int a);
 extern void func_ov004_0220fefc(RoomObject *self, UnkStruct_0220c9fc *out);
-extern void func_ov004_0220e61c(RoomObject *self, UnkStruct_0220c9fc *out);
+extern int func_ov004_0220e61c(RoomObject *self, UnkStruct_0220c9fc *out);
 extern int FX_MulFunc(int a, int b);
-extern void func_ov004_0220ccf8(RoomObject *self, int a);
+extern int func_ov004_0220ccf8(RoomObject *self, int a);
 extern void func_ov004_0220e5dc(RoomObject *self, int a);
 
 void func_ov004_0220c9fc(RoomObject *self)

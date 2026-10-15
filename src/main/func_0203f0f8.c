@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern __arm void func_020e8ce0(int, void *);
-extern __arm void func_020ee62c(void *);
+extern __arm int func_020e8ce0(int, void *);
+extern void func_020ee62c(void *);
 
 typedef struct {
     unsigned int unk_00;

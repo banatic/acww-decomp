@@ -14,11 +14,13 @@ extern unsigned int data_ov004_02256c80, data_ov004_02256c64, data_ov004_02256c8
 extern Vec data_ov004_02256e28[2], data_ov004_02256e40[2], data_ov004_02256db0;
 extern u8 data_ov004_02256cc0[], data_ov004_02256d08[], data_ov004_02256d5c[], data_ov004_02256d68[], data_ov004_02256da4[],
     data_021fbe48[];
-extern void __register_global_object(void *, void (*)(void *), void *), func_020012dc(void *);
+extern void __register_global_object(void *, void *destructor, void *);
+extern void func_020012dc(void *);
 extern void func_020e9640(void *, int), MTX_MultVec43(Vec *, void *, Vec *);
 extern void func_ov004_0220ff74(void *, Vec *, Vec *);
 extern int func_020ea9e4(Vec *, Vec *), func_020eaa2c(Vec *, Vec *);
 extern void VEC_Subtract(Vec *, Vec *, Vec *), VEC_Add(Vec *, Vec *, Vec *);
+
 void func_ov004_0220dbac(u8 *self, u8 *other)
 {
     Vec offset, point;
@@ -30,13 +32,13 @@ void func_ov004_0220dbac(u8 *self, u8 *other)
         data_ov004_02256e28[0].x = 0;
         data_ov004_02256e28[0].y = 0;
         data_ov004_02256e28[0].z = 0;
-        __register_global_object(&data_ov004_02256e28[0], func_020012dc, data_ov004_02256cc0);
+        __register_global_object(&data_ov004_02256e28[0], ((void *) &func_020012dc), data_ov004_02256cc0);
         {
             Vec *v = &data_ov004_02256e28[1];
             v->x = -0x2000;
             v->y = 0;
             v->z = 0;
-            __register_global_object(v, func_020012dc, data_ov004_02256d08);
+            __register_global_object(v, ((void *) &func_020012dc), data_ov004_02256d08);
         }
         data_ov004_02256c80 |= 1;
     }
@@ -44,13 +46,13 @@ void func_ov004_0220dbac(u8 *self, u8 *other)
         data_ov004_02256e40[0].x = 0;
         data_ov004_02256e40[0].y = 0;
         data_ov004_02256e40[0].z = 0;
-        __register_global_object(&data_ov004_02256e40[0], func_020012dc, data_ov004_02256d5c);
+        __register_global_object(&data_ov004_02256e40[0], ((void *) &func_020012dc), data_ov004_02256d5c);
         {
             Vec *v = &data_ov004_02256e40[1];
             v->x = 0x2000;
             v->y = 0;
             v->z = 0;
-            __register_global_object(v, func_020012dc, data_ov004_02256d68);
+            __register_global_object(v, ((void *) &func_020012dc), data_ov004_02256d68);
         }
         data_ov004_02256c64 |= 1;
     }
@@ -58,7 +60,7 @@ void func_ov004_0220dbac(u8 *self, u8 *other)
         data_ov004_02256db0.x = 0x2000;
         data_ov004_02256db0.y = 0;
         data_ov004_02256db0.z = 0;
-        __register_global_object(&data_ov004_02256db0, func_020012dc, data_ov004_02256da4);
+        __register_global_object(&data_ov004_02256db0, ((void *) &func_020012dc), data_ov004_02256da4);
         data_ov004_02256c8c |= 1;
     }
     func_020e9640(data_021fbe48, S(P(self, 0x9c), 0x8e));

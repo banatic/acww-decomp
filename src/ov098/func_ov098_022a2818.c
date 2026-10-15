@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern char *func_ov002_0220b74c(char *p);
-extern int func_0206f56c(char *p);
-extern void func_ov002_02208098(char *p, int n);
-extern void func_ov002_0220b740(char *p);
+extern void func_ov002_0220b74c(char *p);
+extern int func_0206f56c(void);
+extern unsigned char *func_ov002_02208098(char *p, unsigned char value);
+extern int func_ov002_0220b740(char *p);
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 extern unsigned short data_021fbe40[];
@@ -13,7 +13,8 @@ extern unsigned short data_021fbe40[];
 void func_ov098_022a2818(char *self)
 {
     unsigned int b;
-    if (func_0206f56c(func_ov002_0220b74c(self + 0x2958)) != 0) {
+    func_ov002_0220b74c(self + 0x2958);
+    if (func_0206f56c() != 0) {
         goto call;
     }
     b = (data_021fbdd8 && data_021fbddc);

@@ -7,9 +7,9 @@ struct UnkStruct_02208b00 {
     unsigned char unk_1C;
 };
 
-extern void func_ov002_02208b14(struct UnkStruct_02208b00 *self, int arg1, int arg2, int arg3);
+extern int func_ov002_02208b14(struct UnkStruct_02208b00 *self, int arg1, int arg2, int arg3);
 
-void func_ov002_02208b00(struct UnkStruct_02208b00 *self, int arg1, int arg2)
+int func_ov002_02208b00(struct UnkStruct_02208b00 *self, int arg1, int arg2)
 {
-    func_ov002_02208b14(self, arg1, arg2, self->unk_1C - 1);
+    return func_ov002_02208b14(self, arg1, arg2, self->unk_1C - 1);
 }

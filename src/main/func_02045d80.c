@@ -7,13 +7,13 @@ typedef struct {
     unsigned int unk_04;
 } Pair;
 
-extern void func_02045cec(Pair *out, int arg);
+extern int func_02045cec(Pair *out, int arg);
 
-void func_02045d80(Pair *src, int arg)
+int func_02045d80(Pair *src, int arg)
 {
     Pair local;
 
     local.unk_00 = src->unk_00;
     local.unk_04 = src->unk_04;
-    func_02045cec(&local, arg);
+    return func_02045cec(&local, arg);
 }

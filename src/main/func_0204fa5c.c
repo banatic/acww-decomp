@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void FS_LoadOverlayInfo(int, int, int);
+extern int FS_LoadOverlayInfo(int, int, int);
 
 void func_0204fa5c(int p0, int p1)
 {

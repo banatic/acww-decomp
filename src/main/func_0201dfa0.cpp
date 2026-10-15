@@ -22,7 +22,7 @@ struct UnkStruct_0201dfa0 {
 
 extern "C" void func_0202da88(UnkStruct_0201dfa0 *self, void *arg);
 extern "C" void func_0206844c(u32 a, u8 *b, u32 c);
-extern "C" void func_020154b4(UnkStruct_0201dfa0 *self, u8 *p, int r2, int r3, int r4);
+extern "C" int func_020154b4(UnkStruct_0201dfa0 *self, u8 *p, int r2, int r3, int r4);
 extern "C" void func_0202dbf0(UnkStruct_0201dfa0 *self, Pair p);
 extern Pair data_020d9138;
 

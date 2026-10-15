@@ -12,7 +12,7 @@ extern UnkStruct_0205e1bc *func_0205e14c(UnkStruct_0205e1bc *p, int n);
 extern UnkStruct_0205e1bc *func_0205e194(UnkStruct_0205e1bc *p, int n);
 extern int func_0205e138(UnkStruct_0205e1bc *p, int n);
 extern int func_021077e8(UnkStruct_0205e1bc *p);
-extern void func_020b9eec(UnkStruct_0205e1bc *p, int val, int flag);
+extern int func_020b9eec(UnkStruct_0205e1bc *p, int val, int flag);
 
 int func_0205e1bc(UnkStruct_0205e1bc *p)
 {

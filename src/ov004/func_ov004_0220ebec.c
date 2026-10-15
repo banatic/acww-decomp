@@ -12,7 +12,7 @@ struct UnkStruct_0220ebec_2 {
     int unk_04;
 };
 
-extern void func_ov004_0220db94(struct UnkStruct_0220ebec *l);
+extern char *func_ov004_0220db94(struct UnkStruct_0220ebec *l);
 extern void func_ov004_0220f27c(void *self, struct UnkStruct_0220ebec *l, int a, int b);
 extern struct UnkStruct_0220ebec_2 *func_ov004_0220db5c(struct UnkStruct_0220ebec *l, unsigned int i);
 extern unsigned int func_ov004_0220db68(struct UnkStruct_0220ebec *l);

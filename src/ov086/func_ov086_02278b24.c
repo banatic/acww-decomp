@@ -4,21 +4,21 @@
 
 #include "types.h"
 
-extern void func_020154b4(void *, u16 *, int, int, int);
-extern void func_0209a000(u16 *, int);
+extern int func_020154b4(void *, u16 *, int, int, int);
+extern int func_0209a000(u16 *, int);
 extern int func_0209a1e8(void);
 extern int func_0209a1d0(void);
 extern int func_020984e8(void);
-extern void func_020a8228(void *);
-extern void func_020a8210(void *);
+extern void *func_020a8228(void *);
+extern void *func_020a8210(void *);
 extern int func_020644cc(int);
-extern void func_020b4a20(void *, u8 *, int);
-extern void func_0203d7c4(int, void *);
+extern int func_020b4a20(void *, u8 *, int);
+extern int func_0203d7c4(int, void *);
 extern int func_02099870(int);
 extern void func_02066024(int, u8 *, void *, void *, void *, int);
 extern int func_0204bd20(int, int);
 extern int func_020996ac(int);
-extern void OS_UnlockByWord_IrqAndFiq(int, u16 *, int);
+extern int OS_UnlockByWord_IrqAndFiq(int object, u16 *item, int mode);
 extern int func_0208602c(void);
 extern void func_020860f0(int, int);
 extern void func_0206844c(int, u8 *, void *);

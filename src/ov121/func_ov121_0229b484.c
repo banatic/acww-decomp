@@ -9,9 +9,9 @@ typedef struct {
     unsigned int unk_2D8;
 } Obj_ov121_0229c3a8;
 
-extern int func_ov002_02208014(Obj_ov121_0229c3a8 *self);
-extern void func_ov121_0229b008(Obj_ov121_0229c3a8 *self);
-extern void func_ov002_02207d24(void *ptr, int arg);
+extern int func_ov002_02208014(void);
+extern unsigned char *func_ov121_0229b008(Obj_ov121_0229c3a8 *self);
+extern int func_ov002_02207d24(void *ptr, int arg);
 extern int func_ov002_02208008(Obj_ov121_0229c3a8 *self);
 extern int func_ov121_02299ccc(Obj_ov121_0229c3a8 *self, int a, int b);
 extern void func_ov121_0229a450(Obj_ov121_0229c3a8 *self);
@@ -21,7 +21,7 @@ extern void func_ov121_0229a170(Obj_ov121_0229c3a8 *self);
 extern void func_ov121_0229a130(Obj_ov121_0229c3a8 *self);
 extern int func_ov090_02299078(int arg);
 extern int func_ov090_02299098(int arg);
-extern void func_ov121_0229bc70(Obj_ov121_0229c3a8 *self, int arg);
+extern int func_ov121_0229bc70(Obj_ov121_0229c3a8 *self, int arg);
 extern void func_ov002_02207d00(void *ptr);
 
 extern struct {
@@ -33,7 +33,7 @@ void func_ov121_0229b484(Obj_ov121_0229c3a8 *self)
 {
     unsigned short flags;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov121_0229b008(self);
         func_ov002_02207d24(&self->unk_2D8, 1);
         return;

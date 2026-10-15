@@ -21,18 +21,18 @@ typedef struct Msg {
     u16 unk_02;
 } Msg;
 
-extern int func_020160b4(void);
+extern int func_020160b4(void *arg0);
 extern int func_020ab504(int);
 extern void func_0209a050(int);
-extern void func_02015330(UnkStruct_02278ab8 *, u16 *, int, int, int);
+extern int func_02015330(UnkStruct_02278ab8 *, u16 *, int, int, int);
 extern void func_0206844c(void *, u8 *, const void *);
 extern int func_020644cc(int);
-extern void func_02094fd4(int *);
-extern void func_02094fbc(int *);
+extern void *func_02094fd4(int *);
+extern void *func_02094fbc(int *);
 extern void *func_0207cec0(void *, int);
 extern void *func_0208150c(void *);
 extern int func_02003704(void *);
-extern void func_02003618(void *, int *);
+extern int func_02003618(void *, int *);
 extern void func_02068404(void *, int, int *);
 extern void func_020867a4(void *, void *);
 extern void func_02086760(void *, void *);
@@ -45,7 +45,7 @@ void func_ov085_02278ab8(UnkStruct_02278ab8 *this)
 {
     Msg m;
     int blk[8];
-    int ok = func_020ab504(func_020160b4());
+    int ok = func_020ab504(func_020160b4((void *) this));
     const void *tag = (const void *) &data_ov085_0227959c;
     int code = 0xff;
     int v = this->unk_B4;

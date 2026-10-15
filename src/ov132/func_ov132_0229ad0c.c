@@ -3,23 +3,27 @@
  */
 
 extern char data_ov132_0229b990;
-extern void func_ov002_0220ba0c(void *p);
-extern void __cxa_vec_cleanup(void *p, int a, int b, unsigned int c);
-extern void func_ov002_0220afdc(void *p);
-extern void func_ov002_02209cb4(void *p);
-extern void func_ov002_0220826c(void *p);
+extern void *func_ov002_0220ba0c(void *p);
+extern void __cxa_vec_cleanup(void *p, int a, int b, void (*callback3)(void *));
+extern void *func_ov002_0220afdc(void *p);
+extern void *func_ov002_02209cb4(void *p);
+extern void *func_ov002_0220826c(void *p);
 extern void func_ov002_02207f6c(void *p);
 
-extern void func_02070be8(void);
+extern int **func_02070be8(int **arg0);
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
 
 void *func_ov132_0229ad0c(void *obj)
 {
     *(int *) obj = (int) &data_ov132_0229b990;
     func_ov002_0220ba0c((char *) obj + 0x3e4);
-    __cxa_vec_cleanup((char *) obj + 0x2c4, 2, 0x6c, (unsigned int) func_02070be8);
+    __cxa_vec_cleanup((char *) obj + 0x2c4, 2, 0x6c, DisposeElement_func_02070be8);
     func_ov002_0220afdc((char *) obj + 0xf8);
     func_ov002_02209cb4((char *) obj + 0x94);
     func_ov002_0220826c(obj);
     func_ov002_02207f6c(obj);
     return obj;
 }
+
+#undef DisposeElement_func_02070be8

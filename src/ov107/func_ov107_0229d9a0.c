@@ -11,18 +11,18 @@ struct UnkStruct_0229d9a0 {
     char unk_21CC;
 };
 
-extern int AOSS_FD_SET(void *p);
-extern void func_ov002_02208098(void *p, int n);
+extern int func_ov002_02207cc0(int object);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov107_0229c990(void *p, int byte, int flag);
 
 void func_ov107_0229d9a0(struct UnkStruct_0229d9a0 *self)
 {
-    if (AOSS_FD_SET(&self->unk_21CC)) {
+    if (func_ov002_02207cc0((int) (&self->unk_21CC))) {
         if (self->unk_BF) {
             self->unk_BF--;
         } else {
             func_ov107_0229c990(self, self->unk_B6, 1);
-            func_ov002_02208098(self, 2);
+            func_ov002_02208098((void *) (self), 2);
         }
     }
 }

@@ -8,9 +8,9 @@ typedef struct {
     int z;
 } Vec;
 extern int FX_MulFunc(int a, int b);
-extern void func_02030678(void *w, Vec *v, int a, int b);
+extern void *func_02030678(void *w, Vec *v, int a, int b);
 extern int func_0203006c(void *w, Vec *a, Vec *b);
-extern void func_02030668(void *w);
+extern int func_02030668(void *w);
 extern short data_0213a59c[];
 extern short data_0213c59c[];
 int func_020b8550(Vec *out, Vec *p, Vec *q, int a4, int a5)

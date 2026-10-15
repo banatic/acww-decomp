@@ -60,7 +60,7 @@ extern int data_ov003_0223cfa0;
 extern void func_02055124(int *);
 extern int func_02056f94(int *);
 extern void func_ov003_02222c68(UnkStruct_02223274_4 *);
-extern void func_020044c0(int *, int, int, int);
+extern int func_020044c0(int *, int, int, int);
 extern void func_020044d0(int *, UnkStruct_02223274_2 *);
 extern void func_0210744c(void *, int);
 extern void func_02107494(void *, int);

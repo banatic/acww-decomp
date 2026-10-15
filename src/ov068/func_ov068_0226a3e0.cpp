@@ -39,17 +39,17 @@ class UnkStruct_0226a3e0_2 {
 };
 
 extern "C" UnkStruct_0226a3e0_2 *func_0201ce50(UnkStruct_0226a3e0_2 *obj);
-extern "C" void func_ov068_0226aca8(UnkStruct_0226a3e0 *self, int *a, int *b, int c, int d);
+extern "C" int func_ov068_0226aca8(UnkStruct_0226a3e0 *self, int *a, int *b, int c, int d);
 extern "C" void func_0207daf4(int b, int a);
 extern "C" void func_020801c4(int b, int a, int c);
 extern "C" void func_ov068_0226ada8(UnkStruct_0226a3e0 *self, UnkStruct_0226a3e0_2 *obj, void *data);
-extern "C" void func_02082164(void *buf);
-extern "C" void func_0208150c(int a);
-extern "C" int func_02003648(void);
+extern "C" unsigned int *func_02082164(void *buf);
+extern "C" unsigned int func_0208150c(int a);
+extern "C" int func_02003648(void *argument0);
 extern "C" int func_02082308(void *buf, int a);
 extern "C" void func_02080a7c(int a, void *buf);
 extern "C" void func_ov068_0226ad44(UnkStruct_0226a3e0 *self, UnkStruct_0226a3e0_2 *obj, void *data, int a, int b, int c);
-extern "C" void func_0208214c(void *buf);
+extern "C" void *func_0208214c(void *buf);
 extern int data_ov068_0227676c;
 extern int data_ov068_02276738;
 
@@ -70,8 +70,8 @@ extern "C" int func_ov068_0226a3e0(UnkStruct_0226a3e0 *self, UnkStruct_0226a3e0_
     func_020801c4(b, a, 0);
     func_ov068_0226ada8(self, obj, &data_ov068_0227676c);
     func_02082164(buf);
-    func_0208150c(b);
-    if (func_02082308(buf, func_02003648()) != 0) {
+
+    if (func_02082308(buf, func_02003648((void *) func_0208150c(b))) != 0) {
         func_02080a7c(b, buf);
     }
     func_ov068_0226ad44(self, obj, &data_ov068_02276738, 4, 2, 1);

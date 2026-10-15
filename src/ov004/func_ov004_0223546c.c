@@ -7,7 +7,7 @@
 extern u8 data_ov004_022593a4;
 extern u8 data_ov004_02255c30;
 extern char *data_ov004_022594d4[];
-extern void func_0209d238(void *, void *);
+extern void *func_0209d238(void *, void *);
 extern void func_0209d0a4(void *);
 
 int func_ov004_0223546c(char *self, int i)

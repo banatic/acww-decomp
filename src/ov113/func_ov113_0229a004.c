@@ -4,25 +4,25 @@
 
 #include "types.h"
 
-extern u32 func_020781d0(u32);
-extern u32 func_020782cc(u32);
-extern void func_0206de88(u32, void *, void *, u32, u32, u32, u32);
-extern void func_020a8c1c(void *, u32);
-extern void func_02070870(void *, u32, u32, u32, u32);
+extern void *func_020781d0(unsigned char *, int index);
+extern unsigned short *func_020782cc(void *record);
+extern int func_0206de88(const unsigned short *, void *, void *, u32, u32, u32, u32);
+extern void func_020a8c1c(void *);
+extern void func_02070870(void *, const unsigned short *, u32, u32, u32);
 extern void func_02070a54(void *, void *, u32, u32, u32);
 extern void func_02070a04(void *, u32, u32);
-extern void func_020b9c10(void *, void *, u32, u32, u32, u32);
+extern int func_020b9c10(void *, void *, u32, u32, u32, u32);
 extern unsigned char data_021eed68[];
 
-void func_ov113_0229a004(unsigned char *self)
+void func_ov113_0229a004(unsigned char *self, int index)
 {
-    u32 a;
+    void *a;
     u32 arr[7];
     u32 tmp;
     u32 zero1;
     u32 zero2;
     int i;
-    a = func_020781d0((unsigned int) data_021eed68);
+    a = func_020781d0(data_021eed68, index);
     func_0206de88(func_020782cc(a), arr, &tmp, 0x60, 0x10, 0xa0, 6);
     zero1 = 0;
     for (i = 0; i < 6; i++) {
@@ -30,17 +30,17 @@ void func_ov113_0229a004(unsigned char *self)
         unsigned char *p;
         u32 offset;
         u32 diff;
-        u32 t;
+        unsigned short *t;
         diff = arr[i + 1] - arr[i];
         offset = i;
         offset = offset * 0x6c;
         base1 = self + 0x2898;
         p = base1;
         p = p + offset;
-        func_020a8c1c(p, offset);
+        func_020a8c1c(p);
         if (diff != 0) {
             t = func_020782cc(a);
-            func_02070870(p, t + (2 * arr[i]), diff, zero1, zero1);
+            func_02070870(p, t + arr[i], diff, zero1, zero1);
         }
     }
 

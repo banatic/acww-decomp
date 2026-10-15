@@ -3,7 +3,7 @@
  */
 
 extern int data_ov003_0223cfe4;
-extern void func_ov003_022213f8(int *dest, int self, int *arr1, int *arr2, int a, int b, short c, int d);
+extern int func_ov003_022213f8(int *dest, int self, int *arr1, int *arr2, int a, int b, short c, int d);
 
 void func_ov003_022210d4(int self, int arg1, int *p2, int *p3, short arg4, int arg5)
 {

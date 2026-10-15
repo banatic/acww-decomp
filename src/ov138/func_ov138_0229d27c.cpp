@@ -7,13 +7,16 @@
 
 typedef void (Obj_ov138_0229d4e0::*PMF)();
 
+#define STATE_func_ov138_0229d0b4 (PMF) & Obj_ov138_0229d4e0::func_ov138_0229d0b4
+#define STATE_func_ov138_0229d04c (PMF) & Obj_ov138_0229d4e0::func_ov138_0229d04c
+
 extern "C" void func_ov138_0229cf98(Obj_ov138_0229d4e0 *);
 extern "C" void func_ov138_0229cf88(Obj_ov138_0229d4e0 *);
 
 static PMF g_src0 = &Obj_ov138_0229d4e0::func_ov138_0229d0dc;
-static PMF g_src1 = &Obj_ov138_0229d4e0::func_ov138_0229d0b4;
+static PMF g_src1 = STATE_func_ov138_0229d0b4;
 static PMF g_src2 = &Obj_ov138_0229d4e0::func_ov138_0229d07c;
-static PMF g_src3 = &Obj_ov138_0229d4e0::func_ov138_0229d04c;
+static PMF g_src3 = STATE_func_ov138_0229d04c;
 
 int Obj_ov138_0229d4e0::func_ov138_0229d27c()
 {
@@ -30,7 +33,12 @@ int Obj_ov138_0229d4e0::func_ov138_0229d27c()
     }
 
     func_ov138_0229cf98(this);
+
     (this->*(s_table[state]))();
+
     func_ov138_0229cf88(this);
     return 1;
 }
+
+#undef STATE_func_ov138_0229d0b4
+#undef STATE_func_ov138_0229d04c

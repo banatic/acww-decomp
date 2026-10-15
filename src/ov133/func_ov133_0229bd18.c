@@ -6,7 +6,7 @@
 
 extern u16 data_021fbe40;
 extern void func_ov133_0229ae8c(char *self);
-extern void func_ov002_02208098(char *self, int v);
+extern unsigned char *func_ov002_02208098(char *self, unsigned char value);
 extern int func_ov133_0229ae5c(char *self);
 extern int func_ov133_0229b1e8(char *self, int v);
 extern int func_ov133_0229ba84(char *self);

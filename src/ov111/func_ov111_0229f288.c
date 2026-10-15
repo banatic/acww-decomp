@@ -19,9 +19,9 @@ struct UnkStruct_0229f288_2 {
 extern struct UnkStruct_0229f288_2 data_021fbe40;
 
 extern int func_ov095_0229cf64(unsigned char *p, int value);
-extern void func_ov111_0229f730(struct UnkStruct_0229f288 *s, int value);
+extern int func_ov111_0229f730(struct UnkStruct_0229f288 *s, int value);
 extern void func_ov095_0229c8e4(unsigned char *p, int value);
-extern void func_ov002_02208098(struct UnkStruct_0229f288 *s, int value);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 int func_ov111_0229f288(struct UnkStruct_0229f288 *self)
 {
@@ -34,6 +34,6 @@ int func_ov111_0229f288(struct UnkStruct_0229f288 *self)
     func_ov111_0229f730(self, 0x118);
     func_ov095_0229c8e4(&self->unk_AC, 0x109);
     self->unk_98 = self->unk_8D;
-    func_ov002_02208098(self, 0xb);
+    func_ov002_02208098((void *) (self), 0xb);
     return 1;
 }

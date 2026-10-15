@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_02050c38(unsigned int arg);
+extern unsigned int func_02050c38(void);
 extern void func_020a9334(unsigned int arg1, unsigned int arg2);
 
 void func_0206cd10(unsigned int arg)
 {
     unsigned int tmp;
-    tmp = func_02050c38(arg);
+    tmp = func_02050c38();
     func_020a9334(arg, tmp);
 }

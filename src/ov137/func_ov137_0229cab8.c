@@ -2,6 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern int func_0208e484(void *object);
+extern int func_ov137_0229c574(unsigned short *object, unsigned short mask);
+extern int func_ov134_02299b70(void *object);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+extern int func_ov134_022997b0(void *object);
+extern void func_ov137_0229c8d4(void *object);
+extern void func_ov137_0229c92c(char *object);
+extern void func_ov137_0229c900(char *object, int value);
+
 void func_ov137_0229cab8(void *this)
 {
     if (func_0208e484((unsigned char *) this + 0x94) != 0) {

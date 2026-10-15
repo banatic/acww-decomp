@@ -9,8 +9,8 @@ struct UnkStruct_020ab278 {
 };
 
 extern int func_020ab504(int);
-extern int func_020ab0f4(struct UnkStruct_020ab278 *);
-extern int func_020ab230(struct UnkStruct_020ab278 *);
+extern int func_020ab0f4(void);
+extern void func_020ab230(struct UnkStruct_020ab278 *);
 extern int func_020a7e50(void);
 extern int func_020ab0a4(struct UnkStruct_020ab278 *);
 extern int func_020a7e44(void);
@@ -20,10 +20,14 @@ extern void func_020ab42c(int, int);
 void func_020ab278(struct UnkStruct_020ab278 *self)
 {
     if (self->unk_20 != 0 && func_020ab504(self->unk_20) < 0) {
-        if (func_020ab0f4(self) != 0) {
+        asm { add r0, self, #0 }
+        if (func_020ab0f4() != 0)
+        {
             func_020ab230(self);
             return;
-        } else {
+        }
+        else
+        {
             int flag = 0;
             if (func_020a7e50() != 0) {
                 if (func_020ab0a4(self) != 0) {

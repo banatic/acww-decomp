@@ -7,7 +7,7 @@ typedef struct {
     int unk_04;
 } ThreadInfo;
 extern ThreadInfo OSi_ThreadInfo;
-extern void func_020e9a08(int param);
+extern int func_020e9a08(int param);
 extern void OS_SetThreadParameter(int thread, int param);
 
 void func_020ea584(int a, int b)

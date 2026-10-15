@@ -4,7 +4,7 @@
 
 extern int func_02008934(int p1, int p2, int p3, int p4);
 
-int func_020088fc(int a, int b)
+void func_020088fc(int a, int b)
 {
-    return func_02008934(a, 0, 6, b);
+    func_02008934(a, 0, 6, b);
 }

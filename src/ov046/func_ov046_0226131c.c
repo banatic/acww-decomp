@@ -11,10 +11,10 @@ typedef struct UnkStruct_0226131c {
 
 extern int func_0206fbc0(void);
 extern int func_0206fc6c(void);
-extern void func_020b1954(char *);
-extern void func_020b1394(char *, void *);
+extern void *func_020b1954(char *);
+extern int func_020b1394(char *, void *);
 extern void func_02068404(void *, int, char *);
-extern void func_020b193c(char *);
+extern void *func_020b193c(char *);
 extern void func_0206844c(void *a, char *b, const void *c);
 extern const int data_ov046_02261fe8;
 

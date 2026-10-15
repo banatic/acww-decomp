@@ -4,12 +4,12 @@
 
 #include "types.h"
 
-extern int func_ov004_0223b518(void *self);
+extern int func_ov004_0223b518(void);
 extern int func_ov004_0223b540(void *self, u16 *p, int c);
 
 int func_ov004_0223b4d0(void *self, unsigned int b, int c)
 {
-    unsigned int v = (unsigned int) func_ov004_0223b518(self);
+    unsigned int v = (unsigned int) func_ov004_0223b518();
     if (v != (unsigned int) -1) {
         u16 s;
         v = b + (v << 3);

@@ -43,7 +43,7 @@ extern u16 data_020c80f8;
 
 extern Vec *func_02095794(int);
 extern int func_02014868(void *);
-extern void func_0203e0a8(UnkStruct_022753ec *, int);
+extern int func_0203e0a8(UnkStruct_022753ec *, int);
 extern int func_02030818(Vec *);
 extern int func_020ea990(void *, void *);
 extern int func_020eaa2c(void *, void *);

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov134_02299b3c(void);
+extern void func_ov134_02299b3c(void *unused0);
 
 void func_ov134_02299b18(int *r0, int r1)
 {
@@ -14,5 +14,5 @@ void func_ov134_02299b18(int *r0, int r1)
     if (r0[0x19] > 0xa0) {
         r0[0x19] = 0xa0;
     }
-    func_ov134_02299b3c();
+    func_ov134_02299b3c(r0);
 }

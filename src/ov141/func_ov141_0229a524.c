@@ -11,7 +11,7 @@ typedef struct UnkStruct_0229a524 {
 
 extern void func_ov141_02299f5c(UnkStruct_0229a524 *, int);
 extern void func_ov002_02208090(UnkStruct_0229a524 *, int);
-extern void func_ov002_02208098(UnkStruct_0229a524 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void RtcSendPxiCommand(int);
 
 void func_ov141_0229a524(UnkStruct_0229a524 *self)
@@ -20,6 +20,6 @@ void func_ov141_0229a524(UnkStruct_0229a524 *self)
     self->unk_1274 = 10;
     self->unk_1A8B = 5;
     func_ov002_02208090(self, 3);
-    func_ov002_02208098(self, 5);
+    func_ov002_02208098((void *) (self), 5);
     RtcSendPxiCommand(0x27);
 }

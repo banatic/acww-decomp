@@ -2,18 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02057bd4(unsigned char *p);
+extern int func_02057bd4(void);
 extern void func_02019af0(unsigned char *p, int n);
 
-int func_0201873c(unsigned char *p)
+void func_0201873c(unsigned char *p, int event)
 {
     int t;
 
-    t = func_02057bd4(p);
+    t = func_02057bd4();
     if (t) {
-        return t;
+        return;
     }
     func_02019af0(p, 1);
     p[0x98] = 5;
-    return 5;
 }

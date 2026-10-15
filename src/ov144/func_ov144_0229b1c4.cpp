@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" int func_0206fe54(void *);
+extern "C" int func_0206fe54(void);
 extern "C" void func_ov002_02209eb8(void *);
 extern "C" int func_ov144_02299680(void *, int);
 extern "C" int func_ov002_02207f60(void *);
@@ -34,7 +34,7 @@ extern "C" int func_ov144_0229b1c4(UnkStruct_0229b1c4 *s)
     int one = 1;
     int big = 0x1000;
     void *p4;
-    if (func_0206fe54(s)) {
+    if (func_0206fe54()) {
         func_ov002_02209eb8((char *) s + 0xC4);
     }
     if (!func_ov144_02299680(s, 1)) {

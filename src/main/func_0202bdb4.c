@@ -98,13 +98,13 @@ extern int func_0202c230(UnkStruct_0202bdb4_3 *self, void *a);
 extern int func_0207dd1c(void *a);
 extern int func_020ae32c(void);
 extern int func_020ae2c4(void);
-extern void func_020ae774(void *a);
+extern void *func_020ae774(void *a);
 extern int func_020ae3b8(unsigned int a);
 extern int func_020ae5bc(int a, void *b);
 extern void func_02068404(int a, int b, void *c);
-extern void func_020ae75c(void *a);
+extern void *func_020ae75c(void *a);
 extern int func_02073d90(void *a);
-extern int func_02081864(void);
+extern int func_02081864(void *record);
 extern int func_02099fe8(void);
 extern void func_02063ccc(UnkStruct_0202bdb4 *o, int a, int b);
 extern void func_020638d4(u16 *out, UnkStruct_0202bdb4 *o, int a, int b, int c, int d, int e);
@@ -113,7 +113,7 @@ extern void func_02015de4(UnkStruct_0202bdb4_3 *self, void *b, int c, int d);
 extern void func_02081878(int a);
 extern int func_020b6730(void);
 extern void *func_0207f1c8(void *a);
-extern void *func_0209b5ec(void *a);
+extern void *func_0209b5ec(void *);
 extern int func_0209c330(void *a);
 extern int func_020b65c4(void);
 extern int func_020b66d8(void);
@@ -123,7 +123,7 @@ extern int func_0209dcac(void);
 extern void *func_0207944c(UnkStruct_0202bdb4_5 *a);
 extern int func_020793c4(void *a);
 extern int func_020644cc(int a);
-extern void func_0202da38(UnkStruct_0202bdb4_3 *self, char *name, u8 *b, int len, int c, int d, int e, int f, int g);
+extern int func_0202da38(UnkStruct_0202bdb4_3 *self, char *name, u8 *b, int len, int c, int d, int e, int f, int g);
 extern void func_02015fb0(UnkStruct_0202bdb4_3 *self, int a, int b, int c, int d, int e);
 
 extern unsigned char data_021f3b30[];
@@ -207,7 +207,8 @@ void func_0202bdb4(UnkStruct_0202bdb4_3 *self, UnkStruct_0202bdb4_4 *out)
         err = &data_020c8ac8;
         func_02068404(self->unk_40, 4, b0);
         func_020ae75c(b0);
-    } else if (func_02073d90(data_020ccf94) == 0 && self->unk_12C != 0 && func_02081864() != 0 && func_02099fe8() != -1) {
+    } else if (func_02073d90(data_020ccf94) == 0 && self->unk_12C != 0 && func_02081864((void *) self->unk_12C) != 0 &&
+               func_02099fe8() != -1) {
         err = &data_020c8c70;
         func_02063ccc(&o, 0, 0);
         func_020638d4(&h[1], &o, 0, 0, 1, 1, 0);
@@ -220,12 +221,12 @@ void func_0202bdb4(UnkStruct_0202bdb4_3 *self, UnkStruct_0202bdb4_4 *out)
         }
     } else if (func_020b6730() != 0) {
         err = &data_020c8c38;
-        if (func_0209c330(func_0209b5ec(func_0207f1c8(local18))) != 4) {
+        if (func_0209c330((func_0209b5ec((void *) func_0207f1c8(local18)))) != 4) {
             code2 = 1;
         }
     } else if (func_020b65c4() == 0xa) {
         err = &data_020c8c90;
-        if (func_0209c330(func_0209b5ec(func_0207f1c8(local18))) != 3) {
+        if (func_0209c330((func_0209b5ec((void *) func_0207f1c8(local18)))) != 3) {
             code2 = 1;
         }
     } else if (func_020b66d8() != 0 && func_020b671c(func_020b65c4()) == 1) {
@@ -241,7 +242,7 @@ void func_0202bdb4(UnkStruct_0202bdb4_3 *self, UnkStruct_0202bdb4_4 *out)
             err = &data_020c8b78;
         }
         code2 = func_0209dcac();
-    } else if (func_0209c330(func_0209b5ec(func_0207f1c8(local18))) == 8) {
+    } else if (func_0209c330((func_0209b5ec((void *) func_0207f1c8(local18)))) == 8) {
         err = &data_020c8a00;
     } else if (func_020793c4(func_0207944c(obj)) != 0) {
         err = &data_020c8b90;

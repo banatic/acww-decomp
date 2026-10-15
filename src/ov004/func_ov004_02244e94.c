@@ -6,7 +6,7 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern void func_02034270(void *w, Vec3 *v, int a, int b);
+extern int func_02034270(void *w, Vec3 *v, int a, int b);
 extern int func_020341c8(void *w, int a);
 extern void func_0203423c(void *w);
 

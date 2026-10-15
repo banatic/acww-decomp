@@ -7,7 +7,7 @@ struct UnkStruct_02261304 {
     void *unk_00;
 };
 
-extern void func_0202eb70(UnkStruct_02261304 *this);
+extern void *func_0202eb70(UnkStruct_02261304 *this);
 extern char data_ov046_0226204c;
 
 UnkStruct_02261304 *func_ov046_02261304(UnkStruct_02261304 *this)

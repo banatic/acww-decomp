@@ -16,16 +16,16 @@ struct R4Struct {
 };
 
 extern struct UnkStruct_020424b4 data_021c779c;
-extern void DC_FlushAll(void *p);
+extern void DC_FlushAll(void);
 extern void func_0204714c(struct UnkStruct_020424b4 *base, void *a, void *b, unsigned int c, unsigned int d, unsigned int e);
-extern int func_020ea584(unsigned int a, unsigned int b);
-extern int OS_ExitThread(unsigned int a, unsigned int b);
+extern void func_020ea584(unsigned int a, unsigned int b);
+extern void OS_ExitThread(void);
 
 void func_020424b4(void *p)
 {
     struct R4Struct *r4;
 
-    DC_FlushAll(p);
+    DC_FlushAll();
 
     r4 = (struct R4Struct *) data_021c779c.unk_20;
 
@@ -36,5 +36,5 @@ void func_020424b4(void *p)
 
     r4->unk_10E9 = 1;
 
-    OS_ExitThread(0x10E9, 1);
+    OS_ExitThread();
 }

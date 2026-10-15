@@ -6,7 +6,7 @@ extern int func_02088bdc(int);
 extern int func_020984e8(void);
 extern int func_02099670(int);
 
-int func_ov004_02222b3c(char *self)
+int func_ov004_02222b3c(void)
 {
     // DECLS
     // ENDDECLS

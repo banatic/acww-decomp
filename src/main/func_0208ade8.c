@@ -6,7 +6,7 @@
 
 extern void func_0208af30(void *self);
 extern void func_0208a1f8(void *sub);
-extern void func_0208aecc(void *sub);
+extern void *func_0208aecc(void *sub);
 extern void func_0208a738(void *self);
 extern void func_0208a9a4(void *self);
 extern int data_020e20ac;

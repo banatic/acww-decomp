@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02099fe8(void *);
-extern void func_02099f1c(void *, void (*)(void));
-extern void func_0209a000(unsigned short *, int);
-extern void func_ov073_02278e44(void);
+extern int func_02099fe8(void);
+extern unsigned char func_02099f1c(void *, int (*cb)(unsigned short *));
+extern int func_0209a000(unsigned short *, int);
+extern int func_ov073_02278e44(unsigned short *values);
 
 typedef struct {
     unsigned char pad_00[0xc4];
@@ -22,7 +22,7 @@ int func_ov073_02278d94(St *self)
 {
     int count = 0;
     int i;
-    int r7 = func_02099fe8(self);
+    int r7 = func_02099fe8();
     int r6;
     UnkStruct_02278d94 local;
 

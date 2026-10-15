@@ -8,7 +8,7 @@ struct UnkStruct_0229e29c {
 };
 
 extern int func_ov002_02207f3c(struct UnkStruct_0229e29c *p, int a);
-extern void *func_020027f0(int size);
+extern void func_020027f0(int size);
 extern void func_ov102_0229c288(struct UnkStruct_0229e29c *p, int a);
 extern void func_ov002_02207f04(struct UnkStruct_0229e29c *p, int a, int b, int c, int d);
 extern void func_ov002_02207e80(struct UnkStruct_0229e29c *p, int a, int b, int c);

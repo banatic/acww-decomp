@@ -10,13 +10,13 @@ typedef struct {
 extern void *data_020ccf94;
 extern void func_020a7778(void *a0, void *a1, void *a2, void *a3, void *a4);
 extern void func_020a7394(int a0, unsigned char a1, unsigned char a2, unsigned char a3, int a4);
-extern void func_020a7820(void *a0);
+extern void *func_020a7820(void *a0);
 extern void func_020a77f4(void *a0, int a1, unsigned char a2, unsigned char a3, unsigned char a4, int a5);
 extern void func_02073820(void *a0);
 extern void func_020737f0(void *a0, void *a1, int a2);
 extern void func_02073770(void *a0, int a1, int a2);
 extern void func_020a7768(void *a0);
-extern void func_020a7810(void *a0);
+extern int func_020a7810(void *a0);
 
 void func_020a669c(UnkStruct_020a669c *self)
 {

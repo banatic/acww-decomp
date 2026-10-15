@@ -3,7 +3,7 @@
  */
 
 extern int func_020be0d4(void *p, int a);
-extern void func_020bdc50(void *p, int a, int b, int c, int d);
+extern void *func_020bdc50(void *p, int a, int b, int c, int d);
 
 typedef struct UnkStruct_020bc514 {
     unsigned char data[0x60];

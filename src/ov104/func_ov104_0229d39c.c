@@ -7,9 +7,9 @@ struct FuncOv104 {
     unsigned char b8;
 };
 
-extern void func_ov104_0229d858(struct FuncOv104 *self, unsigned char b);
+extern int func_ov104_0229d858(struct FuncOv104 *self, unsigned char b);
 
-void func_ov104_0229d39c(struct FuncOv104 *self)
+int func_ov104_0229d39c(struct FuncOv104 *self)
 {
-    func_ov104_0229d858(self, self->b8);
+    return func_ov104_0229d858(self, self->b8);
 }

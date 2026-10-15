@@ -7,9 +7,9 @@ typedef struct {
     short unk_7E4;
 } UnkStruct_022108b0;
 
-extern int func_0200fb34(UnkStruct_022108b0 *self, short val);
+extern void func_0200fb34(UnkStruct_022108b0 *self, short val);
 
-int func_ov003_022108b0(UnkStruct_022108b0 *self)
+void func_ov003_022108b0(UnkStruct_022108b0 *self)
 {
-    return func_0200fb34(self, self->unk_7E4);
+    func_0200fb34(self, self->unk_7E4);
 }

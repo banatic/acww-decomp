@@ -16,7 +16,7 @@ struct Dst {
     int z;
 };
 
-void func_020ff434(struct Src *src, struct Dst *dst)
+void func_020ff434(struct Src *src, struct Dst *dst, void *acceleration, void *emitter)
 {
     dst->x += (int) (((long long) src->scale * (src->x - dst->x) + 0x800) >> 12);
     dst->y += (int) (((long long) src->scale * (src->y - dst->y) + 0x800) >> 12);

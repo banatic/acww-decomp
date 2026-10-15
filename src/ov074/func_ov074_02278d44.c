@@ -15,7 +15,7 @@ typedef struct UnkStruct_02278d44 {
 
 extern void func_ov074_02278a90(char *a, char *b);
 extern void func_020157c8(UnkStruct_02278d44 *self, int a, int b);
-extern void func_02015828(UnkStruct_02278d44 *self, int a);
+extern int func_02015828(UnkStruct_02278d44 *self, int a);
 extern void func_ov074_022790b4(UnkStruct_02278d44 *self, int a);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov074_02279d14;

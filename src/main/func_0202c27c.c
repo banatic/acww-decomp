@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(int, void *);
-extern int func_0209975c(int, unsigned);
+extern int func_020984e8(void);
+extern int func_0209975c(int);
 
 struct Spad {
     char pad_00[0x1d];
@@ -14,7 +14,7 @@ int func_0202c27c(int a, struct Spad *p)
 {
     int res;
     unsigned bit;
-    res = func_020984e8(a, p);
+    res = func_020984e8();
     bit = p->b;
     if (bit != 0) {
         goto fail;
@@ -22,7 +22,7 @@ int func_0202c27c(int a, struct Spad *p)
     if (res == 0) {
         goto fail;
     }
-    if (func_0209975c(res, bit) == 0) {
+    if (func_0209975c(res) == 0) {
         goto fail;
     }
     return 1;

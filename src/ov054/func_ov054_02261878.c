@@ -5,15 +5,15 @@
 #include "types.h"
 
 extern int func_0206fc6c(void);
-extern void func_020984e8(void);
-extern void func_020992fc(void);
-extern int func_020983f0(void);
+extern int func_020984e8(void);
+extern int func_020992fc(int);
+extern int func_020983f0(int *);
 extern void func_02015fb0(void *self, int a, int b, int c, int d, int e);
 extern int _s32_div_f(int a, int b);
-extern void func_02015330(void *self, void *p, int a, int b, int c);
-extern void func_020154b4(void *self, void *p, int a, int b, int c);
+extern int func_02015330(void *self, void *p, int a, int b, int c);
+extern int func_020154b4(void *self, void *p, int a, int b, int c);
 extern void func_ov054_02261cc4(void *self, int a);
-extern void func_020155cc(void *self);
+extern int func_020155cc(void *self);
 extern void func_0206844c(void *dst, void *src, int data);
 
 typedef struct DataEntry {
@@ -57,9 +57,7 @@ void func_ov054_02261878(UnkStruct_02261878_2 *self)
     data = data_ov054_02262fac[val].unk_00;
 
     if (func_0206fc6c() != 0) {
-        func_020984e8();
-        func_020992fc();
-        r6 = func_020983f0();
+        r6 = func_020983f0((int *) func_020992fc((int) func_020984e8()));
         func_02015fb0(self, r6, 5, 10, 0, 0);
         val = _s32_div_f(r6, 0xc8);
         func_02015fb0(self, val, 6, 10, 0, 0);

@@ -32,7 +32,7 @@ extern void func_ov002_0220ad18(void *p, int v);
 extern void func_ov095_0229b1c8(void *p, int a, u32 b, int c);
 extern void func_ov095_0229ae84(void *p, int a, u32 b);
 extern void func_02088df8(int a1, void *a2, u32 a3, u32 a4, int a5, int a6, int a7, int a8, int a9, int a10, int a11, int a12);
-extern void func_ov095_0229af58(void *p, int a, int b, int c);
+extern int func_ov095_0229af58(void *p, int a, int b, int c);
 extern u8 data_ov126_022a20b0;
 
 int func_ov126_022a1d90(UnkStruct_022a1d90 *self)

@@ -3,7 +3,7 @@
  */
 
 extern void func_ov002_0220a05c(void *dst, int a, int b, int c, int d);
-extern void func_ov002_02208098(void *obj, int flag);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char value);
 
 typedef struct {
     unsigned char pad_00[0x8d];

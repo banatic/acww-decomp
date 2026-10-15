@@ -3,7 +3,7 @@
  */
 
 extern void func_02010f5c(int arg);
-extern void func_0200f554(int arg);
+extern int func_0200f554(int arg);
 extern void func_02010d64(int arg);
 extern void func_02009ad4(int arg);
 

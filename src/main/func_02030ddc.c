@@ -14,7 +14,7 @@ struct Elem {
 
 extern struct Elem data_021c31ec[];
 
-extern int func_02030c34(int);
+extern void func_02030c34(int);
 extern void func_02030e4c(int);
 
 int func_02030ddc(unsigned int a0, unsigned int a1, int a2, int a3)

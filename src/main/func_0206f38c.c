@@ -7,7 +7,7 @@ extern short data_021cfc1c;
 extern unsigned char data_021cfc14;
 extern int data_021cfc2c;
 
-extern void func_0205bfdc(void *p);
+extern int func_0205bfdc(void *p);
 
 void func_0206f38c(void)
 {

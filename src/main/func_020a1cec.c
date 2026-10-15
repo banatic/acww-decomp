@@ -9,7 +9,7 @@ extern int data_020d1c20[];
 extern int func_02050974(int *a);
 extern void func_02050948(int *a);
 extern void MI_CpuFill8(int a, int b, int c);
-extern void func_02050a84(int *a, int b, int c, int d);
+extern int func_02050a84(int *a, int b, int c, int d);
 
 int func_020a1cec(void *a, int b)
 {

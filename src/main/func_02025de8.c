@@ -16,7 +16,7 @@ typedef struct UnkStruct_02025de8 {
 } UnkStruct_02025de8;
 
 extern int func_0209b91c(int *);
-extern int func_0209bd44(void);
+extern int func_0209bd44(void *);
 extern int func_0202d9c4(UnkStruct_02025de8 *);
 extern int func_0209bc40(int);
 extern void func_0209b9cc(int *, int, char *, int, int);
@@ -30,8 +30,7 @@ void func_02025de8(UnkStruct_02025de8 *p)
     int r4, r7, r6;
     r6 = p->unk_100->unk_830;
     r4 = 0;
-    func_0209b91c(p->unk_164);
-    if (func_0209bd44() == 0) {
+    if (func_0209bd44((void *) func_0209b91c(p->unk_164)) == 0) {
         r7 = func_0209bc40(func_0202d9c4(p));
         r4 = 1;
     } else {

@@ -6,7 +6,7 @@ extern void func_02010f5c(void *);
 extern int func_02056f28(void *, int);
 extern void func_ov003_02224384(unsigned int, unsigned int *, int);
 extern void func_0200f268(void *, int);
-extern void func_0200f27c(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
 
 void func_ov003_0220f684(void *obj)
 {

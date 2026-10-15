@@ -29,11 +29,11 @@ struct UnkStruct_02236fa0 {
     int unk_270;
 };
 
-extern void func_020e88dc(void *p, int a, int b);
+extern int func_020e88dc(void *p, int a, int b);
 extern int func_020ea9e4(void *a, void *b);
 extern int func_0200322c(void *a, void *b);
 extern int func_ov004_02239460(int a, int b);
-extern void func_ov004_02239bb4(void *p, int a, int b);
+extern int func_ov004_02239bb4(void *p, int a, int b);
 
 void func_ov004_02236fa0(struct UnkStruct_02236fa0 *self, int k)
 {

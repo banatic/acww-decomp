@@ -17,7 +17,7 @@ extern unsigned short data_020c80f8;
 extern unsigned int data_020c814c;
 extern char data_021fbee8[];
 
-void func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
+int func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
 void func_02013c0c(void *a);
 void func_0201ad18(void *a, int b, int c, int d, int e, int f, int g, int h);
 

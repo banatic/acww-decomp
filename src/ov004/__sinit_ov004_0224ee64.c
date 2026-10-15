@@ -12,8 +12,8 @@ typedef struct {
     int c;
 } UnkStruct_0224ee64_2;
 
-extern void __register_global_object(UnkStruct_0224ee64_2 *, void *, void *);
-extern void func_020012dc(void);
+extern void __register_global_object(UnkStruct_0224ee64_2 *, void *destructor, void *);
+extern void func_020012dc(void *arg0);
 extern UnkStruct_0224ee64_2 data_ov004_022593dc, data_ov004_022593c4;
 extern int data_ov004_022593d0, data_ov004_022593e8;
 extern UnkStruct_0224ee64 data_ov004_02259424[4];
@@ -58,12 +58,12 @@ void __sinit_ov004_0224ee64(void)
     p->a = 0x11000;
     p->b = 0;
     p->c = 0x15000;
-    __register_global_object(p, (void *) func_020012dc, &data_ov004_022593d0);
+    __register_global_object(p, ((void *) &func_020012dc), &data_ov004_022593d0);
     p = &data_ov004_022593c4;
     p->a = 0x11000;
     p->b = 0;
     p->c = 0x7000;
-    __register_global_object(p, (void *) func_020012dc, &data_ov004_022593e8);
+    __register_global_object(p, ((void *) &func_020012dc), &data_ov004_022593e8);
 
     data_ov004_02259424[0] = data_ov004_02255c50;
     data_ov004_02259424[1] = data_ov004_02255c58;

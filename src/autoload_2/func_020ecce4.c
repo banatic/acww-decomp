@@ -5,15 +5,15 @@
 #include "types.h"
 
 extern void MI_CpuFill8(void *dest, u8 fill, u32 size);
-extern void func_020edaf0(void);
-extern void UTi_PutString(void);
-extern void func_020ed6e8(void);
-extern void CTRDG_WriteAgbFlashSectorAsync(void);
-extern void func_ov066_022667e0(void (*fp)(void));
-extern void func_ov066_02267fe8(void (*fp)(void));
-extern void func_ov066_022672b8(int, int, int);
+extern int func_020edaf0(int size, int align);
+extern int UTi_PutString(int pointer);
+extern void func_020ed6e8(unsigned char *command);
+extern void CTRDG_WriteAgbFlashSectorAsync(int index, char *buffer, unsigned int length);
+extern int func_ov066_022667e0(void (*fp)(unsigned char *));
+extern void func_ov066_02267fe8(void (*callback)(int, char *, unsigned int));
+extern int func_ov066_022672b8(int, int, int);
 
-extern void *CTRDGi_WriteAgbFlashSectorAsync;
+extern void (*CTRDGi_WriteAgbFlashSectorAsync)(int, char *, unsigned int);
 extern u8 data_021fbef8;
 extern u8 data_021fbf68[16];
 extern u8 data_021fbef4;
@@ -28,10 +28,10 @@ typedef struct MSG {
     u8 c3;
 } MSG;
 
-extern void func_ov066_0226b9b8(MSG *msg);
-extern void func_ov066_0226748c(u8 a, void (*b)(void), void (*c)(void), int d);
+extern int func_ov066_0226b9b8(MSG *msg);
+extern int func_ov066_0226748c(int a, int (*allocator)(int, int), int (*deallocator)(int), int d);
 
-void func_020ecce4(int action, void *data)
+void func_020ecce4(int action, void (*data)(int, char *, unsigned int))
 {
     MSG msg;
 

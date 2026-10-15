@@ -6,8 +6,8 @@ typedef struct {
     volatile unsigned int unk_00;
 } UnkStruct_0204cf34;
 
-extern __arm void func_020ee62c(void *ptr);
-extern __arm void func_020edf54(void *ptr);
+extern void func_020ee62c(void *ptr);
+extern void func_020edf54(void *ptr);
 
 extern unsigned char data_020da13c[];
 extern unsigned char data_020db898[];

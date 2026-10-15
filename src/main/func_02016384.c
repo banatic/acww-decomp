@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_02016618(void *self, void *arg);
+extern int func_02016618(void *self);
 extern int func_0201a7b4(void *ptr);
 extern int func_0201a7bc(void *ptr);
 extern int func_02054230(void *ptr);
@@ -25,7 +25,7 @@ typedef struct {
 
 void func_02016384(UnkStruct_02016384 *self, void *arg)
 {
-    if (func_02016618(self, arg) == 0) {
+    if (func_02016618(self) == 0) {
         goto out;
     }
 

@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202e550(void);
-extern void func_02064328(void *a, void *b, int c, int d);
+extern int func_0202e550(void *);
+extern int func_02064328(void *a, void *b, int c, int d);
 extern char data_021c1d84[];
 extern char data_020d9fd8[];
 
-void *func_0202e498(void)
+void *func_0202e498(void *argument0)
 {
-    int x = func_0202e550();
+    int x = func_0202e550((void *) argument0);
     if (x == -1) {
         x = 0;
     }

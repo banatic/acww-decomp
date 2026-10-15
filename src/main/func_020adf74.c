@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020adf40(int arg);
+extern unsigned int func_020adf40(int arg);
 extern void func_020adf54(int arg);
 
 int func_020adf74(int arg)

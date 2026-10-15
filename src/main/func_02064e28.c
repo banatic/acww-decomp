@@ -20,7 +20,7 @@ typedef struct {
 extern UnkStruct_02064e28_2 *data_021cd864;
 extern void func_020650ac(UnkStruct_02064e28 *s);
 extern int func_0206521c(unsigned char *p, int v);
-extern void func_020b3670(void *p, int a, int b, int c, int d);
+extern int func_020b3670(void *p, int a, int b, int c, int d);
 extern void func_020b36c8(void *p);
 extern void func_02064ef8(UnkStruct_02064e28 *s);
 

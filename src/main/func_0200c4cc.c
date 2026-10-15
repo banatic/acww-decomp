@@ -6,14 +6,14 @@
 
 extern void func_0200f268(void *p, int n);
 extern int func_02056f28(void *p, int n);
-extern void func_0200f27c(void *p, int n);
+extern unsigned int *func_0200f27c(void *p, int n);
 extern void func_0200c610(void *p);
 extern void func_0200c5e0(void *p);
 extern void func_0200c598(void *p);
 extern void *func_020984fc(u32 v);
 extern void func_02099740(void *p, int n);
 extern void *func_0209984c(void *p);
-extern void func_0205dc94(void *p, void *v);
+extern int func_0205dc94(void *p, void *v);
 extern void func_02010bf0(void *p, const char *s, char *buf);
 extern void func_02010bac(void *p, const char *s, char *buf);
 extern void func_02079280(void);

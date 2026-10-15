@@ -4,7 +4,7 @@
 
 extern int func_02019e00(void *p);
 extern int func_02019de8(void *p);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
 extern void func_02019b78(void *p);
 extern unsigned short data_020c80f8;
 

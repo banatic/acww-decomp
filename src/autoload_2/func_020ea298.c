@@ -4,7 +4,7 @@
 
 extern unsigned short data_0213e5a4;
 extern int NNS_FndCreateExpHeapEx(void *p, void *q, unsigned short c);
-extern void func_020ea41c(void *a, void *p, void *q, int x, int r);
+extern void *func_020ea41c(void *a, void *p, void *q, int x, int r);
 
 void *func_020ea298(void *a, void *b)
 {

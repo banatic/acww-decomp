@@ -4,7 +4,7 @@
 
 extern void MI_CpuFill8(void *dst, int data, unsigned long size);
 extern int func_ov066_02267784(int a, unsigned char b);
-extern int func_ov066_02266c7c(void);
+extern int func_ov066_02266c7c(void *argument0);
 extern int func_ov066_0226760c(void);
 extern int data_021fbf78[8];
 
@@ -16,7 +16,7 @@ int *func_020eb92c(void)
         int idx = 0;
         do {
             int val = func_ov066_02267784(0, i);
-            if (func_ov066_02266c7c() != 0) {
+            if (func_ov066_02266c7c((void *) val) != 0) {
                 data_021fbf78[idx] = val;
                 idx++;
             }

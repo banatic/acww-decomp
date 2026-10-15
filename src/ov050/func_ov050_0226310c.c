@@ -9,16 +9,16 @@ typedef struct {
     u8 *ptr;
 } FieldHolder;
 extern void *func_020984e8(void);
-extern void *func_02099640(void);
-extern void func_0209ad9c(void *a, int b);
-extern void *func_0209b4d4(void);
-extern void func_02099fe8(void);
+extern void *func_02099640(int argument0);
+extern void *func_0209ad9c(void *a, int b);
+extern void *func_0209b4d4(void *object);
+extern int func_02099fe8(void);
 extern int func_ov050_02263394(void *a, void *b);
 extern int func_02099e9c(u16 *p);
 extern int func_02099020(void *a, int b);
 extern void *func_02099870(void *a);
 extern int func_0207a5d0(void *a, void *b);
-extern u16 *func_020992e4(void);
+extern u16 *func_020992e4(int argument0);
 extern void func_0209bb90(void *a, int b);
 extern unsigned char data_021e5a2c[];
 
@@ -32,9 +32,9 @@ void func_ov050_0226310c(void *p0, void *p1)
     u16 *q;
     int i;
     h = func_020984e8();
-    func_0209ad9c(func_02099640(), 0);
+    x = func_0209ad9c(func_02099640((int) h), 0);
     ptr2 = &arr[0];
-    x = func_0209b4d4();
+    x = func_0209b4d4(x);
     func_02099fe8();
     if (func_ov050_02263394(p0, p1) != 0) {
         return;
@@ -70,8 +70,8 @@ void func_ov050_0226310c(void *p0, void *p1)
 
     ((FieldHolder *) p0)->ptr[0x73e] = 1;
     if ((func_02099020(h, 0xa) != 0) && (func_0207a5d0((void *) data_021e5a2c, func_02099870(h)) != 0)) {
-        func_020984e8();
-        if ((*func_020992e4()) != 0) {
+
+        if ((*func_020992e4((int) func_020984e8())) != 0) {
             func_0209bb90(x, 1);
             ((u8 *) p1)[4] = 0x1a;
             return;

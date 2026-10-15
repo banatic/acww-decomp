@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02057bd4(void *);
-extern int func_02019af0(void *, int);
+extern int func_02057bd4(void);
+extern void func_02019af0(void *, int);
 
-void func_02017654(void *arg0)
+void func_02017654(void *arg0, void *event)
 {
     int val;
     void *pvVar2;
 
-    val = func_02057bd4(arg0);
+    val = func_02057bd4();
     if (val == 0) {
         func_02019af0(arg0, 1);
         pvVar2 = (void *) ((int) arg0 + 0x98);

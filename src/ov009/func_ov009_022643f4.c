@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b6590(void *a, void *b);
-extern void func_020b7d24(int a, void *b);
+extern int func_020b6590(void);
+extern void *func_020b7d24(int a, void *b);
 
 struct UnkStruct_022643f4 {
     unsigned char pad_00[0x235];
@@ -25,7 +25,7 @@ void func_ov009_022643f4(struct UnkStruct_022643f4 *self)
     }
     cur = (char *) self->array;
     while (cur < (char *) self->array + self->count * 0x44) {
-        func_020b7d24(func_020b6590((char *) self->array + self->count * 0x44, self->array), cur);
+        func_020b7d24(func_020b6590(), cur);
         cur += 0x44;
     }
 }

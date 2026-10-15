@@ -14,13 +14,13 @@ typedef struct {
 
 extern int func_0208e484(void *);
 extern void func_ov002_02209114(void *, unsigned char, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov107_0229d764(UnkStruct_0229d764 *self)
 {
     if (func_0208e484(self->unk_22B4)) {
         func_ov002_02209114(self->unk_2318, self->unk_BD, 1);
         self->unk_BC = self->table[self->unk_BD];
-        func_ov002_02208098(self, 12);
+        func_ov002_02208098((void *) (self), 12);
     }
 }

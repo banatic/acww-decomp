@@ -16,7 +16,7 @@ typedef union {
 extern unsigned char data_021ebcd4;
 extern void *data_020ccf94;
 
-extern void func_02060bf8(void *, int, int);
+extern int func_02060bf8(void *, int, int);
 extern void func_02073820(void *);
 extern void func_020737f0(void *, unsigned char *, int);
 extern void func_02073770(void *, int, int);

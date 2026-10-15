@@ -9,7 +9,7 @@ struct Pair {
 extern struct Pair data_0213e77c;
 extern struct Pair data_0213e78c;
 extern struct Pair data_0213e794;
-extern void func_01ffd44c(int, struct Pair, struct Pair, struct Pair);
+extern int func_01ffd44c(int, struct Pair, struct Pair, struct Pair);
 
 void func_020ede60(int a)
 {

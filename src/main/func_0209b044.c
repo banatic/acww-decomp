@@ -8,7 +8,7 @@ typedef struct {
     unsigned char unk_0D;
 } UnkStruct_0209b044;
 
-extern unsigned int func_0209b184(UnkStruct_0209b044 *);
+extern unsigned int func_0209b184(UnkStruct_0209b044 *, int mask);
 extern void func_0209b160(UnkStruct_0209b044 *, unsigned int);
 extern void func_0209bb90(UnkStruct_0209b044 *, int);
 extern int func_020644cc(int);
@@ -22,7 +22,7 @@ int func_0209b044(UnkStruct_0209b044 *obj)
     unsigned short v;
 
     if (obj->unk_0D != 0) {
-        r = func_0209b184(obj);
+        r = func_0209b184(obj, obj->unk_0D);
         if (r < 5) {
             func_0209b160(obj, r);
             obj->unk_0C = r;

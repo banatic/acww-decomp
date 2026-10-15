@@ -2,24 +2,24 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov095_0229ab68(void);
-extern void func_ov095_0229aae0(void);
-extern void func_ov095_0229aaac(void);
+extern void func_ov095_0229ab68(void *unused0);
+extern void func_ov095_0229aae0(void *unused0);
+extern void func_ov095_0229aaac(void *unused0);
 
-int func_ov095_0229aa74(unsigned char *p0)
+void func_ov095_0229aa74(unsigned char *p0)
 {
     switch (p0[0x16]) {
         case 0:
         case 3:
             break;
         case 1:
-            func_ov095_0229ab68();
+            func_ov095_0229ab68(p0);
             break;
         case 2:
-            func_ov095_0229aae0();
+            func_ov095_0229aae0(p0);
             break;
         case 4:
-            func_ov095_0229aaac();
+            func_ov095_0229aaac(p0);
             break;
     }
 }

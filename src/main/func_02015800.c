@@ -5,7 +5,7 @@
 void func_02015800(void *arg0, unsigned short arg1, unsigned char arg2, unsigned char arg3)
 {
     unsigned short *ptr1;
-    unsigned int *ptr2;
+    int (**ptr2)(unsigned short *, int);
     unsigned char *ptr3;
     unsigned char *ptr4;
     unsigned short *ptr5;
@@ -13,7 +13,7 @@ void func_02015800(void *arg0, unsigned short arg1, unsigned char arg2, unsigned
 
     ptr1 = (unsigned short *) ((char *) arg0 + 0x7c);
     *ptr1 = arg1;
-    ptr2 = (unsigned int *) ((char *) arg0 + 0x78);
+    ptr2 = (int (**)(unsigned short *, int))((char *) arg0 + 0x78);
     *ptr2 = 0;
     ptr3 = (unsigned char *) ((char *) arg0 + 0x84);
     *ptr3 = arg2;

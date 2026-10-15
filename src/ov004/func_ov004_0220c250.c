@@ -13,16 +13,16 @@ typedef struct {
     u32 data[16];
 } BUFFER;
 
-extern u32 func_020984e8(u32);
-extern u32 func_020996a0(u32);
-extern u16 *func_020adf50(u32);
-extern void func_020b5630(BUFFER *);
-extern void func_020b45d0(BUFFER *, u16, int, int, int, int);
+extern u32 func_020984e8(void);
+extern unsigned int func_020996a0(unsigned int);
+extern u16 *func_020adf50(void *record);
+extern void *func_020b5630(BUFFER *);
+extern int func_020b45d0(BUFFER *, u16, int, int, int, int);
 extern void func_02068404(u32, int, BUFFER *);
 extern u16 func_020adda8(u16 *);
 extern u8 func_020adde4(u16);
-extern void func_020683e4(u32, int, void *, u32);
-extern void func_020b5618(BUFFER *);
+extern int func_020683e4(u32, int, void *, u32);
+extern void *func_020b5618(BUFFER *);
 extern u32 data_ov004_0224fbe4;
 
 void func_ov004_0220c250(struct Work *self)
@@ -35,7 +35,7 @@ void func_ov004_0220c250(struct Work *self)
         return;
     }
 
-    p = func_020adf50(func_020996a0(func_020984e8(self->unk_12C)));
+    p = func_020adf50((void *) func_020996a0((unsigned int) func_020984e8()));
 
     func_020b5630(&buf);
 

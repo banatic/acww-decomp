@@ -2,14 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206b97c(void *self, unsigned int offset);
-
+extern void func_0206b97c(void);
 struct UnkStruct_020693c0 {
     unsigned char pad_00[0x24];
     unsigned int unk_24;
 };
-
-int func_020693c0(struct UnkStruct_020693c0 *self)
+// clang-format off
+asm int func_020693c0(register struct UnkStruct_020693c0 *self)
 {
-    return func_0206b97c(self, self->unk_24 + 0x18ac);
+    ldr r2, [r0, #0x24]
+    ldr r1, =0x18ac
+    add r1, r2, r1
+    ldr r3, =func_0206b97c
+    bx r3
 }
+// clang-format on

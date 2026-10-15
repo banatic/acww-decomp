@@ -4,8 +4,8 @@
 
 extern int func_020110b4(void *self, int *out);
 extern void func_0205cc1c(void *ptr, int a, int b, int c);
-extern void func_0205cb94(void *ptr);
-extern int NNS_G3dGetJntAnmSet(void);
+extern int func_0205cb94(void *ptr);
+extern int NNS_G3dGetJntAnmSet(void *resource);
 extern int func_02107b44(int a, int b);
 extern void func_02054828(void *dst, int a, int b, unsigned char c, int d, int e, int f);
 extern void func_020108cc(void *self, int a, unsigned short b);
@@ -30,9 +30,8 @@ void func_02010a24(void *self, int p1, int p2, unsigned char p3, int p4, unsigne
 
     if (p1 != 0 || r6 != 0 || p5 != 0 || p2 == 0 || p7 < 0x137) {
         func_0205cc1c((char *) self + 0x700, localResult, 1, 0);
-        func_0205cb94((char *) self + 0x700);
         {
-            int tmp = NNS_G3dGetJntAnmSet();
+            int tmp = NNS_G3dGetJntAnmSet((void *) func_0205cb94((char *) self + 0x700));
             int ret = func_02107b44(tmp, 0);
             func_02054828((char *) self + 0x234, ret, p2, p3, p4, p5, 0);
         }

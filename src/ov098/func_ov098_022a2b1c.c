@@ -8,7 +8,7 @@ struct UnkStruct_022a2b1c {
 };
 
 extern int func_020436a8(int);
-extern void func_ov002_02208098(struct UnkStruct_022a2b1c *, int);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_022a2b1c *, unsigned char value);
 extern void func_ov098_022a2ac8(struct UnkStruct_022a2b1c *);
 extern void func_ov096_0229fb9c(struct UnkStruct_022a2b1c *);
 extern void func_ov096_0229f874(struct UnkStruct_022a2b1c *, int, int, int);

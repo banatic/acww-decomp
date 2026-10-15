@@ -4,7 +4,7 @@
 
 extern int func_ov101_0229cd08(unsigned char *, unsigned char);
 extern int func_ov101_0229ccd0(unsigned char *, unsigned char);
-extern int func_0206fe54(int);
+extern int func_0206fe54(void);
 extern void func_0208aa60(unsigned char *, int, int);
 extern int func_ov101_0229ce38(unsigned char *, unsigned char);
 extern int func_ov101_0229ce1c(unsigned char *, unsigned char);
@@ -22,7 +22,7 @@ void func_ov101_0229caac(unsigned char *p)
     v1 = ret1 - 0x6d;
     ret2 = func_ov101_0229ccd0(p, p[0xb1]);
     v2 = ret2 - 0x78;
-    if (func_0206fe54(ret2) != 0) {
+    if (func_0206fe54() != 0) {
         v2 -= 8;
     }
     func_0208aa60(p + 0x21b4, v1, v2);

@@ -2,16 +2,22 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206d420(void *a, void *b, void *c);
+extern void func_0206d420(void);
 
 struct Func0206c580_Unk {
     char pad_00[0x2c];
     char *ptr;
 };
 
-void func_0206c580(struct Func0206c580_Unk *self)
+// clang-format off
+asm void func_0206c580(register struct Func0206c580_Unk *self)
 {
-    char *start;
-    start = self->ptr + 0x14b8;
-    func_0206d420(self, start + 0x170, start);
+    ldr r2, [r0, #0x2c]
+    ldr r1, =0x14b8
+    add r2, r2, r1
+    ldr r1, =0x170
+    add r1, r2, r1
+    ldr r3, =func_0206d420
+    bx r3
 }
+// clang-format on

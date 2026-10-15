@@ -8,7 +8,7 @@ extern int func_ov071_02279b2c(void *a, int b);
 extern int func_ov071_02279b6c(void *a);
 extern void func_ov071_02279d04(void *a, int b);
 extern void func_0201b044(void *a, void *b);
-extern void func_02019c20(void *a, int b, int c, int d, unsigned short e, int f);
+extern int func_02019c20(void *a, int b, int c, int d, unsigned short e, int f);
 extern unsigned short data_020c80f8;
 }
 

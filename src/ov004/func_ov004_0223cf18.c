@@ -4,13 +4,11 @@
 
 #include "types.h"
 
-extern void func_02004320(void *, int, int);
+extern void func_02004320(void *object, short value);
 
-void func_ov004_0223cf18(char *self, int a1)
+void func_ov004_0223cf18(char *self, short value)
 {
-    // DECLS
-    // ENDDECLS
-    if (*(u8 *) (self + 0x1c) != 0x0) {
-        func_02004320(self, a1, *(u8 *) (self + 0x1c));
+    if (*(u8 *) (self + 0x1c) != 0) {
+        func_02004320(self, value);
     }
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02011404(signed short *a, signed short b, unsigned int c, unsigned int d, unsigned int e);
+extern int func_02011404(signed short *a, signed short b, unsigned int c, unsigned int d, unsigned int e);
 extern void func_020110a0(unsigned char *a, signed short *b);
 
 void func_02008cec(unsigned char *self)

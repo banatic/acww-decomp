@@ -11,8 +11,8 @@ struct UnkStruct_0221d698 {
 };
 
 extern u16 data_020c80f8;
-extern void func_02019c90(void *p, int a, int b, u16 c);
-extern void func_ov004_0221dd24(struct UnkStruct_0221d698 *self, int a);
+extern int func_02019c90(void *p, int a, int b, u16 c);
+extern int func_ov004_0221dd24(struct UnkStruct_0221d698 *self, int a);
 
 void func_ov004_0221d698(struct UnkStruct_0221d698 *self)
 {

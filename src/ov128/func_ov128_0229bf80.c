@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *p);
+extern int func_ov002_02208014(void);
 extern void func_ov128_0229be44(void *p);
 extern void func_ov128_0229bdd4(void *p);
 extern int func_ov128_0229bae0(void *p);
 extern void func_ov128_0229bb20(void *p);
 extern void func_ov127_02299c08(void *p, int state, int flag);
-extern void func_ov002_02208098(void *p, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern unsigned short data_021fbe40[2];
 
 void func_ov128_0229bf80(void *this)
@@ -17,7 +17,7 @@ void func_ov128_0229bf80(void *this)
     unsigned short flags;
     int ret;
 
-    if (func_ov002_02208014(this)) {
+    if (func_ov002_02208014()) {
         func_ov128_0229be44(this);
         return;
     }
@@ -33,5 +33,5 @@ void func_ov128_0229bf80(void *this)
     }
     func_ov127_02299c08(self + 0x4a4, self[0x2d6b], 1);
     func_ov128_0229bb20(this);
-    func_ov002_02208098(this, 5);
+    func_ov002_02208098((void *) (this), 5);
 }

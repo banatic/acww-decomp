@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov100_0229d630(unsigned char *a, unsigned char *b);
-extern int func_ov100_0229d620(unsigned char *a, unsigned char *b);
-extern int func_ov100_0229d118(unsigned char *a, unsigned char *b);
-extern int func_ov100_0229d0dc(unsigned char *a, unsigned char *b);
-extern int func_ov100_0229d4a8(unsigned char *a, int b, int c, int d);
-extern int func_ov100_0229cd4c(unsigned char *a, unsigned char *b);
+extern int func_ov100_0229d630(unsigned char *a, int b);
+extern int func_ov100_0229d620(unsigned char *a, int b);
+extern int func_ov100_0229d118(unsigned char *a, int b);
+extern int func_ov100_0229d0dc(unsigned char *a, int b);
+extern void func_ov100_0229d4a8(unsigned char *a, int b, int c, int d);
+extern void func_ov100_0229cd4c(unsigned char *a, int b);
 
-int func_ov100_0229d4f4(unsigned char *a, unsigned char *b)
+int func_ov100_0229d4f4(unsigned char *a, int b)
 {
     if (func_ov100_0229d630(a, b) != 0 || func_ov100_0229d620(a, b) != 0) {
         int v1 = func_ov100_0229d118(a, b);

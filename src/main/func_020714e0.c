@@ -12,9 +12,9 @@ extern int data_021d04e4[];
 extern UnkStruct_020714e0 *data_021d0470;
 extern UnkStruct_020714e0_2 *data_021d0480;
 extern int func_02072a48(void *p, unsigned int a);
-extern void func_0203cff8(UnkStruct_020714e0 *p, int val);
+extern int func_0203cff8(UnkStruct_020714e0 *p, int val);
 extern int func_0203cfc8(UnkStruct_020714e0 *p);
-extern void func_020577c8(UnkStruct_020714e0_2 *p, int a1, int a2, int a3, int a4, int a5, int a6);
+extern int func_020577c8(UnkStruct_020714e0_2 *p, int a1, int a2, int a3, int a4, int a5, int a6);
 extern unsigned char data_021ed278[];
 
 int func_020714e0(unsigned int a)

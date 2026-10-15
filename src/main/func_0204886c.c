@@ -32,7 +32,7 @@ void func_0204886c(void *a0, int a1, int a2, int a3)
         }
 
         if (a2 == 0) {
-            if (func_0209c330(func_0209b5ec(func_0207f1c8(p))) != 5) {
+            if (func_0209c330((func_0209b5ec((void *) func_0207f1c8(p)))) != 5) {
                 continue;
             }
         }

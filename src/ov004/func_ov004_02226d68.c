@@ -13,7 +13,7 @@ struct UnkStruct_02226d68 {
 
 extern int func_02056f94(void *);
 extern int func_02008258(struct UnkStruct_02226d68 *, int);
-extern void func_0200d4e8(struct UnkStruct_02226d68 *, int, int, int);
+extern int func_0200d4e8(struct UnkStruct_02226d68 *, int, int, int);
 
 void func_ov004_02226d68(struct UnkStruct_02226d68 *obj)
 {

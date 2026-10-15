@@ -9,7 +9,7 @@ extern struct {
     unsigned char _p2[2];
     unsigned char f4;
 } data_021c75a0;
-extern void func_020413f4(void);
+extern void func_020413f4(void *);
 extern unsigned char data_021c7594;
 
 void __sinit_020c5194(void)
@@ -17,5 +17,6 @@ void __sinit_020c5194(void)
     data_021c75a0.f0 = 0;
     data_021c75a0.f4 = 0;
     data_021c75a0.f1 = 0;
-    __register_global_object((void *) &data_021c75a0, (void *) &func_020413f4, (void *) &data_021c7594);
+    __register_global_object((void *) ((void *) &data_021c75a0), (((void *) func_020413f4)),
+                             (void *) ((void *) &data_021c7594));
 }

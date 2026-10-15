@@ -15,7 +15,7 @@ extern void *NNS_G3dGetVisAnmSet(void *);
 extern void *func_02107cf0(void *, int);
 extern void func_02055060(void *, void *, int, int, unsigned short, unsigned short);
 extern void func_02055050(void *);
-extern void func_0200430c(void *);
+extern int func_0200430c(void *);
 int func_ov004_0223e2f0(unsigned char *self)
 {
     void *heap, *resource;

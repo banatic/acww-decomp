@@ -7,7 +7,7 @@ typedef struct {
 } Triple;
 
 extern void func_ov003_0220f4f0(void *a, Triple *b);
-extern void func_ov003_0220f538(void *a, Triple b, int c, int d);
+extern void *func_ov003_0220f538(void *a, Triple b, int c, int d);
 
 void func_ov003_0220f478(void *s, int val)
 {

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020eb9f0(void);
-extern void func_ov066_02269638(void);
+extern int func_020eb9f0(const void *src, unsigned int length);
+extern int func_ov066_02269638(const void *src, unsigned int length);
 
-void func_020eb9f0(void)
+int func_020eb9f0(const void *src, unsigned int length)
 {
-    func_ov066_02269638();
+    return func_ov066_02269638(src, length);
 }

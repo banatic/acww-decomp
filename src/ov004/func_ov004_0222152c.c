@@ -3,11 +3,12 @@
  */
 
 extern int func_020044c0(void *, int, int, int);
-extern int func_020b220c(int);
+extern void func_020b220c(void);
 
-int func_ov004_0222152c(char *self)
+void func_ov004_0222152c(char *self)
 {
     // DECLS
     // ENDDECLS
-    return func_020b220c(func_020044c0(self + 0x514, 0x4cb, 0x7f, 0x0));
+    func_020044c0(self + 0x514, 0x4cb, 0x7f, 0x0);
+    func_020b220c();
 }

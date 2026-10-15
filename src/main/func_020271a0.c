@@ -7,11 +7,11 @@ extern struct UnkStruct_020271a0 {
     unsigned char b;
 } data_020c8dc8, data_020c8db8;
 
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *p1, void *p2, void *p3, int n, int a, int b, int c, int d, int e);
+extern int func_0202da38(void *p1, void *p2, void *p3, int n, int a, int b, int c, int d, int e);
 
 struct Param1 {
     char pad_00[0x100];
@@ -33,8 +33,7 @@ void func_020271a0(struct Param1 *p, struct UnkStruct_020271a0_2 *o)
     int v;
     int tmp;
 
-    func_0202d9c4();
-    v = func_0209bc40();
+    v = func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) p));
 
     switch (v) {
         case 0xa:

@@ -3,8 +3,8 @@
  */
 
 extern void __cxa_vec_ctor();
-extern void func_ov004_0223adb4();
-extern void func_ov004_0223adc8();
+extern void *func_ov004_0223adb4(char *arg0);
+extern void *func_ov004_0223adc8(char *arg0);
 
 void *func_ov004_0223ab98(char *self)
 {

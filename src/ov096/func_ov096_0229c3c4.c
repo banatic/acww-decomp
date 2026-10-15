@@ -5,8 +5,8 @@
 extern int func_ov096_0229c2fc(int, int);
 extern void func_ov096_0229c2dc(int, int);
 extern int CARD_IsEnabled(void);
-extern void func_0203ac2c(void);
-extern void func_0203ac44(void);
+extern int func_0203ac2c(void);
+extern int func_0203ac44(void);
 
 void func_ov096_0229c3c4(int param)
 {

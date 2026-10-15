@@ -8,7 +8,7 @@ typedef struct GX_tag {
 } GX;
 
 extern GX data_021d5658;
-extern int func_02091494(GX *, unsigned short, int, int, int, int, int);
+extern void func_02091494(GX *, unsigned short, int, int, int, int, int);
 extern int func_02090ac4(int, int, int, void *);
 extern void func_020914dc(GX *);
 extern char data_020e2a8c[];

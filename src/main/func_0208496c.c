@@ -2,6 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern unsigned char func_02073dd4(const void *data, int index);
+
 extern void *func_020984e8(void);
 extern int func_020b65c4(void);
 extern int func_02084ad0(void);
@@ -46,5 +48,3 @@ int func_0208496c(void)
 fail:
     return 0;
 }
-
-extern int func_02073dd4(void *ptr, int field);

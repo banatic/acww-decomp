@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a8c1c(int, int);
+extern void func_020a8c1c(int);
 
 void func_02067718(int p0)
 {
-    func_020a8c1c((p0 + 7756), 7756);
+    func_020a8c1c((p0 + 7756));
 }

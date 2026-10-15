@@ -6,8 +6,8 @@
 
 extern int data_021d56f0;
 extern u16 data_021d56f4[4];
-extern void func_020051b0(void);
-extern void __register_global_object(u16 *slot, void (*fn)(void), void *arg);
+extern void func_020051b0(void *);
+extern void __register_global_object(void *, void *, void *);
 extern void *data_021d572c, *data_021d5720, *data_021d5714, *data_021d5708;
 
 extern void MI_CpuFill8(void *dst, u8 val, unsigned int n);
@@ -36,13 +36,13 @@ void *func_020985cc(char *base, int a1, int a2, int idx)
     if (func_020988d8(idx) == 1) {
         if ((data_021d56f0 & 1) == 0) {
             data_021d56f4[0] = 0x3884;
-            __register_global_object(&data_021d56f4[0], func_020051b0, &data_021d572c);
+            __register_global_object((void *) (&data_021d56f4[0]), (((void *) func_020051b0)), (void *) (&data_021d572c));
             data_021d56f4[1] = 0x3888;
-            __register_global_object(&data_021d56f4[1], func_020051b0, &data_021d5720);
+            __register_global_object((void *) (&data_021d56f4[1]), (((void *) func_020051b0)), (void *) (&data_021d5720));
             data_021d56f4[2] = 0x388c;
-            __register_global_object(&data_021d56f4[2], func_020051b0, &data_021d5714);
+            __register_global_object((void *) (&data_021d56f4[2]), (((void *) func_020051b0)), (void *) (&data_021d5714));
             data_021d56f4[3] = 0x3890;
-            __register_global_object(&data_021d56f4[3], func_020051b0, &data_021d5708);
+            __register_global_object((void *) (&data_021d56f4[3]), (((void *) func_020051b0)), (void *) (&data_021d5708));
             data_021d56f0 |= 1;
         }
         self = base + idx * 0x249c;

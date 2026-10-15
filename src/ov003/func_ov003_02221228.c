@@ -3,7 +3,7 @@
  */
 
 extern char data_ov003_0223cfe4;
-extern int func_0204e414(int param1, int param2);
+extern int func_0204e414(void);
 extern void func_0204f818(int *outX, int *outY, int param3);
 extern int func_0204eda8(int obj, int x, int y);
 extern int func_ov003_0222139c(char *obj, int a, void *pair, int *arr, int c1, int c2, int c3, int c4);
@@ -22,7 +22,7 @@ int func_ov003_02221228(int a, int b)
     struct Pair pr; // pair to pass
     int arr[3];     // zeroed array
 
-    r6 = func_0204e414(a, b);
+    r6 = func_0204e414();
     if (r6 == 0) {
         return 0;
     }

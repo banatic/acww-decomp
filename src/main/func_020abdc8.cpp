@@ -5,12 +5,12 @@
 class UnkStruct_020abdc8_2;
 struct UnkStruct_020abdc8;
 
-extern "C" void func_0208f640(void *);
-extern "C" void func_020b4980(void *, void *, int);
+extern "C" void *func_0208f640(void *);
+extern "C" int func_020b4980(void *, void *, int);
 extern "C" void func_0208f218(UnkStruct_020abdc8_2 *, void *);
 extern "C" void func_020aca94(UnkStruct_020abdc8_2 *, int);
 extern "C" void func_020abcb4(struct UnkStruct_020abdc8 *);
-extern "C" void func_0208f628(void *);
+extern "C" void *func_0208f628(void *);
 
 class UnkStruct_020abdc8_2 {
   public:

@@ -13,14 +13,14 @@ struct UnkStruct_0221bd28 {
     int unk_64;
 };
 
-extern void func_ov004_0221bc98(char *self);
+extern void func_ov004_0221bc98(void);
 extern int func_ov004_0221bc44(char *self);
 extern int func_ov004_0221b98c(char *self);
 extern char *func_02096190(int k);
 extern void func_01ffd070(Vec3 *out, void *m, Vec3 *in);
 extern u8 func_020b65c4(void);
 extern void func_0203efb0(char *self, u16 v);
-extern void func_ov004_0221b570(char *self, int a);
+extern int func_ov004_0221b570(char *self, int a);
 extern int func_ov004_0221bad0(char *self);
 
 extern int data_ov004_02257914;
@@ -49,7 +49,7 @@ int func_ov004_0221bd28(char *self)
     int a;
     // ENDDECLS
 
-    func_ov004_0221bc98(self);
+    func_ov004_0221bc98();
     *(int *) (self + 0x15c) = data_ov004_02257914;
     *(s16 *) (self + 0x160) = data_ov004_0225337c;
     *(int *) (self + 0x168) = data_ov004_02257928;

@@ -10,10 +10,10 @@ typedef struct UnkStruct_0229e544 {
     unsigned char unk_B7;
 } UnkStruct_0229e544;
 
-extern int func_0206f56c(UnkStruct_0229e544 *);
+extern int func_0206f56c(void);
 extern void func_ov106_0229cd60(UnkStruct_0229e544 *, int);
 extern void func_ov106_0229c378(UnkStruct_0229e544 *);
-extern void func_ov002_02207d24(void *, int);
+extern int func_ov002_02207d24(void *, int);
 extern void func_ov106_0229ce38(UnkStruct_0229e544 *);
 extern void func_ov106_0229d00c(UnkStruct_0229e544 *);
 extern int func_ov106_0229d2e4(UnkStruct_0229e544 *, void *, void *, int);
@@ -35,7 +35,7 @@ void func_ov106_0229e544(UnkStruct_0229e544 *param)
     void *r6;
     int r4;
 
-    if (func_0206f56c(param)) {
+    if (func_0206f56c()) {
         func_ov106_0229cd60(param, param->unk_B7);
         func_ov106_0229c378(param);
         func_ov002_02207d24((char *) param + 0x21b8, 0);

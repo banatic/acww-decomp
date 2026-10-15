@@ -9,7 +9,7 @@ typedef struct {
 } UnkStruct_020036ec;
 
 extern char data_021dc7aa[];
-extern void func_020642d0(void *s, void *ptr, unsigned char byte);
+extern void func_020642d0(void *s, void *ptr);
 
 void func_020036ec(UnkStruct_020036ec *s, unsigned char byte_F, unsigned char byte_E, void *ptr)
 {
@@ -18,5 +18,5 @@ void func_020036ec(UnkStruct_020036ec *s, unsigned char byte_F, unsigned char by
     if (ptr == 0) {
         ptr = data_021dc7aa;
     }
-    func_020642d0(s, ptr, byte_E);
+    func_020642d0(s, ptr);
 }

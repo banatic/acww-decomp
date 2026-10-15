@@ -3,8 +3,8 @@
  */
 
 extern "C" void *func_ov004_022320d8(void);
-extern "C" void func_02062300(void *p);
-extern "C" int func_02031914(void);
+extern "C" unsigned char func_02062300(void *p);
+extern "C" int func_02031914(int);
 
 extern unsigned char data_020e54a8;
 
@@ -31,8 +31,7 @@ extern "C" int func_ov004_0220ec8c(void)
             m = 1;
         }
         if (m != 0) {
-            func_02062300(p);
-            r = func_02031914();
+            r = func_02031914((int) func_02062300(p));
             if (r != 0xffff) {
                 return r;
             }

@@ -9,8 +9,8 @@ typedef struct {
     void (*callback)(void *self);
 } UnkStruct_0226adcc;
 
-extern int func_ov066_0226686c(int value);
-extern void OS_Terminate(int value);
+extern void func_ov066_0226686c(int value);
+extern void OS_Terminate(void);
 
 void func_ov066_0226adcc(UnkStruct_0226adcc *obj)
 {
@@ -20,6 +20,7 @@ void func_ov066_0226adcc(UnkStruct_0226adcc *obj)
         }
         return;
     } else {
-        OS_Terminate(func_ov066_0226686c(obj->flag));
+        func_ov066_0226686c(obj->flag);
+        OS_Terminate();
     }
 }

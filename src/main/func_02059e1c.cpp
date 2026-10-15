@@ -11,7 +11,7 @@ extern "C" {
 
 // 0x02063ccc / 0x02063cc8: constructor and destructor of the 8-byte object.
 extern void func_02063ccc(UnkStruct_02059e1c *, int, int);
-extern void func_02063cc8(UnkStruct_02059e1c *);
+extern void func_02063cc8(void *);
 // 0x020638d4: writes a 16-bit handle through its first argument.
 extern void func_020638d4(unsigned short *, const UnkStruct_02059e1c *, int, int, int, int, int *);
 // 0x02063884: the single-argument twin of mk, used by the retry path.
@@ -19,7 +19,7 @@ extern void func_02063884(unsigned short *, const UnkStruct_02059e1c *);
 // 0x020644cc: ARM; returns an index in [0, n).
 extern int func_020644cc(int);
 // 0x02138bb0: __register_global_object(object, destructor, chain node).
-extern void __register_global_object(UnkStruct_02059e1c *, void *, void *);
+extern void __register_global_object(void *, void *, void *);
 // 0x02098868
 extern int func_02098868(void *, int);
 // 0x0205a240: the tail call this function's result comes from.
@@ -76,11 +76,11 @@ int func_02059e1c(unsigned int a, int b, int c)
             UnkStruct_02059e1c t;
             if (!(data_021c95f4 & 1)) {
                 func_02063ccc(&data_021c96ec[0], 0, 1);
-                __register_global_object(&data_021c96ec[0], (void *) func_02063cc8, &data_021c9650);
+                __register_global_object((void *) (&data_021c96ec[0]), (((void *) func_02063cc8)), (void *) (&data_021c9650));
                 func_02063ccc(&data_021c96ec[1], 0, 2);
-                __register_global_object(&data_021c96ec[1], (void *) func_02063cc8, &data_021c962c);
+                __register_global_object((void *) (&data_021c96ec[1]), (((void *) func_02063cc8)), (void *) (&data_021c962c));
                 func_02063ccc(&data_021c96ec[2], 0, 3);
-                __register_global_object(&data_021c96ec[2], (void *) func_02063cc8, &data_021c9644);
+                __register_global_object((void *) (&data_021c96ec[2]), (((void *) func_02063cc8)), (void *) (&data_021c9644));
                 data_021c95f4 |= 1;
             }
             t = data_021c96ec[func_020644cc(3)];
@@ -93,11 +93,11 @@ int func_02059e1c(unsigned int a, int b, int c)
             UnkStruct_02059e1c t;
             if (!(data_021c95f8 & 1)) {
                 func_02063ccc(&data_021c96d4[0], 0, 0);
-                __register_global_object(&data_021c96d4[0], (void *) func_02063cc8, &data_021c9620);
+                __register_global_object((void *) (&data_021c96d4[0]), (((void *) func_02063cc8)), (void *) (&data_021c9620));
                 func_02063ccc(&data_021c96d4[1], 4, 0);
-                __register_global_object(&data_021c96d4[1], (void *) func_02063cc8, &data_021c9698);
+                __register_global_object((void *) (&data_021c96d4[1]), (((void *) func_02063cc8)), (void *) (&data_021c9698));
                 func_02063ccc(&data_021c96d4[2], 3, 0);
-                __register_global_object(&data_021c96d4[2], (void *) func_02063cc8, &data_021c96b0);
+                __register_global_object((void *) (&data_021c96d4[2]), (((void *) func_02063cc8)), (void *) (&data_021c96b0));
                 data_021c95f8 |= 1;
             }
             t = data_021c96d4[func_020644cc(3)];
@@ -110,23 +110,23 @@ int func_02059e1c(unsigned int a, int b, int c)
             UnkStruct_02059e1c t;
             if (!(data_021c95ec & 1)) {
                 func_02063ccc(&data_021c972c[0], 0, 1);
-                __register_global_object(&data_021c972c[0], (void *) func_02063cc8, &data_021c9608);
+                __register_global_object((void *) (&data_021c972c[0]), (((void *) func_02063cc8)), (void *) (&data_021c9608));
                 func_02063ccc(&data_021c972c[1], 0, 2);
-                __register_global_object(&data_021c972c[1], (void *) func_02063cc8, &data_021c9668);
+                __register_global_object((void *) (&data_021c972c[1]), (((void *) func_02063cc8)), (void *) (&data_021c9668));
                 func_02063ccc(&data_021c972c[2], 0, 3);
-                __register_global_object(&data_021c972c[2], (void *) func_02063cc8, &data_021c9638);
+                __register_global_object((void *) (&data_021c972c[2]), (((void *) func_02063cc8)), (void *) (&data_021c9638));
                 func_02063ccc(&data_021c972c[3], 4, 1);
-                __register_global_object(&data_021c972c[3], (void *) func_02063cc8, &data_021c965c);
+                __register_global_object((void *) (&data_021c972c[3]), (((void *) func_02063cc8)), (void *) (&data_021c965c));
                 func_02063ccc(&data_021c972c[4], 4, 2);
-                __register_global_object(&data_021c972c[4], (void *) func_02063cc8, &data_021c9680);
+                __register_global_object((void *) (&data_021c972c[4]), (((void *) func_02063cc8)), (void *) (&data_021c9680));
                 func_02063ccc(&data_021c972c[5], 4, 3);
-                __register_global_object(&data_021c972c[5], (void *) func_02063cc8, &data_021c96bc);
+                __register_global_object((void *) (&data_021c972c[5]), (((void *) func_02063cc8)), (void *) (&data_021c96bc));
                 func_02063ccc(&data_021c972c[6], 3, 1);
-                __register_global_object(&data_021c972c[6], (void *) func_02063cc8, &data_021c95fc);
+                __register_global_object((void *) (&data_021c972c[6]), (((void *) func_02063cc8)), (void *) (&data_021c95fc));
                 func_02063ccc(&data_021c972c[7], 3, 2);
-                __register_global_object(&data_021c972c[7], (void *) func_02063cc8, &data_021c9614);
+                __register_global_object((void *) (&data_021c972c[7]), (((void *) func_02063cc8)), (void *) (&data_021c9614));
                 func_02063ccc(&data_021c972c[8], 3, 3);
-                __register_global_object(&data_021c972c[8], (void *) func_02063cc8, &data_021c9674);
+                __register_global_object((void *) (&data_021c972c[8]), (((void *) func_02063cc8)), (void *) (&data_021c9674));
                 data_021c95ec |= 1;
             }
             t = data_021c972c[func_020644cc(9)];

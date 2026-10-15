@@ -3,7 +3,7 @@
  */
 
 extern char data_0213ee48;
-extern void func_020f4514(void *obj, void *vt);
+extern void *func_020f4514(void *obj);
 
 void *func_020f2980(void *obj)
 {
@@ -11,6 +11,6 @@ void *func_020f2980(void *obj)
     void *vt = (void *) &data_0213ee48;
 
     *(void **) self = vt;
-    func_020f4514(self, vt);
+    func_020f4514(self);
     return self;
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02003750(void *ptr);
+extern int func_02003750(void *ptr);
 extern void func_020642f8(void *ptr);
 
 void *func_02099e40(void *ptr)

@@ -8,7 +8,7 @@ extern void func_020736bc(int, unsigned char *, int);
 extern void func_ov003_0222e6c4(int, int);
 extern void func_ov003_0222e7f8(int);
 
-void func_02076d68(int param)
+void func_02076d68(int param, int sequence, unsigned char category, unsigned int player)
 {
     unsigned char local;
     int flag;

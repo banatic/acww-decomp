@@ -4,7 +4,7 @@
 
 extern unsigned int data_0213fdd0;
 extern unsigned int data_0213fddc;
-extern void func_020015fc(unsigned int, unsigned int, unsigned int);
+extern int func_020015fc(unsigned int, unsigned int, unsigned int);
 
 void func_020015c8(void)
 {

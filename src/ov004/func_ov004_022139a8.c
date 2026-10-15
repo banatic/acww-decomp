@@ -10,7 +10,7 @@ struct UnkStruct_022139a8 {
 
 extern int func_02072614(void);
 extern int func_0207277c(int a, int b);
-extern void func_020044c0(void *p, int a, int b, int c);
+extern int func_020044c0(void *p, int a, int b, int c);
 extern void func_020044d0(void *p, struct UnkStruct_022139a8 *t);
 
 int func_ov004_022139a8(char *self)

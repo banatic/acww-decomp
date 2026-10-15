@@ -4,17 +4,17 @@
 
 extern char data_ov103_0229e2e0;
 extern void func_02066688(char *);
-extern void func_ov002_0220b464(char *);
-extern void func_0206e35c(char *);
-extern void func_ov002_0220ba0c(char *);
-extern void func_ov002_02209ac8(char *);
-extern void func_ov002_02209cb4(char *);
+extern void *func_ov002_0220b464(char *);
+extern void *func_0206e35c(char *);
+extern void *func_ov002_0220ba0c(char *);
+extern void *func_ov002_02209ac8(char *);
+extern void *func_ov002_02209cb4(char *);
 extern void func_ov002_02209e38(char *);
-extern void func_ov002_02207e28(char *);
-extern void func_ov094_0229a2d0(char *);
+extern void *func_ov002_02207e28(char *);
+extern void *func_ov094_0229a2d0(char *);
 extern void func_ov119_0229bc30(char *);
-extern void func_ov094_0229afe0(char *);
-extern void func_ov002_0220826c(char *);
+extern void *func_ov094_0229afe0(char *);
+extern void *func_ov002_0220826c(char *);
 extern void func_ov002_02207f6c(char *);
 
 char *func_ov103_0229c228(char *self)

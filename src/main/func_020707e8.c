@@ -12,10 +12,10 @@ struct StackLocal {
     struct UnkStruct_020707e8 inner;
 };
 
-extern void func_020707d0(struct StackLocal *);
-extern void func_020a87e0(struct StackLocal *, int);
+extern void *func_020707d0(struct StackLocal *);
+extern int func_020a87e0(struct StackLocal *, int);
 extern int func_02051ca8(const unsigned short *, unsigned short);
-extern void func_020707b8(struct StackLocal *);
+extern void *func_020707b8(struct StackLocal *);
 
 int func_020707e8(int arg0, const unsigned short *arg1, unsigned short arg2)
 {

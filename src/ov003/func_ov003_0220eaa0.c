@@ -8,7 +8,7 @@ extern void func_0201107c(void *self, u32 *out);
 extern u32 func_020113a4(void *str, int a, int b);
 extern int func_02056f94(void *x);
 extern void func_0205eae0(void *a, int b, int c, int d);
-extern void func_020109a0(void *a, int b, int c, int d);
+extern void func_020109a0(void *a, int b, int c, unsigned short d);
 extern void *data_020ccf94;
 extern int func_02073908(void *a, u32 b);
 extern void *func_020984e8(void);

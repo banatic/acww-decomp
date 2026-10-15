@@ -13,7 +13,7 @@ typedef struct {
     int unk_71C;
 } UnkStruct_02279518;
 
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern void func_0201ad18(void *, int, int, int, void *, int, int, int);
 extern int func_020644cc(int);
 extern unsigned short data_020c80f8;

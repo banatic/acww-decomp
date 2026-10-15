@@ -4,7 +4,7 @@
 
 extern void func_020109fc(int, int, int, int);
 
-void func_ov003_02210140(int x)
+void func_ov003_02210140(int x, void *message, int previous)
 {
     func_020109fc(x, 0, 3, 0);
 }

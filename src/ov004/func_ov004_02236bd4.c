@@ -4,11 +4,11 @@
 
 #include "types.h"
 
-extern int func_02055dc8(void *, void *, void *);
+extern void func_02055dc8(void *, void *, void *);
 extern void func_ov004_022354e0(void *);
-extern void func_ov004_0223653c();
+extern void func_ov004_0223653c(char *arg0);
 
-int func_ov004_02236bd4(char *self)
+void func_ov004_02236bd4(char *self)
 {
     // DECLS
     // ENDDECLS
@@ -17,5 +17,5 @@ int func_ov004_02236bd4(char *self)
     *(u8 *) (self + 0x1e9) = *(int *) (self + 0x15c);
     *(u8 *) (self + 0x1c8) = 0x1;
     func_ov004_022354e0(self);
-    return func_02055dc8(self + 0x64, (void *) func_ov004_0223653c, self);
+    func_02055dc8(self + 0x64, (void *) func_ov004_0223653c, self);
 }

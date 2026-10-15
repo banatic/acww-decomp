@@ -3,7 +3,7 @@
  */
 
 extern int func_02073d70(int arg);
-extern int func_02075978(int arg);
+extern int func_02075978(void);
 extern int data_020ccf94;
 
 void func_020a02b4(int unused, unsigned char *p, int value)
@@ -13,7 +13,7 @@ void func_020a02b4(int unused, unsigned char *p, int value)
             *p = value + 1;
         }
     } else if (*p == value + 1) {
-        if (func_02075978(value + 1) != 0) {
+        if (func_02075978() != 0) {
             *p = value + 2;
         }
     }

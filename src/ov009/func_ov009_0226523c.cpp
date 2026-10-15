@@ -79,15 +79,15 @@ typedef struct {
     u32 data[12]; // 48 bytes
 } Buf48;
 
-extern "C" void func_ov003_02220268(UnkStruct_0226523c *self);
+extern "C" int func_ov003_02220268(UnkStruct_0226523c *self);
 extern "C" void func_0203efb0(UnkStruct_0226523c *self, u16 val);
-extern "C" void func_02055dc8(void *dest, void (*callback)(void), UnkStruct_0226523c *self);
+extern "C" void func_02055dc8(void *dest, void (*callback)(void *), UnkStruct_0226523c *self);
 extern "C" int func_0203f844(void *dest, void *src);
 extern "C" void func_020e96c8(void *dest, u32 a, u32 b, u32 c);
 extern "C" void func_020e9774(void *dest, int p1);
 extern "C" void func_020b3380(void *dest, int p1, int p2);
 extern "C" void func_0203edf4(UnkStruct_0226523c *self, int p1);
-extern "C" void func_ov009_02264ad8(UnkStruct_0226523c *self, int a, int b, int c);
+extern "C" int func_ov009_02264ad8(UnkStruct_0226523c *self, int a, int b, int c);
 extern "C" void func_ov009_02264f68(UnkStruct_0226523c *self);
 extern "C" void func_ov009_02264e98(UnkStruct_0226523c *self);
 extern "C" void func_ov009_022646b8(UnkStruct_0226523c *self, void *p);
@@ -95,7 +95,7 @@ extern "C" void func_ov009_02264618(UnkStruct_0226523c *self, void *p);
 extern "C" void func_ov009_02264444(UnkStruct_0226523c *self, void *p);
 extern "C" void *func_ov009_02264884(UnkStruct_0226523c *self);
 extern "C" int func_ov009_0226321c(UnkStruct_0226523c *self, void *p, int p2);
-extern "C" void func_ov009_022655c4(void);
+extern "C" void func_ov009_022655c4(void *state);
 
 int Obj_ov009_022658dc::func_ov009_0226523c()
 {

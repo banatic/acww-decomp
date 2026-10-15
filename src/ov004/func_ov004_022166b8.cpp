@@ -40,13 +40,13 @@ class UnkStruct_022166b8 {
 extern "C" {
 void func_ov004_0221041c(void *self, int a, int b, int c, int d);
 int func_ov004_0220d2b8(void *p);
-void func_ov004_0220d0a0(void *p, int a, int b);
-void func_02052738(void *self, int a, int b, int c);
+int func_ov004_0220d0a0(void *p, int a, int b);
+int func_02052738(void *self, int a, int b, int c);
 int func_ov004_0223c10c(void);
 int func_020b6680(void);
 int func_020b66b0(void);
 int func_0207cec0(void *d, int a);
-unsigned int func_0207f2c4(void);
+unsigned int func_0207f2c4(int result);
 u16 *func_02060b70(void);
 void func_02060afc(void);
 }
@@ -79,8 +79,8 @@ extern "C" int func_ov004_022166b8(UnkStruct_022166b8 *selfp)
     } else if (func_ov004_0220d2b8(self + 0x740) != 0 && func_ov004_0223c10c() == 0) {
         if (func_020b6680() != 0) {
             n = 0;
-            if (func_0207cec0(&data_021e5a2c, func_020b66b0()) != 0) {
-                n = func_0207f2c4();
+            if ((m = func_0207cec0(&data_021e5a2c, func_020b66b0())) != 0) {
+                n = func_0207f2c4(m);
             }
             ok = 0;
             lo = data_ov004_02256fec;

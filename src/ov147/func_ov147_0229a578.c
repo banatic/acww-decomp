@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020e9898(void);
+extern void func_020e9898(int unused0);
 
 void func_ov147_0229a578(int param)
 {
     if (param != 0) {
-        func_020e9898();
+        func_020e9898(param);
     }
 }

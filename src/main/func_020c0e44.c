@@ -9,7 +9,7 @@ typedef struct {
     unsigned char unk_03;
 } UnkStruct_020c0e44;
 
-extern unsigned int func_0209def4(unsigned short *p);
+extern void func_0209def4(unsigned short *p);
 extern unsigned int CARDi_GetTargetMode(void);
 extern int FX_MulFunc(int a, int b);
 extern int FX_Sqrt(int a);

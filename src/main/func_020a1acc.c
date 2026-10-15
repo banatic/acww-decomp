@@ -16,7 +16,7 @@ extern int data_020d1c08[];
 extern int func_02050974(void *);
 extern void MI_CpuFill8(int, int, int);
 extern int func_020509a8(void *, int, int, int);
-extern int func_02050948(void *);
+extern void func_02050948(void *);
 extern int func_0209f180(int);
 extern int func_02050920(int, int);
 

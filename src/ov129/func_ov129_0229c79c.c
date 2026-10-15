@@ -3,9 +3,9 @@
  */
 
 extern void func_ov129_0229b7cc(void *p, int n);
-extern void func_ov002_0220a720(void *p, int n);
+extern void *func_ov002_0220a720(void *p, int n);
 extern void func_ov002_02208090(void *p, int n);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov129_0229bee4(void *p, int n);
 extern void func_020b15b8(void *p, int *a, int *b);
 extern void func_ov127_022999c0(void *p, int x, int y);
@@ -18,7 +18,7 @@ void func_ov129_0229c79c(unsigned char *self)
     func_ov129_0229b7cc(self, 4);
     func_ov002_0220a720(self + 0x1d4, 6);
     func_ov002_02208090(self, 4);
-    func_ov002_02208098(self, 10);
+    func_ov002_02208098((void *) (self), 10);
     func_ov129_0229b7cc(self, 16);
     func_ov129_0229bee4(self, 0);
     func_020b15b8(self + 0x2f78, &x, &y);

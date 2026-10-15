@@ -4,7 +4,7 @@
 
 extern void func_ov123_02299630(void *, int);
 extern void func_ov123_0229b65c(void *);
-extern int RtcSendPxiCommand(int);
+extern void RtcSendPxiCommand(int command);
 extern int func_ov002_02208008(void *);
 extern int func_ov123_022999b0(void *, int, int);
 extern void func_ov123_0229a340(void *);

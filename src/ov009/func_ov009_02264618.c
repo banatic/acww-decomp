@@ -22,13 +22,13 @@ typedef struct {
     u32 unk_14;
     u32 unk_18;
 } ItemStruct;
-extern void *func_ov009_02264884(void *ctx, int arg1);
+extern void *func_ov009_02264884(void *ctx);
 extern u32 func_ov009_02264394(void *field);
-extern void *func_020e9948(void *heap, u32 size, u32 align);
+extern void *func_020e9948(void *heap, u32 size);
 extern void *func_020ad1dc(void *ptr);
 extern ItemStruct *func_ov009_02264388(void *field, u32 idx);
 extern void func_ov009_02265660(u32 *out, u32 *in, int arg);
-extern void func_020ad0c0(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5, u32 a6, u32 a7);
+extern int func_020ad0c0(u32 a0, u32 a1, u32 a2, u32 a3, u32 a4, u32 a5, u32 a6, u32 a7);
 void func_ov009_02264618(CtxStruct *ctx, int arg1)
 {
     ResultStruct *res;
@@ -41,13 +41,13 @@ void func_ov009_02264618(CtxStruct *ctx, int arg1)
     u32 input[3];
     u32 out[4];
     u32 i;
-    res = func_ov009_02264884(ctx, arg1);
+    res = func_ov009_02264884(ctx);
     if ((res == 0) || (res->unk_1C == 0)) {
         return;
     }
     heap = data_021c9b1c;
     count = func_ov009_02264394(res->unk_1C);
-    ctx->ptr = func_020e9948(heap, count * 0x34, 0x34);
+    ctx->ptr = func_020e9948(heap, count * 0x34);
     ptr = ctx->ptr;
     zero = 0;
     for (i = 0; i < count; i++) {

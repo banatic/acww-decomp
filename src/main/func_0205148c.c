@@ -4,7 +4,7 @@
 
 extern int data_021c8194;
 extern void func_02050e24(void);
-extern int func_020e9fc8(int x);
+extern void func_020e9fc8(int x);
 extern void func_02051758(const void *addr);
 
 extern unsigned char data_021c81d4[];

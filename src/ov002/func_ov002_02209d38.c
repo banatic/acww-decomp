@@ -14,10 +14,13 @@ struct Anim {
     u8 mode;
 };
 
-void func_ov002_02209d38(struct Anim *p, int x, int y, int steps)
+int func_ov002_02209d38(struct Anim *p, int x, int y, int steps)
 {
+    int result;
     p->mode = 2;
     p->dx = ((x << 4) - p->x) / steps;
-    p->dy = ((y << 4) - p->y) / steps;
+    result = ((y << 4) - p->y) / steps;
+    p->dy = result;
     p->steps = steps;
+    return result;
 }

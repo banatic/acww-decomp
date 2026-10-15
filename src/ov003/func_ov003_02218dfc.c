@@ -17,7 +17,7 @@ typedef struct {
 } UnkStruct_02218dfc;
 
 extern void func_ov003_02218eac(char *p, Pair *p2);
-extern void func_ov003_02218ec4(void *p, Pair *p2, int count, int val);
+extern int func_ov003_02218ec4(void *p, Pair *p2, int count, int val);
 
 void func_ov003_02218dfc(UnkStruct_02218dfc *self, int arg2)
 {

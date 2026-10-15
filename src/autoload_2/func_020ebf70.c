@@ -3,22 +3,20 @@
  */
 
 extern unsigned char data_021fbef8;
-extern void func_ov066_02269934(void);
-extern int func_020ec040(void);
-extern void func_020ebfd8(void);
+extern int func_ov066_02269934(void);
+extern int func_020ec040(unsigned int ready);
+extern int func_020ebfd8(void);
 
 int func_020ebf70(void)
 {
     unsigned char b = data_021fbef8;
     if ((unsigned char) (b + 255) <= 1) {
-        func_ov066_02269934();
-        return func_020ec040();
+        return func_020ec040(func_ov066_02269934());
     } else {
         if ((unsigned char) (b + 253) > 1) {
             return 0;
         } else {
-            func_020ebfd8();
-            return func_020ec040();
+            return func_020ec040(func_020ebfd8());
         }
     }
 }

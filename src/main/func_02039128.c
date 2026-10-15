@@ -2,21 +2,21 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203a3a4(void *, const void *, int);
+extern void *func_0203a3a4(void *, const void *, int);
 extern void func_0203a2f0(void *, const void *, int);
-extern void func_0205195c(void *);
-extern void func_020a87e0(void *, void *);
-extern void func_02051880(void *, void *);
+extern void *func_0205195c(void *);
+extern int func_020a87e0(void *, void *);
+extern int func_02051880(void *, void *);
 extern int func_0207762c(void *);
 extern void func_0203a2dc(void *);
-extern void func_0203a38c(void *);
+extern void *func_0203a38c(void *);
 extern void MI_CpuCopy8(void *, void *, int);
 
 extern const char data_021c676a[16];
 extern const char data_021c675e[6];
 extern char data_021c675c;
 
-void func_02039128(void *a, void *b, void *c)
+void *func_02039128(void *a, void *b, void *c)
 {
     struct {
         char buf1[16];
@@ -36,5 +36,5 @@ void func_02039128(void *a, void *b, void *c)
     temp = func_0207762c(b);
     MI_CpuCopy8(&data_021c675c, a, temp);
     func_0203a2dc(locals.buf2);
-    func_0203a38c(locals.buf1);
+    return func_0203a38c(locals.buf1);
 }

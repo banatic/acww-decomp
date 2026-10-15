@@ -7,13 +7,13 @@ struct UnkStruct_0202c254 {
     unsigned char flag : 1;
 };
 
-extern int func_0209dcac(int, int *, struct UnkStruct_0202c254 *);
+extern int func_0209dcac(void);
 
 extern unsigned char data_020c89f0[];
 
 void *func_0202c254(int a, int *b, struct UnkStruct_0202c254 *c)
 {
-    *b = func_0209dcac(a, b, c);
+    *b = func_0209dcac();
     c->flag = 1;
     return (void *) data_020c89f0;
 }

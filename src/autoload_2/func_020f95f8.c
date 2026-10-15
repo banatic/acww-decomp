@@ -3,8 +3,8 @@
  */
 
 extern int data_0213f250;
-extern void func_020f9868(void *self);
-extern void func_020f9848(void *self);
+extern unsigned int *func_020f9868(void *self);
+extern unsigned int *func_020f9848(void *self);
 
 void *func_020f95f8(void *self)
 {

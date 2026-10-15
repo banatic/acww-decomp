@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201b1a0(void *a, void *b);
-extern void func_0201b0bc(void *a, void *b, int c, int d, int e);
+extern int func_0201b1a0(void *a);
+extern int func_0201b0bc(void *a, void *b, int c, int d, int e);
 
 struct UnkStruct_0201b078 {
     char pad_00[0x34];
@@ -22,7 +22,7 @@ struct UnkStruct_0201b078_2 {
 
 void func_0201b078(struct UnkStruct_0201b078 *a, struct UnkStruct_0201b078_2 *b)
 {
-    if (func_0201b1a0(a, b) == 4) {
+    if (func_0201b1a0(a) == 4) {
         b->unk_94 = a->unk_34;
     } else {
         func_0201b0bc(a, &b->unk_94, a->unk_34, a->unk_36, a->unk_55);

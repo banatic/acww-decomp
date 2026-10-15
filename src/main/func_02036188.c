@@ -3,7 +3,7 @@
  */
 
 extern void *func_02095794(int size);
-extern void func_02034270(void *dst, const void *src, int a, int b);
+extern int func_02034270(void *dst, const void *src, int a, int b);
 extern void func_0203423c(void *obj);
 extern void func_02036558(void *self, int a, int b, int c);
 

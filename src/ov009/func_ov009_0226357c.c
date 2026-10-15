@@ -21,11 +21,11 @@ struct UnkStruct_0226357c {
 extern int func_ov009_02264c90(struct UnkStruct_0226357c *self);
 extern int func_ov009_022631b4(struct UnkStruct_0226357c *self);
 extern int func_ov009_0226321c(struct UnkStruct_0226357c *self, struct Vec3 *v, s16 *local);
-extern int func_020b5e10(int a);
+extern int func_020b5e10(void);
 extern int func_020b6098(int a, int b);
 extern int func_020310c8(int a);
-extern int func_020b65c4(int a);
-extern void func_020b5ea0(int a, int b, struct Vec3 *v, int c, int d, u32 e, u32 f);
+extern int func_020b65c4(void);
+extern int func_020b5ea0(int a, int b, struct Vec3 *v, int c, int d, u32 e, u32 f);
 extern void func_020b22ac(int a);
 
 void func_ov009_0226357c(struct UnkStruct_0226357c *self)
@@ -54,15 +54,15 @@ void func_ov009_0226357c(struct UnkStruct_0226357c *self)
     if (v2 == 0) {
         return;
     }
-    v3 = func_020b5e10(v2);
+    v3 = func_020b5e10();
     if (func_020b6098(v3, v1) == 0) {
         return;
     }
 
     v.y = func_020310c8(0);
     v.z += 0x1000;
-    v6 = func_020b5e10(v.z);
-    v7 = func_020b65c4(v6);
+    v6 = func_020b5e10();
+    v7 = func_020b65c4();
     func_020b5ea0(v6, v7, &v, 0x0f000000, (s16) (local + 0x8000), self->unk_22C, self->unk_230);
 
     func_020b22ac(func_ov009_02264c90(self));

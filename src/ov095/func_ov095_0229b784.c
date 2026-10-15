@@ -6,7 +6,7 @@ typedef unsigned short u16;
 typedef unsigned int u32;
 
 extern void MIi_CpuCopy16(const void *src, void *dst, unsigned int size);
-extern int func_ov095_0229b9e0(void *self, u16 val, int flag);
+extern int func_ov095_0229b9e0(void *self, u16 val);
 extern int func_ov095_0229b704(void *self, void *ptr);
 
 typedef struct {
@@ -23,7 +23,7 @@ int func_ov095_0229b784(UnkStruct_0229b784 *self, u16 val)
 
     self->unk_12 = val;
     self->unk_10 = 0;
-    if (!func_ov095_0229b9e0(self, val, 0)) {
+    if (!func_ov095_0229b9e0(self, val)) {
         return 0;
     }
 

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b95b4(void);
-extern void func_020b958c(void);
+extern unsigned int func_020b95b4(unsigned int size, unsigned int mode);
+extern unsigned int func_020b958c(unsigned int size);
 extern void OS_Terminate(void);
 extern void NNS_GfdInitFrmTexVramManager(int, int);
 extern void NNS_GfdInitFrmPlttVramManager(int, int);
@@ -12,8 +12,8 @@ extern int GX_GetBankForTex(void);
 
 extern unsigned long data_021f6c70, data_021f6c94, data_021f6c84, data_021f6c88, data_021f6c8c, data_021f6c90, data_021f6c74,
     data_021f6c78, data_021f6c7c, data_021f6c80;
-extern void (*NNS_GfdDefaultFuncAllocTexVram)(void);
-extern void (*NNS_GfdDefaultFuncAllocPlttVram)(void);
+extern void *NNS_GfdDefaultFuncAllocTexVram;
+extern void *NNS_GfdDefaultFuncAllocPlttVram;
 
 void func_020b947c(void)
 {
@@ -21,8 +21,8 @@ void func_020b947c(void)
 
     NNS_GfdInitFrmTexVramManager(4, 1);
     NNS_GfdInitFrmPlttVramManager(0x8000, 1);
-    NNS_GfdDefaultFuncAllocTexVram = func_020b95b4;
-    NNS_GfdDefaultFuncAllocPlttVram = func_020b958c;
+    NNS_GfdDefaultFuncAllocTexVram = (((void *) func_020b95b4));
+    NNS_GfdDefaultFuncAllocPlttVram = (((void *) func_020b958c));
     data_021f6c70 = 0;
     data_021f6c94 = GX_GetSizeOfTexPltt();
     data_021f6c84 = 0;

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020779d8(const unsigned char *src, int arg, unsigned char *dst);
-void func_02077978(const unsigned char *p, unsigned int *out, int arg)
+extern void func_020779d8(const unsigned char *src, unsigned int *arg, unsigned char *dst);
+void func_02077978(const unsigned char *p, unsigned int *out, unsigned int *arg)
 {
     unsigned char tmp;
     func_020779d8(p + 2, arg, &tmp);

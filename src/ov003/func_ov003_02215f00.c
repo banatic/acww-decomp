@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200e92c(void *, const int *, int, int);
+extern unsigned int func_0200e92c(void *);
 extern void func_0200e90c(void *, int, int, int);
 extern void func_ov003_02215f4c(int *, const int *);
 extern int func_0200e894(void *, void *);
-extern void func_0200e91c(void *);
+extern int func_0200e91c(void *);
 
 int func_ov003_02215f00(void *obj, const int *src, int a, int b)
 {
@@ -15,7 +15,7 @@ int func_ov003_02215f00(void *obj, const int *src, int a, int b)
     int tmp[3];
     int ret;
 
-    func_0200e92c(ctx, src, a, b);
+    func_0200e92c(ctx);
     func_0200e90c(ctx, 0x4d, a, b);
     tmp[0] = src[0];
     tmp[1] = src[1];

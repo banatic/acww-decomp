@@ -3,14 +3,13 @@
  */
 
 extern int func_020984d4(void);
-extern int func_020988d8(void);
+extern int func_020988d8(unsigned int argument0);
 
 int func_ov003_0221dc1c(void)
 {
     int result;
 
-    func_020984d4();
-    result = func_020988d8();
+    result = func_020988d8((unsigned int) func_020984d4());
 
     if (result != 0) {
         return 0;

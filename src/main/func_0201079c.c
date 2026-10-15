@@ -5,8 +5,8 @@
 extern int func_0205f670(unsigned short *p);
 extern int func_0205ceb0(void *q);
 extern void func_0205cc1c(char *a, int b, int c, int d);
-extern void func_0205cb94(char *a);
-extern int NNS_G3dGetJntAnmSet(void);
+extern int func_0205cb94(char *a);
+extern int NNS_G3dGetJntAnmSet(int resource);
 extern int func_02107b44(int a, int b);
 extern void func_020547b0(char *a, int b, int c, int d, int e, int f, int g, int h);
 extern int func_0205cebc(int a);
@@ -52,8 +52,7 @@ void func_0201079c(char *self, unsigned short *p, void *q, int a3)
         }
     }
     func_0205cc1c(self + 0x701, h, 1, 0);
-    func_0205cb94(self + 0x701);
-    func_020547b0(self + 0x234, func_02107b44(NNS_G3dGetJntAnmSet(), 0), a3, 0, 0x1000, 0, 0, 0);
+    func_020547b0(self + 0x234, func_02107b44(NNS_G3dGetJntAnmSet(func_0205cb94(self + 0x701)), 0), a3, 0, 0x1000, 0, 0, 0);
     t = func_0205cebc(h);
     if (t < 4) {
         n = func_0205cf10(t);

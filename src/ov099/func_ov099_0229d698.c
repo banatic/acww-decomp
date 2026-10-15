@@ -10,7 +10,7 @@ extern int func_ov099_0229ceb8(u8 *, int, int, int);
 extern int func_ov099_0229ce68(u8 *, int);
 extern void func_ov099_0229cf48(u8 *, u8, int);
 extern void func_ov099_0229d0f0(u8 *);
-extern void func_ov099_0229cb20(u8 *);
+extern void func_ov099_0229cb20(u8 *, int arg1);
 extern u8 data_021fbdd8;
 
 void func_ov099_0229d698(u8 *self)
@@ -36,7 +36,7 @@ void func_ov099_0229d698(u8 *self)
     return;
 
 flag_nonzero:
-    func_ov099_0229cb20(self);
+    func_ov099_0229cb20(self, x);
     return;
 
 x_eq:

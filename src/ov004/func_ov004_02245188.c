@@ -3,10 +3,10 @@
  */
 
 extern void func_ov004_02244fcc(void *arg);
-extern void func_ov004_022450d4(void *arg);
+extern int func_ov004_022450d4(void *arg);
 
-void func_ov004_02245188(void *arg)
+int func_ov004_02245188(void *arg)
 {
     func_ov004_02244fcc(arg);
-    func_ov004_022450d4(arg);
+    return func_ov004_022450d4(arg);
 }

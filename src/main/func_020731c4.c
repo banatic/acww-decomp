@@ -5,9 +5,9 @@
 extern void *data_020ccf94;
 extern int func_02073dd4(void *p, int idx);
 extern int func_02073918(void *p, int idx);
-extern void func_02077b58(int idx);
+extern int func_02077b58(int idx);
 extern unsigned int func_02073220(void *p, int idx);
-extern void func_02077a64(unsigned int v);
+extern int func_02077a64(void);
 
 int func_020731c4(void)
 {
@@ -20,7 +20,7 @@ int func_020731c4(void)
 
             func_02077b58(idx);
             result = func_02073220(p, idx);
-            func_02077a64(result);
+            func_02077a64();
             if (result > 600U) {
                 return 1;
             }

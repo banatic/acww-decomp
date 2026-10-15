@@ -6,7 +6,7 @@ extern unsigned char data_021fbef8;
 extern unsigned short data_021fbefc;
 extern void DWC_ProcessInet(void);
 extern void func_ov065_02278000(void);
-extern void func_ov065_0227f700(void);
+extern int func_ov065_0227f700(void);
 extern void func_020ed03c(void);
 extern void func_020ecf24(void);
 

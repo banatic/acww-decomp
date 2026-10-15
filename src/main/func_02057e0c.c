@@ -11,7 +11,7 @@ extern void func_0205967c(void *, void *);
 extern void func_02059674(void *, int);
 extern void func_020ea6e0(void *, short);
 extern void VEC_Add(void *, void *, void *);
-extern void func_020e895c(void *, unsigned int, unsigned int);
+extern int func_020e895c(void *, unsigned int, unsigned int);
 
 typedef struct UnkStruct_02057e0c {
     unsigned char pad_00[0x60];

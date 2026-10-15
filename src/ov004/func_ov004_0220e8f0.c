@@ -23,7 +23,7 @@ extern void func_0204f818(int *, int *, Vec *);
 extern void VEC_Add(Vec *, const Vec *, Vec *);
 extern void *func_ov004_0223cd50(void);
 extern char *func_ov004_0223cc10(void *, int, int, int);
-extern void func_ov004_0220f100(char *, void *, int);
+extern void func_ov004_0220f100(char *, unsigned char, int);
 extern void *func_ov004_0220db94(Points *);
 extern void func_ov004_0220f27c(char *, Points *, Vec *, int);
 extern Pair *func_ov004_0220db5c(Points *, unsigned);
@@ -31,7 +31,7 @@ extern u16 *func_0204f5e0(void *, int, int, int, int, u8);
 extern void func_ov004_0220ef14(char *, int, int, int, int);
 extern void func_ov004_0220db90(Points *);
 extern u8 func_02031b38(int, int);
-extern int func_ov004_0220ce2c(void), func_02030890(Vec *), func_ov004_0223c5a4(Vec *);
+extern int func_ov004_0220ce2c(int objectword), func_02030890(Vec *), func_ov004_0223c5a4(Vec *);
 extern unsigned func_ov004_0220db68(Points *);
 static inline void copyvec(Vec *dst, const Vec *src)
 {
@@ -48,6 +48,7 @@ static inline void copyvec(Vec *dst, const Vec *src)
 int func_ov004_0220e8f0(char *self, Vec *offset, int extent)
 {
     char *occupied;
+    char *condition_object;
     int x, z, hz;
     void *grid;
     u16 *tile, *other;
@@ -123,7 +124,8 @@ int func_ov004_0220e8f0(char *self, Vec *offset, int extent)
             CLEANUP();
             return 0;
         }
-        if (func_ov004_0223cc10(func_ov004_0223cd50(), x, z, 1) && func_ov004_0220ce2c()) {
+        if ((condition_object = func_ov004_0223cc10(func_ov004_0223cd50(), x, z, 1)) != 0 &&
+            func_ov004_0220ce2c((int) condition_object)) {
             CLEANUP();
             return 0;
         }

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b1580(char *arg);
-extern int func_020b1078(char *arg);
+extern int func_020b1580(void);
+extern int func_020b1078(char *arg, int excluded);
 extern void func_020b11fc(void);
 extern int func_ov127_022995a0(char *arg);
 extern void func_020b11ec(void);
@@ -13,11 +13,11 @@ int func_020b11a4(char *arg)
 {
     int x;
     int result;
-    x = func_020b1580(arg);
+    x = func_020b1580();
     if (x == -1) {
         return 0;
     }
-    if (func_020b1078(arg + 0x1e) != 0) {
+    if (func_020b1078(arg + 0x1e, -1) != 0) {
         return 0;
     }
     func_020b11fc();

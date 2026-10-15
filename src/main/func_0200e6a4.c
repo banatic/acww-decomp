@@ -15,7 +15,7 @@ extern void func_0205e4e8(void *, unsigned char);
 extern void func_020112f8(unsigned short *, UnkStruct_0200e6a4 *);
 extern int func_020112e4(UnkStruct_0200e6a4 *);
 extern int func_020112d0(UnkStruct_0200e6a4 *);
-extern void func_020100e8(UnkStruct_0200e6a4 *, unsigned short *, int, int, int);
+extern int func_020100e8(UnkStruct_0200e6a4 *, unsigned short *, int, int, int);
 
 void func_0200e6a4(UnkStruct_0200e6a4 *obj)
 {

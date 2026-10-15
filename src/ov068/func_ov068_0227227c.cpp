@@ -12,7 +12,7 @@ extern "C" void func_02055124(void *);
 extern "C" void *func_020961a8(int);
 extern "C" int func_ov068_02272cd4(void *);
 extern "C" int func_020e8b4c(int, int);
-extern "C" void func_02095518(int, int, int);
+extern "C" int func_02095518(int, int, int);
 
 void Obj_ov068_02277750::func_ov068_0227227c()
 {

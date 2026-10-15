@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a11c4(void *);
+extern int func_020a11c4(void);
 extern void *func_020682e0(int);
 extern void func_02068358(void *);
 extern void func_02068434(void *);
 extern void func_0206844c(void *, void *, const void *);
 extern void func_020a4e94(void *, int);
-extern int func_020ec2d4(int);
+extern int func_020ec2d4(void);
 extern int func_020e8840(void *);
-extern void func_02074308(void);
-extern int func_0209ffb0(void *);
+extern int func_02074308(void);
+extern int func_0209ffb0(void);
 extern void func_020a0174(void);
 extern const char data_020e3c54;
 
@@ -25,7 +25,7 @@ void func_020a2c8c(struct Self020a2c8c *self)
     char buf[2];
     int v;
 
-    v = func_020a11c4(self);
+    v = func_020a11c4();
     if (v > 0 && v < 4) {
         void *p;
 
@@ -39,11 +39,11 @@ void func_020a2c8c(struct Self020a2c8c *self)
         int flag = 0;
         int w;
 
-        w = func_020ec2d4(v);
+        w = func_020ec2d4();
         if (w == 2) {
             self->unk_D0 = 0;
         } else {
-            if (func_020ec2d4(w) == 1) {
+            if (func_020ec2d4() == 1) {
                 if (func_020e8840(&self->unk_D0) == 0) {
                     flag = 1;
                 } else {
@@ -55,7 +55,9 @@ void func_020a2c8c(struct Self020a2c8c *self)
             if (flag) {
                 void *p;
 
-                if (func_0209ffb0(self)) {
+                asm { add r0, self, #0 }
+                if (func_0209ffb0())
+                {
                     func_020a0174();
                 }
                 p = func_020682e0(0);

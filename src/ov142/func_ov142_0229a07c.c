@@ -7,14 +7,14 @@ struct UnkStruct_0229a07c {
     void *unk_A4;
 };
 
-extern void func_ov142_0229a09c(struct UnkStruct_0229a07c *self);
-extern void func_ov142_0229a0d4(struct UnkStruct_0229a07c *self);
+extern int func_ov142_0229a09c(struct UnkStruct_0229a07c *self);
+extern int func_ov142_0229a0d4(struct UnkStruct_0229a07c *self);
 
-void func_ov142_0229a07c(struct UnkStruct_0229a07c *self)
+int func_ov142_0229a07c(struct UnkStruct_0229a07c *self)
 {
     if (self->unk_A4 == 0) {
-        func_ov142_0229a0d4(self);
+        return func_ov142_0229a0d4(self);
     } else {
-        func_ov142_0229a09c(self);
+        return func_ov142_0229a09c(self);
     }
 }

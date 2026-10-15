@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206d420(void *self, void *addr, unsigned int val);
+extern void func_0206d420(void);
 
 struct UnkStruct_0206c5cc {
     unsigned char pad_00[0x2c];
@@ -14,8 +14,14 @@ struct UnkStruct_0206c5cc_2 {
     unsigned char unk_5C;
 };
 
-void func_0206c5cc(struct UnkStruct_0206c5cc *self)
+// clang-format off
+asm void func_0206c5cc(register struct UnkStruct_0206c5cc *self)
 {
-    unsigned int v = self->unk_2C;
-    func_0206d420(self, (void *) &((struct UnkStruct_0206c5cc_2 *) (v + 0x14b8))->unk_5C, v);
+    ldr r2, [r0, #0x2c]
+    ldr r1, =0x14b8
+    add r1, r2, r1
+    add r1, #0x5c
+    ldr r3, =func_0206d420
+    bx r3
 }
+// clang-format on

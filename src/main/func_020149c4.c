@@ -33,7 +33,7 @@ struct Arg {
 };
 
 extern struct Big *func_02015d78(struct Big *self, u8 value);
-extern void func_0203ae28(struct Arg *arg);
+extern int func_0203ae28(struct Arg *arg);
 
 int func_020149c4(struct Big *self)
 {

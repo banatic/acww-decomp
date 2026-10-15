@@ -13,7 +13,7 @@ extern void func_0201b388(char *p, int n);
 extern void func_0201b38c(char *p, int n);
 extern void func_0201af28(char *p, int a, int b, int c, int d);
 extern void func_0201ad18(char *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_ov004_02222178(char *self, int a);
+extern int func_ov004_02222178(char *self, int a);
 extern char *data_ov004_02257f7c;
 extern int data_021e5a2c;
 extern int data_020c814c;

@@ -7,7 +7,7 @@ typedef struct {
     void *unk_00;
 } Obj_t;
 extern void func_0206dcec(Obj_t *);
-extern void func_020a8c38(Obj_t *);
+extern void *func_020a8c38(Obj_t *);
 extern void func_020edb3c(Obj_t *);
 
 Obj_t *func_0206dd48(Obj_t *obj)

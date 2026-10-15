@@ -8,7 +8,7 @@ extern unsigned char *data_021fbf3c;
 extern int func_0210132c(unsigned char *p);
 extern unsigned char func_ov065_022798d0(unsigned char *a, unsigned char *b, unsigned char *c, unsigned char *d, int *e);
 
-void func_020ed540(void *arg)
+void func_020ed540(void *arg, int changed, void *user_data)
 {
     unsigned int i;
     int local;

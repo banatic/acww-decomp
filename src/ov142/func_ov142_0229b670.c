@@ -3,17 +3,17 @@
  */
 
 extern unsigned char data_021fbdd8;
-extern void func_ov142_02299830(int a, int b);
-extern void func_ov142_02299908(int a, int b);
-extern void func_ov002_02208098(int a, int b);
+extern void func_ov142_02299830(int a);
+extern void func_ov142_02299908(int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov142_0229b670(int p)
 {
     unsigned char f = data_021fbdd8;
     if (f) {
-        func_ov142_02299830(p, f);
+        func_ov142_02299830(p);
         return;
     }
-    func_ov142_02299908(p, f);
-    func_ov002_02208098(p, 0);
+    func_ov142_02299908(p);
+    func_ov002_02208098((void *) (p), 0);
 }

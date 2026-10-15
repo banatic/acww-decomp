@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200f27c(int a, int b);
+extern unsigned int *func_0200f27c(int a, int b);
 
 void func_ov003_02217d3c(int a, int b)
 {

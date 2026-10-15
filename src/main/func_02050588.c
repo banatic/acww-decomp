@@ -4,8 +4,8 @@
 
 extern int data_020dcd78;
 extern struct Param *data_021c8184;
-extern void func_0209d180(void *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_0205c8f8(void);
+extern int func_0209d180(void *p, unsigned int n, int a, int b, int c, int (*allocate)(int, int), void (*cleanup)(void));
+extern int func_0205c8f8(int size, int heapword);
 extern void func_0205c8dc(void);
 extern int data_020dcef0;
 
@@ -17,13 +17,25 @@ struct Param {
 
 int func_02050588(struct Param *param)
 {
+    volatile unsigned int outgoing[4];
     if (param->state == 0) {
         data_020dcd78 = 4;
     } else if (param->state == 1) {
         data_020dcd78 = 1;
     }
-    func_0209d180((char *) param + 0x600, data_020dcd78, 0x800, 0x80, 0x134c, (int) func_0205c8f8, (int) func_0205c8dc,
-                  (int) &data_020dcef0);
+    outgoing[0] = 0x134c;
+    outgoing[1] = (unsigned int) func_0205c8f8;
+    outgoing[2] = (unsigned int) func_0205c8dc;
+    outgoing[3] = (unsigned int) &data_020dcef0;
+    asm {
+        ldr r0, =0x600
+        add r0, param, r0
+        ldr r1, =data_020dcd78
+        ldr r1, [r1]
+        ldr r2, =0x800
+        mov r3, #0x80
+        bl func_0209d180
+    }
     data_021c8184 = param;
     return 1;
 }

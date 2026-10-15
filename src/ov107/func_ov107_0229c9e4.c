@@ -9,10 +9,10 @@ typedef struct {
     volatile u8 unk_B9;
 } UnkStruct_0229c9e4;
 
-extern void func_0206f9c0(UnkStruct_0229c9e4 *self);
+extern unsigned char func_0206f9c0(void);
 extern int func_ov107_0229d0f0(UnkStruct_0229c9e4 *self, int k);
 extern int func_0206fca4(void);
-extern void func_ov002_02208d4c(void *p, int a, int b);
+extern int func_ov002_02208d4c(void *p, int a, int b);
 extern int func_ov094_022999e4(int id);
 
 void func_ov107_0229c9e4(UnkStruct_0229c9e4 *self)
@@ -24,7 +24,7 @@ void func_ov107_0229c9e4(UnkStruct_0229c9e4 *self)
     int id;
     int k;
 
-    func_0206f9c0(self);
+    func_0206f9c0();
     id = func_ov107_0229d0f0(self, self->unk_B9);
     t = id;
     k = func_0206fca4();

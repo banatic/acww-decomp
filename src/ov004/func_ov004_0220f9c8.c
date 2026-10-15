@@ -14,13 +14,13 @@ extern void func_ov004_0220fefc(void *self, Vec3 *v);
 extern void func_ov004_0220dfe8(void *p, void *self);
 extern int *func_ov004_0223ce84(void);
 extern int func_ov004_0220d4c0(void *p);
-extern void func_ov004_0223cd58(int *a, int b);
-extern void func_020321bc(void *p, int x, int z, int k, Vec3 *c, int h, Vec3 *b);
+extern int func_ov004_0223cd58(int *a, int b);
+extern int func_020321bc(void *p, int x, int z, int k, Vec3 *c, int h, Vec3 *b);
 extern int func_ov004_0223cd78(int *a, int v);
 extern int FX_MulFunc(int a, int b);
 extern int func_020b67ac(void);
 extern int func_020b6590(void);
-extern void func_020b7dc8(int h, void *o, Vec3 *v, int x, int z, int y, int k, int f, int c);
+extern int func_020b7dc8(int h, void *o, Vec3 *v, int x, int z, int y, int k, int f, int c);
 
 void func_ov004_0220f9c8(char *self)
 {

@@ -3,9 +3,9 @@
  */
 
 extern char data_020e1ac8;
-extern void __cxa_vec_cleanup(void *ptr, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 extern void func_02083c78(void *ptr);
-extern void func_02083654(void);
+extern void *func_02083654(void *);
 
 typedef struct {
     void *unk_00;
@@ -16,7 +16,7 @@ typedef struct {
 void *func_020835dc(UnkStruct_020835dc *param)
 {
     param->unk_00 = &data_020e1ac8;
-    __cxa_vec_cleanup(&param->data[0], 5, 8, func_02083654);
+    __cxa_vec_cleanup((void *) (&param->data[0]), 5, 8, (((void (*)(void *)) func_02083654)));
     func_02083c78(param);
     return param;
 }

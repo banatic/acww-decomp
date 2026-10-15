@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int func_020eef70(int a);
-extern void NNS_SndPlayerCreateHeap(int a, int b, int c);
+extern int func_020eef70(void);
+extern int NNS_SndPlayerCreateHeap(int a, int b, int c);
 
 void func_020f41a4(int a, int count)
 {
-    int value = func_020eef70(a);
+    int value = func_020eef70();
     int i = 0;
     if (count <= 0) {
         return;

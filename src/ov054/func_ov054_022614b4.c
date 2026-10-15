@@ -27,7 +27,7 @@ extern void func_02068358(unsigned int);
 extern void func_02068434(unsigned int);
 extern void func_ov054_02261cc4(ArgType *, int);
 extern void func_ov054_02261f44(ArgType *);
-extern void func_02073044(int);
+extern unsigned int func_02073044(void);
 extern int func_020ec920(void);
 extern TabEntry12 data_ov054_02262fac[];
 
@@ -46,7 +46,7 @@ void func_ov054_022614b4(ArgType *arg)
         func_02068434(field_40);
         func_ov054_02261cc4(arg, 0);
     } else {
-        func_02073044(res);
+        func_02073044();
         if (func_020ec920()) {
             func_02068358(field_40);
             func_02068434(field_40);

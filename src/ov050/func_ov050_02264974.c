@@ -20,22 +20,22 @@ typedef struct {
     int a;
 } UnkStruct_02264974_2;
 
-extern int func_0202ec58(void);
+extern int func_0202ec58(void *argument0);
 extern int func_02073d90(void *);
 extern short *func_0209d358(int, int);
 extern int func_020a7278(void);
 extern int func_0208602c(void);
 extern int func_020860d0(int);
-extern void func_02087f08(int);
-extern int func_0209dffc(void);
+extern void *func_02087f08(void *record);
+extern int func_0209dffc(const unsigned char *timestamp);
 extern void func_02087ef0(int);
 extern void func_ov050_02264834(UnkStruct_02264974 *, int);
 extern int func_020984e8(void);
 extern int func_02099640(int);
 extern int func_02099020(int, int);
-extern void func_0209ad9c(int, int);
-extern int func_0209b4d4(void);
-extern void func_02030864(int);
+extern void *func_0209ad9c(int, int);
+extern int func_0209b4d4(void *argument0);
+extern int func_02030864(int);
 extern void func_ov050_02263640(void *, int);
 extern int func_02087ec0(int);
 extern void func_020367e4(void *);
@@ -59,14 +59,13 @@ int func_ov050_02264974(UnkStruct_02264974 *p)
     int b;
     int c;
 
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58((void *) p) == 0) {
         return 0;
     }
     if (func_02073d90(data_020ccf94) != 0 || *func_0209d358(0, 0x4a) != 0) {
         p->unk_4E8 |= 2;
         if (func_020a7278() != 0) {
-            func_02087f08(func_020860d0(func_0208602c()));
-            if (func_0209dffc() != 0) {
+            if (func_0209dffc(func_02087f08((void *) func_020860d0(func_0208602c()))) != 0) {
                 func_02087ef0(func_020860d0(func_0208602c()));
             }
             p->unk_8E = 0;
@@ -78,16 +77,15 @@ int func_ov050_02264974(UnkStruct_02264974 *p)
         return 1;
     }
 
-    func_02087f08(func_020860d0(func_0208602c()));
-    if (func_0209dffc() != 0) {
+    if (func_0209dffc(func_02087f08((void *) func_020860d0(func_0208602c()))) != 0) {
         func_02087ef0(func_020860d0(func_0208602c()));
     }
     h = func_020860d0(func_0208602c());
     a = func_020984e8();
     b = func_02099640(a);
     if (func_02099020(a, 1) != 0) {
-        func_0209ad9c(b, 0);
-        c = func_0209b4d4();
+
+        c = func_0209b4d4((void *) func_0209ad9c(b, 0));
         func_02030864(1);
         func_ov050_02263640(p->unk_658, 5);
         func_02087ef0(h);

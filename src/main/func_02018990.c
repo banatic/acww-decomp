@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02019de4(void *a, void *b);
+extern int func_02019de4(void *a);
 extern void func_0201b1a4(void *a, void *b, int c, int d, unsigned short e);
 extern void func_0201b044(void *a, void *b);
 extern void func_0201afd4(void *a, void *b);
@@ -19,7 +19,7 @@ int func_02018990(void *a, void *b)
 {
     void *r4;
 
-    r4 = (void *) func_02019de4(a, b);
+    r4 = (void *) func_02019de4(a);
     func_0201b1a4((char *) b + 0x350, b, 0, 0, data_020c80f8);
     func_0201b044((char *) b + 0x350, (void *) data_021fbee8);
     func_0201afd4((char *) b + 0x350, (void *) data_021fbee8);

@@ -40,7 +40,7 @@ extern int func_ov004_0223cd50(void);
 extern int func_ov004_0223cc10(int, int, int, int);
 extern int func_020b6590(void);
 extern int func_020b7524(int, int, int);
-extern void func_020b758c(int, Vec3 *);
+extern int func_020b758c(int, Vec3 *);
 extern u16 *func_ov004_02246378(int, int);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);

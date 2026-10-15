@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov118_0229a438(void) {}
+void func_ov118_0229a438(void *element) {}

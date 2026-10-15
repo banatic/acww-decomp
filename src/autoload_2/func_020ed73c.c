@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_021fbef8;
-extern int func_020ed834(int a0, int a1, int a2, int a3);
+extern int func_020ed834(int a0, int a1, int a2, unsigned int argument3);
 extern int func_020ed79c(int a0, int a1, int a2, int a3);
 
 int func_020ed73c(int a0, int a1, int a2, int a3)

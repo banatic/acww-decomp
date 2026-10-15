@@ -2,9 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020e98f4(int, int);
+typedef unsigned int uintptr_t;
 
-void func_0206e4fc(int a, int b, int c)
+extern int func_020e98f4(int, int);
+
+void *func_0206e4fc(int name, unsigned int size, int align)
 {
-    func_020e98f4(b, c);
+    (void) name;
+    return (void *) (uintptr_t) (unsigned int) func_020e98f4(size, align);
 }

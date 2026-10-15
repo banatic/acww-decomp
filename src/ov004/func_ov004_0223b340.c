@@ -4,11 +4,11 @@
 
 extern int func_ov004_0223b364(int);
 extern int func_ov004_0223cc10(int, void *, int, int);
-extern int func_ov004_0223cd50(void *, int);
+extern int func_ov004_0223cd50(void);
 
 int func_ov004_0223b340(char *self, int a1)
 {
     // DECLS
     // ENDDECLS
-    return func_ov004_0223b364(func_ov004_0223cc10(func_ov004_0223cd50(self, a1), self, a1, 0x0));
+    return func_ov004_0223b364(func_ov004_0223cc10(func_ov004_0223cd50(), self, a1, 0x0));
 }

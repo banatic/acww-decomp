@@ -16,17 +16,17 @@ class UnkStruct_02026c1c_2 {
     Pmf pmf;
 };
 extern int data_021c2c44, data_021c2c74;
-extern "C" void *func_020984e8(void *);
+extern "C" void *func_020984e8(void);
 extern "C" void *func_02099734(void *);
 extern "C" int func_02098eb8(void *);
 extern "C" void func_0202da88(UnkStruct_02026c1c_2 *self, void *tbl);
-extern "C" void func_02068484(int a, void *b, int c);
+extern "C" int func_02068484(int a, void *b, int c);
 extern "C" void func_02026c1c(UnkStruct_02026c1c_2 *self)
 {
     unsigned char arg;
     UnkStruct_02026c1c out;
-    void *a = func_020984e8(self);
-    if (a && func_02098eb8(func_02099734(func_020984e8(a))) != -1) {
+    void *a = func_020984e8();
+    if (a && func_02098eb8(func_02099734(func_020984e8())) != -1) {
         func_0202da88(self, &data_021c2c44);
     } else {
         func_0202da88(self, &data_021c2c74);

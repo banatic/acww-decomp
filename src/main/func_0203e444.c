@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0203efbc(void);
+extern int func_0203efbc(void *);
 extern int func_0203e478(int, int, int, int, unsigned char);
 
 int func_0203e444(int a, int b)
@@ -13,7 +13,7 @@ int func_0203e444(int a, int b)
     }
     x = 0;
     if (a != 0) {
-        x = func_0203efbc();
+        x = func_0203efbc((void *) a);
     }
     return func_0203e478(x, 0, 3, 1, (unsigned char) b);
 }

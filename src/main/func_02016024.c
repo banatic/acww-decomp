@@ -3,10 +3,10 @@
  */
 
 extern int func_02015da0(int a, int c);
-extern void *func_0201c274(void);
-extern int func_02015ff4(void);
+extern void *func_0201c274(void *);
+extern int func_02015ff4(void *);
 extern int func_02019e00(void *p);
-extern void func_02019c90(void *p, int n, unsigned char c, unsigned short s);
+extern int func_02019c90(void *p, int n, unsigned char c, unsigned short s);
 extern unsigned short data_020c80f8;
 
 typedef struct {
@@ -19,27 +19,31 @@ typedef struct {
     int unk_5C;
 } UnkStruct_02016024_2;
 
-void func_02016024(int a, int b, int c)
+int func_02016024(int a, int b, int c)
 {
     UnkStruct_02016024 *r4;
     UnkStruct_02016024_2 *r6;
+    int result;
 
     r4 = (UnkStruct_02016024 *) func_02015da0(a, c);
     if (r4 == 0) {
-        return;
+        return (int) r4;
     }
-    r6 = (UnkStruct_02016024_2 *) func_0201c274();
+    r6 = (UnkStruct_02016024_2 *) func_0201c274(r4);
     if (r6 == 0) {
-        return;
+        return (int) r6;
     }
-    if (func_02015ff4() != 0) {
-        return;
+    result = func_02015ff4(r6);
+    if (result != 0) {
+        return result;
     }
     if (r6->unk_5C == b) {
-        if (func_02019e00(&r4->unk_564) == 8) {
-            return;
+        result = func_02019e00(&r4->unk_564);
+        if (result == 8) {
+            return result;
         }
     }
-    func_02019c90(&r4->unk_564, 2, (unsigned char) b, data_020c80f8);
+    result = func_02019c90(&r4->unk_564, 2, (unsigned char) b, data_020c80f8);
     r6->unk_5C = b;
+    return result;
 }

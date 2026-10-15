@@ -26,7 +26,7 @@ extern int func_0202ea40(char *p, u8 *q, int a);
 extern void func_0202ea28(char *p, u8 *q);
 extern void func_0206844c(int h, u8 *p, int k);
 
-void func_ov054_02260b70(UnkStruct_02260b70 *self)
+void func_ov054_02260b70(UnkStruct_02260b70 *self, unsigned int callbackArgument1)
 {
     u8 m[2];
     int h;

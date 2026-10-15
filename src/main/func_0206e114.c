@@ -14,12 +14,12 @@ typedef struct {
     int unk_320;
 } SelfT;
 
-extern void func_0206db74(void);
+extern void func_0206db74(void *);
 extern void func_0206db50(SelfT *self, unsigned char v, unsigned char n);
-extern void func_020a88ec(void *listObj);
+extern void *func_020a88ec(void *listObj);
 extern void func_020a8874(void *listObj, unsigned short *arr, int n);
 extern void func_0206dbc0(SelfT *self, void *listObj);
-extern void func_020a887c(void *listObj);
+extern void *func_020a887c(void *listObj);
 extern int data_020df270;
 
 void func_0206e114(SelfT *self, Arg1T *arg1, unsigned short *outArg)
@@ -29,7 +29,7 @@ void func_0206e114(SelfT *self, Arg1T *arg1, unsigned short *outArg)
     unsigned short *o;
     int i, j;
 
-    func_0206db74();
+    func_0206db74(self);
 
     o = outArg ? outArg : out;
 

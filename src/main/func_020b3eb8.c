@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b3f08(void);
+extern int func_020b3f08(char *);
 extern int func_020b3ed4(int);
 
 int func_020b3eb8(int param)
@@ -11,7 +11,7 @@ int func_020b3eb8(int param)
     int b;
     int result;
 
-    a = func_020b3f08();
+    a = func_020b3f08((char *) param);
     b = func_020b3ed4(param);
     result = a + b;
     return result;

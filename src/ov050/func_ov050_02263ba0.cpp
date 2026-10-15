@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern struct UnkStruct_02263ba0;
+struct UnkStruct_02263ba0;
 typedef void (UnkStruct_02263ba0::*Pmf)();
 
 struct UnkStruct_02263ba0 {

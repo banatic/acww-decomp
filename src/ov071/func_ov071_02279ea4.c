@@ -3,25 +3,25 @@
  */
 
 extern void *func_020edf70(unsigned int size);
-extern void func_0203f130(void *ptr);
-extern void func_0205467c(void *ptr);
+extern void *func_0203f130(void *ptr);
+extern void *func_0205467c(void *ptr);
 extern void func_0201b394(void *ptr);
-extern void func_0201a430(void *ptr);
-extern void func_020169a8(void *ptr);
-extern void func_0201b324(void *ptr);
+extern void *func_0201a430(void *ptr);
+extern int func_020169a8(void *ptr);
+extern int func_0201b324(void *ptr);
 extern void func_0201af14(void *ptr);
 extern void func_0201b370(void *ptr);
 extern void func_0201adec(void *ptr);
-extern void func_0201a7ec(void *ptr);
+extern void *func_0201a7ec(void *ptr);
 extern void func_0201a794(void *ptr);
-extern void func_02032c64(void *ptr);
-extern void func_02089c88(void *ptr);
-extern void func_020f55cc(void *ptr);
+extern void *func_02032c64(void *ptr);
+extern void *func_02089c88(void *ptr);
+extern void *func_020f55cc(void *ptr);
 extern void func_02013c2c(void *ptr);
-extern void func_02019eb0(void *ptr);
+extern void *func_02019eb0(void *ptr);
 extern void func_0201489c(void *ptr);
-extern void func_02082f60(void *ptr);
-extern void func_ov071_02278fb8(void *ptr);
+extern void *func_02082f60(void *ptr);
+extern void *func_ov071_02278fb8(void *ptr);
 extern char data_020d8c64;
 extern char data_020da088;
 extern char data_ov071_0227a278;

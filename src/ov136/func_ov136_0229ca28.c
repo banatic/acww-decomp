@@ -17,7 +17,7 @@ extern int func_ov002_0220a768(void *s, int arg);
 extern int func_ov002_0220a72c(void *s, int arg);
 extern void func_ov002_0220a0b4(void *s, int a, int b);
 extern void func_ov136_0229c734(UnkStruct_0229ca28 *p);
-extern void func_ov002_022080a0(UnkStruct_0229ca28 *p, int a);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 void func_ov136_0229ca28(UnkStruct_0229ca28 *p)
 {
@@ -30,6 +30,6 @@ void func_ov136_0229ca28(UnkStruct_0229ca28 *p)
         }
     } else {
         func_ov136_0229c734(p);
-        func_ov002_022080a0(p, 1);
+        func_ov002_022080a0((void *) (p), 1);
     }
 }

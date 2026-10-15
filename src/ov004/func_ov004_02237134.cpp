@@ -35,7 +35,7 @@ extern void func_ov004_0223592c(struct UnkStruct_02237134 *self);
 extern int func_ov004_02239424(void *a, void *b, void *c, int d);
 extern void func_ov004_02239b80(struct UnkStruct_02237134 *self);
 extern void func_ov004_0223635c(struct UnkStruct_02237134 *self, void *p);
-extern void func_ov004_02236418(struct UnkStruct_02237134 *self);
+extern int func_ov004_02236418(struct UnkStruct_02237134 *self);
 void func_ov004_02237134(struct UnkStruct_02237134 *self);
 }
 

@@ -19,10 +19,10 @@ extern UnkStruct_0223bf40 *func_ov004_0223cd58(void *, unsigned int);
 extern int func_ov004_022111f0(UnkStruct_0223bf40 *);
 extern long long func_01ffd028(const Vec *, const Vec *);
 extern unsigned int func_ov004_0223c130(void);
-extern void func_ov004_022168e4(UnkStruct_0223bf40 *);
+extern void *func_ov004_022168e4(UnkStruct_0223bf40 *);
 extern int data_ov004_022595d8;
 
-void func_ov004_0223bf40(void *self)
+void func_ov004_0223bf40(void)
 {
     Player *pl = func_020961a8(4);
     if (pl != 0) {

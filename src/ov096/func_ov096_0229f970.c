@@ -14,11 +14,11 @@ typedef struct {
     unsigned char unk_2418;
 } UnkStruct_0229f970;
 
-extern void func_ov002_02207d24(void *p, int n);
+extern int func_ov002_02207d24(void *p, int n);
 extern void func_ov096_0229e8e0(UnkStruct_0229f970 *self, int val);
 extern void func_ov096_0229e90c(UnkStruct_0229f970 *self, int val);
 extern int func_ov096_0229ea5c(UnkStruct_0229f970 *self);
-extern void func_ov094_022999c0(int arg);
+extern void func_ov094_022999c0(void);
 
 void func_ov096_0229f970(UnkStruct_0229f970 *self, int val)
 {
@@ -37,5 +37,5 @@ void func_ov096_0229f970(UnkStruct_0229f970 *self, int val)
             self->ba = 0xb;
             break;
     }
-    func_ov094_022999c0(func_ov096_0229ea5c(self));
+    ((void) (func_ov096_0229ea5c(self)), func_ov094_022999c0());
 }

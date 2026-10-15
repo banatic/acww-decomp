@@ -5,7 +5,7 @@
 
 #include "cpp/ov068/Obj_ov068_02277750.h"
 
-extern "C" void func_02095518(int a, int b, int c);
+extern "C" int func_02095518(int a, int b, int c);
 extern "C" void func_02055124(void *p);
 
 void Obj_ov068_02277750::func_ov068_022721a0()

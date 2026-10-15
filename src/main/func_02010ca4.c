@@ -22,20 +22,21 @@ extern void *data_020ccf94;
 extern int func_02073908(void *a, int b);
 extern int func_020b67ac(void);
 extern int func_020b6590(void);
-extern void func_020b7d3c(int h, void *p1, Vec3 *p2, int a3, int a4, int a5, int a6);
+extern void *func_020b7d3c(int h, void *p1, Vec3 *p2, int a3, int a4, int a5, int a6);
 
-void func_02010ca4(struct Self5 *self)
+int func_02010ca4(struct Self5 *self)
 {
     Vec3 *p;
     Vec3 v;
     int h;
 
     if (func_02073908(data_020ccf94, self->unk_800) == 0) {
-        if (func_020b67ac() == 0) {
-            return;
+        int gate = func_020b67ac();
+        if (gate == 0) {
+            return gate;
         }
         if (self->unk_7F0 != 8) {
-            return;
+            return self->unk_7F0;
         }
     }
 
@@ -46,5 +47,5 @@ void func_02010ca4(struct Self5 *self)
     v.y = v.y + 0xb33;
 
     h = func_020b6590();
-    func_020b7d3c(h, (char *) self + 0x214, &v, 0xa00, 0x15cf, 1, (unsigned char) self->unk_800);
+    return (int) func_020b7d3c(h, (char *) self + 0x214, &v, 0xa00, 0x15cf, 1, (unsigned char) self->unk_800);
 }

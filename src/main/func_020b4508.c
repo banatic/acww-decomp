@@ -4,13 +4,13 @@
 
 extern int FX_Modf(int, int *);
 extern int func_020b45d0(void *, int, int, int, int, int);
-extern void func_020b5630(void *);
-extern void func_020a8228(void *);
+extern void *func_020b5630(void *);
+extern void *func_020a8228(void *);
 extern int func_020a8bb8(void *, void *);
 extern int func_020a89f8(void *, void *);
 extern int func_020a89dc(void *, void *);
-extern void func_020a8210(void *);
-extern void func_020b5618(void *);
+extern void *func_020a8210(void *);
+extern void *func_020b5618(void *);
 
 extern int data_020d2080;
 

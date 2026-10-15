@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short *func_020996e0(void);
+extern unsigned short *func_020996e0(int);
 extern int func_0207e2a4(int a, int b, int c);
 extern int func_0207e280(int a, int b, int c);
 extern int func_0207e214(int a, int b, int c);
@@ -14,7 +14,7 @@ int func_0207e3f4(int a, int b, int c)
     unsigned short value;
     unsigned short *ptr;
 
-    ptr = func_020996e0();
+    ptr = func_020996e0(a);
     flag = 0;
     value = *ptr;
     if (value >= 0x1431u && value <= 0x1470u) {

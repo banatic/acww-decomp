@@ -13,8 +13,8 @@ typedef struct {
     u8 unk_30;
 } UnkStruct_02055954;
 
-extern void func_02055b50(int);
-extern void func_020b9eec(void *, int, int);
+extern void func_02055b50(int, void *);
+extern int func_020b9eec(void *, int, int);
 extern int func_020561cc(int, int);
 
 int func_02055954(UnkStruct_02055954 *self, int arg2, int arg3, int arg4)
@@ -24,7 +24,7 @@ int func_02055954(UnkStruct_02055954 *self, int arg2, int arg3, int arg4)
         return state;
     }
     if (state == 0) {
-        func_02055b50(arg3);
+        func_02055b50(arg3, (void *) arg2);
         func_020b9eec(self->unk_14, arg2, 1);
         self->unk_30 = 1;
         return self->unk_30;

@@ -10,7 +10,7 @@ typedef struct {
 
 extern int data_021c69b4;
 
-extern void func_0203d540(LocalT *self);
+extern void *func_0203d540(LocalT *self);
 extern void func_0203d4d4(LocalT *self, int flag);
 extern void func_020a8164(LocalT *self, int val);
 extern void func_0203d4cc(LocalT *self, void *a);
@@ -18,7 +18,7 @@ extern void func_0203d4c8(LocalT *self, void *d);
 extern void func_0203d4d0(LocalT *self, int f);
 extern void func_0203d668(int *g);
 extern int func_0203d564(int *g, LocalT *self);
-extern void func_0203d528(LocalT *self);
+extern void *func_0203d528(LocalT *self);
 
 int func_0203d930(void *p0, void *p1, void *p2, void *p3, const unsigned char *p4, int p5)
 {

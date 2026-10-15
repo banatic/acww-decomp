@@ -3,13 +3,13 @@
  */
 
 extern int func_0208e4bc(void *);
-extern int func_ov142_0229af94(void *);
+extern void func_ov142_0229af94(void *);
 extern int func_ov002_0220a700(void *);
 extern int func_ov002_0220a6e0(void *);
 extern int func_ov002_0220a768(void *, int);
 extern int func_ov002_0220a72c(void *, int);
 extern void func_ov002_0220a0b4(void *, int, int);
-extern void func_ov002_022080a0(void *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 void func_ov142_0229b290(void *self)
 {
@@ -25,6 +25,6 @@ void func_ov142_0229b290(void *self)
         }
     } else {
         func_ov142_0229af94(self);
-        func_ov002_022080a0(self, 1);
+        func_ov002_022080a0((void *) (self), 1);
     }
 }

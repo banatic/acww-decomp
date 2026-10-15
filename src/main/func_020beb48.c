@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_022197c4(int param, void *ptr);
+extern int func_ov003_022197c4(int param, void *ptr);
 extern void func_020be9f8(void);
 
 typedef struct {

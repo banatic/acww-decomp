@@ -5,7 +5,7 @@
 extern int func_020abd44(int);
 extern int func_020abd2c(int);
 extern int func_020a80c4(int, int, int, int);
-extern void func_020a806c(int *, int *);
+extern int func_020a806c(int *, int *);
 
 struct func_020aaa74_s {
     int a;

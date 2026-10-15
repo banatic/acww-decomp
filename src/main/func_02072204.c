@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02064af4(void *dst, const void *src, unsigned int size);
+extern int func_02064af4(void *dst, const void *src, unsigned int size);
 extern unsigned char data_020e17f0[];
 
 void func_02072204(unsigned char *src)

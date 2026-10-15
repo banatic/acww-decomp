@@ -3,9 +3,9 @@
  */
 
 extern int data_021c526c;
-extern int func_02035170(int a, int b);
+extern void func_02035170(void *a, int b);
 
-int func_02035624(int arg)
+void func_02035624(int arg)
 {
-    return func_02035170(data_021c526c, arg);
+    func_02035170((void *) data_021c526c, arg);
 }

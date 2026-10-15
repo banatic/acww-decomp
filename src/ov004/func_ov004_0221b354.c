@@ -12,7 +12,7 @@ struct UnkStruct_0221b354_2 {
     struct UnkStruct_0221b354 *unk_12C;
 };
 extern void func_0203ee08(struct UnkStruct_0221b354_2 *obj, char *ptr);
-extern void func_0203e020(struct UnkStruct_0221b354_2 *obj);
+extern int func_0203e020(struct UnkStruct_0221b354_2 *obj);
 
 void func_ov004_0221b354(struct UnkStruct_0221b354_2 *obj)
 {

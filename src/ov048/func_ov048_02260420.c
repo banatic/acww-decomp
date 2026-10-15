@@ -3,8 +3,8 @@
  */
 
 extern unsigned int data_ov048_02264298;
-extern void func_ov048_022626f0(void *ptr);
-extern void func_0202ee5c(void *ptr);
+extern void *func_ov048_022626f0(void *ptr);
+extern void *func_0202ee5c(void *ptr);
 
 struct UnkStruct_02260420 {
     unsigned int unk_00;

@@ -3,12 +3,12 @@
  */
 
 extern unsigned char data_021fbdd8;
-extern void func_ov002_02208098(void *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov095_0229bf0c(void *ptr);
 extern int func_ov095_0229c548(void *ptr);
 extern int func_ov095_0229c448(void *ptr, int a, int b);
 extern void func_ov095_0229c8e4(void *ptr, int a);
-extern void func_ov111_0229f730(void *self, int a);
+extern int func_ov111_0229f730(void *self, int a);
 
 void func_ov111_022a0708(void *self)
 {
@@ -16,7 +16,7 @@ void func_ov111_022a0708(void *self)
     int r;
 
     if (data_021fbdd8 == 0) {
-        func_ov002_02208098(self, 0);
+        func_ov002_02208098((void *) (self), 0);
         return;
     }
     if (func_ov095_0229bf0c((char *) self + 0xac) == 0) {

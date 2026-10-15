@@ -8,10 +8,10 @@ extern void *data_020ccf94;
 extern int func_02073908(void *, int);
 extern int func_02008258(void *, int);
 extern int func_02051eac(void);
-extern void func_0200d4e8(void *, int, int, int);
-extern void func_ov004_022294a0(void *, int, int);
-extern void func_ov004_02229010(void *, int, int);
-extern void func_ov004_02229258(void *, int, int);
+extern int func_0200d4e8(void *, int, int, int);
+extern int func_ov004_022294a0(void *, int, int);
+extern int func_ov004_02229010(void *, int, int);
+extern int func_ov004_02229258(void *, int, int);
 
 void func_ov004_02229530(char *self)
 {

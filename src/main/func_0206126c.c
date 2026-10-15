@@ -20,10 +20,10 @@ typedef struct Child {
 
 extern void func_020614c8(void *p);
 extern void func_02053088(void *p);
-extern void __register_global_object(void *obj, void *dtor, void *node);
+extern void __register_global_object(void *, void *, void *);
 extern void *func_020614c4(void *p);
 extern void func_02052ee8(int a, int b, int c, int d, int e);
-extern void func_020051b0(void);
+extern void func_020051b0(void *);
 
 extern int data_021cb500;
 extern u16 data_021cb504[5];
@@ -48,30 +48,30 @@ void func_0206126c(UnkStruct_0206126c *self, int idx)
 
     if ((data_021cb500 & 1) == 0) {
         data_021cb504[0] = 0x113e;
-        __register_global_object(&data_021cb504[0], (void *) func_020051b0, &data_021cb570);
+        __register_global_object((void *) (&data_021cb504[0]), (((void *) func_020051b0)), (void *) (&data_021cb570));
         data_021cb504[1] = 0x113e;
-        __register_global_object(&data_021cb504[1], (void *) func_020051b0, &data_021cb594);
+        __register_global_object((void *) (&data_021cb504[1]), (((void *) func_020051b0)), (void *) (&data_021cb594));
         data_021cb504[2] = 0x113e;
-        __register_global_object(&data_021cb504[2], (void *) func_020051b0, &data_021cb588);
+        __register_global_object((void *) (&data_021cb504[2]), (((void *) func_020051b0)), (void *) (&data_021cb588));
         data_021cb504[3] = 0x113e;
-        __register_global_object(&data_021cb504[3], (void *) func_020051b0, &data_021cb57c);
+        __register_global_object((void *) (&data_021cb504[3]), (((void *) func_020051b0)), (void *) (&data_021cb57c));
         data_021cb504[4] = 0x113e;
-        __register_global_object(&data_021cb504[4], (void *) func_020051b0, &data_021cb51c);
+        __register_global_object((void *) (&data_021cb504[4]), (((void *) func_020051b0)), (void *) (&data_021cb51c));
         data_021cb500 |= 1;
     }
     self->unk_448 = data_021cb504[idx];
 
     if ((data_021cb4f8 & 1) == 0) {
         data_021cb510[0] = 0x1182;
-        __register_global_object(&data_021cb510[0], (void *) func_020051b0, &data_021cb528);
+        __register_global_object((void *) (&data_021cb510[0]), (((void *) func_020051b0)), (void *) (&data_021cb528));
         data_021cb510[1] = 0x1182;
-        __register_global_object(&data_021cb510[1], (void *) func_020051b0, &data_021cb534);
+        __register_global_object((void *) (&data_021cb510[1]), (((void *) func_020051b0)), (void *) (&data_021cb534));
         data_021cb510[2] = 0x1182;
-        __register_global_object(&data_021cb510[2], (void *) func_020051b0, &data_021cb540);
+        __register_global_object((void *) (&data_021cb510[2]), (((void *) func_020051b0)), (void *) (&data_021cb540));
         data_021cb510[3] = 0x1182;
-        __register_global_object(&data_021cb510[3], (void *) func_020051b0, &data_021cb54c);
+        __register_global_object((void *) (&data_021cb510[3]), (((void *) func_020051b0)), (void *) (&data_021cb54c));
         data_021cb510[4] = 0x1182;
-        __register_global_object(&data_021cb510[4], (void *) func_020051b0, &data_021cb558);
+        __register_global_object((void *) (&data_021cb510[4]), (((void *) func_020051b0)), (void *) (&data_021cb558));
         data_021cb4f8 |= 1;
     }
     self->unk_44A = data_021cb510[idx];

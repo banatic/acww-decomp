@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_020984e8(int a);
+extern int func_020984e8(void);
 extern int func_02099670(int a);
 extern int func_020a12e8(void);
 extern int func_0200338c(int a, int b);
@@ -28,7 +28,7 @@ void func_ov004_02224440(int arg, char *out)
     int c;
     // ENDDECLS
 
-    a = func_02099670(func_020984e8(arg));
+    a = func_02099670(func_020984e8());
     if (func_020a12e8() != 0) {
         *(int *) out = data_ov004_02254594[1];
         out[4] = 0x1f;

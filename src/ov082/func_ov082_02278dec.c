@@ -16,10 +16,10 @@ extern unsigned short *func_02099870(void *);
 extern int memcmp(const void *, const void *, int);
 extern int func_0209518c(void *, void *);
 extern int func_02003704(void *);
-extern void func_02094fd4(void *);
-extern void func_02003618(void *, void *);
+extern void *func_02094fd4(void *);
+extern int func_02003618(void *, void *);
 extern void func_02068404(void *, int, void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fbc(void *);
 
 extern unsigned char data_021f3aa4[];
 

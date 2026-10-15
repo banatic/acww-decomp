@@ -4,7 +4,7 @@
 
 extern unsigned char data_020e54a8;
 extern "C" int func_0204bbd4(int);
-extern "C" void func_020b30e8(int, int);
+extern "C" int func_020b30e8(int, int);
 
 class VirtualObj {
   public:

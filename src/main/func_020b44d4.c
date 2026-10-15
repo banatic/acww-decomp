@@ -4,8 +4,8 @@
 
 extern unsigned char data_020d2084[];
 extern unsigned char data_020e52f4[];
-extern void func_020b49d4(void *a, unsigned char *b, unsigned char *c);
-extern void func_020b4a20(void *a, unsigned char *b, unsigned char *c);
+extern void *func_020b49d4(void *a, unsigned char *b, unsigned char *c);
+extern int func_020b4a20(void *a, unsigned char *b, unsigned char *c);
 
 void func_020b44d4(void *a, int idx, int cond)
 {

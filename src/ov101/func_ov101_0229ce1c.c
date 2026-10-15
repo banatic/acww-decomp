@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov101_0229ce38(int);
+extern int func_ov101_0229ce38(int, unsigned int arg1);
 
 int func_ov101_0229ce1c(int a1, int a2)
 {
@@ -10,7 +10,7 @@ int func_ov101_0229ce1c(int a1, int a2)
     int result;
 
     r4 = a2;
-    if (func_ov101_0229ce38(a1) != 0) {
+    if (func_ov101_0229ce38(a1, a2) != 0) {
         result = (unsigned char) r4;
     } else {
         result = 0;

@@ -21,7 +21,7 @@ extern int func_020951bc(void *o);
 extern int func_0209bc40(void *x);
 extern int func_0209b8d0(int kind);
 extern u16 *func_0209b8c4(void *h);
-extern Pair *func_0209b8c8(void *h);
+extern Pair *func_0209b8c8(void *record);
 extern int func_0209e3ac(void *p2, Pair *pr, int m);
 extern int func_0209e350(Pair *pr, void *p2);
 

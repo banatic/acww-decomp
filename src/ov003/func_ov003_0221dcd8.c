@@ -3,8 +3,8 @@
  */
 
 extern int func_ov003_0221dd0c(void);
-extern int func_ov003_022203dc(int x);
-extern void func_02064328(char *a, char *b, signed char c, int d);
+extern int func_ov003_022203dc(void);
+extern int func_02064328(char *a, char *b, signed char c, int d);
 extern char data_ov003_0223c998[];
 extern char data_ov003_02239390[];
 extern signed char data_ov003_02236654[];
@@ -12,7 +12,7 @@ extern signed char data_ov003_02236654[];
 void *func_ov003_0221dcd8(void)
 {
     int x = func_ov003_0221dd0c();
-    int y = func_ov003_022203dc(x);
+    int y = func_ov003_022203dc();
     func_02064328(data_ov003_0223c998, data_ov003_02239390, data_ov003_02236654[x & 0xF], y);
     return data_ov003_0223c998;
 }

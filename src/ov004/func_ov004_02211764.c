@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_022118bc(char *self, int a);
+extern int func_ov004_022118bc(char *self, int a);
 void func_ov004_02211764(char *self)
 {
     if (*(u16 *) (self + 0x852) == 0) {

@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_0200db84(void) {}
+void func_0200db84(void *object, int event) {}

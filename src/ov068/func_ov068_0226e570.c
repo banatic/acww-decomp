@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(int, void *);
+extern int func_020984e8(void);
 extern void func_02098fd0(int, int);
 extern int data_ov068_0227733c;
 
@@ -14,7 +14,7 @@ typedef struct {
 void func_ov068_0226e570(int arg0, UnkStruct_ov068 *arg1)
 {
     int ret;
-    ret = func_020984e8(arg0, arg1);
+    ret = func_020984e8();
     if (ret != 0) {
         func_02098fd0(ret, 0x23);
     }

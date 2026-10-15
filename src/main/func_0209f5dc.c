@@ -11,8 +11,8 @@ extern int func_02074150(void);
 extern void func_02068358(void *);
 extern void func_02068434(void *);
 extern void func_020a6f20(int, int);
-extern void func_020a6f00(void);
-extern void func_020a6ef0(void);
+extern int func_020a6f00(void);
+extern void func_020a6ef0(void *);
 extern void func_0206844c(void *, unsigned char *, const void *);
 extern void func_020a01e0(int);
 extern void func_0209f820(UnkStruct_0209f5dc *, int);
@@ -30,8 +30,7 @@ void func_0209f5dc(UnkStruct_0209f5dc *this)
         func_02068434(o);
         if (r == 5) {
             func_020a6f20(0, 6);
-            func_020a6f00();
-            func_020a6ef0();
+            func_020a6ef0((void *) func_020a6f00());
             func_0206844c(o, &data_021f43e8, (const void *) 0);
             func_020a01e0(0);
             func_0209f820(this, 3);

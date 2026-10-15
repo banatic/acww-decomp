@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int memcmp(void);
+extern int memcmp(const void *a, const void *b, unsigned int size);
 
-int func_02064344(void)
+int func_02064344(const void *a, const void *b, unsigned int size)
 {
     int result;
-    if (memcmp() != 0) {
+    if (memcmp(a, b, size) != 0) {
         result = 1;
     } else {
         result = 0;

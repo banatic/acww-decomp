@@ -14,12 +14,12 @@ typedef struct Overlay104Data {
 extern void func_ov104_0229c344(Overlay104Data *self, int a);
 extern void func_ov002_02208d30(void *ptr, int size);
 extern int func_ov104_0229d8f8(Overlay104Data *self, int param);
-extern int func_0206fe54(int x);
-extern void func_ov002_02208d4c(void *ptr, int a, int b);
+extern int func_0206fe54(void);
+extern int func_ov002_02208d4c(void *ptr, int a, int b);
 extern int func_02065ec0(int x);
 extern int func_02065f18(int x);
 extern void func_ov104_0229d378(Overlay104Data *self);
-extern void func_ov002_02207d24(void *ptr, int v);
+extern int func_ov002_02207d24(void *ptr, int v);
 extern void func_ov104_0229d010(Overlay104Data *self, int param);
 
 void func_ov104_0229cf14(Overlay104Data *self, int param1, int param2)
@@ -31,7 +31,7 @@ void func_ov104_0229cf14(Overlay104Data *self, int param1, int param2)
     self->b9 = param1;
     func_ov002_02208d30(&self->unk_28EC, 4);
     result = func_ov104_0229d8f8(self, param1);
-    if (func_0206fe54(result)) {
+    if (func_0206fe54()) {
         func_ov002_02208d4c(&self->unk_28EC, 0, 0);
     }
     v5 = func_02065ec0(result);

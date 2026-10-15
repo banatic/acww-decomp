@@ -14,10 +14,10 @@ typedef struct {
 extern void *func_02096190(void *obj);
 extern void func_ov003_0222933c(char *self, void *o, Vec3 *v);
 extern int func_0205fb28(Vec3 *w, int a, void *b, void *c, int d);
-extern void func_ov003_0222a88c(char *self, void *obj);
+extern int func_ov003_0222a88c(char *self, void *obj);
 extern void func_0209549c(UnkStruct_022298f0 *m, void *obj);
 extern void func_ov003_02219668(UnkStruct_022298f0 *m, Vec3 *axis);
-extern void func_0203f7d0(Vec3 *a, Vec3 *b);
+extern int func_0203f7d0(Vec3 *a, Vec3 *b);
 
 int func_ov003_022298f0(char *self, void *obj)
 {

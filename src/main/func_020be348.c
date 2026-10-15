@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_020bf064(void *);
+extern int func_020bf064(void *, int);
 
 typedef struct {
     u32 unk_00;
@@ -26,7 +26,7 @@ void func_020be348(u8 *base)
             if (f0 == 0x34) {
                 p->unk_09 = 0;
             } else if (p->unk_08 == 0) {
-                func_020bf064(end);
+                func_020bf064(end, f0);
             }
         }
         p++;

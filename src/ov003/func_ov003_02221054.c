@@ -3,7 +3,7 @@
  */
 
 extern char data_ov003_0223cfe4;
-void func_ov003_022213f8(void *p, void *a, void *b, void *c, int d, unsigned int e, int f, int g);
+int func_ov003_022213f8(void *p, void *a, void *b, void *c, int d, unsigned int e, int f, int g);
 
 typedef struct {
     unsigned int a, b;

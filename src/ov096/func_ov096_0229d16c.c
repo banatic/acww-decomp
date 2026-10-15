@@ -4,7 +4,7 @@
 
 extern void RtcSendPxiCommand(int);
 extern void func_ov002_022096d8(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov096_0229ddd8(void *);
 
 void func_ov096_0229d16c(void *r0)
@@ -13,6 +13,6 @@ void func_ov096_0229d16c(void *r0)
     RtcSendPxiCommand(0x28);
     *(unsigned char *) ((char *) r4 + 0xbe) = 0xf;
     func_ov002_022096d8((char *) r4 + 0x2564, 1);
-    func_ov002_02208098(r4, 0x24);
+    func_ov002_02208098((void *) (r4), 0x24);
     func_ov096_0229ddd8(r4);
 }

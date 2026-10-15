@@ -37,7 +37,7 @@ struct UnkStruct_0226c910 {
     unsigned char b1 : 1;
 };
 
-extern "C" int func_020984e8(int);
+extern "C" int func_020984e8(void);
 extern "C" int func_02099020(int, int);
 extern "C" struct UnkStruct_0226c910 *func_0207f270(int);
 extern "C" int func_0207d578(int, int);
@@ -49,7 +49,7 @@ extern "C" int func_ov068_0226c910(int a0, UnkStruct_0226c910_2 *obj)
     int r6;
     int r4;
 
-    r0 = func_020984e8(a0);
+    r0 = func_020984e8();
     if (r0 != 0) {
         r0 = func_02099020(r0, 1);
     } else {

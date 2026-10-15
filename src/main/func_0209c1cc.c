@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209dffc(int a, int b, int c);
+extern int func_0209dffc(int a);
 extern int func_0209c380(int a);
 extern int func_0209e350(int a, int b);
 extern unsigned int _s32_div_f(unsigned int a, unsigned int b);
@@ -11,7 +11,7 @@ int func_0209c1cc(int a, int b, unsigned int c)
 {
     int t;
 
-    if (func_0209dffc(a, b, c) != 0) {
+    if (func_0209dffc(a) != 0) {
         goto ret0;
     }
     if (func_0209c380(a) == 0) {

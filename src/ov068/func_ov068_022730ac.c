@@ -7,11 +7,11 @@ typedef struct {
     unsigned short unk_59A;
 } Something;
 
-extern void func_ov068_022732bc(Something *obj, int a, int b);
+extern void func_ov068_022732bc(Something *obj, int a);
 
 int func_ov068_022730ac(Something *obj)
 {
     obj->unk_59A = 0;
-    func_ov068_022732bc(obj, 1, 0);
+    func_ov068_022732bc(obj, 1);
     return 1;
 }

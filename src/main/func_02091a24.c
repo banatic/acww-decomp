@@ -10,7 +10,7 @@ extern unsigned char data_021d52d8[];
 extern int data_020d1840;
 extern int data_020d184c;
 extern int data_020d178c;
-extern void func_02094bcc(void *, void *, void *);
+extern int func_02094bcc(void *, void *, void *);
 
 void func_02091a24(void *self)
 {

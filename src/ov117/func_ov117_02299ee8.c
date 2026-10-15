@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_0204e414(void *p);
+extern int func_0204e414(void);
 extern int func_0204f3e4(int a, void *b, void *c, void *d, void *e, void *f, void *g, int h, int i);
 extern void func_0204f800(void *a, void *b, u32 c, u32 d, u32 e, u32 f);
 extern int func_020b3b50(void *p);
@@ -27,7 +27,7 @@ void func_ov117_02299ee8(void *self)
     int v;
     int ret3;
 
-    v = func_0204e414(self);
+    v = func_0204e414();
     if (v == 0) {
         return;
     }

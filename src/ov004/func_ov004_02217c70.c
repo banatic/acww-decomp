@@ -3,10 +3,10 @@
  */
 
 extern void func_0203ee08(void *self, void *p);
-extern void func_0203e020(void *self);
+extern int func_0203e020(void *self);
 extern int func_020b5e10(void);
 extern int func_020b6434(int a, int b, int c, int d);
-extern void func_020a1948(int a);
+extern void func_020a1948(void);
 
 void func_ov004_02217c70(char *self)
 {
@@ -20,6 +20,7 @@ void func_ov004_02217c70(char *self)
         }
         func_0203ee08(self, q);
         func_0203e020(self);
-        func_020a1948(func_020b6434(func_020b5e10(), 0x2e, 2, 0));
+        func_020b6434(func_020b5e10(), 0x2e, 2, 0);
+        func_020a1948();
     }
 }

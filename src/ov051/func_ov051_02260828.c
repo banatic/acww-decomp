@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern int func_02099870(void);
+extern int func_020984e8(void);
+extern int func_02099870(int argument0);
 extern void func_020950c8(int, int);
 extern int func_020a12c0(void);
 extern void func_0206844c(unsigned int, unsigned char *, int);
@@ -22,8 +22,8 @@ void func_ov051_02260828(struct UnkStruct_02260828 *self, int which)
 
     switch (which) {
         case 0:
-            func_020984e8();
-            func_020950c8(func_02099870(), 0);
+
+            func_020950c8(func_02099870((int) func_020984e8()), 0);
             if (func_020a12c0()) {
                 buf[0] = func_ov051_022605e8(self, 0x19);
                 func_0206844c(self->unk_40, buf, data_ov051_022615c0);
@@ -33,8 +33,8 @@ void func_ov051_02260828(struct UnkStruct_02260828 *self, int which)
             }
             break;
         case 1:
-            func_020984e8();
-            func_020950c8(func_02099870(), 1);
+
+            func_020950c8(func_02099870((int) func_020984e8()), 1);
             buf[2] = 0xe;
             func_0206844c(self->unk_40, &buf[2], data_ov051_022615c0);
             break;

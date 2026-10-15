@@ -5,15 +5,15 @@
 #include "types.h"
 
 extern int func_ov002_02208054(void *self, int a);
-extern void func_ov144_0229a7e8(void *self);
+extern unsigned char *func_ov144_0229a7e8(void *self);
 extern u8 data_021fbdd8;
 extern u8 data_021fbddc;
 extern u8 data_021f6c58;
 extern u8 data_021f6c54;
 extern int func_ov144_02299a30(void *self, int a, int b);
-extern void func_ov144_02299ac4(void *self, int n);
+extern int func_ov144_02299ac4(void *self, int n);
 extern int func_ov144_0229a540(void *self, int a, int b);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov002_0220a574(void *p);
 
 void func_ov144_0229ab88(char *self)

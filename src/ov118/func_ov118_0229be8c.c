@@ -12,10 +12,10 @@ extern const u8 data_ov118_0229cce8[];
 extern const u8 data_ov118_0229cd00[];
 extern const u8 data_ov118_0229cd18[];
 
-extern void func_02002d14(const void *a0, void *a1, int a2, int a3, int a4, int a5);
-extern void func_02002c6c(const void *a0, void *a1, int a2, int a3, int a4, int a5);
-extern void func_02064af4(const void *src, void *dst, int size);
-extern void func_02002b40(void *buf, int val, int size, int flag);
+extern int func_02002d14(const void *a0, void *a1, int a2, int a3, int a4, int a5);
+extern int func_02002c6c(const void *a0, void *a1, int a2, int a3, int a4, int a5);
+extern int func_02064af4(const void *src, void *dst, int size);
+extern int func_02002b40(void *buf, int val, int size, int flag);
 extern void func_0206fdd4(void *buf, int a, int b, int c, int d, int e);
 
 typedef struct {

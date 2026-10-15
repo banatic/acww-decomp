@@ -7,7 +7,7 @@ struct UnkStruct_0229ca50;
 extern int func_ov114_0229c1b8(struct UnkStruct_0229ca50 *a, int b);
 extern void func_ov114_0229c6f8(struct UnkStruct_0229ca50 *a, unsigned char b);
 extern void RtcSendPxiCommand(int cmd);
-extern int _s32_div_f(int a, int b, int c);
+extern int _s32_div_f(int numerator, int denominator);
 
 struct UnkStruct_0229ca50 {
     char pad_00[0x127c];
@@ -44,7 +44,7 @@ int func_ov114_0229ca50(struct UnkStruct_0229ca50 *a, int b, int c)
         x = 0;
     }
 
-    r4 = _s32_div_f(x, 0x1b, v);
+    r4 = _s32_div_f(x, 0x1b);
 
     limit = a->unk_1294;
     if (r4 >= limit) {

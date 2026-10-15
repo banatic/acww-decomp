@@ -5,7 +5,7 @@
 extern void func_ov117_022999fc(int);
 extern void func_ov117_0229a2c8(char *);
 extern void func_ov117_022999a0(char *, char *);
-extern void func_02002a88(char *, int, int, int, int);
+extern int func_02002a88(char *, int, int, int, int);
 extern void func_ov118_0229b120(char *, char *);
 
 void func_ov118_0229be04(char *p)

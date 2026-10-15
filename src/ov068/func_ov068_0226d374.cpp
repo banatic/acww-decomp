@@ -37,7 +37,7 @@ extern "C" int func_02003704(int);
 extern "C" int func_0207f270(int);
 extern "C" int func_020794cc(int);
 extern "C" int func_0207f1c8(int);
-extern "C" int func_0209b5ec(int);
+extern "C" int func_0209b5ec(void *object);
 extern "C" void func_0209e474(int *);
 extern "C" int func_0209c38c(int);
 extern "C" int func_0209c330(int);
@@ -59,7 +59,7 @@ extern "C" void func_ov068_0226d374(UnkStruct_0226d374 *self)
         return;
     }
     r4 = func_020794cc(func_0207f270(obj));
-    obj = func_0209b5ec(func_0207f1c8(obj));
+    obj = func_0209b5ec((void *) (func_0207f1c8(obj)));
     local[0] = 0;
     local[1] = 0;
     func_0209e474(local);

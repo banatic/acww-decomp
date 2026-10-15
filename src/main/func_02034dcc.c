@@ -4,8 +4,8 @@
 
 extern int func_0203735c(void *);
 extern int func_020b6840(int);
-extern int func_020b6660(int);
-extern int func_020b22b8(int);
+extern int func_020b6660(void);
+extern int func_020b22b8(void);
 extern void *func_0203734c(void *);
 extern void func_0206e9bc(void *);
 
@@ -25,8 +25,8 @@ void func_02034dcc(UnkStruct_02034dcc *s)
         if (a == 0) {
             r4 = 0;
         }
-        b = func_020b6660(a);
-        if (b != 0 && func_020b22b8(b) != 0) {
+        b = func_020b6660();
+        if (b != 0 && func_020b22b8() != 0) {
             r4 = 0;
         }
         if (s->unk_2F4 != 0) {

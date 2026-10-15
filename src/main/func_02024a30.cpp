@@ -23,7 +23,7 @@ extern "C" void func_0206844c(int a, void *b, int c);
 
 extern "C" void *func_0202d9c4(UnkStruct_02024a30_2 *);
 extern "C" int func_0209bc40(void *);
-extern "C" void func_0202d730(UnkStruct_02024a30_2 *);
+extern "C" int func_0202d730(UnkStruct_02024a30_2 *);
 extern "C" void func_02024a30(UnkStruct_02024a30_2 *self)
 {
     unsigned char arg;

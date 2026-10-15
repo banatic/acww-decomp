@@ -10,10 +10,10 @@ extern int func_0202e1fc(void *self);
 extern UnkStruct_022765b0 data_ov068_02278064;
 extern void func_ov068_022764b4(void *self);
 extern void func_02013c0c(void *p);
-extern void func_020b65b8(void);
-extern int func_020b6674(void);
-extern void func_ov068_02275c78(void *self, int flag);
-extern int func_ov068_0227629c(void *p);
+extern unsigned char func_020b65b8(void);
+extern int func_020b6674(int code);
+extern int func_ov068_02275c78(void *self, int flag);
+extern int func_ov068_0227629c(void);
 extern void func_020b23d4(void);
 extern int func_020644cc(int);
 extern void func_0205ba64(void *buf);
@@ -38,11 +38,17 @@ int func_ov068_022765b0(void *self)
     *(char *) ((char *) self + 0xa5c) = 3;
     *(unsigned char *) ((char *) self + 0xa60) = 0xb0;
 
-    func_020b65b8();
-    if (func_020b6674() != 0) {
+    if (func_020b6674(func_020b65b8()) != 0) {
         func_ov068_02275c78(self, 0);
     } else {
-        if (func_ov068_0227629c((char *) self + 0x89c) != 0) {
+        // clang-format off
+        asm {
+            ldr r0, =0x89c
+            add r0, self, r0
+        }
+        // clang-format on
+        if (func_ov068_0227629c() != 0)
+        {
             func_020b23d4();
             v0 = func_020644cc(0x14);
             *(short *) ((char *) self + 0xa5e) = (short) ((v0 + 0x28) * 0x3c);
@@ -53,7 +59,9 @@ int func_ov068_022765b0(void *self)
             *(int *) ((char *) self + 0xa54) = v0;
             func_ov068_02275c78(self, 6);
             func_0205ba60(buf);
-        } else {
+        }
+        else
+        {
             v0 = func_020644cc(0x28);
             *(short *) ((char *) self + 0xa5e) = (short) ((v0 + 0x3c) * 0x3c);
             v1 = func_020644cc(4);

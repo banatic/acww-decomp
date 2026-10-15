@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b65c4(void);
-extern unsigned int func_020b5e04(void);
-extern unsigned int func_020b5df8(void);
+extern unsigned char func_020b65c4(void);
+extern unsigned int func_020b5e04(unsigned int);
+extern unsigned int func_020b5df8(unsigned int);
 extern unsigned int func_02085f08(void);
 extern unsigned int func_0205f63c(void);
 extern unsigned int func_020ea0e0(unsigned int, unsigned int);
@@ -23,8 +23,7 @@ void func_0205f3b4(UnkStruct_0205f3b4 *data)
     unsigned int a;
     unsigned int b;
     unsigned int end;
-    func_020b65c4();
-    count = func_020b5e04();
+    count = func_020b5e04((unsigned int) func_020b65c4());
     if (cnt < count) {
         count = cnt;
     }
@@ -35,8 +34,7 @@ void func_0205f3b4(UnkStruct_0205f3b4 *data)
     if (count == 0) {
         count = 1;
     }
-    func_020b65c4();
-    a = func_020b5df8();
+    a = func_020b5df8((unsigned int) func_020b65c4());
     b = func_02085f08();
     end = (a + b) - count;
     end = end + 4;

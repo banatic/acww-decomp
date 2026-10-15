@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02070490(int value);
-int func_02070438(unsigned char *data)
+extern void func_02070490(int value);
+void func_02070438(unsigned char *data, int player)
 {
-    return func_02070490(*data - 0x12);
+    func_02070490(*data - 0x12);
 }

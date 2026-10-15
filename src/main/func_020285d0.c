@@ -4,8 +4,7 @@
 
 extern unsigned int func_0208150c(unsigned int x);
 extern unsigned int func_020036e8(unsigned int x);
-extern void func_0202da38(void *a, unsigned char *b, unsigned char *c, int d, unsigned int e, unsigned int f, unsigned char g,
-                          int h, int i);
+extern int func_0202da38(void *a, unsigned char *b, unsigned char *c, int d, int base, int offset, int scale, int h, int i);
 
 typedef struct {
     unsigned char pad_00[0xC8];

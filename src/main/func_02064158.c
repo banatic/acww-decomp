@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_020de67c;
-extern void func_020a887c(void *);
+extern void *func_020a887c(void *);
 
 void *func_02064158(void *arg)
 {

@@ -3,10 +3,10 @@
  */
 
 extern unsigned char data_020e21d4;
-extern void func_0208df44(void *);
-extern void func_0208d338(void *);
-extern void func_0208c1dc(void *);
-extern void func_0208bbbc(void *);
+extern void *func_0208df44(void *);
+extern void *func_0208d338(void *);
+extern void *func_0208c1dc(void *);
+extern void *func_0208bbbc(void *);
 
 typedef struct {
     void *unk_00;

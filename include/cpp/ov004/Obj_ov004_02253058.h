@@ -7,7 +7,7 @@
 // vtable 0x02253058: room object
 struct Obj_ov004_02253058 : public RoomObject {
     virtual ~Obj_ov004_02253058();
-    virtual void vfunc_70(int a, int b);
+    virtual int vfunc_70(int a, int b);
     // Base_02066994 slots; also appended after that vtable
     virtual void vfunc_02066994_14(); // func_ov004_022178fc
     virtual void vfunc_02066994_18(); // func_ov004_02217864

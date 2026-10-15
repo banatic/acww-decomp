@@ -9,7 +9,7 @@ struct UnkStruct_0203668c {
     unsigned short unk_0A;
 };
 
-extern int func_020b65c4(struct UnkStruct_0203668c *s);
+extern int func_020b65c4(void);
 extern int func_02036754(int a);
 extern void func_020366c0(struct UnkStruct_0203668c *s);
 extern void func_020366e0(struct UnkStruct_0203668c *s, int a);
@@ -19,7 +19,7 @@ void func_0203668c(struct UnkStruct_0203668c *s)
     int a;
     int b;
 
-    a = func_020b65c4(s);
+    a = func_020b65c4();
     if (s->unk_08 == a) {
         return;
     }

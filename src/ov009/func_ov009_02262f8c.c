@@ -7,7 +7,7 @@ struct UnkStruct_02262f8c {
     char flag;
 };
 
-extern void func_020f539c(struct UnkStruct_02262f8c *p);
+extern void *func_020f539c(struct UnkStruct_02262f8c *p);
 
 void *func_ov009_02262f8c(struct UnkStruct_02262f8c *obj)
 {

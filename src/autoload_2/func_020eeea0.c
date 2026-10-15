@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020eeea0(void) {}
+void func_020eeea0(void *memory, unsigned int size, unsigned int data1, unsigned int data2) {}

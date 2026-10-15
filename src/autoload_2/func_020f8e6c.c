@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_SndPlayerReadVariable(char *ptr, int val, short *out);
+extern int NNS_SndPlayerReadVariable(char *ptr, int val, short *out);
 
 struct UnkStruct_020f8e6c {
     char pad_00[8];

@@ -13,8 +13,12 @@ typedef struct UnkStruct_0229ea5c {
 extern int func_ov002_02209f3c(void *);
 extern int func_ov002_02209f14(void *);
 
-void func_ov096_0229ea5c(UnkStruct_0229ea5c *self)
+int func_ov096_0229ea5c(UnkStruct_0229ea5c *self)
 {
     self->unk_A4 = func_ov002_02209f3c(self->unk_2500) - 2;
-    self->unk_A8 = func_ov002_02209f14(self->unk_2500) - 4;
+    {
+        int result = func_ov002_02209f14(self->unk_2500) - 4;
+        self->unk_A8 = result;
+        return result;
+    }
 }

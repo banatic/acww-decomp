@@ -14,9 +14,9 @@ struct UnkStruct_0207f76c {
 };
 
 extern void func_02061b1c(struct UnkStruct_0207f76c *, u16 *, int);
-extern void func_0207f1c8(struct UnkStruct_0207f76c_2 *);
-extern int func_0209b5ec(void);
-extern int func_0209c330(void);
+extern unsigned int func_0207f1c8(struct UnkStruct_0207f76c_2 *);
+extern int func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern int func_0209c2c0(int);
 extern int func_0204bcdc(struct UnkStruct_0207f76c *);
 extern int func_0207fc34(struct UnkStruct_0207f76c_2 *, u16 *, int);
@@ -24,7 +24,7 @@ extern int func_02053bc0(struct UnkStruct_0207f76c *);
 extern int func_0207f8a0(struct UnkStruct_0207f76c_2 *, u16 *, int, int, int, int);
 extern int func_0207fad0(struct UnkStruct_0207f76c_2 *, int, int, int, int);
 extern int func_0207ffa0(struct UnkStruct_0207f76c_2 *, int);
-extern void func_0207fb70(u16 *);
+extern int func_0207fb70(u16 *);
 extern void func_0207f2f4(struct UnkStruct_0207f76c_2 *, u8);
 extern void func_0207f2e8(struct UnkStruct_0207f76c_2 *, u8);
 
@@ -36,9 +36,8 @@ int func_0207f76c(struct UnkStruct_0207f76c_2 *o, u16 *p)
 
     if (*p != 0xfff1) {
         func_02061b1c(&loc, p, 1);
-        func_0207f1c8(o);
-        a = func_0209b5ec();
-        b = func_0209c330();
+        a = func_0209b5ec((void *) func_0207f1c8(o));
+        b = func_0209c330((unsigned char *) a);
         c = func_0209c2c0(a);
         if (func_0204bcdc(&loc)) {
             r = func_0207fc34(o, p, b);

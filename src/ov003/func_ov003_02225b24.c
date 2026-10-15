@@ -24,9 +24,9 @@ extern void func_020e9774(Mtx *m, int a);
 extern void func_020e97a4(Mtx *m, int a, int b, int c);
 extern void func_020e9838(Mtx *m, int x, int y, int z);
 extern int func_0204c63c(Draw *d);
-extern void func_ov003_02225474(void *g, Draw *d, Mtx m);
-extern void func_ov003_02225598(void *g, Draw *d, Mtx m);
-extern void func_ov003_022251e8(void *g, Draw *d, Mtx m);
+extern void *func_ov003_02225474(void *g, Draw *d, Mtx m);
+extern char *func_ov003_02225598(void *g, Draw *d, Mtx m);
+extern void *func_ov003_022251e8(void *g, Draw *d, Mtx m);
 extern void func_ov003_022251a4(void *g, int v, Mtx m);
 
 void func_ov003_02225b24(void *self, u16 id, Vec3 *src, Vec3 *sc, short s1, short s2, short s3)

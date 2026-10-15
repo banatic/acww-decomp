@@ -19,10 +19,10 @@ extern void ENV_AppendResourceSet(ENVResource *resSet);
 
 extern void ENV_SetResourceSet(ENVResource *resSet);
 
-extern void func_020f6f3c(void);
+extern void func_020f6f3c(void *resSet);
 
 void ENV_SetResourceSet(ENVResource *resSet)
 {
-    func_020f6f3c();
+    func_020f6f3c(resSet);
     ENV_AppendResourceSet(resSet);
 }

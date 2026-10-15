@@ -17,11 +17,11 @@ extern void *data_021fbf0c; // 0x021fbf0c
 extern u64 OS_GetTick(void);
 #define OS_TicksToMilliSeconds(t) (((u64) (t) << 6) / 0x82eaULL)
 
-extern void func_020eba18(void);
-extern void UTi_PutString(void *p);
+extern int func_020eba18(void);
+extern int UTi_PutString(void *p);
 extern int func_ov065_02277cbc(void);
 extern int func_ov065_02277c28(void);
-extern void func_ov065_0227f710(void);
+extern int func_ov065_0227f710(void);
 extern void func_ov065_022781e4(void);
 extern int func_ov065_0227f22c(void);
 

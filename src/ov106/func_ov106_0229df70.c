@@ -3,13 +3,13 @@
  */
 
 extern int func_0208e484(void *);
-extern int func_ov106_0229ca3c(void *);
-extern void func_ov002_02208098(void *, int);
+extern void func_ov106_0229ca3c(void *);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov106_0229df70(void *arg0)
 {
     if (func_0208e484((char *) arg0 + 0x22a0)) {
         func_ov106_0229ca3c(arg0);
-        func_ov002_02208098(arg0, 7);
+        func_ov002_02208098((void *) (arg0), 7);
     }
 }

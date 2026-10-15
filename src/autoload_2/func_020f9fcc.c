@@ -13,7 +13,7 @@ typedef struct {
     u8 unk_0F;
 } Self3;
 
-extern void func_020eed18(int, int);
+extern int func_020eed18(int, int);
 extern int NNS_SndArcPlayerStartSeq(void *handle, int seqNo);
 
 void func_020f9fcc(Self3 *self, int mode)

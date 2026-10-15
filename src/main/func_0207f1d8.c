@@ -9,8 +9,8 @@ typedef struct UnkStruct_0207f1d8 {
 
 extern UnkStruct_0207f1d8 *data_020ccf94;
 
-extern void func_0208150c(void *);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(void *);
+extern int func_02003704(void *);
 extern int func_0207f270(void *);
 extern int func_02073dd4(UnkStruct_0207f1d8 *, int);
 extern int func_020794d8(int);
@@ -20,8 +20,7 @@ int func_0207f1d8(void *a)
 {
     int r = 0;
 
-    func_0208150c(a);
-    if (func_02003704()) {
+    if (func_02003704((void *) func_0208150c(a))) {
         r = func_0207f270(a);
         if (func_02073dd4(data_020ccf94, data_020ccf94->unk_64)) {
             if (func_020794d8(r) == 2) {

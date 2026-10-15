@@ -8,8 +8,9 @@
 extern u8 data_ov004_02257fc4[], data_ov004_02254298[], data_ov004_022542a4[];
 extern void *func_0206837c(void *), *func_0208150c(void *);
 extern int func_020ab504(void *), func_020644cc(int), func_ov004_02222a30(u16 *, int);
-extern u16 func_0206f9d8(int (*)(u16 *, int));
-extern void func_0200366c(void *, void *, int, void *), func_0206844c(void *, u8 *, void *);
+extern unsigned short func_0206f9d8(int (*predicate)(unsigned short *, int));
+extern int func_0200366c(void *, void *, int, void *);
+extern void func_0206844c(void *, u8 *, void *);
 void func_ov004_0222224c(u8 *self)
 {
     u8 messages[6];

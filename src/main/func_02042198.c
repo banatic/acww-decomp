@@ -6,9 +6,9 @@ extern struct {
     char pad[12];
     int field;
 } data_021c75b8;
-extern int func_02001aac(int arg);
+extern void func_02001aac(int arg);
 
-int func_02042198(void)
+void func_02042198(void)
 {
-    return func_02001aac(data_021c75b8.field);
+    func_02001aac(data_021c75b8.field);
 }

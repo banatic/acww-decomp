@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02086874(void);
+extern void func_02086874(void *);
 extern void func_0209df64(void *);
 
 void func_0208683c(void *param)
@@ -12,7 +12,7 @@ void func_0208683c(void *param)
     void *r4;
 
     r4 = param;
-    func_02086874();
+    func_02086874(param);
     func_0209df64(&sp);
     a = ((unsigned char *) &sp)[2];
     ((unsigned char *) r4)[0x46] = a;

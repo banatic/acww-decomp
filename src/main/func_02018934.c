@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020164cc(char *p);
+extern int func_020164cc(char *p, int);
 extern void func_02019af0(void *self, int v);
 
 struct UnkStruct_02018934 {
@@ -28,7 +28,7 @@ void func_02018934(void *self, struct UnkStruct_02018934 *st)
             break;
         case 1:
         case 3:
-            result = func_020164cc((char *) st + 0x334);
+            result = func_020164cc((char *) st + 0x334, (int) st);
             break;
         default:
             break;

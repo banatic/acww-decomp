@@ -7,10 +7,10 @@ extern int func_02008258(void *p, int v);
 extern int func_02073908(int a, int b);
 extern int func_02099e9c(unsigned short *p);
 extern void func_0200f268(void *p, int _x);
-extern void func_02095694(int a, int b);
+extern int func_02095694(int a, int b);
 extern void func_0209a050(int a);
-extern void func_ov003_02217c5c(void *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_0200d4e8(void *p, int a, int b, int c);
+extern int func_ov003_02217c5c(void *p, int a, int b, int c, int d, int e, int f, int g);
+extern int func_0200d4e8(void *p, int a, int b, int c);
 extern int data_020ccf94;
 
 void func_ov003_0220dc0c(void *self)

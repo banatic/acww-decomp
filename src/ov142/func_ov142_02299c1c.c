@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_0220a58c(void *p);
+extern int func_ov002_0220a58c(void *p, int unused1, int unused2);
 extern void func_ov002_0220a574(void *p);
 
 struct UnkStruct_02299c1c {
@@ -14,7 +14,7 @@ struct UnkStruct_02299c1c {
 
 int func_ov142_02299c1c(struct UnkStruct_02299c1c *self, int unused, int value)
 {
-    if (func_ov002_0220a58c((char *) self + 0x14c) != 0) {
+    if (func_ov002_0220a58c((char *) self + 0x14c, unused, value) != 0) {
         self->unk_AC = self->unk_A8 - value;
         func_ov002_0220a574((char *) self + 0x14c);
         self->unk_B0 = self->unk_A8;

@@ -9,7 +9,7 @@ typedef struct UnkStruct_0229c974 {
     unsigned int hi : 16;
 } UnkStruct_0229c974;
 
-extern int func_ov095_0229c930(void *a);
+extern int func_ov095_0229c930(void *a, int unused1, int unused2);
 extern UnkStruct_0229c974 *func_ov095_0229b16c(void *a);
 
 void func_ov095_0229c974(void *a, int id, int val)
@@ -18,7 +18,7 @@ void func_ov095_0229c974(void *a, int id, int val)
     int idx;
     int i;
 
-    if (func_ov095_0229c930(a) != 0) {
+    if (func_ov095_0229c930(a, id, val) != 0) {
         return;
     }
     if (id < 0xc9 || id > 0xf6) {

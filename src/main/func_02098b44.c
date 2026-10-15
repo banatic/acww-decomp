@@ -5,7 +5,7 @@
 extern int func_0204c878(unsigned short *p);
 extern int func_02098be8(void *self);
 extern unsigned short *func_02098f48(void *self, int index);
-extern void func_02098f0c(void *self, unsigned short *p, int index, int zero);
+extern int func_02098f0c(void *self, unsigned short *p, int index, int zero);
 
 unsigned int func_02098b44(void *self, unsigned int r5)
 {

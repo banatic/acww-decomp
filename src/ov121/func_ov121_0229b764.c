@@ -3,11 +3,11 @@
  */
 
 extern int func_ov002_02208054(void *self, int a);
-extern void func_ov121_0229afd8(void *self);
+extern unsigned char *func_ov121_0229afd8(void *self);
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 extern int func_ov121_0229ae18(void *self);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov002_02207cf8(void *p);
 extern void RtcSendPxiCommand(int cmd);
 

@@ -6,7 +6,7 @@ extern int func_0209cb88(void *p, int n);
 extern int func_0209ca6c(void *p, int a, int b);
 extern int func_0209cc30(void *p, int a, int b);
 extern int func_0209d030(int v);
-extern void func_0209d01c(int v, int n);
+extern int func_0209d01c(int v, int n);
 extern int func_020644cc(int n);
 
 int func_0209c988(void *arg, int p2)

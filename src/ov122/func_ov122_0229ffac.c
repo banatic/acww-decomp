@@ -7,7 +7,7 @@ extern void func_ov122_0229f2f4(char *p);
 extern int func_ov002_0220a768(char *p, int n);
 extern int func_ov002_0220a72c(char *p, int n);
 extern void func_ov002_0220a0b4(char *p, int a, int b);
-extern void func_ov002_02208098(char *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov122_0229ffac(char *p)
 {
@@ -18,5 +18,5 @@ void func_ov122_0229ffac(char *p)
     b = func_ov002_0220a72c(p + 0x4698, 4);
     func_ov002_0220a0b4(p + 0x4058, a, b);
     p[0xb6] = 1;
-    func_ov002_02208098(p, 0x13);
+    func_ov002_02208098((void *) (p), 0x13);
 }

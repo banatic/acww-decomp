@@ -11,7 +11,7 @@ typedef struct {
     unsigned int unk_2C;
 } UnkStruct_020648a0;
 
-extern void FS_SeekFile(UnkStruct_020648a0 *self, int a, int b);
+extern int FS_SeekFile(UnkStruct_020648a0 *self, int a, int b);
 extern int FS_ReadFile(UnkStruct_020648a0 *self, void *buf, int len);
 
 int func_020648a0(UnkStruct_020648a0 *self)

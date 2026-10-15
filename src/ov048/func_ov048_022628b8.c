@@ -5,17 +5,17 @@
 struct UnkStruct_022628b8_3;
 
 extern void *func_020682e0(int);
-extern void func_0208602c(int);
-extern void *func_020860cc(void);
+extern int func_0208602c(void);
+extern void *func_020860cc(int);
 extern struct UnkStruct_022628b8 *func_020961a8(int);
 extern void func_0204f818(int *a, int *b, int *vec);
 extern void func_02087e88(void *obj, int);
 extern void func_02087e80(void *obj, int);
 extern int func_020b5e10(void);
-extern void func_020b5f84(int, int, int *, int, int, int, int);
+extern int func_020b5f84(int, int, int *, int, int, int, int);
 extern void func_0203acd8(void);
 extern void func_020a18d0(void);
-extern void func_020b6434(int, int, int, int);
+extern int func_020b6434(int, int, int, int);
 extern void func_ov048_022635f4(struct UnkStruct_022628b8_3 *self, int);
 
 struct UnkStruct_022628b8_2 {
@@ -45,8 +45,7 @@ int func_ov048_022628b8(struct UnkStruct_022628b8_3 *self)
         int a, b;
         int short_val;
 
-        func_0208602c(t->type);
-        obj = func_020860cc();
+        obj = func_020860cc((int) func_0208602c());
 
         p = func_020961a8(4);
         {

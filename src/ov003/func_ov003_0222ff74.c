@@ -17,7 +17,7 @@ typedef struct {
     char pad_251[0xb];
 } UnkStruct_0222ff74;
 
-extern void func_0209d238(char *a, char *b);
+extern void *func_0209d238(char *a, char *b);
 extern void func_0209d0a4(char *p);
 extern UnkStruct_0222ff74 data_ov003_02260994[];
 

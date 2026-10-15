@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209b91c(int);
+extern int func_0209b91c(void *);
 extern int func_0209bd44(int);
 extern int func_0209bd04(int);
 extern int func_0209bc40(int);
-extern int func_0209b8d0(void);
+extern int func_0209b8d0(int);
 extern int func_0209b914(int);
 extern int func_0209b64c(int);
 extern void func_0209ba7c(int);
@@ -19,15 +19,14 @@ void func_0209b920(int arg)
     int idx;
     unsigned int cond;
 
-    f = func_0209b91c(arg);
+    f = func_0209b91c((void *) arg);
     if (func_0209bd44(f) == 0) {
         return;
     }
     if (func_0209bd04(f) != 0) {
         return;
     }
-    func_0209bc40(f);
-    limit = func_0209b8d0();
+    limit = func_0209b8d0((int) func_0209bc40(f));
     idx = func_0209b914(arg);
     if (idx >= limit - 1) {
         return;

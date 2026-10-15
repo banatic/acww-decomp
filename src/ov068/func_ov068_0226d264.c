@@ -13,10 +13,10 @@ typedef struct UnkStruct_0226d264 {
     Vt *vt;
 } UnkStruct_0226d264;
 
-extern void func_0208150c(void);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(unsigned int argument0);
+extern int func_02003704(void *argument0);
 extern int func_0207f270(int obj);
-extern int func_020794cc(void);
+extern int func_020794cc(void *argument0);
 extern int func_020ba4e4(void);
 extern u16 *func_02079464(int a);
 extern void func_0207945c(int a, u16 *p);
@@ -42,10 +42,10 @@ void func_ov068_0226d264(UnkStruct_0226d264 *self)
 
     obj = self->vt->unk_64(self);
     if (obj != 0) {
-        func_0208150c();
-        if (func_02003704() != 0) {
+
+        if (func_02003704((void *) func_0208150c(obj)) != 0) {
             a = func_0207f270(obj);
-            b = func_020794cc();
+            b = func_020794cc((void *) a);
             mode = func_020ba4e4();
             if (mode != 1) {
                 p = func_02079464(a);

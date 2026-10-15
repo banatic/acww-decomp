@@ -7,14 +7,14 @@
 extern int func_02056f28(void *a, int b);
 extern void func_020108cc(void *self, int a, int b);
 extern int func_02056f94(void *a);
-extern void func_0200f27c(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern void func_0200f268(void *self, int a);
 extern u32 func_02008258(void *self, u32 a);
-extern void func_0200c3b0(void *self, int a, int b, int c);
-extern void func_0203e110(void);
-extern void func_0200d4e8(void *self, int a, int b, int c);
-extern void func_ov003_022188d0(void *self, u32 a, u32 b, s16 c, int d, int e);
-extern void func_ov003_022186cc(void *self, int a, u32 b, u32 c, s16 d, int e, int f);
+extern int func_0200c3b0(void *self, int a, int b, int c);
+extern int func_0203e110(void);
+extern int func_0200d4e8(void *self, int a, int b, int c);
+extern int func_ov003_022188d0(void *self, u32 a, u32 b, s16 c, int d, int e);
+extern int func_ov003_022186cc(void *self, int a, u32 b, u32 c, s16 d, int e, int f);
 
 typedef struct UnkStruct_022178cc {
     s32 state;  // 0x00

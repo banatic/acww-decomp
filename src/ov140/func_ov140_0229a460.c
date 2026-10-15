@@ -4,7 +4,7 @@
 
 extern int func_ov140_02299fb0(const char *a, int b);
 extern int func_020b9bbc(const char *a, const char *b, int c, int d, int e);
-extern int func_ov140_02299f90(const char *a, int b);
+extern void func_ov140_02299f90(const char *a, int b);
 
 void func_ov140_0229a460(char *arg)
 {

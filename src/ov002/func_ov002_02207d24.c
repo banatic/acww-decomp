@@ -10,13 +10,13 @@ typedef struct {
 } UnkStruct_02207d24;
 
 extern int func_0208a844(UnkStruct_02207d24 *obj);
-extern void func_ov002_02207cf0(UnkStruct_02207d24 *obj, int flag);
+extern void func_ov002_02207cf0(UnkStruct_02207d24 *obj);
 
 int func_ov002_02207d24(UnkStruct_02207d24 *obj, int flag)
 {
     obj->unk_CE = 0;
     if (flag) {
-        func_ov002_02207cf0(obj, flag);
+        func_ov002_02207cf0(obj);
     }
     if (func_0208a844(obj) == 0) {
         obj->unk_CC = 0;

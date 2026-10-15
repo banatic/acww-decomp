@@ -2,6 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern void func_020029e8(int layer, int priority);
+extern void func_020028bc(unsigned int mode, int a, int b, int c);
+
 void func_ov116_0229e2e0(void)
 {
     func_020029e8(3, 1);

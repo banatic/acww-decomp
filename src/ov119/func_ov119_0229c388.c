@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov119_0229ae68(void *self);
-extern int func_ov119_0229ad84(void *self);
+extern int func_ov119_0229ae68(void);
+extern int func_ov119_0229ad84(void);
 extern void func_ov119_0229ad5c(void *self);
 extern int func_ov119_0229acb4(void *self);
-extern void func_020ee45c(void *self);
-extern void func_ov090_02298fa4(void);
+extern int func_020ee45c(void *self);
+extern void func_ov090_02298fa4(int);
 extern void func_ov119_0229a5d8(void *self);
 extern void func_ov002_02209984(void *p, int a, int b, const char *data);
 extern void func_ov119_0229adc4(void *self);
@@ -15,16 +15,18 @@ extern const char data_ov119_0229cfe0[];
 
 void func_ov119_0229c388(char *self)
 {
-    if (func_ov119_0229ae68(self) == 0) {
-        if (func_ov119_0229ad84(self) != 0) {
+    if (func_ov119_0229ae68() == 0) {
+        asm {
+            mov r0, self
+        }
+        if (func_ov119_0229ad84() != 0)
+        {
             func_ov119_0229ad5c(self);
-            func_020ee45c(self);
-            func_ov090_02298fa4();
+            func_ov090_02298fa4((int) func_020ee45c(self));
         }
     } else {
         if (func_ov119_0229acb4(self) != 0) {
-            func_020ee45c(self);
-            func_ov090_02298fa4();
+            func_ov090_02298fa4((int) func_020ee45c(self));
         }
     }
     *((unsigned char *) self + 0x9e) = 0;

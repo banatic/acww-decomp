@@ -10,7 +10,7 @@ typedef struct {
 
 extern int func_020a7e50(void);
 extern int func_020a7e44(void);
-extern int func_020aa9fc(UnkStruct_020aab48 *p);
+extern int func_020aa9fc(void);
 extern void func_020aa880(UnkStruct_020aab48 *p);
 extern void func_020aa9c0(UnkStruct_020aab48 *p);
 extern int func_020a7f5c(void);
@@ -25,7 +25,9 @@ void func_020aab48(UnkStruct_020aab48 *p)
 
     if (func_020a7e50()) {
         if (p->unk_2C == 0) {
-            if (func_020aa9fc(p)) {
+            asm { add r0, p, #0 }
+            if (func_020aa9fc())
+            {
                 func_020aa880(p);
             }
         } else if (p->unk_2C == 1) {

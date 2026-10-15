@@ -3,7 +3,7 @@
  */
 
 extern "C" int func_020679b0(void *);
-extern "C" void func_0206bb9c(void *, int, void *);
+extern "C" void func_0206bb9c(void);
 extern "C" int func_020a82f8(void *);
 extern "C" void func_020a9334(void *, int);
 extern "C" void func_020a7994(void *, int);
@@ -28,7 +28,12 @@ extern unsigned char data_020df1a8[];
 extern "C" void func_0206a150(ParamType *p)
 {
     if (func_020679b0(p->unk_24) == 0) {
-        func_0206bb9c(p, 0x0ccb, (void *) data_020df1a8);
+        asm {
+            mov r0, p
+            ldr r1, =0x0ccb
+            ldr r2, =data_020df1a8
+            bl func_0206bb9c
+        }
     }
 
     int idx1 = func_020a82f8(p->unk_5C);

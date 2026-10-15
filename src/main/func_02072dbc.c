@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02072fbc(char *);
+extern int func_02072fbc(char *);
 
 char *func_02072dbc(char *p)
 {

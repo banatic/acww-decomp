@@ -10,11 +10,11 @@ extern const char data_ov123_0229d28c[];
 extern const char data_ov123_0229d29c[];
 extern const char data_ov123_0229d2b0[];
 
-extern void func_02002d14(const char *, const void *, int, int, int, int);
-extern void func_02064af4(const char *, char *, int);
-extern void func_02002b40(char *, int, int, int);
-extern void func_02002ca4(const char *, const void *, int);
-extern void func_02002c6c(const char *, const void *, int, int, int, int);
+extern int func_02002d14(const char *, const void *, int, int, int, int);
+extern int func_02064af4(const char *, char *, int);
+extern int func_02002b40(char *, int, int, int);
+extern int func_02002ca4(const char *, const void *, int);
+extern int func_02002c6c(const char *, const void *, int, int, int, int);
 
 void func_ov123_0229be60(char *self)
 {

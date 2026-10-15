@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02073090(void);
-extern int func_020ead48(int);
-extern int func_020ead58(int);
-extern int func_020ead7c(int);
+extern void func_02073090(void);
+extern int func_020ead48(void);
+extern int func_020ead58(void);
+extern void func_020ead7c(void);
 extern void RtcSendPxiCommand(int);
 extern void func_02074958(void);
 extern void func_0206844c(void *, unsigned char *, void *);
@@ -29,15 +29,15 @@ void func_ov055_022606f4(UnkStruct_022606f4 *self)
         return;
     }
 
-    if (func_020ead48(func_02073090()) != 0) {
+    if (((void) (func_02073090()), func_020ead48()) != 0) {
         RtcSendPxiCommand(0x69);
         func_02074958();
 
         b = 0x3c;
         func_0206844c(self->unk_40, &b, data_ov055_02260e60);
     } else {
-        if (func_020ead58(func_02073090()) != 1) {
-            func_020ead7c(func_02073090());
+        if (((void) (func_02073090()), func_020ead58()) != 1) {
+            ((void) (func_02073090()), func_020ead7c());
             return;
         }
     }

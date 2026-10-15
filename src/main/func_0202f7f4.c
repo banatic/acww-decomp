@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202f838(int *ptr, int addr);
-extern int FX_Sqrt(void);
+extern long long func_0202f838(int *ptr, int addr);
+extern int FX_Sqrt(int value);
 extern int FX_Div(int a, int b);
 
 extern unsigned char data_021c30b8[];
@@ -13,8 +13,7 @@ int func_0202f7f4(int *ptr)
     int val;
     int abs;
 
-    func_0202f838(ptr, (unsigned int) data_021c30b8);
-    val = FX_Sqrt();
+    val = FX_Sqrt((int) func_0202f838(ptr, (unsigned int) data_021c30b8));
     abs = val < 0 ? -val : val;
     if (abs < 4) {
         return 0;

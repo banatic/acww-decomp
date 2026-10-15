@@ -11,7 +11,7 @@ struct UnkStruct_0209a710 {
     unsigned char unk_BA;
 };
 
-extern void func_0209a77c(struct UnkStruct_0209a710 *, void *, void *);
+extern void func_0209a77c(struct UnkStruct_0209a710 *);
 extern void func_02003728(int *, void *);
 extern void func_0209bd30(struct UnkStruct_0209a710 *, int, unsigned short *, int);
 #pragma arm
@@ -23,7 +23,7 @@ void func_0209a710(struct UnkStruct_0209a710 *a, void *b, void *c)
 {
     unsigned short local;
 
-    func_0209a77c(a, b, c);
+    func_0209a77c(a);
     func_02003728(&a->unk_0C, b);
 
     local = 0x155e;

@@ -8,7 +8,7 @@ extern int func_ov004_02220318(void *self);
 extern int func_020ea990(void *a, void *b);
 extern void func_0201b458(void *m, void *self, void *p);
 extern int func_02019e00(void *p);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern void func_0201b044(void *p, void *m);
 extern int func_020eaa6c(void *m, void *p);
 extern void func_ov004_02221550(void *self, int a);

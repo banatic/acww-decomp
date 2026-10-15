@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204bcf8(void);
+extern int func_0204bcf8(unsigned short *);
 int func_0204bcdc(void *p)
 {
-    switch (func_0204bcf8()) {
+    switch (func_0204bcf8(p)) {
         case 3:
         case 4:
             return 1;

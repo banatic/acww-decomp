@@ -11,8 +11,8 @@ extern void *func_02072da0(void *);
 extern void *func_02072d4c(void *);
 extern void *func_02072f88(void *);
 extern void func_020025c4(void *, void *, int, int, int);
-extern void func_02002a88(void *, int, int, int, int);
-extern void func_02002bd0(void *, int, int, int, int);
+extern int func_02002a88(void *, int, int, int, int);
+extern int func_02002bd0(void *, int, int, int, int);
 extern void MIi_CpuCopy16(const void *, void *, unsigned int);
 extern void *data_021fbe94;
 

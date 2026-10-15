@@ -6,7 +6,7 @@ extern "C" {
 extern void *func_02015da0(void *self, int param);
 extern unsigned int func_0201c274(void *ptr);
 extern int func_0201c314(void *r0, void *r1);
-extern void func_02019d0c(void *ptr, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
+extern int func_02019d0c(void *ptr, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
 extern void func_02015bfc(void *self, void *a);
 extern unsigned short data_020c80f8;
 }

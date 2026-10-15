@@ -6,8 +6,8 @@ extern char data_020dd0ac;
 extern char data_020dd0bc;
 extern char data_020dd0cc;
 extern char data_020dd184;
-extern void func_02054e8c(void *);
-extern void func_02056ee0(void *);
+extern void *func_02054e8c(void *);
+extern void *func_02056ee0(void *);
 
 typedef struct {
     void *unk_00;       // 0x00

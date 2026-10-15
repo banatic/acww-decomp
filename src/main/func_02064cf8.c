@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void FS_InitFile(int, int);
-extern void FS_OpenFile(int, int);
+extern void FS_InitFile(void *file);
+extern int FS_OpenFile(void *file, const char *path);
 
-void func_02064cf8(int a0, int a1)
+int func_02064cf8(void *file, const char *path)
 {
-    FS_InitFile(a0, a1);
-    FS_OpenFile(a0, a1);
+    FS_InitFile(file);
+    return FS_OpenFile(file, path);
 }

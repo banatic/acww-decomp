@@ -3,9 +3,9 @@
  */
 
 extern void func_0209e474(void *);
-extern void func_0208150c(int);
-extern int func_020036e8(void);
-extern void func_0202da38(void *, void *, void *, int, int, void *, int, int, int);
+extern unsigned int func_0208150c(int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *, void *, void *, int, int, void *, int, int, int);
 
 struct GlobalInfo {
     void *ptr;
@@ -40,9 +40,8 @@ void func_0201e734(void *a, void *b)
 
     p = *(void **) ((char *) a + 0x100);
     val2 = *(int *) ((char *) p + 0x830);
-    func_0208150c(val2);
 
-    val1 = func_020036e8();
+    val1 = func_020036e8((unsigned char *) func_0208150c(val2));
 
     func_0202da38(a, (char *) a + 0x104, (char *) a + 0x122, 30, val1, data_020c8b50.ptr, 1, r4, data_020c8b50.unk_04);
 

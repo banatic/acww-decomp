@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206c038(void);
+extern void func_0206c038(unsigned int *);
 
 int func_0206c234(char *buf, int val)
 {
@@ -17,7 +17,7 @@ int func_0206c234(char *buf, int val)
         count = *ptr;
         *ptr = count + 1;
         buf[count] = b1;
-        func_0206c038();
+        func_0206c038((unsigned int *) buf);
     }
     return flag;
 }

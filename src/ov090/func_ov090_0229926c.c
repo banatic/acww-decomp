@@ -18,7 +18,7 @@ typedef struct UnkStruct_0229926c {
 extern u8 data_ov090_02299960;
 extern u8 data_020e54a8;
 
-extern void func_0207000c(int);
+extern int func_0207000c(int);
 extern void func_0206fc98(u8);
 
 void func_ov090_0229926c(UnkStruct_0229926c *o)

@@ -5,7 +5,7 @@
 extern int data_020dcd78;
 extern int data_021c8184;
 extern void func_020505f4(unsigned int, int);
-extern void func_0209d138(unsigned int);
+extern int func_0209d138(unsigned int);
 
 int func_0205009c(unsigned int param)
 {

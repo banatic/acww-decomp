@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020bdd10(char *work, int a, int b, int *c);
+extern int func_020bdd10(char *work, int a, int b);
 extern int func_020be1c4(char *work, int a);
 extern int func_020be0f8(char *work, int a, int b);
 extern void func_020bee74(char *a, int b, char *c);
@@ -16,7 +16,7 @@ void *func_020bdc50(char *work, int param1, int param2, int *param3, int param4)
     int result1, result2, index;
     char *p;
 
-    result1 = func_020bdd10(work, param1, param4, param3);
+    result1 = func_020bdd10(work, param1, param4);
     p = 0;
     result2 = func_020be1c4(work, result1);
     if (result2 == 5) {

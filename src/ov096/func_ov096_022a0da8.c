@@ -14,15 +14,15 @@ struct UnkStruct_022a0da8 {
 };
 extern int func_0206f56c(void);
 extern void func_ov096_0229e898(UnkStruct_022a0da8 *, int, int);
-extern void func_ov096_022a18dc(UnkStruct_022a0da8 *, int);
+extern int func_ov096_022a18dc(UnkStruct_022a0da8 *, int);
 extern void func_ov096_0229ea88(UnkStruct_022a0da8 *);
 extern void func_ov096_0229ed44(UnkStruct_022a0da8 *);
 extern int func_ov096_0229f4f8(UnkStruct_022a0da8 *, char *, char *, int);
 extern int func_ov096_0229f4ac(UnkStruct_022a0da8 *, int);
-extern void func_ov096_0229f90c(UnkStruct_022a0da8 *, int, int);
+extern unsigned char *func_ov096_0229f90c(UnkStruct_022a0da8 *, int, int);
 extern void func_ov094_022999d8(void);
 extern void func_ov096_0229fb9c(UnkStruct_022a0da8 *);
-extern void func_ov096_0229ec90(UnkStruct_022a0da8 *);
+extern void func_ov096_0229ec90(UnkStruct_022a0da8 *, unsigned int argument1);
 extern u8 data_021fbdd8;
 
 void func_ov096_022a0da8(UnkStruct_022a0da8 *self)
@@ -43,7 +43,7 @@ void func_ov096_022a0da8(UnkStruct_022a0da8 *self)
                 func_ov094_022999d8();
                 func_ov096_0229fb9c(self);
             } else {
-                func_ov096_0229ec90(self);
+                func_ov096_0229ec90(self, r);
             }
         } else {
             if (data_021fbdd8 == 0) {

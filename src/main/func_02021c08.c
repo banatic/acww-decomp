@@ -3,10 +3,11 @@
  */
 
 extern unsigned char data_021dc7bc[];
+extern void *func_02081d60(void *record);
 
-func_02021c08(int r0, int r1)
+int func_02021c08(int r0, int r1)
 {
-    int r5 = func_02081d60(r1);
+    int r5 = (int) func_02081d60((void *) r1);
     int r6 = 0;
     int r4 = 0;
     if (func_02081398(r0, r5) == 1) {

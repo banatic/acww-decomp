@@ -3,14 +3,14 @@
  */
 
 extern void *func_02090040(int);
-extern void *MI_CpuCopy8(void *, const void *, int);
+extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 
 struct UnkStruct_02260668 {
     char pad_00[0x714];
     char unk_714[0x950];
 };
 
-void *func_ov055_02260668(struct UnkStruct_02260668 *p)
+void func_ov055_02260668(struct UnkStruct_02260668 *p)
 {
-    return MI_CpuCopy8(p->unk_714, func_02090040(4), 0x950);
+    MI_CpuCopy8(p->unk_714, func_02090040(4), 0x950);
 }

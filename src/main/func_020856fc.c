@@ -24,29 +24,31 @@ extern UnkStruct_020856fc_2 data_021d213c[];
 
 extern int func_02073dd4(Gx *, int);
 extern int func_0207af30(void);
-extern void func_020984e8(void);
-extern void *func_02099640(void);
+extern int func_020984e8(void);
+extern void *func_02099640(int);
 extern int func_0209bd44(char *);
 extern int func_0209bc40(char *);
 extern void func_0209e474(UnkStruct_020856fc *);
 extern int func_0209e350(char *, UnkStruct_020856fc *);
 extern unsigned int func_0209bba0(char *);
 extern int func_0207cf14(int *, char *);
-extern int func_0207cf74(void);
+extern int func_0207cf74(unsigned int index);
 extern void func_02077978(u8 *, UnkStruct_020856fc *, int *);
 extern void MI_CpuCopy8(u8 *, u16 *, int);
 extern void func_020b23c8(void);
 extern int func_0207ce98(int *, char *);
-extern void func_0207f270(void);
-extern void func_02079500(void);
-extern void func_020b65b8(void);
-extern int func_020b6674(void);
+extern int func_0207f270(int object);
+extern void func_02079500(unsigned char *);
+extern unsigned char func_020b65b8(void);
+extern int func_020b6674(int);
 extern void func_0207a7f8(int *);
 extern int func_0207915c(void);
-extern void func_02003348(int, int, UnkStruct_020856fc *, int, int);
+extern int func_02003348(int, int, UnkStruct_020856fc *, int, int);
 
 void func_020856fc(int p0)
 {
+    int forwarded_value;
+
     u16 w[4];
     char *base;
     int idx;
@@ -75,8 +77,7 @@ void func_020856fc(int p0)
     w[0] = 0xfff1;
     r = func_0207af30();
     if (r == 0xb) {
-        func_020984e8();
-        base = (char *) func_02099640() + 0xa4;
+        base = (char *) func_02099640((int) func_020984e8()) + 0xa4;
         obj = base + 0x10;
         res = -1;
         if (func_0209bd44(obj) != 0 && func_0209bc40(obj) == 0x15) {
@@ -91,7 +92,7 @@ void func_020856fc(int p0)
             } else if (func_0209bba0(obj) < 4) {
                 if (n <= 0x3c) {
                     res = func_0207cf14(&data_021e5a2c, base);
-                    if (func_0207cf74() != 0) {
+                    if (func_0207cf74(res) != 0) {
                         e = &data_021d213c[res];
                         if (data_021d213c[res].unk_00 != 0) {
                             func_02077978(e->unk_04, &a20, &a28);
@@ -100,9 +101,8 @@ void func_020856fc(int p0)
                     }
                 } else {
                     func_020b23c8();
-                    if (func_0207ce98(&data_021e5a2c, base) != 0) {
-                        func_0207f270();
-                        func_02079500();
+                    if ((forwarded_value = (int) func_0207ce98(&data_021e5a2c, base)) != 0) {
+                        func_02079500((unsigned char *) func_0207f270((int) forwarded_value));
                     }
                 }
             }
@@ -113,16 +113,14 @@ void func_020856fc(int p0)
             z = 1;
         }
     } else if (r == 0xa) {
-        func_020b65b8();
-        if (func_020b6674() != 0) {
+        if (func_020b6674((int) func_020b65b8()) != 0) {
             func_0207a7f8(&data_021e5a2c);
         }
         idx = func_0207915c();
-        if (func_0207cf74() != 0) {
+        if (func_0207cf74(idx) != 0) {
             w[0] = (u16) ((idx & 0xfff) | 0xe000);
             kind = 0x87;
-            func_020b65b8();
-            if (func_020b6674() == 0) {
+            if (func_020b6674((int) func_020b65b8()) == 0) {
                 e = &data_021d213c[idx];
                 if (data_021d213c[idx].unk_00 != 0) {
                     func_02077978(e->unk_04, &a20, &a28);

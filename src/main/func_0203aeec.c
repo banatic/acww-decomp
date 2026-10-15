@@ -8,7 +8,7 @@ struct UnkStruct_0203aeec {
 };
 
 extern struct UnkStruct_0203aeec *data_021c67a4;
-extern void func_0203c0ac(struct UnkStruct_0203aeec *p, int n);
+extern int func_0203c0ac(struct UnkStruct_0203aeec *p, int n);
 
 void func_0203aeec(unsigned int value)
 {

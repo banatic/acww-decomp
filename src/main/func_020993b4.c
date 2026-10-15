@@ -6,13 +6,13 @@ extern int func_02099a28(void *);
 extern void *func_02099734(void *);
 extern unsigned char *func_02098f48(void *, int);
 extern unsigned char *func_02099640(void *);
-extern void func_0209ad9c(unsigned char *, int);
-extern void func_0209b56c(void);
+extern void *func_0209ad9c(unsigned char *, int);
+extern void func_0209b56c(void *);
 extern void func_0209af04(unsigned char *);
 extern int func_02098e8c(void *, int);
-extern void func_02098f0c(void *, unsigned char *, int, int);
+extern int func_02098f0c(void *, unsigned char *, int, int);
 extern unsigned char *func_020996ac(void *);
-extern void OSi_DoUnlockByWord__main_0203cd2c(unsigned int, unsigned char *, unsigned int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(unsigned int, unsigned char *, unsigned int, int);
 extern unsigned char *func_02098e44(void *, int);
 extern int func_02065ec0(unsigned char *);
 extern void func_02066650(unsigned char *);
@@ -30,10 +30,8 @@ void func_020993b4(void *param)
     p1 = func_02099734(param);
     p2 = func_02098f48(p1, 0);
 
-    func_0209ad9c(func_02099640(param), 0);
-    func_0209b56c();
-    func_0209ad9c(func_02099640(param), 1);
-    func_0209b56c();
+    func_0209b56c((void *) func_0209ad9c(func_02099640(param), 0));
+    func_0209b56c((void *) func_0209ad9c(func_02099640(param), 1));
     func_0209af04(func_02099640(param) + 0xa4);
 
     {

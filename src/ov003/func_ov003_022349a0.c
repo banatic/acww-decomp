@@ -19,7 +19,7 @@ typedef struct {
     int unk_64;
 } UnkStruct_022349a0;
 extern int func_02073dd4(UnkStruct_022349a0 *p, int a);
-extern void func_ov068_022701b0(unsigned char *self, short *ang);
+extern int func_ov068_022701b0(unsigned char *self, short *ang);
 extern void func_ov003_02234840(unsigned char *self, short *p);
 extern void func_ov068_0226fea4(unsigned char *self, short *ang, int a, int b, int c, int d);
 extern void func_ov003_02234e28(unsigned char *self, short *ang, int a, int b, int c, int d);

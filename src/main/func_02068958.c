@@ -16,7 +16,7 @@ struct UnkStruct_02068958 {
     int unk_28;
 };
 
-extern int func_0203d438(struct UnkStruct_02068958 *self);
+extern int func_0203d438(void);
 extern unsigned char data_020cce7c[];
 
 unsigned char func_02068958(struct UnkStruct_02068958 *self)
@@ -25,7 +25,7 @@ unsigned char func_02068958(struct UnkStruct_02068958 *self)
     int c;
     int flag;
     int index;
-    ret = func_0203d438(self);
+    ret = func_0203d438();
     c = self->unk_18;
     flag = (ret == 0);
     if (self->unk_14 != 7) {

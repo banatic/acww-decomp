@@ -8,7 +8,7 @@ typedef struct UnkStruct_0200faf0 {
 } UnkStruct_0200faf0;
 
 extern int func_02011404(void *, int, int, int, int);
-extern void func_020110a0(UnkStruct_0200faf0 *, short *);
+extern void func_020110a0(UnkStruct_0200faf0 *s, short *src);
 
 int func_0200faf0(UnkStruct_0200faf0 *p, int arg2)
 {

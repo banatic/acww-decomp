@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02055478(void *, void *);
-extern void func_02055140(void *, void *);
-extern void func_02055de0(void *, void (*)(void), int, int, void *, int);
+extern int func_02055478(void *, void *);
+extern int func_02055140(void *, void *);
+extern void func_02055de0(void *, void (*)(void *), int, int, void *, int);
 extern void func_0200451c(int *);
 extern void func_ov003_02222c68(void *);
-extern void func_ov003_02222c34(void);
+extern void func_ov003_02222c34(void *state);
 extern void *data_ov003_0223cf78;
 
 typedef struct {

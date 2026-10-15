@@ -6,7 +6,7 @@ extern unsigned int data_020ccf94;
 extern void func_020736bc(unsigned int, unsigned int *, unsigned int);
 extern void func_02052960(unsigned int *);
 
-void func_02077008(unsigned int arg)
+void func_02077008(unsigned int arg, int sequence, unsigned char category, unsigned int player)
 {
     unsigned int local;
     func_020736bc(data_020ccf94, &local, arg);

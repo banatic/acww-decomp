@@ -3,14 +3,12 @@
  */
 
 extern int NNS_G3dAnmObjCalcSizeRequired(int a, int b);
-extern int NNS_FndAllocFromAllocator(int a, int b);
+extern void NNS_FndAllocFromAllocator(int a, int b);
 
-int NNS_G3dAllocAnmObj(int a, int b, int c)
+void NNS_G3dAllocAnmObj(int a, int b, int c)
 {
-    int result;
     int temp;
 
     temp = NNS_G3dAnmObjCalcSizeRequired(b, c);
-    result = NNS_FndAllocFromAllocator(a, temp);
-    return result;
+    NNS_FndAllocFromAllocator(a, temp);
 }

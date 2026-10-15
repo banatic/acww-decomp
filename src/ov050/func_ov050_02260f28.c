@@ -13,9 +13,9 @@ typedef struct UnkStruct_02260f28 {
     int unk_D0;
 } UnkStruct_02260f28;
 
-extern void func_020160b4(UnkStruct_02260f28 *self);
-extern int func_020ab504(void);
-extern void func_020984e8(int x);
+extern int func_020160b4(UnkStruct_02260f28 *self);
+extern int func_020ab504(void *argument0);
+extern int func_020984e8(void);
 extern void func_ov050_02263640(UnkStruct_02260f28 *self, int arg);
 extern int func_0202e9fc(void);
 extern int func_020ada14(void);
@@ -36,9 +36,8 @@ void func_ov050_02260f28(UnkStruct_02260f28 *self)
     char buffer[2];
     int *gp;
 
-    func_020160b4(self);
-    r5 = func_020ab504();
-    func_020984e8(r5);
+    r5 = func_020ab504((void *) func_020160b4(self));
+    func_020984e8();
     gp = &data_021f3b0c;
 
     if ((int) self->unk_1E > 0x14) {

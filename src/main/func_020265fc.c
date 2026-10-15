@@ -10,17 +10,17 @@ typedef struct {
     unsigned char unk_04;
 } UnkStruct_020265fc;
 
-int func_020265fc(unsigned short *param0, UnkStruct_020265fc *param1)
+void func_020265fc(unsigned short *param0, UnkStruct_020265fc *param1)
 {
     int result;
     *param0 = 0xfff1;
     result = func_0202cbdc(param0, 2, 3, param1->unk_04, param1->unk_03);
     if (result != 0) {
-        return result;
+        return;
     }
     result = func_0202cbdc(param0, 0, 1, param1->unk_04, param1->unk_03);
     if (result != 0) {
-        return result;
+        return;
     }
-    return func_0202cbdc(param0, 4, 4, param1->unk_04, param1->unk_03);
+    func_0202cbdc(param0, 4, 4, param1->unk_04, param1->unk_03);
 }

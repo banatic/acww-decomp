@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02002d14(const void *a, void *b, int c, int d, int e, int f);
-extern void func_02002c6c(const void *a, void *b, int c, int d, int e, int f);
+extern int func_02002d14(const void *a, void *b, int c, int d, int e, int f);
+extern int func_02002c6c(const void *a, void *b, int c, int d, int e, int f);
 extern void *data_021fbe94;
 extern const char data_ov127_0229b634[];
 extern const char data_ov127_0229b64c[];

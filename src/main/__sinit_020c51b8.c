@@ -21,26 +21,27 @@ typedef struct {
 } El2;
 
 extern void __register_global_object(void *, void *, void *);
-extern void __cxa_vec_ctor(void *, int, int, void *, int);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 extern void func_0204b160(void *);
 
 extern unsigned char data_021c779c;
-extern void func_0204b184(void);
+extern void func_0204b184(void *);
 extern unsigned char data_021c777c;
 extern Big data_021c79c4;
 extern unsigned char data_021c79dc;
-extern void func_0204b170(void);
+extern void *func_0204b170(void *);
 extern unsigned char data_021c7770;
 extern El2 data_021c7c48[3];
 extern unsigned char data_021c77c0;
-extern void func_020012e0(void);
+extern void func_020012e0(void *);
 
 void __sinit_020c51b8(void)
 {
     Big *p;
     El *q;
     El2 *r;
-    __register_global_object((void *) &data_021c779c, (void *) &func_0204b184, (void *) &data_021c777c);
+    __register_global_object((void *) ((void *) &data_021c779c), (((void *) func_0204b184)),
+                             (void *) ((void *) &data_021c777c));
     p = &data_021c79c4;
     func_0204b160((void *) &data_021c79dc);
     p->unk_34 = 0;
@@ -53,12 +54,13 @@ void __sinit_020c51b8(void)
         q->unk_14 = 0;
         q++;
     } while (q != p->arr + 16);
-    __register_global_object((void *) &data_021c79c4, (void *) &func_0204b170, (void *) &data_021c7770);
+    __register_global_object((void *) ((void *) &data_021c79c4), (((void *) func_0204b170)),
+                             (void *) ((void *) &data_021c7770));
     r = data_021c7c48;
     do {
         r->unk_14 = 0;
         r->unk_18 = 0;
         r++;
     } while (r != data_021c7c48 + 3);
-    __cxa_vec_ctor((void *) &data_021c77c0, 0x18, 8, (void *) &func_020012e0, 0);
+    __cxa_vec_ctor((void *) ((void *) &data_021c77c0), 0x18, 8, (void (*)(void *)) func_020012e0, 0);
 }

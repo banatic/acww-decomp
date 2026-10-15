@@ -9,7 +9,7 @@ struct UnkStruct_02017cf8 {
     unsigned char unk_98;
 };
 
-void func_02017cf8(struct UnkStruct_02017cf8 *s)
+void func_02017cf8(struct UnkStruct_02017cf8 *s, int event)
 {
     if (func_02057bf0(1)) {
         s->unk_98 = 14;

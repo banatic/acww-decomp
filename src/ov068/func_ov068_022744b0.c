@@ -42,19 +42,19 @@ typedef struct {
 extern int data_ov068_02277ca4[];
 extern u8 data_ov068_022767e8[];
 
-extern void *func_020984e8(int a);
+extern void *func_020984e8(void);
 extern int func_ov068_022746b0(UnkStruct_022744b0_3 *self);
 extern void func_0209e474(UnkStruct_022744b0_2 *z);
 extern int func_02099e9c(u16 *p);
 extern int func_0202ea80(int a, int b);
 extern int func_02099020(void *h, int a);
 extern void func_02098ff8(void *h, int a);
-extern void func_02062fbc(UnkStruct_022744b0_5 *c);
-extern void func_02062f4c(UnkStruct_022744b0_5 *c);
-extern void func_02062e50(UnkStruct_022744b0_5 *c);
-extern void func_02062e00(UnkStruct_022744b0_5 *c);
+extern void *func_02062fbc(UnkStruct_022744b0_5 *c);
+extern void *func_02062f4c(UnkStruct_022744b0_5 *c);
+extern void *func_02062e50(UnkStruct_022744b0_5 *c);
+extern void *func_02062e00(UnkStruct_022744b0_5 *c);
 extern void func_020a8874(UnkStruct_022744b0_5 *c, void *p, int n);
-extern void func_020a8a70(UnkStruct_022744b0_5 *a, UnkStruct_022744b0_5 *b, int c, int d);
+extern int func_020a8a70(UnkStruct_022744b0_5 *a, UnkStruct_022744b0_5 *b, int c, int d);
 extern void func_020683b4(void *a, int b, UnkStruct_022744b0_5 *c, int d);
 extern void func_02015de4(UnkStruct_022744b0_3 *self, u16 *p, int a, int b);
 extern int func_020644cc(int a);
@@ -77,7 +77,7 @@ void func_ov068_022744b0(UnkStruct_022744b0_3 *self, UnkStruct_022744b0_4 *out)
     self->unk_BE = -1;
     self->unk_BF = -1;
     self->unk_C0 = -1;
-    h = func_020984e8(-1);
+    h = func_020984e8();
     out->unk_00 = data_ov068_02277ca4[self->unk_B4->unk_730];
     v = self->unk_B4->unk_730;
     if (v == 7) {

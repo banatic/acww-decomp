@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207cad4(void);
+extern int func_0207cad4(void *);
 extern int func_0207c160(char *);
 extern int func_0207c0c0(char *);
 extern int func_0209e3ac(int, char *, int);
@@ -13,7 +13,7 @@ int func_0207c048(char *arg0, int arg1)
 {
     int v6, v0, result, ret;
 
-    if (func_0207cad4() != 8) {
+    if (func_0207cad4(arg0) != 8) {
         goto fail;
     }
     v6 = func_0207c160(arg0);

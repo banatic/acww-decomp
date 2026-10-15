@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02098b44(int);
+extern int func_02098b44(int, unsigned int);
 
 void func_02098aa0(int a, int b, int c)
 {
@@ -12,7 +12,7 @@ void func_02098aa0(int a, int b, int c)
     }
     if ((unsigned) b > 99999) {
         if (c == 1) {
-            int ret = func_02098b44(a);
+            int ret = func_02098b44(a, b);
             if ((unsigned) ret <= 99999) {
                 value = ret;
             } else {

@@ -7,7 +7,7 @@ typedef struct {
     int b;
 } UnkStruct_020c59c0;
 
-extern void func_02060878(void *);
+extern unsigned char *func_02060878(void *);
 extern void __register_global_object(void *, void *, void *);
 extern struct B021cad30 {
     UnkStruct_020c59c0 unk_00;
@@ -22,7 +22,7 @@ extern struct B021cad30 {
     UnkStruct_020c59c0 unk_48;
 } data_021cad30;
 extern int data_021cad80;
-extern int func_02060844;
+extern void *func_02060844(void *);
 extern int data_021cad10;
 extern UnkStruct_020c59c0 data_020dd80c;
 extern UnkStruct_020c59c0 data_020dd804;
@@ -38,7 +38,8 @@ extern UnkStruct_020c59c0 data_020dd7c4;
 void __sinit_020c59c0(void)
 {
     func_02060878((void *) &data_021cad80);
-    __register_global_object((void *) &data_021cad80, (void *) &func_02060844, (void *) &data_021cad10);
+    __register_global_object((void *) ((void *) &data_021cad80), (((void *) func_02060844)),
+                             (void *) ((void *) &data_021cad10));
     data_021cad30.unk_00 = data_020dd80c;
     data_021cad30.unk_08 = data_020dd804;
     data_021cad30.unk_10 = data_020dd7fc;

@@ -11,11 +11,11 @@ struct UnkStruct_020b4a20 {
 };
 
 extern int data_021f4dac;
-extern void func_020b4044(struct UnkStruct_020b4a20 *p);
+extern void *func_020b4044(struct UnkStruct_020b4a20 *p);
 extern void func_020a8164(struct UnkStruct_020b4a20 *p, int p3);
 extern void func_020b43f4(int *g);
 extern int func_020b4344(int *g, struct UnkStruct_020b4a20 *p);
-extern void func_020b402c(struct UnkStruct_020b4a20 *p);
+extern void *func_020b402c(struct UnkStruct_020b4a20 *p);
 
 int func_020b4a20(int p1, unsigned char *p2, int p3)
 {

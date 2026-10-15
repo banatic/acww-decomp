@@ -3,8 +3,8 @@
  */
 
 extern unsigned int func_020b65c4(void);
-extern unsigned int func_020b5e04(void);
-extern unsigned int func_020b5df8(void);
+extern unsigned int func_020b5e04(unsigned int);
+extern unsigned int func_020b5df8(unsigned int);
 extern unsigned int func_02085f08(void);
 extern unsigned int func_0205dab8(void);
 extern unsigned int func_020e9968(unsigned int, unsigned int, unsigned int);
@@ -20,8 +20,7 @@ void func_0205d9ec(unsigned int *out)
 
     g = data_021c9aec;
     byte = data_020ccf94[0x6c];
-    func_020b65c4();
-    min_count = func_020b5e04();
+    min_count = func_020b5e04((unsigned int) func_020b65c4());
     if (byte < min_count) {
         min_count = byte;
     }
@@ -36,8 +35,7 @@ void func_0205d9ec(unsigned int *out)
         min_count = 1;
     }
 
-    func_020b65c4();
-    v = func_020b5df8();
+    v = func_020b5df8((unsigned int) func_020b65c4());
     w = func_02085f08();
     limit = v + w - min_count;
 

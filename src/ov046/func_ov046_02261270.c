@@ -15,13 +15,31 @@ typedef struct {
     unsigned char unk_C5;
 } UnkStruct_02261270;
 
-void func_ov046_02261270(UnkStruct_02261270 *self, int v)
+// clang-format off
+asm void func_ov046_02261270(register UnkStruct_02261270 *self, register int v)
 {
-    UnkStruct_02261270 *obj;
-
-    obj->vtable[2](obj);
-    obj = self;
-    obj->unk_B4 = v;
-    obj->unk_C4 = 0;
-    obj->unk_C5 = 0x10 - func_020b1558();
+    push {r4, r5, lr}
+    sub sp, #4
+    add r5, r0, #0
+    add r4, r1, #0
+    ldr r1, [r0]
+    ldr r1, [r1, #8]
+    blx r1
+    add r0, r5, #0
+    add r0, #0xb4
+    str r4, [r0]
+    mov r1, #0
+    add r0, r5, #0
+    add r0, #0xc4
+    strb r1, [r0]
+    bl func_020b1558
+    mov r1, #0x10
+    sub r0, r1, r0
+    add r5, #0xc5
+    strb r0, [r5]
+    add sp, #4
+    pop {r4, r5}
+    pop {r3}
+    bx r3
 }
+// clang-format on

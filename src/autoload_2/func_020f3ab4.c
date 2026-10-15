@@ -9,11 +9,11 @@ extern void func_020f4130(void *self);
 extern void func_020f40e8(void *self);
 extern void func_020f40ac(void *self);
 extern void *func_020eef70(void);
-extern void func_0210e160(int a, void *b);
-extern void NNS_SndHeapSaveState(void *heap);
+extern int func_0210e160(int a, void *b);
+extern int NNS_SndHeapSaveState(void *heap);
 extern int NNS_SndHeapGetCurrentLevel(void *heap);
-extern void func_020f1d84(void *dest, int size);
-extern void func_020f4038(void *self);
+extern int func_020f1d84(void *dest, int size);
+extern int func_020f4038(void *self);
 extern void func_020f97dc(void *p, int q);
 extern void NNS_SndPlayerSetPlayerVolume(int player, int volume);
 

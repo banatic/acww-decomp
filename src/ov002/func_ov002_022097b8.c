@@ -9,8 +9,8 @@ struct UnkStruct_022097b8 {
     u8 unk_1A;
 };
 
-extern void func_02002d14(const void *d, void *g, int i, int a, int b, int c);
-extern void func_02002c6c(const void *d, void *g, int i, int a, int b, int c);
+extern int func_02002d14(const void *d, void *g, int i, int a, int b, int c);
+extern int func_02002c6c(const void *d, void *g, int i, int a, int b, int c);
 extern void *data_021fbe94;
 extern const char data_ov002_0220bbe0[];
 extern const char data_ov002_0220bbfc[];

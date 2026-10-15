@@ -3,7 +3,7 @@
  */
 
 extern int func_0200363c(int x);
-extern void func_020b4a20(void *dst, void *src, const void *fmt);
+extern int func_020b4a20(void *dst, void *src, const void *fmt);
 extern const char data_020e19c8[];
 
 int func_0208249c(char *arg0, int arg1)

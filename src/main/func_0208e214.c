@@ -9,7 +9,7 @@ typedef struct {
     int unk_74;
 } UnkStruct_0208e214;
 
-extern void func_0208e24c(int);
+extern void func_0208e24c(void);
 extern void func_0208e05c(UnkStruct_0208e214 *);
 extern void func_0208e0dc(UnkStruct_0208e214 *);
 extern void func_0208e200(UnkStruct_0208e214 *);
@@ -18,7 +18,7 @@ void func_0208e214(UnkStruct_0208e214 *s)
 {
     if (s->unk_74 != 0) {
         if (s->unk_0C == 4) {
-            func_0208e24c(s->unk_0C);
+            func_0208e24c();
         }
         func_0208e05c(s);
         func_0208e0dc(s);

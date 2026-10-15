@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_02003348(int p1, int p2, void *p3, void *p4, int p5);
+extern int func_02003348(int p1, int p2, void *p3, void *p4, int p5);
 extern u16 data_ov004_02253238;
 extern int data_ov004_022577d0;
 

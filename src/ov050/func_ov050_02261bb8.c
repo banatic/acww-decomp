@@ -13,7 +13,7 @@ typedef struct UnkStruct_02261bb8 {
 
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
-extern void func_02060de4(void *tbl, u8 idx);
+extern int func_02060de4(void *tbl, u8 idx);
 extern int data_021ebcd4;
 
 void func_ov050_02261bb8(UnkStruct_02261bb8 *self)

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200e92c(void *buf);
+extern unsigned int func_0200e92c(void *buf);
 extern void func_0200e90c(void *buf, int param, int a, int b);
 extern int func_0200e894(void *p1, void *buf);
-extern void func_0200e91c(void *buf);
+extern int func_0200e91c(void *buf);
 
 int func_ov003_02218ca8(void *param1, unsigned int *param2, int a2, int a3)
 {

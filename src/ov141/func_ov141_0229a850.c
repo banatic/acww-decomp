@@ -4,10 +4,10 @@
 
 extern void func_ov139_022999f8(void *);
 extern void func_ov139_022999c4(void *);
-extern void func_02064af4(const void *, void *, int);
+extern int func_02064af4(const void *, void *, int);
 extern void func_0206fdd4(void *, int, int, int, int, int);
 extern void func_ov141_02299f6c(void *, int);
-extern void func_02002d14(const void *, int, int, int, int, int);
+extern int func_02002d14(const void *, int, int, int, int, int);
 
 extern unsigned char data_ov141_0229afa8[];
 extern unsigned char data_ov141_0229afbc[];

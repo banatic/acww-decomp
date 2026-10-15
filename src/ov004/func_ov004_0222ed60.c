@@ -16,12 +16,12 @@ extern char data_ov004_02255098[], data_ov004_022550b0[], data_ov004_022550cc[],
 extern char data_ov004_02255100[], data_ov004_02255118[], data_ov004_02255134[], data_ov004_0225514c[];
 extern void *data_021c9b24;
 extern Vec data_ov004_02258318, data_ov004_02258330;
-extern void func_ov004_0222c600(char *, char *, char *);
+extern int func_ov004_0222c600(char *, char *, char *);
 extern void func_ov004_0222de14(char *, int, char *, char *);
 extern void *func_ov004_0222c3c4(char *, int);
 extern int func_02055140(char *, void *);
 extern void func_02055060(char *, void *, int, int, u16, u16);
-extern int func_02055050(char *);
+extern void func_02055050(char *);
 extern void func_ov004_0222dd5c(char *, int);
 extern int func_ov004_0222e73c(char *, int);
 extern void func_ov004_0222db14(char *, int, char *, char *, u8, int, u16, u16);

@@ -6,7 +6,7 @@
 
 extern int gt2GetIncomingBufferSize(void *p);
 extern int func_0201c314(void *self, int h);
-extern void func_020147fc(void *p, int a, int b, int c);
+extern int func_020147fc(void *p, int a, int b, int c);
 
 int func_ov004_02220df4(char *self)
 {

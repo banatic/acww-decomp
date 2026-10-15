@@ -3,7 +3,7 @@
  */
 
 extern int func_020644cc(int);
-extern void func_020683e4(void *a, int b, void *c, void *d);
+extern int func_020683e4(void *a, int b, void *c, void *d);
 
 struct UnkStruct_02278ba0 {
     unsigned char pad_00[0x1e];

@@ -6,7 +6,7 @@ extern int func_020b65c4(void);
 extern int func_020a132c(void);
 extern void func_020a126c(int, int);
 
-void func_02075334(void)
+void func_02075334(unsigned char *payload, unsigned int length, int player)
 {
     int x;
     int y;

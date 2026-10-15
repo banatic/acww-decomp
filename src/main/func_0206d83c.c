@@ -16,14 +16,14 @@ extern u16 data_021ce3f4[];
 extern int data_021ce2f4;
 extern int data_020df1f8;
 
-extern void func_0206d9d8(struct UnkStruct_0206d83c *);
-extern void func_0206d964(struct UnkStruct_0206d83c_2 *);
+extern void *func_0206d9d8(struct UnkStruct_0206d83c *);
+extern void *func_0206d964(struct UnkStruct_0206d83c_2 *);
 extern void func_020a8c1c(struct UnkStruct_0206d83c *);
-extern void func_0206d97c(struct UnkStruct_0206d83c *, void *, int);
-extern void func_020a87e0(struct UnkStruct_0206d83c_2 *, struct UnkStruct_0206d83c *);
+extern int func_0206d97c(struct UnkStruct_0206d83c *, void *, int);
+extern int func_020a87e0(struct UnkStruct_0206d83c_2 *, struct UnkStruct_0206d83c *);
 extern int func_02051ce0(u16 *, int, int);
-extern void func_0206d94c(struct UnkStruct_0206d83c_2 *);
-extern void func_0206d9c0(struct UnkStruct_0206d83c *);
+extern void *func_0206d94c(struct UnkStruct_0206d83c_2 *);
+extern void *func_0206d9c0(struct UnkStruct_0206d83c *);
 
 void func_0206d83c(void)
 {

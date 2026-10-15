@@ -4,16 +4,16 @@
 
 extern void func_0208e508(void *, int);
 extern void func_0208e5cc(void *);
-extern void func_0208e8d4(void *);
+extern void *func_0208e8d4(void *, unsigned char parameter1);
 extern void func_ov002_02209e18(void *);
 extern void func_ov002_02209e44(void *);
 extern void *data_ov002_0220bc88;
 
-void *func_ov002_0220a40c(char *self)
+void *func_ov002_0220a40c(char *self, unsigned char arg1)
 {
     // DECLS
     // ENDDECLS
-    func_0208e8d4(self);
+    func_0208e8d4(self, arg1);
     *(void **) (self) = &data_ov002_0220bc88;
     func_ov002_02209e44(self + 0x4c);
     func_0208e508(self, 0x0);

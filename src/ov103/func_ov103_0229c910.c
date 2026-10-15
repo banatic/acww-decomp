@@ -6,7 +6,7 @@ extern int func_ov103_0229cdfc(char *a, char *b);
 extern int func_ov103_0229cde8(char *a, char *b);
 extern int func_ov094_0229b8d8(char *ptr, int v);
 extern int func_02066830(char *ptr, int v);
-extern int func_ov094_0229b890(char *ptr, int v);
+extern void func_ov094_0229b890(char *ptr, int v);
 
 void func_ov103_0229c910(char *a, char *b)
 {

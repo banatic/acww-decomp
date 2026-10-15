@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *);
+extern void *func_020984e8(void);
 extern int func_02099020(void *, int);
 extern char *func_02079350(void);
 extern void *func_0208150c(char *);
@@ -22,7 +22,7 @@ void func_02079e64(void *a, char *b, void *c)
     int i;
     int zero;
 
-    h = func_020984e8(a);
+    h = func_020984e8();
     if (h != 0) {
         v = func_02099020(h, 1);
     } else {

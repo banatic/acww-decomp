@@ -2,18 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020996f8(void);
-extern int func_0204bcdc(void);
+extern void *func_020996f8(int);
+extern int func_0204bcdc(void *);
 extern int func_0204bc64(const void *p);
 
-int func_0207e894(void)
+int func_0207e894(int v)
 {
     unsigned short local;
     void *p;
-    int v, w;
+    int w;
 
-    p = func_020996f8();
-    if (func_0204bcdc() != 0) {
+    p = func_020996f8(v);
+    if (func_0204bcdc(p) != 0) {
         local = 0x13E3;
         v = func_0204bc64(p);
         w = func_0204bc64(&local);

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_020044a0(char *p);
+extern int func_020044a0(char *p);
 int func_ov004_02213984(char *self)
 {
     if (*(u8 *) (self + 0x888) != 0) {

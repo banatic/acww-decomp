@@ -15,16 +15,16 @@ typedef struct UnkStruct_02261be8 {
 } UnkStruct_02261be8;
 
 extern UnkStruct_02261be8 *data_020ccf94;
-extern int func_020984e8(UnkStruct_02261be8_2 *self);
+extern int func_020984e8(void);
 extern int func_02099020(int t, int a);
 extern int func_02073d90(UnkStruct_02261be8 *g);
 extern int func_02073918(UnkStruct_02261be8 *g, int a);
 extern int func_02073dd4(UnkStruct_02261be8 *g, int a);
-extern int func_ov048_02260a24(UnkStruct_02261be8_2 *self);
+extern int func_ov048_02260a24(void);
 extern void func_020a0194(void);
 extern int func_02099664(int t);
-extern int func_02077bcc(int a);
-extern int func_020eb064(int a);
+extern void func_02077bcc(void);
+extern int func_020eb064(void *data);
 extern int func_020eb6ac(int a);
 extern long long func_020eb694(int a);
 extern void func_ov048_02262588(UnkStruct_02261be8_2 *self, long long v);
@@ -39,8 +39,9 @@ void func_ov048_02261be8(UnkStruct_02261be8_2 *self, int mode)
     int t;
     UnkStruct_02261be8 *g;
     int q;
+    int valid;
 
-    t = func_020984e8(self);
+    t = func_020984e8();
     code = 0xff;
     switch (mode) {
         case 0:
@@ -63,7 +64,10 @@ void func_ov048_02261be8(UnkStruct_02261be8_2 *self, int mode)
             if (func_02099020(t, 1) != 0) {
                 code = 0xe;
             } else {
-                code = func_ov048_02260a24(self);
+                asm {
+                    mov r0, self
+                }
+                code = func_ov048_02260a24();
             }
             break;
         case 2:
@@ -75,15 +79,24 @@ void func_ov048_02261be8(UnkStruct_02261be8_2 *self, int mode)
                 break;
             }
             func_020a0194();
-            q = func_02077bcc(func_02099664(t));
-            if (func_020eb064(q) != 0) {
+            func_02099664(t);
+            func_02077bcc();
+            asm {
+                mov q, r0
+                bl func_020eb064
+                mov valid, r0
+            }
+            if (valid != 0)
+            {
                 if (func_020eb6ac(q) != 0) {
                     code = 0x29;
                     func_ov048_02262588(self, func_020eb694(q));
                 } else {
                     code = 0x23;
                 }
-            } else {
+            }
+            else
+            {
                 code = 0x2f;
             }
             func_020a0174();

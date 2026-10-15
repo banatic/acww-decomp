@@ -3,7 +3,7 @@
  */
 
 extern void func_ov112_022a1310(void *p);
-extern void func_ov002_022080a0(void *p);
+extern unsigned char *func_ov002_022080a0(void *p, unsigned char arg1);
 
 struct UnkStruct_ov112_022a1e48 {
     char pad_00[0x8c];
@@ -14,6 +14,6 @@ int func_ov112_022a1e48(struct UnkStruct_ov112_022a1e48 *p)
 {
     func_ov112_022a1310(p);
     p->unk_8C = 0;
-    func_ov002_022080a0(p);
+    func_ov002_022080a0(p, 0);
     return 1;
 }

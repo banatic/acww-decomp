@@ -3,11 +3,12 @@
  */
 
 extern int *data_021fbf40;
-extern void func_020ed440(void);
-extern void func_020ed540(void);
-extern void func_020ed4cc(void);
-extern void func_ov065_0227982c(int *, int);
-extern void func_ov065_02277edc(int, void (*)(void), int, void (*)(void), int, void (*)(void), int);
+extern void func_020ed440(int index, int reason, void *user_data);
+extern void func_020ed540(void *result, int changed, void *user_data);
+extern void func_020ed4cc(int index, int status, void *profile, void *user_data);
+extern int func_ov065_0227982c(int *, int);
+extern int func_ov065_02277edc(int, void (*)(void *, int, void *), int, void (*)(int, int, void *, void *), int,
+                               void (*)(int, int, void *), int);
 
 void func_020ed3d4(int a, int b, int c)
 {

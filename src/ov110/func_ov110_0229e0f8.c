@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_021fbdd8;
-extern void func_ov002_02208098(void *p, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_02207ce4(void *p, int size);
 extern void func_ov002_02207d00(void *p);
 extern int func_ov110_0229c2c8(void *p, int a);
@@ -13,7 +13,7 @@ extern void func_ov110_0229d770(void *p, unsigned char b);
 void func_ov110_0229e0f8(void *p)
 {
     if (data_021fbdd8 == 0) {
-        func_ov002_02208098(p, 0);
+        func_ov002_02208098((void *) (p), 0);
         func_ov002_02207ce4((char *) p + 0x21f8, 0x3c);
     } else {
         if (func_ov110_0229c2c8(p, 4) != 0 && func_ov110_0229cf54(p) != 0) {

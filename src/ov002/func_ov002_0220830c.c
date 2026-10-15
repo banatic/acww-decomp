@@ -4,9 +4,9 @@
 
 extern int data_020da13c;
 extern int data_ov002_0220bb24;
-extern void func_020ee660(void *p);
+extern void *func_020ee660(void *p);
 extern void func_ov002_022089e0(void *sub);
-extern void func_ov002_022087d4(void *sub);
+extern void *func_ov002_022087d4(void *sub);
 
 struct UnkStruct_0220830c {
     int *vptr;

@@ -4,14 +4,14 @@
 
 #include "types.h"
 
-extern void func_02034270(void *dst, void *src, int a, int b);
+extern int func_02034270(void *dst, void *src, int a, int b);
 extern void func_0203423c(void *ptr);
 extern void VEC_Add(void *a, void *b, void *c);
-extern void func_02090c2c(int a, void *b, int c, void *d);
-extern void func_02090aa4(int x, void (*cb)(void));
+extern int func_02090c2c(int a, void *b, int c, void *d);
+extern void func_02090aa4(int x, void (*cb)(int *out));
 extern void func_020ba31c(int k);
-extern void func_020ba334(int k);
-extern void func_ov003_02219930(void *p);
+extern void func_020ba334(void);
+extern int func_ov003_02219930(void *p);
 extern void func_ov003_02222860(void *self);
 extern int func_ov003_02220bf0(void *p);
 extern void func_0204f794(int *out, int x, int y);
@@ -19,7 +19,7 @@ extern int _s32_div_f(int a, int b);
 extern int func_020984e8(void);
 extern void func_02098ff8(int a, int b);
 extern void func_ov003_02224140(int a, int b, int c, int d);
-extern void func_ov003_02221c9c(void);
+extern void func_ov003_02221c9c(int *out);
 
 extern int data_ov003_0223cf88[];
 extern void *data_020e25d4;
@@ -77,7 +77,7 @@ void func_ov003_02221ad8(UnkStruct_02221ad8 *self)
         } else {
             self->unk_50 = self->unk_50 - 1;
             if (self->unk_50 < 0) {
-                func_020ba334(self->unk_50);
+                func_020ba334();
                 func_ov003_02219930(&self->unk_18);
                 self->unk_A0 = 0;
                 func_ov003_02222860(self);
@@ -104,7 +104,7 @@ void func_ov003_02221ad8(UnkStruct_02221ad8 *self)
             self->unk_30 = 0;
             self->unk_34 = 0;
             self->unk_38 = 0;
-            func_020ba334(0);
+            func_020ba334();
             if (self->unk_50 == 0) {
                 if (self->unk_08 == 0x137b) {
                     func_02098ff8(func_020984e8(), 0x30);

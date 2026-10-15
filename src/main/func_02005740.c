@@ -60,7 +60,7 @@ extern void func_0205490c(void *a, Task *t);
 extern void func_02054ed4(void *a, Task *t, int k);
 extern int func_0203f844(Vec *a, Vec *b);
 extern int func_0203f758(void);
-extern void func_0203f7d0(Vec *d, Vec *s);
+extern int func_0203f7d0(Vec *d, Vec *s);
 extern int func_0200545c(UnkStruct_02005740_3 *o, int v);
 extern void MTX_RotY33_(Mtx33 *m, int s, int c);
 extern void MTX_RotX33_(Mtx33 *m, int s, int c);

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020574a0(void);
+extern int func_020574a0(void *);
 
 int func_02057430(int a0, int a1, int a2)
 {
@@ -11,7 +11,7 @@ int func_02057430(int a0, int a1, int a2)
     int r4 = a2;
     int r0;
 
-    if (func_020574a0() == 0) {
+    if (func_020574a0((void *) a0) == 0) {
         r0 = -1;
         if (r4 != r0) {
             r0 = *(unsigned char *) (r6 + *(int *) (r6 + 8) + 5);

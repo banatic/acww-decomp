@@ -3,12 +3,12 @@
  */
 
 extern int data_021d11c4[];
-extern int func_02077bb4[];
+extern void func_02077bb4(void *);
 extern int data_021d11b8[];
-extern void __register_global_object(int, int, int);
+extern void __register_global_object(void *, void *, void *);
 
 void __sinit_020c5d1c(void)
 {
     data_021d11c4[0] = (~0);
-    __register_global_object((int) data_021d11c4, (int) func_02077bb4, (int) data_021d11b8);
+    __register_global_object((void *) ((int) data_021d11c4), (((void *) func_02077bb4)), (void *) ((int) data_021d11b8));
 }

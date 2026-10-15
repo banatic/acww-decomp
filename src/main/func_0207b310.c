@@ -17,7 +17,7 @@ extern int func_0207dca8(char *p);
 extern int func_02080998(char *p, int n, void *buf);
 extern int func_0207cc54(int a, int b, int c);
 extern void *func_0207cec0(UnkStruct_0207b310 *self, int i);
-extern unsigned char *func_02080890(void *e);
+extern unsigned char *func_02080890(unsigned int object);
 extern int func_020644cc(int x);
 
 int func_0207b310(UnkStruct_0207b310 *self, unsigned int k)
@@ -62,7 +62,7 @@ int func_0207b310(UnkStruct_0207b310 *self, unsigned int k)
     sel = func_0207cc54(mask, cnt, 8);
     e = func_0207cec0(self, sel);
     if (e != 0) {
-        q = func_02080890(e);
+        q = func_02080890((unsigned int) e);
         if (func_020644cc(data_020cd4c4[k]) < q[3] + 0x80) {
             return sel;
         }

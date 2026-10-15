@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202eb20(void *self, void *arg);
+extern void *func_0202eb20(void *self);
 extern char data_ov049_022634b4;
 
 typedef struct {
@@ -12,6 +12,6 @@ typedef struct {
 UnkStruct_022620d0 *func_ov049_022620d0(UnkStruct_022620d0 *self)
 {
     self->vtable = &data_ov049_022634b4;
-    func_0202eb20(self, &data_ov049_022634b4);
+    func_0202eb20(self);
     return self;
 }

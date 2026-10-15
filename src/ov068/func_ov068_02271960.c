@@ -9,7 +9,7 @@ typedef struct {
 } VecFx32;
 
 extern int func_020644cc(int a);
-extern void func_02091230(int a, VecFx32 *v, s16 *ang, int d);
+extern int func_02091230(int a, VecFx32 *v, s16 *ang, int d);
 
 void func_ov068_02271960(u8 *self, s16 *buf)
 {

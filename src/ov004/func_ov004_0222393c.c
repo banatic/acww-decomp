@@ -23,7 +23,7 @@ extern int func_02019d0c(char *, int, int, int, int, short, short, int, int, u16
 extern int func_02019de8(char *);
 extern int func_02019c20(char *, int, int, char, u16, u16);
 extern void func_0201b38c(char *, int), func_0201b388(char *, int), func_0201b384(char *, int);
-extern void func_0200442c(char *, int, int, int);
+extern int func_0200442c(char *, int, int, int);
 extern void func_0206844c(char *, u8 *, int);
 extern void func_ov004_0222421c(char *, int);
 void func_ov004_0222393c(char *self)

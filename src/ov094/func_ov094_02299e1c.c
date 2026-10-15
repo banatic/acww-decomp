@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void *func_020984e8(void *self);
+extern void *func_020984e8(void);
 extern void *func_02099870(void *a);
 extern int func_020950c0(void *a);
 extern u16 *func_02099728(void *a);
@@ -19,7 +19,7 @@ void func_ov094_02299e1c(void *self)
     int ret;
     int ok;
 
-    a = func_020984e8(self);
+    a = func_020984e8();
     b = func_020950c0(func_02099870(a));
     p = func_02099728(a);
     ret = 0;

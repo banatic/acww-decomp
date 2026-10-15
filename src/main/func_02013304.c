@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02013384(void);
-extern void *MI_CpuFill8(void *dst, int val, int len);
-extern void *MI_CpuCopy8(void *dst, void *src, int len);
+extern int func_02013384(unsigned char *, unsigned int *);
+extern void MI_CpuFill8(void *dst, int val, int len);
+extern void MI_CpuCopy8(void *dst, void *src, int len);
 
 struct UnkStruct_02013304 {
     unsigned char unk_00, unk_01, unk_02;
 };
 
-struct UnkStruct_02013304 func_02013304(unsigned char *self)
+struct UnkStruct_02013304 func_02013304(unsigned char *self, unsigned int *argument1)
 {
     unsigned char local[3];
     int idx;
@@ -18,7 +18,7 @@ struct UnkStruct_02013304 func_02013304(unsigned char *self)
     unsigned char *dst;
     int i;
 
-    idx = func_02013384();
+    idx = func_02013384((unsigned char *) self, (unsigned int *) argument1);
     MI_CpuFill8(local, 0, 3);
     if (idx != -1) {
         base = self + 0x2c;

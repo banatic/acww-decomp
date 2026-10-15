@@ -15,7 +15,7 @@ struct UnkStruct_0229a71c {
 extern void func_ov144_0229a6c8(struct UnkStruct_0229a71c *p);
 extern void func_ov144_02299660(struct UnkStruct_0229a71c *p, int a);
 extern void func_ov144_02299c5c(struct UnkStruct_0229a71c *p, int a);
-extern void func_ov002_02208098(struct UnkStruct_0229a71c *p, int a);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229a71c *p, unsigned char value);
 extern void func_ov144_02299694(struct UnkStruct_0229a71c *p, int a);
 extern void func_0206fc4c(int a);
 extern void func_0206f674(int a);

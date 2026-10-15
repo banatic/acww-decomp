@@ -19,9 +19,9 @@ extern int func_020883cc(void);
 extern int func_020b65c4(void);
 extern int func_02073dd4(UnkStruct_020842b8 *h, int a);
 extern int func_02085d2c(int a, int b);
-extern void func_0208602c(void);
-extern void func_020860c4(void);
-extern int func_02087f30(void);
+extern int func_0208602c(void);
+extern int func_020860c4(int);
+extern int func_02087f30(void *);
 extern int func_02073d90(UnkStruct_020842b8 *h);
 extern int func_02084d5c(u16 *p, int *a, void *b);
 
@@ -60,18 +60,14 @@ int func_020842b8(int p)
         }
     }
 L30e:
-    func_0208602c();
-    func_020860c4();
-    if (func_02087f30() != 0) {
+    if (func_02087f30((void *) func_020860c4((int) func_0208602c())) != 0) {
         if (func_020b65c4() == 0xb) {
             if (func_02073d90(data_020ccf94) == 0) {
                 goto act;
             }
         }
     }
-    func_0208602c();
-    func_020860c4();
-    if (func_02087f30() == 0) {
+    if (func_02087f30((void *) func_020860c4((int) func_0208602c())) == 0) {
         goto ret0;
     }
     if (func_020b65c4() != 0xc) {

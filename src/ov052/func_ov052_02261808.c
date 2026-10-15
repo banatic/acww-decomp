@@ -24,7 +24,7 @@ extern int func_020eaa2c(Vec3 *, void *);
 extern void func_ov052_02261908(UnkStruct_02261808 *, int);
 extern int func_ov052_022604ec(UnkStruct_02261808 *);
 extern int func_ov052_022604a0(UnkStruct_02261808 *);
-extern void func_ov052_02260554(UnkStruct_02261808 *);
+extern int func_ov052_02260554(UnkStruct_02261808 *);
 
 int func_ov052_02261808(UnkStruct_02261808 *self)
 {

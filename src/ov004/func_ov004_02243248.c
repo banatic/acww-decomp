@@ -20,7 +20,7 @@ typedef struct UnkStruct_02243248 {
 
 extern void func_ov004_02244fb8(Vec3 *out, int ang);
 extern int FX_MulFunc(int a, int b);
-extern void func_02034270(void *w, Vec3 *v, int a, int b);
+extern int func_02034270(void *w, Vec3 *v, int a, int b);
 extern int func_020341c8(void *w, int a);
 extern void func_0203423c(void *w);
 

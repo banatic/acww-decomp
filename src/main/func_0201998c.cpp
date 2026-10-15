@@ -18,10 +18,10 @@ class UnkStruct_0201998c {
 };
 extern "C" int func_02019de8(UnkStruct_0201998c *);
 
-extern "C" void func_02019af8(UnkStruct_0201998c *);
+extern "C" void func_02019af8(UnkStruct_0201998c *, int);
 extern "C" void func_0201998c(UnkStruct_0201998c *self, void *arg)
 {
-    func_02019af8(self);
+    func_02019af8(self, (int) arg);
     Node *n = self->unk_20;
     if (n && n->pmf) {
         (self->*(n->pmf))(arg);

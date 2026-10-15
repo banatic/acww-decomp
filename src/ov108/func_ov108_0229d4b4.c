@@ -15,25 +15,25 @@ struct UnkStruct_0229d4b4 {
 };
 
 extern volatile struct GlobalHW data_021fbe40;
-extern int func_ov002_02208014(struct UnkStruct_0229d4b4 *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(struct UnkStruct_0229d4b4 *self);
-extern void func_ov002_02207d24(void *obj, int val);
+extern int func_ov002_02207d24(void *obj, int val);
 extern void func_ov002_02207d00(void *obj);
-extern int func_ov108_0229cfa8(struct UnkStruct_0229d4b4 *self);
+extern void func_ov108_0229cfa8(struct UnkStruct_0229d4b4 *self);
 extern int func_ov108_0229c2f0(struct UnkStruct_0229d4b4 *self, int val, int zero);
-extern int func_ov108_0229c9d8(struct UnkStruct_0229d4b4 *self);
-extern int func_ov108_0229c72c(struct UnkStruct_0229d4b4 *self);
+extern void func_ov108_0229c9d8(struct UnkStruct_0229d4b4 *self);
+extern void func_ov108_0229c72c(struct UnkStruct_0229d4b4 *self);
 extern int func_ov108_0229cb88(struct UnkStruct_0229d4b4 *self, unsigned char flag);
 extern int func_ov108_0229cd70(struct UnkStruct_0229d4b4 *self, unsigned char flag);
 extern int func_ov108_0229cb54(struct UnkStruct_0229d4b4 *self, unsigned char flag);
-extern int func_ov108_0229c404(struct UnkStruct_0229d4b4 *self, unsigned char flag, int zero);
-extern int func_ov108_0229c5b4(struct UnkStruct_0229d4b4 *self);
-extern int func_ov108_0229c794(struct UnkStruct_0229d4b4 *self);
-extern int func_ov108_0229cd90(struct UnkStruct_0229d4b4 *self);
+extern void func_ov108_0229c404(struct UnkStruct_0229d4b4 *self, unsigned char flag, int zero);
+extern void func_ov108_0229c5b4(struct UnkStruct_0229d4b4 *self);
+extern void func_ov108_0229c794(struct UnkStruct_0229d4b4 *self);
+extern void func_ov108_0229cd90(struct UnkStruct_0229d4b4 *self);
 
 void func_ov108_0229d4b4(struct UnkStruct_0229d4b4 *self)
 {
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov108_0229cfa8(self);
         func_ov002_02207d24(self->obj, 1);
         return;

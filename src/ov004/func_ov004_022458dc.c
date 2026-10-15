@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov004_0222c110(int, int);
+extern int func_ov004_0222c110(int, int);
 extern void func_0208e508(void *, int);
-extern void func_0208e260(void *);
+extern void *func_0208e260(void *);
 void func_ov004_022458dc(char *self)
 {
     int a = 0;

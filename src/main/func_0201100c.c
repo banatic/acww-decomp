@@ -23,14 +23,16 @@ typedef struct UnkStruct_0201100c {
 } UnkStruct_0201100c;
 
 extern void func_02003300(void *, void *);
-extern void func_02032c64(void *);
+extern void *func_02032c64(void *);
 extern int func_020082a0(void *, void *);
 extern void func_02031288(void *, void *, void *, int, int, void *, int);
-extern void func_02032c50(void *);
-extern int func_020310c8(int);
+extern void *func_02032c50(void *);
+extern int func_020310c8(void);
 
-void func_0201100c(UnkStruct_0201100c *self)
+int func_0201100c(UnkStruct_0201100c *self)
 {
+    int result;
+
     char buf[0x34];
     char *p5c;
     signed short s;
@@ -47,5 +49,8 @@ void func_0201100c(UnkStruct_0201100c *self)
     }
     func_02031288(a0, p5c, (char *) self + 0x68, s, 0xfd7, self, 0xf);
     func_02032c50(buf);
-    *(int *) (p5c + 4) = func_020310c8(0);
+    asm { mov r0, #0 }
+    result = func_020310c8();
+    *(int *) (p5c + 4) = result;
+    return result;
 }

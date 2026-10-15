@@ -4,9 +4,9 @@
 
 extern void func_ov107_0229cf08(void *);
 extern void func_ov107_0229cf90(void *);
-extern void func_ov107_0229d054(void *, unsigned char);
+extern void func_ov107_0229d054(void *object, int index);
 extern void func_ov002_02207fc0(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov107_0229d4a0(void *self)
 {
@@ -15,6 +15,6 @@ void func_ov107_0229d4a0(void *self)
     func_ov107_0229cf08(self);
     func_ov002_02207fc0(self);
     func_ov107_0229cf90(self);
-    func_ov002_02208098(self, 5);
+    func_ov002_02208098((void *) (self), 5);
     func_ov107_0229d054(self, ((unsigned char *) self)[0xb8]);
 }

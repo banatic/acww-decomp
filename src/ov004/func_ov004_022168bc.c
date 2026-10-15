@@ -3,11 +3,13 @@
  */
 
 extern int func_ov004_0221152c(unsigned int size);
-extern void func_ov004_0221688c(void);
+extern void *func_ov004_0221688c(char *argument0);
 
 void func_ov004_022168bc(void)
 {
-    if (func_ov004_0221152c(0x8a8)) {
-        func_ov004_0221688c();
+    char *conditionInput0;
+
+    if ((conditionInput0 = (char *) (func_ov004_0221152c(0x8a8)))) {
+        func_ov004_0221688c((char *) conditionInput0);
     }
 }

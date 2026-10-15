@@ -3,14 +3,13 @@
  */
 
 extern int func_0204bcdc(int arg);
-extern void func_0204bc64(int arg);
-extern int func_02053c34(void);
+extern int func_0204bc64(int arg);
+extern int func_02053c34(int);
 
 int func_02053c14(int arg)
 {
     if (func_0204bcdc(arg) != 0) {
-        func_0204bc64(arg);
-        return func_02053c34();
+        return func_02053c34((int) func_0204bc64(arg));
     }
     return 0;
 }

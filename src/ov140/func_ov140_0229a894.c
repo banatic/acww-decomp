@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0229a894;
 
 extern void func_ov140_0229a638(UnkStruct_0229a894 *p);
-extern int func_ov002_022080a0(UnkStruct_0229a894 *p, int n);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 int func_ov140_0229a894(UnkStruct_0229a894 *p)
 {
@@ -18,6 +18,6 @@ int func_ov140_0229a894(UnkStruct_0229a894 *p)
         return v;
     } else {
         func_ov140_0229a638(p);
-        return func_ov002_022080a0(p, 1);
+        return (int) func_ov002_022080a0((void *) (p), 1);
     }
 }

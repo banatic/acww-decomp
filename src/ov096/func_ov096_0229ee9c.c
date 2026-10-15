@@ -3,7 +3,7 @@
  */
 
 extern int func_ov096_0229ef30(void *a, int b, int c, int d);
-extern int func_ov096_0229f0dc(void *a, void *b);
+extern unsigned short func_ov096_0229f0dc(void *a, void *b);
 extern int func_ov096_0229f088(void *a, void *b);
 extern int func_ov096_0229defc(void *a, unsigned short *p1, unsigned char c, unsigned short *p2, int x);
 

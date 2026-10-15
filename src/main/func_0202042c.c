@@ -29,7 +29,7 @@ typedef struct {
 extern UnkStruct_0202042c_3 data_020c8ab0;
 extern void *func_0208150c(void *ptr);
 extern void *func_020036e8(void *ptr);
-extern void func_0202da38(void *a, void *b, void *c, int d, void *e, u32 f, int g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, void *e, int offset, int g, int h, int i);
 
 void func_0202042c(UnkStruct_0202042c *a, UnkStruct_0202042c_2 *b)
 {

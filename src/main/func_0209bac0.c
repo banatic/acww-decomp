@@ -7,12 +7,12 @@ typedef struct {
     unsigned char unk_2A;
 } UnkStruct_0209bac0;
 
-extern void func_0209baf4(UnkStruct_0209bac0 *a, int b, int c);
+extern void func_0209baf4(UnkStruct_0209bac0 *a);
 extern void func_0209bae4(UnkStruct_0209bac0 *a, int b, int c);
 
 int func_0209bac0(UnkStruct_0209bac0 *a, int b, int c)
 {
-    func_0209baf4(a, b, c);
+    func_0209baf4(a);
     func_0209bae4(a, b, c);
     a->unk_2A = 0;
     return 0;

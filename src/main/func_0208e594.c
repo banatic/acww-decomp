@@ -10,7 +10,7 @@ typedef struct {
     int unk_40;
 } UnkStruct_0208e594;
 
-extern int func_0208aef0(UnkStruct_0208e594 *self, int a, int b);
+extern int func_0208aef0(UnkStruct_0208e594 *self);
 extern void func_020041bc(unsigned char c);
 
 void func_0208e594(UnkStruct_0208e594 *self, int a, int b)
@@ -19,7 +19,7 @@ void func_0208e594(UnkStruct_0208e594 *self, int a, int b)
     self->unk_24 = b;
     if (self->unk_40 != 0) {
         int value;
-        value = func_0208aef0(self, self->unk_40, b) + self->unk_20;
+        value = func_0208aef0(self) + self->unk_20;
         if (value < 0) {
             value = 0;
         }

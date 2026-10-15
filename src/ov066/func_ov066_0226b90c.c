@@ -5,7 +5,7 @@
 #pragma optimize_for_speed
 #pragma opt_speed
 
-extern void WM_SetPortCallback(int, int, int);
+extern int WM_SetPortCallback(int, int, int);
 extern void func_ov066_022668c4(void *);
 extern void func_ov066_02269aa4(void);
 

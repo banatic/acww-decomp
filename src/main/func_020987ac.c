@@ -10,7 +10,7 @@ typedef struct {
     char pad_00[0x249c];
 } Elem;
 
-extern int func_02098868(void *);
+extern int func_02098868(void *, void *);
 extern int func_02098880(void *);
 extern int func_020644cc(int);
 extern int func_02099a28(Elem *);
@@ -25,7 +25,7 @@ void *func_020987ac(void *p0, Key *p1)
     Elem *e;
     Key *q;
 
-    if (p1 == 0 || func_02098868(p0) == 0) {
+    if (p1 == 0 || func_02098868(p0, p1) == 0) {
         n = func_02098880(p0);
     } else {
         n = func_02098880(p0) - 1;

@@ -11,10 +11,10 @@ extern const unsigned char data_ov145_0229af58[];
 extern const unsigned char data_ov145_0229af70[];
 extern const unsigned char data_ov145_0229af88[];
 
-extern void func_02002c6c(const unsigned char *src, unsigned char *dst, int a, int b, int c, int d);
-extern void func_02002d14(const unsigned char *src, unsigned char *dst, int a, int b, int c, int d);
-extern void func_02064af4(const unsigned char *src, unsigned char *dst, int size);
-extern void func_02002b40(unsigned char *dst, int val, int size, int flag);
+extern int func_02002c6c(const unsigned char *src, unsigned char *dst, int a, int b, int c, int d);
+extern int func_02002d14(const unsigned char *src, unsigned char *dst, int a, int b, int c, int d);
+extern int func_02064af4(const unsigned char *src, unsigned char *dst, int size);
+extern int func_02002b40(unsigned char *dst, int val, int size, int flag);
 
 void func_ov145_0229a6c8(unsigned char *self)
 {

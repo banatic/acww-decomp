@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204b42c(void);
+extern int func_0204b42c(unsigned short *);
 
-int func_0204bd40(void)
+int func_0204bd40(unsigned short *argument0)
 {
     int r0;
     int r1;
 
-    r0 = func_0204b42c();
+    r0 = func_0204b42c((unsigned short *) argument0);
     r1 = r0 - 0x1000;
     r1 &= 3;
     r0 = r1 + 1;

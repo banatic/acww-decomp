@@ -7,7 +7,7 @@ struct UnkStruct_0206da98 {
     void *unk_00;
 };
 
-extern void func_020a8cac(UnkStruct_0206da98 *obj);
+extern void *func_020a8cac(UnkStruct_0206da98 *obj);
 extern void func_020a8c1c(UnkStruct_0206da98 *obj);
 extern char data_020df210;
 

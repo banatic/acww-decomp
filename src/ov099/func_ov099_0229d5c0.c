@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *self);
+extern int func_ov002_02208014(void);
 extern void func_ov099_0229d14c(void *self);
-extern void func_ov002_02207d24(int *p, int val);
+extern int func_ov002_02207d24(int *p, int val);
 extern int func_ov002_02208008(void *self);
 extern int func_ov099_0229c2c4(void *self, int a);
 extern void func_ov099_0229c9d0(void *self);
@@ -13,7 +13,7 @@ extern int func_ov099_0229ccc8(void *self, unsigned char b);
 extern int func_ov099_0229cf30(void *self, unsigned char b);
 extern int func_ov099_0229cc74(void *self, unsigned char b);
 extern void func_ov099_0229c3e0(void *self, unsigned char b);
-extern void func_ov002_022080a0(void *self, int val);
+extern unsigned char *func_ov002_022080a0(void *self, unsigned char value);
 extern void func_ov099_0229c754(void *self);
 extern void func_ov002_02207d00(int *p);
 
@@ -34,7 +34,7 @@ struct UnkStruct_0229d5c0 {
 
 void func_ov099_0229d5c0(struct UnkStruct_0229d5c0 *self)
 {
-    if (func_ov002_02208014(self)) {
+    if (func_ov002_02208014()) {
         func_ov099_0229d14c(self);
         func_ov002_02207d24(&self->unk_218C, 1);
         return;

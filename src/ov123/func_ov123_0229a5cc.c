@@ -3,7 +3,7 @@
  */
 
 extern unsigned short *data_ov123_0229cf8c[];
-extern void func_ov123_0229adc8(int, unsigned char, unsigned char, int);
+extern int func_ov123_0229adc8(int, unsigned char, unsigned char, int);
 
 void func_ov123_0229a5cc(int a, int b, int c, int d, int e)
 {

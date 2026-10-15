@@ -32,21 +32,22 @@ struct UnkStruct_0222ca34 {
     virtual int v24(int);
 };
 extern "C" {
-extern int func_02055124(void *);
+extern void func_02055124(void *object);
 extern int func_02056f94(void *);
 extern int func_0209d3f8(void *, int);
 }
 
-extern "C" int func_ov004_0222ca34(char *self)
+extern "C" void func_ov004_0222ca34(char *self)
 {
     // DECLS
     // ENDDECLS
     if (func_02056f94(self + 0x188) != 0x0) {
         if (*(u8 *) (self + 0x374) == 0x0) {
-            return ((UnkStruct_0222ca34 *) self)->v24(0x2);
+            ((UnkStruct_0222ca34 *) self)->v24(0x2);
+            return;
         }
-        return func_0209d3f8(self, 0x2);
+        func_0209d3f8(self, 0x2);
     } else {
-        return func_02055124(self + 0xec);
+        func_02055124(self + 0xec);
     }
 }

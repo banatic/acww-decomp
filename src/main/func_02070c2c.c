@@ -9,7 +9,7 @@ struct UnkStruct_02070c2c {
     int unk_68;
 };
 
-extern void func_020a8cac(UnkStruct_02070c2c *obj);
+extern void *func_020a8cac(UnkStruct_02070c2c *obj);
 extern void func_020a8c1c(UnkStruct_02070c2c *obj);
 extern char data_020e179c;
 

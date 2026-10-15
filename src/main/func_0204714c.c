@@ -76,7 +76,7 @@ extern void func_02047e54(void *self, World *w, int mx, int my);
 extern void func_020868e8(void *p);
 extern void func_0207122c(void *p);
 extern void func_02060f5c(void *p);
-extern void func_020aea84(void);
+extern int func_020aea84(void);
 extern void func_02060d48(void *p, int c);
 extern void func_020617f0(void);
 extern void func_0203a508(void *p, int c);
@@ -97,7 +97,7 @@ extern void func_020790a8(void *p, Rec *r);
 extern int func_0209de88(int a, int b, int c);
 extern void func_02046c2c(void *self);
 extern void func_0205ba60(Obj54 *o);
-extern void func_02042c40(void *p);
+extern void func_02042c40(void);
 extern void func_020481a0(void *self);
 
 void func_0204714c(void *self, Rec *a1, Rec *a2, int a3, u8 a5, int a6)
@@ -246,6 +246,7 @@ void func_0204714c(void *self, Rec *a1, Rec *a2, int a3, u8 a5, int a6)
         }
         func_0205ba60(&obj);
     }
-    func_02042c40(&data_021c7c48);
+    asm { ldr r0, =data_021c7c48 }
+    func_02042c40();
     func_020481a0(self);
 }

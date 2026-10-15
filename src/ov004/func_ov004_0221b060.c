@@ -4,17 +4,17 @@
 
 #include "types.h"
 
-extern void func_ov004_0221afe8(void *self);
+extern void func_ov004_0221afe8(void);
 extern s16 data_ov004_02253238;
 extern int data_ov004_022577d0;
 extern int func_ov004_0221afb8(void *self);
 extern int func_020b65c4(void);
 extern void func_0203efb0(void *self, u16 a);
-extern void func_ov004_0221ae7c(void *self, int a);
+extern int func_ov004_0221ae7c(void *self, int a);
 
 int func_ov004_0221b060(char *self)
 {
-    func_ov004_0221afe8(self);
+    func_ov004_0221afe8();
     *(s16 *) (self + 0x156) = data_ov004_02253238;
     *(int *) (self + 0x158) = data_ov004_022577d0;
     if (func_ov004_0221afb8(self)) {

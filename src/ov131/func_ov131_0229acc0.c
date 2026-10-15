@@ -12,10 +12,10 @@ typedef struct {
     char unk_2C4[4];
 } UnkStruct_0229acc0;
 
-extern void func_ov130_0229a790(void *);
-extern void func_ov002_0220afdc(void *);
-extern void func_ov002_02209cb4(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov130_0229a790(void *);
+extern void *func_ov002_0220afdc(void *);
+extern void *func_ov002_02209cb4(void *);
+extern void *func_ov002_0220826c(void *);
 
 extern unsigned char data_ov131_0229b8f0[];
 

@@ -10,7 +10,7 @@ extern int func_020eb04c(void *);
 extern int func_020eb058(void *, void *);
 extern int func_020eb040(void *);
 extern int func_02077e50(void *);
-extern void *MI_CpuCopy8(void *, const void *, unsigned int);
+extern void MI_CpuCopy8(void *, const void *, unsigned int);
 
 int func_ov119_0229acb4(void *param)
 {

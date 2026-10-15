@@ -4,7 +4,7 @@
 
 extern void func_0202f8fc(void *dst, int x, int y);
 extern void func_0202f898(void *dst, void *src1, void *src2);
-extern void func_0202f7f4(void *v);
+extern int func_0202f7f4(void *v);
 extern void func_0202f7a0(void *dst, void *a, void *b);
 extern int func_02033614(void *a, void *b, void *c, void *d, int e, int f, int g, int h);
 extern int FX_MulFunc(int x, int y);

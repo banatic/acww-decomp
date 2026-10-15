@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a74bc(int);
+extern void func_020a74bc(void);
 extern void func_02073820(int);
 extern int func_020733c4(int);
 extern int func_02073394(int);
@@ -16,7 +16,7 @@ void func_020a7064(int param)
     int obj;
     int tmp1;
     int tmp2;
-    func_020a74bc(param);
+    func_020a74bc();
     obj = data_020ccf94;
     func_02073820(obj);
     tmp1 = func_020733c4(obj);

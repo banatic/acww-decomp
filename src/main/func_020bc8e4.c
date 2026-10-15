@@ -9,9 +9,9 @@ typedef struct {
 
 extern void func_020bca80(UnkStruct_020bc8e4 *, int, int, int);
 extern void func_020bc9c4(UnkStruct_020bc8e4 *, int);
-extern int func_020bcc70(UnkStruct_020bc8e4 *);
+extern void func_020bcc70(UnkStruct_020bc8e4 *);
 
-int func_020bc8e4(UnkStruct_020bc8e4 *arg)
+void func_020bc8e4(UnkStruct_020bc8e4 *arg)
 {
     int field = arg->unk_2F30;
     if (field < 0) {
@@ -19,5 +19,5 @@ int func_020bc8e4(UnkStruct_020bc8e4 *arg)
     } else if (field == 0) {
         func_020bc9c4(arg, 0x14);
     }
-    return func_020bcc70(arg);
+    func_020bcc70(arg);
 }

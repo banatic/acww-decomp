@@ -4,7 +4,7 @@
 
 extern void func_ov121_0229a1b0(void *obj);
 extern void func_ov002_022096d8(void *ptr, int value);
-extern void func_ov002_02208098(void *obj, int value);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char value);
 
 typedef struct {
     char pad_00[0xB2];

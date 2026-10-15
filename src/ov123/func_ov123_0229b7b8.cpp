@@ -6,7 +6,7 @@
 #include "cpp/ov123/Obj_ov123_0229d024.h"
 
 extern "C" int func_ov002_02209f64(void *ptr);
-extern "C" void func_ov002_02208098(void *ptr, unsigned char byte);
+extern "C" unsigned char *func_ov002_02208098(void *ptr, unsigned char byte);
 
 typedef struct {
     char pad_00[0xa0];

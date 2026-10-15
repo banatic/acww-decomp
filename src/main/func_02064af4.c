@@ -3,11 +3,11 @@
  */
 
 extern void func_02064cd8(void *dst, const void *src);
-extern void func_020649ac(void *dst, const void *src, int size);
+extern int func_020649ac(void *dst, const void *src, int size);
 
-void func_02064af4(const void *a, const void *b, int c)
+int func_02064af4(const void *a, const void *b, int c)
 {
     unsigned char buf[0x4c];
     func_02064cd8(buf, a);
-    func_020649ac(buf, b, c);
+    return func_020649ac(buf, b, c);
 }

@@ -11,7 +11,7 @@ struct Pair {
     int y;
 };
 extern struct Pair data_021d27e0[8];
-extern void func_02034240(void *out, int a, int b, int c, int d);
+extern int func_02034240(void *out, int a, int b, int c, int d);
 extern void func_0203423c(void *buf);
 
 int func_020863dc(struct Arg *arg)

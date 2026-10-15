@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov129_0229bc34(void *p);
+extern int func_ov129_0229bc34(void *p, unsigned int entry);
 extern void func_ov129_0229c610(void *p, int arg);
 
 int func_ov129_0229b9d8(unsigned char *p)
@@ -11,7 +11,7 @@ int func_ov129_0229b9d8(unsigned char *p)
     if (p[0xb0] == 0xff) {
         goto end;
     }
-    result = func_ov129_0229bc34(p);
+    result = func_ov129_0229bc34(p, p[0xb0]);
     if (result == 1) {
         goto body;
     }

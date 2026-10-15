@@ -3,7 +3,7 @@
  */
 
 extern int func_02014868(const void *);
-extern void func_0203e020(const void *);
+extern int func_0203e020(const void *);
 extern void func_ov081_022792e0(const void *, int);
 
 int func_ov081_02279244(const void *p)

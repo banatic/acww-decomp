@@ -4,14 +4,14 @@
 
 #include "types.h"
 
-extern void func_ov004_0220d290();
+extern void func_ov004_0220d290(unsigned char *self, int pending);
 
 int func_ov004_0220fd98(char *self)
 {
     // DECLS
     // ENDDECLS
     if (*(u8 *) (self + 0x77d) == 0x0) {
-        func_ov004_0220d290(self + 0x740, 0x1);
+        func_ov004_0220d290((unsigned char *) self + 0x740, 0x1);
         return 0x1;
     }
     return 0x0;

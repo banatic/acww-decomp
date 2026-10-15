@@ -3,17 +3,17 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int);
-extern void func_ov002_0220830c(void *);
-extern void func_020b9af4(void *);
-extern void func_ov094_0229b000(void *);
+extern void *func_ov002_0220830c(void *);
+extern void *func_020b9af4(void *);
+extern void *func_ov094_0229b000(void *);
 extern void func_ov094_0229bc3c(void *);
-extern void func_ov094_0229a2ec(void *);
-extern void func_ov002_02207e40(void *);
+extern void *func_ov094_0229a2ec(void *);
+extern void *func_ov002_02207e40(void *);
 extern void func_ov002_02209e44(void *);
-extern void func_ov002_02209ccc(void *);
-extern void func_ov002_02209b14(void *);
-extern void func_ov002_0220ba24(void *);
-extern void func_ov002_0220b008(void *);
+extern void *func_ov002_02209ccc(void *);
+extern void *func_ov002_02209b14(void *);
+extern void *func_ov002_0220ba24(void *);
+extern void *func_ov002_0220b008(void *);
 extern int data_ov109_0229dbd8;
 
 void *func_ov109_0229da60(void)

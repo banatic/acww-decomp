@@ -17,7 +17,7 @@ typedef struct UnkStruct_02039668 {
 } UnkStruct_02039668;
 
 extern void *func_020396dc(struct UnkStruct_02039668 *self, int param);
-extern void func_02039ebc(Node *node);
+extern int func_02039ebc(Node *node);
 
 void func_02039668(struct UnkStruct_02039668 *self, int param)
 {

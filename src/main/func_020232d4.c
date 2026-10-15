@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern void *func_02099640(void);
+extern int func_020984e8(void);
+extern void *func_02099640(int);
 extern void func_02029264(void *a, void *b);
-extern void func_0208150c(void *p);
-extern void *func_020036e8(void);
-extern void func_0202da38(void *a, void *b, void *c, int d, void *e, int f, int g, int h, int i);
+extern unsigned int func_0208150c(void *p);
+extern void *func_020036e8(unsigned char *);
+extern int func_0202da38(void *a, void *b, void *c, int d, void *e, int f, int g, int h, int i);
 
 struct GlobalData {
     int x;
@@ -34,10 +34,10 @@ struct UnkStruct_020232d4_3 {
 
 void func_020232d4(struct UnkStruct_020232d4_2 *a, struct UnkStruct_020232d4_3 *out)
 {
-    func_020984e8();
-    func_02029264(a, (void *) ((char *) func_02099640() + 0xc0));
-    func_0208150c(((struct UnkStruct_020232d4 *) a->unk_100)->unk_830);
-    func_0202da38(a, a->buf_104, &a->unk_122, 0x1e, func_020036e8(), data_020c8e18.x, data_020c8e18.y, 0, 0);
+    func_02029264(a, (void *) ((char *) func_02099640((int) func_020984e8()) + 0xc0));
+    func_0202da38(a, a->buf_104, &a->unk_122, 0x1e,
+                  func_020036e8((unsigned char *) func_0208150c(((struct UnkStruct_020232d4 *) a->unk_100)->unk_830)),
+                  data_020c8e18.x, data_020c8e18.y, 0, 0);
     out->ptr = a->buf_104;
     out->byte = a->unk_122;
 }

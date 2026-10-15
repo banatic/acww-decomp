@@ -2,13 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_022109cc(void);
-extern int func_0203efdc(void);
+extern int func_ov004_022109cc(int result);
+extern int func_0203efdc(char *arg0);
 
-int func_ov004_022109cc(void)
+int func_ov004_022109cc(int result)
 {
-    int result;
-    if (func_0203efdc() != 0) {
+    if (func_0203efdc((char *) result) != 0) {
         result = 1;
     } else {
         result = 0;

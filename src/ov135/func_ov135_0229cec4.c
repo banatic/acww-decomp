@@ -3,11 +3,11 @@
  */
 
 extern int func_ov134_0229b014(void *p);
-extern void func_ov002_02208098(void *p, int v);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov135_0229cec4(void *p)
 {
     if (func_ov134_0229b014((char *) p + 0x2c8)) {
-        func_ov002_02208098(p, 0);
+        func_ov002_02208098((void *) (p), 0);
     }
 }

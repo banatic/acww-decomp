@@ -11,7 +11,7 @@ typedef struct {
 extern unsigned short data_020c80f8;
 extern int func_02019e00(char *addr);
 extern int func_02019de8(char *addr);
-extern void func_02019c6c(char *addr, int val, unsigned short data);
+extern int func_02019c6c(char *addr, int val, unsigned short data);
 extern int func_ov068_0226c0e0(UnkStruct_022693f0 *a, char *b);
 extern void func_ov068_0226cce8(UnkStruct_022693f0 *a, char *b, int c);
 

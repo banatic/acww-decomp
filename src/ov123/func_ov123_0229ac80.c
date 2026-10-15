@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int func_ov123_0229adc8(int a, u8 b, u8 c, int d);
-extern void func_ov123_0229a148(int a, u8 b, u8 c, int d);
+extern void func_ov123_0229a148(int a, u8 b, u8 c);
 
 int func_ov123_0229ac80(int a, u8 b, u8 c, int d, int e)
 {
@@ -54,7 +54,7 @@ int func_ov123_0229ac80(int a, u8 b, u8 c, int d, int e)
         } break;
 
         case 3:
-            func_ov123_0229a148(a, b, c, d);
+            func_ov123_0229a148(a, b, c);
             break;
     }
 

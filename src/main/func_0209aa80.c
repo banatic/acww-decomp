@@ -3,13 +3,14 @@
  */
 
 extern int func_020984e8(void);
-extern void func_02099640(void);
-extern void func_0209aa9c(void);
+extern int func_02099640(int object);
+extern void func_0209aa9c(int);
 
 void func_0209aa80(void)
 {
-    if (func_020984e8() != 0) {
-        func_02099640();
-        func_0209aa9c();
+    int forwarded_value;
+
+    if ((forwarded_value = (int) func_020984e8()) != 0) {
+        func_0209aa9c((int) func_02099640((int) forwarded_value));
     }
 }

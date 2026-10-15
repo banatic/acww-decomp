@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int func_ov002_02208054(void *self, int a);
-extern void func_ov132_0229b124(void *self);
+extern int func_ov132_0229b124(void *self);
 extern u8 data_021fbdd8;
 extern u8 data_021fbddc;
 extern u8 data_021f6c58;

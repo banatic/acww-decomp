@@ -31,7 +31,7 @@ struct UnkStruct_020edfcc {
 extern "C" {
 extern Node *func_020e99d8(void *, int);
 extern int func_020e9ed4(Node *, int, int);
-extern void func_020e9e34(Node *);
+extern int func_020e9e34(Node *);
 extern void func_020e9974(void);
 extern void func_020e9fd4(Node *);
 extern void func_020ee470(UnkStruct_020edfcc *);

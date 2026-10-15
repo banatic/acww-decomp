@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200fbe0(void *);
-extern void func_020109a0(void *, int, int, int);
+extern int func_0200fbe0(void *argument0);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
 extern void func_0205eae0(void *, int, int, int);
 extern int func_020912d4(int, void *, int, int);
-extern void func_0203e420(void);
+extern int func_0203e420(void);
 extern void RtcSendPxiCommand(int);
-extern void func_0200f328(void *, int);
+extern int func_0200f328(void *, int);
 extern void func_02035684(int, int, int);
 
-void func_ov003_0220f180(char *self, unsigned char *other)
+void func_ov003_0220f180(char *self, unsigned char *other, int previous)
 {
     int ret;
     unsigned char b;

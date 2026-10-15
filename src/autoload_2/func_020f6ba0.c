@@ -31,7 +31,7 @@ extern const u8 data_02138fd4[];
 
 extern int func_020f6d78(void *obj, u8 byte);
 extern int func_020f1d3c(void *ptr, int arg);
-extern void func_020eedb8(u16 arg1, u16 arg2, void *obj);
+extern int func_020eedb8(u16 arg1, u16 arg2, void *obj);
 extern void func_0210b604(void *obj, int val);
 extern void NNS_SndPlayerSetVolume(void *obj, int vol);
 extern void NNS_SndPlayerSetTrackVolume(void *obj, int track, int vol);

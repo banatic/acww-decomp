@@ -13,9 +13,9 @@ typedef struct {
 } UnkStruct_0229d870;
 
 void func_ov002_02209d68(void *p, int a, int b);
-void func_ov002_02209d38(void *p, int a, int b, int c);
-void func_ov002_02209d8c(void *p);
-void func_ov002_02208098(void *p, int a);
+int func_ov002_02209d38(void *p, int a, int b, int c);
+int func_ov002_02209d8c(void *p);
+unsigned char *func_ov002_02208098(void *p, unsigned char value);
 int func_ov105_0229d4c4(UnkStruct_0229d870 *self, int param2);
 int func_ov105_0229d73c(UnkStruct_0229d870 *self, int param2);
 int func_ov105_0229d530(UnkStruct_0229d870 *self, int param2);

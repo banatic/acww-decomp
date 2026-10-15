@@ -3,7 +3,7 @@
  */
 
 extern int func_ov104_0229d8f8(void *obj, unsigned char idx);
-extern void func_02066830(void *dest, int value);
+extern int func_02066830(void *dest, int value);
 
 void func_ov104_0229cb38(void *base)
 {

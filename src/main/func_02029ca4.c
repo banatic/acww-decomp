@@ -35,8 +35,8 @@ extern struct Pair data_020d8e98;
 extern void *func_0202d9c4(struct UnkStruct_02029ca4 *a);
 extern int func_0209bba0(void *a);
 extern void *func_0209b908(int a);
-extern void func_020984e8(void);
-extern void *func_02099870(void);
+extern int func_020984e8(void);
+extern void *func_02099870(int);
 extern int memcmp(const void *a, const void *b, unsigned int n);
 extern int func_0209518c(void *a, void *b);
 extern int func_02099f1c(FlagStruct *f, int (*cb)(u16 *));
@@ -74,8 +74,7 @@ int func_02029ca4(struct UnkStruct_02029ca4 *self)
     switch (func_0209bba0(func_0202d9c4(self))) {
         case 0:
             p8 = func_0209b908(self->unk_164);
-            func_020984e8();
-            pc = func_02099870();
+            pc = func_02099870((int) func_020984e8());
             if (*(u16 *) pc != *(u16 *) p8) {
                 break;
             }

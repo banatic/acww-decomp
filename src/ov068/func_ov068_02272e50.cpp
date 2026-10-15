@@ -9,7 +9,7 @@ extern "C" {
 int func_020984e8(void);
 int func_020b22b8(void);
 int func_020b22dc(void);
-void func_020b5e10(void);
+int func_020b5e10(void);
 void func_020b5e90(void);
 void func_0209971c(int, unsigned short *);
 }

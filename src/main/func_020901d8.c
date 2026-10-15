@@ -3,9 +3,9 @@
  */
 
 extern void func_02066694(void *);
-extern void func_020b1a64(void *);
-extern void func_02079914(void *);
-extern void func_02088460(void *);
+extern int func_020b1a64(void *);
+extern int func_02079914(void *);
+extern int func_02088460(void *);
 
 void *func_020901d8(void *arg)
 {

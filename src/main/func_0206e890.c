@@ -12,14 +12,14 @@ struct UnkStruct_0206e890 {
     void *unk_18;
 };
 
-extern void FS_ConvertPathToFileID(struct UnkStruct_0206e890 *obj, int b, int c, int d);
+extern int FS_ConvertPathToFileID(struct UnkStruct_0206e890 *obj, int b);
 extern void *func_020e98b4(int value);
 
 int func_0206e890(struct UnkStruct_0206e890 *obj, int b, int c, int d)
 {
     obj->unk_08 = c;
     obj->unk_0C = d;
-    FS_ConvertPathToFileID(obj, b, c, d);
+    FS_ConvertPathToFileID(obj, b);
     obj->unk_18 = func_020e98b4(c << 3);
     return 1;
 }

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void func_020eed18(void *h, int a);
-extern void func_020eedb8(int seq, int a, void *h);
+extern int func_020eed18(void *h, int a);
+extern int func_020eedb8(int seq, int a, void *h);
 extern unsigned int func_020f1d3c(void *rng, unsigned int range);
 extern void func_0210b6d4(void *h, int a, int b);
 extern void ciAddUNQUIETFilter(void *p, void *q);

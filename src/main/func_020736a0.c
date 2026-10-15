@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02073698(int a, int b);
+extern void func_02073698(int a, int b);
 
-int func_020736a0(int a, int b)
+void func_020736a0(int a)
 {
-    return func_02073698(a, 0);
+    func_02073698(a, 0);
 }

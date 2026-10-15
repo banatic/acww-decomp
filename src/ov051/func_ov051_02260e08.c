@@ -3,7 +3,7 @@
  */
 
 extern void func_020157c8(void *p, int size, int value);
-extern void func_02015828(void *p, int value);
+extern int func_02015828(void *p, int value);
 extern void func_ov051_02260f2c(void *p, int value);
 
 void func_ov051_02260e08(void *p)

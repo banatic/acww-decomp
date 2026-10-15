@@ -3,16 +3,16 @@
  */
 
 extern int func_02073d90(int);
-extern int func_020797bc(int, int);
+extern void func_020797bc(int, int);
 extern int data_020ccf94;
 
-int func_02079750(int param)
+void func_02079750(int param)
 {
     int ret;
 
     ret = func_02073d90(data_020ccf94);
     if (ret != 0) {
-        return ret;
+        return;
     }
-    return func_020797bc(2, param);
+    func_020797bc(2, param);
 }

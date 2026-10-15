@@ -7,7 +7,7 @@ typedef struct {
 } DataType;
 extern DataType data_0213fee4;
 extern char data_0213feb4[];
-extern void MTX_Inverse43(void *, void *);
+extern int MTX_Inverse43(void *, void *);
 
 void func_02002e98(const DataType *src)
 {

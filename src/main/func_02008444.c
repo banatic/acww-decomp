@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020109a0(int a, int b, int c, int d);
+extern void func_020109a0(int a, int b, int c, unsigned short d);
 
-int func_02008444(int a)
+void func_02008444(int a, void *message, int previous)
 {
-    return func_020109a0(a, 0x80, 3, 0);
+    func_020109a0(a, 0x80, 3, 0);
 }

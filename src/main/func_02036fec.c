@@ -13,8 +13,8 @@ extern void *func_020984e8(void);
 extern int func_020b22b8(void);
 extern int func_020b22dc(void);
 extern int func_02099020(void *p, int n);
-extern void func_02099640(void *p);
-extern int func_0209ac04(void);
+extern int func_02099640(void *p);
+extern int func_0209ac04(int);
 extern void func_02035684(int a, int b, int c);
 extern void func_02036fb4(struct UnkStruct_02036fec *p, int a, int b, int c);
 
@@ -38,8 +38,7 @@ void func_02036fec(struct UnkStruct_02036fec *self)
                 if (func_02099020(r5, 1) == 0) {
                     goto label_72;
                 }
-                func_02099640(r5);
-                if (func_0209ac04() != 0) {
+                if (func_0209ac04((int) func_02099640(r5)) != 0) {
                     goto label_72;
                 }
             call_1c:

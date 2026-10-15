@@ -8,7 +8,7 @@ extern int func_ov101_0229ccd0(void *self, unsigned char b);
 extern void func_ov002_02209874(char *a, char *b);
 extern void func_ov002_02209910(char *a, int b, int c);
 extern void func_ov002_0220970c(char *a, int b);
-extern void func_ov002_02208098(void *self, int k);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 
 typedef struct {
     char pad_00[0xb4];

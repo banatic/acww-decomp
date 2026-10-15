@@ -5,7 +5,7 @@
 extern int func_02088d9c(const void *);
 extern int func_02088d94(const void *);
 extern int func_ov095_0229ad90(void *, int);
-extern int func_ov095_0229cdf0(const void *);
+extern int func_ov095_0229cdf0(const void *, int code);
 extern int func_ov090_022990b8(int);
 extern int data_ov095_0229e380;
 extern int data_ov095_0229e814;
@@ -29,7 +29,7 @@ int func_ov095_0229ad18(struct UnkStruct_0229ad18 *p)
         p->unk_30 = func_02088d94(&data_ov095_0229e814) + 0x68;
         return 1;
     }
-    if (func_ov095_0229cdf0(p)) {
+    if (func_ov095_0229cdf0(p, p->unk_28)) {
         p->unk_2C = func_ov090_022990b8(p->unk_28 - 0xfb);
         p->unk_30 = 8;
         return 1;

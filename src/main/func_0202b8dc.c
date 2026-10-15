@@ -22,9 +22,9 @@ typedef struct GlobalData {
 } GlobalData;
 
 extern GlobalData data_020c8b18;
-extern void func_0208150c(int arg);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_0202b8dc_2 *this, char *p1, char *p2, int size, int a, int b, int c, int d, int e);
+extern unsigned int func_0208150c(int arg);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_0202b8dc_2 *this, char *p1, char *p2, int size, int a, int b, int c, int d, int e);
 extern void func_0202da88(UnkStruct_0202b8dc_2 *this, char *p);
 extern char data_021c2704[];
 
@@ -39,8 +39,7 @@ int func_0202b8dc(UnkStruct_0202b8dc_2 *this)
     GlobalData *g;
 
     sub = this->sub;
-    func_0208150c(sub->unk_830);
-    ret0 = func_020036e8();
+    ret0 = func_020036e8((unsigned char *) func_0208150c(sub->unk_830));
     g = &data_020c8b18;
     local1 = g->unk_00;
     local2 = 9;

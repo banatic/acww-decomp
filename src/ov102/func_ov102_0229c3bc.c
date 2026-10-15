@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_020896b8(int a, void *b, int c, void *d, int e, int f, int g);
+extern int func_020896b8(int a, void *b, int c, void *d, int e, int f, int g);
 extern u8 data_ov102_0229eac0[];
 
 typedef struct {

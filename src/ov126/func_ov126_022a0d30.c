@@ -13,17 +13,17 @@ typedef struct {
     u8 unk_19C;
 } UnkStruct_022a0d30;
 
-extern void func_ov002_02208098(UnkStruct_022a0d30 *self, u8 x);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov095_0229bf0c(void *ptr);
 extern int func_ov126_022a027c(UnkStruct_022a0d30 *self, int val);
 extern int func_ov126_0229f7c8(UnkStruct_022a0d30 *self, int val);
 extern void func_ov126_0229ff0c(UnkStruct_022a0d30 *self);
-extern void func_ov126_022a0a50(UnkStruct_022a0d30 *self);
+extern int func_ov126_022a0a50(UnkStruct_022a0d30 *self);
 
 void func_ov126_022a0d30(UnkStruct_022a0d30 *self)
 {
     if ((data_021fbe40 & 2) == 0) {
-        func_ov002_02208098(self, self->unk_AE);
+        func_ov002_02208098((void *) (self), self->unk_AE);
     } else {
         if (func_ov095_0229bf0c(&self->unk_19C) != 0) {
             if (func_ov126_022a027c(self, 0) != 0) {

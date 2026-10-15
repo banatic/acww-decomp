@@ -6,7 +6,7 @@ struct UnkStruct_0229c3c4;
 
 extern int func_020436a8(int);
 extern void func_020431b8(int);
-extern void func_ov002_02208098(struct UnkStruct_0229c3c4 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov107_0229c378(struct UnkStruct_0229c3c4 *);
 extern void func_ov107_0229d480(struct UnkStruct_0229c3c4 *);
 extern void func_ov107_0229d3a0(struct UnkStruct_0229c3c4 *, int, int);
@@ -27,7 +27,7 @@ void func_ov107_0229c3c4(struct UnkStruct_0229c3c4 *self)
     }
     return;
 case1:
-    func_ov002_02208098(self, 0x17);
+    func_ov002_02208098((void *) (self), 0x17);
     func_ov107_0229c378(self);
     goto common;
 case2:

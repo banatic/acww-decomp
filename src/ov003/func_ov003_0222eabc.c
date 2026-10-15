@@ -30,7 +30,7 @@ extern struct UnkStruct_0222eabc data_ov003_02260e4c[];
 extern Handler data_ov003_0223c2ac[];
 
 extern void func_ov003_0222e358(struct UnkStruct_0222eabc *e, int n);
-extern void func_ov003_02234030(struct UnkStruct_0222eabc *e, int n);
+extern int func_ov003_02234030(struct UnkStruct_0222eabc *e, int n);
 extern void func_0209129c(int h);
 extern void func_ov003_0222e6c4(int idx, int n);
 

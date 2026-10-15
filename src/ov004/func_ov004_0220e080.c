@@ -8,13 +8,13 @@ extern int func_0204bcdc(void *p);
 extern int func_0204bc64(void *p);
 extern u16 func_0204bc50(int a, int b);
 extern int func_ov004_0220e448(void *self);
-extern void func_ov004_0220e224(void *self, void *a, int b);
+extern int func_ov004_0220e224(void *self, void *a, int b);
 extern void *func_021077e8(void *p);
 extern int func_0209d320(void *a);
 extern int func_0209d324(void *a);
 extern int func_02055954(void *p, void *a, int b, int c);
 extern int func_0205594c(void *p);
-extern void func_ov004_0220e028(void *self);
+extern int func_ov004_0220e028(void *self);
 
 static __inline int chk(u16 *p, u16 k)
 {

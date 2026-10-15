@@ -3,8 +3,8 @@
  */
 
 extern int func_0206493c(const void *a, int b, unsigned int c, ...);
-extern void func_0212a13c(void *dst, const void *src, int param);
-extern void FS_OpenFile(int *dst, const void *src);
+extern int func_0212a13c(void *dst, const void *src, int param);
+extern int FS_OpenFile(int *dst, const void *src);
 
 extern const unsigned char data_020dcfa8[];
 extern const unsigned char data_020dcfbc[];

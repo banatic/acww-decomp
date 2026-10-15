@@ -4,13 +4,13 @@
 
 #include "types.h"
 
-extern void func_02003564();
-extern void func_02032c64();
-extern void func_02055210();
-extern void func_02089bd4();
+extern void *func_02003564(void *argument0);
+extern void *func_02032c64(void *argument0);
+extern void *func_02055210(void *argument0);
+extern void *func_02089bd4(void *argument0);
 extern void __cxa_vec_ctor();
-extern void func_020012dc();
-extern void func_020012e8();
+extern void func_020012dc(void *arg0);
+extern void func_020012e8(void *arg0);
 extern void *data_0213efe8;
 extern void *data_0213f020;
 extern void *data_ov004_0225622c;

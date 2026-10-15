@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern void func_02099734(void);
-extern unsigned char *func_02098ddc(void);
-extern void func_02051c08(void *dest, const void *src, int size);
+extern int func_020984e8(void);
+extern int func_02099734(int);
+extern unsigned char *func_02098ddc(unsigned int);
+extern int func_02051c08(void *dest, const void *src, int size);
 
 struct UnkStruct_02065e60 {
     unsigned char pad_00[0x22];
@@ -24,9 +24,7 @@ void func_02065e60(struct UnkStruct_02065e60 *p)
         return;
     }
 
-    func_020984e8();
-    func_02099734();
-    result = func_02098ddc();
+    result = func_02098ddc((unsigned int) func_02099734((int) func_020984e8()));
     func_02051c08(result, p->unk_44, 0xa);
     p->unk_F8 = result[0x48];
 }

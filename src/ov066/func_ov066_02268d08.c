@@ -3,7 +3,7 @@
  */
 
 extern int OS_DisableInterrupts(void);
-extern void OS_RestoreInterrupts(int);
+extern unsigned int OS_RestoreInterrupts(int);
 
 typedef struct {
     unsigned char pad_00[0xc0];

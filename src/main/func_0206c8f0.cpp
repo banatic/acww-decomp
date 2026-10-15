@@ -15,7 +15,7 @@ typedef struct UnkStruct_0206c8f0 {
     char *base;
 } UnkStruct_0206c8f0;
 
-extern "C" void func_020679b0(char *p);
+extern "C" int func_020679b0(char *p);
 extern "C" void func_020a9334(UnkStruct_0206c8f0 *p, int value);
 extern "C" void func_020a7994(char *p, int value);
 extern "C" void func_0206c8f0(UnkStruct_0206c8f0 *self)

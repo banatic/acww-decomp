@@ -8,13 +8,13 @@ typedef struct Func_ov143_0229a16c_s {
 } Func_ov143_0229a16c_t;
 
 extern void *data_020ccf94;
-extern int func_0206fc6c(void *);
+extern int func_0206fc6c(void);
 extern int func_02073d90(void *);
 extern int func_02074fec(int);
 
 int func_ov143_0229a16c(Func_ov143_0229a16c_t *self)
 {
-    if (func_0206fc6c(self) == 0) {
+    if (func_0206fc6c() == 0) {
         return 1;
     }
     if (func_02073d90(data_020ccf94) != 0) {

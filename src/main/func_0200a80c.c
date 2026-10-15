@@ -47,8 +47,8 @@ extern void func_0203ae98(void);
 extern void func_02045df8(Pair *, int);
 extern void func_02045f08(Pair *, int);
 extern void func_0200f268(UnkStruct_0200a80c_2 *, int);
-extern void func_0200f328(UnkStruct_0200a80c_2 *, int);
-extern void func_0200f27c(UnkStruct_0200a80c_2 *, int);
+extern int func_0200f328(UnkStruct_0200a80c_2 *, int);
+extern unsigned int *func_0200f27c(UnkStruct_0200a80c_2 *, int);
 extern int func_0203e1c4(void);
 extern void func_0203ee14(UnkStruct_0200a80c_2 *, char *);
 extern void func_0203ee08(UnkStruct_0200a80c_2 *, char *);
@@ -56,10 +56,10 @@ extern void func_020a8164(char *, int *);
 extern void func_02035624(int);
 extern void func_02035684(int, int, int);
 extern void func_020356c4(int, int, int, int);
-extern void func_0203e19c(void);
-extern void func_0203b144(void);
+extern int func_0203e19c(void);
+extern int func_0203b144(void);
 extern int func_02008258(UnkStruct_0200a80c_2 *, int);
-extern void func_0200a6a0(UnkStruct_0200a80c_2 *, Pair *, int, int, int);
+extern int func_0200a6a0(UnkStruct_0200a80c_2 *, Pair *, int, int, int);
 
 void func_0200a80c(UnkStruct_0200a80c_2 *self)
 {

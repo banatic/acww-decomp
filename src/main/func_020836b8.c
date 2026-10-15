@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02083c30(void);
+extern void func_02083c30(void *, unsigned int);
 extern int func_02083708(void);
-extern int func_020837a8(int a, int b);
+extern void func_020837a8(void *object);
 
 struct UnkStruct_020836b8 {
     int pad_00;
@@ -13,15 +13,18 @@ struct UnkStruct_020836b8 {
 
 unsigned int func_020836b8(struct UnkStruct_020836b8 *p, unsigned int idx)
 {
+    register unsigned int preserved_result;
     int base;
     int offset;
 
-    func_02083c30();
+    func_02083c30(p, idx);
     if (idx >= p->count) {
         return p->count;
     }
 
     base = func_02083708() + 8;
     offset = idx * 2;
-    return func_020837a8(base + offset, offset);
+    func_020837a8((void *) (base + offset));
+    asm { mov preserved_result, r0 }
+    return preserved_result;
 }

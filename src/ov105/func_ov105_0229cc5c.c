@@ -5,7 +5,7 @@
 extern void func_ov105_0229cd30(void *p);
 extern void func_ov105_0229c734(void *p);
 extern void func_ov105_0229c6a0(void *p);
-extern void func_ov105_0229c698(void *p);
+extern void func_ov105_0229c698(unsigned char *arg0);
 extern void func_ov105_0229db14(void *p);
 
 typedef struct {
@@ -26,7 +26,7 @@ void func_ov105_0229cc5c(UnkStruct_ov105_0229cc5c *p)
             func_ov105_0229c6a0(p);
             break;
         case 3:
-            func_ov105_0229c698(p);
+            func_ov105_0229c698((unsigned char *) p);
             break;
         case 4:
         default:

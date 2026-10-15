@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020efb44(void (*func)(void));
-extern void func_020efb34(void (*func)(void));
-extern void func_020efb54(void (*func)(void));
-extern void func_020f5e3c(void);
-extern void func_020f5e14(void);
-extern void func_020f5c50(void);
+extern void func_020efb44(int (*func)(void *));
+extern void func_020efb34(int (*func)(void *));
+extern void func_020efb54(int (*func)(void *));
+extern int func_020f5e3c(void *context);
+extern int func_020f5e14(void *context);
+extern int func_020f5c50(void *context);
 
 void func_020f59b4(void)
 {

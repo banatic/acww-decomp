@@ -11,7 +11,7 @@ typedef struct {
 extern Vec3 data_ov003_02236b64[];
 extern u16 data_ov003_0223667c[];
 extern int func_0204b710(u16 *b);
-extern void func_ov003_02225da0(void *a0, int id, Vec3 *va, int k, Vec3 *vb, short s1, short s2, short s3);
+extern int func_ov003_02225da0(void *a0, int id, Vec3 *va, int k, Vec3 *vb, short s1, short s2, short s3);
 
 void func_ov003_02225a90(void *a0, u16 *b, Vec3 *base)
 {

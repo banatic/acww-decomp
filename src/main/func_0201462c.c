@@ -9,8 +9,8 @@ struct UnkStruct_0201462c_3 {
 };
 
 extern struct UnkStruct_0201462c_3 *func_020160d4(void *);
-extern void func_0203b144(void);
-extern void func_02095518(int, int, int);
+extern int func_0203b144(void);
+extern int func_02095518(int, int, int);
 
 struct UnkStruct_0201462c {
     char pad_00[0xb];

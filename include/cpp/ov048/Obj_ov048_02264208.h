@@ -13,7 +13,9 @@ class Obj_ov048_02264208 {
     // handlers run by func_ov048_02261748, keyed by mode
     void func_ov048_02261b1c(int arg);
     void func_ov048_02261b10(int arg);
+
     void func_ov048_02261b04(int arg);
+
     void func_ov048_02261af8(int arg);
     void func_ov048_02261b28(int arg);
     void func_ov048_02261ce4(int arg);
@@ -36,15 +38,19 @@ class Obj_ov048_02264208 {
     void func_ov048_022623f0();
     void func_ov048_022623b8();
     void func_ov048_02262358();
+
     void func_ov048_022622ec();
     void func_ov048_02262320();
     void func_ov048_02262368();
+
     void func_ov048_022622bc();
     void func_ov048_02262298();
     void func_ov048_022621e8();
     void func_ov048_0226224c();
     void func_ov048_022621d8();
+
     void func_ov048_022621c8();
+
     void func_ov048_022621a0();
     void func_ov048_0226213c();
     void func_ov048_02262114();

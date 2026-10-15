@@ -3,7 +3,7 @@
  */
 
 extern int func_ov002_02208054(void *self, int flag);
-extern void func_ov122_022a0038(void *self);
+extern unsigned char *func_ov122_022a0038(void *self);
 extern int func_ov095_0229bf48(void *sub);
 extern int func_ov002_0220a784(const void *sub, int val);
 extern void func_ov122_022a0df8(void *self);
@@ -13,7 +13,7 @@ extern int func_ov095_0229aff0(void *sub);
 extern void func_ov095_0229c22c(void *sub, int a, int b, int c);
 extern void func_ov122_022a15b8(void *self, int a, int b);
 extern int func_ov122_0229fc30(void *self);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov095_0229b3ec(void *sub);
 extern int func_ov122_0229f540(void *self);
 extern void func_ov002_0220a574(void *sub);
@@ -66,7 +66,7 @@ void func_ov122_022a1380(char *self)
         if (r4 < 0x48) {
             if (r7 < 0xe0) {
                 if (func_ov122_0229fc30(self)) {
-                    func_ov002_02208098(self, 3);
+                    func_ov002_02208098((void *) (self), 3);
                     func_ov095_0229b3ec(self + 0xc0);
                     func_ov122_022a15b8(self, 1, 1);
                     return;
@@ -74,7 +74,7 @@ void func_ov122_022a1380(char *self)
             } else {
                 if (func_ov122_0229f540(self)) {
                     func_ov002_0220a574(self + 0x4010);
-                    func_ov002_02208098(self, 2);
+                    func_ov002_02208098((void *) (self), 2);
                     func_ov122_0229f940(self);
                     func_ov122_022a15b8(self, 1, 1);
                     return;
@@ -87,7 +87,7 @@ void func_ov122_022a1380(char *self)
                 int r = func_ov122_022a1110(self);
                 if (r != 0) {
                     if (r == 1) {
-                        func_ov002_02208098(self, 1);
+                        func_ov002_02208098((void *) (self), 1);
                     }
                 }
             }

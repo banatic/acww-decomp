@@ -19,10 +19,10 @@ typedef struct {
 extern GType data_021ca16c;
 
 extern unsigned short *func_0205f100(GType *g, int byte);
-extern void func_0205f024(GType *g, int byte);
-extern int func_0205f64c(void);
-extern void func_0205f130(GType *g, int byte);
-extern void func_02054cdc(void);
+extern int func_0205f024(GType *g, int byte);
+extern int func_0205f64c(unsigned short *);
+extern int func_0205f130(GType *g, int byte);
+extern void func_02054cdc(void *);
 extern void func_02056ffc(void *ptr);
 extern void func_02060214(UnkStruct_0205ea60 *p);
 
@@ -36,13 +36,11 @@ void func_0205ea60(UnkStruct_0205ea60 *p)
         goto common;
     }
     func_0205f024(&data_021ca16c, byte);
-    func_0205f100(&data_021ca16c, byte);
-    r6 = func_0205f64c();
+    r6 = func_0205f64c((unsigned short *) func_0205f100(&data_021ca16c, byte));
     if (r6 == 0x2b) {
         goto common;
     }
-    func_0205f130(&data_021ca16c, byte);
-    func_02054cdc();
+    func_02054cdc((void *) func_0205f130(&data_021ca16c, byte));
     if (r6 != 0x27) {
         goto common;
     }

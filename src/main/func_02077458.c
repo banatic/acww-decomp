@@ -2,8 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_02235c94(int a0, int a1, int a2);
-int func_02077458(int a0, int a1)
+extern void func_ov003_02235c94(void *buffer, int index);
+
+// clang-format off
+asm void func_02077458(int a0, int a1)
 {
-    return func_ov003_02235c94(a0, 26, a1);
+    add r2, r1, #0
+    mov r1, #0x1a
+    ldr r3, =func_ov003_02235c94
+    bx r3
 }
+// clang-format on

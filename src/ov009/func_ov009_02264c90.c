@@ -3,7 +3,7 @@
  */
 
 extern char data_020d1f24[];
-extern void func_020b2a68(void *dst, const void *src, int flag);
+extern void func_020b2a68(void *dst, const void *src);
 extern int func_020b2a5c(void *buf);
 extern void func_020b2a64(void *buf);
 
@@ -33,7 +33,7 @@ int func_ov009_02264c90(void *param0)
         ptr = (const char *) data_020d1f24;
     }
 
-    func_020b2a68(buffer, ptr, flag);
+    func_020b2a68(buffer, ptr);
     result = func_020b2a5c(buffer);
     func_020b2a64(buffer);
     return result;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202fb28(int *, int *, int, int);
+extern int func_0202fb28(int *, int *);
 extern int func_0202f904(int *, int *, int *, int *);
 extern void func_01ffd070(int *, int *, int *);
 extern int FX_MulFunc(int, int);
@@ -14,7 +14,7 @@ int func_0202fd78(int *arg0, int *arg1, int unused, int arg3)
     int local16[3];
     int r7;
 
-    r7 = func_0202fb28(arg0, arg1, 0, arg3);
+    r7 = func_0202fb28(arg0, arg1);
     if (r7 < 0) {
         goto end;
     }

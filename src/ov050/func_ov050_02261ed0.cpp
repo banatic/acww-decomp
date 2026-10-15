@@ -53,7 +53,7 @@ extern int func_02099640(int a);
 extern int func_0209a850(int a);
 extern int func_02099020(int a, int b);
 extern int func_0209ad9c(int a, int b);
-extern int func_0209b4d4(int a);
+extern int func_0209b4d4(void *object);
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
 extern int func_0209bd44(int a);
@@ -83,7 +83,7 @@ extern void func_02015ea0(void *self, int a, int b);
 extern int func_020afb24(void *a);
 extern int func_020afb90(void *a);
 extern int func_020afad8(void *a);
-extern void func_020683e4(void *a, int b, u8 *c, void *d);
+extern int func_020683e4(void *a, int b, u8 *c, void *d);
 extern int func_0204c788(u16 *p);
 extern void func_02015fb0(void *self, int a, int b, int c, int d, int e);
 extern void func_02015de4(void *self, u16 *p, int a, int b);
@@ -184,7 +184,7 @@ void func_ov050_02261ed0(UnkStruct_02261ed0_3 *self, UnkStruct_02261ed0_4 *out)
     s0c = func_02099640(q);
 
     if (func_02099020(q, 1) != 0) {
-        r6 = func_0209b4d4(func_0209ad9c(s0c, 0));
+        r6 = func_0209b4d4((void *) (func_0209ad9c(s0c, 0)));
         v = self->unk_B4->unk_0C;
         if (((v == 0x75) ? 1 : 0) || ((v == 0x74) ? 1 : 0)) {
             out->text = data_ov050_02265804;

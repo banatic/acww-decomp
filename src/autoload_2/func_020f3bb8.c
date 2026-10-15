@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f9868(char *);
-extern void func_020f4514(void *);
+extern unsigned int *func_020f9868(char *);
+extern void *func_020f4514(void *);
 extern int data_0213ea04;
 
 typedef struct UnkStruct_020f3bb8 {

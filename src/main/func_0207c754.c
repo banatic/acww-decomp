@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02079cc4(char *a, char *b, int c);
+extern void func_02079cc4(char *a, char *b, int c);
 
-int func_0207c754(char *p, int n)
+void func_0207c754(char *p, int n)
 {
-    return func_02079cc4(p + 0x3f7c, p, n);
+    func_02079cc4(p + 0x3f7c, p, n);
 }

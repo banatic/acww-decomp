@@ -4,7 +4,7 @@
 
 extern unsigned short data_021f69ec[];
 
-void func_020b68c8(unsigned short value)
+void func_020b68c8(unsigned int value)
 {
     data_021f69ec[0x11] = value;
 }

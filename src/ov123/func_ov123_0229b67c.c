@@ -14,7 +14,7 @@ extern void func_ov123_02299d44(struct UnkStruct_0229b67c *);
 extern int func_ov123_0229ae7c(struct UnkStruct_0229b67c *, unsigned char);
 extern void func_020041bc(int);
 extern void func_ov002_02207fb0(struct UnkStruct_0229b67c *, int, int, int);
-extern void func_ov002_02208098(struct UnkStruct_0229b67c *, int);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229b67c *, unsigned char value);
 extern void func_ov002_02207fc0(struct UnkStruct_0229b67c *);
 
 void func_ov123_0229b67c(struct UnkStruct_0229b67c *param)

@@ -13,9 +13,9 @@ struct UnkStruct_020a8f74 {
     struct VTable *vtable;
 };
 
-extern void func_020a8f88(int value);
+extern int func_020a8f88(int value);
 
-void func_020a8f74(struct UnkStruct_020a8f74 *obj)
+int func_020a8f74(struct UnkStruct_020a8f74 *obj)
 {
-    func_020a8f88(obj->vtable->func(obj));
+    return func_020a8f88(obj->vtable->func(obj));
 }

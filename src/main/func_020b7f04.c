@@ -9,7 +9,7 @@ typedef struct {
     unsigned int unk_14;
 } UnkStruct_020b7f04;
 
-extern int func_0202f268(UnkStruct_020b7f04 *s, int a, int b);
+extern void func_0202f268(UnkStruct_020b7f04 *s, int a, int b);
 
 int func_020b7f04(UnkStruct_020b7f04 *s, int a, int b, int c, unsigned char d)
 {

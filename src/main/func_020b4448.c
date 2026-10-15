@@ -17,11 +17,11 @@ extern SomeGlobal data_021f4dac;
 extern void *data_021f669c;
 extern SomeData data_020e52e8;
 
-extern void func_020b4044(UnkStruct_020b4448 *p);
+extern void *func_020b4044(UnkStruct_020b4448 *p);
 extern void func_020a8164(UnkStruct_020b4448 *p, SomeData *d);
 extern void func_020b43f4(SomeGlobal *p);
 extern int func_020b4344(SomeGlobal *p, UnkStruct_020b4448 *q);
-extern void func_020b402c(UnkStruct_020b4448 *p);
+extern void *func_020b402c(UnkStruct_020b4448 *p);
 
 int func_020b4448(void *self, void *param2, unsigned char *b)
 {

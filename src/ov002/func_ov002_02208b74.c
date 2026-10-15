@@ -13,15 +13,15 @@ typedef struct {
     u8 b[0x70];
 } UnkStruct_02208b74_3;
 
-extern void func_ov002_02208f58(UnkStruct_02208b74 *, u8 *, int, u8 *);
+extern void func_ov002_02208f58(UnkStruct_02208b74 *, u8 *, int);
 extern void func_ov002_022092e0(UnkStruct_02208b74 *);
-extern void func_02070c08(void *);
+extern void *func_02070c08(void *);
 extern void func_020708e4(void *, short *, int);
-extern void func_020a8bb8(void *, void *);
-extern void func_020a89f8(void *, void *);
-extern void func_020a89dc(void *, void *);
+extern void *func_020a8bb8(void *, void *);
+extern int func_020a89f8(void *, void *);
+extern int func_020a89dc(void *, void *);
 extern void func_0208f218(u8 *, void *);
-extern void func_02070be8(void *);
+extern int **func_02070be8(void *);
 extern u8 data_ov002_0220ba50[];
 
 void func_ov002_02208b74(UnkStruct_02208b74 *self, u8 *p)
@@ -43,7 +43,7 @@ void func_ov002_02208b74(UnkStruct_02208b74 *self, u8 *p)
         if (val != 0) {
             t = i;
             t = t * 0x74;
-            func_ov002_02208f58(self, (u8 *) self + 0x28 + t, val, (u8 *) self + 0x28);
+            func_ov002_02208f58(self, (u8 *) self + 0x28 + t, val);
             *((u8 *) self + 0x1c) = (u8) (*((u8 *) self + 0x1c) + 1);
         } else {
             i = 5;

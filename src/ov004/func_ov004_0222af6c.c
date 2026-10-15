@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200e92c(void *);
+extern unsigned int func_0200e92c(void *);
 extern void func_0200e90c(void *, int, int, int);
 extern void func_ov004_0222afbc(void *, int, int, int, int);
 extern int func_0200e894(void *, void *);
-extern void func_0200e91c(void *);
+extern int func_0200e91c(void *);
 
 typedef struct {
     double pad_00;

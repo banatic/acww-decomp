@@ -35,14 +35,14 @@ extern u16 data_ov068_022767ec[];
 extern char data_021fbee8[];
 extern int data_020c814c;
 
-extern int func_0202edc8(void);
+extern int func_0202edc8(void *unused0);
 extern void func_0201c280(UnkStruct_02274b44 *self, char *p);
 extern void func_ov068_022746c0(char *p, UnkStruct_02274b44 *self);
 extern void func_0209e474(TM *t);
 extern int func_02073dd4(void *g, void *h);
 extern int func_0209fa30(u8 *p);
 extern int func_0209ded0(void);
-extern void func_02003348(int a, int b, int c, int d, int e);
+extern int func_02003348(int a, int b, int c, int d, int e);
 extern int func_02086eb0(u8 *p);
 extern int func_020af028(u8 *p);
 extern unsigned int func_02086ecc(u8 *p);
@@ -66,7 +66,7 @@ int func_ov068_02274b44(UnkStruct_02274b44 *self)
     int mode;
     unsigned int t;
 
-    if (func_0202edc8() == 0) {
+    if (func_0202edc8(self) == 0) {
         return 0;
     }
     func_0201c280(self, self->unk_65C);

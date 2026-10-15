@@ -22,9 +22,9 @@ extern struct Pair {
 
 extern int func_0207f0f0(unsigned int);
 extern int func_02073d90(void *);
-extern void func_020984e8(void);
-extern void func_02099870(void);
-extern int func_02094ffc(void);
+extern int func_020984e8(void);
+extern int func_02099870(int);
+extern int func_02094ffc(void *);
 extern void func_0201cf74(void *self, void *buf, unsigned int idx, void *tbl, void *msg);
 extern void func_0201cec8(void *self, void *buf);
 extern void func_0202da74(void *self, struct Pair p);
@@ -44,9 +44,7 @@ void func_02020e64(UnkStruct_02020e64 *self)
     }
 
     if (func_02073d90(data_020ccf94) != 0) {
-        func_020984e8();
-        func_02099870();
-        if (func_02094ffc() != 0) {
+        if (func_02094ffc((void *) func_02099870((int) func_020984e8())) != 0) {
             msg = data_021c2214;
             goto done;
         }

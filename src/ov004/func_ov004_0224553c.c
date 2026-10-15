@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_ov004_0224553c(void *self)
+short func_ov004_0224553c(void *self)
 {
     return *(short *) ((char *) self + 0x12);
 }

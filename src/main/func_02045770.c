@@ -64,7 +64,7 @@ extern void func_020737f0(UnkStruct_02045770_5 *o, UnkStruct_02045770_2 *w, int 
 extern void func_02073770(UnkStruct_02045770_5 *o, int a, int b);
 extern int func_0204590c(UnkStruct_02045770_2 *w, UnkStruct_02045770 *s);
 extern int func_02046024(int a, Pt *b, int c, int d, u8 p5, u8 p6, u8 p7, u8 p8, u8 p9, s8 p10);
-extern void func_02045380(UnkStruct_02045770_3 *b, UnkStruct_02045770_2 *w, int c);
+extern int func_02045380(UnkStruct_02045770_3 *b, UnkStruct_02045770_2 *w, int c);
 void func_02045770(u8 idx, int p1)
 {
     UnkStruct_02045770_2 w;

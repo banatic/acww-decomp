@@ -13,9 +13,9 @@ typedef struct {
 extern UnkStruct_0207be8c *data_020ccf94;
 extern int func_02073dd4(UnkStruct_0207be8c *p, int field);
 extern void func_0209e474(void *buffer);
-extern void func_0208150c(UnkStruct_0207be8c_2 *p);
-extern int func_02003704(void);
-extern void func_0207d840(UnkStruct_0207be8c_2 *p, void *buffer);
+extern unsigned int func_0208150c(UnkStruct_0207be8c_2 *p);
+extern int func_02003704(void *);
+extern int func_0207d840(UnkStruct_0207be8c_2 *p, void *buffer);
 
 void func_0207be8c(UnkStruct_0207be8c_2 *ptr)
 {
@@ -31,8 +31,7 @@ void func_0207be8c(UnkStruct_0207be8c_2 *ptr)
     func_0209e474(buffer);
 
     for (i = 0; i < 8; i++) {
-        func_0208150c(ptr);
-        if (func_02003704()) {
+        if (func_02003704((void *) func_0208150c(ptr))) {
             func_0207d840(ptr, buffer);
         }
         ptr++;

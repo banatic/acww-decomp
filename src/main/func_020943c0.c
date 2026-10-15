@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02034270(void *p, int b, int c, int d);
+extern int func_02034270(void *p, int b, int c, int d);
 extern void func_0203423c(void *p);
 extern int func_02094cf8(int sel, int a, int b, int c, int d, int zero);
 

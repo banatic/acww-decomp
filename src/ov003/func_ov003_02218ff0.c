@@ -6,7 +6,7 @@ extern void func_02010f5c(void *self);
 extern void func_0200ee40(void *self);
 extern int func_0200f554(void *self);
 extern void func_02010d64(void *self);
-extern void func_0201100c(void *self);
+extern int func_0201100c(void *self);
 extern void func_ov003_022191c0(void *self);
 extern void func_ov003_022190b0(void *self);
 

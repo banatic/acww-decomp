@@ -8,8 +8,8 @@
 typedef void (Obj_ov047_02262c14::*PMF)(int);
 
 extern "C" int func_020a12e8(void);
-extern "C" void func_020984e8(void);
-extern "C" void func_02099640(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099640(int argument0);
 
 void Obj_ov047_02262c14::func_ov047_02260b14(int arg)
 {
@@ -18,8 +18,8 @@ void Obj_ov047_02262c14::func_ov047_02260b14(int arg)
     }
     static PMF arr[2] = {&Obj_ov047_02262c14::func_ov047_022608f8, &Obj_ov047_02262c14::func_ov047_02260a88};
     int idx = 0;
-    func_020984e8();
-    func_02099640();
+
+    func_02099640((int) func_020984e8());
     if (unk_B0 == 1) {
         idx = 1;
     }

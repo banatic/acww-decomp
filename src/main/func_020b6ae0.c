@@ -3,8 +3,8 @@
  */
 
 extern void func_020351ec(void);
-extern void func_020b6590(void);
-extern void func_020b7e6c(void);
+extern int func_020b6590(void);
+extern void func_020b7e6c(void *);
 extern void func_0205c188(void);
 extern void func_02082c4c(void);
 extern void func_02078d88(void);
@@ -21,21 +21,21 @@ extern void func_0205daf8(void);
 extern void func_0205dd80(void);
 extern void func_0205d70c(void);
 extern void func_0205cf6c(void);
-extern void func_02072614(void);
-extern void func_02072638(void);
+extern int func_02072614(void);
+extern void func_02072638(void *);
 extern void func_02053e4c(void);
-extern void func_02062ad4(void);
+extern int func_02062ad4(void);
 extern void func_020ace0c(void);
 extern void func_020ad3a0(void);
-extern void func_0203750c(void);
-extern void func_020375a0(void);
+extern int func_0203750c(void);
+extern int func_020375a0(void *);
 extern void func_020b68e4(void);
 extern int func_020b65c4(void);
 extern void func_020962a4(int, int);
 extern void func_02096294(int);
 extern int func_020a6ed0(void);
 extern int func_0209847c(int);
-extern void func_02099a38(void);
+extern void func_02099a38(void *);
 extern void func_020a6ec0(int);
 extern void func_020b70e8(void);
 extern void func_020b7218(void);
@@ -53,9 +53,9 @@ extern struct UnkStruct_020b6ae0 *data_020ccf94;
 
 int func_020b6ae0(void)
 {
+    void *condition_value0;
     func_020351ec();
-    func_020b6590();
-    func_020b7e6c();
+    func_020b7e6c((void *) func_020b6590());
     data_021c8ca0 = 0;
     func_0205c188();
     func_02082c4c();
@@ -73,14 +73,12 @@ int func_020b6ae0(void)
     func_0205dd80();
     func_0205d70c();
     func_0205cf6c();
-    func_02072614();
-    func_02072638();
+    func_02072638((void *) func_02072614());
     func_02053e4c();
     func_02062ad4();
     func_020ace0c();
     func_020ad3a0();
-    func_0203750c();
-    func_020375a0();
+    func_020375a0((void *) func_0203750c());
     func_020b68e4();
     data_021d3124 = 0;
 
@@ -103,8 +101,8 @@ int func_020b6ae0(void)
     } else if (func_020b65c4() == 14) {
         int r = func_020a6ed0();
         if (r > 0 && r < 4) {
-            if (func_0209847c(r + 3)) {
-                func_02099a38();
+            if ((condition_value0 = (void *) (func_0209847c(r + 3)))) {
+                func_02099a38(condition_value0);
             }
             func_02096294(r);
         }

@@ -37,8 +37,8 @@ extern void func_020261b0(u16 *out, struct UnkStruct_02026058 *a, int v);
 extern void func_020263b0(u16 *out, struct UnkStruct_02026058 *a, int v);
 extern int func_0209b8bc(int a);
 extern int func_020535f0(u16 *p);
-extern int func_0209b850(void);
-extern void func_02015dd4(struct UnkStruct_02026058 *a, int b, void *c, void *d, void *e);
+extern int func_0209b850(int);
+extern int func_02015dd4(struct UnkStruct_02026058 *a, int b, void *c, void *d, void *e);
 
 void func_02026058(struct UnkStruct_02026058 *self)
 {
@@ -86,7 +86,7 @@ void func_02026058(struct UnkStruct_02026058 *self)
                 }
             }
             if (n < 0x18) {
-                x = func_0209b850();
+                x = func_0209b850(n);
                 if (x != -1) {
                     loc.unk_00 = x;
                     loc.unk_01 = 0;

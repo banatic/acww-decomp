@@ -3,16 +3,16 @@
  */
 
 extern int data_020e1ae4;
-extern void __cxa_vec_cleanup(void *, int, int, void (*)());
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 extern void func_02083c78(void *);
-extern void func_020837d0(void);
+extern int func_020837d0(void *);
 
 void *func_02083744(void *param)
 {
     void *p;
     p = param;
     *(int **) p = &data_020e1ae4;
-    __cxa_vec_cleanup((char *) p + 8, 5, 2, func_020837d0);
+    __cxa_vec_cleanup((void *) ((char *) p + 8), 5, 2, (((void (*)(void *)) func_020837d0)));
     func_02083c78(p);
     return p;
 }

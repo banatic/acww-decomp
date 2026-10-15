@@ -10,8 +10,8 @@ typedef struct UnkStruct_020f70ec {
     unsigned char unk_0F;
 } UnkStruct_020f70ec;
 
-extern void func_020f7bc4(UnkStruct_020f70ec *self, int id, unsigned char *p);
-extern void func_020f7218(UnkStruct_020f70ec *self, int z);
+extern int func_020f7bc4(UnkStruct_020f70ec *self, int id, unsigned char *p);
+extern void func_020f7218(UnkStruct_020f70ec *self);
 extern void ciAddUNQUIETFilter(UnkStruct_020f70ec *self, void *arg);
 
 void func_020f70ec(UnkStruct_020f70ec *self, int msg, void *arg)
@@ -41,7 +41,7 @@ void func_020f70ec(UnkStruct_020f70ec *self, int msg, void *arg)
             self->unk_0D++;
             if (self->unk_0D == 7) {
                 self->unk_0D = 0;
-                func_020f7218(self, 0);
+                func_020f7218(self);
             }
             self->unk_0F++;
             if (self->unk_0F == 3) {

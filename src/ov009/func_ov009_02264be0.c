@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_022203dc(void *s, int index);
-extern void func_02064328(void *a, void *b, int c, int d);
+extern int func_ov003_022203dc(void);
+extern int func_02064328(void *a, void *b, int c, int d);
 
 typedef struct {
     char pad_00[0x138];
@@ -19,7 +19,7 @@ char *func_ov009_02264be0(UnkStruct_02264be0 *s)
     int val;
     volatile int unused;
     val = s->unk_138;
-    unused = func_ov003_022203dc(s, 0x138);
+    unused = func_ov003_022203dc();
     func_02064328(&data_ov009_02265b74, &data_ov009_02265ad4, val, val);
     return &data_ov009_02265b74;
 }

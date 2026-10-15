@@ -32,9 +32,9 @@ extern int func_ov003_02216410(struct UnkStruct_02216c9c *self, int b, Pair *c, 
 extern int func_ov003_02216698(struct UnkStruct_02216c9c *self, int b, int c, Pair *d, int e, short f);
 extern int func_ov003_02216ab8(struct UnkStruct_02216c9c *self, int b, int c, Pair *d, int e, short f);
 extern int func_02008258(struct UnkStruct_02216c9c *self, int a);
-extern void func_0200d4e8(struct UnkStruct_02216c9c *self, int a, int b, int c);
+extern int func_0200d4e8(struct UnkStruct_02216c9c *self, int a, int b, int c);
 
-int func_ov003_02216c9c(struct UnkStruct_02216c9c *self, int a1, int a2, int a3)
+int func_ov003_02216c9c(struct UnkStruct_02216c9c *self, int a1)
 {
     va_list ap;
     int st;

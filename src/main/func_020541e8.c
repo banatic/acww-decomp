@@ -3,7 +3,7 @@
  */
 
 extern void func_02054170(void *);
-extern int func_02054ecc(void);
+extern int func_02054ecc(int);
 extern void func_02054240(void *, int, int, unsigned char, unsigned int, unsigned int, int, int);
 
 typedef struct {
@@ -20,5 +20,5 @@ void func_020541e8(UnkStruct_020541e8 *a, int b, int c)
         func_02054170(a);
         return;
     }
-    func_02054240(a, func_02054ecc(), b, a->unk_B0, a->unk_AC, (a->unk_A4 << 4) >> 16, c, 1);
+    func_02054240(a, func_02054ecc((int) a), b, a->unk_B0, a->unk_AC, (a->unk_A4 << 4) >> 16, c, 1);
 }

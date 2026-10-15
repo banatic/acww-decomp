@@ -34,7 +34,7 @@ extern UnkStruct_02023e54 data_020d8ee8;
 
 extern int func_0208150c(int a);
 extern int func_020036e8(int a);
-extern void func_0200368c(void *dst, int n, int a, int b);
+extern int func_0200368c(void *dst, int n, int a, int b);
 extern void *func_0202d9c4(UnkStruct_02023e54_2 *self);
 extern int func_0209bc40(void *a);
 extern void func_02063ccc(UnkStruct_02023e54 *o, int a, int b);
@@ -42,11 +42,12 @@ extern void func_020638d4(u16 *out, UnkStruct_02023e54 *o, int a, int b, int c, 
 extern void func_02063cc8(UnkStruct_02023e54 *o);
 extern void func_02015de4(UnkStruct_02023e54_2 *self, void *b, int c, int d);
 extern void func_0209bb90(void *a, int b);
-extern int func_02081d60(void);
+extern void *func_02081d60(void *record);
 extern int func_02081398(int a, int b);
 
 void func_02023e54(UnkStruct_02023e54_2 *self, UnkStruct_02023e54_3 *out)
 {
+    void *record;
     u16 h[2];
     UnkStruct_02023e54 o1;
     UnkStruct_02023e54 o2;
@@ -72,7 +73,8 @@ void func_02023e54(UnkStruct_02023e54_2 *self, UnkStruct_02023e54_3 *out)
             func_0209bb90(func_0202d9c4(self), 1);
             break;
         case 0x11:
-            if (self->unk_12C != 0 && func_02081398(*(int *) (self->unk_100 + 0x830), func_02081d60()) != 0) {
+            if ((record = (void *) self->unk_12C) != 0 &&
+                func_02081398(*(int *) (self->unk_100 + 0x830), (int) func_02081d60(record)) != 0) {
                 self->unk_17C = data_020d8ee8;
                 self->unk_138 = self->unk_12C;
                 self->unk_122 = 0xe;

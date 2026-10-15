@@ -3,12 +3,12 @@
  */
 
 extern void *data_020ccf94;
-extern int func_020736bc(void *arg1, int *arg2, int arg3);
+extern void func_020736bc(void *arg1, int *arg2, int arg3);
 extern int func_0209d3a8(int *arg);
 
-int func_02076f2c(int arg)
+void func_02076f2c(int arg, int sequence, unsigned char category, unsigned int player)
 {
     int local;
     func_020736bc(data_020ccf94, &local, arg);
-    return func_0209d3a8(&local);
+    func_0209d3a8(&local);
 }

@@ -41,13 +41,13 @@ typedef struct {
     int b;
 } UnkStruct_02278b64_2;
 
-extern void func_020154b4(void *, u16 *, int, int, int);
-extern void func_0209a000(u16 *, int);
+extern int func_020154b4(void *, u16 *, int, int, int);
+extern int func_0209a000(u16 *, int);
 extern void func_0206844c(int, u8 *, void *);
 extern int func_02015094(UnkStruct_02278b64_3 *);
 extern int func_020984e8(void);
 extern int func_02099670(int);
-extern int func_02088b1c(int, int);
+extern void func_02088b1c(int, int);
 extern void func_0208674c(u16 *, void *);
 extern int func_02086744(void *);
 extern int func_ov082_02278dec(UnkStruct_02278b64_3 *);
@@ -62,15 +62,18 @@ extern void func_020638d4(u16 *, UnkStruct_02278b64_2 *, int, int, int, int, int
 extern void func_02063cc8(UnkStruct_02278b64_2 *);
 extern void func_02015de4(UnkStruct_02278b64_3 *, u16 *, int, int);
 extern int func_0202ea80(int, int);
-extern void func_020157d4(UnkStruct_02278b64_3 *, void *, int, int);
-extern void func_02015828(UnkStruct_02278b64_3 *, int);
+extern void func_020157d4(UnkStruct_02278b64_3 *, int (*predicate)(unsigned short *, int), unsigned char kind,
+                          unsigned char flag);
+extern int func_02015828(UnkStruct_02278b64_3 *, int);
 extern void func_ov082_022791a0(UnkStruct_02278b64_3 *, int);
-extern void func_ov082_02279168(void);
+extern unsigned short func_ov082_02279168(unsigned short *arg0, int arg1);
 
 extern char data_ov082_022798c8;
 extern char data_ov082_022798d8;
 extern char data_021f3aa4;
 extern char data_021dc7a8;
+
+#define TilePredicate_func_ov082_02279168 ((int (*)(unsigned short *, int)) func_ov082_02279168)
 
 void func_ov082_02278b64(UnkStruct_02278b64_3 *p)
 {
@@ -169,7 +172,7 @@ void func_ov082_02278b64(UnkStruct_02278b64_3 *p)
             func_0202ea80(0x1c, 1);
             break;
         case 0xb:
-            func_020157d4(p, (void *) &func_ov082_02279168, 0xd, 1);
+            func_020157d4(p, TilePredicate_func_ov082_02279168, 0xd, 1);
             func_02015828(p, 0);
             func_ov082_022791a0(p, 0);
             break;
@@ -180,3 +183,5 @@ void func_ov082_02278b64(UnkStruct_02278b64_3 *p)
         func_0206844c(p->unk_40, &m.unk_01, tbl);
     }
 }
+
+#undef TilePredicate_func_ov082_02279168

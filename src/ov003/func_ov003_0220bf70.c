@@ -20,12 +20,12 @@ typedef struct UnkStruct_0220bf70 {
 
 extern void func_0203ee14(void *self, void *sub);
 extern void func_020a8164(void *sub, void *data);
-extern void func_02094fd4(void *local);
-extern void func_0207cec0(void *data, int val);
-extern int func_0208150c(void);
-extern void func_02003618(int val, void *local);
+extern void *func_02094fd4(void *local);
+extern int func_0207cec0(void *data, int val);
+extern int func_0208150c(int object);
+extern int func_02003618(int val, void *local);
 extern void func_02068404(Other *other, int zero, void *local);
-extern void func_02094fbc(void *local);
+extern void *func_02094fbc(void *local);
 
 extern char data_ov003_022380f0;
 extern char data_021e5a2c;
@@ -49,8 +49,7 @@ int func_ov003_0220bf70(UnkStruct_0220bf70 *self)
     self->unk_12C->unk_08 = 1;
 
     func_02094fd4(buf.local);
-    func_0207cec0(&data_021e5a2c, self->unk_08);
-    func_02003618(func_0208150c(), buf.local);
+    func_02003618(func_0208150c(func_0207cec0(&data_021e5a2c, self->unk_08)), buf.local);
     func_02068404(self->unk_12C, 0, buf.local);
     func_02094fbc(buf.local);
 

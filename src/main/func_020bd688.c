@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020bdc50(void *self, int a, int b, int c, int d);
+extern void *func_020bdc50(void *self, int a, int b, int c, int d);
 extern void func_020bdc14(void *self, int a);
 
 void func_020bd688(void *self)

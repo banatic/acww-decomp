@@ -5,7 +5,7 @@
 extern int func_ov002_02208054(void *self, int flag);
 extern void func_ov113_0229a0ec(void *self);
 extern int func_ov113_02299cd0(void *self);
-extern void func_ov113_02299aa4(void *self);
+extern int func_ov113_02299aa4(void *self);
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 

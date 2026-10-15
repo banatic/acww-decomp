@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *MI_CpuFill8(void *, int, int);
-extern void func_0209cc30(void *, unsigned int, unsigned int);
-extern int func_0209d034(void);
-extern void func_02064328(int *, int, int, int);
+extern void MI_CpuFill8(void *, int, int);
+extern unsigned char *func_0209cc30(void *, unsigned int, unsigned int);
+extern int func_0209d034(int *record);
+extern int func_02064328(int *, int, int, int);
 extern int func_0206487c(int *);
 extern int data_020e35d8;
 
@@ -24,16 +24,13 @@ int func_0209ce34(void *self)
     addend = sum;
     for (; outer < 6; outer++) {
         for (inner = 0; inner < 6; inner++) {
-            func_0209cc30(self, inner, outer);
-            if (buf[func_0209d034()] == 0) {
-                func_0209cc30(self, inner, outer);
+            if (buf[func_0209d034((int *) func_0209cc30(self, inner, outer))] == 0) {
                 {
-                    int v = func_0209d034();
+                    int v = func_0209d034((int *) func_0209cc30(self, inner, outer));
                     func_02064328((int *) tmp, (int) &data_020e35d8, v >> 4, v);
                     sum += addend + func_0206487c((int *) tmp);
                 }
-                func_0209cc30(self, inner, outer);
-                buf[func_0209d034()] = 1;
+                buf[func_0209d034((int *) func_0209cc30(self, inner, outer))] = 1;
             }
         }
     }

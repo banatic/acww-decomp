@@ -3,9 +3,9 @@
  */
 
 #define g_x0 (*(int *) 0xffff8000)
-extern void func_ov004_0223c908(int, int);
+extern int func_ov004_0223c908(int, int);
 
-void func_ov004_0223c85c(int p0)
+int func_ov004_0223c85c(int p0)
 {
-    func_ov004_0223c908(p0, (int) &g_x0);
+    return func_ov004_0223c908(p0, (int) &g_x0);
 }

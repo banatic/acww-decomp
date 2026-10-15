@@ -5,7 +5,7 @@
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern int func_ov109_0229cbd4(void *self, int a);
 extern int func_ov109_0229cb9c(void *self, int a);
 extern void func_ov002_02207cf8(char *p);

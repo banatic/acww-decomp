@@ -14,7 +14,7 @@ typedef struct {
     unsigned char unk_5C;
 } UnkStruct_0222bfe0;
 extern int func_ov003_0222796c(Vec3 *a, Vec3 *b, Vec3 *c);
-extern void func_ov003_02228400(Vec3 *v, int k);
+extern int func_ov003_02228400(Vec3 *v, int k);
 extern int func_ov003_02229428(Vec3 *v, Vec3 *a, Vec3 *b, int n, int p, int q);
 extern int func_0200322c(Vec3 *a, Vec3 *b);
 extern void func_02031288(UnkStruct_0222bfe0 *s, Vec3 *a, Vec3 *b, int r, int t, int u, int v);

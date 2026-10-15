@@ -31,7 +31,7 @@ extern int func_0200e9a8(UnkStruct_0200cf50_3 *s, UnkStruct_0200cf50_2 *a, int *
 extern int func_020b65c4(void);
 extern int FX_MulFunc(int a, int b);
 extern int func_0200e93c(UnkStruct_0200cf50_3 *s, int a, int b, int c, int d, short *e);
-extern void func_020113e0(short *a, int b);
+extern int func_020113e0(short *a, int b);
 extern void func_020110a0(UnkStruct_0200cf50_3 *s, short *p);
 extern int FX_Sqrt(int a);
 extern int FX_Div(int a, int b);

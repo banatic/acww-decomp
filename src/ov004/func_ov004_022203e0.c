@@ -9,15 +9,15 @@ typedef void (*VF)(char *);
 extern int func_0201c2a4(char *self, int n);
 extern void func_02016108(char *a, int b);
 extern void func_ov004_02221550(char *self, int n);
-extern void func_ov004_0223ce84(void);
-extern int func_ov004_0223cdc0(void);
+extern void *func_ov004_0223ce84(void);
+extern int func_ov004_0223cdc0(int *);
 extern void func_020b23d4(void);
-extern void func_02030864(int a);
+extern int func_02030864(int a);
 extern void func_ov004_0223d33c(void);
 extern void func_0209e474(char *p);
 extern int *func_02095794(int n);
 extern int func_02030818(int *v);
-extern void func_020307f8(void);
+extern int func_020307f8(void);
 
 void func_ov004_022203e0(char *self, int n)
 {
@@ -38,8 +38,7 @@ void func_ov004_022203e0(char *self, int n)
                 func_ov004_02221550(self, 6);
             }
             if (*(u8 *) (self + 0xac8) == 0) {
-                func_ov004_0223ce84();
-                *(int *) (self + 0xae4) = func_ov004_0223cdc0();
+                *(int *) (self + 0xae4) = func_ov004_0223cdc0((int *) func_ov004_0223ce84());
                 func_020b23d4();
                 func_02030864(0);
                 func_ov004_0223d33c();

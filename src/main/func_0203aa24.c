@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203f844(void *buffer, int arg2);
-extern void func_0203aa48(int arg0, int arg1, void *buffer);
+extern int func_0203f844(void *buffer, int arg2);
+extern int func_0203aa48(int arg0, int arg1, void *buffer);
 
 void func_0203aa24(int arg0, int arg1, int arg2)
 {

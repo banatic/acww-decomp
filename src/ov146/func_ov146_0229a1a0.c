@@ -4,8 +4,8 @@
 
 extern int func_ov146_0229a42c(int);
 extern int func_0207094c(int, int);
-extern int func_02070adc(int, int, int, int, int, int, int);
-extern int func_02070a04(int, int, int);
+extern void func_02070adc(int, int, int, int, int, int, int);
+extern void func_02070a04(int, int, int);
 
 void func_ov146_0229a1a0(int r0)
 {

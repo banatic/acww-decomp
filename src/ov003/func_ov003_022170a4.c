@@ -20,7 +20,7 @@ typedef struct {
 } Input;
 
 extern void func_ov003_022171c4(void *p, int a, int b, unsigned char c);
-extern void func_020109a0(void *p, int a, int b, int c);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
 extern void func_0200fa6c(Vec3 *dst, void *src);
 extern int func_020310d0(Vec3 *a, void *b, int c);
 extern void func_0200fa8c(Vec3 *dst, void *src);
@@ -30,10 +30,10 @@ extern int func_02073908(int a, int b);
 extern void func_0200f268(void *p, int a);
 extern int func_0200fc90(void *p);
 extern int func_020644cc(int a);
-extern void func_0200f27c(void *p, int a);
+extern unsigned int *func_0200f27c(void *p, int a);
 extern int data_020ccf94;
 
-void func_ov003_022170a4(void *self, Input *arg)
+void func_ov003_022170a4(void *self, Input *arg, int previous)
 {
     void *dest;
     int temp;

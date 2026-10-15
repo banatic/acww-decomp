@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_02019c20(void *, int, int, int, int, int);
+extern int func_02019c20(void *, int, int, int, int, int);
 extern void func_0201ad18(void *, int, int, int, void *, int, int, int);
 extern void *data_020c80f8;
 extern void *data_020c814c;

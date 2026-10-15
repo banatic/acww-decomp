@@ -6,7 +6,7 @@
 // hand; they fill it through func_02082438 and read slot 0x0c.
 struct Obj_020e2f6c {
     virtual ~Obj_020e2f6c(); // slot 0x00; func_02094fbc
-    virtual void vfunc_08(); // func_02094f98
+    virtual int vfunc_08();  // func_02094f98
     virtual int vfunc_0c();  // func_02094f94
     char pad_04[0x1c];
 };

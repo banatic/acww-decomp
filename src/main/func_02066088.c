@@ -6,9 +6,9 @@ typedef struct UnkStruct_02066088 {
     char data[32];
 } UnkStruct_02066088;
 
-extern void func_0209529c(UnkStruct_02066088 *this);
+extern void *func_0209529c(UnkStruct_02066088 *this);
 extern void func_0209525c(UnkStruct_02066088 *this, int value);
-extern void func_0209526c(UnkStruct_02066088 *this);
+extern int func_0209526c(UnkStruct_02066088 *this);
 extern void func_02066650(char *a);
 extern void func_020666b0(char *a, int val);
 extern void func_020666d0(char *a, UnkStruct_02066088 *this);

@@ -3,9 +3,9 @@
  */
 
 extern void *func_020682e0(unsigned int heap_id);
-extern void *func_02068340(void *heap, unsigned int size);
+extern void func_02068340(void *s, unsigned int val);
 
-void *func_0203df94(unsigned int size)
+void func_0203df94(unsigned int receiver)
 {
-    return func_02068340(func_020682e0(0), size);
+    func_02068340(func_020682e0(0), receiver);
 }

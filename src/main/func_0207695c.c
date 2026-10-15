@@ -11,7 +11,7 @@ int func_0207cec0(void *, unsigned int);
 int func_020807c0(int, unsigned int);
 void func_02081a80(int, unsigned char);
 
-void func_0207695c(void)
+void func_0207695c(int length, int sequence, unsigned char category, unsigned int player)
 {
     unsigned int val = data_020ccf94;
     struct {

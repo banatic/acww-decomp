@@ -23,7 +23,7 @@ extern int data_020c8c20;
 
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
-extern void func_0200368c(char *a, int n, int g, int v);
+extern int func_0200368c(char *a, int n, int g, int v);
 extern int func_0202d9c4(UnkStruct_02023d0c_2 *self);
 extern int func_0209bc40(int x);
 

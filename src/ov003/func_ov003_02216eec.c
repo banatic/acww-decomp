@@ -16,12 +16,12 @@ struct Work {
 extern void *data_020ccf94;
 extern int func_02073908(void *, u32);
 extern void func_02010f5c(struct Work *);
-extern void func_0201100c(struct Work *);
+extern int func_0201100c(struct Work *);
 extern void func_02010d64(struct Work *);
 extern int func_020113a4(void *, int, int);
 extern void func_0201107c(struct Work *, int *);
 extern int func_0200f554(struct Work *);
-extern void func_020912d4(int, void *, void *, int);
+extern int func_020912d4(int, void *, void *, int);
 extern void func_ov003_02217060(struct Work *);
 extern void func_ov003_02216fec(struct Work *);
 extern void func_ov003_02217020(struct Work *);

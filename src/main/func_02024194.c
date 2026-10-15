@@ -8,11 +8,11 @@ extern struct TwoWords {
 } data_020d9338;
 extern unsigned int data_020d9d24[];
 
-extern int func_0202d9c4(void *self, int zero);
-extern void func_0209bcc4(int prev, int *out_idx);
-extern int func_0208150c(unsigned int val, void *ptr);
+extern int func_0202d9c4(void *self);
+extern int func_0209bcc4(int prev, int *out_idx);
+extern int func_0208150c(unsigned int val);
 extern int func_020036e8(int a);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, unsigned int f, unsigned char g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int offset, int scale, int h, int i);
 
 void func_02024194(void *self, void *out)
 {
@@ -29,7 +29,7 @@ void func_02024194(void *self, void *out)
     *(struct TwoWords *) &cond = data_020d9338;
     cond.c = 0;
 
-    result = func_0202d9c4(self, 0);
+    result = func_0202d9c4(self);
     func_0209bcc4(result, &cond.c);
 
     idx = cond.c;
@@ -43,7 +43,7 @@ void func_02024194(void *self, void *out)
 
     ptr100 = *(void **) ((char *) self + 0x100);
     val830 = *(unsigned int *) ((char *) ptr100 + 0x830);
-    res = func_0208150c(val830, ptr100);
+    res = func_0208150c(val830);
     result = func_020036e8(res);
 
     func_0202da38(self, (char *) self + 0x104, (char *) self + 0x122, 0x1e, result, cond.a, *((unsigned char *) &cond.b), 0,

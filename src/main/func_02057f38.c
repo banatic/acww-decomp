@@ -34,7 +34,7 @@ extern struct Vec data_021c9390;
 extern void func_0205967c(struct UnkStruct_02057f38_2 *, struct Vec *);
 extern void func_020ea6e0(struct Vec *, int);
 extern void VEC_Add(struct Vec *, struct Vec *, struct Vec *);
-extern void func_020e895c(int *, int, int);
+extern int func_020e895c(int *, int, int);
 extern int _s32_div_f(int, int);
 
 void func_02057f38(struct UnkStruct_02057f38_2 *o)

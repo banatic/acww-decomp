@@ -14,7 +14,7 @@ typedef struct {
     u8 unk_00[0x41];
 } Obj2;
 
-void func_020f555c(void *self, int idx)
+void func_020f555c(void *self, int idx, int code)
 {
     void *elem;
     Obj2 *adj;

@@ -20,9 +20,9 @@ struct GlobalData {
 };
 
 extern struct GlobalData data_020c89a8;
-extern void func_0208150c(int);
-extern int func_020036e8(void);
-extern void func_0202da38(void *, void *, void *, int, int, int, int, int, int);
+extern unsigned int func_0208150c(int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *, void *, void *, int, int, int, int, int, int);
 
 void func_02023790(struct UnkStruct_02023790 *p, struct Output *out)
 {
@@ -31,8 +31,7 @@ void func_02023790(struct UnkStruct_02023790 *p, struct Output *out)
     int c;
 
     b = ((unsigned char *) &data_020c89a8)[4];
-    func_0208150c(*(int *) ((char *) p->unk_100 + 0x830));
-    result = func_020036e8();
+    result = func_020036e8((unsigned char *) func_0208150c(*(int *) ((char *) p->unk_100 + 0x830)));
     c = *(int *) &data_020c89a8;
     func_0202da38(p, p->unk_104, &p->unk_122, 30, result, c, b, 2, b);
     out->ptr = p->unk_104;

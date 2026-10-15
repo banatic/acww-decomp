@@ -18,14 +18,14 @@ extern u8 data_021cfc5c;
 extern Pad data_021fbe40;
 
 extern void func_020701a8(void);
-extern void func_02070108(void);
-extern void func_02070150(void);
+extern int func_02070108(void);
+extern int func_02070150(void);
 extern void func_0206eec8(void);
 extern int func_0203de78(void);
 extern int func_020b65c4(void);
 extern int func_0203ec98(void);
 extern int func_02070094(void);
-extern void func_0203e3c8(int);
+extern int func_0203e3c8(int);
 extern void func_0206fe90(void);
 extern void func_0206fe7c(void);
 extern int func_02011ed4(void);

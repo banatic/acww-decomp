@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ee660(void *);
+extern void *func_020ee660(void *);
 extern void *data_020da13c;
 extern void *data_020e2fe8;
 

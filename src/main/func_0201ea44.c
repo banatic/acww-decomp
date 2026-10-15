@@ -3,8 +3,8 @@
  */
 
 struct UnkStruct_0201ea44;
-extern void func_0202da38(struct UnkStruct_0201ea44 *a, unsigned char *b, unsigned char *c, int d, int e, unsigned int f,
-                          int g, int h, int i);
+extern int func_0202da38(struct UnkStruct_0201ea44 *a, unsigned char *b, unsigned char *c, int d, int e, int offset, int g,
+                         int h, int i);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
 

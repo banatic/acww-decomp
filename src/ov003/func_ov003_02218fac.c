@@ -9,11 +9,11 @@ typedef struct {
     int pad_00[4];
 } UnkStruct_02218fac_2;
 
-extern void func_0200e92c(UnkStruct_02218fac *);
+extern unsigned int func_0200e92c(UnkStruct_02218fac *);
 extern void func_0200e90c(UnkStruct_02218fac *, int, int, int);
 extern void func_ov003_02218fec(UnkStruct_02218fac_2 *, int);
 extern int func_0200e894(int, UnkStruct_02218fac *);
-extern void func_0200e91c(UnkStruct_02218fac *);
+extern int func_0200e91c(UnkStruct_02218fac *);
 
 int func_ov003_02218fac(int a, int b, int c, int d)
 {

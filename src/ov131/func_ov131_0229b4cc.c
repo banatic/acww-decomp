@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fca4(void *self);
+extern int func_0206fca4(void);
 extern void func_ov130_0229a6d8(void *ptr, unsigned char val, int a, int b);
 extern void func_ov131_0229ae0c(void *self);
 
@@ -11,7 +11,7 @@ void func_ov131_0229b4cc(void *self)
     int result;
     unsigned char byte_val;
 
-    result = func_0206fca4(self);
+    result = func_0206fca4();
     byte_val = (unsigned char) (result - 0x34);
     func_ov130_0229a6d8((char *) self + 0x2c4, byte_val, 6, 4);
     func_ov131_0229ae0c(self);

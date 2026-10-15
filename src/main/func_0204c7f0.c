@@ -6,12 +6,14 @@ extern int FX_Div(int numerator, int denominator);
 extern int func_0204c878(void *p);
 extern int func_0204c7c8(void *p);
 extern int func_020984e8(void);
-extern void func_020996a0(void);
-extern void func_020adf50(void);
-extern int func_0204c86c(void);
+extern unsigned int func_020996a0(unsigned int object);
+extern unsigned short *func_020adf50(void *record);
+extern int func_0204c86c(unsigned short *counter);
 
 int func_0204c7f0(void *p)
 {
+    int forwarded_value;
+
     int v;
     int pct;
     int mode;
@@ -20,12 +22,10 @@ int func_0204c7f0(void *p)
     if (func_0204c7c8(p) != 0) {
         return v;
     }
-    if (func_020984e8() == 0) {
+    if ((forwarded_value = (int) func_020984e8()) == 0) {
         goto ret_v;
     }
-    func_020996a0();
-    func_020adf50();
-    mode = func_0204c86c();
+    mode = func_0204c86c(func_020adf50((void *) func_020996a0((unsigned int) forwarded_value)));
     pct = 0;
     switch (mode) {
         case 2:

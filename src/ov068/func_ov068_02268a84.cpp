@@ -20,14 +20,14 @@ struct UnkStruct_02268a84_3 {
     unsigned char unk_9F0;
 };
 
-extern "C" void func_0202e118(struct UnkStruct_02268a84 *);
+extern "C" void func_0202e118(struct UnkStruct_02268a84 *, void *unused1);
 extern "C" void func_ov068_0226cfd4(struct UnkStruct_02268a84_3 *);
 extern "C" void func_ov068_02266c34(void *, struct UnkStruct_02268a84_3 *, int, int, int, void *, int, int, int);
-extern "C" void func_02019c20(void *, int, int, int, unsigned short, int);
-extern "C" void func_02012508(void *, struct UnkStruct_02268a84_3 *, struct UnkStruct_02268a84 *, int, unsigned short);
-extern "C" void func_020124e4(void *, int, int, int);
-extern "C" void func_020121e0(void *, int);
-extern "C" void func_0200442c(void *, int, int, int);
+extern "C" int func_02019c20(void *, int, int, int, unsigned short, int);
+extern "C" int func_02012508(void *, struct UnkStruct_02268a84_3 *, struct UnkStruct_02268a84 *, int, unsigned short);
+extern "C" void func_020124e4(void *a, int b, int c, int d);
+extern "C" char *func_020121e0(void *, int);
+extern "C" int func_0200442c(void *, int, int, int);
 extern "C" void func_0202e194(struct UnkStruct_02268a84_3 *);
 extern "C" void func_0201cbbc(void *);
 extern int data_021fbee8;
@@ -37,7 +37,7 @@ extern unsigned short data_020c80f8;
 extern "C" int func_ov068_02268a84(struct UnkStruct_02268a84_2 *a0, struct UnkStruct_02268a84_3 *o)
 {
     struct UnkStruct_02268a84 s;
-    func_0202e118(&s);
+    func_0202e118(&s, o);
     func_ov068_0226cfd4(o);
     func_ov068_02266c34(o->unk_898, o, 0, 0, 0, &data_021fbee8, 4, data_020c814c, 1);
     int ok = 0;

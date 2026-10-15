@@ -5,9 +5,9 @@
 extern "C" int *func_02095794(int);
 extern "C" void func_0201b458(void *out, void *obj, void *data);
 extern "C" int func_0201c378(void *obj, int);
-extern "C" void func_0204ed30(void *a, void *b);
+extern "C" int func_0204ed30(void *a, void *b);
 extern "C" int func_02019e00(void *p);
-extern "C" void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern "C" int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern "C" void func_0201b044(void *p, void *q);
 extern "C" int func_020eaa6c(void *a, void *b);
 extern "C" int func_020e8858(void *p);

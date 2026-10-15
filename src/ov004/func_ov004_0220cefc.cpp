@@ -6,12 +6,12 @@ struct Vec {
     int x, y, z;
 };
 
-extern "C" void func_020ea6e0(struct Vec *);
+extern "C" void func_020ea6e0(struct Vec *, int arg1);
 extern "C" int func_ov004_0220ebd4(void *, struct Vec *);
 extern "C" void func_01ffd070(struct Vec *, void *, struct Vec *);
-extern "C" void func_ov004_0220ccf8(void *, int);
-extern "C" int func_ov004_0220ec8c(void *);
-extern "C" void func_02095380(int);
+extern "C" int func_ov004_0220ccf8(void *, int);
+extern "C" int func_ov004_0220ec8c(void);
+extern "C" int func_02095380(int);
 
 struct UnkStruct_0220cefc {
     char pad_00[0xc];
@@ -29,7 +29,7 @@ extern "C" int func_ov004_0220cefc(struct UnkStruct_0220cefc *o, unsigned short 
     v.x = 0;
     v.y = 0;
     v.z = 0x2000;
-    func_020ea6e0(&v);
+    func_020ea6e0(&v, a);
     if (func_ov004_0220ebd4(o, &v)) {
         struct Vec r;
         func_01ffd070(&r, o->unk_5C, &v);
@@ -40,7 +40,10 @@ extern "C" int func_ov004_0220cefc(struct UnkStruct_0220cefc *o, unsigned short 
         func_ov004_0220ccf8(o, 3);
         int b = (o->unk_0C == 0x3d);
         if (!b) {
-            int id = func_ov004_0220ec8c(o);
+            asm {
+                mov r0, o
+            }
+            int id = func_ov004_0220ec8c();
             if (id != 0xffff) {
                 func_02095380(id);
             }

@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020ee45c(void *self, int type);
+extern int func_020ee45c(void *self);
 extern void func_ov090_022993cc(int a, int b);
-extern void func_ov002_022080a0(void *self, int val);
+extern unsigned char *func_ov002_022080a0(void *self, unsigned char value);
 
 int func_ov118_0229c438(void *self, int type)
 {
     int result;
 
-    result = func_020ee45c(self, type);
+    result = func_020ee45c(self);
     if (type == -1 || type == 5) {
         // nothing
     } else {

@@ -24,10 +24,10 @@ extern int func_0205ddd4(void *);
 extern void func_020103e4(UnkStruct_02010424 *);
 extern void func_0205de70(void *);
 extern void func_0205dec8(void *);
-extern void func_02055454(void *);
+extern int func_02055454(void *);
 extern int func_0205de10(void *);
 extern void func_020554b0(void *, int);
-extern void func_0205de24(void *);
+extern int func_0205de24(void *);
 
 static __inline int idxA(u16 v)
 {

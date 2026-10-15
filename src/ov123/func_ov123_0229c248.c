@@ -5,7 +5,7 @@
 extern int func_ov002_02207f3c(void *p, int a);
 extern void func_ov002_02207eb4(void *p, int a, int b);
 extern int func_ov123_02299650(void *p, int a);
-extern void func_ov002_0220aacc(void *p, int a);
+extern int func_ov002_0220aacc(void *p, int a);
 extern void func_ov002_02208090(void *p, int a);
 extern void func_ov123_02299684(void *p);
 extern void func_ov123_02299630(void *p, int a);

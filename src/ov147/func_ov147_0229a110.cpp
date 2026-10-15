@@ -6,8 +6,8 @@
 #include "cpp/ov147/Obj_ov147_0229aa28.h"
 
 extern "C" void func_ov147_02299aac(unsigned char *, unsigned char *);
-extern "C" void func_0203d4b8(void);
-extern "C" void func_0203d28c(void);
+extern "C" int func_0203d4b8(void);
+extern "C" void func_0203d28c(void *argument0);
 extern "C" void func_0203e334(void);
 extern "C" int func_0206e508(void);
 extern "C" void func_ov147_0229a6ac(unsigned char *);
@@ -20,8 +20,8 @@ int Obj_ov147_0229aa28::func_ov147_0229a110()
 {
     unsigned char *p = (unsigned char *) this;
     func_ov147_02299aac(p + 0x54, p);
-    func_0203d4b8();
-    func_0203d28c();
+
+    func_0203d28c((void *) func_0203d4b8());
     func_0203e334();
     if (func_0206e508() == 3) {
         p[0xf4] = 1;

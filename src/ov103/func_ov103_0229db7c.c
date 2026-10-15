@@ -13,7 +13,7 @@ extern void func_ov103_0229c2d4(UnkStruct_0229db7c *, int);
 extern int func_ov103_0229c2f4(UnkStruct_0229db7c *, int);
 extern void func_ov002_02208090(UnkStruct_0229db7c *, int);
 extern void func_ov103_0229daf4(UnkStruct_0229db7c *);
-extern void func_ov002_022080a0(UnkStruct_0229db7c *, int);
+extern unsigned char *func_ov002_022080a0(UnkStruct_0229db7c *, unsigned char value);
 extern void func_ov002_02207e80(UnkStruct_0229db7c *, int, int, int);
 extern int func_ov002_02207f60(UnkStruct_0229db7c *);
 

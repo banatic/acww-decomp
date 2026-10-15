@@ -8,7 +8,7 @@ struct UnkStruct_0227907c {
     unsigned short unk_C4;
 };
 
-extern void func_0202eb70(struct UnkStruct_0227907c *self);
+extern void *func_0202eb70(struct UnkStruct_0227907c *self);
 
 extern unsigned char data_ov082_0227978c[];
 

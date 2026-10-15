@@ -4,7 +4,7 @@
 
 extern int func_02060d3c(void *);
 extern void func_02015fb0(void *, int, int, int, int, int);
-extern void func_0206844c(void *, char *, int, int);
+extern void func_0206844c(void *, char *, int);
 
 extern char data_021ebcd4;
 
@@ -32,6 +32,6 @@ void func_ov054_022607ec(struct UnkStruct_022607ec_2 *self)
     func_02015fb0(self, func_02060d3c(&data_021ebcd4), 4, 10, 0, 0);
     {
         char byte = 18;
-        func_0206844c(self->unk_40, &byte, data_ov054_02262fac[self->unk_B0->idx].a, self->unk_B0->idx * 12);
+        func_0206844c(self->unk_40, &byte, data_ov054_02262fac[self->unk_B0->idx].a);
     }
 }

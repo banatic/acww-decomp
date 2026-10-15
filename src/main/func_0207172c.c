@@ -20,12 +20,12 @@ extern int data_021d0488;
 extern u16 data_021d046c;
 extern int data_021d048c;
 extern int data_021ebcd4;
-extern void func_020051b0(void *p);
+extern void func_020051b0(void *);
 
-extern void __register_global_object(void *o, void (*d)(void *), void *n);
+extern void __register_global_object(void *, void *, void *);
 extern World *func_0204e414(void);
 extern UnkStruct_0207172c *func_02037e0c(void *t, int a, int b, int c);
-extern void func_02037e44(void *t, u16 *p, int a, int b, int c);
+extern int func_02037e44(void *t, u16 *p, int a, int b, int c);
 extern World *func_0204df30(int i);
 extern void *func_02060ee0(void *g, int i);
 extern UnkStruct_0207172c *func_02061204(void *e, int k);
@@ -68,7 +68,7 @@ void func_0207172c(int arg)
 
     if ((data_021d0488 & 1) == 0) {
         data_021d046c = 0xfff1;
-        __register_global_object(&data_021d046c, func_020051b0, &data_021d048c);
+        __register_global_object((void *) (&data_021d046c), (((void *) func_020051b0)), (void *) (&data_021d048c));
         data_021d0488 |= 1;
     }
     w = func_0204e414();

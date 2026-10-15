@@ -4,8 +4,8 @@
 
 extern void *const data_ov004_02253058[];
 extern void *const data_ov004_02253104[];
-extern void func_ov004_0220d0f4(void *p);
-extern void func_ov004_02210cf0(void *p);
+extern void *func_ov004_0220d0f4(void *p);
+extern void *func_ov004_02210cf0(void *p);
 extern void func_ov004_02211518(void *p);
 
 void *func_ov004_02218780(char *self)

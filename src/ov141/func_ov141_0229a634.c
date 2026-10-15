@@ -20,10 +20,10 @@ struct UnkStruct_0229a634 {
 extern int func_0208e484(u8 *p);
 extern void func_ov141_0229a524(UnkStruct_0229a634 *self);
 extern void func_ov141_0229a4e8(UnkStruct_0229a634 *self);
-extern void func_ov141_02299f94(UnkStruct_0229a634 *self, int _x);
+extern int func_ov141_02299f94(UnkStruct_0229a634 *self, int _x);
 extern void RtcSendPxiCommand(u32 cmd);
 extern void func_ov141_02299f6c(UnkStruct_0229a634 *self, int val);
-extern void func_ov002_02208098(UnkStruct_0229a634 *self, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov141_0229a358(UnkStruct_0229a634 *self);
 
 void func_ov141_0229a634(UnkStruct_0229a634 *self)
@@ -53,6 +53,6 @@ void func_ov141_0229a634(UnkStruct_0229a634 *self)
         }
     }
 
-    func_ov002_02208098(self, 1);
+    func_ov002_02208098((void *) (self), 1);
     func_ov141_0229a358(self);
 }

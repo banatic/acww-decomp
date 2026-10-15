@@ -58,7 +58,7 @@ extern void *func_02080ce4(void *ptr);
 extern int func_0204bcdc(void *ptr);
 extern int func_0204bc64(void *ptr);
 extern void func_02080cd8(void *a, void *b);
-extern void func_020172d8(void *ptr, int a, void *b);
+extern int func_020172d8(void *ptr, int a, void *b);
 extern void func_ov068_0226ad44(SomeState *self, Object *obj, void *data, int a, int b, int c);
 
 extern char data_ov068_02276744[];

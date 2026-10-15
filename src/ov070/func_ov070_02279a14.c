@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec58(void);
-extern int func_ov070_02279974(int, int);
+extern int func_0202ec58(void *arg0);
+extern void func_ov070_02279974(int, int);
 
 int func_ov070_02279a14(int param)
 {
@@ -11,7 +11,7 @@ int func_ov070_02279a14(int param)
     int *ptr;
     char *byte_ptr;
 
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58((void *) param) == 0) {
         return 0;
     }
 

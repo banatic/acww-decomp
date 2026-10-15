@@ -4,7 +4,7 @@
 
 extern int func_02060d3c(int param);
 extern unsigned int func_02060e78(int param);
-extern void func_02060d24(int a, int b, int c);
+extern void func_02060d24(int a, int b);
 extern int data_020cc9d0[];
 
 void func_02060cf4(int arg)
@@ -18,5 +18,5 @@ void func_02060cf4(int arg)
     if (index >= 7) {
         return;
     }
-    func_02060d24(arg, data_020cc9d0[index], index << 2);
+    func_02060d24(arg, data_020cc9d0[index]);
 }

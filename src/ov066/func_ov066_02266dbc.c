@@ -3,8 +3,8 @@
  */
 
 extern unsigned int *data_ov066_0226bdec;
-extern void func_ov066_0226696c(void);
-extern void func_ov066_02266a08(void (*)(void));
+extern void func_ov066_0226696c(void *packet);
+extern void func_ov066_02266a08(void (*)(void *));
 
 void func_ov066_02266dbc(void)
 {

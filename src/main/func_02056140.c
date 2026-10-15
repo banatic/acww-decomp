@@ -7,13 +7,13 @@ typedef struct {
     unsigned int unk_04;
 } UnkStruct_02056140;
 
-extern void NNS_G3dTexSetTexKey(UnkStruct_02056140 *);
+extern void NNS_G3dTexSetTexKey(UnkStruct_02056140 *, unsigned int, unsigned int);
 extern void DC_FlushRange(UnkStruct_02056140 *, unsigned int);
 extern void NNS_G3dTexLoad(UnkStruct_02056140 *, unsigned int);
 
-int func_02056140(UnkStruct_02056140 *param)
+int func_02056140(UnkStruct_02056140 *param, unsigned int key, unsigned int key4x4)
 {
-    NNS_G3dTexSetTexKey(param);
+    NNS_G3dTexSetTexKey(param, key, key4x4);
     DC_FlushRange(param, param->unk_04);
     NNS_G3dTexLoad(param, 1);
     return 1;

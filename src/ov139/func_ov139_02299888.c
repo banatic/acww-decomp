@@ -11,7 +11,7 @@ typedef struct {
     u16 out[16];
 } UnkStruct_02299888;
 
-extern void func_ov139_022995b0(UnkStruct_02299888 *self, int a);
+extern unsigned short *func_ov139_022995b0(UnkStruct_02299888 *self, int a);
 
 void func_ov139_02299888(UnkStruct_02299888 *self, int a, int a1, int a2, int idx)
 {

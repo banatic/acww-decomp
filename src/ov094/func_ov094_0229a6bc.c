@@ -15,9 +15,9 @@ extern char data_ov094_0229bf70[];
 extern int func_02088d9c(void *);
 extern int func_02088d94(void *);
 extern int func_ov094_0229a50c(int);
-extern void func_020896b8(int, void *, int, int, int, unsigned int, void *);
+extern int func_020896b8(int, void *, int, int, int, unsigned int, void *);
 extern void func_ov094_0229a634(void *, int, int, int);
-extern void func_ov094_0229a600(void *, int, int);
+extern int func_ov094_0229a600(void *, int, int);
 
 void func_ov094_0229a6bc(UnkStruct_0229a6bc *self, int b, int c)
 {

@@ -3,7 +3,7 @@
  */
 
 extern int func_020b9c7c(void *p);
-extern void func_020ba0dc(void *p);
+extern unsigned int func_020ba0dc(void *p);
 extern void func_020ba07c(void *p);
 
 int func_020b9a90(void *p)

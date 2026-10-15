@@ -4,13 +4,13 @@
 
 #include "types.h"
 
-extern void func_02084b54(void);
+extern void func_02084b54(void *);
 extern void func_02084dac(void *a);
 extern void func_0207921c(void);
 extern int func_020b6660(void);
 extern void func_0207be8c(void *a);
 extern int func_020b5e70(void);
-extern int func_020b6694(int a);
+extern int func_020b6694(int);
 extern int func_0207cd4c(void *a, signed char b);
 extern int func_0208150c(int a);
 extern int func_02003704(int a);
@@ -19,11 +19,11 @@ extern void func_0207f454(int a);
 extern u8 data_020e1ca8;
 extern u8 data_021e5a2c[];
 
-int func_020854f4(void)
+int func_020854f4(void *argument0)
 {
     u8 *p;
     int v, w;
-    func_02084b54();
+    func_02084b54((void *) argument0);
     func_02084dac(&data_020e1ca8);
     func_0207921c();
     if (func_020b6660()) {

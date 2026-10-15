@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *p);
-extern int func_02099640(void);
-extern int func_0209abb0(void);
+extern void *func_020984e8(void);
+extern int func_02099640(int argument0);
+extern int func_0209abb0(void *argument0);
 extern void *func_02099710(void *p);
-extern int func_0204bcdc(void);
+extern int func_0204bcdc(void *argument0);
 extern int func_0204bc64(void *p);
 
 int func_ov050_02263394(void *p0, unsigned char *p1)
@@ -15,9 +15,9 @@ int func_ov050_02263394(void *p0, unsigned char *p1)
     void *r4;
     int matched;
 
-    obj = func_020984e8(p0);
-    func_02099640();
-    if (!func_0209abb0()) {
+    obj = func_020984e8();
+
+    if (!func_0209abb0((void *) func_02099640((int) obj))) {
         goto fail;
     }
     if (!obj) {
@@ -25,7 +25,7 @@ int func_ov050_02263394(void *p0, unsigned char *p1)
     }
 
     r4 = func_02099710(obj);
-    if (func_0204bcdc()) {
+    if (func_0204bcdc(r4)) {
         unsigned short local = 0x11a8;
         int a = func_0204bc64(r4);
         int b = func_0204bc64(&local);

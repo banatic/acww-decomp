@@ -11,7 +11,7 @@ void func_02056478(void *ptr, int val, int a, int b, int c);
 int func_02055e00(void *ptr);
 void func_020563dc(void *ptr, int val);
 int func_ov003_02220150(void *self);
-int func_020b6590(int val);
+int func_020b6590(void);
 void func_020b7d84(int a, void *b, int *c, int d, int e, int f);
 int func_020b6660(void);
 int func_02073d90(void *ptr);
@@ -85,7 +85,7 @@ extern "C" int func_ov003_0221e7ac(UnkStruct_0221e7ac *self)
     arr[1] = self->unk_60;
     arr[2] = self->unk_64;
     arr[1] += 0x1000;
-    int ret = func_020b6590(arr[1]);
+    int ret = func_020b6590();
     func_020b7d84(ret, &self->unk_2D8, arr, 0x1000, 7, mask);
     self->unk_2F4 = 1;
     if (func_020b6660() == 0) {

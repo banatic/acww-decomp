@@ -4,7 +4,7 @@
 
 extern void func_ov144_02299670(void *p, int n);
 extern void func_ov144_02299bfc(void *p, int n);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_ov002_02208090(void *p, int n);
 extern void RtcSendPxiCommand(int cmd);
 

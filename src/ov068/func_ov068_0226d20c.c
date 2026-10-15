@@ -10,12 +10,12 @@ typedef struct {
     UnkStruct_0226d20c pos;
 } UnkStruct_0226d20c_2;
 
-extern int func_0201cddc(void);
+extern int func_0201cddc(void *argument0);
 extern UnkStruct_0226d20c_2 *func_02096190(int);
 extern void *data_021c80bc;
 extern int func_0204f61c(void *, int, int, int);
 
-int func_ov068_0226d20c(void)
+int func_ov068_0226d20c(void *argument0)
 {
     volatile UnkStruct_0226d20c t;
     UnkStruct_0226d20c_2 *o;
@@ -23,7 +23,7 @@ int func_ov068_0226d20c(void)
     UnkStruct_0226d20c *v;
     unsigned char k;
 
-    k = (unsigned char) (func_0201cddc() + 0xfd);
+    k = (unsigned char) (func_0201cddc(argument0) + 0xfd);
     if (k <= 1) {
         o = func_02096190(4);
         g = data_021c80bc;

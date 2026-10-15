@@ -4,7 +4,7 @@
 
 extern int func_0206fbf8(int k);
 
-int func_ov004_022163c4(void)
+int func_ov004_022163c4(void *callbackObject)
 {
     if (func_0206fbf8(0x40) != 0) {
         return 1;

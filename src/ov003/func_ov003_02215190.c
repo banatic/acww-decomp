@@ -3,16 +3,16 @@
  */
 
 extern void *data_020ccf94;
-extern unsigned char func_0203cc38(unsigned int);
+extern unsigned char func_0203cc38(void);
 extern int func_02073908(void *, unsigned int);
 extern unsigned char *func_020604f8(unsigned char *);
 extern void func_02079798(unsigned char *);
-extern void func_0208b500(void);
-extern void func_0208d09c(void);
-extern void func_020109a0(unsigned char *, int, volatile long long);
+extern int func_0208b500(void);
+extern void func_0208d09c(void *argument0);
+extern void func_020109a0(int, int b, int c, unsigned short d);
 extern void func_0205eae0(unsigned char *, int, int, int);
 extern void func_ov003_0221523c(unsigned char *, unsigned char);
-void func_ov003_02215190(unsigned char *self, unsigned char *param)
+void func_ov003_02215190(unsigned char *self, unsigned char *param, int previous)
 {
     typedef struct {
         unsigned short field_0;
@@ -28,19 +28,19 @@ void func_ov003_02215190(unsigned char *self, unsigned char *param)
     block = (Block *) (self + 0x7d4);
     block->field_4 = c;
     block->field_0 = 0x39;
-    block->field_5 = func_0203cc38(0x39);
+    block->field_5 = func_0203cc38();
     if (c == 0) {
         if (func_02073908(data_020ccf94, *((unsigned int *) (self + 0x800))) != 0) {
             t = *((signed char *) (func_020604f8(self + 0x5c8) + 0x7e));
             block->field_3 = t;
             if (t < 0x38) {
                 func_02079798(self + 0x5c);
-                func_0208b500();
-                func_0208d09c();
+
+                func_0208d09c((void *) func_0208b500());
             }
         }
         block->field_2 = 0;
-        func_020109a0(self, 0x59, 3);
+        func_020109a0((int) (self), (int) (0x59), (int) (3), 0);
         func_0205eae0(self + 0x5a0, 0x1c, 3, 1);
     } else {
         block->field_2 = 2;

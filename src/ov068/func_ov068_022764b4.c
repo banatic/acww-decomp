@@ -11,7 +11,7 @@ struct UnkStruct_022764b4 {
 };
 extern struct UnkStruct_022764b4 *data_021c80bc;
 extern int func_02037e0c(void *, int, int, int);
-extern int func_0204bc90(void);
+extern int func_0204bc90(int tile);
 extern void func_020308e0(int, int);
 
 void func_ov068_022764b4(void)
@@ -21,6 +21,7 @@ void func_ov068_022764b4(void)
     int y;
     int x;
     int zero;
+    int tile;
 
     zero = 0;
     q = data_021c80bc;
@@ -31,7 +32,7 @@ void func_ov068_022764b4(void)
     }
     for (y = 0; y < 0x10; y++) {
         for (x = 0; x < 0x10; x++) {
-            if (func_02037e0c(base, x, y, zero) != 0 && func_0204bc90() != 0) {
+            if ((tile = func_02037e0c(base, x, y, zero)) != 0 && func_0204bc90(tile) != 0) {
                 func_020308e0(x, y);
             }
         }

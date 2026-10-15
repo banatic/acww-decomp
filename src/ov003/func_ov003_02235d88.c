@@ -6,7 +6,7 @@ extern void func_ov003_02235f2c(void *element);
 extern void func_ov003_02235f30(void *element);
 extern void *func_ov003_02235f10(void *base);
 extern void __cxa_vec_ctor(void *a, int b, int c, void (*d)(void *), void (*e)(void *));
-extern void __register_global_object(void *a, void *(*b)(void *), void *node);
+extern void __register_global_object(void *object, void *destructor, void *node);
 extern void func_ov003_02236028(void *base);
 extern void func_0204f800(int *ox, int *oz, int ax, int ay, int j, int i);
 extern int func_020319e4(int x, int z);
@@ -21,6 +21,8 @@ extern int data_ov003_02262b28;
 extern void *data_021c80bc;
 extern unsigned char data_ov003_02262b58[];
 extern unsigned char data_ov003_02262b2c[];
+
+#define DestroyGlobal_ov003_02235f10 ((void *) &func_ov003_02235f10)
 
 int func_ov003_02235d88(void *a0, void *a1, void *a2, int a3)
 {
@@ -40,7 +42,7 @@ int func_ov003_02235d88(void *a0, void *a1, void *a2, int a3)
     grid = data_021c80bc;
     if ((data_ov003_02262b28 & 1) == 0) {
         __cxa_vec_ctor(data_ov003_02262b58, 0x10, 0x22, func_ov003_02235f30, func_ov003_02235f2c);
-        __register_global_object(data_ov003_02262b58, func_ov003_02235f10, data_ov003_02262b2c);
+        __register_global_object(data_ov003_02262b58, DestroyGlobal_ov003_02235f10, data_ov003_02262b2c);
         data_ov003_02262b28 |= 1;
     }
     func_ov003_02236028(data_ov003_02262b58);
@@ -85,3 +87,5 @@ int func_ov003_02235d88(void *a0, void *a1, void *a2, int a3)
     }
     return 0;
 }
+
+#undef DestroyGlobal_ov003_02235f10

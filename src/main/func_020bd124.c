@@ -26,10 +26,10 @@ extern u32 func_02082644(u32);
 extern u32 func_0201bea4(u32);
 extern u32 func_02073dd4(void *, u32);
 extern u32 func_020ba4e4(void);
-extern void func_0208602c(void);
-extern void func_020860c0(void);
-extern u32 func_02087e0c(void);
-extern void func_020bdc50(UnkStruct_020bd124 *, u32, u32, u32, u32);
+extern int func_0208602c(void);
+extern int func_020860c0(int);
+extern u32 func_02087e0c(void *);
+extern void *func_020bdc50(UnkStruct_020bd124 *, u32, u32, u32, u32);
 
 void func_020bd124(UnkStruct_020bd124 *p)
 {
@@ -71,9 +71,7 @@ void func_020bd124(UnkStruct_020bd124 *p)
         return;
     }
 
-    func_0208602c();
-    func_020860c0();
-    if (func_02087e0c() != 0) {
+    if (func_02087e0c((void *) func_020860c0((int) func_0208602c())) != 0) {
         return;
     }
 

@@ -10,11 +10,11 @@ typedef struct {
     char data[16];
 } UnkStruct_0200d1a0_2;
 
-extern void func_0200e92c(UnkStruct_0200d1a0 *);
+extern unsigned int func_0200e92c(UnkStruct_0200d1a0 *);
 extern void func_0200e90c(UnkStruct_0200d1a0 *, int, int, int);
 extern void func_0200d1e0(UnkStruct_0200d1a0_2 *, int);
 extern int func_0200e894(int, UnkStruct_0200d1a0 *);
-extern void func_0200e91c(UnkStruct_0200d1a0 *);
+extern int func_0200e91c(UnkStruct_0200d1a0 *);
 
 int func_0200d1a0(int p0, int p1, int p2, int p3)
 {

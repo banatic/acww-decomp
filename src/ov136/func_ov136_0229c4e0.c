@@ -15,10 +15,10 @@ struct UnkStruct_0229c4e0_2 {
     struct UnkStruct_0229c4e0 sub3;
 };
 
-extern void func_ov134_0229beb0(struct UnkStruct_0229c4e0 *p);
-extern void func_ov002_0220afdc(struct UnkStruct_0229c4e0 *p);
-extern void func_ov002_02209cb4(struct UnkStruct_0229c4e0 *p);
-extern void func_ov002_0220826c(struct UnkStruct_0229c4e0_2 *p);
+extern char *func_ov134_0229beb0(struct UnkStruct_0229c4e0 *p);
+extern void *func_ov002_0220afdc(struct UnkStruct_0229c4e0 *p);
+extern void *func_ov002_02209cb4(struct UnkStruct_0229c4e0 *p);
+extern void *func_ov002_0220826c(struct UnkStruct_0229c4e0_2 *p);
 
 extern unsigned char data_ov136_0229d510[];
 

@@ -5,13 +5,13 @@
 extern unsigned char data_020e52d0;
 extern unsigned char data_021f4dac;
 
-extern void func_020b4044(void *);
+extern void *func_020b4044(void *);
 extern void func_020a8164(void *, void *);
 extern void func_020b43f4(void *);
 extern void *func_020b4344(void *, void *);
-extern void func_020b402c(void *);
+extern void *func_020b402c(void *);
 extern int func_020b5548(void);
-extern void func_020a8bb8(int, void *);
+extern void *func_020a8bb8(int, void *);
 extern void func_020a8c1c(void *);
 extern void func_020b4c40(void *);
 extern void func_020b4c28(void *, int);

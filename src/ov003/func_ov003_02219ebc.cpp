@@ -39,11 +39,11 @@ struct LocBuf {
 };
 
 extern "C" {
-extern void func_0203ee14(void *, UnkStruct_02219ebc *);
+extern void func_0203ee14(void *self, UnkStruct_02219ebc *arg);
 extern int func_020644cc(int);
 extern void func_020a8164(UnkStruct_02219ebc *, const char *);
 extern void func_02066954(UnkStruct_02219ebc *, int, int);
-extern void func_020b4a20(Loc *, char *, const char *);
+extern int func_020b4a20(Loc *, char *, const char *);
 extern const char data_ov003_0223838c[];
 extern const char data_ov003_0223839c[];
 }

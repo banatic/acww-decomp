@@ -26,13 +26,13 @@ extern int data_ov004_02256d14[3];
 extern int data_ov004_02256c54;
 extern UnkStruct_0220f27c data_ov004_02256c9c;
 extern int data_ov004_02256c90[3];
-extern void __register_global_object(UnkStruct_0220f27c *a, void *cb, void *c);
-extern void func_020012dc(void);
+extern void __register_global_object(UnkStruct_0220f27c *a, void *destructor, void *c);
+extern void func_020012dc(void *arg0);
 extern void VEC_Add(Vec3 *d, void *a, Vec3 *b);
 extern void func_ov004_0220fc98(void *self, void *m, int k);
 extern void MTX_MultVec43(Vec3 *v, Mtx43 *m, Vec3 *out);
 extern void func_0204f818(int *a, int *b, Vec3 *v);
-extern void func_ov004_0220db6c(struct UnkStruct_0220f27c_2 *l, int a, int b);
+extern int func_ov004_0220db6c(struct UnkStruct_0220f27c_2 *l, int a, int b);
 
 void func_ov004_0220f27c(char *self, struct UnkStruct_0220f27c_2 *l, void *m, int k)
 {
@@ -54,14 +54,14 @@ void func_ov004_0220f27c(char *self, struct UnkStruct_0220f27c_2 *l, void *m, in
         data_ov004_02256e10[0].unk_00 = 0;
         data_ov004_02256e10[0].unk_04 = 0;
         data_ov004_02256e10[0].unk_08 = 0;
-        __register_global_object(&data_ov004_02256e10[0], (void *) func_020012dc, &data_ov004_02256e04);
+        __register_global_object(&data_ov004_02256e10[0], ((void *) &func_020012dc), &data_ov004_02256e04);
         {
             UnkStruct_0220f27c *object = &data_ov004_02256e1c;
             int value = 0x2000;
             object->unk_00 = value;
             object->unk_04 = 0;
             object->unk_08 = 0;
-            __register_global_object(object, (void *) func_020012dc, &data_ov004_02256d14);
+            __register_global_object(object, ((void *) &func_020012dc), &data_ov004_02256d14);
         }
         data_ov004_02256c78 |= 1;
     }
@@ -80,7 +80,7 @@ void func_ov004_0220f27c(char *self, struct UnkStruct_0220f27c_2 *l, void *m, in
                 data_ov004_02256c9c.unk_00 = 0;
                 data_ov004_02256c9c.unk_04 = 0;
                 data_ov004_02256c9c.unk_08 = 0;
-                __register_global_object(&data_ov004_02256c9c, (void *) func_020012dc, &data_ov004_02256c90);
+                __register_global_object(&data_ov004_02256c9c, ((void *) &func_020012dc), &data_ov004_02256c90);
                 data_ov004_02256c54 |= 1;
             }
             MTX_MultVec43((Vec3 *) &data_ov004_02256c9c, &data_021fbe48, &q);

@@ -3,10 +3,10 @@
  */
 
 extern void func_ov096_0229d508(void *p, int n);
-extern int func_ov096_0229fb9c(void *p);
+extern void func_ov096_0229fb9c(void *p);
 
-int func_ov096_0229d4d4(void *p)
+void func_ov096_0229d4d4(void *p)
 {
     func_ov096_0229d508(p, ((unsigned char *) p)[0xbb] - 0x1c);
-    return func_ov096_0229fb9c(p);
+    func_ov096_0229fb9c(p);
 }

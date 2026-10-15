@@ -50,12 +50,12 @@ extern int func_020a0030(int a);
 extern int func_02098420(int a);
 extern int func_020a13ac(void);
 extern int func_020961a8(int a);
-extern void func_020ee470(void);
+extern void func_020ee470(void *);
 extern int func_02075b98(void);
 extern int func_020ec260(void);
 extern int func_02096284(int a);
 extern void *func_0209847c(int a);
-extern void MI_CpuCopy8(void *d, const void *s, int n);
+extern void MI_CpuCopy8(const void *source, void *destination, unsigned int size);
 extern void func_02073de0(struct UnkStruct_020a3ea4 *g, int a, int b);
 extern void func_020738f4(struct UnkStruct_020a3ea4 *g, int v);
 extern void func_020a7394(int a, int b, int c, int d, int e);
@@ -74,10 +74,10 @@ extern void func_020ba37c(void);
 extern void func_02073d74(struct UnkStruct_020a3ea4 *g, int a);
 extern int func_02075c00(int a);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern int func_ov048_02262ee8(void);
 extern int func_020b5e10(void);
-extern void func_020b6098(int a, int b);
+extern int func_020b6098(int a, int b);
 extern void func_020b5e1c(int a, int b);
 
 void func_020a3ea4(struct UnkStruct_020a3ea4_3 *self)
@@ -162,8 +162,7 @@ void func_020a3ea4(struct UnkStruct_020a3ea4_3 *self)
             if (!func_020a13ac()) {
                 return;
             }
-            func_020961a8(4);
-            func_020ee470();
+            func_020ee470((void *) func_020961a8(4));
             self->state = 5;
             return;
 
@@ -249,7 +248,7 @@ void func_020a3ea4(struct UnkStruct_020a3ea4_3 *self)
                 func_02074078();
                 return;
             }
-            if (!func_020ebf70(func_02073044())) {
+            if (!(func_02073044(), func_020ebf70())) {
                 return;
             }
             func_02073d74(data_020ccf94, 2);

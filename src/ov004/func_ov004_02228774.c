@@ -23,7 +23,7 @@ extern int data_020ccf94;
 extern int func_02073908(int a, int b);
 extern void func_02051e38(int a);
 
-void func_ov004_02228774(struct UnkStruct_02228774_2 *self)
+void func_ov004_02228774(struct UnkStruct_02228774_2 *self, int stateId)
 {
     struct UnkStruct_02228774 *src;
     struct UnkStruct_02228774 *dst;

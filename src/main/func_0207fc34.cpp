@@ -3,14 +3,16 @@
  */
 
 class UnkStruct_0207fc34;
-typedef int (UnkStruct_0207fc34::*PMF)(int);
-extern "C" PMF func_0207fc7c(UnkStruct_0207fc34 *obj);
-extern "C" int func_0207fc34(UnkStruct_0207fc34 *obj, int arg)
+
+typedef int (UnkStruct_0207fc34::*PMF)(unsigned short *);
+extern "C" PMF func_0207fc7c(UnkStruct_0207fc34 *obj, unsigned int category);
+
+extern "C" int func_0207fc34(UnkStruct_0207fc34 *obj, unsigned short *item, unsigned int category)
 {
-    PMF pmf = func_0207fc7c(obj);
+    PMF pmf = func_0207fc7c(obj, category);
     int result = 1;
     if (pmf != 0) {
-        if ((obj->*pmf)(arg) == 0) {
+        if ((obj->*pmf)(item) == 0) {
             result = 0;
         }
     }

@@ -16,7 +16,7 @@ struct Param {
 };
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(struct Param *p, int x);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov002_02208008(struct Param *p);
 extern int func_ov111_0229f430(struct Param *p, int x);
 extern void func_ov095_0229b3ec(struct SubType *p);
@@ -30,7 +30,7 @@ extern void RtcSendPxiCommand(int cmd);
 void func_ov111_022a027c(struct Param *p)
 {
     if (!(data_021fbe40 & 1)) {
-        func_ov002_02208098(p, 9);
+        func_ov002_02208098((void *) (p), 9);
         if (p->unk_9F == p->unk_A0) {
             func_ov111_0229efb8(p, 1);
         }

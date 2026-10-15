@@ -15,7 +15,7 @@ typedef struct {
     int unk_04;
 } UnkStruct_02012d40_2;
 extern UnkStruct_02012d40 *data_021c80bc;
-extern void func_02012d84(UnkStruct_02012d40_2 *, void *, Pair *, UnkStruct_02012d40 *);
+extern int func_02012d84(UnkStruct_02012d40_2 *, void *, Pair *, UnkStruct_02012d40 *);
 extern int func_02013518(UnkStruct_02012d40_2 *, void *);
 
 int func_02012d40(UnkStruct_02012d40_2 *a, void *b)

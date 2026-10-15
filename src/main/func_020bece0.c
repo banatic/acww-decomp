@@ -3,11 +3,11 @@
  */
 
 extern int func_020644cc(int);
-extern void func_020becbc(int *ptr, int value, signed char *data);
+extern void func_020becbc(int *ptr, int value);
 extern signed char data_020d2d8c[];
 
 void func_020bece0(int *ptr)
 {
     *ptr = func_020644cc(5);
-    func_020becbc(ptr, data_020d2d8c[0x1d], data_020d2d8c);
+    func_020becbc(ptr, data_020d2d8c[0x1d]);
 }

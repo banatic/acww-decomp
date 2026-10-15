@@ -11,7 +11,7 @@ extern int func_ov142_02299668(struct Obj0229b23c *p, int n);
 extern void func_ov142_02299648(struct Obj0229b23c *p, int n);
 extern void func_ov142_0229b0d4(struct Obj0229b23c *p);
 extern void func_ov002_02207fc0(struct Obj0229b23c *p);
-extern void func_ov002_02208098(struct Obj0229b23c *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov142_0229b23c(struct Obj0229b23c *p)
 {
@@ -22,5 +22,5 @@ void func_ov142_0229b23c(struct Obj0229b23c *p)
     }
     func_ov142_0229b0d4(p);
     func_ov002_02207fc0(p);
-    func_ov002_02208098(p, 4);
+    func_ov002_02208098((void *) (p), 4);
 }

@@ -21,7 +21,7 @@ struct UnkStruct_0226ed9c {
     unsigned char unk_399;
 };
 
-extern void func_ov003_0221a35c(struct UnkStruct_0226ed9c *obj, int val);
+extern int func_ov003_0221a35c(struct UnkStruct_0226ed9c *obj, int val);
 
 void func_ov068_0226ed9c(struct UnkStruct_0226ed9c *obj)
 {

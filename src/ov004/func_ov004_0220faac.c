@@ -14,8 +14,8 @@ extern int data_ov004_02256c70;
 extern int data_ov004_02256de0[3];
 extern int data_ov004_02256dec[3];
 extern int data_ov004_02256df8[3];
-extern void __register_global_object(UnkStruct_0220faac *a, void *cb, void *c);
-extern void func_020012dc(void);
+extern void __register_global_object(UnkStruct_0220faac *a, void *destructor, void *c);
+extern void func_020012dc(void *arg0);
 extern int func_020b65c4(void);
 extern int func_ov004_0223d348(void);
 
@@ -29,14 +29,14 @@ void func_ov004_0220faac(char *self, UnkStruct_0220faac *out)
         data_ov004_02256e58[0].unk_00 = 0x2000;
         data_ov004_02256e58[0].unk_04 = 0x2000;
         data_ov004_02256e58[0].unk_08 = 0x2000;
-        __register_global_object(data_ov004_02256e58, (void *) func_020012dc, &data_ov004_02256de0);
+        __register_global_object(data_ov004_02256e58, ((void *) &func_020012dc), &data_ov004_02256de0);
         {
             UnkStruct_0220faac *object = &data_ov004_02256e64;
             int value = 0x4000;
             object->unk_00 = value;
             object->unk_04 = 0x2000;
             object->unk_08 = 0x2000;
-            __register_global_object(object, (void *) func_020012dc, &data_ov004_02256dec);
+            __register_global_object(object, ((void *) &func_020012dc), &data_ov004_02256dec);
         }
         {
             UnkStruct_0220faac *object = &data_ov004_02256e70;
@@ -44,7 +44,7 @@ void func_ov004_0220faac(char *self, UnkStruct_0220faac *out)
             object->unk_00 = value;
             object->unk_04 = 0x2000;
             object->unk_08 = value;
-            __register_global_object(object, (void *) func_020012dc, &data_ov004_02256df8);
+            __register_global_object(object, ((void *) &func_020012dc), &data_ov004_02256df8);
         }
         data_ov004_02256c70 |= 1;
     }

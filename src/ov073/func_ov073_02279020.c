@@ -4,13 +4,13 @@
 
 extern int func_02014868(void *ptr);
 extern int func_0203e020(void *ptr);
-extern void func_0208b514(int arg);
+extern void func_0208b514(void);
 extern void func_ov073_02279608(void *obj, int arg);
 
 int func_ov073_02279020(void *obj)
 {
     if (!func_02014868((char *) obj + 0x618)) {
-        func_0208b514(func_0203e020(obj));
+        ((void) (func_0203e020(obj)), func_0208b514());
         func_ov073_02279608(obj, 1);
     }
     return 1;

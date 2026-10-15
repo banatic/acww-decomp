@@ -4,9 +4,9 @@
 extern int func_02087178(const void *);
 extern int gt2GetIncomingBufferSize(const void *);
 extern int func_0201c314(const void *, int);
-extern void func_020147fc(void *, int, int, int);
-extern void func_020147e0(void *, int, int);
-extern void func_02019c90(void *, int, int, unsigned short);
+extern int func_020147fc(void *, int, int, int);
+extern int func_020147e0(void *, int, int);
+extern int func_02019c90(void *, int, int, unsigned short);
 extern unsigned short data_020c80f8;
 
 extern unsigned char data_021ebcd2[];

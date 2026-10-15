@@ -5,7 +5,7 @@
 extern char data_020dd05c;
 extern char data_020dd06c;
 extern void func_02057054(void *ptr);
-extern void func_0205572c(void *ptr);
+extern void *func_0205572c(void *ptr);
 
 typedef struct {
     unsigned int unk_00;

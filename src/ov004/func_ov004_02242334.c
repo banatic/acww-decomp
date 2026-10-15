@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_ov004_0223ee38(void *self);
+extern void *func_ov004_0223ee38(void);
 extern int func_0200322c(void *a, void *b);
 extern int func_020ea990(void *a, void *b);
 extern int FX_MulFunc(int a, int b);
@@ -24,7 +24,7 @@ void func_ov004_02242334(void *self)
     unsigned char f;
     int q;
 
-    other = func_ov004_0223ee38(self);
+    other = func_ov004_0223ee38();
     A = (int *) ((char *) self + 0x2c8);
     B = (int *) ((char *) other + 0x2c8);
     C = (char *) self;

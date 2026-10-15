@@ -9,7 +9,7 @@ struct UnkStruct_02068058 {
     void *unk_1AB8;
 };
 
-extern void func_020b44bc(void **, unsigned char);
+extern int func_020b44bc(void **, unsigned char);
 
 void *func_02068058(struct UnkStruct_02068058 *p)
 {

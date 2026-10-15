@@ -4,11 +4,11 @@
 
 extern int func_020b65c4(void);
 extern int func_020a132c(void);
-extern int func_020a1200(int, int, int);
+extern void func_020a1200(int, int, int);
 
-void func_02075380(int param1, int param2, int param3)
+void func_02075380(unsigned char *payload, unsigned int length, int player)
 {
-    int r4 = param3;
+    int r4 = player;
     int result;
 
     result = func_020b65c4();

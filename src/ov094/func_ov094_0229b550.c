@@ -3,7 +3,7 @@
  */
 
 extern int func_ov094_0229b1e8(void *a, int b);
-extern void func_020896b8(int a, void *b, int c, int d, int e, int f, int g);
+extern int func_020896b8(int a, void *b, int c, int d, int e, int f, int g);
 
 struct UnkStruct_0229b550 {
     int pad_00;

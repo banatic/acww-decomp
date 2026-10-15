@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02001238(void);
+extern void func_02001238(int, int, int);
 extern int PXI_IsCallbackReady(int, int);
-extern void PXI_SetFifoRecvCallback(int, void (*)(void));
+extern void PXI_SetFifoRecvCallback(int, void (*)(int, int, int));
 
 void func_02001268(void)
 {

@@ -11,7 +11,7 @@ extern unsigned char data_021c75b8;
 extern UnkStruct_02299b98 *func_020682e0(int a);
 extern void func_02068320(UnkStruct_02299b98 *p);
 extern int func_020b5e10(void);
-extern void func_020b6434(int a, int b, int c, int d);
+extern int func_020b6434(int a, int b, int c, int d);
 extern void func_020a1888(void);
 extern void func_ov147_0229a01c(void *self);
 

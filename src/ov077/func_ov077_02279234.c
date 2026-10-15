@@ -11,7 +11,7 @@ struct UnkStruct_02279234 {
     u8 unk_71C[4];
     u8 unk_720[4];
 };
-extern void func_02019c20(u8 *, int, int, int, int, int);
+extern int func_02019c20(u8 *, int, int, int, int, int);
 extern int func_0204f490(void *, int *, int *, int *, int *, u16 *, u16 *, int, int);
 extern void func_0204f800(u8 *, u8 *, int, int, int, int);
 extern u8 data_020e54a8;

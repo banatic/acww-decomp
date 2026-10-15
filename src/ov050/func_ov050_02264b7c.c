@@ -17,7 +17,7 @@ struct UnkStruct_02264b7c {
     u8 unk_740;
 };
 
-extern int func_0202edc8(void);
+extern int func_0202edc8(void *unused0);
 extern void func_0201c280(void *a, void *b);
 extern void func_ov050_02263648(void *a, void *b);
 extern int func_ov050_022604bc(void *a);
@@ -31,7 +31,7 @@ extern int data_020ccf94;
 
 int func_ov050_02264b7c(struct UnkStruct_02264b7c *self)
 {
-    if (!func_0202edc8()) {
+    if (!func_0202edc8(self)) {
         return 0;
     }
 

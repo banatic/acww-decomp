@@ -7,9 +7,9 @@ struct UnkStruct_022a18dc {
     char unk_8C;
 };
 
-extern int func_020ee45c(struct UnkStruct_022a18dc *s, int b);
+extern int func_020ee45c(struct UnkStruct_022a18dc *s);
 extern void func_ov090_022993cc(int x, unsigned char b);
-extern void func_ov002_022080a0(struct UnkStruct_022a18dc *s, int x);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov096_0229c414(struct UnkStruct_022a18dc *s);
 extern void func_ov096_0229c2dc(struct UnkStruct_022a18dc *s, int x);
 
@@ -17,7 +17,7 @@ int func_ov096_022a18dc(struct UnkStruct_022a18dc *s, int b)
 {
     int x;
 
-    x = func_020ee45c(s, b);
+    x = func_020ee45c(s);
     if (b == -1) {
         goto fail;
     }
@@ -27,7 +27,7 @@ int func_ov096_022a18dc(struct UnkStruct_022a18dc *s, int b)
 
     func_ov090_022993cc(x, (unsigned char) b);
     s->unk_8C = 5;
-    func_ov002_022080a0(s, 1);
+    func_ov002_022080a0((void *) (s), 1);
     if (b != 7) {
         func_ov096_0229c414(s);
     }

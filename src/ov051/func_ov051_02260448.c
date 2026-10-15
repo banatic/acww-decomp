@@ -3,9 +3,9 @@
  */
 
 extern char data_ov051_0226193c;
-extern void func_ov051_02261058(char *p);
-extern void func_0202ee5c(char *p);
-extern __arm void func_020edf54(char *p);
+extern void *func_ov051_02261058(char *p);
+extern void *func_0202ee5c(char *p);
+extern void func_020edf54(char *p);
 
 char *func_ov051_02260448(char *p)
 {

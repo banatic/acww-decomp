@@ -8,7 +8,7 @@ extern int func_02019de8(void *);
 extern int gt2GetIncomingBufferSize(void *);
 extern int func_0201c314(void *, int);
 extern void func_ov068_02266c34(void *, void *, int, int, int, const void *, int, int, int);
-extern void func_020147fc(void *, int, int, int);
+extern int func_020147fc(void *, int, int, int);
 extern const int data_021fbee8[]; // 0x021fbee8
 extern int data_020c814c;         // 0x020c814c
 

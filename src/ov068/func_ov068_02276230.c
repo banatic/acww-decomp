@@ -3,8 +3,8 @@
  */
 
 extern int func_ov068_02276254(void);
-extern void func_020984e8(void);
-extern int func_02099640(void);
+extern int func_020984e8(void);
+extern int func_02099640(int argument0);
 extern void func_0209bb90(int, int);
 
 void func_ov068_02276230(void)
@@ -12,6 +12,6 @@ void func_ov068_02276230(void)
     if (func_ov068_02276254() != 0) {
         return;
     }
-    func_020984e8();
-    func_0209bb90(func_02099640() + 0xb4, 2);
+
+    func_0209bb90(func_02099640((int) func_020984e8()) + 0xb4, 2);
 }

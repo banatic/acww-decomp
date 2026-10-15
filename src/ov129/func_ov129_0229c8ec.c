@@ -14,10 +14,10 @@ struct UnkStruct_0229c8ec_2 {
 
 extern struct UnkStruct_0229c8ec_2 data_021fbe40;
 
-extern int func_ov002_02208014(struct UnkStruct_0229c8ec *self);
-extern void func_ov129_0229d3e0(struct UnkStruct_0229c8ec *self);
+extern int func_ov002_02208014(void);
+extern unsigned char *func_ov129_0229d3e0(struct UnkStruct_0229c8ec *self);
 extern void func_ov002_0220a1dc(void *ptr);
-extern void func_ov002_02208098(struct UnkStruct_0229c8ec *self, int x);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov129_0229c3f4(struct UnkStruct_0229c8ec *self);
 extern void func_ov129_0229c644(struct UnkStruct_0229c8ec *self);
 extern void func_ov129_0229c684(struct UnkStruct_0229c8ec *self);
@@ -30,7 +30,7 @@ extern void func_ov129_0229c368(struct UnkStruct_0229c8ec *self, int a, int b);
 
 void func_ov129_0229c8ec(struct UnkStruct_0229c8ec *self)
 {
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov129_0229d3e0(self);
         return;
     }
@@ -38,7 +38,7 @@ void func_ov129_0229c8ec(struct UnkStruct_0229c8ec *self)
         unsigned short flags = data_021fbe40.unk_02;
         if ((flags & 1) != 0) {
             func_ov002_0220a1dc((char *) self + 0x3a0);
-            func_ov002_02208098(self, 0xd);
+            func_ov002_02208098((void *) (self), 0xd);
             return;
         }
         if ((flags & 2) != 0) {

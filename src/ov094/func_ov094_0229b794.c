@@ -3,10 +3,10 @@
  */
 
 extern void func_ov094_0229b174(void *arg);
-extern void func_ov094_0229b8d8(unsigned char *self, unsigned int idx);
-extern unsigned int func_02065ec0(void);
+extern unsigned char *func_ov094_0229b8d8(unsigned char *self, unsigned int idx);
+extern unsigned int func_02065ec0(unsigned char *);
 extern void func_ov094_0229b77c(unsigned char *self, unsigned int idx);
-extern void func_02002d14(void *data, void *ptr, int a, int b, int c, int d);
+extern int func_02002d14(void *data, void *ptr, int a, int b, int c, int d);
 extern void *data_021fbe94;
 extern char data_ov094_0229c154[];
 
@@ -28,8 +28,7 @@ void func_ov094_0229b794(unsigned char *self, unsigned int flags)
     f2 = flags & 4;
 
     do {
-        func_ov094_0229b8d8(self, idx);
-        v = func_02065ec0();
+        v = func_02065ec0((unsigned char *) func_ov094_0229b8d8(self, idx));
         switch (v) {
             case 1:
                 if (f0) {

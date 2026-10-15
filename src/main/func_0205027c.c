@@ -23,13 +23,13 @@ extern const char data_020dced8[];
 
 extern void *func_0209d238(void *, int *);
 extern int _s32_div_f(int, int);
-extern void func_02064328(char *, const char *, ...);
+extern int func_02064328(char *, const char *, ...);
 extern int func_0209d0ac(void *, void *, char *);
 extern void *func_0209d088(void *);
-extern void func_02055f2c(void *, void *, int);
+extern int func_02055f2c(void *, void *, int);
 extern void *func_0209d324(void *);
-extern void func_02064b2c(char *, void *, int, int);
-extern int NNS_G3dGetJntAnmSet(void);
+extern void *func_02064b2c(char *, void *, int, int);
+extern int NNS_G3dGetJntAnmSet(int resource);
 extern int func_02107b44(int, int);
 extern int func_02055140(void *, void *);
 extern void func_02055060(void *, int, int, int, int, int);
@@ -70,8 +70,7 @@ int func_0205027c(void *p0, void *p1, UnkStruct_0205027c *s)
         } else {
             func_02064328(buf, data_020dced8, t, n);
         }
-        func_02064b2c(buf, c, 4, 0);
-        t = func_02107b44(NNS_G3dGetJntAnmSet(), 0);
+        t = func_02107b44(NNS_G3dGetJntAnmSet((int) func_02064b2c(buf, c, 4, 0)), 0);
         flags = 0x1000;
         if (!s->unk_168) {
             flags = 0;

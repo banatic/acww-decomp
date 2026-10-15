@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(short *, unsigned short *, unsigned short, int);
+extern int func_020984e8(void);
 extern int func_0204c2b4(unsigned short *);
 extern int func_020996ac(int);
 extern int func_0203cdcc(int, unsigned short *);
@@ -15,7 +15,7 @@ int func_ov142_0229a76c(short *base, unsigned short *out, unsigned short step, i
     int j;
     short *p;
 
-    saved = func_020984e8(base, out, step, count);
+    saved = func_020984e8();
     local = 0xfff1;
     j = 0;
     p = base + index;

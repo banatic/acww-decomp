@@ -7,7 +7,7 @@ struct UnkStruct_0202de64 {
 };
 
 extern char data_020d9df8[];
-void func_0201615c(struct UnkStruct_0202de64 *obj);
+void *func_0201615c(struct UnkStruct_0202de64 *obj);
 void func_020edb3c(struct UnkStruct_0202de64 *obj);
 
 struct UnkStruct_0202de64 *func_0202de64(struct UnkStruct_0202de64 *obj)

@@ -3,13 +3,13 @@
  */
 
 typedef struct {
-    int a, b, c, d, e;
-} BIG5;
-void func_ov004_022265c0(int *self, BIG5 v)
+    int a, b, c;
+} Triple;
+void func_ov004_022265c0(int *self, Triple v, int setting, int extent)
 {
     self[0] = v.a;
     self[1] = v.b;
     self[2] = v.c;
-    self[3] = v.d;
-    self[4] = v.e;
+    self[3] = setting;
+    self[4] = extent;
 }

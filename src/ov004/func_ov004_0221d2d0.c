@@ -13,18 +13,22 @@ extern Vec data_ov004_02257a94[6];
 extern u8 data_ov004_02257a24[6][12];
 extern void *data_ov004_02257a18;
 extern int func_0202e364(void *), func_ov004_0223c5a4(Vec *), func_ov004_0221d068(void *);
-extern void __register_global_object(void *, void (*)(void *), void *), func_020012dc(void *),
-    func_01ffd070(Vec *, Vec *, Vec *);
-extern void func_0201c280(void *, void *), func_ov004_0221cd48(void *, void *), func_ov004_0221c844(void *, int),
-    func_ov004_0221d050(void *);
+extern void __register_global_object(void *, void *destructor, void *);
+extern void func_020012dc(void *);
+extern void func_01ffd070(Vec *, Vec *, Vec *);
+extern void func_0201c280(void *, void *);
+extern void func_ov004_0221cd48(void *, void *);
+extern int func_ov004_0221c844(void *, int);
+extern void func_ov004_0221d050(void *);
 #define INIT(i, a, b, c)                                                                                                      \
     {                                                                                                                         \
         Vec *v = &data_ov004_02257a94[i];                                                                                     \
         v->x = (a);                                                                                                           \
         v->y = (b);                                                                                                           \
         v->z = (c);                                                                                                           \
-        __register_global_object(v, func_020012dc, data_ov004_02257a24[i]);                                                   \
+        __register_global_object(v, ((void *) &func_020012dc), data_ov004_02257a24[i]);                                       \
     }
+
 int func_ov004_0221d2d0(u8 *self)
 {
     Vec candidate;

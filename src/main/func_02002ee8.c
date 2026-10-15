@@ -14,7 +14,7 @@ extern void GX_SetBankForTex(int);
 extern void GX_SetBankForTexPltt(int);
 extern void OS_EnableDTCM(void);
 extern void G3X_SetClearColor(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
-extern void MTX_Inverse43(void *, void *);
+extern int MTX_Inverse43(void *, void *);
 
 void func_02002ee8(void)
 {

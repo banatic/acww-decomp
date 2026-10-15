@@ -7,7 +7,7 @@ extern void func_0205d3d4(void *, void *, int, int, int);
 extern void *func_02081500(int);
 extern void func_0205d36c(void *, void *);
 extern int func_0205d25c(void *);
-extern int func_0203cfa8(int);
+extern int func_0203cfa8(unsigned int *);
 
 typedef struct {
     unsigned short val;
@@ -43,7 +43,7 @@ int func_0202dfd0(char *a, UnkStruct_0202dfd0_2 *b, UnkStruct_0202dfd0 *c)
         }
         v = func_0205d25c(p);
         if (v != 0) {
-            result = func_0203cfa8(v);
+            result = func_0203cfa8((unsigned int *) v);
         }
     }
     return result;

@@ -10,8 +10,8 @@ typedef struct {
 
 extern void func_ov004_0223df88(char *self);
 extern void func_ov004_0223d87c(char *self);
-extern void func_02091254(int a, void *b, int c, int d);
-extern void func_ov004_0223dc68(char *self);
+extern int func_02091254(int a, void *b, int c, int d);
+extern void func_ov004_0223dc68(char *self, int parameter1);
 extern int func_020644cc(int n);
 extern void func_020042c0(void *a, Vec3 *v);
 
@@ -45,7 +45,7 @@ void func_ov004_0223e1f0(char *self)
             func_02091254(0x50, self + 0x5c, 0, 0);
             *(int *) (self + 8) -= 1;
             *(int *) (self + 0x110) = 2;
-            func_ov004_0223dc68(self);
+            func_ov004_0223dc68(self, (int) (0x2));
             break;
         case 3:
             if (func_020644cc(0x64) > 0x32) {

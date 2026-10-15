@@ -4,19 +4,19 @@
 
 extern void *data_ov104_0229f6d0;
 extern void __cxa_vec_cleanup(void *dest, int a, int b, void *cb);
-extern void func_ov002_0220afdc(void *p);
-extern void func_ov002_0220b464(void *p);
-extern void func_0206e35c(void *p);
-extern void func_ov002_0220ba0c(void *p);
-extern void func_ov002_02209ac8(void *p);
-extern void func_ov002_02209cb4(void *p);
+extern void *func_ov002_0220afdc(void *p);
+extern void *func_ov002_0220b464(void *p);
+extern void *func_0206e35c(void *p);
+extern void *func_ov002_0220ba0c(void *p);
+extern void *func_ov002_02209ac8(void *p);
+extern void *func_ov002_02209cb4(void *p);
 extern void func_ov002_02209e38(void *p);
-extern void func_ov002_02207e28(void *p);
-extern void func_ov094_0229a2d0(void *p);
+extern void *func_ov002_02207e28(void *p);
+extern void *func_ov094_0229a2d0(void *p);
 extern void func_ov094_0229bc30(void *p);
-extern void func_ov094_0229afe0(void *p);
+extern void *func_ov094_0229afe0(void *p);
 extern void func_02066688(void *p);
-extern void func_ov002_0220826c(void *p);
+extern void *func_ov002_0220826c(void *p);
 extern void func_ov002_02207f6c(void *p);
 
 void *func_ov104_0229c260(void *self)

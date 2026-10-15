@@ -6,27 +6,27 @@ extern int func_0208e484(void *arg);
 extern int func_ov114_0229c60c(void *p);
 extern int func_ov115_0229e4cc(void *self, int type);
 extern int func_ov114_0229c2c8(void *p);
-extern void func_ov002_02208098(void *p, int val);
-extern void func_ov115_0229ddd0(void *p);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+extern unsigned char *func_ov115_0229ddd0(void *p);
 
-void func_ov115_0229e0e8(void *self)
+int func_ov115_0229e0e8(void *self)
 {
     int result;
+    int status;
 
-    if (func_0208e484((char *) self + 0x94) == 0) {
-        return;
+    if ((status = func_0208e484((char *) self + 0x94)) == 0) {
+        return status;
     }
     result = func_ov114_0229c60c((char *) self + 0xf8);
     if (result != -1) {
-        if (func_ov115_0229e4cc(self, result) != 0) {
-            return;
+        if ((status = func_ov115_0229e4cc(self, result)) != 0) {
+            return status;
         }
     } else {
         if (func_ov114_0229c2c8((char *) self + 0xf8) != 0) {
-            func_ov002_02208098(self, 6);
-            return;
+            return (int) func_ov002_02208098(self, 6);
         }
     }
-    func_ov002_02208098(self, 2);
-    func_ov115_0229ddd0(self);
+    func_ov002_02208098((void *) (self), 2);
+    return (int) func_ov115_0229ddd0(self);
 }

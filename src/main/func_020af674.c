@@ -10,7 +10,7 @@ struct UnkStruct_020af674 {
     u8 unk_5C[8];
 };
 
-extern u32 func_020af028(void);
+extern u32 func_020af028(unsigned short *);
 extern u32 func_020af8e0(struct UnkStruct_020af674 *, u32);
 extern int func_020af870(struct UnkStruct_020af674 *, u32);
 extern u16 *func_020af854(struct UnkStruct_020af674 *, u32, int);
@@ -28,7 +28,7 @@ int func_020af674(struct UnkStruct_020af674 *o, u32 idx, u32 delta, void *a3)
     u16 *p;
 
     if (idx < 0x25) {
-        cap = func_020af8e0(o, func_020af028());
+        cap = func_020af8e0(o, func_020af028((unsigned short *) o));
         o->unk_00 = o->unk_00 + delta;
         if (o->unk_00 > cap) {
             o->unk_00 = cap;
@@ -58,7 +58,7 @@ int func_020af674(struct UnkStruct_020af674 *o, u32 idx, u32 delta, void *a3)
         func_020af788(o);
         return 1;
     }
-    cap = func_020af8e0(o, func_020af028());
+    cap = func_020af8e0(o, func_020af028((unsigned short *) o));
     o->unk_00 = o->unk_00 + delta;
     if (o->unk_00 > cap) {
         o->unk_00 = cap;

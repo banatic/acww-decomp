@@ -6,7 +6,7 @@ struct UnkStruct_020ab928 {
     void *vtable;
 };
 
-extern void func_020a9a40(void *);
+extern void *func_020a9a40(void *);
 extern void func_020edb3c(void *);
 
 extern unsigned char data_020e3fcc[];

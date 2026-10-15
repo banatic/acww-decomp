@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_02050fc8;
 
 extern unsigned char data_021c8344[];
-extern int func_02050ea8(UnkStruct_02050fc8 *s, unsigned int start);
+extern int func_02050ea8(UnkStruct_02050fc8 *s);
 
 void func_02050fc8(UnkStruct_02050fc8 *s, unsigned int start)
 {
@@ -16,7 +16,7 @@ void func_02050fc8(UnkStruct_02050fc8 *s, unsigned int start)
     unsigned int row, col;
     unsigned char *p;
     int hi, v;
-    v = func_02050ea8(s, start);
+    v = func_02050ea8(s);
     hi = v << 4;
 
     for (i = start; i < s->count; i++) {

@@ -32,7 +32,7 @@ struct UnkStruct_02069b80_2 {
     char someField;
 };
 
-extern "C" void func_020a86e4(void *, unsigned char *, unsigned char *, unsigned char *);
+extern "C" int func_020a86e4(void *, unsigned char *, unsigned char *, unsigned char *);
 extern "C" int func_020644cc(int arg);
 extern "C" void func_0206b964(UnkStruct_02069b80_2 *, unsigned char *);
 

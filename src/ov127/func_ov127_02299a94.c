@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov127_02299abc(void *, int, int);
+extern int func_ov127_02299abc(void *, int, int);
 
 typedef struct {
     unsigned char pad_00[0x2824];

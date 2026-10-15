@@ -24,7 +24,7 @@ struct UnkStruct_020b5350 {
 
 extern "C" void func_020a94a4(struct UnkStruct_020b5350 *);
 extern "C" void func_020a9354(struct UnkStruct_020b5350 *, int);
-extern "C" void func_020a92d8(struct UnkStruct_020b5350 *, int);
+extern "C" int func_020a92d8(struct UnkStruct_020b5350 *, int);
 extern "C" int func_020b4d0c(struct UnkStruct_020b5350 *);
 extern "C" int func_020b4cd8(struct UnkStruct_020b5350 *);
 

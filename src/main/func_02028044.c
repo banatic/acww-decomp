@@ -30,7 +30,7 @@ extern int func_0202d9c4(struct Input *p);
 extern int func_0209bc40(int arg);
 extern int func_0208150c(int val);
 extern int func_020036e8(int val);
-extern void func_0202da38(struct Input *p, char *a, char *b, int c, int d, int e, int f, int g, int h);
+extern int func_0202da38(struct Input *p, char *a, char *b, int c, int d, int e, int f, int g, int h);
 
 void func_02028044(struct Input *p, struct Output *out)
 {

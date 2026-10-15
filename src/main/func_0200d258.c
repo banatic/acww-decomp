@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200d1a0(void *p, int a, int b, int c);
+extern int func_0200d1a0(void *p, int a, int b, int c);
 extern int DWC_Alloc(int a, int b);
 extern int func_02096518(int *out, int a, int b);
 

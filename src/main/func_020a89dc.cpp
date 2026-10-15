@@ -10,9 +10,9 @@ class UnkStruct_020a89dc {
     virtual int v3();
 };
 
-extern "C" void func_020a89f8(void *dst, int value);
+extern "C" int func_020a89f8(void *dst, int value);
 
-extern "C" void func_020a89dc(void *dst, UnkStruct_020a89dc *obj)
+extern "C" int func_020a89dc(void *dst, UnkStruct_020a89dc *obj)
 {
-    func_020a89f8(dst, obj->v3());
+    return func_020a89f8(dst, obj->v3());
 }

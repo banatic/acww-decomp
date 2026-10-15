@@ -4,7 +4,7 @@
 
 extern void *func_0204b2c8(void *arg);
 extern int func_0204b42c(void *arg);
-extern void *NNS_FndAllocFromAllocator(void *allocator, unsigned int size);
+extern void NNS_FndAllocFromAllocator(void *object, unsigned int value);
 extern void *func_020622c4(void *ptr);
 extern void func_020051b0(void *ptr);
 

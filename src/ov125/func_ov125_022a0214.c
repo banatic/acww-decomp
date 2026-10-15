@@ -6,7 +6,7 @@
 
 extern int func_ov002_02208054(void *a, int b);
 extern void func_ov125_0229f948(void *a);
-extern void func_ov002_02208098(void *a, int b);
+extern unsigned char *func_ov002_02208098(void *a, unsigned char value);
 extern int func_ov002_02208b00(void *a, u8 b, u8 c);
 extern void func_ov002_02209114(void *a, int b, int c);
 extern u8 func_ov125_0229fc84(void *a, int b);

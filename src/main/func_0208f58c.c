@@ -23,16 +23,16 @@ struct UnkStruct_0208f58c {
     unsigned char unk_75;
 };
 
-extern void func_0208af30(struct UnkStruct_0208f58c *obj, char a, int b);
+extern void func_0208af30(struct UnkStruct_0208f58c *obj);
 extern void func_0208a1f8(void *p);
-extern void func_0208f640(void *p);
-extern void func_0208f0c4(struct UnkStruct_0208f58c *obj);
+extern void *func_0208f640(void *p);
+extern void func_0208f0c4(void *, int);
 
 extern unsigned char data_020e23a0[];
 
 struct UnkStruct_0208f58c *func_0208f58c(struct UnkStruct_0208f58c *obj, char a, int b)
 {
-    func_0208af30(obj, a, b);
+    func_0208af30(obj);
     obj->unk_00 = (void *) data_020e23a0;
     obj->unk_0C = 0;
     obj->unk_10 = 0;
@@ -48,6 +48,6 @@ struct UnkStruct_0208f58c *func_0208f58c(struct UnkStruct_0208f58c *obj, char a,
     obj->unk_73 = 0;
     obj->unk_74 = 0;
     obj->unk_75 = 0;
-    func_0208f0c4(obj);
+    func_0208f0c4(obj, 0);
     return obj;
 }

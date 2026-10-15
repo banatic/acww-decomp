@@ -4,14 +4,12 @@
 
 #include "types.h"
 
-extern int func_ov002_0220b2ac(void *, int);
-extern void func_ov002_0220b358(void *);
+extern void func_ov002_0220b2ac(char *self, int value);
+extern void func_ov002_0220b358(void *, unsigned char parameter1);
 
-int func_ov002_0220b318(char *self)
+void func_ov002_0220b318(char *self, unsigned char value)
 {
-    // DECLS
-    // ENDDECLS
-    func_ov002_0220b358(self);
-    *(u8 *) (self + 0x75) = 0x0;
-    return func_ov002_0220b2ac(self, 0x1);
+    func_ov002_0220b358(self, value);
+    *(u8 *) (self + 0x75) = 0;
+    func_ov002_0220b2ac(self, 1);
 }

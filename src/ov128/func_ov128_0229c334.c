@@ -3,10 +3,10 @@
  */
 
 extern void func_ov127_02299e64(void *);
-extern int func_ov128_0229b804(void *);
+extern void func_ov128_0229b804(void *);
 
-int func_ov128_0229c334(void *param)
+void func_ov128_0229c334(void *param)
 {
     func_ov127_02299e64((char *) param + 0x4a4);
-    return func_ov128_0229b804(param);
+    func_ov128_0229b804(param);
 }

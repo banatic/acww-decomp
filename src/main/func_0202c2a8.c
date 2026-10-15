@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_0202c2a8(void *self)
+int func_0202c2a8(void *self)
 {
     void *p;
     void *base;
-    void (*fp)(void *);
+    int (*fp)(void *);
 
     p = *(void **) ((char *) self + 0x100);
     base = *(void **) p;
-    fp = *(void (**)(void *))((char *) base + 0xb0);
-    fp(p);
+    fp = *(int (**)(void *))((char *) base + 0xb0);
+    return fp(p);
 }

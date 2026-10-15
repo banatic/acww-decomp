@@ -4,7 +4,7 @@
 
 extern void func_ov003_022165e4(int);
 extern void func_02010d64(int);
-extern void func_02010ca4(int);
+extern int func_02010ca4(int);
 extern void func_ov003_0221648c(int);
 
 void func_ov003_0221646c(int a)

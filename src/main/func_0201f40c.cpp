@@ -32,16 +32,22 @@ extern "C" int func_02020a5c(UnkStruct_0201f40c *, int);
 extern "C" void func_0202d8f8(UnkStruct_0201f40c *, int *, int *, void *, int);
 extern "C" int func_020819bc(void);
 extern "C" void func_0202da88(UnkStruct_0201f40c *, char *);
-extern "C" int func_02099f1c(int *, void (*)(void));
-extern "C" void func_020819e0(void);
-extern "C" void func_0201f550(void);
+struct ItemFlags {
+    unsigned short bits;
+    unsigned char count;
+};
+extern "C" unsigned char func_02099f1c(ItemFlags *, int (*)(unsigned short *));
+extern "C" void func_020819e0(unsigned short *);
+extern "C" int func_0201f550(unsigned short *);
 
 extern "C" void func_0201f40c(UnkStruct_0201f40c *p, int arg)
 {
+    unsigned short *condition_value0;
     void *x;
     int a;
     int b;
-    int loc;
+    ItemFlags loc;
+    register int predicate_count;
 
     x = p->unk_100->unk_830;
     a = func_020644cc(0xa) & 1;
@@ -55,9 +61,14 @@ extern "C" void func_0201f40c(UnkStruct_0201f40c *p, int arg)
     } else if (a == 0) {
         func_0202da88(p, data_021c255c);
     } else if (b == 0) {
-        if (func_02099f1c(&loc, func_0201f550) > 0) {
+        func_02099f1c(&loc, func_0201f550);
+        asm { mov predicate_count, r0 }
+        if (predicate_count > 0)
+        {
             func_0202da88(p, data_021c258c);
-        } else {
+        }
+        else
+        {
             func_0202da88(p, data_021c255c);
         }
     } else {
@@ -67,7 +78,7 @@ extern "C" void func_0201f40c(UnkStruct_0201f40c *p, int arg)
         (p->*(p->cb))(arg);
     }
     func_0202d8f8(p, &p->unk_12C, &p->unk_128, x, 0);
-    if (p->unk_12C) {
-        func_020819e0();
+    if ((condition_value0 = (unsigned short *) (p->unk_12C))) {
+        func_020819e0(condition_value0);
     }
 }

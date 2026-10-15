@@ -18,7 +18,7 @@ extern OtherStruct *data_021f42f4;
 extern char data_020da570[];
 
 extern void func_02038424(UnkStruct_02038910 *self);
-extern void func_0205556c(void *buf, unsigned int fourcc, void *data);
+extern int func_0205556c(void *buf, unsigned int fourcc, void *data);
 extern void func_020386c4(UnkStruct_02038910 *self);
 extern void func_020382b8(UnkStruct_02038910 *self);
 extern void func_020382d4(UnkStruct_02038910 *self);

@@ -12,12 +12,12 @@ typedef struct UnkStruct_02278e64 {
 } UnkStruct_02278e64;
 
 extern int func_02013a94(char *p);
-extern void func_020683e4(int *h, int a, u8 *p, int k);
+extern int func_020683e4(int *h, int a, u8 *p, int k);
 extern int func_020984e8(void);
 extern void func_02098ff8(int a, int b);
 extern void func_ov088_02278a54(char *p, int a, int b);
 extern void func_0206844c(int *h, u8 *p, int k);
-extern void func_0202ea80(int a, int b);
+extern int func_0202ea80(int a, int b);
 extern void func_ov088_02278f0c(UnkStruct_02278e64 *self, int a);
 extern int data_ov088_02279da8;
 extern int data_ov088_02279d98;

@@ -62,7 +62,7 @@ struct UnkStruct_02265144 {
     int unk_238;
 };
 
-extern "C" int func_0203efc4(void);
+extern "C" int func_0203efc4(void *argument0);
 extern "C" void func_ov009_02262f54(int *p);
 extern "C" u16 *func_ov009_02262fcc(UnkStruct_02265144 *self);
 extern "C" int func_0204bcdc(u16 *p);
@@ -85,7 +85,7 @@ int Obj_ov009_022658dc::func_ov009_02265144()
     int v1;
     int v2;
 
-    if (func_0203efc4() == 0) {
+    if (func_0203efc4((void *) this) == 0) {
         return 0;
     }
     func_ov009_02262f54(&self->unk_238);

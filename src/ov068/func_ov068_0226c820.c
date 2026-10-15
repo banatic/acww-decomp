@@ -8,7 +8,7 @@ typedef struct {
     int z;
 } Vec3_0226c8;
 
-extern int func_0203dff0(void *);
+extern int func_0203dff0(void);
 extern int func_020eaa2c(void *, void *);
 extern int func_02096190(int);
 extern int func_0203dfac(void);
@@ -26,7 +26,7 @@ int func_ov068_0226c820(void *self, void *arg1, Vec3_0226c8 *arg2)
     int diff1;
     int diff2;
 
-    if (func_0203dff0(self) == 0) {
+    if (func_0203dff0() == 0) {
         goto fail;
     }
     if (func_020eaa2c(arg2, (void *) data_021fbee8) == 0) {

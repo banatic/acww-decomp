@@ -37,11 +37,11 @@ typedef struct UnkStruct_0206026c_3 {
     int something;
 } UnkStruct_0206026c_3;
 
-extern void func_02034270(void *dst, void *src, int a, int b);
+extern int func_02034270(void *dst, void *src, int a, int b);
 extern void func_0203423c(void *obj);
-extern int func_0209129c(int value);
+extern void func_0209129c(int value);
 extern int func_020912d4(int kind, int *vec, int a, int b);
-extern int func_0205fbc4(int *a, int *b, int *c, int *d, int e);
+extern void func_0205fbc4(int *a, int *b, int *c, int *d, int e);
 extern int func_ov003_0222a784(int value);
 
 void func_0206026c(UnkStruct_0206026c_2 *self, int param)

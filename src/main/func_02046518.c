@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02046518(unsigned char *p, unsigned char a1, unsigned short a2, unsigned short a3, unsigned short a4,
-                   unsigned char a5, unsigned char a6, unsigned char a7, unsigned char a8, unsigned char a9, signed char a10)
+int func_02046518(unsigned char *p, unsigned int a1, unsigned short a2, unsigned int a3, unsigned short a4, unsigned char a5,
+                  unsigned char a6, unsigned char a7, unsigned char a8, unsigned char a9, signed char a10)
 {
     *p = (unsigned char) ((*p & ~0x07) | (a1 & 0x07));
     *(unsigned short *) (p + 8) = a2;
@@ -15,5 +15,9 @@ void func_02046518(unsigned char *p, unsigned char a1, unsigned short a2, unsign
     p[1] = (unsigned char) ((p[1] & ~0x1c) | ((a8 & 0x07) << 2));
     p[2] = (unsigned char) ((p[2] & ~0x02) | ((a9 & 0x01) << 1));
     p[2] = (unsigned char) ((*((signed char *) (p + 2)) & ~0x3c) | ((a10 & 0x0f) << 2));
-    p[2] = (unsigned char) ((p[2] & ~0x01) | 0x01);
+    {
+        int flags = (p[2] & ~0x01) | 0x01;
+        p[2] = (unsigned char) flags;
+        return flags;
+    }
 }

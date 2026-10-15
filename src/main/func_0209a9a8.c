@@ -11,12 +11,12 @@ typedef struct {
 
 extern int func_02065ec0(void *b);
 extern void *func_0209ad9c(void *a, int k);
-extern void *func_0209b4d4(void);
-extern int func_0209bc40(void);
+extern void *func_0209b4d4(void *);
+extern int func_0209bc40(unsigned char *);
 extern int func_02065f64(void *b);
-extern void func_02003760(Rec *r, int v);
+extern void *func_02003760(Rec *r, int v);
 extern int func_02003704(Rec *r);
-extern void func_02003750(Rec *r);
+extern int func_02003750(Rec *r);
 extern Rec *func_0209b4cc(void *h, int k);
 extern int memcmp(const void *a, const void *b, unsigned int n);
 extern unsigned int func_0209bba0(void *c);
@@ -37,8 +37,8 @@ int func_0209a9a8(void *a, void *b)
         goto fail;
     }
     h = func_0209ad9c(a, 0);
-    c = func_0209b4d4();
-    if (func_0209bc40() != 0xf) {
+    c = func_0209b4d4((void *) h);
+    if (func_0209bc40(c) != 0xf) {
         goto fail;
     }
     v = func_02065f64(b);

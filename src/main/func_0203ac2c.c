@@ -3,7 +3,7 @@
  */
 
 extern int data_021c67a4;
-extern int func_0203b868(int arg);
+extern void func_0203b868(int arg);
 
 int func_0203ac2c(void)
 {

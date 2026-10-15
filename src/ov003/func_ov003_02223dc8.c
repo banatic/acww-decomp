@@ -7,13 +7,13 @@ struct Pair {
     int b;
 };
 
-extern unsigned char *func_0204cab4(unsigned char *a0, int *p1, int *p2, int *p3);
+extern unsigned char *func_0204cab4(void);
 extern void func_0204f794(void *a4, int a5, int a6);
 extern unsigned char data_ov003_02236b88[];
 
 void func_ov003_02223dc8(unsigned char *a0, int *p1, int *p2, int *p3, void *a4, unsigned short *a5, struct Pair *a6)
 {
-    unsigned char *base = func_0204cab4(a0, p1, p2, p3);
+    unsigned char *base = func_0204cab4();
     int flag = 0;
     unsigned short val = *a5;
     int t;

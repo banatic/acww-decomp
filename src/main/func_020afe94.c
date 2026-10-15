@@ -8,15 +8,15 @@ extern u8 data_020e54a8;
 extern int func_020b65c4(void);
 extern int data_021c80bc;
 extern u16 *func_0204f5e0(int a, int b, int c, int d, int e, int f);
-extern int func_0204bc90(void);
+extern int func_0204bc90(int object);
 extern int func_ov004_0223cd50(void);
 extern int func_ov004_0223cc10(int a, int x, int y, int z);
 extern int func_ov004_0223ce84(void);
-extern void func_ov004_0223cd78(int a, int b);
-extern void func_ov004_0223bb14(void);
+extern int func_ov004_0223cd78(int a, int b);
+extern int func_ov004_0223bb14(int);
 extern void RtcSendPxiCommand(int a);
 extern int func_0204bd08(u16 *p);
-extern void func_0204f538(int a, void *b, int x, int y, int e);
+extern int func_0204f538(int a, void *b, int x, int y, int e);
 extern int data_021f49f4;
 
 void func_020afe94(int x, int y, int p2, int p3)
@@ -46,11 +46,10 @@ void func_020afe94(int x, int y, int p2, int p3)
         return;
     }
 
-    if (func_0204bc90() != 0) {
+    if (func_0204bc90((int) q) != 0) {
         h = func_ov004_0223cc10(func_ov004_0223cd50(), x, y, 0);
         if (h != 0) {
-            func_ov004_0223cd78(func_ov004_0223ce84(), h);
-            func_ov004_0223bb14();
+            func_ov004_0223bb14((int) func_ov004_0223cd78(func_ov004_0223ce84(), h));
         }
         if (p3 != 0) {
             RtcSendPxiCommand(0x2e);

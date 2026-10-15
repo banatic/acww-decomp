@@ -3,8 +3,8 @@
  */
 
 extern int func_ov066_02266e08(void);
-extern int func_ov066_022686f0(void);
-extern int func_ov066_0226686c(void);
+extern void func_ov066_022686f0(void);
+extern void func_ov066_0226686c(int status);
 extern unsigned int data_ov066_0226bdf4;
 
 void func_ov066_02268798(unsigned short *param)
@@ -21,7 +21,7 @@ void func_ov066_02268798(unsigned short *param)
                 func_ov066_022686f0();
             }
         } else {
-            func_ov066_0226686c();
+            func_ov066_0226686c(param[1]);
         }
     }
 }

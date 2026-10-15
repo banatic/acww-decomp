@@ -10,7 +10,7 @@ typedef struct {
 
 extern char data_ov003_0225f4dc[];
 extern int data_020ccf94;
-extern void func_020912d4(int id, Vec3 *v, int a, int b);
+extern int func_020912d4(int id, Vec3 *v, int a, int b);
 extern void func_020779b8(u8 *p, int a, int b);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned n);
 extern void func_02073820(int g);

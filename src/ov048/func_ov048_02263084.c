@@ -7,12 +7,12 @@
 extern void *func_0200338c(int, int);
 extern int func_02019e00(void *);
 extern int func_02019de8(void *);
-extern void func_02019c6c(void *, int, u16);
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
-extern void func_02095ab0(void *, int, int);
-extern void func_02019c20(void *, int, int, int, int, int);
+extern int func_02019c6c(void *, int, u16);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02095ab0(void *, int, int);
+extern int func_02019c20(void *, int, int, int, int, int);
 extern int func_020644cc(int);
-extern void func_ov004_02246f7c(void);
+extern int func_ov004_02246f7c(void);
 
 extern u16 data_020c80f8;
 extern unsigned int data_ov048_0226398c[3];

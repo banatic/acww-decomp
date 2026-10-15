@@ -8,7 +8,7 @@ extern unsigned short data_020c81a8[];
 extern int func_0201afec(void *);
 extern void func_02016764(void *, void *, unsigned int, unsigned short, int, int, int, int);
 extern void func_02012444(int, unsigned short, int);
-extern void func_0200442c(void *, unsigned short, int, int);
+extern int func_0200442c(void *, unsigned short, int, int);
 
 void func_02019098(void *self, void *data)
 {

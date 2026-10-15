@@ -13,9 +13,9 @@ typedef struct {
     Vec3 v;
 } UnkStruct_0226c754;
 
-extern int func_0203dff0(int a, int b, int c);
+extern int func_0203dff0(void);
 extern UnkStruct_0226c754 *func_02096190(int size);
-extern UnkStruct_0226c754 *func_0203dfac(UnkStruct_0226c754 *p);
+extern UnkStruct_0226c754 *func_0203dfac(void);
 extern void func_020eaca0(Vec3 *dst, const Vec3 *a, const Vec3 *b);
 extern void func_020eaaa8(Vec3 *dst, int scale);
 extern void func_01ffd070(Vec3 *dst, const Vec3 *a, const Vec3 *b);
@@ -23,9 +23,9 @@ extern int func_020ea990(int v, const Vec3 *vec);
 
 int func_ov068_0226c754(int a, int b, int c)
 {
-    if (func_0203dff0(a, b, c)) {
+    if (func_0203dff0()) {
         UnkStruct_0226c754 *p1 = func_02096190(4);
-        UnkStruct_0226c754 *p2 = func_0203dfac(p1);
+        UnkStruct_0226c754 *p2 = func_0203dfac();
         if (p1 != 0 && p2 != 0) {
             Vec3 v1, v2;
             func_020eaca0(&v1, &p1->v, &p2->v);

@@ -7,7 +7,7 @@ typedef struct {
     int unk_830;
 } UnkStruct_0221e048;
 
-extern int func_020984e8(UnkStruct_0221e048 *param);
+extern int func_020984e8(void);
 extern int func_02099870(int arg);
 extern int func_020804b8(int arg1, int arg2);
 extern void func_02081e14(int arg1, int arg2, int arg3, int arg4);
@@ -18,7 +18,7 @@ void func_ov004_0221e048(UnkStruct_0221e048 *param)
     int b;
     int c;
 
-    a = func_020984e8(param);
+    a = func_020984e8();
     if (a == 0) {
         return;
     }

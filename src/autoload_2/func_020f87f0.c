@@ -7,7 +7,7 @@ typedef struct {
     unsigned short unk_0E;
 } UnkStruct_020f87f0;
 
-extern void func_020f7bc4(void *, int, void *);
+extern int func_020f7bc4(void *, int, void *);
 
 int func_020f87f0(UnkStruct_020f87f0 *obj)
 {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(int);
+extern int func_020984e8(void);
 extern int func_02099870(int);
 extern int func_0209871c(int, int);
 extern int func_020988a4(int, int);
@@ -15,7 +15,7 @@ extern char data_021dc7bc[];
 
 void func_ov126_0229f9b8(void *param)
 {
-    int x = func_020984e8((int) param);
+    int x = func_020984e8();
     int y;
     int z;
     int i;

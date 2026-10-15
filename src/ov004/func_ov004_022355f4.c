@@ -15,7 +15,7 @@ struct UnkStruct_022355f4 {
     u8 unk_22F;
 };
 
-extern void func_020e89dc(void *p, int a, int b);
+extern int func_020e89dc(void *p, int a, int b);
 
 void func_ov004_022355f4(struct UnkStruct_022355f4 *self)
 {

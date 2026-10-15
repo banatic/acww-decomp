@@ -8,15 +8,15 @@ typedef struct UnkStruct_0229e62c {
 } UnkStruct_0229e62c;
 
 extern int func_ov002_02207f48(UnkStruct_0229e62c *p, int arg);
-extern int func_ov002_022080a0(UnkStruct_0229e62c *p, int arg);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov100_0229d8b0(UnkStruct_0229e62c *p);
-extern int func_ov002_02207e80(UnkStruct_0229e62c *p, int arg1, int arg2, int arg3);
+extern void func_ov002_02207e80(UnkStruct_0229e62c *p, int arg1, int arg2, int arg3);
 extern int func_ov002_02207f60(UnkStruct_0229e62c *p);
 
 void func_ov100_0229e62c(UnkStruct_0229e62c *p)
 {
     if (func_ov002_02207f48(p, 0)) {
-        func_ov002_022080a0(p, 2);
+        func_ov002_022080a0((void *) (p), 2);
         func_ov100_0229d8b0(p);
     }
     func_ov002_02207e80(p, 4, 0, 0);

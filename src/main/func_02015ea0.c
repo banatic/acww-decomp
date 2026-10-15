@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a8228(void *);
-extern void func_020b44a4(void *, int);
+extern void *func_020a8228(void *);
+extern int func_020b44a4(void *, int);
 extern void func_02068404(int, int, void *);
-extern void func_020a8210(void *);
+extern void *func_020a8210(void *);
 
 struct UnkStruct_02015ea0 {
     char pad_00[0x40];

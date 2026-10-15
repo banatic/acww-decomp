@@ -6,7 +6,7 @@ extern char data_021dc7a8[];
 extern void *func_020409c8(void *arg, int _x);
 extern int func_020984d4(void);
 
-int func_020408e8(int param)
+int func_020408e8(int param, unsigned char flag)
 {
     if (param == 0x45) {
         return 0;
@@ -16,7 +16,6 @@ int func_020408e8(int param)
         int result;
         unsigned char *p;
         int shift;
-        unsigned char flag;
 
         base = data_021dc7a8;
         result = 0;

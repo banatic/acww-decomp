@@ -3,8 +3,8 @@
  */
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(unsigned int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int,
-                          unsigned int, unsigned int);
+extern int func_02019d0c(unsigned int, int, int, int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int,
+                         unsigned int, unsigned int);
 
 int func_ov052_022615a4(unsigned int p)
 {

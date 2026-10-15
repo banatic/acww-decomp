@@ -6,14 +6,14 @@ typedef struct {
     void *unk_00;
 } UnkStruct_020f6f88;
 
-extern void func_020f6f3c(UnkStruct_020f6f88 *, int);
-extern void func_020eed18(int, int);
-extern void func_020eedb8(int, int, int);
+extern void func_020f6f3c(UnkStruct_020f6f88 *);
+extern int func_020eed18(int, int);
+extern int func_020eedb8(int, int, int);
 
 void func_020f6f88(UnkStruct_020f6f88 *self, int n)
 {
     unsigned int ok;
-    func_020f6f3c(self, n);
+    func_020f6f3c(self);
     if ((unsigned int) n > 0xd) {
         return;
     }

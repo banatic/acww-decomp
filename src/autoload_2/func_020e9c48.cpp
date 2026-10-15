@@ -16,7 +16,7 @@ class UnkStruct_020e9c48 {
     int unk_10;
 };
 
-extern "C" void func_020ea0a4(void);
+extern "C" void func_020ea0a4(void *unused0);
 extern "C" void func_020ea084(UnkStruct_020e9c48 *obj);
 extern void (*data_021fbe7c)(UnkStruct_020e9c48 *, int);
 
@@ -25,7 +25,7 @@ extern "C" void func_020e9c48(UnkStruct_020e9c48 *obj, int param)
     if (param == 0) {
         return;
     }
-    func_020ea0a4();
+    func_020ea0a4(obj);
     if (data_021fbe7c && (obj->unk_10 & 0x800)) {
         data_021fbe7c(obj, param);
     }

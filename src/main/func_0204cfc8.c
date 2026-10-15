@@ -20,12 +20,12 @@ typedef struct {
 extern int data_021c80bc;
 extern int data_021fbe94;
 extern int func_020e9948(void *a, int b);
-extern void func_0204ecf8(void);
+extern void func_0204ecf8(void *);
 extern RecT *func_020b682c(void);
 extern void func_0204d594(SelfT *self, int r6);
 extern void func_0204d08c(SelfT *self, int r7, int f58);
 extern void *func_0204d3f0(SelfT *self, int r7, int f58, int r6);
-extern void func_0204ebb0(int a, void *r4, void *bufptr, int r6);
+extern int func_0204ebb0(int a, void *r4, void *bufptr, int r6);
 extern unsigned char data_020e54a8;
 extern void func_0204d0ac(int a);
 extern void func_020e993c(int r6, void *r4);
@@ -45,7 +45,7 @@ int func_0204cfc8(SelfT *self, void *arg1)
         int r = func_020e9948(arg1, 0x20);
         data_021c80bc = r;
         if (r != 0) {
-            func_0204ecf8();
+            func_0204ecf8((void *) r);
         }
     }
 

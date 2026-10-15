@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void UTi_PutString(int);
+extern int UTi_PutString(int);
 
 void func_020edaa8(int a, int b)
 {

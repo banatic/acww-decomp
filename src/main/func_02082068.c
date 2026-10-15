@@ -3,7 +3,7 @@
  */
 
 extern char data_020e194c[];
-extern void func_020a887c(void *this);
+extern void *func_020a887c(void *this);
 extern void func_020edb3c(void *this);
 
 typedef struct {

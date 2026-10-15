@@ -3,8 +3,8 @@
  */
 
 extern void func_020f6f3c(void *list);
-extern void func_020eed18(void *obj, int param);
-extern void func_020eedb8(int param, unsigned short value, void *obj);
+extern int func_020eed18(void *obj, int param);
+extern int func_020eedb8(int param, unsigned short value, void *obj);
 
 typedef struct {
     void *link;
@@ -13,7 +13,7 @@ typedef struct {
     unsigned char flag;
 } EnvObj;
 
-void func_020f7054(EnvObj *self, unsigned short id, unsigned int data)
+int func_020f7054(EnvObj *self, unsigned short id, unsigned int data)
 {
     unsigned int has_link;
 
@@ -25,5 +25,5 @@ void func_020f7054(EnvObj *self, unsigned short id, unsigned int data)
     self->id = id;
     self->data = data;
     self->flag = 1;
-    func_020eedb8(0, self->id, self);
+    return func_020eedb8(0, self->id, self);
 }

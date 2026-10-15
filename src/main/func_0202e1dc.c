@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0203efdc(void);
-extern void func_02082568(void *);
+extern int func_0203efdc(char *);
+extern int func_02082568(void *);
 
 int func_0202e1dc(void *arg0)
 {
@@ -11,7 +11,7 @@ int func_0202e1dc(void *arg0)
     int r0;
 
     r4 = arg0;
-    r0 = func_0203efdc();
+    r0 = func_0203efdc(arg0);
     if (r0 == 0) {
         return 0;
     }

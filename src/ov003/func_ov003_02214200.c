@@ -25,8 +25,8 @@ struct UnkStruct_02214200 {
 
 extern int FX_MulFunc(int a, int b);
 extern short FX_SinCosTable_[];
-extern void func_0200f328(UnkStruct_02214200 *self, int id);
-extern void func_0203f7d0(Vec *a, Vec *b);
+extern int func_0200f328(UnkStruct_02214200 *self, int id);
+extern int func_0203f7d0(Vec *a, Vec *b);
 
 void func_ov003_02214200(UnkStruct_02214200 *self, Vec *p1, Vec *p2, Vec *p3)
 {

@@ -16,9 +16,9 @@ extern void *func_0203efdc(void *self);
 extern void func_ov009_02262f0c(void *p);
 extern void func_ov009_02264580(struct UnkStruct_02264fb8 *self);
 extern void func_ov009_02264398(struct UnkStruct_02264fb8 *self);
-extern void func_02055f1c(void *p);
-extern void func_ov003_02220240(struct UnkStruct_02264fb8 *self);
-extern void func_0203f364(int n);
+extern int func_02055f1c(void *p);
+extern int func_ov003_02220240(struct UnkStruct_02264fb8 *self);
+extern void func_0203f364(void);
 extern int func_0204bba8(void *p);
 extern void func_020ad78c(int n);
 
@@ -33,7 +33,7 @@ int func_ov009_02264fb8(struct UnkStruct_02264fb8 *self)
     func_02055f1c(self->unk_13C);
     func_ov003_02220240(self);
     if (self->b0) {
-        func_0203f364(self->b0);
+        func_0203f364();
         if (func_0204bba8(self->unk_136) != 0) {
             func_020ad78c(1);
         }

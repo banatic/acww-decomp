@@ -23,7 +23,7 @@ typedef struct {
 extern int func_02067d7c(void *);
 extern void func_0206bd2c(void *);
 extern void func_02068ae4(void *, int);
-extern void func_020a94d8(void *);
+extern int func_020a94d8(void *);
 extern void func_0206c05c(void *);
 extern void func_02068a04(void *);
 extern void func_02067540(void *);

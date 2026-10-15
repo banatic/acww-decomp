@@ -9,7 +9,7 @@ extern int func_020a259c(unsigned char *self, int);
 extern void func_0209dfc0(void);
 extern void func_0207bddc(int *p, int);
 extern void func_0209e6ec(int *p, int);
-extern void func_02042458(unsigned char *self);
+extern void func_02042458(void);
 extern void func_0209e604(int *p);
 extern void func_020a4e94(unsigned char *self, int);
 
@@ -32,7 +32,7 @@ void func_020a4aa8(unsigned char *self)
             self[0xa1]++;
             break;
         case 3:
-            func_02042458(self);
+            func_02042458();
             self[0xa1]++;
             break;
         case 4:

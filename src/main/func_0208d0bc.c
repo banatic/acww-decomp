@@ -3,7 +3,7 @@
  */
 
 extern void func_0209df04(void *);
-extern void func_0209e200(void *, short, int);
+extern void func_0209e200(void *, short);
 extern void func_020b8d74(int);
 extern const short data_020d0a58[];
 
@@ -27,7 +27,7 @@ void func_0208d0bc(struct UnkStruct_0208d0bc *p, int a1, int a2)
     p->unk_C8 = 0;
     if (a1 != 0) {
         func_0209df04(p->unk_B8);
-        func_0209e200(p->unk_B8, data_020d0a58[a1], a1 * 2);
+        func_0209e200(p->unk_B8, data_020d0a58[a1]);
         p->unk_AC = 0;
         p->unk_B0 = 0;
         p->unk_A4 = 1;

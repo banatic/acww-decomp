@@ -3,7 +3,7 @@
  */
 
 extern void MTX_MultVec43(int, int, void *);
-extern void func_0203f7d0(int, void *);
+extern int func_0203f7d0(int, void *);
 
 void func_ov009_02265660(int a, int b, int c)
 {

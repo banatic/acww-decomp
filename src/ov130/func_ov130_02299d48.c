@@ -11,9 +11,9 @@ typedef struct {
 } UnkStruct_02299d48;
 
 extern int func_ov130_02299d98(UnkStruct_02299d48 *self);
-extern void func_ov130_02299dc8(int value);
+extern int func_ov130_02299dc8(int value);
 extern void func_ov130_02299c08(UnkStruct_02299d48 *self);
-extern int RtcSendPxiCommand(int command);
+extern void RtcSendPxiCommand(int command);
 
 void func_ov130_02299d48(UnkStruct_02299d48 *self)
 {

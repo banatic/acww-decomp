@@ -2,17 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_ov009_02264884(void *);
+extern "C" char *func_ov009_02264884(void *);
 extern "C" int func_ov009_02264cf8(void *, int);
 extern "C" int func_02003348(int, int, int *, int, int);
 extern "C" void func_02055dc8(void *, void *, void *);
-extern "C" int func_02057a50(int, int *);
+extern "C" int func_02057a50(void *object, const char *name);
 extern "C" int func_0205650c(void *, int, int *);
 extern "C" void func_02056478(void *, int, int, int, int);
 extern "C" int func_02055e00(void *);
 extern "C" void func_020563dc(void *, int);
 extern "C" void func_0209e474(int *);
-extern "C" void func_ov003_0221d038(void);
+extern "C" void func_ov003_0221d038(void *unused0);
 extern int data_ov003_0223662c[];
 extern char data_ov003_0223c8b0;
 extern int data_ov003_02238d90;
@@ -86,7 +86,7 @@ extern "C" int func_ov003_0221ce40(UnkStruct_0221ce40 *obj)
     }
 
     func_02055dc8(obj->sub_13c, (void *) func_ov003_0221d038, obj);
-    obj->unk_2D4 = (unsigned char) func_02057a50(obj->unk_198, &data_ov003_02238d90);
+    obj->unk_2D4 = (unsigned char) func_02057a50((void *) (obj->unk_198), (const char *) (&data_ov003_02238d90));
     int ret2 = func_0205650c(obj->sub_2b4, obj->unk_198, data_021c9b1c);
     if (ret2 != 0) {
         int x = func_ov009_02264cf8(obj, 0);

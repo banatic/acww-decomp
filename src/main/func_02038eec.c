@@ -12,16 +12,16 @@ typedef struct UnkStruct_02038eec {
 extern int func_020960d8(int);
 extern int func_02073d90(UnkStruct_02038eec *);
 extern int func_0203ec98(void);
-extern void func_0203a404(void *);
-extern void func_020b4980(void *, void *, int);
-extern void func_02094fd4(void *);
-extern void func_020984e8(void);
-extern int func_02099870(void);
-extern void func_02095074(int, void *);
+extern void *func_0203a404(void *);
+extern int func_020b4980(void *, void *, int);
+extern void *func_02094fd4(void *);
+extern int func_020984e8(void);
+extern int func_02099870(int);
+extern void *func_02095074(int, void *);
 extern void func_020398e8(int, void *, void *);
 extern void RtcSendPxiCommand(int);
-extern void func_02094fbc(void *);
-extern void func_0203a3ec(void *);
+extern void *func_02094fbc(void *);
+extern void *func_0203a3ec(void *);
 
 extern u16 data_021fbe40[];
 extern UnkStruct_02038eec *data_020ccf94;
@@ -129,8 +129,7 @@ void func_02038eec(void)
         cmd = (u8) r2;
         func_020b4980(buf1, &cmd, 0);
         func_02094fd4(buf2);
-        func_020984e8();
-        func_02095074(func_02099870(), buf2);
+        func_02095074(func_02099870((int) func_020984e8()), buf2);
         func_020398e8(obj->unk_64, buf2, buf1);
         RtcSendPxiCommand(0x32);
         data_021c6730 = 0x1e;

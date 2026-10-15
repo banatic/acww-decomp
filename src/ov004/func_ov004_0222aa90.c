@@ -20,18 +20,18 @@ extern void func_0204f794(void *p, int a, int b);
 extern int func_ov004_0223c5a4(void *p);
 extern u16 *func_0204f5a8(void *g, void *p, int k);
 extern int func_02008258(void *self, int a);
-extern void func_0200d4e8(void *self, int a, int b, int c);
+extern int func_0200d4e8(void *self, int a, int b, int c);
 extern int func_02099fe8(void);
 extern int func_020b67d4(void);
 extern int func_0204bcdc(void *p);
 extern int func_0204bc64(void *p);
 extern void func_020109fc(void *self, int a, int b, int c);
 extern unsigned int func_020b2300(void);
-extern void func_0200f27c(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern void func_02045f08(int *p, int a);
-extern void func_ov004_0223bb20(int v, u16 *a, u16 *b);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f328(void *self, int a);
+extern int func_ov004_0223bb20(int v, u16 *a, u16 *b);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
+extern int func_0200f328(void *self, int a);
 extern void *data_021c80bc;
 
 static __inline int chk(u16 *p, u16 k)
@@ -47,7 +47,7 @@ static __inline int chk(u16 *p, u16 k)
     return (*p == k) ? 1 : 0;
 }
 
-void func_ov004_0222aa90(void *self, void *msg)
+void func_ov004_0222aa90(void *self, void *msg, int previous)
 {
     // DECLS
     struct UnkStruct_0222aa90_2 *m;

@@ -8,7 +8,7 @@ typedef void (Obj_020d82b4::*PMF)();
 
 struct UnkStruct_020058e4;
 
-extern "C" void func_0203f8d0(Vec_0203f080 *, Vec_0203f080 *);
+extern "C" int func_0203f8d0(Vec_0203f080 *, Vec_0203f080 *);
 extern "C" void func_020103e4(Obj_020d82b4 *);
 extern "C" void func_02010134(Obj_020d82b4 *);
 extern "C" int func_02073908(UnkStruct_020058e4 *, int);
@@ -19,7 +19,7 @@ extern "C" void func_020069f0(Obj_020d82b4 *);
 extern "C" void func_02006554(Obj_020d82b4 *);
 extern "C" void func_0205ea60(Member_0205ef90 *member);
 extern "C" void func_02010f48(Obj_020d82b4 *);
-extern "C" void func_02011520(int);
+extern "C" int func_02011520(int);
 extern "C" void func_02006530(Obj_020d82b4 *, int, int);
 extern "C" void func_020064f0(Obj_020d82b4 *, int);
 extern "C" void func_020082ac(Obj_020d82b4 *);

@@ -17,7 +17,7 @@ typedef struct {
     unsigned char unk_58;
 } UnkStruct_020a7d68;
 
-extern void func_020a9484(void *);
+extern void *func_020a9484(void *);
 extern void func_020a8754(void *);
 
 extern unsigned char data_020e3e44[];

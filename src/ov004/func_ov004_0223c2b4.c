@@ -8,7 +8,7 @@ extern void *func_ov004_0223cd58(void *h, unsigned int i);
 extern int func_ov004_0220d2b8(void *p);
 extern void func_ov004_0220d280(void *p, int a, void *arg);
 
-void func_ov004_0223c2b4(int a, int (*fn)(void), void *arg)
+void func_ov004_0223c2b4(int a, int (*fn)(void *), void *arg)
 {
     unsigned int i;
     void *e;
@@ -22,7 +22,7 @@ void func_ov004_0223c2b4(int a, int (*fn)(void), void *arg)
             if (fn == 0) {
                 continue;
             }
-            if (fn() == 0) {
+            if (fn(e) == 0) {
                 continue;
             }
         }

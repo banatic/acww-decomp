@@ -39,7 +39,7 @@ extern "C" void func_ov004_0220d280(void *p, int a, int b);
 extern "C" void func_ov004_0221041c(UnkStruct_02217700 *self, int a, int b, int c, int d);
 extern "C" int func_ov004_0220d2b8(void *p);
 extern "C" int func_ov004_0223c10c(void);
-extern "C" void func_ov004_02217124(UnkStruct_02217700 *self, int a);
+extern "C" int func_ov004_02217124(UnkStruct_02217700 *self, int a);
 
 extern "C" int func_ov004_02217700(UnkStruct_02217700 *self)
 {

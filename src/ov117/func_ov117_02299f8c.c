@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_0204e414(void *p);
+extern void *func_0204e414(void);
 extern int func_0204f3e4(void *hand, int *a, int *b, int *c, int *d, short *e, short *f, int g, int h);
 extern void func_0204f800(int *outx, int *outy, int a, int b, int c, int d);
 extern void *func_020b3b50(void *obj);
@@ -17,7 +17,7 @@ void func_ov117_02299f8c(void *param)
     int e, f, g, h;
     void *hand;
 
-    hand = func_0204e414(param);
+    hand = func_0204e414();
     if (hand == 0) {
         return;
     }

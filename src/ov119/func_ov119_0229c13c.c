@@ -9,7 +9,7 @@ extern unsigned char data_021fbddc;
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 extern int func_ov119_0229b0f8(void *self, unsigned char a, unsigned char b);
-extern void func_ov119_0229b188(void *self);
+extern int func_ov119_0229b188(void *self);
 
 void func_ov119_0229c13c(void *self)
 {

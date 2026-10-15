@@ -6,7 +6,7 @@ struct UnkStruct_0222439c {
     unsigned char b;
 };
 
-extern int func_020984e8(void *self);
+extern int func_020984e8(void);
 extern int func_02099670(int a);
 extern int func_020a12e8(void);
 extern unsigned int func_02088bd4(int s);
@@ -24,7 +24,7 @@ void func_ov004_0222439c(char *self)
     unsigned char code;
     int c;
 
-    s = func_02099670(func_020984e8(self));
+    s = func_02099670(func_020984e8());
     ctx = *(char **) (self + 0x40);
     u = data_ov004_02254594;
     code = 0xff;

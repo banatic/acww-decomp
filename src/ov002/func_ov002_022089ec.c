@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b4980(const char *s, char *dst, int mode);
+extern int func_020b4980(const char *s, char *dst, int mode);
 
 void func_ov002_022089ec(int unused, const char *src, char c)
 {

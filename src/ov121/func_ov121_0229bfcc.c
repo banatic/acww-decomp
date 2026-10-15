@@ -47,7 +47,7 @@ extern void func_ov121_0229a0b4(UnkStruct_0229bfcc_3 *);
 extern void func_ov121_0229ad40(UnkStruct_0229bfcc_3 *);
 extern int func_ov121_0229af40(UnkStruct_0229bfcc_3 *, int);
 extern int func_ov121_0229af58(UnkStruct_0229bfcc_3 *, int);
-extern void func_020896b8(int, UnkStruct_0229bfcc *, int, int, int, int, int);
+extern int func_020896b8(int, UnkStruct_0229bfcc *, int, int, int, int, int);
 extern void func_02088df8(int, UnkStruct_0229bfcc *, int, int, int, int, int, int, int, int, int, int);
 
 int func_ov121_0229bfcc(UnkStruct_0229bfcc_3 *self)

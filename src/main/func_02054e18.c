@@ -11,7 +11,7 @@ struct UnkStruct_02054e18 {
 };
 
 void func_02056eb0(void *p);
-void func_0205517c(void *p);
+void *func_0205517c(void *p);
 
 extern unsigned char data_020dd0dc[];
 extern unsigned char data_020dd0ec[];

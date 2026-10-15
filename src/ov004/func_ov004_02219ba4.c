@@ -3,7 +3,7 @@
  */
 
 extern int func_ov004_0220d2a8(void *p);
-extern void func_0205265c(void *p, int a, int b, int c);
+extern int func_0205265c(void *p, int a, int b, int c);
 
 void func_ov004_02219ba4(char *self)
 {

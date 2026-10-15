@@ -11,11 +11,11 @@ struct UnkStruct_02272404 {
 extern int func_ov003_02220174(unsigned int);
 extern int func_ov009_0226321c(int, struct UnkStruct_02272404 *, short *);
 extern unsigned int func_020b5e10(void);
-extern void func_020b6098(unsigned int, int);
-extern unsigned int func_020b65c4(unsigned int);
+extern int func_020b6098(unsigned int, int);
+extern unsigned int func_020b65c4(void);
 extern unsigned int func_020b5ea0(unsigned int, unsigned int, struct UnkStruct_02272404 *, unsigned int, int, unsigned int,
                                   unsigned int);
-extern void func_0203e328(unsigned int);
+extern void func_0203e328(void);
 
 void func_ov068_02272404(char *self)
 {
@@ -46,9 +46,10 @@ void func_ov068_02272404(char *self)
     s.unk_08 += 0x1000;
 
     a = func_020b5e10();
-    b = func_020b65c4(a);
+    b = func_020b65c4();
     temp = (short) (val + 0x8000);
 
-    func_0203e328(func_020b5ea0(a, b, &s, 0x0f000000, temp, *(unsigned int *) ((char *) self + 0x2b8),
-                                *(unsigned int *) ((char *) self + 0x2bc)));
+    ((void) (func_020b5ea0(a, b, &s, 0x0f000000, temp, *(unsigned int *) ((char *) self + 0x2b8),
+                           *(unsigned int *) ((char *) self + 0x2bc))),
+     func_0203e328());
 }

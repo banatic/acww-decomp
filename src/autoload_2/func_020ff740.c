@@ -36,7 +36,7 @@ static __inline u32 SPLRandom_U32(u32 bits)
 
 #define SPLRandom_RangeFX32(num) (((num) * (s32) SPLRandom_U32(9) - ((num) << 8)) >> 8)
 
-void func_020ff740(SPLRandomBehavior *behavior, SPLParticle *ptcl, VecFx32 *velocity)
+void func_020ff740(SPLRandomBehavior *behavior, SPLParticle *ptcl, VecFx32 *velocity, void *emitter)
 {
     if (ptcl->age % behavior->interval == 0) {
         velocity->x += SPLRandom_RangeFX32(behavior->magnitude.x);

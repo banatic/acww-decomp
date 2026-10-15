@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int MIi_ReadWordStreamFromMemory(int a, int b);
+extern unsigned long MIi_ReadWordStreamFromMemory(const unsigned long *stream);
 extern int func_020efc2c(int a, int b);
 extern void func_020efc44(int a, int b);
 
@@ -10,7 +10,7 @@ void func_020f4eec(int a, int b)
 {
     int found = 1;
     int v;
-    v = MIi_ReadWordStreamFromMemory(a, b);
+    v = MIi_ReadWordStreamFromMemory((const unsigned long *) a);
     while (v != 0) {
         if (v == b) {
             found = 0;

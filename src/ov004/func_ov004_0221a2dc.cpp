@@ -13,7 +13,7 @@ extern "C" int func_ov004_0220fde0(char *);
 extern "C" int func_ov004_0220e5c8(char *);
 extern "C" void func_ov004_0223cf40(void *, int, void *);
 extern "C" int func_02056f28(void *, int);
-extern "C" void func_ov004_0223cf18(void *, int);
+extern "C" void func_ov004_0223cf18(void *, short);
 extern "C" int func_ov004_022107d4(char *);
 int Obj_ov004_02252f2c::func_ov004_0221a2dc()
 {

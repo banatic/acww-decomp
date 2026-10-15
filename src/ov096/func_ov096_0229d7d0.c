@@ -11,11 +11,11 @@ typedef struct UnkStruct_0229d7d0 {
 
 extern int func_ov096_0229e158(UnkStruct_0229d7d0 *);
 extern int func_0204c120(int, int, int);
-extern int func_ov096_0229f55c(UnkStruct_0229d7d0 *);
+extern int func_ov096_0229f55c(void);
 extern void func_ov096_0229fb9c(UnkStruct_0229d7d0 *);
 extern void func_ov096_0229f874(UnkStruct_0229d7d0 *, int, int, int);
 extern void func_ov096_0229e0f8(UnkStruct_0229d7d0 *, int);
-extern void func_ov096_0229f8cc(UnkStruct_0229d7d0 *, int, int, int, int);
+extern unsigned char *func_ov096_0229f8cc(UnkStruct_0229d7d0 *, int, int, int, int);
 
 void func_ov096_0229d7d0(UnkStruct_0229d7d0 *o)
 {
@@ -36,7 +36,12 @@ void func_ov096_0229d7d0(UnkStruct_0229d7d0 *o)
             v = func_0204c120(10000, 0, 0);
             break;
     }
-    w = func_ov096_0229f55c(o);
+    // clang-format off
+    asm {
+        mov r0, o
+    }
+    // clang-format on
+    w = func_ov096_0229f55c();
     if (w == 0x26) {
         func_ov096_0229fb9c(o);
         func_ov096_0229f874(o, 0xc, 0xff, 1);

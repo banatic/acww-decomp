@@ -9,10 +9,10 @@ extern void func_ov002_02209e18(void *a);
 extern void func_ov002_02209984(void *a, int b, int c, int d);
 extern void func_0206e2ec(void *a, int b);
 extern void func_02066650(void *a);
-extern void func_020984e8(void);
-extern unsigned char *func_020989b4(void);
+extern int func_020984e8(void);
+extern unsigned char *func_020989b4(int object);
 extern unsigned char *func_02098090(unsigned char *a, int b);
-extern void func_02066830(void *a, unsigned char *b);
+extern int func_02066830(void *a, unsigned char *b);
 extern void func_ov106_0229c354(void *a, int b);
 
 void func_ov106_0229ea08(unsigned char *self)
@@ -33,8 +33,7 @@ void func_ov106_0229ea08(unsigned char *self)
     for (i = 0; i < 10; i++) {
         func_02066650(self + 0x2bb4 + i * 0x100);
     }
-    func_020984e8();
-    p = func_02098090(func_020989b4(), 0);
+    p = func_02098090(func_020989b4(func_020984e8()), 0);
     for (i = 0; i < 10; i++) {
         func_02066830(self + 0x2bb4 + i * 0x100, p);
         p += 0x100;

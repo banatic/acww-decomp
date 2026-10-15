@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_0222ab14(int);
+extern int func_ov003_0222ab14(int);
 
-void func_02060474(int *p0)
+int func_02060474(int *p0)
 {
-    func_ov003_0222ab14(p0[11]);
+    return func_ov003_0222ab14(p0[11]);
 }

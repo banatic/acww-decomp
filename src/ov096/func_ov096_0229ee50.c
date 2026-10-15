@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov096_0229e4f8(void);
+extern int func_ov096_0229e4f8(void *argument0);
 
 int func_ov096_0229ee50(int r0, int r1)
 {
@@ -13,7 +13,7 @@ int func_ov096_0229ee50(int r0, int r1)
         return 0;
     }
     if (r1 == 1) {
-        if (func_ov096_0229e4f8() == 1) {
+        if (func_ov096_0229e4f8((void *) r0) == 1) {
             return 0;
         }
         return 1;

@@ -5,7 +5,7 @@
 extern unsigned int data_020ccf94;
 extern void func_02010f5c(void *);
 extern int func_02073908(unsigned int, unsigned int);
-extern void func_0200f530(void *, void *);
+extern int func_0200f530(void *, void *);
 extern void func_02010d64(void *);
 extern void func_0200a9e0(void *);
 extern void func_0200a80c(void *);

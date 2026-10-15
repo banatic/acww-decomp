@@ -7,8 +7,8 @@ struct UnkStruct_0207b764 {
 };
 
 extern struct UnkStruct_0207b764 *func_02079350(void);
-extern void func_020794d0(struct UnkStruct_0207b764 *);
-extern void func_0209bd5c(void);
+extern int func_020794d0(struct UnkStruct_0207b764 *);
+extern void func_0209bd5c(void *);
 
 void func_0207b764(void)
 {
@@ -17,8 +17,7 @@ void func_0207b764(void)
 
     p = func_02079350();
     for (i = 0; i < 8; i++) {
-        func_020794d0(p);
-        func_0209bd5c();
+        func_0209bd5c((void *) func_020794d0(p));
         p++;
     }
 }

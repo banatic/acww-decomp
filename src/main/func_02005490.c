@@ -14,8 +14,8 @@ typedef struct {
 
 extern void func_02055d38(UnkStruct_02005490 *d, u8 k);
 extern void func_02054848(UnkStruct_02005490 *d, int n);
-extern void func_02055d0c(UnkStruct_02005490 *d, UnkStruct_02005490 *s, int n);
-extern void func_0203f7d0(Vec *d, Vec *s);
+extern int func_02055d0c(UnkStruct_02005490 *d, UnkStruct_02005490 *s, int n);
+extern int func_0203f7d0(Vec *d, Vec *s);
 extern void func_02055e7c(UnkStruct_02005490 *d, int n);
 extern int func_0205e138(UnkStruct_02005490 *d, int n);
 extern int func_0205ddd4(UnkStruct_02005490 *d);

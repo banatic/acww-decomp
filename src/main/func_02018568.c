@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02019de4(void *a, void *b);
+extern void *func_02019de4(void *a);
 extern void func_0201b1a4(void *a, void *b, int c, int d, int e);
 extern void func_0201b044(void *a, void *b);
 extern void func_0201afd4(void *a, void *b);
 extern void func_0201b350(void *a, int b);
-extern void func_ov004_0222bf74(void *a, void *b, void *c, void *d, void *e);
-extern void func_02095a4c(void *a, void *b, void *c, void *d, void *e);
+extern void *func_ov004_0222bf74(void *a, void *b, void *c, void *d, void *e);
+extern void *func_02095a4c(void *a, void *b, void *c, void *d, void *e);
 extern void func_02019af0(void *a, int b);
 
 extern char data_021fbee8[];
@@ -27,7 +27,7 @@ struct UnkStruct_02018568 {
 int func_02018568(void *p0, void *p1)
 {
     struct UnkStruct_02018568 *r4;
-    r4 = func_02019de4(p0, p1);
+    r4 = func_02019de4(p0);
     func_0201b1a4((char *) p1 + 0x350, p1, 0, 0, r4->unk_1C);
     func_0201b044((char *) p1 + 0x350, data_021fbee8);
     func_0201afd4((char *) p1 + 0x350, data_021fbee8);

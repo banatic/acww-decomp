@@ -6,6 +6,17 @@ extern int func_020be0d4(int, int);
 extern int FX_Div(int, int);
 extern int FX_MulFunc(int, int);
 extern short FX_SinCosTable_[];
+struct Entry {
+    char pad_00[4];
+    int unk_04;
+    char pad_08[0x34 - 0x8];
+    int unk_34;
+    int unk_38;
+    char pad_3C[0x50 - 0x3c];
+    int unk_50;
+    unsigned short unk_54;
+    char pad_56[0x74 - 0x56];
+};
 extern struct Entry data_021f8b48[];
 struct UnkStruct_020c1144 {
     int unk_00;
@@ -25,17 +36,6 @@ struct UnkStruct_020c1144 {
     char pad_56[10];
     unsigned int unk_60;
     int unk_64;
-};
-struct Entry {
-    char pad_00[4];
-    int unk_04;
-    char pad_08[0x34 - 0x8];
-    int unk_34;
-    int unk_38;
-    char pad_3C[0x50 - 0x3c];
-    int unk_50;
-    unsigned short unk_54;
-    char pad_56[0x74 - 0x56];
 };
 struct Vec {
     int x;

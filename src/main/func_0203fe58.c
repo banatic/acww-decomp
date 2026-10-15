@@ -4,7 +4,7 @@
 
 extern void func_0209e474(void *p);
 extern void MI_CpuCopy8(void *dst, void *src, unsigned int n);
-extern void func_0203fec4(void *p, void *q, int n);
+extern int func_0203fec4(void *p, void *q, int n);
 extern unsigned char data_021c74d4[];
 extern unsigned char data_021c74d0[];
 

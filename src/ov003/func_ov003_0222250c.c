@@ -4,7 +4,7 @@
 
 extern void func_0204f794(void *, int, int);
 extern int func_0204eda8(int, int, int);
-extern void func_ov003_02224140(int, int, long long);
+extern void func_ov003_02224140(void *, void *, unsigned short, int);
 
 typedef struct {
     int unk_00;
@@ -39,5 +39,5 @@ void func_ov003_0222250c(UnkStruct_0222250c *obj, OtherStruct *src, int arg2)
     obj->v0 = 0;
     obj->v1 = 0;
     obj->v2 = 0;
-    func_ov003_02224140(src->unk_00, src->unk_04, 0xfff1);
+    func_ov003_02224140((void *) (src->unk_00), (void *) (src->unk_04), (unsigned short) (0xfff1), 0);
 }

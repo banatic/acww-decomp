@@ -7,7 +7,7 @@
 extern void func_02055060(void *, int, int, int, int, int);
 extern void func_02056478(void *, int, int, int, int);
 extern int func_ov004_0222c3a4(void *, int);
-extern int func_ov004_0222c3c4(void *);
+extern int func_ov004_0222c3c4(void *, int arg1);
 
 int func_ov004_022305a0(char *self)
 {
@@ -17,7 +17,7 @@ int func_ov004_022305a0(char *self)
     *(u8 *) (self + 0x6b0) = 0x1;
     *(u8 *) (self + 0x6b1) = 0x1;
     *(u8 *) (self + 0x6b2) = 0x1;
-    func_02055060(self + 0x400, func_ov004_0222c3c4(self + 0x600), 0x1, 0x1000, 0x0, 0x0);
+    func_02055060(self + 0x400, func_ov004_0222c3c4(self + 0x600, 1), 0x1, 0x1000, 0x0, 0x0);
     func_02056478(self + 0x6b4, func_ov004_0222c3a4(self + 0x55c, 0x1), 0x1, 0x1000, 0x0);
     return 0x1;
 }

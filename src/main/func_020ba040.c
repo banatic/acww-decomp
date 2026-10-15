@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02002bd0(int a, unsigned char b, unsigned char c, unsigned char d, unsigned char e);
+extern int func_02002bd0(int a, unsigned char b, unsigned char c, unsigned char d, unsigned char e);
 
 typedef struct {
     int unk_00;

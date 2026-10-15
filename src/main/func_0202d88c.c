@@ -14,12 +14,12 @@ struct SomeObjVtable {
     void (*method)(SomeObj *obj, int a, int b);
 };
 
-extern SomeObj *func_02015d90(void *a, int b);
+extern SomeObj *func_02015d90(void *a);
 
 void func_0202d88c(void *a, int b)
 {
     SomeObj *obj;
-    obj = func_02015d90(a, b);
+    obj = func_02015d90(a);
     if (obj) {
         obj->vtable->method(obj, 2, b);
     }

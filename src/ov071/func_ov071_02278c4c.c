@@ -10,18 +10,18 @@ extern void func_0208b514(void);
 extern int func_02099020(int, int);
 extern void func_02098ff8(int, int);
 extern int func_02099670(int);
-extern void func_02088a78(void);
-extern void func_0202ea80(int, int);
+extern void func_02088a78(void *);
+extern int func_0202ea80(int, int);
 extern int func_ov071_02278fd0(int, int, int);
 extern void MI_CpuFill8(void *, int, int);
-extern void func_02015330(void *, u16 *, int, int, int);
+extern int func_02015330(void *, u16 *, int, int, int);
 extern void func_0201b420(int, int);
-extern void func_020157d4(void *, void (*)(void), int, int);
-extern void func_02015828(void *, int);
-extern void func_02015094(void *);
+extern void func_020157d4(void *self, int (*predicate)(unsigned short *, int), unsigned char kind, unsigned char flag);
+extern int func_02015828(void *, int);
+extern int func_02015094(void *);
 extern void func_ov071_02279128(void *, int);
-extern void func_ov071_022790f0(void);
-extern int func_0206f9d8(void *);
+extern unsigned short func_ov071_022790f0(unsigned short *argument0, int argument1);
+extern unsigned short func_0206f9d8(int (*predicate)(unsigned short *, int));
 extern void func_0206844c(int, u8 *, void *);
 extern char data_ov071_0227a180;
 
@@ -34,6 +34,8 @@ typedef struct {
     int unk_B4;
     u8 unk_B8;
 } UnkStruct_02278c4c;
+
+#define TilePredicate_func_ov071_022790f0 ((int (*)(unsigned short *, int)) func_ov071_022790f0)
 
 void func_ov071_02278c4c(UnkStruct_02278c4c *p)
 {
@@ -105,8 +107,7 @@ void func_ov071_02278c4c(UnkStruct_02278c4c *p)
             func_0201b420(p->unk_B4, 0xbb8);
             code = 0x1a;
             func_02098ff8(g, 0x17);
-            func_02099670(g);
-            func_02088a78();
+            func_02088a78((void *) func_02099670(g));
             break;
         case 0x16:
         case 0x1a:
@@ -121,13 +122,13 @@ void func_ov071_02278c4c(UnkStruct_02278c4c *p)
             func_02098ff8(g, 0x18);
             break;
         case 0x23:
-            func_020157d4(p, func_ov071_022790f0, 0xd, 1);
+            func_020157d4(p, TilePredicate_func_ov071_022790f0, 0xd, 1);
             func_02015828(p, 0);
             func_ov071_02279128(p, 0);
             break;
         case 0x25:
             func_02015094(p);
-            if (func_0206f9d8((void *) func_ov071_022790f0) != 0) {
+            if (func_0206f9d8(TilePredicate_func_ov071_022790f0) != 0) {
                 code = 0x21;
             } else {
                 code = 0x26;
@@ -140,3 +141,5 @@ void func_ov071_02278c4c(UnkStruct_02278c4c *p)
         func_0206844c(p->unk_40, &m.b, dp);
     }
 }
+
+#undef TilePredicate_func_ov071_022790f0

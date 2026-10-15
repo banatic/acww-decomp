@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned char *func_ov123_02299d9c(int, int, int, int);
+extern unsigned char *func_ov123_02299d9c(int);
 
 int func_ov123_0229a82c(int a0, int count, int unit, int value)
 {
@@ -18,7 +18,7 @@ int func_ov123_0229a82c(int a0, int count, int unit, int value)
     }
 
     i = count - 1;
-    base = func_ov123_02299d9c(a0, count, unit, value);
+    base = func_ov123_02299d9c(a0);
     ptr = base + (unit << 4) + ((i >> 3) << 2);
     shift = (i & 7) << 2;
 

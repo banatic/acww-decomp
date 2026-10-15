@@ -11,9 +11,9 @@ extern volatile unsigned short data_020c80f8;
 extern unsigned int data_020c8198[];
 extern void func_02016764(unsigned char *, unsigned char *, unsigned int, unsigned short, int, int, int, int);
 extern void func_02012444(unsigned int, unsigned short, int);
-extern void func_0200442c(unsigned char *, int, int, int);
-extern void func_02057d58(unsigned char *, unsigned int, unsigned char, unsigned int, unsigned char *, unsigned int);
-extern void func_02057d0c(int, unsigned char *);
+extern int func_0200442c(unsigned char *, int, int, int);
+extern int func_02057d58(unsigned char *, unsigned int, unsigned char, unsigned int, unsigned char *, unsigned int);
+extern int func_02057d0c(int, unsigned char *);
 extern void func_02019af0(unsigned char *, int);
 extern int data_021fbee8;
 

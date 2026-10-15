@@ -12,7 +12,7 @@ typedef struct {
 extern void func_ov119_0229ae84(UnkStruct_0229bcf8 *, int);
 extern void func_0200277c(int);
 extern void func_ov119_0229a69c(UnkStruct_0229bcf8 *, unsigned char);
-extern void func_ov002_02208098(UnkStruct_0229bcf8 *, int);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229bcf8 *, unsigned char value);
 
 void func_ov119_0229bcf8(UnkStruct_0229bcf8 *self)
 {

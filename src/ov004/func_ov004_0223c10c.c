@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b65c4(int x);
-extern int func_020b6730(int a);
-int func_ov004_0223c10c(int x)
+extern int func_020b65c4(void);
+extern int func_020b6730(void);
+int func_ov004_0223c10c(void)
 {
     int r;
-    int a = func_020b65c4(x);
-    if (func_020b6730(a) != 0 || a == 0xa || a == 0xf) {
+    int a = func_020b65c4();
+    if (func_020b6730() != 0 || a == 0xa || a == 0xf) {
         r = 1;
     } else {
         r = 0;

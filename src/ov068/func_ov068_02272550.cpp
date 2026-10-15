@@ -12,10 +12,10 @@ extern "C" void func_02055124(void *a);
 extern "C" void *func_020961a8(int a);
 extern "C" int func_ov068_02272cd4(void *self);
 extern "C" int func_020e8b4c(int a, int b);
-extern "C" void func_02095518(int a, int b, int c);
+extern "C" int func_02095518(int a, int b, int c);
 extern "C" int func_ov003_02220174(int a);
 extern "C" int func_ov009_0226321c(int a, int *b, int *c);
-extern "C" void func_02095ab0(void *a, int b, int c);
+extern "C" int func_02095ab0(void *a, int b, int c);
 
 struct UnkStruct_02272550 {
     char pad_00[0x13c];

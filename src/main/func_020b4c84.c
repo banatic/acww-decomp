@@ -4,7 +4,7 @@
 
 extern char data_020e5254[];
 extern char data_020e3e68[];
-extern void func_020a941c(void *);
+extern void *func_020a941c(void *);
 
 void *func_020b4c84(void *obj)
 {

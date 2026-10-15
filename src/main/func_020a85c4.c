@@ -15,7 +15,7 @@ typedef struct {
 } node;
 
 extern void func_020a8718(ctx *p0, unsigned char *out1, unsigned char *out2);
-extern void func_020a8a34(node *ptr, unsigned int base);
+extern int func_020a8a34(node *ptr, unsigned int base);
 
 unsigned int func_020a85c4(ctx *p0, unsigned char *p1, node *p2, unsigned char *p3, node *p4)
 {

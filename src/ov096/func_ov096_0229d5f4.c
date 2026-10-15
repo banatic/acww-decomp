@@ -8,7 +8,7 @@ extern void func_ov096_0229e95c(UnkStruct_0229d5f4 *, int);
 extern int func_ov096_0229f290(UnkStruct_0229d5f4 *, int);
 extern int func_ov096_0229f200(UnkStruct_0229d5f4 *, int);
 extern int func_0206fe54(void);
-extern void func_ov002_02208098(UnkStruct_0229d5f4 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov094_0229b1d8(void *);
 
 struct UnkStruct_0229d5f4 {
@@ -31,6 +31,6 @@ void func_ov096_0229d5f4(UnkStruct_0229d5f4 *self)
         self->unk_A4 -= 2;
         self->unk_A8 -= 2;
     }
-    func_ov002_02208098(self, 0x2a);
+    func_ov002_02208098((void *) (self), 0x2a);
     func_ov094_0229b1d8(&self->unk_DB8);
 }

@@ -26,33 +26,33 @@ typedef struct Loc {
     u16 d;
 } Loc;
 
-extern void *func_020984e8(UnkStruct_02278b64 *);
+extern void *func_020984e8(void);
 extern int func_0209a1e8(void);
 extern void *func_0209a1d0(void);
 extern void *func_02099670(void *);
-extern void func_020b5630(void *);
+extern void *func_020b5630(void *);
 extern void func_ov070_02279238(UnkStruct_02278b64 *);
 extern u32 func_02088b64(void *);
-extern void func_020154b4(UnkStruct_02278b64 *, u16 *, int, int, int);
-extern void func_020b45d0(void *, u32, int, int, int, int);
-extern void func_0203d7c4(int, void *);
+extern int func_020154b4(UnkStruct_02278b64 *, u16 *, int, int, int);
+extern int func_020b45d0(void *, u32, int, int, int, int);
+extern int func_0203d7c4(int, void *);
 extern int func_02099870(void *);
 extern void func_02066024(void *, Loc *, void *, void *, void *, int);
 extern u16 func_0204bd20(int, int);
 extern int func_020996ac(void *);
-extern void OS_UnlockByWord_IrqAndFiq(int, u16 *, int);
-extern void func_02065ed0(void *, int, int);
-extern void func_020b5618(void *);
+extern int OS_UnlockByWord_IrqAndFiq(int object, u16 *item, int mode);
+extern unsigned short func_02065ed0(void *, int, int);
+extern void *func_020b5618(void *);
 extern int func_ov070_02279724(Big *, u8 *, int);
 extern int func_020644cc(int);
 extern int func_ov070_022790cc(UnkStruct_02278b64 *);
 extern void func_0208b520(void);
 extern void func_020157c8(UnkStruct_02278b64 *, int, int);
-extern void func_02015828(UnkStruct_02278b64 *, int);
+extern int func_02015828(UnkStruct_02278b64 *, int);
 extern void func_ov070_02279820(UnkStruct_02278b64 *, int);
 extern void func_0208b514(void);
 extern int func_ov070_02278e30(UnkStruct_02278b64 *);
-extern void func_0202ea80(int, int);
+extern int func_0202ea80(int, int);
 extern void func_0204093c(int);
 extern void func_0206844c(void *, u8 *, void *);
 extern int func_02099710(void *);
@@ -74,7 +74,7 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
     u8 n;
     u8 k;
 
-    ent = func_020984e8(self);
+    ent = func_020984e8();
 
     st = self->state;
     if (st >= 0xf && st <= 0x22) {

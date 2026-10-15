@@ -13,11 +13,11 @@ typedef struct {
     int count;
 } Container;
 
-extern int func_02034ee4(Container *param);
+extern int func_02034ee4(Container *param, unsigned short);
 
-void func_02035148(Container *param)
+void func_02035148(Container *param, unsigned short argument1)
 {
-    int ret = func_02034ee4(param);
+    int ret = func_02034ee4(param, (unsigned short) argument1);
     if (ret >= 0 && ret < param->count) {
         param->array[ret].flag = 1;
     }

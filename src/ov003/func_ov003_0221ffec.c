@@ -20,7 +20,7 @@ extern const char data_ov003_02239c1c[];
 extern const char data_ov003_02239c40[];
 extern const char data_ov003_02239c58[];
 
-extern void *func_020b3750(void *p);
+extern unsigned char *func_020b3750(void *record);
 extern int func_020b38c0(void *p, int i);
 extern int func_ov003_022203dc(void);
 extern void *func_02064960(void *a, int b, const char *f, int d, ...);

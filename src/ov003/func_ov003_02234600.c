@@ -14,7 +14,7 @@ extern int func_020644cc(int n);
 extern void func_020550e4(unsigned char *p, int a);
 extern int func_02073dd4(UnkStruct_02234600_2 *p, int a);
 extern void func_ov003_02234cc4(unsigned char *self);
-extern void func_ov003_02234d70(unsigned char *self);
+extern int func_ov003_02234d70(unsigned char *self);
 extern void func_ov003_02235934(unsigned char *self, int a);
 extern int func_ov003_02234030(unsigned char *self, int a);
 extern void func_ov068_022717e0(unsigned char *self);
@@ -23,7 +23,7 @@ extern void func_ov003_02234264(unsigned char *self);
 extern void func_ov003_022344c8(unsigned char *self, short *p);
 extern void func_ov003_022342f8(unsigned char *self, short *p);
 extern int func_ov003_02234984(unsigned char *self);
-extern void func_ov068_02271b30(unsigned char *self);
+extern int func_ov068_02271b30(unsigned char *self);
 extern UnkStruct_02234600_2 *data_020ccf94;
 
 void func_ov003_02234600(unsigned char *self)

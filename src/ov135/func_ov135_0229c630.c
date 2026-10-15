@@ -13,11 +13,11 @@ struct UnkStruct_0229c630 {
 };
 
 extern void func_ov002_0220a164(void *p);
-extern void func_ov002_02208098(UnkStruct_0229c630 *self, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov135_0229c630(UnkStruct_0229c630 *self)
 {
     func_ov002_0220a164(&self->unk_98);
     self->unk_94 = self->unk_8D;
-    func_ov002_02208098(self, 12);
+    func_ov002_02208098((void *) (self), 12);
 }

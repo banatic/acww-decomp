@@ -18,16 +18,16 @@ extern u16 *func_020ae8e4(void *, int, int);
 extern u16 *func_020adfa4(void *, int, int);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
-extern void func_020af674(void *, int, int, int);
+extern int func_020af674(void *, int, int, int);
 extern int func_020984e8(void);
 extern int func_020996a0(int);
-extern int func_020adf50(int);
+extern unsigned short *func_020adf50(void *record);
 extern void func_020ade0c(int, int);
 extern int func_ov004_0224627c(int *, int *, int);
 extern void func_020afe94(int, int, int, int);
-extern void func_020ae850(void *, u16 *);
+extern int func_020ae850(void *, u16 *);
 extern void func_020afdc8(u16 *, int, int);
-extern void func_020adfc0(void *, u16 *);
+extern int func_020adfc0(void *, u16 *);
 extern void func_02073820(int);
 extern void func_020737f0(int, void *, int);
 extern void func_02073770(int, int, int);
@@ -101,7 +101,7 @@ void func_020adb70(int a, int b, int c, int d, int mode, u8 f6, int g7)
         case 0:
             func_020af674(data_021f395c, a, b, d);
             if (f6 != 0) {
-                func_020ade0c(func_020adf50(func_020996a0(func_020984e8())), b);
+                func_020ade0c((int) func_020adf50((void *) func_020996a0(func_020984e8())), b);
             }
             if (data_020e54a8 == 1) {
                 k = 1;

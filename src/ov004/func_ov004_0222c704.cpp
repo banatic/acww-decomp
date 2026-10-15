@@ -31,16 +31,16 @@ struct UnkStruct_0222c704 {
     virtual int v25(void *);
 };
 extern "C" {
-extern int func_02003420(void *, int);
+extern void func_02003420(void *, int);
 extern void func_ov004_0222c2f8(void *, void *);
 }
 
-extern "C" int func_ov004_0222c704(char *self, int a1)
+extern "C" void func_ov004_0222c704(char *self, int a1)
 {
     // DECLS
     char frame[0xc];
     // ENDDECLS
     ((UnkStruct_0222c704 *) self)->v25(frame);
     func_ov004_0222c2f8(self + 0x250, frame);
-    return func_02003420(self, a1);
+    func_02003420(self, a1);
 }

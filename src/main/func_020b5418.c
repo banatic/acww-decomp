@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a9484(void);
+extern void *func_020a9484(void *);
 extern void func_020a8754(void *sub);
 extern char data_020e3e68;
 extern char data_020e5278;
@@ -23,7 +23,7 @@ typedef struct {
 
 UnkStruct_020b5418 *func_020b5418(UnkStruct_020b5418 *self, int param)
 {
-    func_020a9484();
+    func_020a9484(self);
     self->vtbl = (unsigned int) &data_020e3e68;
     self->vtbl = (unsigned int) &data_020e5278;
     self->unk_24 = param;

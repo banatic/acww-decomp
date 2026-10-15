@@ -3,9 +3,9 @@
  */
 
 extern int data_021fbe94;
-extern void func_02002c6c(void *data, int obj, int type, int a4, int a5, int a6);
-extern void func_02002d14(void *data, int obj, int type, int a4, int a5, int a6);
-extern void func_02064af4(void *src, void *dst, int size);
+extern int func_02002c6c(void *data, int obj, int type, int a4, int a5, int a6);
+extern int func_02002d14(void *data, int obj, int type, int a4, int a5, int a6);
+extern int func_02064af4(void *src, void *dst, int size);
 extern void func_ov144_02299b7c(void *param);
 
 extern unsigned char data_ov144_0229b480[];

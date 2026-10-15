@@ -5,8 +5,8 @@
 #include "types.h"
 
 extern u32 func_0208150c(u32);
-extern u32 func_020036e8(void);
-extern void func_0202da38(void *, void *, void *, u32, u32, u32, u32, u32, u32);
+extern u32 func_020036e8(unsigned char *);
+extern int func_0202da38(void *, void *, void *, u32, int base, int offset, int scale, int multiplier, int selected);
 extern u32 func_0207cec0(void *, u32);
 extern void func_02015e10(void *, u32, u32);
 
@@ -23,10 +23,9 @@ void func_0201de64(void *self, void *out)
     u32 v;
 
     v = *(u32 *) (*(u32 *) ((char *) self + 0x100) + 0x830);
-    func_0208150c(v);
 
-    func_0202da38(self, (char *) self + 0x104, (char *) self + 0x122, 0x1e, func_020036e8(), data_020c8d18.a, 1, 5,
-                  data_020c8d18.b);
+    func_0202da38(self, (char *) self + 0x104, (char *) self + 0x122, 0x1e, func_020036e8((unsigned char *) func_0208150c(v)),
+                  data_020c8d18.a, 1, 5, data_020c8d18.b);
 
     *(u32 *) out = (u32) ((char *) self + 0x104);
     *(u8 *) ((char *) out + 4) = *(u8 *) ((char *) self + 0x122);

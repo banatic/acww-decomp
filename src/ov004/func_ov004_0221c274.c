@@ -12,11 +12,11 @@ struct OuterOverlay {
     struct InnerOverlay *ptr;
 };
 
-void func_0203e020(struct OuterOverlay *self, int arg);
+int func_0203e020(struct OuterOverlay *self);
 
 void func_ov004_0221c274(struct OuterOverlay *self)
 {
     if (self->ptr != 0 && self->ptr->unk_04 == 0) {
-        func_0203e020(self, self->ptr->unk_04);
+        func_0203e020(self);
     }
 }

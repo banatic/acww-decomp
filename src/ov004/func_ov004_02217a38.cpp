@@ -39,8 +39,8 @@ class UnkStruct_02217a38 {
 extern "C" int func_ov004_0220cdec(UnkStruct_02217a38 *self);
 extern "C" int func_02053bc0(void *p);
 extern "C" int func_0204bc64(void *p);
-extern "C" void func_ov004_02211394(int a, int b, int c, int d, int e, int f);
-extern "C" int func_ov004_0223c660(void);
+extern "C" int func_ov004_02211394(int a, int b, int c, int d, int e, int f);
+extern "C" int func_ov004_0223c660(void *);
 
 extern "C" void func_ov004_02217a38(UnkStruct_02217a38 *self)
 {
@@ -60,8 +60,7 @@ extern "C" void func_ov004_02217a38(UnkStruct_02217a38 *self)
     if (*(u8 *) (s + 0x846) != 0 && r == 2) {
         a = a - 1;
     }
-    func_ov004_02211394(a, b, func_0204bc64(s + 0x85c), 3, 0, 1);
-    if (func_ov004_0223c660() != 0) {
+    if (func_ov004_0223c660((void *) func_ov004_02211394(a, b, func_0204bc64(s + 0x85c), 3, 0, 1)) != 0) {
         self->s28(0xd, 0xff);
     }
 }

@@ -4,12 +4,12 @@
 
 extern void *func_02065f7c(void *);
 extern int func_020951bc(void *);
-extern void func_0209527c(void *, void *);
+extern int func_0209527c(void *, void *);
 extern int memcmp(const void *, const void *, unsigned int);
 extern int func_0209518c(void *, void *);
 extern int func_020807a8(void *, void *);
-extern int func_02081cd8(void);
-extern void func_0209526c(void *);
+extern int func_02081cd8(void *object);
+extern int func_0209526c(void *);
 
 struct LocalObj {
     unsigned short unk_00;
@@ -19,6 +19,8 @@ struct LocalObj {
 
 int func_02081398(void *arg0, struct LocalObj *arg1)
 {
+    int forwarded_value;
+
     void *p;
     struct LocalObj obj;
 
@@ -41,10 +43,10 @@ int func_02081398(void *arg0, struct LocalObj *arg1)
     if (func_0209518c(arg1, &obj) == 0) {
         goto fail_cleanup;
     }
-    if (func_020807a8(arg0, arg1) == 0) {
+    if ((forwarded_value = (int) func_020807a8(arg0, arg1)) == 0) {
         goto fail_cleanup;
     }
-    if (func_02081cd8() == 0) {
+    if (func_02081cd8((void *) forwarded_value) == 0) {
         goto fail_cleanup;
     }
 

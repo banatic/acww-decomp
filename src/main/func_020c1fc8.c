@@ -3,9 +3,9 @@
  */
 
 extern int func_02016884(void *a, int b, void *c);
-extern void func_020912d4(int id, void *p1, void *p2, int flag);
+extern int func_020912d4(int id, void *p1, void *p2, int flag);
 extern int func_02019de8(void *p);
-extern void func_02019c20(void *p, int a, int b, int c, unsigned short d, int e);
+extern int func_02019c20(void *p, int a, int b, int c, unsigned short d, int e);
 extern void func_020c26b4(void *p, int flag);
 extern unsigned short data_020c80f8;
 

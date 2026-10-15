@@ -3,20 +3,14 @@
  */
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(void *, int, int, int);
+extern int func_02019d0c(void *argument0, int argument1, int argument2, int argument3, int argument4, short argument5,
+                         short argument6, int argument7, int argument8, unsigned short argument9, unsigned short argument10);
 
 int func_ov070_02279940(void *arg0)
 {
-    volatile int local[7];
 
-    local[0] = 0;
-    local[1] = 0;
-    local[2] = 0;
-    local[3] = 0;
-    local[4] = 0;
-    local[5] = data_020c80f8;
-    local[6] = 0;
-
-    func_02019d0c((char *) arg0 + 0x564, 0, 1, 0);
+    func_02019d0c((void *) ((void *) ((char *) arg0 + 0x564)), (int) ((int) (0)), (int) ((int) (1)), (int) ((int) (0)),
+                  (int) ((int) (0)), (short) ((short) (0)), (short) ((short) (0)), (int) ((int) (0)), (int) ((int) (0)),
+                  (unsigned short) ((unsigned short) (data_020c80f8)), (unsigned short) ((unsigned short) (0)));
     return 1;
 }

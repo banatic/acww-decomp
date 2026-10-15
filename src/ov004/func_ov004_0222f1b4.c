@@ -9,7 +9,7 @@ extern void *func_ov004_0222f320(void *);
 extern void *func_020e9948(void *, int);
 extern void *data_021c9b24;
 extern int func_02071298(void *, u16 *);
-extern void func_02064328(void *, void *, int, int);
+extern int func_02064328(void *, void *, int, int);
 extern u8 func_0205790c(int, void *);
 extern int data_021f38f8;
 extern int data_ov004_02258460;

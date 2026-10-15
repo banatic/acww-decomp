@@ -6,7 +6,7 @@ extern int func_ov127_02299b78(void *);
 extern unsigned char func_ov127_02299d20(void *, unsigned char, unsigned char);
 extern void func_ov127_02299c08(void *, int, int);
 extern void func_ov128_0229bb20(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 extern unsigned char data_021fbdd8; // at 0x021fbdd8
 extern unsigned char data_021f6c60; // at 0x021f6c60
@@ -31,11 +31,11 @@ void func_ov128_0229c144(void *obj)
         }
         func_ov127_02299c08((char *) obj + 0x4a4, v, 1);
         func_ov128_0229bb20(obj);
-        func_ov002_02208098(obj, 1);
+        func_ov002_02208098((void *) (obj), 1);
         return;
     }
 short_path:
-    func_ov002_02208098(obj, 0);
+    func_ov002_02208098((void *) (obj), 0);
 common:
     func_ov128_0229bb20(obj);
 }

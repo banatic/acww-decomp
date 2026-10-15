@@ -40,14 +40,14 @@ extern "C" Pair data_ov004_0224be1c;
 
 extern "C" int func_020988a4(char *g, int i);
 extern "C" Src *func_02096190(int i);
-extern "C" void func_02094fd4(M32 *m);
-extern "C" void func_02098844(char *g, int i);
-extern "C" int func_02099870(void);
-extern "C" void func_02095074(int h, M32 *m);
+extern "C" void *func_02094fd4(M32 *m);
+extern "C" int func_02098844(char *g, int i);
+extern "C" int func_02099870(int);
+extern "C" void *func_02095074(int h, M32 *m);
 extern "C" void func_0203aa24(int *a, int *b, Vec3 *v);
 extern "C" void func_0208e29c(Node *n, int a, int b);
-extern "C" void func_0208e290(Node *n, M32 *m);
-extern "C" void func_02094fbc(M32 *m);
+extern "C" void *func_0208e290(Node *n, M32 *m);
+extern "C" void *func_02094fbc(M32 *m);
 
 extern "C" void func_ov004_02245744(UnkStruct_02245744 *self)
 {
@@ -71,8 +71,7 @@ extern "C" void func_ov004_02245744(UnkStruct_02245744 *self)
                 v.y = q->y;
                 v.z = q->z;
                 func_02094fd4(&m);
-                func_02098844(&data_021dc7bc, i);
-                func_02095074(func_02099870(), &m);
+                func_02095074(func_02099870((int) func_02098844(&data_021dc7bc, i)), &m);
                 func_0203aa24(&a, &b, &v);
                 e = &data_ov004_0224be44[i];
                 a = a + e->u;

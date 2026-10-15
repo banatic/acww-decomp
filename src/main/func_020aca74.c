@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020aca80(void);
+extern int func_020aca80(void *);
 
-void func_020aca74(void)
+int func_020aca74(void *argument0)
 {
-    func_020aca80();
+    return func_020aca80((void *) argument0);
 }

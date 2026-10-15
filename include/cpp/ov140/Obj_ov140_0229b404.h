@@ -14,7 +14,7 @@ class Obj_ov140_0229b404 : public Obj_ov002_0220bb24 {
     void func_ov140_0229a9b4();
     void func_ov140_0229a914();
     void func_ov140_0229a8c0();
-    void func_ov140_0229a894();
+    int func_ov140_0229a894();
     void func_ov140_0229a85c();
     void func_ov140_0229a800();
 

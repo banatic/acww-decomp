@@ -18,7 +18,7 @@ extern void func_0201b458(void *buf, void *self, void *tmp);
 extern int func_ov050_02260498(void *self);
 extern int func_ov050_02260474(void *self);
 extern int func_02019e00(void *p);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern void func_0201b044(void *p, void *buf);
 extern int func_020eaa6c(void *buf, void *p);
 

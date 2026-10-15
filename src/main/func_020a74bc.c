@@ -13,7 +13,7 @@ extern void func_020733ac(Context *);
 extern unsigned char *func_020733c4(Context *);
 extern int func_020b65c4(void);
 extern void func_020733a0(Context *, int);
-extern void *MI_CpuCopy8(void *, const void *, unsigned int);
+extern void MI_CpuCopy8(void *, const void *, unsigned int);
 
 void func_020a74bc(void)
 {

@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201c314(void);
+extern int func_0201c314(void *, void *);
 
-int func_0201c2b0(struct UnkStruct *r4)
+int func_0201c2b0(struct UnkStruct *r4, void *argument1)
 {
     int r0;
     int r1;
     int result;
 
-    r0 = func_0201c314();
+    r0 = func_0201c314((void *) r4, (void *) argument1);
     r1 = *(short *) ((char *) r4 + 0x8e);
     result = r0 - r1;
     result = (result << 16) >> 16;

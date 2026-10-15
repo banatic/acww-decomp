@@ -8,9 +8,9 @@ struct UnkStruct_020984e8 {
 };
 
 extern struct UnkStruct_020984e8 *data_020ccf94;
-extern void func_020984fc(void *p);
+extern int func_020984fc(void *p);
 
-void func_020984e8(void)
+int func_020984e8(void)
 {
-    func_020984fc(data_020ccf94->unk_68);
+    return func_020984fc(data_020ccf94->unk_68);
 }

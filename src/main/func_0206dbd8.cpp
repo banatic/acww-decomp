@@ -19,14 +19,14 @@ class UnkStruct_0206dbd8_2 {
     unsigned char flag;
 };
 
-extern "C" void func_0206dc1c(UnkStruct_0206dbd8_2 *self, unsigned char val);
+extern "C" void func_0206dc1c(UnkStruct_0206dbd8_2 *self);
 extern "C" void func_02051624(UnkStruct_0206dbd8 *p);
 extern "C" void func_02051694(UnkStruct_0206dbd8 *p);
 
 extern "C" void func_0206dbd8(UnkStruct_0206dbd8_2 *self, int flag)
 {
     if (self->flag != 0) {
-        func_0206dc1c(self, self->flag);
+        func_0206dc1c(self);
         if (self->sub != 0) {
             self->flag = 0;
             UnkStruct_0206dbd8 *sub = self->sub;

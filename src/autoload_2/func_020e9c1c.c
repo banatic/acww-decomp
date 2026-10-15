@@ -7,12 +7,12 @@ struct UnkStruct_020e9c1c {
     void *unk_14;
 };
 
-extern void *NNS_FndFreeToExpHeap(void *);
+extern void NNS_FndFreeToExpHeap(void *heap, void *block);
 
-void *func_020e9c1c(void *self, int enable)
+void func_020e9c1c(void *self, void *block)
 {
-    if (enable == 0) {
-        return self;
+    if (block == 0) {
+        return;
     }
-    return NNS_FndFreeToExpHeap(((struct UnkStruct_020e9c1c *) self)->unk_14);
+    NNS_FndFreeToExpHeap(((struct UnkStruct_020e9c1c *) self)->unk_14, block);
 }

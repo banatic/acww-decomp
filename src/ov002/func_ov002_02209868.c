@@ -4,11 +4,11 @@
 
 #include "types.h"
 
-extern int func_0200284c(int);
+extern void func_0200284c(int, int parameter1, int parameter2);
 
-int func_ov002_02209868(char *self)
+void func_ov002_02209868(char *self, int arg1, int arg2)
 {
     // DECLS
     // ENDDECLS
-    return func_0200284c(*(u8 *) (self + 0x1a));
+    func_0200284c(*(u8 *) (self + 0x1a), arg1, arg2);
 }

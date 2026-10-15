@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206c058(void *param1, int param2);
+extern void func_0206c058(void);
 
 typedef struct {
     char pad_00[0x28];
@@ -14,5 +14,6 @@ typedef struct {
 void func_0206bc98(UnkStruct_0206bc98 *self)
 {
     self->unk_30 = 3;
-    func_0206c058(self->unk_28, 3);
+    (void) *(void *volatile *) &self->unk_28;
+    func_0206c058();
 }

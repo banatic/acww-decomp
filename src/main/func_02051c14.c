@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02051ce0(const unsigned short *a, int b, int e, int *d);
+extern int func_02051ce0(const unsigned short *a, int b, int e);
 extern int func_02051d30(unsigned short value);
 
 int func_02051c14(const unsigned short *a, int b, int c, int *d, int e)
 {
     int i;
     int sum = 0;
-    int count = func_02051ce0(a, b, e, d);
+    int count = func_02051ce0(a, b, e);
 
     for (i = 0; i < count; i++) {
         sum += func_02051d30(a[i]);

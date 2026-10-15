@@ -3,11 +3,11 @@
  */
 
 extern int data_ov088_02279d98;
-extern int func_020984e8(int, void *);
+extern int func_020984e8(void);
 extern int func_02099020(int, int);
 extern int func_0202ea80(int, int);
 extern int func_020644cc(int);
-extern int func_0203fa58(int);
+extern int func_0203fa58(void);
 
 typedef struct {
     unsigned int unk_00;
@@ -21,12 +21,12 @@ void func_ov088_02278c38(int unused, UnkStruct_02278c38 *ctx)
 
     ctx->unk_00 = (unsigned int) &data_ov088_02279d98;
     ctx->unk_04 = 1;
-    r = func_02099020(func_020984e8(1, ctx), 0x10);
+    r = func_02099020(func_020984e8(), 0x10);
     if (r == 1) {
         r2 = func_0202ea80(0xe, 0);
         if (r2 == 0) {
             ctx->unk_04 = (unsigned char) (func_020644cc(2) + 0x13);
-        } else if (func_0203fa58(r2) == 1) {
+        } else if (func_0203fa58() == 1) {
             ctx->unk_04 = (unsigned char) (func_020644cc(3) + 0xd);
         } else {
             ctx->unk_04 = (unsigned char) (func_020644cc(3) + 0x10);

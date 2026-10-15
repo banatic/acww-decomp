@@ -8,12 +8,12 @@ struct UnkStruct_0229ae64 {
 };
 
 extern void func_ov143_0229a98c(struct UnkStruct_0229ae64 *this);
-extern void func_ov002_022080a0(struct UnkStruct_0229ae64 *this);
+extern unsigned char *func_ov002_022080a0(struct UnkStruct_0229ae64 *this, unsigned char arg1);
 
 int func_ov143_0229ae64(struct UnkStruct_0229ae64 *this)
 {
     func_ov143_0229a98c(this);
     this->flag = 0;
-    func_ov002_022080a0(this);
+    func_ov002_022080a0(this, 0);
     return 1;
 }

@@ -10,7 +10,7 @@ extern int data_020dd398;
 extern int data_020dd3d8;
 extern int data_020dd388;
 
-extern void *func_020984e8(void *p);
+extern void *func_020984e8(void);
 extern int func_02099020(void *h, int k);
 extern void func_02066694(Buf *b);
 extern void *func_02099870(void *h);
@@ -19,13 +19,13 @@ extern int func_02097a54(Buf *b);
 extern void func_02098ff8(void *h, int k);
 extern void func_02066688(Buf *b);
 
-int func_0205a2f0(void *p)
+int func_0205a2f0(void)
 {
     unsigned char m[4];
     Buf buf;
     void *h;
 
-    h = func_020984e8(p);
+    h = func_020984e8();
     if (h == 0) {
         goto zero;
     }

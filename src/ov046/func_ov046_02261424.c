@@ -22,9 +22,9 @@ extern void func_020b12e0(int *out, int a);
 extern void func_02015ed0(UnkStruct_02261424_2 *self, int a, int b);
 extern void func_02015ea0(UnkStruct_02261424_2 *self, int a, int b);
 extern void func_02015fb0(UnkStruct_02261424_2 *self, int a, int b, int c, int d, int e);
-extern void func_020683e4(int h, int a, u8 *p, int k);
-extern int func_020b14c0(int a);
-extern int func_020b1558(int a);
+extern int func_020683e4(int h, int a, u8 *p, int k);
+extern void func_020b14c0(int a);
+extern int func_020b1558(void);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov046_02262420;
 extern int data_ov046_02261fe8;
@@ -56,7 +56,7 @@ void func_ov046_02261424(UnkStruct_02261424_2 *self)
         func_020683e4(h, 8, &m.b[1], (int) &data_ov046_02262420);
         m.b[0] = 8;
     } else {
-        self->unk_C5 = (u8) (0x10 - func_020b1558(func_020b14c0(self->unk_C0)));
+        self->unk_C5 = (u8) (0x10 - ((void) (func_020b14c0(self->unk_C0)), func_020b1558()));
         self->unk_C4 = 0;
     }
     func_0206844c(h, &m.b[0], (int) &data_ov046_02261fe8);

@@ -33,7 +33,7 @@ struct UnkStruct_02069804_2 {
 };
 
 extern int func_020a86e4(u8 *a, u8 *b, u8 *c, u8 *d);
-extern int func_020ba4e4(int x);
+extern int func_020ba4e4(void);
 extern void func_0206b964(struct UnkStruct_02069804_2 *self, u8 *data);
 
 void func_02069804(struct UnkStruct_02069804_2 *self)
@@ -47,7 +47,7 @@ void func_02069804(struct UnkStruct_02069804_2 *self)
     obj = self->s->obj;
     obj->vtbl->method(obj, 9, 3);
 
-    y = func_020ba4e4(func_020a86e4(self->unk_38, &data[1], &data[2], &data[3]));
+    y = (func_020a86e4(self->unk_38, &data[1], &data[2], &data[3]), func_020ba4e4());
 
     idx = 0;
     if (y == 1) {

@@ -12,11 +12,11 @@ extern int *data_020ccf94;
 
 extern int func_02073dd4(int *p, int n);
 extern int func_020a2450(int p, int n);
-extern void func_02090040(void);
+extern int func_02090040(int);
 extern int func_02090158(void);
-extern void func_02075e00(int, int, int, int, int, int);
+extern int func_02075e00(int, int, int, int, int, int);
 
-void func_020a0af8(int param)
+int func_020a0af8(int param)
 {
     Vec3 a = data_020e3a74;
     Vec3 b = data_020e3a80;
@@ -29,7 +29,7 @@ void func_020a0af8(int param)
         if (func_02073dd4(g, j) != 0) {
             int res = func_020a2450(param, j);
             if (res < 4) {
-                func_02090040();
+                func_02090040(res);
                 if (func_02090158() != 0) {
                     a.v[i] = val;
                     b.v[i] = res;
@@ -43,5 +43,5 @@ void func_020a0af8(int param)
         i--;
     } while (i >= 0);
 
-    func_02075e00(a.v[0], b.v[0], a.v[1], b.v[1], a.v[2], b.v[2]);
+    return func_02075e00(a.v[0], b.v[0], a.v[1], b.v[1], a.v[2], b.v[2]);
 }

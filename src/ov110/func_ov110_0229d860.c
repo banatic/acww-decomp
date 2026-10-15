@@ -12,7 +12,7 @@ typedef struct {
 extern void func_ov110_0229cc58(UnkStruct_0229d860 *self);
 extern void func_ov002_02207fc0(UnkStruct_0229d860 *self);
 extern void func_ov110_0229ce44(UnkStruct_0229d860 *self);
-extern void func_ov002_02208098(UnkStruct_0229d860 *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov110_0229cff8(UnkStruct_0229d860 *self, unsigned char arg);
 
 void func_ov110_0229d860(UnkStruct_0229d860 *self)
@@ -21,6 +21,6 @@ void func_ov110_0229d860(UnkStruct_0229d860 *self)
     func_ov110_0229cc58(self);
     func_ov002_02207fc0(self);
     func_ov110_0229ce44(self);
-    func_ov002_02208098(self, 4);
+    func_ov002_02208098((void *) (self), 4);
     func_ov110_0229cff8(self, self->unk_F5);
 }

@@ -2,14 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_02021ea8(void *, void *, void *, void *);
-extern void func_020820f8(void *);
-extern void func_02081bc4(void *, void *);
+extern int func_02021cac(int a, int b);
+
+extern int func_02021ea8(void *self, int *arr, int count, void *predicate);
+extern void *func_020820f8(void *);
+extern void *func_02081bc4(void *, void *);
 extern void func_02068404(void *, int, void *);
 extern int func_02081d64(void *);
-extern void func_02015e70(void *, int, int);
-extern void func_020820e0(void *);
-extern void func_02021cac(void);
+extern void *func_02015e70(void *, int, int);
+extern void *func_020820e0(void *);
 
 struct UnkStruct_02021c4c {
     char pad_00[0x830];
@@ -29,7 +30,7 @@ void *func_02021c4c(struct UnkStruct_02021c4c_2 *arg, void *p1, void *p2)
     void *r5;
     char buf[0x2c];
 
-    r5 = func_02021ea8(arg->b->value, p1, p2, func_02021cac);
+    r5 = (void *) func_02021ea8((void *) (arg->b->value), (int *) (p1), (int) (p2), (((void *) func_02021cac)));
     if (r5) {
         func_020820f8(buf);
         func_02081bc4(r5, buf);

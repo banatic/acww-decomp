@@ -45,11 +45,11 @@ typedef struct UnkStruct_0221f71c_3 {
 extern "C" int func_0204bcdc(UnkStruct_0221f71c *p);
 extern "C" int func_0204bc64(void *p);
 extern "C" void func_0201b420(UnkStruct_0221f71c_2 *o, void *p);
-extern "C" void func_0209a000(char *p, int k);
+extern "C" int func_0209a000(char *p, int k);
 extern "C" int func_ov004_0223cd50(void);
 extern "C" int func_ov004_0223cc5c(int a, int b, int c, int d);
-extern "C" void func_ov004_0223bb14(int a);
-extern "C" void func_0207f360(int a, char *p, int c, int d);
+extern "C" int func_ov004_0223bb14(int a);
+extern "C" int func_0207f360(int a, char *p, int c, int d);
 
 extern "C" void func_ov004_0221f71c(UnkStruct_0221f71c_3 *self)
 {

@@ -3,7 +3,7 @@
  */
 
 extern int func_020e9948(int, int);
-extern void memset(int, int, int);
+extern void *memset(int, int, int);
 extern int data_021c9b24;
 
 int func_ov003_0221b5c0(int arg0)

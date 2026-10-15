@@ -7,7 +7,7 @@ struct UnkStruct_020f6580 {
     int x;
 };
 extern void NNS_SndHeapLoadState(int, int);
-extern void func_0210e198(int, int);
+extern int func_0210e198(int, int);
 
 extern unsigned char data_021fd1bc[];
 

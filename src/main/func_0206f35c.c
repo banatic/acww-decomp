@@ -4,7 +4,7 @@
 
 extern unsigned char data_021cfc14;
 extern char data_021cfc2c[];
-extern void func_0205bfdc(char *ptr);
+extern int func_0205bfdc(char *ptr);
 
 void func_0206f35c(void)
 {

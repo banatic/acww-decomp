@@ -24,7 +24,7 @@ class UnkStruct_020695f4 {
     virtual void v17();
 };
 
-extern "C" void func_020a8750(void *, int, void *);
+extern "C" void func_020a8750(void *);
 
 extern "C" void func_020695f4(char *self)
 {
@@ -32,6 +32,6 @@ extern "C" void func_020695f4(char *self)
     UnkStruct_020695f4 *obj;
     p = *(char **) (self + 0x24);
     obj = *(UnkStruct_020695f4 **) (p + 0x14a8);
-    func_020a8750(self + 0x38, 0x14a8, p);
+    func_020a8750(self + 0x38);
     obj->v17();
 }

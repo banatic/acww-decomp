@@ -23,7 +23,7 @@ extern UnkStruct_022684c4_2 *data_ov066_0226bdf4;
 extern int func_ov066_02266e08(void);
 extern void func_ov066_0226686c(int code);
 extern void func_ov066_02268ad0(void);
-extern void func_ov066_022688cc(int a);
+extern int func_ov066_022688cc(int a);
 
 void func_ov066_022684c4(UnkStruct_022684c4 *p)
 {

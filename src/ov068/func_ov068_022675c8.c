@@ -19,7 +19,7 @@ typedef struct {
 extern int func_02014868(unsigned char *);
 extern void func_ov068_0226ad78(UnkStruct_022675c8 *, UnkStruct_022675c8_2 *, int, int, int);
 extern void func_0203eddc(UnkStruct_022675c8_2 *);
-extern void func_0203e020(UnkStruct_022675c8_2 *);
+extern int func_0203e020(UnkStruct_022675c8_2 *);
 extern void func_0201ce5c(UnkStruct_022675c8_2 *, int);
 extern void func_ov068_0226cce4(UnkStruct_022675c8 *, int);
 extern void func_0201ce44(UnkStruct_022675c8_2 *, int);

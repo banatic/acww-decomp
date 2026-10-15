@@ -11,7 +11,7 @@ typedef struct {
 
 extern int func_ov046_02260474(SelfType *self);
 extern int func_020912d4(int a, void *b, void *c, int _x);
-extern void func_02091278(int a, void *b, void *c);
+extern void func_02091278(int a, void *b, void *c, void *arg3);
 
 int func_ov046_022617d4(SelfType *self)
 {
@@ -21,7 +21,7 @@ int func_ov046_022617d4(SelfType *self)
     if (self->unk_740 == -1) {
         self->unk_740 = func_020912d4(0x3c, &self->unk_478, &self->unk_8E, 0);
     } else {
-        func_02091278(self->unk_740, &self->unk_478, &self->unk_8E);
+        func_02091278(self->unk_740, &self->unk_478, &self->unk_8E, (void *) 0);
     }
     return 1;
 }

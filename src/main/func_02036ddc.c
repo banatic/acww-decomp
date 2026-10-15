@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02041614(void *self);
+extern int func_02041614(void);
 extern void func_0209e474(void *buf);
 extern int func_0203fc78(int id, void *ptr, int arg);
 extern int func_02073d90(unsigned int val);
@@ -22,7 +22,7 @@ void func_02036ddc(void *self)
         unsigned int d[2];
     } s;
 
-    r5 = func_02041614(self);
+    r5 = func_02041614();
 
     s.a[0] = 0;
     s.a[1] = 0;

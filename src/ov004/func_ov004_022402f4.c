@@ -8,8 +8,8 @@ typedef struct {
 
 typedef struct UnkStruct_022402f4_2 UnkStruct_022402f4_2;
 
-extern int func_ov004_02244f90(UnkStruct_022402f4_2 *self);
-extern void func_ov004_02240f2c(UnkStruct_022402f4_2 *self, int a, int b, int c, int d, int e, int f);
+extern int func_ov004_02244f90(void);
+extern int func_ov004_02240f2c(UnkStruct_022402f4_2 *self, int a, int b, int c, int d, int e, int f);
 extern UnkStruct_022402f4_2 *func_ov004_0223ee38(void);
 extern void func_ov004_02241008(UnkStruct_022402f4_2 *self, UnkStruct_022402f4 *a, UnkStruct_022402f4 *b);
 extern int func_020644cc(int n);
@@ -19,7 +19,7 @@ void func_ov004_022402f4(UnkStruct_022402f4_2 *self)
     UnkStruct_022402f4 a, b, c, d;
     UnkStruct_022402f4_2 *o;
 
-    func_ov004_02240f2c(self, 0x50, 0x50, 0, func_ov004_02244f90(self), 0, 5);
+    func_ov004_02240f2c(self, 0x50, 0x50, 0, func_ov004_02244f90(), 0, 5);
     *((unsigned char *) self + 0x170) = 0;
     o = func_ov004_0223ee38();
     if (o != 0) {

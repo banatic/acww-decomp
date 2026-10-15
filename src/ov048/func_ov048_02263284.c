@@ -4,9 +4,9 @@
 
 extern int func_02014868(void *p);
 extern int func_0203ad88(void);
-extern void func_ov004_0222d4f4(void);
+extern int func_ov004_0222d4f4(void);
 extern int func_020e8840(void *p);
-extern void func_0203e020(void *p);
+extern int func_0203e020(void *p);
 
 int func_ov048_02263284(void *p)
 {

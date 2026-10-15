@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fe54(void *self);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *field);
 extern int func_ov136_0229c574(void *self, int arg);
 extern int func_ov002_02207f60(void *self);
@@ -18,7 +18,7 @@ typedef struct {
 
 int func_ov136_0229d344(UnkStruct_0229d344 *self)
 {
-    if (func_0206fe54(self)) {
+    if (func_0206fe54()) {
         func_ov002_02209eb8(&self->unk_94);
     }
     if (func_ov136_0229c574(self, 1) == 0) {

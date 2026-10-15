@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02013420(void *a, int b, int c, void *d);
+extern int func_02013420(void *a);
 extern void MI_CpuCopy8(void *dst, const void *src, unsigned int n);
 
 typedef struct {
@@ -16,7 +16,7 @@ void func_020133b4(void *obj, int p1, int p2, void *data)
     unsigned char *p;
     NibblePair *np;
 
-    count = func_02013420(obj, p1, p2, data);
+    count = func_02013420(obj);
     p = (unsigned char *) obj + 0x2c + 3 * count;
     while (count > 0) {
         MI_CpuCopy8(p - 3, p, 3);

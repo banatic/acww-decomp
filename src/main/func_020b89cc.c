@@ -9,10 +9,10 @@ typedef struct {
     char data[0x58];
 } UnkStruct_020b89cc;
 
-void func_020a8228(UnkStruct_020b89cc *s);
-void func_020b4980(UnkStruct_020b89cc *s, unsigned char *b, int flag);
+void *func_020a8228(UnkStruct_020b89cc *s);
+int func_020b4980(UnkStruct_020b89cc *s, unsigned char *b, int flag);
 void func_0208aa48(char *dest, const UnkStruct_020b89cc *src);
-void func_020a8210(UnkStruct_020b89cc *s);
+void *func_020a8210(UnkStruct_020b89cc *s);
 
 struct SelfData {
     char pad_00[0x100];

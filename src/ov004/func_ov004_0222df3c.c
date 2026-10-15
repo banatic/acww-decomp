@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203aeac(void);
+extern int func_0203aeac(void);
 
-int func_ov004_0222df3c(void)
+int func_ov004_0222df3c(void *callbackObject)
 {
     func_0203aeac();
     return 1;

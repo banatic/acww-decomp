@@ -6,8 +6,8 @@ struct UnkStruct_022271e0 {
     unsigned char a;
     unsigned char b;
 };
-extern void func_020109a0(void *self, int a, int b, int c);
-void func_ov004_022271e0(unsigned char *self, unsigned char *p)
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
+void func_ov004_022271e0(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_022271e0 *q, *w;
     int t;

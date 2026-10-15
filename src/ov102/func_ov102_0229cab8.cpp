@@ -11,12 +11,12 @@ class UnkStruct_0229cab8 {
 };
 
 extern "C" int func_ov102_0229c2a8(unsigned char *self, int v);
-extern "C" int func_ov102_0229c288(unsigned char *self, int v);
+extern "C" void func_ov102_0229c288(unsigned char *self, int v);
 extern "C" int func_ov102_0229cb84(unsigned char *self);
 extern "C" int func_ov102_0229cb74(unsigned char *self);
 extern "C" void func_ov002_0220a0b4(UnkStruct_0229cab8 *obj, int a, int b);
 extern "C" void func_ov002_0220a05c(UnkStruct_0229cab8 *obj, int a, int b, int c, int d);
-extern "C" void func_ov002_02208098(unsigned char *self, int v);
+extern "C" unsigned char *func_ov002_02208098(unsigned char *self, unsigned char value);
 
 extern "C" void func_ov102_0229cab8(unsigned char *self)
 {

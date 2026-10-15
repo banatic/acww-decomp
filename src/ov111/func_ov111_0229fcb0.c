@@ -9,20 +9,20 @@ typedef struct {
 
 extern GStruct *data_020ccf94;
 
-extern unsigned int func_020984e8(unsigned char *self);
-extern void func_02094fd4(unsigned char *buf);
+extern unsigned int func_020984e8(void);
+extern void *func_02094fd4(unsigned char *buf);
 extern unsigned int func_02099870(unsigned int v);
-extern void func_02095074(unsigned int a, unsigned char *buf);
-extern void func_020b4424(unsigned char *p);
+extern void *func_02095074(unsigned int a, unsigned char *buf);
+extern int func_020b4424(unsigned char *p);
 extern void func_020398e8(unsigned int a, unsigned char *b, unsigned char *c);
 extern void func_ov111_0229f994(unsigned char *self);
 extern void func_ov111_0229fd08(unsigned char *self);
-extern void func_02094fbc(unsigned char *buf);
+extern void *func_02094fbc(unsigned char *buf);
 
 void func_ov111_0229fcb0(unsigned char *self)
 {
     unsigned char buf[0x24];
-    unsigned int v = func_020984e8(self);
+    unsigned int v = func_020984e8();
 
     func_02094fd4(buf);
     func_02095074(func_02099870(v), buf);

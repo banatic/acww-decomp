@@ -8,7 +8,7 @@ extern void *data_021fbe94;
 
 extern void *func_020e9958(void *p, int size);
 extern void func_020e993c(void *p, void *handle);
-extern void func_02051c08(void *a, void *b, u32 c);
+extern int func_02051c08(void *a, void *b, u32 c);
 extern int func_ov095_0229bcec(u32 a0, void *handle, u32 a2, u8 *bytep, u32 a4, u32 a5, u32 a7, u32 a8);
 extern int func_0206de88(void *handle, void *out1, void *out2, u32 a4, u32 a5, u32 a7, u32 a6);
 extern int func_ov095_022999b0(u32 a0, int param);

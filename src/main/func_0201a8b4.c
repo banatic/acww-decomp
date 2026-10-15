@@ -31,50 +31,13 @@ typedef struct {
 } LocalType;
 
 extern int func_020ea9e4(void *, void *);
-extern void func_020e8870(void *, int, s16);
+extern int func_020e8870(void *, int, s16);
 
-static int func_0201ac10(UnkStruct_0201a8b4 *a, void *b, void *c, s16 d);
-static int func_0201abd0(UnkStruct_0201a8b4 *a, void *b, void *c, s16 d);
-static int func_0201ad8c(UnkStruct_0201a8b4 *a, void *b);
-static int func_0201ab94(UnkStruct_0201a8b4 *a, void *b, void *c, s16 d);
-static int func_0201a814(UnkStruct_0201a8b4 *a, int value);
-
-static int func_0201ac10(UnkStruct_0201a8b4 *a, void *b, void *c, s16 d)
-{
-    (void) a;
-    (void) b;
-    (void) c;
-    (void) d;
-    return 0;
-}
-static int func_0201abd0(UnkStruct_0201a8b4 *a, void *b, void *c, s16 d)
-{
-    (void) a;
-    (void) b;
-    (void) c;
-    (void) d;
-    return 0;
-}
-static int func_0201ad8c(UnkStruct_0201a8b4 *a, void *b)
-{
-    (void) a;
-    (void) b;
-    return 0;
-}
-static int func_0201ab94(UnkStruct_0201a8b4 *a, void *b, void *c, s16 d)
-{
-    (void) a;
-    (void) b;
-    (void) c;
-    (void) d;
-    return 0;
-}
-static int func_0201a814(UnkStruct_0201a8b4 *a, int value)
-{
-    (void) a;
-    (void) value;
-    return 0;
-}
+extern int func_0201ac10(UnkStruct_0201a8b4 *a, void *b, void *c, int d);
+extern int func_0201abd0(UnkStruct_0201a8b4 *a, void *b, void *c, int d);
+extern int func_0201ad8c(UnkStruct_0201a8b4 *a, void *b);
+extern int func_0201ab94(UnkStruct_0201a8b4 *a, void *b, void *c, int d);
+extern int func_0201a814(UnkStruct_0201a8b4 *a, int value);
 
 void func_0201a8b4(UnkStruct_0201a8b4 *a, UnkStruct_0201a8b4_2 *b)
 {

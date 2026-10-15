@@ -3,7 +3,7 @@
  */
 
 #pragma arm
-extern void func_020e8ce0(void *a, void *b);
+extern int func_020e8ce0(void *a, void *b);
 extern void func_020ee62c(void *a);
 extern void func_020edf54(void *a);
 #pragma thumb on

@@ -12,7 +12,7 @@ extern void func_ov121_0229a940(void *p, int flag);
 extern void func_ov121_0229aab4(void *p);
 extern void func_ov121_0229a7c8(void *p, int flag);
 extern void func_ov121_0229a6b4(void *p);
-extern void func_ov121_0229afb8(void *p);
+extern unsigned char *func_ov121_0229afb8(void *p);
 
 void func_ov121_0229a5c8(UnkStruct_0229a5c8 *p)
 {

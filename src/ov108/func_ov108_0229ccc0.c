@@ -5,8 +5,8 @@
 extern int func_ov108_0229cb54(void *a, void *b);
 extern int func_ov108_0229cc5c(void *a, void *b);
 extern int func_02066830(void *dst, int val);
-extern int func_ov108_0229cc90(void *a, unsigned char b, void *c);
-extern int func_ov108_0229c8a4(void *a, void *b);
+extern void func_ov108_0229cc90(void *a, unsigned char b, void *c);
+extern void func_ov108_0229c8a4(void *a, void *b);
 
 int func_ov108_0229ccc0(void *param1, void *param2)
 {

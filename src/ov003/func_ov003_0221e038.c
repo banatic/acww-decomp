@@ -6,7 +6,7 @@ extern void func_02055124(void *ptr);
 extern void func_02056ffc(void *ptr);
 extern int func_ov003_0221e6a0(void *ptr);
 extern int func_02056f94(void *ptr);
-extern void func_020b2800(void *ptr, int val);
+extern int func_020b2800(void *ptr, int val);
 
 typedef struct {
     char pad_00[0x13c];

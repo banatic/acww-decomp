@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov127_022996d8(void *);
-extern int func_ov127_022996c8(void *);
+extern int func_ov127_022996d8(unsigned int);
+extern int func_ov127_022996c8(unsigned int);
 extern int func_ov127_022996e4(unsigned short *, int, int);
-extern int func_ov129_0229be7c(void *, unsigned short, void *);
+extern int func_ov129_0229be7c(void *, unsigned short, unsigned int);
 
-int func_ov129_0229bc34(void *arg0, void *arg1)
+int func_ov129_0229bc34(void *arg0, unsigned int arg1)
 {
     unsigned short local[10];
     int count;

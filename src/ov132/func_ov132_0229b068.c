@@ -3,8 +3,8 @@
  */
 
 extern void func_ov002_02208090(void *a, int b);
-extern void func_020b9bbc(void *a, void *b, int c, int d, int e);
-extern void func_ov002_02208098(void *a, int b);
+extern int func_020b9bbc(void *a, void *b, int c, int d, int e);
+extern unsigned char *func_ov002_02208098(void *a, unsigned char value);
 extern void RtcSendPxiCommand(int cmd);
 
 void func_ov132_0229b068(void *base)

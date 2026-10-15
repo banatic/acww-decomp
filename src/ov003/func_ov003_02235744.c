@@ -11,7 +11,7 @@ typedef struct {
 extern short FX_SinCosTable_[];
 extern int FX_MulFunc(int a, int b);
 extern int func_020310c8(int a);
-extern void func_02034270(int *st, Vec3 *v, int a, int b);
+extern int func_02034270(int *st, Vec3 *v, int a, int b);
 extern int func_020341c8(int *st, int a);
 extern void func_0203423c(int *st);
 extern void func_ov003_02235184(void *self);

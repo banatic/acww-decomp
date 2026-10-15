@@ -6,13 +6,23 @@
 #include "cpp/ov116/Obj_ov116_0229e8b8.h"
 
 typedef Obj_ov116_0229e8b8 S;
-typedef int (S::*PMF)();
+typedef void (S::*PMF)();
 
-int Obj_ov116_0229e8b8::func_ov116_0229e5e8()
+#define DISCARD_HANDLER(Class, Method) (PMF) & Class::Method
+
+void Obj_ov116_0229e8b8::func_ov116_0229e5e8()
 {
-    static PMF table[9] = {&S::func_ov116_0229e228, &S::func_ov116_0229e1f0, &S::func_ov116_0229e168,
-                           &S::func_ov116_0229e140, &S::func_ov116_0229e0e8, &S::func_ov116_0229e0c0,
-                           &S::func_ov116_0229e074, &S::func_ov116_0229e010, &S::func_ov116_0229dfc0};
+    static PMF table[9] = {&S::func_ov116_0229e228,
+                           &S::func_ov116_0229e1f0,
+                           &S::func_ov116_0229e168,
+                           &S::func_ov116_0229e140,
+                           DISCARD_HANDLER(S, func_ov116_0229e0e8),
+                           &S::func_ov116_0229e0c0,
+                           &S::func_ov116_0229e074,
+                           &S::func_ov116_0229e010,
+                           &S::func_ov116_0229dfc0};
     int idx = subState;
-    return (this->*table[idx])();
+    (this->*table[idx])();
 }
+
+#undef DISCARD_HANDLER

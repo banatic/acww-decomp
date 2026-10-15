@@ -7,7 +7,7 @@ extern unsigned char data_021fbddc;
 
 extern int func_ov002_02208054(void *p, int a);
 extern int func_ov002_0220a784(void *p, int a);
-extern void func_ov129_0229d380(void *p);
+extern unsigned char *func_ov129_0229d380(void *p);
 extern void func_ov129_0229c684(void *p);
 extern void func_ov129_0229c644(void *p);
 

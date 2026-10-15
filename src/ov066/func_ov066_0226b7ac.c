@@ -11,14 +11,14 @@ struct UnkStruct_0226b7ac {
     int unk_20;
     int unk_24;
     int unk_28;
-    int (*unk_2C)(int);
+    void (*unk_2C)(void *);
 };
 extern UnkStruct_0226b7ac *data_ov066_0226be08;
 
 void func_ov066_0226b7ac(void)
 {
     unsigned char f4 = data_ov066_0226be08->unk_04;
-    int (*cb)(int) = data_ov066_0226be08->unk_2C;
+    void (*cb)(void *) = data_ov066_0226be08->unk_2C;
     int arg = data_ov066_0226be08->unk_24;
     f4 &= ~8;
     data_ov066_0226be08->unk_04 = f4;
@@ -28,6 +28,6 @@ void func_ov066_0226b7ac(void)
     data_ov066_0226be08->unk_28 = -1;
     data_ov066_0226be08->unk_2C = 0;
     if (cb) {
-        cb(arg);
+        cb((void *) arg);
     }
 }

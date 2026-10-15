@@ -6,7 +6,7 @@ extern int func_0203cff8(void *, int);
 extern int func_0203cfc8(void *);
 extern int func_020b9d3c(void *, int, int *, int, int, int);
 extern int func_020b374c(int *);
-extern int func_020b3850(int, int);
+extern void func_020b3850(int, int);
 extern int data_ov003_02238a70;
 extern int data_021f34b0;
 

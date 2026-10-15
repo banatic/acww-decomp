@@ -8,7 +8,7 @@ extern int func_020508fc(u8 *p, int n, int v);
 extern int func_020a1acc(u8 *self, int k);
 extern void func_0209fafc(u8 *p);
 extern void func_0209fb70(int *p);
-extern void func_020a1738(int a, int *p);
+extern int func_020a1738(int a, int *p);
 extern int func_0209faf4(int *p);
 extern void func_0209faf8(u8 *p, int v);
 extern void func_0209fb6c(int *p);
@@ -16,16 +16,16 @@ extern int func_0209015c(u8 *p);
 extern void func_02090168(u8 *p, int v);
 extern int func_0208ffe8(u8 *p);
 extern void func_0208fff4(u8 *p, int v);
-extern void func_02098844(u8 *p, int i);
-extern u8 *func_02099664(void);
-extern u8 *func_02099658(void);
+extern int func_02098844(u8 *p, int i);
+extern u8 *func_02099664(int);
+extern u8 *func_02099658(int);
 extern int func_02077bb8(u8 *p);
 extern void func_02077bc0(u8 *p, int v);
 extern int func_02077c9c(u8 *p);
 extern void func_02077ca8(u8 *p, int v);
 extern int func_0209faec(u8 *p);
 extern void func_0209faf0(u8 *p, int v);
-extern void func_02050920(u8 *p, int n);
+extern unsigned short func_02050920(u8 *p, int n);
 
 int func_020a1f4c(u8 *self, int a)
 {
@@ -64,11 +64,9 @@ int func_020a1f4c(u8 *self, int a)
         p = b + 0x1704c;
         func_0208fff4(p, func_020508fc(p, 0x104, func_0208ffe8(p)));
         for (i = 0; i < 4; i++) {
-            func_02098844(b + 0x14, i);
-            p = func_02099664();
+            p = func_02099664((int) func_02098844(b + 0x14, i));
             func_02077bc0(p, func_020508fc(p, 0x50, func_02077bb8(p)));
-            func_02098844(b + 0x14, i);
-            p = func_02099658();
+            p = func_02099658((int) func_02098844(b + 0x14, i));
             func_02077ca8(p, func_020508fc(p, 0x484, func_02077c9c(p)));
         }
         func_0209faf0(b + 0x173f8, func_020508fc(b, 0x173fc, func_0209faec(b + 0x173f8)));

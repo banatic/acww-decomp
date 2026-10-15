@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020396dc(void);
+extern int func_020396dc(int, int);
 extern int func_02039628(void *a, void *b);
 extern int func_020396d0(void *a, int b);
 extern void func_02039f0c(void *a, int b, int c, int d);
@@ -23,7 +23,7 @@ void func_020396fc(void *arg0, int arg1, int arg2, int arg3)
     if (arg1 > 4) {
         return;
     }
-    idx = func_020396dc();
+    idx = func_020396dc((int) arg0, arg1);
     r6 = (UnkStruct_020396fc *) ((char *) arg0 + 4 + idx * 184);
     if (func_02039628(arg0, r6) == 0) {
         return;

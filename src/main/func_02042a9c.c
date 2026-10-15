@@ -40,8 +40,8 @@ typedef struct {
 extern void func_02045e24(Pt *p, int k);
 extern UnkStruct_02042a9c_3 *func_020961a8(int k);
 extern void func_02042ff8(int k, Pt *p);
-extern void func_ov003_02221304(int k, int w, Pt *p, UnkStruct_02042a9c *v);
-extern void func_ov004_022335b8(int k, int w, Pt *p, UnkStruct_02042a9c *v, int z);
+extern int func_ov003_02221304(int k, int w, Pt *p, UnkStruct_02042a9c *v);
+extern int func_ov004_022335b8(int k, int w, Pt *p, UnkStruct_02042a9c *v, int z);
 extern void func_ov003_02220e20(int k, int w, Pt *p, UnkStruct_02042a9c *v);
 
 extern Entry data_021c7788[];

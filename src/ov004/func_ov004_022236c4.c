@@ -4,7 +4,7 @@
 
 extern unsigned int *data_ov004_022580dc;
 
-unsigned int func_ov004_022236c4(void)
+unsigned short func_ov004_022236c4(void)
 {
-    return (data_ov004_022580dc[0x64] << 4) >> 16;
+    return (unsigned short) (data_ov004_022580dc[0x64] >> 12);
 }

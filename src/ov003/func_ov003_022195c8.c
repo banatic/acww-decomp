@@ -8,10 +8,10 @@ typedef struct {
     char pad_0E[0xe];
 } LocalObj;
 
-extern void func_0200e92c(void *);
+extern unsigned int func_0200e92c(void *);
 extern void func_0200e90c(void *, int, void *, void *);
 extern int func_0200e894(void *, void *);
-extern void func_0200e91c(void *);
+extern int func_0200e91c(void *);
 
 int func_ov003_022195c8(void *p0, unsigned short p1, void *p2, void *p3)
 {

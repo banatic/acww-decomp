@@ -5,8 +5,8 @@
 extern int data_021f47c8;
 extern int data_021f4824[3];
 extern int data_021f4818;
-extern void func_020012dc(void);
-extern void __register_global_object(int *data_021f4824, void (*fp)(void), int *data_021f4818);
+extern void func_020012dc(void *);
+extern void __register_global_object(void *, void *, void *);
 extern void func_01ffd070(int *out, int in, int *data_021f4824);
 extern void func_020aced0(int *addr, int *buf);
 extern int data_021f4904;
@@ -22,7 +22,7 @@ void func_020ad238(int a, unsigned int b)
         data_021f4824[0] = 0;
         data_021f4824[1] = 0;
         data_021f4824[2] = 0;
-        __register_global_object(data_021f4824, func_020012dc, &data_021f4818);
+        __register_global_object((void *) (data_021f4824), (((void *) func_020012dc)), (void *) (&data_021f4818));
         data_021f47c8 |= 1;
     }
     {

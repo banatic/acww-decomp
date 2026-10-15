@@ -8,7 +8,7 @@ typedef struct UnkStruct_0229a5b4 {
 } UnkStruct_0229a5b4;
 
 extern void func_ov141_0229a44c(UnkStruct_0229a5b4 *self);
-extern void func_ov002_022080a0(UnkStruct_0229a5b4 *self, int flag);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 void func_ov141_0229a5b4(UnkStruct_0229a5b4 *self)
 {
@@ -16,6 +16,6 @@ void func_ov141_0229a5b4(UnkStruct_0229a5b4 *self)
         self->cnt = self->cnt - 1;
     } else {
         func_ov141_0229a44c(self);
-        func_ov002_022080a0(self, 1);
+        func_ov002_022080a0((void *) (self), 1);
     }
 }

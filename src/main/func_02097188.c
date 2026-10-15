@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern int func_02098a0c(void);
+extern int func_020984e8(void);
+extern int func_02098a0c(int);
 extern int func_0209727c(int, int);
 extern void func_02097204(int, int);
 extern int func_020644cc(int);
@@ -16,8 +16,7 @@ int func_02097188(int a, int b, int c, int d)
     int w0, v1, v2, v3, v4;
     int flag = d;
 
-    func_020984e8();
-    w0 = func_02098a0c();
+    w0 = func_02098a0c((int) func_020984e8());
     v1 = func_0209727c(a, b);
 
     if (v1 != 0) {

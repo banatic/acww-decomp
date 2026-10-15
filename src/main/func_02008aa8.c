@@ -33,17 +33,17 @@ extern int func_02056f94(void *p);
 extern void func_020109fc(void *self, int a, int b, int c);
 extern int func_02073908(void *a, int b);
 extern unsigned char func_02008258(void *self, int idx);
-extern void func_0200faf0(void *self, int code);
+extern int func_0200faf0(void *self, int code);
 extern int func_0203e1c4(void);
 extern void func_0203ee14(void *self, void *b);
-extern void func_0200f27c(void *self, int code);
+extern unsigned int *func_0200f27c(void *self, int code);
 extern void func_020a8164(void *p, void *g);
 extern void func_0203ae98(void);
 extern void func_0203ee08(void *self, void *b);
 extern void func_0200f268(void *self, int code);
-extern void func_0203e19c(void);
-extern void func_0200d4e8(void *self, int a, int b, int c);
-extern void func_0203b144(void);
+extern int func_0203e19c(void);
+extern int func_0200d4e8(void *self, int a, int b, int c);
+extern int func_0203b144(void);
 extern void func_02035624(int code);
 
 void func_02008aa8(struct UnkStruct_02008aa8 *self)

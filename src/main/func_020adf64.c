@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020adf3c(unsigned int arg);
+extern void func_020adf3c(void);
 unsigned int func_020adf64(unsigned int arg)
 {
-    func_020adf3c(arg);
+    func_020adf3c();
     return arg;
 }

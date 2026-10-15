@@ -2,17 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02002d14(void *a, void *b, int c, int d, int e, int f);
-extern void func_02064af4(void *a, void *b, unsigned int c);
+extern int func_02002d14(void *a, void *b, int c, int d, int e, int f);
+extern int func_02064af4(void *a, void *b, unsigned int c);
 extern void func_0206fdd4(void *a, int b, int c, int d, int e, int f);
-extern void func_02002b40(void *a, int b, unsigned int c, int d);
-extern void func_02002c6c(void *a, void *b, int c, int d, int e, int f);
+extern int func_02002b40(void *a, int b, unsigned int c, int d);
+extern int func_02002c6c(void *a, void *b, int c, int d, int e, int f);
 
-extern void func_ov095_0229c000(void *a, void *b);
+extern int func_ov095_0229c000(void *a, void *b);
 extern void func_ov112_0229f488(void *a);
 extern void func_ov095_0229bfd8(void *a, int b);
-extern void func_ov095_0229c01c(void *a, int b);
-extern void func_ov095_0229b324(void *a);
+extern int func_ov095_0229c01c(void *a, int b);
+extern int func_ov095_0229b324(void);
 
 extern void *data_021fbe94; // at 0x021fbe94
 extern unsigned char data_ov112_022a2130[];
@@ -37,5 +37,9 @@ void func_ov112_022a1104(char *self)
     func_ov112_0229f488(self);
     func_ov095_0229bfd8(self + 0x384, 6);
     func_ov095_0229c01c(self + 0x384, 6);
-    func_ov095_0229b324(self + 0x384);
+    asm {
+        ldr r0, =0x384
+        add r0, self, r0
+    }
+    func_ov095_0229b324();
 }

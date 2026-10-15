@@ -17,7 +17,7 @@ struct UnkStruct_02067218 {
 
 extern char data_021f43f8;
 
-extern void func_020a8164(void *p, signed char *q, signed char c);
+extern void func_020a8164(void *p, signed char *q);
 extern void func_0206844c(void *s, void *g, int i);
 extern void func_0206726c(void *s);
 extern void func_0206741c(void *s);
@@ -29,7 +29,7 @@ void func_02067218(struct UnkStruct_02067218 *s)
     s->ptr->unk_1E = s->unk_1E77;
     v = s->unk_1E78;
     if (v != 0) {
-        func_020a8164(s->ptr, &s->unk_1E78, v);
+        func_020a8164(s->ptr, &s->unk_1E78);
     }
     func_0206844c(s, &data_021f43f8, 0);
     func_0206726c(s);

@@ -4,7 +4,7 @@
 
 extern unsigned char data_020e54a8;
 extern unsigned int data_021cd864;
-extern unsigned int func_020bbef4(void);
+extern unsigned int func_020bbef4(int);
 
 unsigned int func_020655c4(unsigned int param0)
 {
@@ -16,10 +16,10 @@ unsigned int func_020655c4(unsigned int param0)
         if (param0 == 0) {
             result = *(unsigned char *) (*(unsigned int *) &data_021cd864 + 0x178);
         } else {
-            result = func_020bbef4();
+            result = func_020bbef4(param0);
         }
     } else {
-        result = func_020bbef4();
+        result = func_020bbef4(param0);
     }
     return result;
 }

@@ -20,9 +20,9 @@ typedef struct UnkStruct_020723a8_2 {
 extern UnkStruct_020723a8 *func_020e98b4(int);
 extern void func_020e9898(UnkStruct_020723a8 *);
 extern void func_0203d228(UnkStruct_020723a8 *);
-extern void func_0203d064(UnkStruct_020723a8 *, u16 *, int);
-extern void func_02098844(UnkStruct_020723a8_3 *, int);
-extern void *func_020996b8(void);
+extern int func_0203d064(UnkStruct_020723a8 *, u16 *, int);
+extern int func_02098844(UnkStruct_020723a8_3 *, int);
+extern void *func_020996b8(void *);
 extern void *func_02072bd0(void *, int);
 extern u8 *func_0203cfe4(UnkStruct_020723a8 *);
 extern u8 *func_02072da0(void *);
@@ -34,7 +34,7 @@ extern int func_02056064(void *, int);
 extern void *func_02056160(void *, int);
 extern int func_020b65c4(void);
 extern void *func_02072a48(UnkStruct_020723a8_3 *, int);
-extern void func_0203cff8(UnkStruct_020723a8 *, void *);
+extern int func_0203cff8(UnkStruct_020723a8 *, void *);
 
 extern UnkStruct_020723a8_2 data_021dc7a8;
 extern void *data_021d054c[4][8];
@@ -75,8 +75,8 @@ void func_020723a8(void)
     for (i = 0; i < 4; i++) {
         for (k = 0; k < 8; k++) {
             tbl = data_021d054c[i];
-            func_02098844((UnkStruct_020723a8_3 *) ((char *) &data_021dc7a8 + 0x14), i);
-            p = func_02072bd0(func_020996b8(), k);
+            p = func_02072bd0(
+                func_020996b8((void *) func_02098844((UnkStruct_020723a8_3 *) ((char *) &data_021dc7a8 + 0x14), i)), k);
             *b = *a;
             d = func_0203cfe4(b);
             s = func_02072da0(p);

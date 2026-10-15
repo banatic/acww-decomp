@@ -56,24 +56,24 @@ typedef struct Msg {
     u16 unk_04;
 } Msg;
 
-extern "C" void func_020154b4(UnkStruct_02278c14 *, u16 *, int, int, int);
-extern "C" void func_0209a000(u16 *, int);
+extern "C" int func_020154b4(UnkStruct_02278c14 *, u16 *, int, int, int);
+extern "C" int func_0209a000(u16 *, int);
 extern "C" void func_0206844c(void *, u8 *, const void *);
 extern "C" void *func_020867a0(void *);
 extern "C" void func_020867a4(void *, void *);
-extern "C" void func_02094fd4(int *);
-extern "C" void func_02094fbc(int *);
+extern "C" void *func_02094fd4(int *);
+extern "C" void *func_02094fbc(int *);
 extern "C" int func_02003704(void *);
 extern "C" char *func_0204c7c0(void);
-extern "C" void func_020984e8(void);
-extern "C" int func_02099870(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099870(int);
 extern "C" char *func_0207cb10(char *, int);
 extern "C" void *func_0208150c(char *);
-extern "C" void func_02003618(void *, int *);
-extern "C" void func_0203d7c4(int, int *);
+extern "C" int func_02003618(void *, int *);
+extern "C" int func_0203d7c4(int, int *);
 extern "C" void func_02068404(void *, int, int *);
 extern "C" void *func_020644cc(int);
-extern "C" void func_02077f14(void *, const void *);
+extern "C" void *func_02077f14(void *, const void *);
 extern "C" void func_0207a44c(void *);
 extern "C" int data_021f3aa4;
 extern "C" int data_021e5a2c;
@@ -110,8 +110,7 @@ extern "C" void func_ov085_02278c14(UnkStruct_02278c14 *self)
         func_02094fd4(blk);
         if (func_02003704(o) == 0) {
             c = func_0204c7c0();
-            func_020984e8();
-            c = func_0207cb10(c + 0x9284, func_02099870());
+            c = func_0207cb10(c + 0x9284, func_02099870((int) func_020984e8()));
             if (func_02003704(func_0208150c(c)) != 0) {
                 func_020867a4(&data_021f3aa4, func_0208150c(c));
                 o = func_020867a0(&data_021f3aa4);

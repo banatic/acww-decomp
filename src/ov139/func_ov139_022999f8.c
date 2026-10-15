@@ -15,9 +15,9 @@ struct UnkStruct_022999f8 {
     unsigned char unk_9A2;
 };
 
-extern void func_02002c6c(const unsigned char *, void *, int, int, int, int);
-extern void func_02002d14(const unsigned char *, void *, int, int, int, int);
-extern void func_02064af4(const unsigned char *, void *, int);
+extern int func_02002c6c(const unsigned char *, void *, int, int, int, int);
+extern int func_02002d14(const unsigned char *, void *, int, int, int, int);
+extern int func_02064af4(const unsigned char *, void *, int);
 extern void MIi_CpuCopy16(void *, void *, int);
 
 void func_ov139_022999f8(struct UnkStruct_022999f8 *s)

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b3f58(int a, int b);
+extern int func_020b3f58(int a);
 extern int func_02073d90(void *p);
 extern int func_02073918(void *p, int n);
 extern void func_02073820(void *p);
@@ -19,7 +19,7 @@ extern void *data_020ccf94;
 
 void func_020b23ec(int a, int b)
 {
-    int idx = func_020b3f58(a, b);
+    int idx = func_020b3f58(a);
     void *p = data_020ccf94;
 
     if (func_02073d90(p) == 0 || func_02073918(p, 0) != 0 || func_02073918(p, 4) != 0) {

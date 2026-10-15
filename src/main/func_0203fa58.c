@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern int func_020992f0(void);
+extern int func_020984e8(void);
+extern int func_020992f0(unsigned int);
 extern int func_0203fa98(int, int);
 
 int func_0203fa58(void)
@@ -12,8 +12,7 @@ int func_0203fa58(void)
     int count;
     int a;
 
-    func_020984e8();
-    a = func_020992f0();
+    a = func_020992f0((unsigned int) func_020984e8());
     count = 0;
     i = count;
     do {

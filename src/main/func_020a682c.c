@@ -4,7 +4,7 @@
 
 extern int func_020a6878(void *p);
 extern void func_020a7704(void *p, int *b, int *a);
-extern void *MI_CpuCopy8(void *dst, const void *src, int n);
+extern void MI_CpuCopy8(void *dst, const void *src, int n);
 extern void func_020a76f8(void *p);
 
 void func_020a682c(void *param)

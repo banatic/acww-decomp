@@ -2,8 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_020f7b98(unsigned int arg0, unsigned int arg1)
+extern int func_020f7bc4(void *receiver, int sequence, void *handle);
+
+void func_020f7b98(char *self)
 {
-    extern void func_020f7bc4(unsigned int, unsigned int, unsigned int);
-    func_020f7bc4(arg0, 0x4f1, arg0 + 4);
+    func_020f7bc4(self, 0x4f1, self + 4);
 }

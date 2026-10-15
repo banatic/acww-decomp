@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov129_0229bd1c(void);
+extern int func_ov129_0229bd1c(void *argument0);
 extern int func_ov127_022996d8(int a);
 extern int func_ov127_022996c8(int a);
 extern int func_ov127_022996e4(unsigned short *out, int a, int b);
@@ -16,7 +16,7 @@ void func_ov129_0229be04(void *obj, int param)
     if (param == 0xFF) {
         return;
     }
-    if (func_ov129_0229bd1c() == -1) {
+    if (func_ov129_0229bd1c(obj) == -1) {
         return;
     }
 

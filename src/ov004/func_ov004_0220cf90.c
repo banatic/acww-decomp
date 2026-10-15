@@ -10,8 +10,8 @@ typedef struct {
 } UnkStruct_0220cf90;
 
 extern int func_ov004_0220ebe0(UnkStruct_0220cf90 *, int);
-extern void func_ov004_0220ccf8(UnkStruct_0220cf90 *, int);
-extern void func_02095380(int);
+extern int func_ov004_0220ccf8(UnkStruct_0220cf90 *, int);
+extern int func_02095380(int);
 
 int func_ov004_0220cf90(UnkStruct_0220cf90 *p, int b)
 {

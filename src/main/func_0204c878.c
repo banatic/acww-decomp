@@ -15,14 +15,16 @@ extern int func_020628ac(UnkStruct_0204c878 *);
 extern void func_020051b0(UnkStruct_0204c878 *);
 extern int func_0204ca64(UnkStruct_0204c878 *);
 extern int func_0204c7c0(void);
-extern void func_0204ca60(int);
-extern int func_0204ca48(void);
+extern int func_0204ca60(int);
+extern int func_0204ca48(unsigned int);
 extern int func_0204ca08(UnkStruct_0204c878 *, UnkStruct_0204c878 *);
 extern int func_0204bc64(UnkStruct_0204c878 *);
-extern int func_02053e18(void);
+extern int func_02053e18(int object);
 
 int func_0204c878(void *arg)
 {
+    int forwarded_value;
+
     UnkStruct_0204c878 a, b, c, d, e, f;
     int r;
 
@@ -37,8 +39,7 @@ int func_0204c878(void *arg)
                 return r;
             }
             if (func_0204ca64(&a) != 0) {
-                func_0204ca60(func_0204c7c0() + 0x17254);
-                NNS_FndAllocFromAllocator(&b, func_0204ca48());
+                NNS_FndAllocFromAllocator(&b, func_0204ca48((unsigned int) func_0204ca60(func_0204c7c0() + 0x17254)));
                 if (func_0204ca08(&a, &b) != 0) {
                     NNS_FndAllocFromAllocator(&d, func_0204b42c(&a));
                     r = func_020628ac(&d) / 5;
@@ -62,12 +63,12 @@ int func_0204c878(void *arg)
             return r;
         case 3:
         case 4:
-            if (func_0204bc64(&a) == 0x208) {
-                r = 100 * func_02053e18();
+            if ((forwarded_value = (int) func_0204bc64(&a)) == 0x208) {
+                r = 100 * func_02053e18((int) forwarded_value);
                 func_020051b0(&a);
                 return r;
             }
-            r = func_02053e18();
+            r = func_02053e18((int) forwarded_value);
             func_020051b0(&a);
             return r;
         default:

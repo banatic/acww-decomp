@@ -3,19 +3,19 @@
  */
 
 extern int func_020984e8(void);
-extern int func_020992fc(void);
+extern int func_020992fc(int);
 extern int func_0206f798(void);
 extern int func_020983f0(int);
-extern int func_020983ec(int, int);
+extern void func_020983ec(int, int);
 extern int _s32_div_f(int, int);
 extern void func_02066694(char *);
-extern void func_020b5630(char *);
-extern void func_020b45d0(char *, int, int, int, int, int);
-extern void func_0203d7c4(int, char *);
+extern void *func_020b5630(char *);
+extern int func_020b45d0(char *, int, int, int, int, int);
+extern int func_0203d7c4(int, char *);
 extern int func_02099870(int);
 extern void func_02066024(char *, char *, const char *, const char *, const char *, int);
-extern void func_02097a54(char *);
-extern void func_020b5618(char *);
+extern int func_02097a54(char *);
+extern void *func_020b5618(char *);
 extern void func_02066688(char *);
 extern char data_020e310c;
 extern char data_020e3118;
@@ -31,7 +31,7 @@ void func_020982f8(int p)
     char temp[64];
     char big[256];
     h = func_020984e8();
-    k = func_020992fc();
+    k = func_020992fc(h);
     if (func_0206f798() != 0) {
         return;
     }

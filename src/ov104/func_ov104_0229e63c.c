@@ -19,7 +19,7 @@ extern int func_ov104_0229da70(void *, int);
 extern int func_ov104_0229d7bc(void *, int);
 extern int func_ov104_0229d7fc(void *, int);
 extern int func_ov104_0229d974(void *, int);
-extern void func_ov104_0229db30(void *, int, void *);
+extern int func_ov104_0229db30(void *, int, void *);
 extern void func_ov104_0229d6e8(void *, int);
 extern void func_ov104_0229dd00(void *);
 extern void func_ov094_022999d8(void);

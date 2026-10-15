@@ -6,12 +6,12 @@ extern int func_ov130_02299ddc(void *p);
 extern int func_ov130_02299dd8(void *p);
 extern int func_ov130_02299dd4(void *p);
 extern int func_020984e8(void);
-extern int func_020992fc(void);
+extern int func_020992fc(int argument0);
 extern int func_0206fca4(void);
-extern int func_020983ec(int a, int b);
+extern void func_020983ec(int a, int b);
 extern int func_02099734(int a);
-extern int func_02098a24(int a, int b, int c);
-extern int func_02060d24(int a, int b);
+extern void func_02098a24(int a, int b, int c);
+extern void func_02060d24(int a, int b);
 extern unsigned char data_021ebcd4[];
 
 void func_ov131_0229ad5c(void *obj)
@@ -26,7 +26,7 @@ void func_ov131_0229ad5c(void *obj)
     local4 = func_ov130_02299dd8(((char *) obj) + 0x2c4);
     r6 = func_ov130_02299dd4(((char *) obj) + 0x2c4);
     r7 = func_020984e8();
-    local0 = func_020992fc();
+    local0 = func_020992fc(r7);
     r5 = func_0206fca4();
     switch (r5) {
         case 0x36:

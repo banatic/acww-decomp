@@ -13,8 +13,7 @@ typedef struct {
 } UnkStruct_020597a8_2;
 
 extern u8 data_020e54a8;
-extern void func_0204fdec(int a, int b, UnkStruct_020597a8 *c, UnkStruct_020597a8 *d, int e, int f, int g, int h, int i,
-                          int j);
+extern int func_0204fdec(int a, int b, UnkStruct_020597a8 *c, UnkStruct_020597a8 *d, int e, int f, int g, int h, int i, int j);
 extern void func_ov003_02224678(int id, UnkStruct_020597a8 *a, UnkStruct_020597a8 *b, int c, int d, int e);
 extern void func_ov004_02233b10(int id, UnkStruct_020597a8 *a, UnkStruct_020597a8 *b, int c, int d, int e);
 

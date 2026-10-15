@@ -5,10 +5,10 @@
 extern int data_020dcd78;
 extern char *data_021c8184;
 
-extern void func_020044a0(void *);
+extern int func_020044a0(void *);
 extern void func_0205502c(void *);
 extern void func_0209d090(void *);
-extern void func_02055454(void *);
+extern int func_02055454(void *);
 extern void func_0209d200(void *, void *);
 
 typedef struct UnkStruct_020505f4 {

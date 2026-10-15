@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_02207d24(void *addr, int value);
+extern int func_ov002_02207d24(void *addr, int value);
 extern void func_ov099_0229c754(void *obj);
 extern int func_020ee45c(void *obj);
 extern void func_ov092_02299324(int a, int b, int c);

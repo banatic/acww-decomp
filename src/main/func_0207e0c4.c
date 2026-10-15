@@ -10,8 +10,8 @@ typedef struct UnkStruct_0207e0c4 {
 } UnkStruct_0207e0c4;
 
 extern UnkStruct_0207e0c4 data_020cd5c4[];
-extern void func_02099870(void);
-extern int func_020950c0(void);
+extern int func_02099870(int);
+extern int func_020950c0(signed char *);
 
 int func_0207e0c4(int a, int b, int c)
 {
@@ -20,8 +20,7 @@ int func_0207e0c4(int a, int b, int c)
     int res;
     int i;
 
-    func_02099870();
-    k = func_020950c0();
+    k = func_020950c0((signed char *) func_02099870(a));
     e = data_020cd5c4;
     res = 0x58;
     for (i = 0; i < 0x58; i++) {

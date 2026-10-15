@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void DWC_GetFriendDataType(void);
+extern int DWC_GetFriendDataType(void *friendData);
 
-void func_020eb04c(void)
+int func_020eb04c(void *friendData)
 {
-    DWC_GetFriendDataType();
+    return DWC_GetFriendDataType(friendData);
 }

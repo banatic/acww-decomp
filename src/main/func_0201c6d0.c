@@ -34,7 +34,7 @@ extern struct UnkStruct_0201c6d0_2 *data_020ccf94;
 extern u16 data_020c80f8;
 
 extern void *func_0207f270(void *);
-extern int func_020794c4(void);
+extern int func_020794c4(unsigned char *);
 extern int func_0201cd2c(struct UnkStruct_0201c6d0 *);
 extern int func_02073dd4(void *, void *);
 extern int func_02014868(void *);
@@ -48,7 +48,7 @@ extern void func_0201ccc0(struct UnkStruct_0201c6d0 *);
 extern void *func_020164a0(void *, int);
 extern void *func_020168ac(void *, int, void *);
 extern int func_0201c9a4(struct UnkStruct_0201c6d0 *, struct Other *);
-extern void func_02019d0c(void *, int, void *, int, int, int, int, int, int, u16, int);
+extern int func_02019d0c(void *, int, void *, int, int, int, int, int, int, u16, int);
 extern void func_0201c828(struct UnkStruct_0201c6d0 *, struct Other *, int);
 extern void func_0201cbcc(struct UnkStruct_0201c6d0 *, struct Other *);
 
@@ -58,7 +58,7 @@ void func_0201c6d0(struct UnkStruct_0201c6d0 *self, struct Other *other)
     int r6;
 
     r7 = func_0207f270(other->unk_830);
-    r6 = func_020794c4();
+    r6 = func_020794c4(r7);
 
     if (func_0201cd2c(self) == 0) {
         return;

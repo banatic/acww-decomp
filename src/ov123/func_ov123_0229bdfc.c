@@ -7,8 +7,8 @@ extern const char data_ov123_0229d21c[];
 extern const char data_ov123_0229d230[];
 extern const char data_ov123_0229d244[];
 
-extern void func_02002d14(const void *data, const void *ptr, int arg3, int arg4, int arg5, int arg6);
-extern void func_02002c6c(const void *data, const void *ptr, int arg3, int arg4, int arg5, int arg6);
+extern int func_02002d14(const void *data, const void *ptr, int arg3, int arg4, int arg5, int arg6);
+extern int func_02002c6c(const void *data, const void *ptr, int arg3, int arg4, int arg5, int arg6);
 
 void func_ov123_0229bdfc(void)
 {

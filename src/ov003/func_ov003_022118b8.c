@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short func_02077898(void *self, unsigned int *out1);
+extern unsigned short func_02077898(void *self);
 
 typedef struct {
     unsigned char pad_00[2];
@@ -15,6 +15,6 @@ void func_ov003_022118b8(UnkStruct_022118b8 *self, unsigned int *out1, unsigned 
 {
     out1[0] = self->unk_02;
     out1[1] = self->unk_03;
-    *out2 = func_02077898(self, out1);
+    *out2 = func_02077898(self);
     *out3 = self->unk_04;
 }

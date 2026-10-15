@@ -28,11 +28,11 @@ class VBase {
 
 extern "C" {
 void *func_02015da0(struct Param *p, unsigned char b);
-VBase *func_0201c274(void);
+VBase *func_0201c274(void *);
 void *func_02015d44(void);
 void *func_0201c2c8(void *a, void *b);
 void func_0201ad18(void *a, int b, int c, int d, void *e, void *f, int g, int h);
-void func_02019d0c(void *a, int b, int c, int d, int e, int f, void *g, int h, int i, unsigned short j, int k);
+int func_02019d0c(void *a, int b, int c, int d, int e, int f, void *g, int h, int i, unsigned short j, int k);
 extern unsigned short data_020c80f8;
 void func_02015c7c(struct Param *p);
 }
@@ -48,7 +48,7 @@ void func_02015c7c(struct Param *p)
 
     r5 = func_02015da0(p, p->byte);
     if (r5) {
-        r4 = func_0201c274();
+        r4 = func_0201c274(r5);
         r7 = func_02015d44();
         r6 = func_0201c2c8(r5, r7);
         if (r4) {

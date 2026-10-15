@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0226793c;
 extern void func_ov068_0226cce8(UnkStruct_0226793c *s, int a, int flag);
 extern void func_0203eddc(int a);
-extern void func_0203e0a8(int a, int flag);
+extern int func_0203e0a8(int a, int flag);
 
 void func_ov068_0226793c(UnkStruct_0226793c *s, int a)
 {

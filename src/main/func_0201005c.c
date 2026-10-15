@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020ea990(void *p);
+extern int func_020ea990(void *p, void *);
 extern int func_020e8ed8(int a, int b);
 extern int func_020e8b4c(int a, short b);
 extern int data_020c766c[];
 
 int func_0201005c(unsigned char *self, unsigned char *other, int index)
 {
-    if (func_020ea990(self + 0x6f4) >= ((data_020c766c[index] << 13) >> 12)) {
+    if (func_020ea990(self + 0x6f4, other) >= ((data_020c766c[index] << 13) >> 12)) {
         goto ret0;
     }
 

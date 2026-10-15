@@ -7,9 +7,9 @@ extern int data_ov106_0229f740[];
 extern int data_ov106_0229f760[];
 extern int data_ov106_0229f784[];
 
-extern void func_02002d14(int *p, int a, int b, int c, int d, int e);
-extern void func_02002ca4(int *p, int a, int b);
-extern void func_02002c6c(int *p, int a, int b, int c, int d, int e);
+extern int func_02002d14(int *p, int a, int b, int c, int d, int e);
+extern int func_02002ca4(int *p, int a, int b);
+extern int func_02002c6c(int *p, int a, int b, int c, int d, int e);
 
 void func_ov106_0229e88c(void)
 {

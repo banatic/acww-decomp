@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02001b34(int);
-extern int func_02001b60(int);
+extern void func_02001b34(int);
+extern int func_02001b60(void);
 
 void func_ov147_0229a374(void)
 {
@@ -11,7 +11,7 @@ void func_ov147_0229a374(void)
     unsigned int *p;
     int val;
 
-    val = func_02001b60(func_02001b34(8));
+    val = ((void) (func_02001b34(8)), func_02001b60());
     p = (unsigned int *) 0x04000000;
     v = *p & 0xffffe0ff;
     v |= (val << 8);

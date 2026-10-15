@@ -43,8 +43,8 @@ class UnkStruct_022750d0 {
 
 extern UnkStruct_022750d0 *data_ov068_022788b0;
 extern "C" void func_ov004_0222c590(UnkStruct_022750d0 *p, int arg);
-extern "C" void func_ov004_0222c5c8(UnkStruct_022750d0 *p, int *arg);
-extern "C" void func_ov004_0222c62c(void *a, void *b, void *c, void *d);
+extern "C" int func_ov004_0222c5c8(UnkStruct_022750d0 *p, int *arg);
+extern "C" int func_ov004_0222c62c(void *a, void *b, void *c, void *d);
 
 extern int data_ov068_02277fa4;
 extern int data_ov068_02277fb0;

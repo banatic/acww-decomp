@@ -5,7 +5,7 @@
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
-extern void func_ov002_02208098(void *p, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_02207cf8(void *p);
 extern void func_ov094_022999cc(void);
 
@@ -29,7 +29,7 @@ void func_ov110_0229d7b8(Context *p, int arg1)
     unsigned char g1, g2;
 
     p->unk_F2 = (unsigned char) arg1;
-    func_ov002_02208098(p, 1);
+    func_ov002_02208098((void *) (p), 1);
     g1 = data_021f6c58;
     g2 = data_021f6c54;
     p->unk_A0 = func_ov110_0229d3d8(p, p->unk_F2) - g1;

@@ -3,7 +3,7 @@
  */
 
 extern void VEC_Add(void *a, void *b, void *c);
-extern void func_020044c0(void *p, int a, int b, int c);
+extern int func_020044c0(void *p, int a, int b, int c);
 extern void func_ov003_02222860(void *self);
 
 typedef struct {

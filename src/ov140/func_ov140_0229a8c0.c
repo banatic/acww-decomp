@@ -4,10 +4,10 @@
 
 extern int func_0208e484(void *);
 extern void func_ov140_0229a590(void *);
-extern void func_ov002_02208098(void *, unsigned char);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov140_02299fb0(void *, int);
 extern void func_ov140_02299f90(void *, int);
-extern void func_ov140_0229a614(void *);
+extern int func_ov140_0229a614(void *);
 
 typedef struct {
     unsigned char pad_00[0x8AE];
@@ -24,7 +24,7 @@ void func_ov140_0229a8c0(UnkStruct_0229a8c0 *obj)
         return;
     }
     func_ov140_0229a590(obj);
-    func_ov002_02208098(obj, obj->unk_8AE);
+    func_ov002_02208098((void *) (obj), obj->unk_8AE);
     if (func_ov140_02299fb0(obj, 8) == 0) {
         return;
     }

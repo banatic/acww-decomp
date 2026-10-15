@@ -13,7 +13,7 @@ extern UnkStruct_022615d8 *func_02095794(int);
 extern int func_0201c378(void *self, int n);
 extern void func_0201b458(UnkStruct_022615d8 *out, void *self, UnkStruct_022615d8 *in);
 extern int func_02019e00(void *p);
-extern void func_02019d0c(void *p, int r1, int r2, int r3, int s1, int s2, int s3, int s4, int s5, int s6, int s7);
+extern int func_02019d0c(void *p, int r1, int r2, int r3, int s1, int s2, int s3, int s4, int s5, int s6, int s7);
 extern void func_0201b044(void *p, UnkStruct_022615d8 *buf);
 extern int func_020eaa6c(UnkStruct_022615d8 *buf, void *p);
 extern void func_ov052_02261908(void *self, int flag);

@@ -23,7 +23,7 @@ extern int func_ov093_02298fac(St *st, int n);
 extern void func_ov093_02298f9c(St *st, int n);
 extern void func_ov093_0229937c(void *a, char *s, int n, int m);
 extern void *func_ov093_02299090(void *a);
-extern void func_020a8a34(void *w, char *p);
+extern int func_020a8a34(void *w, char *p);
 extern void func_02070a98(void *w, void *b, int x, int y, int p1, int p2, int p3);
 extern void func_02070a04(void *w, int x, int y);
 extern void func_02070adc(void *w, void *b, int x, int y, int p1, int p2, int p3);

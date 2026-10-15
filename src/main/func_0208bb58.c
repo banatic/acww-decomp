@@ -3,10 +3,10 @@
  */
 
 extern void func_0208ba10(void *self);
-extern void func_020b5618(void *ptr);
+extern void *func_020b5618(void *ptr);
 extern void func_0208a1f4(void *ptr);
 extern void func_0208af00(void *self);
-extern __arm void func_020edb3c(void *self);
+extern void func_020edb3c(void *self);
 extern char data_020e21fc;
 
 void *func_0208bb58(void *self)

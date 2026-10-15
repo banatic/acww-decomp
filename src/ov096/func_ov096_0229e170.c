@@ -15,7 +15,7 @@ typedef struct UnkStruct_0229e170 {
 } UnkStruct_0229e170;
 
 extern int func_0204c878(volatile u16 *p);
-extern int func_ov096_0229e158(UnkStruct_0229e170 *self);
+extern int func_ov096_0229e158(void);
 
 int func_ov096_0229e170(UnkStruct_0229e170 *self, int flag)
 {
@@ -38,7 +38,13 @@ int func_ov096_0229e170(UnkStruct_0229e170 *self, int flag)
         if (ok > 0) {
             if (flag != 0) {
                 int x = func_0204c878(&id);
-                if ((unsigned int) (x + func_ov096_0229e158(self)) > 0x1869f) {
+                // clang-format off
+                asm {
+                    mov r0, self
+                }
+                // clang-format on
+                if ((unsigned int) (x + func_ov096_0229e158()) > 0x1869f)
+                {
                     return 0;
                 }
             }

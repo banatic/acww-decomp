@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_ov002_0220a58c(void *);
+extern int func_ov002_0220a58c(void *, int arg1, int arg2);
 extern void func_ov002_0220a574(void *);
 extern int func_02088d34(const void *, int, int, int, int);
 extern const u8 data_ov114_0229db00[];
@@ -24,7 +24,7 @@ int func_ov114_0229d3f4(UnkStruct_0229d3f4 *self, int x, int y)
     int dx;
     unsigned int dy;
 
-    if (func_ov002_0220a58c(self->sub_121c)) {
+    if (func_ov002_0220a58c(self->sub_121c, x, y)) {
         self->unk_1274 = self->unk_1270 - x;
         func_ov002_0220a574(self->sub_121c);
         self->unk_12BB = 2;

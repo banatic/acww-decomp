@@ -27,16 +27,16 @@ typedef struct UnkStruct_02278ae8_3 {
 extern u8 data_021ebcd2;
 extern int data_ov072_02279a00;
 
-extern void func_02015590(UnkStruct_02278ae8_4 *self, int a);
+extern int func_02015590(UnkStruct_02278ae8_4 *self, int a);
 extern void func_ov072_02278f00(UnkStruct_02278ae8_4 *self, int a);
-extern void func_ov072_02279098(UnkStruct_02278ae8_4 *self);
-extern void func_02015330(UnkStruct_02278ae8_4 *self, u16 *p, int a, int b, int c);
+extern void func_ov072_02279098(void);
+extern int func_02015330(UnkStruct_02278ae8_4 *self, u16 *p, int a, int b, int c);
 extern int func_020871a8(u8 *p);
 extern void func_02063ccc(UnkStruct_02278ae8_3 *o, int a, int b);
 extern void func_020638d4(u16 *p, UnkStruct_02278ae8_3 *o, int a, int b, int c, int d, int e);
 extern void func_02063cc8(UnkStruct_02278ae8_3 *o);
-extern void func_020154b4(UnkStruct_02278ae8_4 *self, u16 *p, int a, int b, int c);
-extern void func_0209a000(u16 *p, int a);
+extern int func_020154b4(UnkStruct_02278ae8_4 *self, u16 *p, int a, int b, int c);
+extern int func_0209a000(u16 *p, int a);
 extern void func_0204093c(int a);
 extern void func_0206844c(int h, u8 *p, int k);
 
@@ -59,7 +59,7 @@ void func_ov072_02278ae8(UnkStruct_02278ae8_4 *self)
             func_ov072_02278f00(self, 1);
             break;
         case 0xb:
-            func_ov072_02279098(self);
+            func_ov072_02279098();
             break;
         case 0x14:
         case 0x15:

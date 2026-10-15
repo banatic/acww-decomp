@@ -22,7 +22,7 @@ extern int data_ov054_02262a18[];
 
 extern int func_020984e8(void);
 extern int func_020992fc(int a);
-extern int func_020983e0(int a);
+extern int func_020983e0(void);
 extern int func_020983c4(int a);
 extern void func_020983c0(int a, int b);
 extern void func_02098ff8(int a, int b);
@@ -44,7 +44,7 @@ void func_ov054_02260710(UnkStruct_02260710 *self)
     k = data_ov054_02262fac[*(int *) (self->unk_B0 + 0x808)].w[0];
     a = func_020984e8();
     b = func_020992fc(a);
-    v = func_020983e0(b);
+    v = func_020983e0();
     code = (u8) (func_020983c4(b) + 0x1f);
     for (i = 1; i < 0x15; i++) {
         lo = data_ov054_02262a18[i];

@@ -45,7 +45,7 @@ extern "C" UnkStruct_0221ec04 *func_02080ce4(int h);
 extern "C" UnkStruct_0221ec04 *func_0202defc(char *p);
 extern "C" int func_0204bcdc(UnkStruct_0221ec04 *p);
 extern "C" int func_0204bc64(UnkStruct_0221ec04 *p);
-extern "C" void func_0202df18(char *p, UnkStruct_0221ec04_2 *self, UnkStruct_0221ec04 *it);
+extern "C" int func_0202df18(char *p, UnkStruct_0221ec04_2 *self, UnkStruct_0221ec04 *it);
 extern "C" void func_0201c6d0(char *p, UnkStruct_0221ec04_2 *self);
 
 extern "C" int func_ov004_0221ec04(UnkStruct_0221ec04_2 *self)

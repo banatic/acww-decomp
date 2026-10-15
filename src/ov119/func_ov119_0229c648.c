@@ -13,7 +13,7 @@ typedef struct UnkStruct_0229c648 {
 
 extern u16 data_021fbe40[];
 
-extern void func_0206f58c(UnkStruct_0229c648 *);
+extern void func_0206f58c(void);
 extern int func_0206f56c(void);
 extern int func_ov119_0229c608(UnkStruct_0229c648 *, int);
 extern int func_0206fe60(void);
@@ -24,7 +24,7 @@ int func_ov119_0229c648(UnkStruct_0229c648 *o)
     int r;
     u16 w;
 
-    func_0206f58c(o);
+    func_0206f58c();
     if (func_0206f56c()) {
         switch (o->unk_8D) {
             case 0:

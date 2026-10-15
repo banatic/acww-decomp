@@ -3,8 +3,8 @@
  */
 
 extern int func_0205d25c(void *p);
-extern int func_0203cfa8(int a);
-extern void func_020b9d3c(void *p, int b, void *c, int d, int e, int f);
+extern int func_0203cfa8(unsigned int *);
+extern int func_020b9d3c(void *p, int b, void *c, int d, int e, int f);
 extern int data_020d8408;
 
 typedef struct {
@@ -15,8 +15,9 @@ typedef struct {
     int unk_778;
 } my_struct;
 
-void func_0201063c(my_struct *self)
+int func_0201063c(my_struct *self)
 {
     int val = self->unk_290;
-    func_020b9d3c(&self->unk_778, val, &data_020d8408, func_0203cfa8(func_0205d25c(&self->unk_774)), 0, 0);
+    return func_020b9d3c(&self->unk_778, val, &data_020d8408, (func_0203cfa8((unsigned int *) func_0205d25c(&self->unk_774))),
+                         0, 0);
 }

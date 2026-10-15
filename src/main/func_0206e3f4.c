@@ -4,7 +4,7 @@
 
 extern void func_0206e438(int, int);
 extern void func_0206e6c4(int, void *);
-extern void OS_DisableInterrupts(void);
+extern unsigned int OS_DisableInterrupts(void);
 extern void OS_Halt(void);
 extern unsigned char data_021cfb64;
 

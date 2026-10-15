@@ -9,7 +9,7 @@ typedef struct {
     unsigned char flag;
 } UnkStruct_0229d304;
 
-extern void func_ov002_0220a568(void *);
+extern int func_ov002_0220a568(void *);
 
 void func_ov114_0229d304(UnkStruct_0229d304 *p)
 {

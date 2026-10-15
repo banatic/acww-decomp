@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020736e4(int a, int b, int c);
-extern int MI_CpuCopy8(int a, int b, int c);
-extern int func_020736ec(int a, int b);
+extern int func_020736e4(int a);
+extern void MI_CpuCopy8(int a, int b, int c);
+extern void func_020736ec(int a, int b);
 
-int func_020736bc(int a, int b, int c)
+void func_020736bc(int a, int b, int c)
 {
     int tmp;
-    tmp = func_020736e4(a, b, c);
+    tmp = func_020736e4(a);
     MI_CpuCopy8(tmp, b, c);
-    return func_020736ec(a, tmp + c);
+    func_020736ec(a, tmp + c);
 }

@@ -8,7 +8,7 @@ extern void func_02055060(void *, int, int, int, int, int);
 extern int func_ov004_0222c3c4(void *, int);
 extern void *data_ov004_022588c8;
 
-void func_ov004_02230c98(char *self)
+void func_ov004_02230c98(void)
 {
     // DECLS
     // ENDDECLS

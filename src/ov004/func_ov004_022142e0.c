@@ -15,11 +15,11 @@ typedef struct {
 } UnkStruct_022142e0;
 
 extern Mtx43 data_021fbe48;
-extern int func_ov004_0220cfd4(void *p);
+extern int func_ov004_0220cfd4(void *p, int arg1);
 extern void MTX_MultVec43(Vec3 *a, Mtx43 *m, Vec3 *out);
-extern void func_02034270(UnkStruct_022142e0 *o, Vec3 *v, int a, int b);
+extern int func_02034270(UnkStruct_022142e0 *o, Vec3 *v, int a, int b);
 extern int func_020341c8(UnkStruct_022142e0 *o, int a);
-extern void func_02052738(void *self, int a, int b, int c);
+extern int func_02052738(void *self, int a, int b, int c);
 extern void func_0203423c(UnkStruct_022142e0 *o);
 
 void func_ov004_022142e0(char *self, int unused, char *arg2)
@@ -29,7 +29,7 @@ void func_ov004_022142e0(char *self, int unused, char *arg2)
     UnkStruct_022142e0 obj;
     Vec3 *q;
 
-    if (func_ov004_0220cfd4(self + 0x764) != 0 && *(u8 *) (self + 0x844) == 1) {
+    if (func_ov004_0220cfd4(self + 0x764, unused) != 0 && *(u8 *) (self + 0x844) == 1) {
         q = (Vec3 *) ((char *) *(void **) (arg2 + 0xb4) + 0x4c);
         v.x = q->x;
         v.y = q->y;

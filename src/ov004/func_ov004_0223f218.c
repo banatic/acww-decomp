@@ -11,8 +11,12 @@ typedef struct {
     int storage[39];
 } Collider;
 extern u8 data_ov004_02259a24, data_ov004_02259a34[];
-extern void func_020324fc(Collider *), func_020324c4(Collider *), func_02032180(Collider *), func_ov004_0223f110(void *),
-    func_ov004_0223f6dc(void *, void *), func_ov004_0223f41c(void *, void *);
+extern void *func_020324fc(Collider *);
+extern void *func_020324c4(Collider *);
+extern int func_02032180(Collider *);
+extern void func_ov004_0223f110(void *);
+extern void func_ov004_0223f6dc(void *, void *);
+extern void func_ov004_0223f41c(void *, void *);
 extern int func_020321bc(Collider *, int, int, int, Vec *, short, Vec *);
 int func_ov004_0223f218(u8 *self)
 {

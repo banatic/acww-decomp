@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02055d0c(unsigned char *p1, unsigned char *p2, int p3);
+extern int func_02055d0c(unsigned char *p1, unsigned char *p2, int p3);
 
 void func_0201adbc(unsigned char *a, unsigned char *b)
 {

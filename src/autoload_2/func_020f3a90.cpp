@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020f44f8(void *self);
+extern "C" void func_020f44f8(void *receiver, int value);
 
 struct UnkStruct_020f3a90 {
     virtual void method0();
@@ -13,8 +13,8 @@ struct UnkStruct_020f3a90_2 {
     UnkStruct_020f3a90 sub;
 };
 
-extern "C" void func_020f3a90(UnkStruct_020f3a90_2 *self)
+extern "C" void func_020f3a90(UnkStruct_020f3a90_2 *self, int value)
 {
-    func_020f44f8(self);
+    func_020f44f8(self, value);
     self->sub.method0();
 }

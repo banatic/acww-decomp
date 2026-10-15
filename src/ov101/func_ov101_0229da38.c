@@ -7,7 +7,7 @@ struct UnkStruct_0229da38 {
     int unk_98;
 };
 
-extern void func_ov002_02207d24(void *addr, int n);
+extern int func_ov002_02207d24(void *addr, int n);
 extern void func_ov101_0229c844(void *self);
 extern int func_020ee45c(void *self);
 extern void func_ov092_02299324(int v, int a, int b);

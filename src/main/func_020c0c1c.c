@@ -12,7 +12,7 @@ extern struct Param {
     int unk_6C;
 };
 
-extern void func_020e88dc(int *p, int a, int b);
+extern int func_020e88dc(int *p, int a, int b);
 
 void func_020c0c1c(struct Param *param)
 {

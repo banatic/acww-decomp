@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a6f74(int a, int b, int c);
-extern int func_020a6f54(unsigned short v);
+extern void func_020a6f74(int a, int b);
+extern void func_020a6f54(unsigned short v);
 
-int func_02075548(unsigned char *param)
+void func_02075548(unsigned char *payload, unsigned int length, int player)
 {
-    unsigned char b = *param;
-    func_020a6f74(3, b & 7, 7);
-    return func_020a6f54((unsigned short) ((b >> 4) & 0xF));
+    unsigned char b = *payload;
+    func_020a6f74(3, b & 7);
+    func_020a6f54((unsigned short) ((b >> 4) & 0xF));
 }

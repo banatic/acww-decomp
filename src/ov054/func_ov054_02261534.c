@@ -27,24 +27,24 @@ typedef struct UnkStruct_02261534 {
 } UnkStruct_02261534;
 
 extern int func_02074308(void);
-extern int func_020ec148(int);
+extern int func_020ec148(void);
 extern int func_020e8840(char *);
 extern void func_ov054_02261f44(UnkStruct_02261534_3 *);
 extern void func_0206844c(void *, u8 *, int);
 extern void func_02068358(void *);
 extern void func_02068434(void *);
 extern void func_ov054_02261cc4(UnkStruct_02261534_3 *, int);
-extern int func_020730c8(void);
-extern void **func_020eb92c(int);
-extern void func_020641c8(int *);
-extern void func_02064170(int *);
-extern void func_02064158(int *);
-extern void func_020641b0(int *);
+extern void func_020730c8(void);
+extern void **func_020eb92c(void);
+extern void *func_020641c8(int *);
+extern void *func_02064170(int *);
+extern void *func_02064158(int *);
+extern void *func_020641b0(int *);
 extern int func_020eb998(void *);
 extern void *func_020eb9c4(void *);
 extern void MI_CpuCopy8(void *, u8 *, int);
 extern void func_020a8874(int *, u8 *, int);
-extern void func_020a8a70(int *, int *, int, int);
+extern int func_020a8a70(int *, int *, int, int);
 extern void func_02068404(void *, int, int *);
 extern int func_020eb8d8(void *);
 extern char data_ov054_02262fac[];
@@ -64,7 +64,8 @@ void func_ov054_02261534(UnkStruct_02261534_3 *this)
     u8 i;
 
     arg3 = *(int *) (data_ov054_02262fac + 12 * this->unk_B0->unk_808);
-    cnt = func_020ec148(func_02074308());
+    func_02074308();
+    cnt = func_020ec148();
     if (func_020e8840(&this->unk_C8) == 0) {
         func_ov054_02261f44(this);
         m.unk_00 = 0x37;
@@ -75,7 +76,8 @@ void func_ov054_02261534(UnkStruct_02261534_3 *this)
         return;
     }
     if (cnt > 0) {
-        list = func_020eb92c(func_020730c8());
+        func_020730c8();
+        list = func_020eb92c();
         func_020641c8(blkA);
         func_02064170(blkB);
         for (i = 0; i < cnt; i++) {

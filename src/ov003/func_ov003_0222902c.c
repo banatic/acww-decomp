@@ -7,10 +7,10 @@
 extern char data_0213efe8[];
 extern char data_0213f020[];
 extern void func_020f5958(char *self);
-extern void func_02032c64(char *p);
+extern void *func_02032c64(char *p);
 extern void func_0209d34c(char *p);
-extern void func_0205577c(char *p);
-extern void func_02055210(char *p);
+extern void *func_0205577c(char *p);
+extern void *func_02055210(char *p);
 extern void func_ov003_02228f48(char *p);
 
 char *func_ov003_0222902c(char *self)

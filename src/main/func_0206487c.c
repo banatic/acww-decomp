@@ -4,7 +4,7 @@
 
 extern void func_02064cd8(void *dst, const void *src);
 extern int func_020648a0(void *ptr);
-extern void FS_CloseFile(void *ptr);
+extern int FS_CloseFile(void *ptr);
 
 int func_0206487c(void *src)
 {

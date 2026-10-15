@@ -7,16 +7,16 @@ typedef struct Pair {
     int y;
 } Pair;
 
-extern int func_0200ffec(void);
+extern int func_0200ffec(void *);
 extern void func_0204f818(int *, int *, int);
-extern void func_ov004_0222ac24(int, Pair *, int, int, int);
-extern void func_0200bdbc(int, Pair *, int, int, int);
-extern void func_ov003_02218ec4(int, Pair *, int, int);
-extern void func_ov003_022100c4(int, Pair *, int, int, int);
+extern int func_ov004_0222ac24(int, Pair *, int, int, int);
+extern int func_0200bdbc(int, Pair *, int, int, int);
+extern int func_ov003_02218ec4(int, Pair *, int, int);
+extern int func_ov003_022100c4(int, Pair *, int, int, int);
 
 int func_0200fd04(int a, int b, int c)
 {
-    int id = func_0200ffec();
+    int id = func_0200ffec((void *) a);
     int v0 = 0;
     int v1 = 0;
 

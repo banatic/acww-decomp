@@ -16,7 +16,7 @@ extern void func_02036450(int);
 extern int data_020ccf94;
 extern int data_021c526c;
 
-void func_ov003_0220db4c(void *arg)
+void func_ov003_0220db4c(void *arg, void *message, int previous)
 {
     struct Sub7d4 *sub = (struct Sub7d4 *) ((char *) arg + 0x7d4);
     int zero = 0;

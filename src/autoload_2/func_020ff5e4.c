@@ -37,7 +37,7 @@ static __inline fx16 FX_CosIdx(int idx)
     return FX_SinCosTable_[((idx >> 4) << 1) + 1];
 }
 
-void func_020ff5e4(SPLSpinBehavior *behavior, SPLParticle *ptcl)
+void func_020ff5e4(SPLSpinBehavior *behavior, SPLParticle *ptcl, void *acceleration, void *emitter)
 {
     MtxFx33 mtx;
 

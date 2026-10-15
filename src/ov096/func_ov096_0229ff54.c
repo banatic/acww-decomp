@@ -9,7 +9,7 @@ extern u32 func_ov096_0229f200(void *self, int x);
 extern void func_ov096_0229c434(void *self);
 extern int func_ov096_0229e2fc(void *self, u32 b, u32 w);
 extern u16 func_ov096_0229e3b0(void *self, u32 b, u32 w);
-extern void func_ov002_02208098(void *self, int x);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov094_02299d7c(void *ptr, int x);
 extern unsigned char data_020e54a8;
 
@@ -39,7 +39,7 @@ void func_ov096_0229ff54(UnkStruct_0229ff54 *self)
     func_ov096_0229c434(self);
 skip:
     if (func_ov096_0229e2fc(self, b, self->unk_AC) != 0) {
-        func_ov002_02208098(self, 0x26);
+        func_ov002_02208098((void *) (self), 0x26);
         self->unk_AC = func_ov096_0229e3b0(self, b, self->unk_AC);
         func_ov094_02299d7c((char *) self + 0xde0, 1);
     }

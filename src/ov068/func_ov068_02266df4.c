@@ -5,30 +5,30 @@
 extern int func_ov068_0226d598(int);
 extern int func_020984e8(void);
 extern int func_0201c330(int, int, int);
-extern int func_02081edc(int);
+extern int func_02081edc(void *record);
 extern int func_02014868(int);
 extern int func_ov068_0226cc00(int);
 extern int func_0201ce18(int);
 extern int func_0201cddc(int);
-int func_ov068_02266df4(int r4)
+int func_ov068_02266df4(int receiver)
 {
-    int r5;
-    r5 = func_ov068_0226d598(r4);
+    int record;
+    record = func_ov068_0226d598(receiver);
     if (func_020984e8() != 0) {
-        r5 = func_ov068_0226d598(r4);
+        record = func_ov068_0226d598(receiver);
     }
-    if (r5 == 0) {
-        if (func_0201c330(r4, 0x6000, 4) == 0) {
+    if (record == 0) {
+        if (func_0201c330(receiver, 0x6000, 4) == 0) {
             goto label_02266e30;
         }
     }
-    if (r5 != 0) {
-        if (func_02081edc(r5) != 0) {
+    if (record != 0) {
+        if (func_02081edc((void *) record) != 0) {
         label_02266e30:
-            if (func_02014868(r4 + 0x618) == 0) {
-                if (func_ov068_0226cc00(r4 + 0x8b8) != 0) {
-                    if (func_0201ce18(r4) == 0) {
-                        if (func_0201cddc(r4) == 0xb) {
+            if (func_02014868(receiver + 0x618) == 0) {
+                if (func_ov068_0226cc00(receiver + 0x8b8) != 0) {
+                    if (func_0201ce18(receiver) == 0) {
+                        if (func_0201cddc(receiver) == 0xb) {
                             return 1;
                         }
                     }

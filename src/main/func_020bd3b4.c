@@ -15,8 +15,8 @@ typedef struct {
     int unk_2F30; // 0x2f30
 } SELF;
 
-extern int func_02041614(int);
-extern int func_0209e474(int *);
+extern int func_02041614(void);
+extern void func_0209e474(int *);
 extern void MI_CpuCopy8(void *, void *, int);
 extern int func_0203fc78(int, void *, int);
 extern int func_020b6640(void);
@@ -73,7 +73,7 @@ void func_020bd3b4(SELF *self)
     r6 = 0;
     buf0[0] = 0;
     buf0[1] = 0;
-    t7 = func_02041614((int) self);
+    t7 = func_02041614();
     func_0209e474(buf0);
     MI_CpuCopy8(buf0, b10, 8);
     res = func_0203fc78(0x13, b10, 1);

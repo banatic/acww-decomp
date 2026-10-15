@@ -23,7 +23,7 @@ extern void func_02081ac0(int p0, unsigned short *p1);
 extern void func_02078710(int a, int b, int c);
 extern unsigned int func_0208150c(unsigned int r0);
 extern int func_020036e8(unsigned char *p0);
-extern void func_0202da38(int p0, int p1, unsigned char *p2, int p3, int p4, int p5, int p6, int p7, int p8);
+extern int func_0202da38(int p0, int p1, unsigned char *p2, int p3, int p4, int p5, int p6, int p7, int p8);
 
 extern G8b data_020c8b10;
 extern G8b data_020c8b00;

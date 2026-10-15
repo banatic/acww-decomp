@@ -25,7 +25,7 @@ extern Rec *func_0209a774(void *p);
 extern int func_0209aebc(char *p, Rec *r);
 extern int func_0207f1c8(void *p);
 extern int func_0209b5e8(int a);
-extern int func_0209b91c(int a);
+extern int func_0209b91c(void *);
 
 int func_0207b86c(char *self, void *a1, void *a2)
 {
@@ -76,8 +76,8 @@ int func_0207b86c(char *self, void *a1, void *a2)
         ret = func_0209bc40((int) p);
         goto out;
     }
-    if (func_0209bd44(func_0209b91c(func_0209b5e8(func_0207f1c8(a1)))) != 0) {
-        ret = func_0209bc40(func_0209b91c(func_0209b5e8(func_0207f1c8(a1))));
+    if (func_0209bd44((func_0209b91c((void *) func_0209b5e8(func_0207f1c8(a1))))) != 0) {
+        ret = func_0209bc40((func_0209b91c((void *) func_0209b5e8(func_0207f1c8(a1)))));
     }
 
 out:

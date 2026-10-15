@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02099734(void);
+extern int func_02099734(int);
 extern int func_02098cf8(int, int);
 
-int func_0207e55c(void)
+int func_0207e55c(int object)
 {
     int v;
-    v = func_02098cf8(func_02099734(), 1);
+    v = func_02098cf8(func_02099734(object), 1);
     if (v >= 10000 && v < 20000) {
         return 1;
     }

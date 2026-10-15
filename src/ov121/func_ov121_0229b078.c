@@ -3,11 +3,13 @@
  */
 
 extern int func_ov002_0220b8ac(void *ptr, int val);
-extern int func_ov121_0229afb8(void *obj);
+extern unsigned char *func_ov121_0229afb8(void *obj);
 
 int func_ov121_0229b078(void *obj)
 {
-    if (func_ov002_0220b8ac((char *) obj + 0x40c, 1)) {
-        return func_ov121_0229afb8(obj);
+    int result = func_ov002_0220b8ac((char *) obj + 0x40c, 1);
+    if (result != 0) {
+        result = (int) func_ov121_0229afb8(obj);
     }
+    return result;
 }

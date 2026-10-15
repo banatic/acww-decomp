@@ -45,7 +45,7 @@ extern void DC_FlushAll(void);
 extern int func_02075fc4(unsigned char *p, unsigned short m);
 extern int func_02075b14(unsigned short m);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern void func_02073d74(struct UnkStruct_020a3bc0 *g, int a);
 extern void func_0209fc40(int a);
 
@@ -174,7 +174,7 @@ void func_020a3bc0(struct UnkStruct_020a3bc0_2 *self)
                 func_02074078();
                 return;
             }
-            if (!func_020ebf70(func_02073044())) {
+            if (!(func_02073044(), func_020ebf70())) {
                 return;
             }
             if (!self->unk_E4) {

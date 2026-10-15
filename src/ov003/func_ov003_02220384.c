@@ -2,13 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_02220294(void);
-extern int func_ov009_0226305c(void);
+extern int func_ov003_02220294(int argument0);
+extern int func_ov009_0226305c(void *object);
 
-int func_ov003_02220384(void)
+int func_ov003_02220384(int argument0)
 {
-    if (func_ov003_02220294()) {
-        return func_ov009_0226305c();
+    int object = func_ov003_02220294(argument0);
+    if (object) {
+        return func_ov009_0226305c((void *) object);
     } else {
         return 0;
     }

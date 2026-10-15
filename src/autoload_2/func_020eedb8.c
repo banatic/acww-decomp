@@ -3,9 +3,9 @@
  */
 
 extern void OS_Terminate(void);
-extern void NNS_SndArcPlayerStartSeqArc(int, int, int);
+extern int NNS_SndArcPlayerStartSeqArc(void *, int, int);
 
-void func_020eedb8(int r0, int r1, int r2)
+int func_020eedb8(int r0, int r1, int r2)
 {
     int r4 = r2;
     int r6 = r0;
@@ -18,5 +18,5 @@ void func_020eedb8(int r0, int r1, int r2)
     OS_Terminate();
 
 label_020eedd0:
-    NNS_SndArcPlayerStartSeqArc(r4, r5, r6);
+    return NNS_SndArcPlayerStartSeqArc((void *) r4, r5, r6);
 }

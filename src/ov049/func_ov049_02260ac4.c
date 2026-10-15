@@ -18,7 +18,7 @@ typedef struct {
 } UnkStruct_02260ac4;
 
 extern void func_0201b420(PtrStruct *a, void *b);
-extern void func_0209a000(char *dst, int val);
+extern int func_0209a000(char *dst, int val);
 extern void func_020ad8f8(unsigned int a, unsigned int b, int c);
 extern void func_0207972c(void);
 

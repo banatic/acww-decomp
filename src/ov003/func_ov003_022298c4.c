@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov003_02229874(void *self);
+int func_ov003_02229874(void *self);
 void func_ov003_022297f0(void *self, void *a);
 
 int func_ov003_022298c4(void *self, void *a)

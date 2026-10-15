@@ -13,9 +13,9 @@ class SomeObj {
 };
 
 extern "C" SomeObj *func_020ab4d4(void *p);
-extern "C" void func_0206923c(void *buf, void *arg);
+extern "C" void *func_0206923c(void *buf, void *arg);
 extern "C" void func_020691cc(void *buf, int val);
-extern "C" void func_0206921c(void *buf);
+extern "C" volatile int *func_0206921c(void *buf);
 
 extern "C" void func_020673e0(void *arg)
 {

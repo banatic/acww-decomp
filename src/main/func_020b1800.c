@@ -5,7 +5,7 @@
 extern void func_020b9ccc(unsigned char *self);
 extern int func_020644cc(int a);
 extern void MI_CpuCopy8(void *dest, const void *src, unsigned int size);
-extern void func_020b9b14(unsigned char *a, unsigned char *b, unsigned int c, int d, int e);
+extern int func_020b9b14(unsigned char *a, unsigned char *b, unsigned int c, int d, int e);
 
 void func_020b1800(unsigned char *self)
 {

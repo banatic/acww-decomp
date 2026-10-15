@@ -30,7 +30,7 @@ extern unsigned int func_020e9dd0(void *h);
 extern void MI_InitUncompContextLZ(UnkStruct_020649ac_2 *c, void *dst, void *p);
 extern int MI_ReadUncompLZ8(UnkStruct_020649ac_2 *c, void *buf, int n);
 extern void func_020e993c(void *h, void *buf);
-extern void FS_CloseFile(UnkStruct_020649ac *f);
+extern int FS_CloseFile(UnkStruct_020649ac *f);
 
 int func_020649ac(UnkStruct_020649ac *f, char *dst, unsigned int len)
 {

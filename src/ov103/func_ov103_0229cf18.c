@@ -16,7 +16,7 @@ typedef struct {
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
-extern void func_ov002_02208098(void *ptr, int val);
+extern unsigned char *func_ov002_02208098(void *ptr, unsigned char value);
 extern void func_ov002_02207cf8(void *ptr);
 extern int func_ov103_0229ccb4(UnkStruct_0229cf18 *s, unsigned char c);
 extern int func_ov103_0229cc80(UnkStruct_0229cf18 *s, unsigned char c);

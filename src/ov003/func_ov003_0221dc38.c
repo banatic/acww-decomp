@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_G3dBindMdlTex(void *, void *);
-extern void NNS_G3dBindMdlPltt(void *, void *);
+extern int NNS_G3dBindMdlTex(void *, void *);
+extern int NNS_G3dBindMdlPltt(void *, void *);
 
 typedef struct {
     char pad_00[0x198];

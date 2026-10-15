@@ -37,7 +37,7 @@ extern int func_02073d90(void *p);
 extern int func_02099e9c(u16 *p);
 extern int func_ov052_02261054(UnkStruct_02260c1c *self);
 extern int func_0202ea80(int a, int b);
-extern int func_02087228(u16 *p);
+extern u16 *func_02087228(void *record);
 extern int func_020951bc(int a);
 extern void func_020871cc(u16 *dst, u16 *src);
 extern void func_02015de4(UnkStruct_02260c1c *self, u16 *p, int a, int b);
@@ -99,7 +99,7 @@ void func_ov052_02260c1c(UnkStruct_02260c1c *self, UnkStruct_02260c1c_2 *out)
                 } else if (func_0202ea80(1, 1) == 0) {
                     self->state = 7;
                 } else {
-                    if (func_020951bc(func_02087228(&data_021f3aec)) != 0) {
+                    if (func_020951bc((int) func_02087228(&data_021f3aec)) != 0) {
                         func_020871cc(&sB, &data_021f3aec);
                         if (func_0204bcdc(&sB) != 0) {
                             sBB = 0xfff1;
@@ -113,10 +113,10 @@ void func_ov052_02260c1c(UnkStruct_02260c1c *self, UnkStruct_02260c1c_2 *out)
                             func_020871cc(&r, &data_021f3aec);
                             func_02015de4(self, &r, 0, 7);
                             v = func_02099870(func_020984e8());
-                            u = func_02087228(&data_021f3aec);
+                            u = (int) func_02087228(&data_021f3aec);
                             if (*(u16 *) u != *(u16 *) v || memcmp((void *) (u + 2), (void *) (v + 2), 12) != 0 ||
                                 func_0209518c(u, v) == 0) {
-                                func_02015e40(self, func_02087228(&data_021f3aec), 1);
+                                func_02015e40(self, (int) func_02087228(&data_021f3aec), 1);
                                 self->state = 8;
                             } else {
                                 func_02015e40(self, func_02099870(t), 1);

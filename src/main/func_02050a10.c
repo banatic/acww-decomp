@@ -7,7 +7,7 @@ typedef struct {
     int handle;
 } UnkStruct_02050a10;
 
-extern int OS_GetLockID(unsigned int size, int sum);
+extern int OS_GetLockID(void);
 extern void func_0211ec44(unsigned short value);
 extern int CARDi_RequestStreamCommand(unsigned int a, unsigned int b, unsigned int c, int d, int e, int f, int g, int h,
                                       int i);
@@ -20,7 +20,7 @@ int func_02050a10(UnkStruct_02050a10 *s, unsigned int a, unsigned int b, unsigne
     if ((c + b) > s->limit) {
         goto exit;
     }
-    s->handle = OS_GetLockID(s->limit, c + b);
+    s->handle = OS_GetLockID();
     if (s->handle == -3) {
         goto exit;
     }

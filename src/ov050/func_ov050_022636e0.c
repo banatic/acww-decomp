@@ -26,11 +26,11 @@ extern int func_0209a034(int a);
 extern void func_0209a050(int a);
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
-extern void func_02015330(UnkStruct_022636e0 *self, u16 *p, int a, int b, int c);
+extern int func_02015330(UnkStruct_022636e0 *self, u16 *p, int a, int b, int c);
 extern int func_02099640(int t);
 extern int func_0209a850(int a);
-extern int func_0209b0f0(int a);
-extern void func_0209bb90(int a, int b);
+extern void *func_0209b0f0(void *record);
+extern void func_0209bb90(void *a, int b);
 extern int func_ov050_02260510(int a);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov050_02265824;
@@ -65,7 +65,11 @@ void func_ov050_022636e0(UnkStruct_022636e0 *self)
                 func_02015330(self, &m.unk_02, 2, 5, 0);
             }
             m.b = 3;
-            func_0209bb90(func_0209b0f0(func_0209a850(func_02099640(t))), 1);
+            {
+                void *retainedAddress;
+                retainedAddress = func_0209b0f0((void *) func_0209a850(func_02099640(t)));
+                func_0209bb90(retainedAddress, 1);
+            }
         }
     }
     if (func_ov050_02260510(self->unk_B4) != 0) {

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov096_0229f3bc(void);
+extern int func_ov096_0229f3bc(int unused0, int unused1, int unused2);
 extern int func_ov096_0229f39c(int, int, int);
 extern int func_ov096_0229c2fc(int, int);
-extern int func_ov096_0229c2dc(int, int);
+extern void func_ov096_0229c2dc(int, int);
 
 int func_ov096_0229f3d4(int a, int b, int c)
 {
@@ -14,7 +14,7 @@ int func_ov096_0229f3d4(int a, int b, int c)
     int r4 = c;
     int r6 = a;
 
-    if (func_ov096_0229f3bc() != 0) {
+    if (func_ov096_0229f3bc(a, b, c) != 0) {
         return 0x24;
     }
 

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206c038(void *obj, unsigned int *used_ptr, unsigned int new_used, unsigned int n);
+extern void func_0206c038(void *obj);
 
 typedef struct {
     char buf[0x400];
@@ -22,7 +22,7 @@ int func_0206c278(UnkStruct_0206c278 *obj, char *src, unsigned int n)
         {
             unsigned int new_used = obj->used + n;
             obj->used = new_used;
-            func_0206c038(obj, &obj->used, new_used, n);
+            func_0206c038(obj);
         }
     }
     return ret;

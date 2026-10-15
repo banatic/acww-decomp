@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02064328(char *dest, const char *fmt, ...);
-extern void func_020ab83c(void *a, void *b, void *c, void *d);
+extern int func_02064328(char *dest, const char *fmt, ...);
+extern int func_020ab83c(void *a, void *b, void *c, void *d);
 typedef struct {
     int unk_00;
     const char *name;

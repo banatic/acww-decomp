@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02077978(void);
+extern void func_02077978(const unsigned char *data, unsigned int *first, unsigned int *second);
 
-void func_ov003_022171ac(int r0, int r1, int r2, unsigned char *r3, int r4)
+void func_ov003_022171ac(const unsigned char *r0, unsigned int *r1, unsigned int *r2, unsigned char *r3)
 {
-    unsigned char *r5 = (unsigned char *) r0;
+    const unsigned char *r5 = r0;
     unsigned char *r4_ptr = r3;
-    func_02077978();
+    func_02077978(r0, r1, r2);
     *r4_ptr = r5[5];
 }

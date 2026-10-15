@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02003518(void);
-extern int func_020ee550(void);
+extern int func_02003518(void *object);
+extern int func_020ee550(void *object);
 
-int func_02003518(void)
+int func_02003518(void *object)
 {
     int result;
-    if (func_020ee550() != 0) {
+    if (func_020ee550(object) != 0) {
         result = 1;
     } else {
         result = 0;

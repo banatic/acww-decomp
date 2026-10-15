@@ -4,7 +4,7 @@
 
 extern void func_0203e334(void);
 extern void func_ov003_022203a0(int);
-int func_ov068_022723ec(void)
+int func_ov068_022723ec(void *receiver)
 {
     func_0203e334();
     func_ov003_022203a0(1);

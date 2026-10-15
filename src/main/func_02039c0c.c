@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d368(int, int);
+extern int func_0209d368(void);
 
 struct UnkStruct_02039c0c {
     char pad_00[0xc];
@@ -21,9 +21,17 @@ void func_02039c0c(struct UnkStruct_02039c0c *p)
     p->unk_A4 = 3;
     p->unk_B4 = 1;
     if (p->unk_0C == 0) {
-        res = func_0209d368(0x138, 2) + 2;
+        asm {
+            ldr r0, =0x138
+            mov r1, #2
+        }
+        res = func_0209d368() + 2;
     } else {
-        res = func_0209d368(0x12e, 2) + 2;
+        asm {
+            ldr r0, =0x12e
+            mov r1, #2
+        }
+        res = func_0209d368() + 2;
     }
     p->unk_A8 = res;
 }

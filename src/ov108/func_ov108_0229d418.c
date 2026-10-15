@@ -10,7 +10,7 @@ extern int func_ov108_0229cb54(void *self, unsigned char byte);
 extern void func_ov108_0229c578(void *self, unsigned char byte);
 extern void func_ov108_0229c52c(void *self, unsigned char byte);
 extern void func_ov108_0229c940(void *self);
-extern void func_ov002_02207d24(void *ptr, int zero);
+extern int func_ov002_02207d24(void *ptr, int zero);
 extern void func_ov002_02207d00(void *ptr);
 
 extern struct {

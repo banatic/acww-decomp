@@ -3,7 +3,7 @@
  */
 
 extern int data_0213ea6c;
-extern void func_020f4514(void *p);
+extern void *func_020f4514(void *p);
 extern void func_020edb3c(void *p);
 
 void *func_020f38cc(void *p)

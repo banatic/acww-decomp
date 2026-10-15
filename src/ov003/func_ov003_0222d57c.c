@@ -4,16 +4,16 @@
 
 #include "types.h"
 
-extern void func_ov003_0222d230();
-extern void func_02032c64();
-extern void func_02055210();
-extern void func_02089b04();
-extern void func_0209d11c();
-extern void __cxa_vec_ctor();
-extern void func_0209d34c();
-extern void func_0209d0a4();
-extern void func_020012e8();
-extern void func_020012dc();
+extern void *func_ov003_0222d230(void *unused0);
+extern void *func_02032c64(void *unused0);
+extern void *func_02055210(void *unused0);
+extern void *func_02089b04(void *unused0);
+extern void *func_0209d11c(void *unused0);
+extern void __cxa_vec_ctor(void *, unsigned int, unsigned int, void (*)(void *), void (*)(void *));
+extern void func_0209d34c(void *unused0);
+extern void func_0209d0a4(void *argument0);
+extern void func_020012e8(void *element);
+extern void func_020012dc(void *element);
 extern void *data_0213efe8;
 extern void *data_0213f020;
 
@@ -26,7 +26,7 @@ void *func_ov003_0222d57c(char *self)
     func_0209d11c(self + 0x130);
     *(void **) (self + 0x174) = &data_0213efe8;
     *(void **) (self + 0x174) = &data_0213f020;
-    __cxa_vec_ctor(self + 0x1ec, 0x2, 0xc, (void *) func_020012e8, (void *) func_020012dc);
+    __cxa_vec_ctor(self + 0x1ec, 0x2, 0xc, func_020012e8, func_020012dc);
     func_0209d34c(self + 0x230);
     func_0209d0a4(self + 0x130);
     *(u8 *) (self + 0x251) = 0x13;

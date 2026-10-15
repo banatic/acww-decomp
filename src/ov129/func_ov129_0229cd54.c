@@ -20,7 +20,7 @@ extern int func_ov002_02208014(void);
 extern void func_ov129_0229c874(UnkStruct_0229cd54 *);
 extern void func_ov129_0229c328(UnkStruct_0229cd54 *);
 extern void func_ov129_0229b7cc(UnkStruct_0229cd54 *, int);
-extern void func_ov002_02208098(UnkStruct_0229cd54 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov129_0229c39c(UnkStruct_0229cd54 *);
 extern void func_ov129_0229c2d8(UnkStruct_0229cd54 *);
 extern int func_ov002_0220a620(void *, int);
@@ -53,7 +53,7 @@ void func_ov129_0229cd54(UnkStruct_0229cd54 *p)
     }
     if ((data_021fbe40.h2 & 0x800) != 0) {
         func_ov129_0229b7cc(p, 2);
-        func_ov002_02208098(p, 4);
+        func_ov002_02208098((void *) (p), 4);
         func_ov129_0229c39c(p);
         func_ov129_0229c2d8(p);
         return;

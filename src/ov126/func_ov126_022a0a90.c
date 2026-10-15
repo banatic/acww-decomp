@@ -3,14 +3,19 @@
  */
 
 extern int func_ov002_0220a620(void *p, int n);
-extern void func_ov126_022a0110(void *p);
-extern void func_ov126_0229ffdc(void *p);
+extern void func_ov126_022a0110(void);
+extern int func_ov126_0229ffdc(void *p);
 extern void func_ov126_022a0ae0(void *p, int n);
 
 int func_ov126_022a0a90(unsigned char *p)
 {
     if (func_ov002_0220a620(p + 0x3dc4, 6) != 0) {
-        func_ov126_022a0110(p);
+        // clang-format off
+        asm {
+            mov r0, p
+        }
+        // clang-format on
+        func_ov126_022a0110();
         return 0;
     }
     {
@@ -20,7 +25,12 @@ int func_ov126_022a0a90(unsigned char *p)
             func_ov126_022a0ae0(p, 0);
             return 1;
         } else {
-            func_ov126_022a0110(p);
+            // clang-format off
+            asm {
+                mov r0, p
+            }
+            // clang-format on
+            func_ov126_022a0110();
             return 0;
         }
     }

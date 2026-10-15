@@ -20,7 +20,7 @@ extern u8 data_ov004_02255c34;
 extern struct UnkStruct_02234a04_2 data_ov004_022594d4[];
 
 extern int func_020b6590(void);
-extern void func_020b7e04(int h, void *p);
+extern int func_020b7e04(int h, void *p);
 extern void func_ov004_02234b9c(struct UnkStruct_02234a04_3 *self, struct UnkStruct_02234a04_2 *x, int i);
 extern void func_ov004_0223494c(struct UnkStruct_02234a04_3 *self, int k);
 

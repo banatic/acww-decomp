@@ -6,8 +6,8 @@
 #include "cpp/ov096/Obj_ov096_022a23e8.h"
 
 extern "C" int func_ov096_022a192c(void *);
-extern "C" int func_ov096_022a142c(void *);
-extern "C" int func_ov096_022a1424(void *);
+extern "C" void func_ov096_022a142c(void *);
+extern "C" void func_ov096_022a1424(void *);
 
 int Obj_ov096_022a23e8::func_ov096_022a19e0()
 {

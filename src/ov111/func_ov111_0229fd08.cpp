@@ -3,7 +3,7 @@
  */
 
 extern "C" void func_ov111_0229fd58(void *self);
-extern "C" void func_020a8a70(void *a, void *b, int c, int d);
+extern "C" int func_020a8a70(void *a, void *b, int c, int d);
 extern "C" void func_02051694(void *p);
 
 struct UnkStruct_0229fd08 {

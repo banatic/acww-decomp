@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void __thumb func_020aaea4(void *);
-extern void __thumb func_020ac078(void *);
-extern void __thumb func_020aa7fc(void *);
-extern void __arm func_020edb3c(void *);
+extern __thumb int func_020aaea4(void *);
+extern __thumb void *func_020ac078(void *);
+extern void func_020aa7fc(void *);
+extern void func_020edb3c(void *);
 extern unsigned char data_020e404c[];
 
 void *func_020aa228(void *obj)

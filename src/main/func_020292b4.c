@@ -36,8 +36,8 @@ extern const int data_020c8924;
 extern const Pair8 data_020d8e40;
 extern const Pair8 data_020d8dc0;
 
-extern void func_0207f1c8(void *);
-extern int func_0209b5e8(void);
+extern unsigned int func_0207f1c8(void *);
+extern int func_0209b5e8(int);
 extern int func_0209b91c(int);
 extern void func_0202d9d0(UnkStruct_020292b4 *, int);
 extern int func_0202d9c4(UnkStruct_020292b4 *);
@@ -59,15 +59,15 @@ extern void func_0201cec8(UnkStruct_020292b4 *, UnkStruct_020292b4_2 *);
 extern void func_0202da74(UnkStruct_020292b4 *, Pair8);
 extern void func_02068388(int, int);
 extern int func_02029ef8(UnkStruct_020292b4 *, void *, int, int);
-extern void func_0202a1ac(void);
-extern void func_0202a15c(void);
+extern int func_0202a1ac(unsigned short *);
+extern unsigned short func_0202a15c(void *);
 extern int func_020296f8(UnkStruct_020292b4 *);
 extern int func_02029a98(UnkStruct_020292b4 *);
 extern int func_02029ca4(UnkStruct_020292b4 *);
 extern int func_0207dd10(void *);
-extern void func_02080864(void *, int);
-extern int func_020822b0(void);
-extern void func_02015dd4(UnkStruct_020292b4 *, int, u8 *, const void *, u8 *);
+extern int func_02080864(void *, int);
+extern int func_020822b0(unsigned char *);
+extern int func_02015dd4(UnkStruct_020292b4 *, int, u8 *, const void *, u8 *);
 
 extern unsigned char data_020d9fa0[];
 extern unsigned char data_021c1d6c[];
@@ -86,8 +86,7 @@ int func_020292b4(UnkStruct_020292b4 *p, void *arg)
     u16 hv, lv;
 
     ok = 0;
-    func_0207f1c8(arg);
-    p->unk_164 = func_0209b5e8();
+    p->unk_164 = func_0209b5e8((int) func_0207f1c8(arg));
     func_0202d9d0(p, func_0209b91c(p->unk_164));
     key = func_0209bc40(func_0202d9c4(p));
     if (func_0201cddc(p->unk_100) != 0xb) {
@@ -257,8 +256,7 @@ sw:
             ok = func_02029ca4(p);
             if (ok == 1) {
                 void *h = *(void **) ((char *) p->unk_100 + 0x830);
-                func_02080864(h, func_0207dd10(h));
-                b.unk_00 = (u8) func_020822b0();
+                b.unk_00 = (u8) func_020822b0((unsigned char *) func_02080864(h, func_0207dd10(h)));
                 b.unk_01 = 0;
                 func_02015dd4(p, 0, &b.unk_00, (const void *) data_020d9fa0, &b.unk_01);
             }

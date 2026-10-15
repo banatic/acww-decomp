@@ -4,8 +4,8 @@
 
 extern int func_0200faf0(void *p, int x);
 extern int func_02056f94(void *p);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f328(void *p, int a);
+extern void func_020109a0(void *self, int a, int b, unsigned short c);
+extern int func_0200f328(void *p, int a);
 extern int func_02008458(void *a0, int a1, int a2);
 extern void func_0200f268(void *p, int a);
 

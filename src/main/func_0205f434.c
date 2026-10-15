@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b65c4(void);
-extern unsigned int func_020b5e04(void);
-extern unsigned int func_020b5df8(void);
+extern unsigned char func_020b65c4(void);
+extern unsigned int func_020b5e04(unsigned int);
+extern unsigned int func_020b5df8(unsigned int);
 extern unsigned int func_02085f08(void);
 extern unsigned int func_0205f634(void);
 extern unsigned int func_0205f630(void);
 extern unsigned int func_0205f62c(void);
-extern void func_02055c80(unsigned char *, unsigned int, unsigned int, unsigned int);
+extern int func_02055c80(unsigned char *, unsigned int, unsigned int, unsigned int);
 extern unsigned int func_0205f644(void);
 extern unsigned int func_020e9968(unsigned int, unsigned int, unsigned int);
 extern unsigned int data_021c9ad8;
@@ -27,8 +27,7 @@ void func_0205f434(unsigned int *param0)
     unsigned int r1, r2, r3;
 
     cnt = data_020ccf94[0x6c];
-    func_020b65c4();
-    count = func_020b5e04();
+    count = func_020b5e04((unsigned int) func_020b65c4());
     if (cnt < count) {
         count = cnt;
     }
@@ -39,8 +38,7 @@ void func_0205f434(unsigned int *param0)
         countOrOne = 1;
     }
 
-    func_020b65c4();
-    a = func_020b5df8();
+    a = func_020b5df8((unsigned int) func_020b65c4());
     b = func_02085f08();
     end = (a + b) - countOrOne;
 

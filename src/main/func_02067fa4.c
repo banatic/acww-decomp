@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b45d0(char *p1, unsigned char p2, int p3, int p4, int p5, int p6);
+extern int func_020b45d0(char *p1, unsigned char p2, int p3, int p4, int p5, int p6);
 
 struct func_02067fa4_s {
     char pad_00[0x1a6a];

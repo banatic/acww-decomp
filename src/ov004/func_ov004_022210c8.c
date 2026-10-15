@@ -3,18 +3,13 @@
  */
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(int a, int b, int c, int d);
+extern int func_02019d0c(void *argument0, int argument1, int argument2, int argument3, int argument4, short argument5,
+                         short argument6, int argument7, int argument8, unsigned short argument9, unsigned short argument10);
 
 int func_ov004_022210c8(int param)
 {
-    volatile int arr[7];
-    arr[0] = 0;
-    arr[1] = 0;
-    arr[2] = 0;
-    arr[3] = 0;
-    arr[4] = 0;
-    arr[5] = data_020c80f8;
-    arr[6] = 0;
-    func_02019d0c(param + 0x564, 1, 1, 0);
+    func_02019d0c((void *) ((void *) (param + 0x564)), (int) ((int) (1)), (int) ((int) (1)), (int) ((int) (0)),
+                  (int) ((int) (0)), (short) ((short) (0)), (short) ((short) (0)), (int) ((int) (0)), (int) ((int) (0)),
+                  (unsigned short) ((unsigned short) (data_020c80f8)), (unsigned short) ((unsigned short) (0)));
     return 1;
 }

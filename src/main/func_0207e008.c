@@ -6,7 +6,7 @@ extern int func_020984e8(void);
 extern void *func_02099870(int);
 extern int func_020807a8(int, void *);
 extern unsigned int func_02081a88(int);
-extern void func_020b4a20(int, void *, void *);
+extern int func_020b4a20(int, void *, void *);
 extern char data_020e195c[];
 
 void func_0207e008(int a, int b, int c)

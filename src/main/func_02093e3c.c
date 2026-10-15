@@ -56,7 +56,7 @@ typedef struct {
 
 extern UnkStruct_02093e3c_4 data_021d52d8[];
 extern void func_020914dc(UnkStruct_02093e3c_4 *e);
-extern void func_02034270(Big *b, UnkStruct_02093e3c_2 *v, int c, int d);
+extern int func_02034270(Big *b, UnkStruct_02093e3c_2 *v, int c, int d);
 extern void func_0203423c(Big *b);
 extern int func_020ea838(UnkStruct_02093e3c_2 *v);
 

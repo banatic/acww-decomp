@@ -11,9 +11,9 @@ extern struct {
 
 int func_02073d90(void *p);
 int func_020b65c4(void);
-void func_0208602c(void);
-void func_020860c8(void);
-int func_02087ea0(void);
+int func_0208602c(void);
+int func_020860c8(int);
+int func_02087ea0(unsigned char *);
 int func_02073dd4(void *obj, unsigned int member);
 void func_0209e474(int *buf);
 void func_020413f8(int arg);
@@ -30,9 +30,7 @@ void func_0204130c(int a, int b, int c)
     if (func_020b65c4() != 0) {
         goto label_1348;
     }
-    func_0208602c();
-    func_020860c8();
-    if (func_02087ea0() == 0) {
+    if (func_02087ea0((unsigned char *) func_020860c8((int) func_0208602c())) == 0) {
         goto label_1348;
     }
     if (func_02073dd4(data_020ccf94, data_020ccf94->field_0x64) == 0) {

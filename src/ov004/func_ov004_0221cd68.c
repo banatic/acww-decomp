@@ -7,14 +7,14 @@ extern int func_0206fc6c(void);
 extern void *func_0206fc8c(void);
 extern int func_020644cc(int k);
 extern void func_0206844c(void *a, void *b, int c);
-extern void func_ov004_0221c844(void *p, int k);
+extern int func_ov004_0221c844(void *p, int k);
 extern int func_0209a034(void *h);
 extern int func_0204c878(void *obj);
 extern void func_0209a050(void *h);
 extern void func_02015de4(void *self, void *obj, int a, int b);
 extern int func_ov004_0221cf00(void *self, void *obj);
-extern void func_ov004_0221cee4(void *self, int k);
-extern void func_02015330(void *self, void *obj, int a, int b, int c);
+extern int func_ov004_0221cee4(void *self, int k);
+extern int func_02015330(void *self, void *obj, int a, int b, int c);
 
 void func_ov004_0221cd68(void *self)
 {

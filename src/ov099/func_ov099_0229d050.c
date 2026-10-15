@@ -11,7 +11,7 @@ struct UnkStruct_0229d050 {
     unsigned char unk_2905;
 };
 
-void func_ov002_02208098(struct UnkStruct_0229d050 *self, int flag);
+unsigned char *func_ov002_02208098(struct UnkStruct_0229d050 *self, unsigned char value);
 int func_ov099_0229cd70(struct UnkStruct_0229d050 *self, int param);
 int func_ov099_0229cd1c(struct UnkStruct_0229d050 *self, int param);
 void func_ov002_02207cf8(void *ptr);

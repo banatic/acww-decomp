@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a6e8c(int a, int b);
+extern void func_020a6e8c(int a, int b);
 
-int func_020762ac(int a, int b, int c, int d)
+void func_020762ac(int length, int sequence, unsigned char category, unsigned int player)
 {
-    return func_020a6e8c(d, 1);
+    func_020a6e8c(player, 1);
 }

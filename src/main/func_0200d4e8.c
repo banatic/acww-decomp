@@ -10,11 +10,11 @@ typedef struct {
     unsigned int data[4];
 } UnkStruct_0200d4e8_2;
 
-extern void func_0200e92c(UnkStruct_0200d4e8 *);
+extern unsigned int func_0200e92c(UnkStruct_0200d4e8 *);
 extern void func_0200e90c(UnkStruct_0200d4e8 *, int, int, int);
 extern void func_0200d528(UnkStruct_0200d4e8_2 *, int);
 extern int func_0200e894(void *, UnkStruct_0200d4e8 *);
-extern void func_0200e91c(UnkStruct_0200d4e8 *);
+extern int func_0200e91c(UnkStruct_0200d4e8 *);
 
 int func_0200d4e8(void *p, int n, int a, int b)
 {

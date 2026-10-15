@@ -101,7 +101,7 @@ void func_0207b594(char *self)
             continue;
         }
         q = self + i * 0x7ec;
-        v = func_0209b5ec(func_0207f1c8(q));
+        v = (func_0209b5ec((void *) func_0207f1c8(q)));
         if (func_0209c380(v) == 0) {
             continue;
         }

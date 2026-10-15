@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov095_022999b0(unsigned int a, unsigned int b, unsigned int c);
+extern int func_ov095_022999b0(unsigned int a, unsigned int b);
 
 int func_ov095_0229c5fc(unsigned int a, unsigned int b, unsigned int c)
 {
-    if (func_ov095_022999b0(a, 4, c) != 0) {
+    if (func_ov095_022999b0(a, 4) != 0) {
         if (c < 0x50 || c > 0x58) {
             goto fail;
         }

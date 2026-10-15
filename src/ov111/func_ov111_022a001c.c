@@ -9,7 +9,7 @@ extern int func_0206fe60(void);
 extern int func_0206fe54(void);
 extern int func_ov095_0229afac(const void *ptr);
 extern void func_ov002_0220a164(const void *ptr);
-extern void func_ov002_02208098(void *self, int value);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_0208e4bc(const void *ptr);
 extern void func_ov111_0229fcb0(void *self);
 extern void func_ov111_0229f994(void *self);
@@ -43,9 +43,9 @@ void func_ov111_022a001c(unsigned char *self)
         func_ov111_0229f994(self);
         func_ov111_0229fd08(self);
         if (func_0206fe60()) {
-            func_ov002_02208098(self, 0);
+            func_ov002_02208098((void *) (self), 0);
         } else if (func_0208e4bc(self + 0x3d38)) {
-            func_ov002_02208098(self, 7);
+            func_ov002_02208098((void *) (self), 7);
         } else {
             func_ov111_022a01dc(self);
         }

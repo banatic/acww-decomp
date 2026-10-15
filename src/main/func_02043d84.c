@@ -3,14 +3,14 @@
  */
 
 extern void *func_02044858(void *);
-extern void func_02043db4(void *, void *, int, int, unsigned short);
+extern int func_02043db4(void *, void *, int, int, unsigned short);
 
 struct Pair {
     unsigned int a;
     unsigned int b;
 };
 
-void func_02043d84(void *a, struct Pair *src, int c, int d, unsigned short e)
+int func_02043d84(void *a, struct Pair *src, int c, int d, unsigned short e)
 {
     struct Pair local;
     void *p;
@@ -18,5 +18,5 @@ void func_02043d84(void *a, struct Pair *src, int c, int d, unsigned short e)
     p = func_02044858(a);
     local.a = src->a;
     local.b = src->b;
-    func_02043db4(p, &local, c, d, e);
+    return func_02043db4(p, &local, c, d, e);
 }

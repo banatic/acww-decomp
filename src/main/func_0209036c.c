@@ -31,7 +31,7 @@ extern int func_02107b80(int, int);
 extern int NNS_G3dGetVisAnmSet(u32);
 extern int func_02107cf0(int, int);
 
-void func_0209036c(struct UnkStruct_0209036c *self, char *base, void (*callback)(struct UnkStruct_0209036c *))
+void func_0209036c(struct UnkStruct_0209036c *self, char *base, void (*callback)(void *))
 {
     char *p;
     int t;

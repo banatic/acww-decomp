@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_FndAppendListObject(void);
+extern void NNS_FndAppendListObject(void *list, void *object);
 
-void func_020efc44(void)
+void func_020efc44(void *list, void *object)
 {
-    NNS_FndAppendListObject();
+    NNS_FndAppendListObject(list, object);
 }

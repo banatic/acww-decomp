@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void *func_ov004_0223ce84(void *self);
+extern void *func_ov004_0223ce84(void);
 extern void *func_ov004_0223cd58(void *a, int b);
 extern int func_ov004_0223ba78(int b);
 extern int func_ov004_0220fde0(void *p);
@@ -36,7 +36,7 @@ int func_ov004_02220084(void *self, int arg)
     // ENDDECLS
     volatile u16 id;
 
-    e = func_ov004_0223cd58(func_ov004_0223ce84(self), arg);
+    e = func_ov004_0223cd58(func_ov004_0223ce84(), arg);
     if (e == 0) {
         return 0;
     }

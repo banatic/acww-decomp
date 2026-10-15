@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02051a78(void *ptr);
+extern void func_02051a78(void *ptr, void *);
 
-void func_0208aa48(void *arg)
+void func_0208aa48(void *arg, void *argument1)
 {
     void *p = arg;
-    func_02051a78((char *) p + 0x60);
+    func_02051a78((char *) p + 0x60, (void *) argument1);
     *(unsigned int *) ((char *) p + 0xc8) = 1;
 }

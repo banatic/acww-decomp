@@ -4,9 +4,9 @@
 
 extern int func_02013a94(void *);
 extern int func_020e8858(void *);
-extern void func_0202ea80(int, int);
+extern int func_0202ea80(int, int);
 extern int func_0203fa4c(void);
-extern void func_020683e4(void *, int, void *, const void *);
+extern int func_020683e4(void *, int, void *, const void *);
 extern void func_0206844c(void *, void *, const void *);
 extern void func_ov088_02278f0c(void *, int);
 extern const char data_ov088_02279da8[];

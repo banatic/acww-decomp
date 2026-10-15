@@ -32,7 +32,7 @@ struct Class {
 };
 
 extern "C" unsigned int func_020a86e4(UnkStruct_020699c0 *, unsigned char *, unsigned char *, unsigned char *);
-extern "C" unsigned int func_0203cbf4(unsigned int);
+extern "C" unsigned int func_0203cbf4(void);
 extern "C" void func_0206b964(Class *, unsigned char *);
 
 extern "C" void func_020699c0(Class *self)
@@ -46,7 +46,7 @@ extern "C" void func_020699c0(Class *self)
     obj = *(UnkStruct_020699c0_2 **) ((char *) self->unk_24 + 0x14a8);
     obj->f13(5, 3);
 
-    r = func_0203cbf4(func_020a86e4(&self->sub, &arr[0], &arr[1], &arr[2]));
+    r = (func_020a86e4(&self->sub, &arr[0], &arr[1], &arr[2]), func_0203cbf4());
 
     if (r == 0x38) {
         idx = 2;

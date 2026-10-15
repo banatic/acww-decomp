@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void FS_LoadOverlay(void);
+extern int FS_LoadOverlay(int target, unsigned int id);
 
-void func_02064d14(void)
+int func_02064d14(int target, unsigned int id)
 {
-    FS_LoadOverlay();
+    return FS_LoadOverlay(target, id);
 }

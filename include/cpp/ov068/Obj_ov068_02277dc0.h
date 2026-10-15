@@ -6,7 +6,7 @@
 // byte at 0x1e; one handler is listed twice.
 class Obj_ov068_02277dc0 {
   public:
-    virtual void vfunc_00();
+    virtual void *vfunc_00();
 
     void func_ov068_02274334();
     void func_ov068_02274314();

@@ -15,12 +15,12 @@ typedef struct UnkStruct_02261b54 {
 } UnkStruct_02261b54;
 
 extern UnkStruct_02261b54 *data_020ccf94;
-extern int func_020984e8(UnkStruct_02261b54_2 *self);
+extern int func_020984e8(void);
 extern int func_02099020(int t, int a);
 extern int func_02073d90(UnkStruct_02261b54 *g);
 extern int func_02073918(UnkStruct_02261b54 *g, int a);
 extern int func_02073dd4(UnkStruct_02261b54 *g, int a);
-extern int func_ov048_02260a24(UnkStruct_02261b54_2 *self);
+extern int func_ov048_02260a24(void);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov048_02263d20;
 
@@ -31,7 +31,7 @@ void func_ov048_02261b54(UnkStruct_02261b54_2 *self, int mode)
     int t;
     UnkStruct_02261b54 *g;
 
-    t = func_020984e8(self);
+    t = func_020984e8();
     code = 0xff;
     switch (mode) {
         case 0:
@@ -54,7 +54,10 @@ void func_ov048_02261b54(UnkStruct_02261b54_2 *self, int mode)
             if (func_02099020(t, 1) != 0) {
                 code = 0xe;
             } else {
-                code = func_ov048_02260a24(self);
+                asm {
+                    mov r0, self
+                }
+                code = func_ov048_02260a24();
             }
             break;
     }

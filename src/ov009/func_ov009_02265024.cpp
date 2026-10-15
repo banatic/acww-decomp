@@ -59,7 +59,7 @@ struct UnkStruct_02265024 {
     int unk_2A4;
 };
 
-extern "C" int func_020033ec(void);
+extern "C" int func_020033ec(void *unused0);
 extern "C" u16 *func_ov009_02262fcc(UnkStruct_02265024 *self);
 extern "C" int func_0204bcdc(u16 *p);
 extern "C" int func_0204bc64(u16 *p);
@@ -72,7 +72,7 @@ extern "C" int func_ov009_02265024(UnkStruct_02265024 *self)
     u16 tmp;
     int r;
     unsigned int ok;
-    if (func_020033ec() == 0) {
+    if (func_020033ec(self) == 0) {
         return 0;
     }
     if ((self->unk_235 & 1) == 0) {

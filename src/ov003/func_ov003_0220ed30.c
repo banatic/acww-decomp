@@ -4,9 +4,9 @@
 
 extern int func_0200fbe0(void *self);
 extern void func_0205eae0(void *ptr, int a, int b, int c);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f27c(void *self, int a);
-extern void func_0200f328(void *self, int a);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
+extern unsigned int *func_0200f27c(void *self, int a);
+extern int func_0200f328(void *self, int a);
 
 typedef struct UnkStruct_0220ed30_2 {
     int unk_00;
@@ -19,7 +19,7 @@ typedef struct {
     UnkStruct_0220ed30_2 sub;
 } UnkStruct_0220ed30;
 
-void func_ov003_0220ed30(UnkStruct_0220ed30 *self)
+void func_ov003_0220ed30(UnkStruct_0220ed30 *self, void *message, int previous)
 {
     UnkStruct_0220ed30_2 *p = &self->sub;
     int ret = func_0200fbe0(self);

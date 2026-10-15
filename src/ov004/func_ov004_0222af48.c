@@ -4,9 +4,9 @@
 
 #include "types.h"
 
-extern int func_020779b8(char *p, int b, int c);
-int func_ov004_0222af48(char *self, u8 a, int b, int c)
+extern void func_020779b8(char *p, int b, int c);
+void func_ov004_0222af48(char *self, u8 a, int b, int c)
 {
     *self = a;
-    return func_020779b8(self + 1, b, c);
+    func_020779b8(self + 1, b, c);
 }

@@ -13,7 +13,7 @@ typedef struct {
 extern void func_ov068_0226cce8(u8 *self, u8 *obj, int c);
 extern int func_ov068_0226c0e0(u8 *self, u8 *obj);
 extern int func_ov068_022697cc(u8 *self, u8 *obj, int c);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern int func_02019e00(void *p);
 extern int func_02019de8(void *p);
 

@@ -17,12 +17,12 @@ typedef struct UnkStruct_02216520 {
     int unk_800;
 } UnkStruct_02216520;
 
-extern int func_0200fc90(UnkStruct_02216520 *self, int arg);
-extern void func_0200f328(UnkStruct_02216520 *self, int arg);
-extern void func_0200f27c(UnkStruct_02216520 *self, int arg);
-extern void func_02095694(int a, int b);
+extern int func_0200fc90(UnkStruct_02216520 *self);
+extern int func_0200f328(UnkStruct_02216520 *self, int arg);
+extern unsigned int *func_0200f27c(UnkStruct_02216520 *self, int arg);
+extern int func_02095694(int a, int b);
 extern void func_0204f794(int *out, u8 a, u8 b);
-extern void func_020912d4(int a, int *b, s16 *c, int d);
+extern int func_020912d4(int a, int *b, s16 *c, int d);
 extern void func_ov003_02224234(int a, int *b, int c);
 extern void func_0200f268(UnkStruct_02216520 *self, int arg);
 
@@ -33,7 +33,7 @@ void func_ov003_02216520(UnkStruct_02216520 *self)
     int pair2[2];
     int res[2];
     u8 *p = (u8 *) self + 0x7d4;
-    int v = func_0200fc90(self, 0x7d4);
+    int v = func_0200fc90(self);
     u8 a, b;
 
     if (p[2] != 0) {

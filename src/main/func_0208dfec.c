@@ -3,8 +3,8 @@
  */
 
 extern int data_020e21e4;
-extern __thumb void func_020a8c38(void *);
-extern __arm void func_020edb3c(void *);
+extern __thumb void *func_020a8c38(void *);
+extern void func_020edb3c(void *);
 
 void *func_0208dfec(void *arg)
 {

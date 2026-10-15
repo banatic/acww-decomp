@@ -3,9 +3,9 @@
  */
 
 extern void *func_02096718(int a);
-extern void func_ov004_02228850(void *p, int a, int b);
-extern void func_ov004_02228b14(void *p, int a, int b);
-extern void func_ov004_02228be0(void *p, int a, int b);
+extern int func_ov004_02228850(void *p, int a, int b);
+extern int func_ov004_02228b14(void *p, int a, int b);
+extern int func_ov004_02228be0(void *p, int a, int b);
 
 int func_ov004_0222c070(int k)
 {

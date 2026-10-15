@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_02207d24(unsigned char *ptr, int arg);
+extern int func_ov002_02207d24(unsigned char *ptr, int arg);
 extern void func_ov103_0229c910(unsigned char *base, int val);
 extern void func_ov103_0229c994(unsigned char *base);
 

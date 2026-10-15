@@ -7,7 +7,7 @@ struct UnkStruct_020a55dc {
     int unk_64;
 };
 
-extern int func_020ee61c(int);
+extern int func_020ee61c(void);
 extern void func_020a5670(void);
 extern void func_0208f8f0(void);
 extern void func_020a7448(void);
@@ -25,7 +25,7 @@ extern struct UnkStruct_020a55dc *data_020ccf94;
 
 int func_020a55dc(int arg)
 {
-    if (func_020ee61c(arg) == 0) {
+    if (func_020ee61c() == 0) {
         return 0;
     }
 

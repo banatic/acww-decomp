@@ -2,16 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov096_0229cbbc(void);
-extern int func_ov003_0222c364(void);
+extern unsigned char func_ov096_0229cbbc(void);
+extern int func_ov003_0222c364(int);
 extern void func_ov096_0229fb9c(int);
 
 void func_ov098_022a2994(int param)
 {
     int result;
 
-    func_ov096_0229cbbc();
-    result = func_ov003_0222c364();
+    result = func_ov003_0222c364((int) func_ov096_0229cbbc());
     if (result == 0) {
         func_ov096_0229fb9c(param);
     }

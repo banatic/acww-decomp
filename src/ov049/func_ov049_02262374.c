@@ -4,7 +4,7 @@
 
 extern unsigned short data_020c80f8;
 extern int func_0201c2c8(void *a, int b);
-extern void func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
+extern int func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
 
 int func_ov049_02262374(char *self)
 {

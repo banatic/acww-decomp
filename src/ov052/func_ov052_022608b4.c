@@ -3,10 +3,10 @@
  */
 
 extern void func_0201b420(unsigned char *, unsigned char *);
-extern void func_0209a000(unsigned char *, int);
+extern int func_0209a000(unsigned char *, int);
 extern void func_020ad890(unsigned int, unsigned int, int);
-extern void func_020984e8(void);
-extern int func_02099870(void);
+extern int func_020984e8(void);
+extern int func_02099870(int);
 extern void func_020871dc(void *, int);
 extern void func_020871d4(void *, unsigned char *);
 extern void func_02015fb0(void *, unsigned char *, int, int, int, int);
@@ -28,8 +28,7 @@ void func_ov052_022608b4(UnkStruct_022608b4 *self)
     {
         void *p = (void *) &data_021f3aec;
         int ret;
-        func_020984e8();
-        ret = func_02099870();
+        ret = func_02099870((int) func_020984e8());
         func_020871dc(p, ret);
         func_020871d4(p, self->ptr + 0x71e);
     }

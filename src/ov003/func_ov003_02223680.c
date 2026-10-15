@@ -21,7 +21,7 @@ extern void *func_0204e414(void);
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
 extern int func_02073d90(void *p);
 extern int func_0204b910(unsigned short *o);
-extern int func_02044540(int id);
+extern int func_02044540(void);
 extern void func_02045f08(int *pos, int k);
 
 void func_ov003_02223680(char *a, int b, struct Vec *v, int d, int e)
@@ -73,7 +73,7 @@ void func_ov003_02223680(char *a, int b, struct Vec *v, int d, int e)
             ok2 = 0;
         }
         if (ok2 != 0) {
-            if (func_02044540(id) != 0) {
+            if (func_02044540() != 0) {
                 goto set;
             }
         }

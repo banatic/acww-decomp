@@ -7,7 +7,7 @@ extern void func_ov106_0229cd88(struct UnkStruct_0229c3a8 *self, unsigned char b
 extern int func_ov106_0229d170(struct UnkStruct_0229c3a8 *self, unsigned char b);
 extern int func_ov106_0229d128(struct UnkStruct_0229c3a8 *self, unsigned char b);
 extern int func_0206fe54(void);
-extern void func_ov002_02208098(struct UnkStruct_0229c3a8 *self, int value);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov094_0229b1d8(void *addr);
 
 struct UnkStruct_0229c3a8 {
@@ -29,6 +29,6 @@ void func_ov106_0229c3a8(struct UnkStruct_0229c3a8 *self)
         self->unk_AC -= 2;
         self->unk_B0 -= 2;
     }
-    func_ov002_02208098(self, 0x26);
+    func_ov002_02208098((void *) (self), 0x26);
     func_ov094_0229b1d8((char *) self + 0x0b58);
 }

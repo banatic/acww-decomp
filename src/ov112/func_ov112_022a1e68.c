@@ -13,18 +13,22 @@ typedef struct {
 } UnkStruct_022a1e68;
 
 extern void *func_ov002_02207f80(int size);
-extern void func_ov002_0220830c(void *self);
-extern void func_ov002_0220ba24(void *self);
-extern void func_020b9cfc(void *self);
-extern void __cxa_vec_ctor(void *self, int a, int b, Callback cb1, Callback cb2);
-extern void func_ov002_0220a5fc(void *self);
-extern void func_ov002_0220b008(void *self);
-extern void func_ov002_02209ccc(void *self);
-extern void func_020780d0(void *self);
-extern void func_02078058(void *self);
-extern void func_02070be8(void);
-extern void func_02070c08(void);
+extern void *func_ov002_0220830c(void *self);
+extern void *func_ov002_0220ba24(void *self);
+extern void *func_020b9cfc(void *self);
+extern void __cxa_vec_ctor(void *self, int a, int b, void (*callback3)(void *), void (*callback4)(void *));
+extern void *func_ov002_0220a5fc(void *self);
+extern void *func_ov002_0220b008(void *self);
+extern void *func_ov002_02209ccc(void *self);
+extern void *func_020780d0(void *self);
+extern void *func_02078058(void *self);
+extern int **func_02070be8(void *element);
+extern void *func_02070c08(void *element);
 extern char data_ov112_022a20d0;
+
+#define DisposeElement_func_02070c08 ((void (*)(void *)) func_02070c08)
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
 
 void *func_ov112_022a1e68(void)
 {
@@ -55,8 +59,8 @@ void *func_ov112_022a1e68(void)
         p++;
     } while (p != q);
 
-    __cxa_vec_ctor(q, 2, 0x6c, func_02070c08, func_02070be8);
-    __cxa_vec_ctor((char *) self + 0x3fac, 6, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(q, 2, 0x6c, DisposeElement_func_02070c08, DisposeElement_func_02070be8);
+    __cxa_vec_ctor((char *) self + 0x3fac, 6, 0x6c, DisposeElement_func_02070c08, DisposeElement_func_02070be8);
     func_ov002_0220a5fc((char *) self + 0x4234);
     func_ov002_0220b008((char *) self + 0x427c);
     func_ov002_02209ccc((char *) self + 0x4448);
@@ -66,3 +70,6 @@ void *func_ov112_022a1e68(void)
 ret:
     return self;
 }
+
+#undef DisposeElement_func_02070c08
+#undef DisposeElement_func_02070be8

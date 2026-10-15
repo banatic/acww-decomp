@@ -9,8 +9,8 @@ extern struct {
 } data_021c79c4;
 
 extern int func_020644cc(int);
-extern void func_02048e4c(void);
-extern void func_02048cb8(int a, int b, int c, int d, int e, void (*f)(void), int g);
+extern int func_02048cb8(int a, int b, int c, int d, int e, int (*predicate)(int, int, int), int g);
+extern int func_02048e4c(int, int, int);
 
 void func_02047fac(int a, int b, int c)
 {
@@ -23,5 +23,5 @@ void func_02047fac(int a, int b, int c)
         return;
     }
     tmp = func_020644cc(c) + 1;
-    func_02048cb8(a, b, tmp, 4, 0x1548, func_02048e4c, 0);
+    func_02048cb8(a, b, tmp, 4, 0x1548, (((int (*)(int, int, int)) func_02048e4c)), 0);
 }

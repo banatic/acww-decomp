@@ -18,7 +18,7 @@ struct Node {
 extern u8 data_020d9f74[];
 
 extern int func_0209a478(int);
-extern void func_02015dd4(void *, void *, u8 *, void *, u8 *);
+extern int func_02015dd4(void *, void *, u8 *, void *, u8 *);
 
 void func_02023040(void *p0, int kind, u16 *pid, int p3, struct Node **list, void *p5)
 {

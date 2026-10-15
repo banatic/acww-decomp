@@ -7,12 +7,12 @@ struct UnkStruct_020ef8d0 {
     unsigned char flags;
 };
 
-extern void OS_Terminate(struct UnkStruct_020ef8d0 *p, int bit, int mode);
+extern void OS_Terminate(void);
 
 void func_020ef8d0(struct UnkStruct_020ef8d0 *p, int bit, int mode)
 {
     if (p == 0) {
-        OS_Terminate(p, bit, mode);
+        OS_Terminate();
     }
     if (mode == 1) {
         p->flags |= (1u << bit);

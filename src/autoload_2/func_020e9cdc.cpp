@@ -18,13 +18,13 @@ class UnkStruct_020e9cdc {
     virtual int method(int a, int b);
 };
 
-extern "C" void func_020ea0a4();
+extern "C" void func_020ea0a4(void *unused0);
 extern "C" void func_020ea084(UnkStruct_020e9cdc *obj);
 
 extern "C" int func_020e9cdc(UnkStruct_020e9cdc *obj, int a, int b)
 {
     int result;
-    func_020ea0a4();
+    func_020ea0a4(obj);
     result = obj->method(a, b);
     func_020ea084(obj);
     return result;

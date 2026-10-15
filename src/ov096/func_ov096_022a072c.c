@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f56c(void *self);
+extern int func_0206f56c(void);
 extern int func_ov002_02208014(void *self);
 extern int func_ov002_02208008(void *self);
 extern int func_ov096_0229c2fc(void *self, int param);
@@ -10,7 +10,7 @@ extern int func_ov002_02209044(void *p1, int val, void *p2, unsigned char b);
 extern void func_ov096_0229d1a0(void *self);
 extern void func_ov096_0229dd44(void *self);
 extern void func_ov002_0220a1dc(void *p);
-extern void func_ov002_02208098(void *self, int id);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov096_0229dce0(void *self);
 
 extern struct {
@@ -20,7 +20,7 @@ extern struct {
 
 void func_ov096_022a072c(void *self)
 {
-    if (func_0206f56c(self)) {
+    if (func_0206f56c()) {
         func_ov096_0229d1a0(self);
         return;
     }
@@ -37,7 +37,7 @@ void func_ov096_022a072c(void *self)
         }
         if (data_021fbe40.flags & 1) {
             func_ov002_0220a1dc((unsigned char *) self + 0x2500);
-            func_ov002_02208098(self, 0xe);
+            func_ov002_02208098((void *) (self), 0xe);
         } else if (data_021fbe40.flags & 2) {
             func_ov096_0229dce0(self);
         }

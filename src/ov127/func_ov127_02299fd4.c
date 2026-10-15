@@ -6,10 +6,10 @@ extern int data_021fbe94;
 extern const int data_ov127_0229b664[];
 extern const int data_ov127_0229b67c[];
 extern const int data_ov127_0229b694[];
-extern void func_02002d14(const int *data, int a, unsigned char b, int c, int d, int e);
-extern void func_02002c6c(const int *data, int a, unsigned char b, int c, int d, int e);
-extern void func_02064af4(const int *data, void *ptr, int size);
-extern void func_02002b40(void *ptr, unsigned char b, int size, int zero);
+extern int func_02002d14(const int *data, int a, unsigned char b, int c, int d, int e);
+extern int func_02002c6c(const int *data, int a, unsigned char b, int c, int d, int e);
+extern int func_02064af4(const int *data, void *ptr, int size);
+extern int func_02002b40(void *ptr, unsigned char b, int size, int zero);
 
 void func_ov127_02299fd4(unsigned char *self, unsigned char val)
 {

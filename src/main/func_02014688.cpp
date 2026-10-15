@@ -15,10 +15,10 @@ class UnkStruct_02014688 {
     char pad_00[8];
     unsigned char unk_08;
 };
-extern "C" void func_020146cc(UnkStruct_02014688 *self);
+extern "C" void func_020146cc(UnkStruct_02014688 *self, int);
 extern "C" void func_02014688(UnkStruct_02014688 *self, void *arg)
 {
-    func_020146cc(self);
+    func_020146cc(self, (int) arg);
     if (self->unk_08 < 5) {
         (self->*(data_021c17c4[self->unk_08].b))(arg);
     }

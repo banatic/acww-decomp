@@ -13,8 +13,8 @@ typedef struct UnkStruct_02260420 {
 } UnkStruct_02260420;
 
 extern char data_ov045_022614f0;
-extern void func_ov045_02260d34(UnkStruct_02260420_2 *ptr);
-extern void func_0202ee5c(UnkStruct_02260420 *self);
+extern void *func_ov045_02260d34(UnkStruct_02260420_2 *ptr);
+extern void *func_0202ee5c(UnkStruct_02260420 *self);
 
 UnkStruct_02260420 *func_ov045_02260420(UnkStruct_02260420 *self)
 {

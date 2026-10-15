@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b9ed8(void *a, int b, int c, int d);
+extern void func_020b9ed8(void *a);
 extern void func_020ba1a8(void *a, int b, int c, int d);
 extern unsigned char func_020ba128(void *a);
 extern int func_020b9978(void *a);
@@ -23,7 +23,7 @@ struct UnkStruct_020b9f30_2 {
 
 int func_020b9f30(struct UnkStruct_020b9f30_2 *p0, int p1, int p2, int p3, unsigned char arg4)
 {
-    func_020b9ed8(p0, p1, p2, p3);
+    func_020b9ed8(p0);
     p0->b = 2;
     func_020ba1a8(&p0->sub, p2, p1, p3);
     p0->c = func_020ba128(&p0->sub);

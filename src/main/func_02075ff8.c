@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void *data_020ccf94;
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 extern int func_02077a8c(int mask);
 extern u8 *func_02073d28(void *h, int n);

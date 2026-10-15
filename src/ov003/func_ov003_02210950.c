@@ -7,9 +7,9 @@
 extern void func_0204f794(u32 *out, u8 a, u8 b);
 extern int func_020e8ed8(u32 a, u32 b);
 extern int func_02056f94(void *p);
-extern void func_020109a0(void *p, int a, int b, int c);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
 extern void func_0200f268(void *p, int a);
-extern void func_0200f27c(void *p, int a);
+extern unsigned int *func_0200f27c(void *p, int a);
 
 typedef struct {
     u16 unk_00;
@@ -21,7 +21,7 @@ typedef struct {
     u8 v4;
 } UnkStruct_02210950;
 
-void func_ov003_02210950(void *self, void *b)
+void func_ov003_02210950(void *self, void *b, int previous)
 {
     u32 local[3];
     u8 *b2;

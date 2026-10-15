@@ -5,7 +5,7 @@
 extern int func_ov094_0229b384(unsigned char *, int);
 extern int func_ov094_0229b328(unsigned char *, int);
 extern int func_ov094_0229b110(unsigned char *, int);
-extern void func_ov094_0229b520(unsigned char *, int, int);
+extern int func_ov094_0229b520(unsigned char *, int, int);
 extern int func_ov094_0229b9a4(unsigned char *, int);
 extern int func_ov094_0229b994(unsigned char *);
 extern int func_ov094_0229b788(unsigned char *, unsigned char);

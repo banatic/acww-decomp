@@ -33,7 +33,7 @@ class VBase {
 };
 
 extern "C" int func_020984e8(void);
-extern "C" int func_02099870(void);
+extern "C" int func_02099870(int argument0);
 extern "C" int func_020951bc(int);
 extern "C" VBase *func_0201ce50(VBase *);
 extern "C" int func_020807a8(int, int);
@@ -45,8 +45,8 @@ extern "C" int func_ov068_0226a020(void *self, VBase *arg1, int threshold)
     int b1, b2;
 
     if (func_020984e8() != 0) {
-        func_020984e8();
-        r5 = func_02099870();
+
+        r5 = func_02099870((int) func_020984e8());
     } else {
         r5 = 0;
     }

@@ -9,7 +9,7 @@ typedef struct {
 } QE;
 
 extern u8 func_ov123_0229a8dc(int, u8, u8);
-extern void func_ov123_02299d9c(int);
+extern char *func_ov123_02299d9c(int);
 extern int func_ov123_0229a82c(int, int, int, int);
 extern int func_ov123_0229a7d4(int, int, int, int);
 extern int func_ov123_0229adc8(int, u8, u8, int);

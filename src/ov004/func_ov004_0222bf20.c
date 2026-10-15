@@ -4,17 +4,17 @@
 
 #include "types.h"
 
-extern int func_02096718();
-extern int func_ov004_02227324();
+extern int func_02096718(int argument0);
+extern int func_ov004_02227324(void *argument0, int argument1, int argument2, int argument3, short argument4);
 
 int func_ov004_0222bf20(char *self, char *a1)
 {
     // DECLS
     int v1;
     // ENDDECLS
-    v1 = func_02096718(0x4, a1);
+    v1 = func_02096718((int) ((int) (0x4)));
     if (v1 != 0x0) {
-        return func_ov004_02227324(v1, *(u8 *) (self), *(u8 *) (a1), 0x6, -0x1);
+        return func_ov004_02227324((void *) (v1), (int) (*(u8 *) (self)), (int) (*(u8 *) (a1)), (int) (0x6), (short) (-0x1));
     }
     return 0x0;
 }

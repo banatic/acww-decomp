@@ -5,16 +5,16 @@
 #include "types.h"
 
 extern void *data_021c80bc;
-extern void func_020b6660(void *a);
-extern void func_0204f538(void *h, volatile u16 *p, void *a, void *b, int k);
+extern int func_020b6660(void);
+extern int func_0204f538(void *h, volatile u16 *p, void *a, void *b, int k);
 extern void func_0204f380(void *h, void *a, void *b);
-extern void func_0204f31c(void *h, void *a, void *b);
+extern int func_0204f31c(void *h, void *a, void *b);
 
 void func_ov003_02224140(void *a, void *b, u16 id, int flag)
 {
     void *h;
     volatile u16 t;
-    func_020b6660(a);
+    func_020b6660();
     h = data_021c80bc;
     if (h) {
         t = 0xfff1;

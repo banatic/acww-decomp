@@ -4,7 +4,7 @@
 
 extern int func_02034270(void *, int, int, int);
 extern void func_0203423c(void *);
-extern int func_020b6598(int);
+extern int func_020b6598(void);
 extern int func_02094cf8(int, int, int, int, int, void *);
 extern int data_020e29dc;
 
@@ -24,7 +24,7 @@ int func_02093448(int a, int b, int c, int d)
     st = func_02034270(&obj, b, 0, 0);
     kind = obj.unk_34;
 
-    if (kind == 0x13 || (func_020b6598(st) != 0 && kind == 3)) {
+    if (kind == 0x13 || (func_020b6598() != 0 && kind == 3)) {
         result = func_02094cf8(0x55, a, b, c, d, &data_020e29dc);
         func_0203423c(&obj);
         return result;

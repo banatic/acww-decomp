@@ -3,7 +3,7 @@
  */
 
 extern void func_02010f5c(void *self);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
 extern void func_0200f888(void *self);
 
 typedef struct {

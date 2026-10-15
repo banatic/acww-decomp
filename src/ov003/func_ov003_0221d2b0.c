@@ -4,7 +4,7 @@
 
 extern int func_ov009_02264c40(void *self);
 extern void *func_0207cec0(void *tbl, int id);
-extern int func_0207f1d4(void *p);
+extern int func_0207f1d4(void);
 extern int func_0207f1d8(void *p);
 extern int func_02073dd4(void *g, unsigned int i);
 extern void func_020a6e4c(unsigned int i, unsigned char *a, unsigned char *b, unsigned char *c);
@@ -41,7 +41,7 @@ int func_ov003_0221d2b0(UnkStruct_0221d2b0 *self)
     if (func_ov009_02264c40(self) != 0) {
         p = func_0207cec0(&data_021e5a2c, id);
         if (p != 0) {
-            if (func_0207f1d4(p) == 0) {
+            if (func_0207f1d4() == 0) {
                 return 0;
             }
             if (func_0207f1d8(p) == 0 || func_0207f1d8(p) == 3 || func_0207f1d8(p) == 4 || func_0207f1d8(p) == 5 ||

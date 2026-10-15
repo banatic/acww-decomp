@@ -37,9 +37,9 @@ extern void func_0202d8f8(void *self, void *p12c, void *p128, void *p830, int ze
 extern UnkStruct_0202b94c *func_0201ce50(void *a);
 extern void *func_0208150c(void *a);
 extern int func_020036e8(void *a);
-extern void func_0202da38(void *self, void *p104, void *p122, int d, int e, unsigned int a, unsigned char b, int h, int i);
+extern int func_0202da38(void *self, void *p104, void *p122, int d, int e, int offset, int scale, int h, int i);
 extern void func_02015e10(void *self, void *q, int flag);
-extern void func_0202bd7c(void *self, int i, unsigned char val);
+extern int func_0202bd7c(void *self, int i, unsigned char val);
 
 void func_0202b94c(UnkStruct_0202b94c_2 *self, UnkStruct_0202b94c_3 *out)
 {

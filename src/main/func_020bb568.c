@@ -20,7 +20,7 @@ typedef struct S_020bb568 {
 
 extern int func_020bb66c(S_020bb568 *p, int a, int b);
 extern int func_020bb608(S_020bb568 *p, int *a, int *b, int c, int d);
-extern int func_020bb7e0(S_020bb568 *p, int a, int b);
+extern void func_020bb7e0(S_020bb568 *p, int a, int b);
 extern void func_020bbc90(S_020bb568 *p);
 
 void func_020bb568(S_020bb568 *p)

@@ -15,14 +15,14 @@ extern int func_020a132c(void);
 extern void func_020a242c(int, int, int);
 extern unk_struct *data_020ccf94;
 
-void func_020755b4(unsigned char *arg0, int arg1)
+void func_020755b4(unsigned char *payload, unsigned int length, int player)
 {
-    if (arg1 == 1) {
-        if (*arg0 != 0) {
+    if (length == 1) {
+        if (*payload != 0) {
             func_02090174(func_02090040(4));
         }
     } else {
-        MI_CpuCopy8(arg0, func_02090040(4), 0x950);
+        MI_CpuCopy8(payload, func_02090040(4), 0x950);
     }
     if (func_020b65c4() != 0x2e) {
         return;

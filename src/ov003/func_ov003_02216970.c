@@ -10,18 +10,18 @@ typedef struct {
 extern int data_020ccf94;
 extern int func_02073908(int a, int b);
 extern int func_0200f290(UnkStruct_02216970 *p, int a);
-extern int func_ov003_02216780(UnkStruct_02216970 *p);
+extern void func_ov003_02216780(UnkStruct_02216970 *p);
 
-int func_ov003_02216970(UnkStruct_02216970 *param)
+void func_ov003_02216970(UnkStruct_02216970 *param)
 {
     int ret;
     ret = func_02073908(data_020ccf94, param->unk_800);
     if (ret != 0) {
-        return ret;
+        return;
     }
     ret = func_0200f290(param, 0x1C);
     if (ret == 0) {
-        return ret;
+        return;
     }
-    return func_ov003_02216780(param);
+    func_ov003_02216780(param);
 }

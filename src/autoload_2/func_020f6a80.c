@@ -39,7 +39,7 @@ typedef struct {
 } Misc;
 extern Misc data_02138fd4;
 
-extern void func_020eed18(int, int);
+extern int func_020eed18(int, int);
 extern int func_020f6d78(void *obj, u8 byte);
 
 int func_020f6a80(Param *self)

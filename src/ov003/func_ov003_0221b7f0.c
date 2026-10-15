@@ -3,7 +3,7 @@
  */
 
 extern int func_0206fbc0(void);
-extern void func_0203e020(int);
+extern int func_0203e020(int);
 
 void func_ov003_0221b7f0(int param)
 {

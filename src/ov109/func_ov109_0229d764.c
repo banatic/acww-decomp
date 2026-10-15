@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f58c(void *p);
-extern int func_0206f56c(int);
+extern void func_0206f58c(void);
+extern int func_0206f56c(void);
 extern void func_ov109_0229c4cc(void *p);
 extern void func_ov109_0229c498(void *p);
 extern void func_ov109_0229c29c(void *p, int);
@@ -13,7 +13,8 @@ extern void func_ov109_0229d4b4(void *p);
 
 int func_ov109_0229d764(void *self)
 {
-    if (func_0206f56c(func_0206f58c(self)) != 0) {
+    func_0206f58c();
+    if (func_0206f56c() != 0) {
         unsigned char b = ((unsigned char *) self)[0x8d];
         if (b == 0 || b == 1 || b == 5) {
             func_ov109_0229c4cc(self);

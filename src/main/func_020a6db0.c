@@ -15,12 +15,12 @@ extern int func_020733f8(UnkStruct_020a6db0 *self);
 extern void func_020a753c(void);
 extern void func_020a7394(void *field, int a, int b, int c, int d);
 extern int func_02073d90(UnkStruct_020a6db0 *self);
-extern void func_020a7880(unsigned char *local);
+extern int func_020a7880(unsigned char *local);
 extern void func_020a7850(unsigned char *local, int a, int b, int c, int d);
 extern void func_02073820(UnkStruct_020a6db0 *self);
 extern void func_020737f0(UnkStruct_020a6db0 *self, unsigned char *local, int a);
 extern void func_02073770(UnkStruct_020a6db0 *self, int a, int b);
-extern void func_020a7870(unsigned char *local);
+extern int func_020a7870(unsigned char *local);
 extern void func_020a7360(void *field, int a, int b, int c, int d);
 
 void func_020a6db0(void)

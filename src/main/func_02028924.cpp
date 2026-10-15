@@ -29,8 +29,8 @@ extern PMF data_020d9108, data_020d94c0, data_020d9198, data_020d91b0, data_020d
 extern int data_020c8928, data_021c1e14, data_020c8924, data_021c1d6c;
 extern UnkStruct_02028924_3 data_020d9188;
 
-extern "C" void func_020984e8(void);
-extern "C" int func_02099640(void);
+extern "C" int func_020984e8(void);
+extern "C" int func_02099640(int);
 extern "C" void func_0201cf74(UnkStruct_02028924 *, ST *, int, void *, void *);
 extern "C" void func_0201cec8(UnkStruct_02028924 *, ST *);
 extern "C" void func_0202da74(UnkStruct_02028924 *, UnkStruct_02028924_3);
@@ -45,8 +45,7 @@ extern "C" void func_02028924(UnkStruct_02028924 *p)
     int i;
 
     a = p->unk_100->unk_830;
-    func_020984e8();
-    b = func_02099640();
+    b = func_02099640((int) func_020984e8());
     for (i = 0; i < 5; i++) {
         if ((p->*tbl[i])(a, b)) {
             break;

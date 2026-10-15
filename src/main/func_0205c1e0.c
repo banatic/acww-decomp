@@ -3,12 +3,13 @@
  */
 
 extern unsigned int data_021c9ab8;
-extern void func_020e9fc8(unsigned int arg);
+extern void func_020e9fc8(void *);
 
 void func_0205c1e0(void)
 {
-    if (data_021c9ab8 != 0) {
-        func_020e9fc8(data_021c9ab8);
+    void *condition_value0;
+    if ((condition_value0 = (void *) (data_021c9ab8)) != 0) {
+        func_020e9fc8(condition_value0);
     }
     data_021c9ab8 = 0;
 }

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int AOSS_FD_SET(void *p);
-extern void func_ov002_02208098(void *p, int i);
+extern int func_ov002_02207cc0(int);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_ov105_0229cadc(void *p, int i, int j);
 
 typedef struct {
@@ -17,7 +17,7 @@ typedef struct {
 
 void func_ov105_0229e7bc(UnkStruct_0229e7bc *self)
 {
-    if (AOSS_FD_SET(self->arr)) {
+    if (func_ov002_02207cc0((int) self->arr)) {
         if (self->byte_at_2c3 != 0) {
             self->byte_at_2c3--;
         } else {

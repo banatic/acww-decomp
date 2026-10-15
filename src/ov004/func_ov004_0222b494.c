@@ -3,9 +3,9 @@
  */
 
 extern void func_ov004_0222b4dc(void *dst, int b);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f328(void *self, int msg);
-void func_ov004_0222b494(unsigned char *self, unsigned char *p)
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
+extern int func_0200f328(void *self, int msg);
+void func_ov004_0222b494(unsigned char *self, unsigned char *p, int previous)
 {
     int b;
     b = *(unsigned char *) (p + 0xc);

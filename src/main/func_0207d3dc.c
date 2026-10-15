@@ -13,12 +13,12 @@ extern u8 data_021d1358[];
 extern int func_020951bc(void *);
 extern int func_02003704(void *);
 extern void func_02066694(struct Big *);
-extern void func_020036e8(void *);
-extern int func_0209765c(void);
+extern int func_020036e8(void *);
+extern int func_0209765c(int);
 extern int func_020644cc(void *);
-extern void func_0200366c(void *, void *, int, void *);
+extern int func_0200366c(void *, void *, int, void *);
 extern void func_02066228(struct Big *, u8 *, u8 *, u8 *, u8 *, void *, u8 *, void *, void *, int);
-extern void func_02065ed0(struct Big *, int, int);
+extern unsigned short func_02065ed0(struct Big *, int, int);
 extern int func_020979f0(struct Big *, int);
 extern void func_02066688(struct Big *);
 
@@ -33,8 +33,7 @@ int func_0207d3dc(void *p0, int p1, void *p2, void *p3, void *p4, u16 *p6)
 
     if (func_020951bc(p3) != 0 && func_02003704(p4) != 0) {
         func_02066694(&big);
-        func_020036e8(p4);
-        buf[0] = (u8) func_0209765c();
+        buf[0] = (u8) func_0209765c((int) func_020036e8(p4));
         v1 = p1 + func_020644cc(p2);
         v2 = p1 + func_020644cc(p2);
         v3 = p1 + func_020644cc(p2);

@@ -35,7 +35,7 @@ struct UnkStruct_022190b4 {
 };
 
 extern "C" int func_ov004_0220d2a8(void *p);
-extern "C" void func_0205265c(UnkStruct_022190b4 *self, int a, int b, int c);
+extern "C" int func_0205265c(UnkStruct_022190b4 *self, int a, int b, int c);
 extern "C" int func_ov004_0220e5c8(UnkStruct_022190b4 *self);
 
 extern "C" void func_ov004_022190b4(UnkStruct_022190b4 *self)

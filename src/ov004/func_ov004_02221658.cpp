@@ -39,15 +39,15 @@ extern "C" void func_02013c0c(char *p);
 extern "C" void func_0201addc(char *p);
 extern "C" int func_020984e8(void);
 extern "C" int func_02099870(int h);
-extern "C" void func_020b65b8(void);
-extern "C" int func_020b6654(void);
+extern "C" unsigned char func_020b65b8(void);
+extern "C" int func_020b6654(int);
 extern "C" int func_020951bc(int h);
 extern "C" int func_020807a8(int a, int h);
 extern "C" int func_02081898(int a);
-extern "C" void func_ov004_0223ce84(void);
-extern "C" int func_ov004_0223cdc0(void);
+extern "C" void *func_ov004_0223ce84(void);
+extern "C" int func_ov004_0223cdc0(int *);
 extern "C" void func_020b23d4(void);
-extern "C" void func_02030864(int a);
+extern "C" int func_02030864(int a);
 extern "C" void func_ov004_0223d33c(void);
 extern "C" void func_0209e474(char *p);
 extern "C" void func_ov004_02221550(UnkStruct_02221658 *self, int k);
@@ -77,12 +77,10 @@ extern "C" int func_ov004_02221658(UnkStruct_02221658 *self)
     } else {
         h = 0;
     }
-    func_020b65b8();
-    if (func_020b6654() != 0 ||
+    if (func_020b6654((int) func_020b65b8()) != 0 ||
         (self->check() != 0 && h != 0 && func_020951bc(h) != 0 && func_020807a8(self->check(), h) != 0 &&
          func_02081898(func_020807a8(self->check(), h)) != 0)) {
-        func_ov004_0223ce84();
-        *(int *) ((char *) self + 0xae4) = func_ov004_0223cdc0();
+        *(int *) ((char *) self + 0xae4) = func_ov004_0223cdc0((int *) func_ov004_0223ce84());
         func_020b23d4();
         func_02030864(0);
         func_ov004_0223d33c();

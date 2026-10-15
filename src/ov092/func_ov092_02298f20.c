@@ -3,7 +3,7 @@
  */
 
 extern char data_ov092_02299508;
-extern void func_ov002_0220826c(void *);
+extern void *func_ov002_0220826c(void *);
 
 void *func_ov092_02298f20(void *this_ptr)
 {

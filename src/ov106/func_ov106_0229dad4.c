@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O1,s
  */
 
-extern int func_0206f56c(void *);
+extern int func_0206f56c(void);
 extern void func_ov106_0229cc50(void *);
 extern void func_ov106_0229d3bc(void *);
 extern int func_ov002_02208014(void *);
 extern void func_ov106_0229d724(void *);
 extern void func_ov106_0229d3e8(void *);
 extern void func_ov002_0220a1dc(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov002_02208008(void *);
 extern int func_ov002_022088ac(int);
 extern int func_ov002_0220889c(int);
@@ -23,14 +23,14 @@ extern struct {
 
 void func_ov106_0229dad4(void *p)
 {
-    if (func_0206f56c(p)) {
+    if (func_0206f56c()) {
         func_ov106_0229cc50(p);
         func_ov106_0229d3bc(p);
     } else if (func_ov002_02208014(p)) {
         func_ov106_0229d724(p);
     } else if (data_021fbe40.flags & 1) {
         func_ov002_0220a1dc((char *) p + 0x22a0);
-        func_ov002_02208098(p, 0x1e);
+        func_ov002_02208098((void *) (p), 0x1e);
     } else if (data_021fbe40.flags & 2) {
         func_ov106_0229cc50(p);
         func_ov106_0229d3bc(p);

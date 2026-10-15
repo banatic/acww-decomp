@@ -8,7 +8,7 @@ extern int func_ov002_0220b5ec(char *, int);
 extern int func_ov002_0220b59c(char *, int);
 extern void func_ov002_0220a0b4(char *, int, int);
 extern void func_ov002_02208090(char *, int);
-extern void func_ov002_022080a0(char *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov096_0229ddd8(char *);
 
 void func_ov096_022a00b4(char *param)
@@ -23,6 +23,6 @@ void func_ov096_022a00b4(char *param)
     } else {
         func_ov096_0229ddd8(param);
         func_ov002_02208090(param, 9);
-        func_ov002_022080a0(param, 1);
+        func_ov002_022080a0((void *) (param), 1);
     }
 }

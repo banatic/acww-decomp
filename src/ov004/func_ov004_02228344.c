@@ -6,9 +6,9 @@ extern void func_ov004_022283c8(void *dst, int b);
 extern void func_ov004_022283c4(void *dst, int b);
 extern void func_020109fc(void *self, int a, int b, int c);
 extern int func_02073908(int a, int b);
-extern void func_ov004_0223b338(void *p, short a);
+extern int func_ov004_0223b338(void *p, short a);
 extern int data_020ccf94;
-void func_ov004_02228344(unsigned char *self, unsigned char *p)
+void func_ov004_02228344(unsigned char *self, unsigned char *p, int previous)
 {
     int b, k;
     b = *(unsigned char *) (p + 0xc);

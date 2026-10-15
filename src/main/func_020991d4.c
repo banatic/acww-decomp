@@ -20,16 +20,16 @@ int func_0209dcdc(struct LocalInfo *, struct LocalInfo *);
 void func_020982f8(int);
 void func_020981f4(int);
 void func_020980f0(int);
-void func_02099670(void *);
-void func_02088810(void);
+int func_02099670(void *);
+void func_02088810(void *);
 void func_020889a8(void);
 void func_0209948c(void *);
 int func_020992ac(void *);
-void func_020992b8(void *, int);
-void func_0209967c(void *);
-void func_020887f8(void);
+unsigned char *func_020992b8(void *, int);
+int func_0209967c(void *);
+void func_020887f8(void *);
 void func_02099768(void *, int);
-void func_02088ac8(void);
+void func_02088ac8(unsigned char *);
 void func_0209f100(void *, int);
 void *func_02099688(void *);
 void func_020882f0(void *);
@@ -56,8 +56,7 @@ void func_020991d4(void)
 
     func_020981f4(r4);
     func_020980f0(r4);
-    func_02099670(self);
-    func_02088810();
+    func_02088810((void *) func_02099670(self));
     func_02099670(self);
     func_020889a8();
 
@@ -70,11 +69,9 @@ void func_020991d4(void)
     }
 
     if (r4 != 0) {
-        func_0209967c(self);
-        func_020887f8();
+        func_020887f8((void *) func_0209967c(self));
         func_02099768(self, 0);
-        func_02099670(self);
-        func_02088ac8();
+        func_02088ac8((unsigned char *) func_02099670(self));
         func_0209f100(&data_021dc7a8, 0x10);
     }
 

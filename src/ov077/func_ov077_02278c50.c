@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200442c(void *dst, void *src, int size, int fill);
-extern void func_ov003_02219648(void *obj);
+extern int func_0200442c(void *dst, void *src, int size, int fill);
+extern void func_ov003_02219648(void);
 
 void func_ov077_02278c50(void *obj, int mode)
 {
     switch (mode) {
         case 0:
-            func_ov003_02219648(obj);
+            func_ov003_02219648();
             break;
         case 1:
             func_0200442c((char *) (*(int *) ((char *) obj + 0xb8)) + 0x514, (void *) 0x7f4, 0x7f, 0);

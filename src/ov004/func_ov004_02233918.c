@@ -9,7 +9,7 @@ typedef struct {
 } Vec3;
 extern void func_0204f794(void *, int, int);
 extern int _s32_div_f(int, int);
-extern void func_020044c0(void *, int, int, int);
+extern int func_020044c0(void *, int, int, int);
 
 void func_ov004_02233918(char *self, int *p1, Vec3 *p2, Vec3 *p3, u16 a5)
 {

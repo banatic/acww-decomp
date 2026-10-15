@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_SndArcPlayerStartSeq(void *dst, int size);
+extern int NNS_SndArcPlayerStartSeq(void *dst, int size);
 
 void func_020f78c4(void *self)
 {

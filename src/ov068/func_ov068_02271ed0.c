@@ -3,10 +3,10 @@
  */
 
 extern void func_ov068_02271f28(void *);
-extern int func_ov068_02271ee4(void *);
+extern void func_ov068_02271ee4(void *);
 
-int func_ov068_02271ed0(void *p)
+void func_ov068_02271ed0(void *p)
 {
     func_ov068_02271f28(p);
-    return func_ov068_02271ee4(p);
+    func_ov068_02271ee4(p);
 }

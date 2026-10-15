@@ -3,10 +3,10 @@
  */
 
 extern void *func_02096718(int);
-extern void func_0203e140(void);
+extern int func_0203e140(void);
 extern int func_02008258(void *, int);
-extern void func_0200d4e8(void *, int, int, int);
-extern void func_02095518(int, int, int);
+extern int func_0200d4e8(void *, int, int, int);
+extern int func_02095518(int, int, int);
 
 typedef struct {
     char pad_00[0x7f0];

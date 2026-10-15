@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int NNS_SndPlayerSetVolume(void *player, int vol);
-extern int func_0210b634(void *player, int a2, int a3);
+extern void NNS_SndPlayerSetVolume(void *player, int vol);
+extern void func_0210b634(void *player, int a2, int a3);
 extern int func_020f5e50(int a1, int a2);
 extern int func_020f5e24(int a1);
 extern int func_020f5c64(int a1, int a2);

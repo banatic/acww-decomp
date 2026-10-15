@@ -4,10 +4,10 @@
 
 extern int func_020a7e50(void);
 extern int func_020a7ffc(void);
-extern int func_020a7e64(void);
+extern void func_020a7e64(void);
 extern int func_020a7e44(void);
 extern int func_020a812c(void);
-extern int func_020a7e70(void);
+extern void func_020a7e70(void);
 
 int func_020ab0f4(void)
 {

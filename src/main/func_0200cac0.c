@@ -25,11 +25,11 @@ struct UnkStruct_0200cac0 {
 extern void func_020109fc(struct UnkStruct_0200cac0 *self, int a, int b, int c);
 extern void func_0200cbfc(unsigned short *p, int val);
 extern int FX_MulFunc(int a, int b);
-extern void func_020912d4(int a, struct Vec3 *pos, s16 *ang, int d);
-extern void func_0200f328(struct UnkStruct_0200cac0 *self, int code);
+extern int func_020912d4(int a, struct Vec3 *pos, s16 *ang, int d);
+extern int func_0200f328(struct UnkStruct_0200cac0 *self, int code);
 extern s16 FX_SinCosTable_[];
 
-void func_0200cac0(struct UnkStruct_0200cac0 *self, void *arg)
+void func_0200cac0(struct UnkStruct_0200cac0 *self, void *arg, int previous)
 {
     s16 ang;
     struct Vec3 v;

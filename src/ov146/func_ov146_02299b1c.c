@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov146_02299dec(void *, int);
+extern void func_ov146_02299dec(void *, int);
 extern int _s32_div_f(void *, int);
 
 void func_ov146_02299b1c(void *self)

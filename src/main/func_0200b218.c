@@ -44,14 +44,15 @@ typedef struct UnkStruct_0200b218_3 {
 } UnkStruct_0200b218_3;
 
 extern void func_0200f268(UnkStruct_0200b218_3 *s, int k);
-extern int *func_ov004_0223badc(void);
-extern void func_0200f27c(UnkStruct_0200b218_3 *s, int k);
+extern void *func_ov004_0223badc(int);
+extern unsigned int *func_0200f27c(UnkStruct_0200b218_3 *s, int k);
 extern u32 _s32_div_f(u32 a, u32 b);
 extern void func_0200ee40(UnkStruct_0200b218_3 *s);
 extern void func_0200f650(UnkStruct_0200b218_3 *s, int a);
 
 void func_0200b218(UnkStruct_0200b218_3 *self)
 {
+    int tested_value0;
     UnkStruct_0200b218 sv;
     UnkStruct_0200b218 *q;
     B48 a;
@@ -70,8 +71,8 @@ void func_0200b218(UnkStruct_0200b218_3 *self)
         return;
     }
     e = &self->e;
-    if (e->unk_04 >= 0) {
-        p = func_ov004_0223badc();
+    if ((tested_value0 = (int) (e->unk_04)) >= 0) {
+        p = func_ov004_0223badc(tested_value0);
         if (p == 0) {
             return;
         }

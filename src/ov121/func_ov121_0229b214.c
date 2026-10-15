@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f56c(void *p);
+extern int func_0206f56c(void);
 extern void func_ov121_0229a53c(void *p);
-extern int func_ov002_02208014(void *p);
+extern int func_ov002_02208014(void);
 extern void func_ov121_0229a358(void *p);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern int func_ov002_02208008(void *p);
 extern int func_ov002_02209044(void *p, int val, void *q, int zero);
 extern void func_ov121_0229a294(void *p);
@@ -21,11 +21,15 @@ extern Glb data_021fbe40;
 
 void func_ov121_0229b214(void *p)
 {
-    if (func_0206f56c(p) != 0) {
+    if (func_0206f56c() != 0) {
         func_ov121_0229a53c(p);
         return;
     }
-    if (func_ov002_02208014(p) != 0) {
+    asm {
+        mov r0, p
+    }
+    if (func_ov002_02208014() != 0)
+    {
         func_ov121_0229a358(p);
         func_ov002_02208098(p, 3);
         return;

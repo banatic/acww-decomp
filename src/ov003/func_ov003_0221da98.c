@@ -11,8 +11,8 @@ struct SELF {
 };
 
 extern int func_0205790c(void *, const char *);
-extern void func_02055de0(void *, void (*)(void), int, int, void *, int);
-extern void func_ov003_0221db90(void);
+extern void func_02055de0(void *, void (*)(void *), int, int, void *, int);
+extern void func_ov003_0221db90(void *state);
 extern const char data_ov003_02239224[];
 extern const char data_ov003_0223922c[];
 

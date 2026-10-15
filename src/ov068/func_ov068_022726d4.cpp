@@ -15,12 +15,12 @@ extern "C" {
 extern char data_ov068_02277890[];
 Manager *func_020682e0(int index);
 int func_020984e8(void);
-void func_02099870(void);
-int func_020950c0(void);
+void *func_02099870(int obj);
+int func_020950c0(void *obj);
 void func_020a8164(Base_02066994 &recv, const char *name);
 void func_02066954(Base_02066994 &recv, int arg, int mode);
 void func_02068340(Manager *manager, Base_02066994 *recv);
-void func_02082438(Obj_020e2f6c *out, unsigned short *id);
+int func_02082438(Obj_020e2f6c *out, unsigned short *id);
 Obj_020e2f6c *func_02094fd4(Obj_020e2f6c *obj);
 Obj_020e2f6c *func_02094fbc(Obj_020e2f6c *obj);
 }
@@ -36,7 +36,8 @@ int Obj_ov068_02277750::func_ov068_022726d4()
     Base_02066994::vfunc_02066994_08();
     func_020a8164(*this, data_ov068_02277890);
     int ready;
-    if (func_020984e8() && (func_02099870(), func_020950c0() == 1)) {
+    int context = func_020984e8();
+    if (context && func_020950c0(func_02099870(context)) == 1) {
         ready = 1;
     } else {
         ready = 0;

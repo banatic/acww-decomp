@@ -16,7 +16,7 @@ extern int data_020ccf94;
 extern int func_02073908(int a, int b);
 extern void func_02010f5c(UnkStruct_02218cec *self);
 extern void func_ov003_02218dcc(UnkStruct_02218cec *self);
-extern void func_0200f530(UnkStruct_02218cec *self, int *data);
+extern int func_0200f530(UnkStruct_02218cec *self, int *data);
 extern void func_02010d64(UnkStruct_02218cec *self);
 extern void func_ov003_02218d44(UnkStruct_02218cec *self);
 

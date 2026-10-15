@@ -5,7 +5,7 @@
 typedef struct UnkStruct_020bd6d0 UnkStruct_020bd6d0;
 
 extern int func_020be0d4(UnkStruct_020bd6d0 *p, int arg);
-extern void func_020bdc50(UnkStruct_020bd6d0 *p, int a, int b, int c, int d);
+extern void *func_020bdc50(UnkStruct_020bd6d0 *p, int a, int b, int c, int d);
 extern int func_020644cc(int arg);
 extern int data_021f8ab0[];
 extern unsigned char data_021f3b28[];

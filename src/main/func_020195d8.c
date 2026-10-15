@@ -21,7 +21,7 @@ typedef struct {
     u16 unk_1C;
 } InfoStruct;
 
-extern InfoStruct *func_02019de4(void *, void *);
+extern InfoStruct *func_02019de4(void *);
 extern void func_0201b1a4(void *, void *, int, int, int);
 extern void func_0201aff4(void *, int);
 extern void func_0201b044(void *, void *);
@@ -39,7 +39,7 @@ int func_020195d8(UnkStruct_020195d8 *out, u8 *p)
     InfoStruct *info;
     u32 v;
 
-    info = func_02019de4(out, p);
+    info = func_02019de4(out);
     func_0201b1a4((u8 *) p + 0x350, p, 3, info->unk_1A, info->unk_1C);
     func_0201aff4((u8 *) p + 0x350, info->unk_18);
     func_0201b044((u8 *) p + 0x350, data_021fbee8);

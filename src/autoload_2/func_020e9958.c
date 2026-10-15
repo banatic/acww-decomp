@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020e9ed4(int, int, int);
-void func_020e9958(int param1, int param2)
+extern int func_020e9ed4(int, int, int);
+int func_020e9958(int param1, int param2)
 {
-    func_020e9ed4(param1, param2, -4);
+    return func_020e9ed4(param1, param2, -4);
 }

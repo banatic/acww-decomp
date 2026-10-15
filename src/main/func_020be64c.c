@@ -19,9 +19,9 @@ typedef struct {
     char flag;
 } UnkStruct_020be64c_2;
 
-extern void __cxa_vec_ctor(void *, int, int, void *, void *);
-extern void func_020012dc(void);
-extern void func_020012e8(void);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
+extern void func_020012dc(void *);
+extern void func_020012e8(void *);
 
 extern unsigned char data_0213efe8[];
 extern unsigned char data_0213f03c[];
@@ -37,7 +37,7 @@ UnkStruct_020be64c_2 *func_020be64c(UnkStruct_020be64c_2 *obj)
         p++;
     } while (p != &obj->array1[8]);
 
-    __cxa_vec_ctor(&obj->array2[0], 8, 12, (void *) func_020012e8, (void *) func_020012dc);
+    __cxa_vec_ctor((void *) (&obj->array2[0]), 8, 12, (void (*)(void *)) func_020012e8, (void (*)(void *)) func_020012dc);
 
     obj->flag = 0;
 

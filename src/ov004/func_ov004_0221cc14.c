@@ -18,7 +18,7 @@ typedef struct {
 #define OBJ (*(UnkStruct_0221cc14 **) (self + 0x1a4))
 
 extern void *func_0208150c(void *);
-extern void func_0200366c(void *a, void *b, int c, void *d);
+extern int func_0200366c(void *a, void *b, int c, void *d);
 extern int func_020644cc(int);
 extern int func_ov004_0221d02c(void *self);
 extern int func_ov004_0221cff8(void *self);

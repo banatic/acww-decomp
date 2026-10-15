@@ -3,11 +3,11 @@
  */
 
 extern int func_0209a000(unsigned short *, int);
-extern void func_02094fd4(void *);
+extern void *func_02094fd4(void *);
 extern void func_0209a918(void *);
-extern void func_0209ac50(void *, void *, unsigned short *);
+extern int func_0209ac50(void *, void *, unsigned short *);
 extern void func_02068404(int, int, void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fbc(void *);
 
 struct Arg0 {
     char pad_00[0x40];

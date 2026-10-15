@@ -24,7 +24,7 @@ typedef struct {
 } UnkStruct_020b0ea8_3;
 
 extern u64 OS_GetTick(void);
-extern void func_02003348(u16 a, int b, UnkStruct_020b0ea8 *v, void *p, int z);
+extern int func_02003348(u16 a, int b, UnkStruct_020b0ea8 *v, void *p, int z);
 
 int func_020b0ea8(UnkStruct_020b0ea8_3 *self, u8 *cnt, u64 start)
 {

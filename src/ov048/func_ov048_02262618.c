@@ -4,9 +4,9 @@
 
 extern void func_020a0194(void);
 extern void func_020a01b4(void);
-extern int func_02074b44(int, int, int);
+extern void func_02074b44(int, int, int);
 
-int func_ov048_02262618(int p1, unsigned int p2, int p3)
+void func_ov048_02262618(int p1, unsigned int p2, int p3)
 {
     switch (p2) {
         case 0:
@@ -20,5 +20,5 @@ int func_ov048_02262618(int p1, unsigned int p2, int p3)
             func_020a01b4();
             break;
     }
-    return func_02074b44(p2, 4, p3);
+    func_02074b44(p2, 4, p3);
 }

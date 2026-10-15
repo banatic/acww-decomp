@@ -41,7 +41,7 @@ extern void func_0209e474(void *p);
 extern int func_0209de44(int a, int b, int c, int d);
 extern unsigned char *func_0208150c(unsigned char *a);
 extern int func_020036e8(unsigned char *a);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 extern Global data_020c8c68;
 extern Pair data_020d8e88;
 

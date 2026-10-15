@@ -16,7 +16,7 @@ extern char *data_ov004_022594d4[];
 extern void *data_021fbe94;
 extern void func_ov004_02235374(void *, int);
 extern void func_020e993c(void *, void *);
-extern void func_0209d138(void *);
+extern int func_0209d138(void *);
 extern void func_02004644(int, int);
 }
 extern "C" int func_ov004_022346a0(char *self)

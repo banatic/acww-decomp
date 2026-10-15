@@ -9,14 +9,14 @@ typedef struct {
     unsigned int unk_704;
 } Stru_02218474;
 
-extern void func_02010f5c(void);
+extern void func_02010f5c(int argument0);
 extern void func_0200f888(Stru_02218474 *);
 
 void func_ov003_02218474(Stru_02218474 *p)
 {
     int v;
 
-    func_02010f5c();
+    func_02010f5c((int) p);
 
     if (p->unk_704 == 0x32) {
         v = (p->unk_2D8 << 4) >> 16;

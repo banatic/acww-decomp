@@ -4,8 +4,8 @@
 
 extern int func_020984e8(void);
 extern int func_02098a18(int);
-extern int func_02097e14(int);
-extern void func_02066830(int, void *);
+extern unsigned char *func_02097e14(void *p);
+extern int func_02066830(int, void *);
 extern void func_020664e0(int);
 extern int func_02097e08(int);
 
@@ -19,7 +19,7 @@ void func_0206f92c(void)
     unsigned char *p;
 
     a = func_020984e8();
-    b = func_02097e14(func_02098a18(a));
+    b = (int) func_02097e14((void *) func_02098a18(a));
     func_02066830(b, &data_021cfd68);
     func_020664e0(b);
     p = (unsigned char *) func_02097e08(func_02098a18(a));

@@ -20,7 +20,7 @@ struct UnkStruct_02027dcc_2 {
 extern int func_0202d9c4(void *);
 extern int func_0209bc40(int);
 extern int func_0209bb70(int);
-extern void func_02015330(void *, int, int, int, int);
+extern int func_02015330(void *, int, int, int, int);
 extern void func_0202dbf0(void *, struct Pair);
 extern int func_0208150c(int);
 extern int func_0209b4cc(void *, int);

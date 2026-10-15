@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_0208f0c4(void *p, int n);
 extern void RtcSendPxiCommand(int cmd);
 void func_ov105_0229c710(void *arg)

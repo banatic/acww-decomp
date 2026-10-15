@@ -5,7 +5,7 @@
 extern void *func_02067308(void *self, char *s);
 extern void *func_020672cc(void *self, char *s);
 extern int strlen(const char *s);
-extern void func_02064328(const char *fmt, ...);
+extern int func_02064328(const char *fmt, ...);
 extern char data_021cdb74[];
 extern char data_020df094[];
 extern char data_020df0a8[];

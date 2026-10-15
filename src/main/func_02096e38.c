@@ -4,12 +4,12 @@
 
 extern void *func_0209a1d0(void);
 extern void *func_02097f14(void *);
-extern int func_02065ec0(void);
+extern unsigned char func_02065ec0(unsigned char *param);
 extern void func_02066650(void *);
 extern void *func_020984e8(void);
 extern void *func_020996ac(void *);
-extern void OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
-extern void func_02066830(void *, void *);
+extern int OSi_DoUnlockByWord__main_0203cd2c(void *, void *, int, int);
+extern int func_02066830(void *, void *);
 extern int func_02073d90(void *);
 extern void func_0207055c(int, int);
 extern void *data_020ccf94;
@@ -26,7 +26,7 @@ int func_02096e38(void)
         return 0;
     }
     b = func_02097f14((void *) data_021f36ec);
-    if (func_02065ec0() == 0) {
+    if (func_02065ec0(b) == 0) {
         func_02066650(b);
         return 1;
     }

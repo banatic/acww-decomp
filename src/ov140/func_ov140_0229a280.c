@@ -19,7 +19,7 @@ typedef struct {
 
 extern void func_ov140_0229a41c(UnkStruct_0229a280 *self);
 extern void func_02051bf8(u16 *buf, int n);
-extern void func_02051c08(void *p, u16 *buf, int n);
+extern int func_02051c08(void *p, u16 *buf, int n);
 extern void *func_ov140_0229a15c(UnkStruct_0229a280 *self);
 extern int func_ov140_0229a1a4(UnkStruct_0229a280 *self, void *ent);
 extern void func_ov139_02299798(void *p, int i);

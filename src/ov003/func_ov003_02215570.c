@@ -4,11 +4,11 @@
 
 extern void func_ov003_02215620(void *, unsigned char);
 extern void func_ov003_0221561c(void *, unsigned char);
-extern void func_020109a0(void *, int, int, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
 extern void func_0205eae0(void *, int, int, int);
-extern void func_0200f328(void *, int);
+extern int func_0200f328(void *, int);
 extern int func_02073908(unsigned int *, unsigned int);
-extern void func_0203b144(void);
+extern int func_0203b144(void);
 extern unsigned int *data_020ccf94;
 
 typedef struct {
@@ -28,7 +28,7 @@ typedef struct {
     unsigned char addr_8f0;
 } UnkStruct_02215570;
 
-void func_ov003_02215570(UnkStruct_02215570 *self, const unsigned char *param)
+void func_ov003_02215570(UnkStruct_02215570 *self, const unsigned char *param, int previous)
 {
     unsigned char byte;
     unsigned int *src;

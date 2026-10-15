@@ -4,7 +4,7 @@
 
 extern void func_ov002_0220919c(void *);
 extern int func_ov103_0229c2f4(void *self, int flag);
-extern int func_0206fe54(int);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *);
 extern void func_ov103_0229ca00(void *);
 extern void func_ov094_0229a850(void *, int, void *);
@@ -30,7 +30,8 @@ int func_ov103_0229dfec(void *self)
         return 1;
     }
 
-    if (func_0206fe54(((UnkStruct_0229dfec *) ((char *) self + 0x218c))->vtable->func((char *) self + 0x218c)) != 0) {
+    ((UnkStruct_0229dfec *) ((char *) self + 0x218c))->vtable->func((char *) self + 0x218c);
+    if (func_0206fe54() != 0) {
         func_ov002_02209eb8((char *) self + 0x2274);
     }
 

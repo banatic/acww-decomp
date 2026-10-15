@@ -5,7 +5,7 @@
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
-void func_ov002_02208098(unsigned char *, int);
+unsigned char *func_ov002_02208098(void *object, unsigned char value);
 int func_ov100_0229d42c(unsigned char *, int);
 int func_ov100_0229d3d8(unsigned char *, int);
 void func_ov002_02207cf8(unsigned char *);
@@ -20,7 +20,7 @@ void func_ov100_0229d824(unsigned char *base, int param)
     int val1, val2;
 
     base[0x291e] = (unsigned char) param;
-    func_ov002_02208098(base, 1);
+    func_ov002_02208098((void *) (base), 1);
     g1 = data_021f6c58;
     g2 = data_021f6c54;
     val1 = func_ov100_0229d42c(base, base[0x291e]) - g1;

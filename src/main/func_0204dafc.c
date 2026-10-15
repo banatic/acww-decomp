@@ -25,7 +25,7 @@ extern int func_02037e90(int a, int b, int c);
 extern int func_0204d858(int a, int b);
 extern UnkStruct_0204dafc_2 *func_0204dc34(int h, int key1, int key2);
 extern void func_0204f800(int *a, int *b, int c, int d, int e, int f);
-extern void func_02030ddc(int a, int b, int c, int d);
+extern int func_02030ddc(int a, int b, int c, int d);
 extern int func_0203750c(void);
 extern int func_0203776c(int a, int b);
 extern void func_02037f28(int a, int b, int *local, int c, int d, int e, int f, int g, int h, int i, int j);

@@ -16,14 +16,14 @@ typedef struct {
 
 extern UnkStruct_0229baa4 data_021fbe40;
 
-extern int func_ov002_02208014(void *);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(void *);
 extern void func_ov123_0229b6d0(void *);
-extern void func_ov123_022999b0(void *, int, int);
+extern int func_ov123_022999b0(void *, int, int);
 extern void func_ov123_0229a438(void *);
 extern void func_ov123_02299640(void *, unsigned int);
 extern void func_ov123_0229a340(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void RtcSendPxiCommand(unsigned int);
 extern void func_ov123_0229b65c(void *);
 extern int func_ov123_022998c0(void *);
@@ -35,7 +35,7 @@ void func_ov123_0229baa4(ThisType *this)
 {
     unsigned short flags;
 
-    if (func_ov002_02208014(this) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov123_0229b6d0(this);
         return;
     }

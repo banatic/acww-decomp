@@ -33,9 +33,9 @@ extern fx32 VEC_Mag(const VecFx32 *);
 extern void func_020eaca0(VecFx32 *, const VecFx32 *, const VecFx32 *);
 extern fx32 func_0200dc8c(struct Actor *);
 extern fx32 func_0200dc80(struct Actor *);
-extern void func_0200f328(struct Actor *, int);
+extern int func_0200f328(struct Actor *, int);
 extern int func_0200f290(struct Actor *, int);
-extern void func_ov003_0220e1f0(struct Actor *, int, int);
+extern void *func_ov003_0220e1f0(struct Actor *, int, int);
 void func_ov003_0220e244(struct Actor *self)
 {
     fx32 prev;

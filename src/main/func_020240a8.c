@@ -2,9 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_020240a8(unsigned short *p)
+int func_020240a8(unsigned short *p, int status)
 {
     int ret;
+    (void) status;
     ret = 0;
     if (*p >= 0x1561u && *p <= 0x1564u) {
         ret = 1;

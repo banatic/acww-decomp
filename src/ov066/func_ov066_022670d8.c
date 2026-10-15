@@ -3,10 +3,10 @@
  */
 
 extern int *data_ov066_0226bdec;
-extern int func_ov066_02266e64(void);
-extern int func_ov066_02267be0(void);
+extern void func_ov066_02266e64(void);
+extern void func_ov066_02267be0(void);
 
-int func_ov066_022670d8(void)
+void func_ov066_022670d8(void)
 {
     int v = *data_ov066_0226bdec;
     switch (v) {
@@ -15,11 +15,13 @@ int func_ov066_022670d8(void)
         case 2:
         case 3:
         case 6:
-            return func_ov066_02266e64();
+            func_ov066_02266e64();
+            return;
         case 5:
-            return func_ov066_02267be0();
+            func_ov066_02267be0();
+            return;
         case 4:
         default:
-            return v;
+            return;
     }
 }

@@ -18,7 +18,7 @@ extern int func_0209bb70(void *);
 extern void func_0209bd30(int, int, int, int);
 extern void MI_CpuCopy8(void *, const void *, unsigned int);
 
-void func_02077744(unsigned char *out)
+void func_02077744(unsigned char *out, unsigned short length)
 {
     int a, b;
     unsigned int z1, z2, z3;

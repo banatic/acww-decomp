@@ -14,8 +14,8 @@ extern int func_02071aa8(int a, int b, int c, int d, int e);
 extern int func_0200442c(void *addr, int a, int b, int c);
 extern u16 *func_02099710(void *h);
 extern u16 *func_020996f8(void *h);
-extern void func_02095b58(u16 *p);
-extern void func_02095b40(u16 *p);
+extern int func_02095b58(u16 *p);
+extern int func_02095b40(u16 *p);
 extern void func_0206844c(void *, u8 *, void *);
 
 extern void *data_ov004_02254794;

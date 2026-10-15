@@ -3,7 +3,7 @@
  */
 
 extern void func_02008738(void *param1, void *param2);
-extern void func_02008750(void *param1, void *param2, int param3, void *param4);
+extern int func_02008750(void *param1, void *param2, int param3, void *param4);
 
 void func_02008690(void *param1, void *param2)
 {

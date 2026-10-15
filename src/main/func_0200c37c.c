@@ -12,7 +12,7 @@ struct Struct0200c37c {
     unsigned short unk_0C;
 };
 
-void func_0200c37c(void *arg0, struct Struct0200c37c *arg1)
+void func_0200c37c(void *arg0, struct Struct0200c37c *arg1, int previous)
 {
     unsigned short field;
     field = arg1->unk_0C;

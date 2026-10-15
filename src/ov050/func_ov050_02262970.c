@@ -12,15 +12,15 @@ typedef struct {
 } UnkStruct_02262970;
 
 extern int func_0209ad9c(int, int);
-extern int func_0209b4d4(int);
-extern int func_0209bb90(int, int);
-extern int func_02099fe8(int);
+extern int func_0209b4d4(void *object);
+extern void func_0209bb90(int, int);
+extern int func_02099fe8(void);
 extern void func_0209aacc(int);
 extern int func_0209b4cc(int, int);
-extern void func_02094fd4(void *);
-extern void func_02003618(int, void *);
+extern void *func_02094fd4(void *);
+extern int func_02003618(int, void *);
 extern void func_02068404(int, int, void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fbc(void *);
 
 void func_ov050_02262970(UnkStruct_02262970 *self, int arg1)
 {
@@ -28,7 +28,7 @@ void func_ov050_02262970(UnkStruct_02262970 *self, int arg1)
     int v;
 
     v = func_0209ad9c(arg1, 0);
-    if (func_02099fe8(func_0209bb90(func_0209b4d4(v), 1)) >= 0) {
+    if (((void) (func_0209bb90(func_0209b4d4((void *) v), 1)), func_02099fe8()) >= 0) {
         func_0209aacc(arg1);
         v = func_0209b4cc(v, 1);
         if (v != 0) {

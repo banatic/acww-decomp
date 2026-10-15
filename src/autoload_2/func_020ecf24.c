@@ -6,7 +6,7 @@ extern unsigned char data_021fbef8;
 extern int DWC_GetMOSCConnectBlockState(void);
 extern unsigned int data_021fbf34;
 extern unsigned long long OS_GetTick(void);
-extern void func_ov065_0227e67c(void);
+extern void *func_ov065_0227e67c(void);
 
 static __inline unsigned int check(unsigned long long diff)
 {

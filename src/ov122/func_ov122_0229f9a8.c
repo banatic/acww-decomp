@@ -9,7 +9,7 @@ struct UnkStruct_0229f9a8 {
 
 extern void func_ov122_0229fa90(struct UnkStruct_0229f9a8 *self);
 extern void func_ov122_0229fa34(struct UnkStruct_0229f9a8 *self);
-extern void func_ov122_0229f9e8(struct UnkStruct_0229f9a8 *self);
+extern int func_ov122_0229f9e8(struct UnkStruct_0229f9a8 *self);
 extern void func_ov122_0229f394(struct UnkStruct_0229f9a8 *self);
 
 void func_ov122_0229f9a8(struct UnkStruct_0229f9a8 *self)

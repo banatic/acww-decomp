@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020565b0(void *ptr);
-extern void func_ov009_0226539c(void *self);
+extern void *func_020565b0(void *ptr);
+extern void *func_ov009_0226539c(void *self);
 
 typedef struct {
     void *unk_00;

@@ -26,10 +26,11 @@ extern int func_020b65c4(void);
 extern void func_0207ac20(int *);
 extern int func_02073d90(void *);
 extern void func_020e993c(void *, void *);
-extern void func_020a0070(void);
+extern void func_020a0070(int);
 
 int func_020a4f0c(struct UnkStruct_020a4f0c *o)
 {
+    int condition_value0;
     if (func_020b65c4() == 6) {
         func_0207ac20(&data_021e5a2c);
     }
@@ -49,8 +50,8 @@ int func_020a4f0c(struct UnkStruct_020a4f0c *o)
         func_020e993c(o->unk_AC, (void *) data_021f3c24);
         data_021f3c24 = 0;
     }
-    if (o->unk_CC) {
-        func_020a0070();
+    if ((condition_value0 = (int) (o->unk_CC))) {
+        func_020a0070(condition_value0);
         func_020e993c(o->unk_AC, o->unk_CC);
         o->unk_CC = 0;
     }

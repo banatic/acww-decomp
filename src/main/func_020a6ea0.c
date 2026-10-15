@@ -3,8 +3,8 @@
  */
 
 extern char data_021f4320;
-extern void func_020a6684(void *);
-void func_020a6ea0(void)
+extern int func_020a6684(void *);
+int func_020a6ea0(void)
 {
-    func_020a6684(&data_021f4320);
+    return func_020a6684(&data_021f4320);
 }

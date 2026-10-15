@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_02278eac;
 
 extern void *func_020984e8(void);
-extern void func_02099640(void *);
+extern int func_02099640(void *);
 extern void func_0209e474(void *);
 extern int func_02099e9c(volatile unsigned short *);
 extern unsigned char func_020952ec(void);

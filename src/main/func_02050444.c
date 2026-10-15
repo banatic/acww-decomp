@@ -22,16 +22,16 @@ struct Entry {
 extern Entry *data_021c8184;
 extern int data_020dcd78;
 
-extern void func_0205066c(void *self, int i);
-extern void func_02050210(void *self, void *p, Entry *entry);
-extern void func_02050140(void *self, void *p, Entry *entry);
-extern void func_0205027c(void *self, void *p, Entry *entry);
+extern int func_0205066c(void *self, int i);
+extern int func_02050210(void *self, void *p, Entry *entry);
+extern int func_02050140(void *self, void *p, Entry *entry);
+extern int func_0205027c(void *self, void *p, Entry *entry);
 extern void func_02055124(void *addr);
 extern int func_0209d088(void *addr);
 extern void NNS_G3dMdlSetMdlAlpha(int r, int a, int b);
 extern void func_020044d0(void *a, int *b);
 extern int func_02056f28(void *addr, int x);
-extern void func_020044c0(void *a, int b, int c, int d);
+extern int func_020044c0(void *a, int b, int c, int d);
 extern void func_02050394(void *self, Entry *entry);
 extern void func_020505f4(void *self, int i);
 

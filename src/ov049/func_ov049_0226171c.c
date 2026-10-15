@@ -3,7 +3,7 @@
  */
 
 extern int func_020644cc(int arg);
-extern int func_ov049_02260780(unsigned int a, unsigned int b);
+extern void func_ov049_02260780(unsigned int a, unsigned int b);
 extern unsigned int data_ov049_02262dec[];
 
 struct UnkStruct_0226171c {
@@ -11,7 +11,7 @@ struct UnkStruct_0226171c {
     unsigned int unk_B0;
 };
 
-int func_ov049_0226171c(struct UnkStruct_0226171c *param, int idx)
+void func_ov049_0226171c(struct UnkStruct_0226171c *param, int idx)
 {
     int n = 0;
     switch (idx) {
@@ -27,5 +27,5 @@ int func_ov049_0226171c(struct UnkStruct_0226171c *param, int idx)
         default:
             break;
     }
-    return func_ov049_02260780(param->unk_B0, data_ov049_02262dec[n]);
+    func_ov049_02260780(param->unk_B0, data_ov049_02262dec[n]);
 }

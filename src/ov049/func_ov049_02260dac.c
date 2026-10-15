@@ -25,14 +25,14 @@ typedef struct Msg {
 extern int func_0206fc6c(void);
 extern void *func_020984e8(void);
 extern unsigned int func_0206fc8c(void);
-extern void func_020996b8(void *);
-extern int func_02072ba4(void);
+extern void *func_020996b8(void *);
+extern int func_02072ba4(int record);
 extern unsigned int func_02072b64(int, unsigned int);
-extern void func_02071aa8(int, unsigned int, int, int, int);
+extern int func_02071aa8(int, unsigned int, int, int, int);
 extern u16 *func_02099710(void *);
 extern u16 *func_020996f8(void *);
-extern void func_02095b58(u16 *);
-extern void func_02095b40(u16 *);
+extern int func_02095b58(u16 *);
+extern int func_02095b40(u16 *);
 extern void func_0206844c(void *, u8 *, int);
 extern int data_ov049_02263298;
 
@@ -47,8 +47,7 @@ void func_ov049_02260dac(UnkStruct_02260dac_2 *this)
     if (func_0206fc6c() != 0) {
         a = func_020984e8();
         t = func_0206fc8c();
-        func_020996b8(a);
-        t = func_02072b64(func_02072ba4(), t);
+        t = func_02072b64(func_02072ba4((int) func_020996b8(a)), t);
         func_02071aa8(9, t, 4, this->unk_B0->unk_976, 1);
         if (t < 8) {
             x = (u16) (t + 0x12a8);

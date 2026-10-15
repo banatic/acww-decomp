@@ -11,17 +11,19 @@ struct UnkStruct_0204dc34 {
 
 extern struct UnkStruct_0204dc34 *func_0204f86c(int, int);
 extern int func_0207cec0(int *, int);
-extern int func_0207ffac(void);
-extern void func_0204dbe4(int, int, int);
+extern int func_0207ffac(int object);
+extern int func_0204dbe4(int, int, int);
 extern int data_021e5a2c;
 
 struct UnkStruct_0204dc34 *func_0204dc34(int a, int b, int c)
 {
+    int forwarded_value;
+
     struct UnkStruct_0204dc34 *p;
     p = func_0204f86c(1, c);
     if (p) {
-        if (func_0207cec0(&data_021e5a2c, b)) {
-            p->unk_00 = func_0207ffac();
+        if ((forwarded_value = (int) func_0207cec0(&data_021e5a2c, b))) {
+            p->unk_00 = func_0207ffac((int) forwarded_value);
         } else {
             p->unk_00 = 0x1010;
         }

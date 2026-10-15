@@ -15,7 +15,7 @@ struct UnkStruct_0229e180 {
 };
 
 extern "C" int func_ov002_02209f64(void *p);
-extern "C" void func_ov002_02208098(struct UnkStruct_0229e180 *obj, unsigned char b);
+extern "C" unsigned char *func_ov002_02208098(struct UnkStruct_0229e180 *obj, unsigned char b);
 extern "C" void func_ov105_0229d3b4(struct UnkStruct_0229e180 *obj, unsigned char b);
 extern "C" void func_ov105_0229d17c(struct UnkStruct_0229e180 *obj);
 

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_ov004_0220e5c8();
+extern int func_ov004_0220e5c8(char *argument0);
 
 int func_ov004_0220d300(char *self, int a1)
 {
@@ -12,7 +12,7 @@ int func_ov004_0220d300(char *self, int a1)
     int v1;
     u8 v2;
     // ENDDECLS
-    v1 = func_ov004_0220e5c8(a1, a1);
+    v1 = func_ov004_0220e5c8((char *) ((char *) (a1)));
     if (v1 == 0x0) {
         v2 = *(u8 *) (self + 0x1);
         *(u8 *) (self) = v2;

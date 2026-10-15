@@ -8,7 +8,7 @@ extern int func_020164a0(void *p, int x);
 extern int func_02019de8(void *p);
 extern int func_ov068_0226ccb0(void *self, void *ctx);
 extern void func_ov068_0226cce8(void *self, void *ctx, int x);
-extern void func_02012508(void *a, void *b, void *c, int d, int e);
+extern int func_02012508(void *a, void *b, void *c, int d, int e);
 
 struct UnkStruct_0226863c {
     u8 pad_00[0x1c];

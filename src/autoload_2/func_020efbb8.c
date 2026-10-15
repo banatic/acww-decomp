@@ -3,7 +3,7 @@
  */
 
 extern void OS_Terminate(void);
-extern void NNS_SndArcPlayerStartSeqArcEx(int p0, int p1, int p2, int p3, int p4, int p5);
+extern int NNS_SndArcPlayerStartSeqArcEx(int p0, int p1, int p2, int p3, int p4, int p5);
 
 void func_020efbb8(int r0, int r1, int r2)
 {

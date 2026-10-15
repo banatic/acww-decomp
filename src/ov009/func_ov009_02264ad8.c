@@ -9,10 +9,10 @@ struct UnkStruct_02264ad8 {
 extern int func_ov009_022648e4(char *, int, int, int);
 extern struct UnkStruct_02264ad8 *func_ov009_02264884(char *);
 extern int func_02055f2c(void *, int, int);
-extern void func_ov003_022203c8(void);
-extern int func_ov003_0221fe2c(void);
-extern void NNS_G3dBindMdlPltt(int, int);
-extern void NNS_G3dBindMdlTex(int, int);
+extern int func_ov003_022203c8(void);
+extern int func_ov003_0221fe2c(void *argument0);
+extern int NNS_G3dBindMdlPltt(int, int);
+extern int NNS_G3dBindMdlTex(int, int);
 
 int func_ov009_02264ad8(char *self, int a, int b, int c)
 {
@@ -31,8 +31,8 @@ int func_ov009_02264ad8(char *self, int a, int b, int c)
     if (func_02055f2c(self + 0x13c, p, 0) == 0) {
         goto ret0;
     }
-    func_ov003_022203c8();
-    NNS_G3dBindMdlPltt(e->unk_00, func_ov003_0221fe2c());
+
+    NNS_G3dBindMdlPltt(e->unk_00, func_ov003_0221fe2c((void *) func_ov003_022203c8()));
     if (e->unk_14 != 0) {
         NNS_G3dBindMdlTex(e->unk_00, e->unk_14);
     }

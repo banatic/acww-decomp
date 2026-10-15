@@ -13,7 +13,7 @@ typedef struct {
     u8 unk_0A;
 } Player;
 
-extern void NNS_SndPlayerReadVariable(Player *player, int varNo, s16 *var);
+extern int NNS_SndPlayerReadVariable(Player *player, int varNo, s16 *var);
 
 void func_020f9c0c(Player *player)
 {

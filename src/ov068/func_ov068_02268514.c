@@ -3,12 +3,12 @@
  */
 
 extern void func_ov068_0226cfd4(void *self);
-extern void func_02019c20(void *addr, int p1, int p2, int p3, unsigned short p4, int p5);
+extern int func_02019c20(void *addr, int p1, int p2, int p3, unsigned short p4, int p5);
 extern void func_ov068_02266c34(void *a, void *b, int c, int d, int e, char *f, int g, unsigned int h, int i);
 extern void func_02012394(void *addr, unsigned short val, int p2);
 extern void func_0202e194(void *self);
 extern void func_02013c04(void *addr);
-extern void func_0200442c(void *addr, int p1, int p2, int p3);
+extern int func_0200442c(void *addr, int p1, int p2, int p3);
 extern void func_0201cbbc(void *addr);
 
 extern unsigned short data_020c80f8;

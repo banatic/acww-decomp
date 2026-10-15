@@ -7,7 +7,7 @@ extern void *data_020c814c;
 
 extern int func_02019c6c(void *self, int a, int b);
 extern void func_0201ad18(void *self, int a, int b, int c, int d, int e, void *f, int g);
-extern void func_02030864(int a);
+extern int func_02030864(int a);
 
 extern unsigned char data_021fbee8[];
 

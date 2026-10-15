@@ -3,9 +3,9 @@
  */
 
 extern int func_020644cc(int a);
-extern void func_0208150c(void *p);
-extern int func_020036e8(void);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern unsigned int func_0208150c(void *p);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 
 extern unsigned char data_020d8d28[];
 extern struct {
@@ -50,9 +50,7 @@ void func_020286f8(struct UnkStruct_020286f8_2 *obj, struct UnkStruct_020286f8_3
     obj->unk_159 = (unsigned char) func_020644cc(3);
     obj->unk_158 = table[obj->unk_159];
 
-    func_0208150c(obj->sub->unk_830);
-
-    local0 = func_020036e8();
+    local0 = func_020036e8((unsigned char *) func_0208150c(obj->sub->unk_830));
     local1 = data_020c8c28.word;
     local2 = data_020c8c28.byte;
     local3 = (int) obj->unk_159;

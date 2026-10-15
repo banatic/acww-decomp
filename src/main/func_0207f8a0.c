@@ -8,16 +8,16 @@ extern int func_0207fe94(void *self, int *lo, int *hi, int a, int b, int c);
 extern int func_0207fa3c(void *self, u16 *p);
 extern int func_0207ffa0(void *self, int n);
 extern int func_0207fc34(void *self, u16 *e, int t);
-extern void func_0207f1c8(void *self);
-extern void *func_0209b5e8(void);
-extern void *func_0209b91c(void);
-extern void func_0204c878(u16 *p);
+extern unsigned int func_0207f1c8(void *self);
+extern void *func_0209b5e8(int);
+extern void *func_0209b91c(void *);
+extern int func_0204c878(u16 *p);
 extern int func_0209bd44(void *h);
 extern int func_0209bc40(void *h);
 extern unsigned int func_0209b914(void *h);
 extern unsigned int func_0209b8bc(void *h);
 extern int func_020535f0(u16 *p);
-extern void func_0207fb70(u16 *p);
+extern int func_0207fb70(u16 *p);
 
 int func_0207f8a0(void *self, u16 *p, int a2, int a3, u8 a5, u8 a6)
 {
@@ -68,9 +68,8 @@ int func_0207f8a0(void *self, u16 *p, int a2, int a3, u8 a5, u8 a6)
     }
     z = func_0207fc34(self, e, a3);
     if (a6 != 0) {
-        func_0207f1c8(self);
-        h1 = func_0209b5e8();
-        h2 = func_0209b91c();
+        h1 = func_0209b5e8((int) func_0207f1c8(self));
+        h2 = func_0209b91c((void *) h1);
         func_0204c878(p);
         func_0204c878(e);
         if (a3 == 2) {

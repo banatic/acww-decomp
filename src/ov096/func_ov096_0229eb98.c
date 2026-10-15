@@ -8,14 +8,14 @@ typedef struct {
 
 extern int func_ov096_0229f290(UnkStruct_0229eb98 *self, int byte);
 extern int func_ov096_0229f200(UnkStruct_0229eb98 *self, int byte);
-extern int func_0206fe54(int val);
+extern int func_0206fe54(void);
 extern void func_0208aa60(unsigned char *dst, int a, int b);
 extern int func_ov096_0229f830(UnkStruct_0229eb98 *self, int byte);
 extern int func_ov096_0229f7ac(UnkStruct_0229eb98 *self, int byte);
 extern void func_ov094_0229abb8(unsigned char *a, unsigned char *b, int c);
 extern int func_ov096_0229f820(UnkStruct_0229eb98 *self, int byte);
 extern int func_ov096_0229f548(UnkStruct_0229eb98 *self, int byte);
-extern void func_ov094_0229b9b4(unsigned char *a, unsigned char *b, int c);
+extern int func_ov094_0229b9b4(unsigned char *a, unsigned char *b, int c);
 
 void func_ov096_0229eb98(UnkStruct_0229eb98 *self)
 {
@@ -24,7 +24,7 @@ void func_ov096_0229eb98(UnkStruct_0229eb98 *self)
     v1 = func_ov096_0229f290(self, self->data[0xb3]) - 0x6d;
     raw2 = func_ov096_0229f200(self, self->data[0xb3]);
     v2 = raw2 - 0x78;
-    if (func_0206fe54(raw2) != 0) {
+    if (func_0206fe54() != 0) {
         v2 -= 8;
     }
     func_0208aa60(self->data + 0x2418, v1, v2);

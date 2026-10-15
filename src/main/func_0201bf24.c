@@ -12,7 +12,7 @@ extern int func_0201c0e0(void *self);
 extern u16 func_0201c444(void *ptr);
 extern void func_020771cc(int a, void *out, int c, int d);
 
-void func_0201bf24(void *self, void *param2, int param3, int param4)
+void func_0201bf24(void *self, int param2)
 {
     u8 *s = (u8 *) self;
     u8 flag = func_020b65c4();

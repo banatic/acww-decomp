@@ -21,8 +21,8 @@ typedef struct {
 extern UnkStruct_02033a5c_3 data_020c907c[];
 extern int data_021c317c;
 extern UnkStruct_02033a5c_2 *func_020342c0(void *a, int x, int y);
-extern void func_02033a24(void *a0, UnkStruct_02033a5c *p1, UnkStruct_02033a5c *p2, UnkStruct_02033a5c *p3, void *t, int k,
-                          int z);
+extern int func_02033a24(void *a0, UnkStruct_02033a5c *p1, UnkStruct_02033a5c *p2, UnkStruct_02033a5c *p3, void *t, int k,
+                         int z);
 
 static inline void setv(UnkStruct_02033a5c *d, int x, int y, int z)
 {

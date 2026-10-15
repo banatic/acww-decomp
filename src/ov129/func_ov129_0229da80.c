@@ -3,12 +3,12 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void *ptr);
-extern void func_ov002_0220ba24(void *ptr);
-extern void func_ov002_0220b008(void *ptr);
-extern void func_ov002_02209ccc(void *ptr);
-extern void func_020b18ac(void *ptr);
-extern void func_ov127_0229a0ec(void *ptr);
+extern void *func_ov002_0220830c(void *ptr);
+extern void *func_ov002_0220ba24(void *ptr);
+extern void *func_ov002_0220b008(void *ptr);
+extern void *func_ov002_02209ccc(void *ptr);
+extern void *func_020b18ac(void *ptr);
+extern int func_ov127_0229a0ec(void *ptr);
 extern unsigned char data_ov129_0229dc38[];
 
 void *func_ov129_0229da80(void)

@@ -3,10 +3,10 @@
  */
 
 extern void func_0206fc4c(int x);
-extern void func_ov002_0220a720(void *p, int x);
+extern void *func_ov002_0220a720(void *p, int x);
 extern void func_ov002_02208090(void *p, int x);
-extern void func_ov002_02208098(void *p, int x);
-extern void func_ov133_0229c3d4(void *p, int x);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
+extern int func_ov133_0229c3d4(void *p, int x);
 extern int func_0206fca4(void);
 extern void *func_ov133_0229b714(void *p);
 extern void func_02077c40(void *p);

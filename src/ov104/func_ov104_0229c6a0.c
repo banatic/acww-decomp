@@ -18,12 +18,12 @@ extern void func_02066650(struct UnkStruct_0229c6a0 *);
 extern int func_02097900(struct UnkStruct_0229c6a0 *);
 extern void func_02097a44(struct UnkStruct_0229c6a0 *);
 extern int func_020682e0(int);
-extern void func_02094fd4(struct UnkStruct_0229c6a0_2 *);
+extern void *func_02094fd4(struct UnkStruct_0229c6a0_2 *);
 extern int func_02098844(void *, int);
 extern int func_02099870(int);
-extern void func_02095074(int, struct UnkStruct_0229c6a0_2 *);
+extern void *func_02095074(int, struct UnkStruct_0229c6a0_2 *);
 extern void func_02068404(int, int, struct UnkStruct_0229c6a0_2 *);
-extern void func_02094fbc(struct UnkStruct_0229c6a0_2 *);
+extern void *func_02094fbc(struct UnkStruct_0229c6a0_2 *);
 extern void *data_021dc7bc;
 u16 func_ov104_0229c6a0(int unused, struct UnkStruct_0229c6a0 *p)
 {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int _u32_div_f(int arg);
+extern unsigned int _u32_div_f(unsigned int numerator, unsigned int denominator);
 
 typedef struct {
     int unk_00;
@@ -10,8 +10,8 @@ typedef struct {
     int unk_08;
 } UnkStruct_0220882c;
 
-void func_ov002_0220882c(UnkStruct_0220882c *self)
+void func_ov002_0220882c(UnkStruct_0220882c *self, unsigned int denominator)
 {
     self->unk_08 = 0x1000;
-    self->unk_04 = _u32_div_f(0x1000);
+    self->unk_04 = _u32_div_f(0x1000, denominator);
 }

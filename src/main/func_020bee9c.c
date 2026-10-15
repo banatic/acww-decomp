@@ -24,7 +24,7 @@ extern int data_021f75b0;
 extern struct UnkStruct_020bee9c data_020d26a0[];
 extern struct Ref data_020d2bac[];
 
-extern void func_020bef88(void *);
+extern int func_020bef88(void *);
 extern void GX_LoadOBJ(const void *src, u32 off, u32 size);
 extern void GXS_LoadOBJ(const void *src, u32 off, u32 size);
 

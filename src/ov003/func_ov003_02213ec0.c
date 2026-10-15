@@ -4,10 +4,10 @@
 
 extern int func_02056f28(void *, int);
 extern int func_ov003_0220c934(void *);
-extern void func_0200f27c(void *, int);
-extern void func_0200f328(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
+extern int func_0200f328(void *, int);
 extern void func_0205eae0(void *, int, int, int);
-extern int func_0200fa1c(void *, void *, void *, void *, void *);
+extern void func_0200fa1c(void *, void *, void *, void *, void *);
 extern int func_020310d0(void *, void *, int);
 extern char data_ov003_02238114[];
 

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204482c(void *, int);
+extern int func_0204482c(void *);
 extern void *func_02045b5c(void *);
 extern int func_02042f20(void *, void *, int, int *, int, int, int, int, int, int);
 
@@ -15,7 +15,7 @@ int func_020435a0(void *a, int b)
     unsigned short v;
     int buf[2];
 
-    if (func_0204482c(a, 0) == 0) {
+    if (func_0204482c(a) == 0) {
         return -1;
     }
 

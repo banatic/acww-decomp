@@ -5,7 +5,7 @@
 extern void func_ov002_02208c58(void *a, void *b, int c);
 extern void func_ov002_022098ec(void *a, int b, int c);
 extern void func_ov002_0220970c(void *a, int b);
-extern void func_ov002_02208098(void *a, int b);
+extern unsigned char *func_ov002_02208098(void *a, unsigned char value);
 extern void func_ov119_0229a400(void *a, int b);
 
 void func_ov119_0229a50c(void *self, int arg2)

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void NNS_SndPlayerWriteVariable(void *self, int id, int value);
+extern int NNS_SndPlayerWriteVariable(void *self, int id, int value);
 
 typedef struct {
     unsigned char pad_00[6];

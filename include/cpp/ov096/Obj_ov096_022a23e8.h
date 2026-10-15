@@ -25,12 +25,12 @@ class Obj_ov096_022a23e8 : public Obj_ov002_0220bb24 {
     void func_ov097_022a2954();
     void func_ov097_022a29e4();
     void func_ov096_0229d664();
-    void func_ov098_022a2e9c();
+    int func_ov098_022a2e9c();
     void func_ov098_022a2b6c();
     void func_ov098_022a2a0c();
     void func_ov098_022a2fa8();
     void func_ov098_022a29d0();
-    void func_ov096_0229d5d4();
+    int func_ov096_0229d5d4();
     void func_ov096_0229d570();
     void func_ov096_0229d4f0();
     void func_ov096_0229d4d4();
@@ -56,7 +56,7 @@ class Obj_ov096_022a23e8 : public Obj_ov002_0220bb24 {
     void func_ov096_022a0654();
     void func_ov096_022a062c();
     void func_ov096_022a05fc();
-    void func_ov096_022a05d0();
+    int func_ov096_022a05d0();
     void func_ov096_022a053c();
     void func_ov096_022a04f4();
     void func_ov096_022a04a4();
@@ -81,12 +81,12 @@ class Obj_ov096_022a23e8 : public Obj_ov002_0220bb24 {
     void func_ov096_0229fc0c();
     void func_ov096_0229fe74();
     void func_ov096_0229fe10();
-    void func_ov098_022a2df4();
+    int func_ov098_022a2df4();
     void func_ov098_022a2b1c();
     void func_ov098_022a2ac8();
     void func_ov096_0229fdf8();
     void func_ov098_022a2f2c();
-    void func_ov096_0229fdb0();
+    unsigned char *func_ov096_0229fdb0();
     void func_ov096_0229fd44();
     void func_ov098_022a29b0();
     void func_ov098_022a2994();

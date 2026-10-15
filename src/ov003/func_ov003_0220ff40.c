@@ -13,7 +13,7 @@ extern int data_020ccf94;
 extern int func_02073908(int, int);
 extern int func_0200f290(UnkStruct_0220ff40 *, int);
 extern void func_0200f268(UnkStruct_0220ff40 *, int);
-extern void func_ov003_02220db4(int, int *);
+extern int func_ov003_02220db4(int, int *);
 
 void func_ov003_0220ff40(UnkStruct_0220ff40 *self, int param)
 {

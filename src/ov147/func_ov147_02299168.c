@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_021c75b8;
-extern void func_ov147_02299248(void *self);
+extern void func_ov147_02299248(void);
 extern void func_ov147_022990dc(void *self);
 extern void func_ov147_0229a630(int *p0, int p1);
 extern int func_ov147_02299018(void *self);
@@ -18,7 +18,10 @@ void func_ov147_02299168(unsigned char *self)
             if (flag == 0) {
                 break;
             }
-            func_ov147_02299248(self);
+            // clang-format off
+            asm { mov r0, self }
+            // clang-format on
+            func_ov147_02299248();
             func_ov147_022990dc(self);
             break;
         }

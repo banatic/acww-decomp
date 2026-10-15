@@ -34,9 +34,10 @@ struct UnkStruct_02217b74 {
     virtual int v28(int, int);
 };
 extern "C" {
-extern int func_0206f9d8(void *);
+extern unsigned short func_0206f9d8(int (*predicate)(unsigned short *, int));
 extern int func_0206fa28(int, int);
-extern void func_ov004_02217bb0();
+extern int func_ov004_02217bb0(char *arg0, int arg1);
+#define TilePredicate_func_ov004_02217bb0 ((int (*)(unsigned short *, int)) func_ov004_02217bb0)
 }
 
 extern "C" void func_ov004_02217b74(char *self)
@@ -44,8 +45,10 @@ extern "C" void func_ov004_02217b74(char *self)
     // DECLS
     // ENDDECLS
     if (*(int *) (self + 0x12c) != 0x0 && *(int *) ((char *) *(int *) (self + 0x12c) + 0x4) == 0x0 &&
-        func_0206fa28(func_0206f9d8((void *) func_ov004_02217bb0), 0x28) != 0x0) {
+        func_0206fa28(func_0206f9d8(TilePredicate_func_ov004_02217bb0), 0x28) != 0x0) {
         ((UnkStruct_02217b74 *) self)->v28(0xb, 0xff);
         return;
     }
 }
+
+#undef TilePredicate_func_ov004_02217bb0

@@ -3,7 +3,7 @@
  */
 
 extern void func_ov003_02218890(void *, int *, int *, short *);
-extern void func_ov003_022188d0(void *, int, int, int, int, int);
+extern int func_ov003_022188d0(void *, int, int, int, int, int);
 
 typedef struct {
     int x, y, z;

@@ -5,7 +5,7 @@
 extern unsigned short data_020c80f8;
 extern void *data_020c814c;
 extern int func_02096190(int);
-extern void func_02019c20(void *p, int a, int b, int c, int d, int e);
+extern int func_02019c20(void *p, int a, int b, int c, int d, int e);
 extern void func_02013c0c(void *p);
 extern void func_0201ad18(void *p, int a, int b, int c, void *d, int e, void *f, int g);
 

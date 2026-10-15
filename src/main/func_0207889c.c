@@ -10,7 +10,7 @@ extern void func_02073770(void *p, int a, int b);
 
 extern void *data_020ccf94;
 
-void func_0207889c(int a, int b, int c, int d)
+void func_0207889c(int a, int b, int c)
 {
     if (func_02073d90(data_020ccf94) != 0) {
         int local;

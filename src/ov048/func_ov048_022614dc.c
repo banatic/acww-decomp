@@ -7,14 +7,14 @@ struct FieldStruct {
     int unk_B4;
 };
 
-extern int func_ov048_022614ac(void *);
+extern int func_ov048_022614ac(void);
 extern void func_ov048_022616b8(void *, int);
 extern void func_020eb9fc(void);
 extern int func_0209fe1c(void);
 
 void func_ov048_022614dc(void *arg)
 {
-    if (func_ov048_022614ac(arg) != 0) {
+    if (func_ov048_022614ac() != 0) {
         func_020eb9fc();
         func_ov048_022616b8(arg, ((struct FieldStruct *) arg)->unk_B4 + 1);
     } else if (func_0209fe1c() != 0) {

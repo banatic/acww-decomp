@@ -11,7 +11,7 @@ typedef struct {
     int w[12];
 } UnkStruct_02225714;
 
-extern void func_ov003_02225768(void *a, void *b, void *c, int d, Vec3 *v, UnkStruct_02225714 m);
+extern char *func_ov003_02225768(void *a, void *b, void *c, int d, Vec3 *v, UnkStruct_02225714 m);
 extern int func_0204b7a0(void *b);
 extern void func_020ad238(Vec3 *v, u8 k);
 

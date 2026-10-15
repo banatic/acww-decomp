@@ -8,7 +8,7 @@ struct UnkStruct_02227268 {
 };
 
 extern int func_02056f94(void *p);
-extern void func_ov004_02227210(void *self, int a, int b, int c, int d);
+extern int func_ov004_02227210(void *self, int a, int b, int c, int d);
 extern int func_020112e4(void *self);
 extern void func_020112f8(unsigned short *p, void *self);
 extern int func_020112d0(void *self);

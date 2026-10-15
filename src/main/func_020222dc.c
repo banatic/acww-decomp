@@ -28,9 +28,9 @@ extern UnkStruct_020222dc_3 data_020c8cb0;
 
 extern UnkStruct_020222dc_2 *func_0207f270(void *p);
 extern int func_0207cc54(int mask, int count, int max);
-extern void func_0208150c(void *p);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_020222dc_4 *s, void *a, void *b, int c, int d, int e, int f, int g, int h);
+extern unsigned int func_0208150c(void *p);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_020222dc_4 *s, void *a, void *b, int c, int d, int e, int f, int g, int h);
 extern void func_02015fb0(UnkStruct_020222dc_4 *s, int a, int b, int c, int d, int e);
 
 int func_020222dc(UnkStruct_020222dc_4 *self)
@@ -89,8 +89,9 @@ int func_020222dc(UnkStruct_020222dc_4 *self)
     if (n >= 7) {
         n = 7;
     }
-    func_0208150c(self->unk_100->unk_830);
-    func_0202da38(self, self->unk_104, self->unk_122, 0x1e, func_020036e8(), data_020c8cb0.unk_00, data_020c8cb0.unk_04, n, 0);
+    func_0202da38(self, self->unk_104, self->unk_122, 0x1e,
+                  func_020036e8((unsigned char *) func_0208150c(self->unk_100->unk_830)), data_020c8cb0.unk_00,
+                  data_020c8cb0.unk_04, n, 0);
     func_02015fb0(self, v, 0, 6, 0, 0);
     return 1;
 fail:

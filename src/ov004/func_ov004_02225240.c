@@ -11,9 +11,13 @@ extern u8 *data_020ccf94;
 extern void *func_0206837c(void *), *func_020984fc(int), *func_02099870(void *);
 extern int func_02073d90(void *), func_0203a71c(void), func_020ab504(void *), func_02073dd4(void *, int), func_0209fbd0(void),
     func_0203a744(void);
-extern void func_02015e40(void *, void *, int), func_02085c2c(u16 *), func_02015fb0(void *, int, int, int, int, int),
-    func_020157c8(void *, int, int), func_02015828(void *, int), func_ov004_022251a4(void *, int),
-    func_0206844c(void *, u8 *, void *);
+extern void func_02015e40(void *, void *, int);
+extern void func_02085c2c(u16 *);
+extern void func_02015fb0(void *, int, int, int, int, int);
+extern void func_020157c8(void *, int, int);
+extern int func_02015828(void *, int);
+extern void func_ov004_022251a4(void *, int);
+extern void func_0206844c(void *, u8 *, void *);
 void func_ov004_02225240(u8 *self)
 {
     u16 code;

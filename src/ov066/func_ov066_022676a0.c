@@ -26,16 +26,16 @@ struct UnkStruct_022676a0_2 {
 extern struct UnkStruct_022676a0 *data_ov066_0226bdf0;
 extern struct UnkStruct_022676a0_2 *data_ov066_0226bdf4;
 
-extern int func_ov066_02266e08(struct UnkStruct_022676a0_3 *self);
+extern int func_ov066_02266e08(void);
 extern void func_ov066_02267958(struct UnkStruct_022676a0_3 *self);
 extern void func_ov066_02267c0c(void);
 extern void func_ov066_0226a404(u32 arg);
 extern void func_ov066_0226768c(void);
-extern void func_ov066_0226686c(void);
+extern void func_ov066_0226686c(int status);
 
 void func_ov066_022676a0(struct UnkStruct_022676a0_3 *self)
 {
-    if (func_ov066_02266e08(self) != 0) {
+    if (func_ov066_02266e08() != 0) {
         return;
     }
     if (self->unk_02 == 0) {
@@ -53,6 +53,6 @@ void func_ov066_022676a0(struct UnkStruct_022676a0_3 *self)
         func_ov066_0226a404(data_ov066_0226bdf4->unk_95 * 16 + data_ov066_0226bdf0->base);
         func_ov066_0226768c();
     } else {
-        func_ov066_0226686c();
+        func_ov066_0226686c(self->unk_02);
     }
 }

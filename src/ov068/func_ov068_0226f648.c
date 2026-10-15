@@ -31,8 +31,8 @@ struct UnkStruct_0226f648_2 {
 extern void func_020e8b60(void *dst, int a, int b, int c);
 extern int FX_Div(int a, int b);
 extern void func_ov068_0226fc48(struct UnkStruct_0226f648 *self);
-extern void func_ov003_0221a35c(struct UnkStruct_0226f648 *self, int a);
-extern void func_02034270(void *a, void *b, int c, int d);
+extern int func_ov003_0221a35c(struct UnkStruct_0226f648 *self, int a);
+extern int func_02034270(void *a, void *b, int c, int d);
 extern void func_0203423c(void *a);
 
 void func_ov068_0226f648(struct UnkStruct_0226f648 *self)

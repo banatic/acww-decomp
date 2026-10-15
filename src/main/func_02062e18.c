@@ -10,8 +10,8 @@ struct UnkStruct_02062e18 {
     u16 data[10];
 };
 
-extern void func_020a88ec(struct UnkStruct_02062e18 *self, const u16 *src);
-extern void func_0205195c(struct UnkStruct_02062e18 *self);
+extern void *func_020a88ec(struct UnkStruct_02062e18 *self);
+extern void *func_0205195c(struct UnkStruct_02062e18 *self);
 extern int data_020de614;
 
 struct Blk {
@@ -23,7 +23,7 @@ struct UnkStruct_02062e18 *func_02062e18(struct UnkStruct_02062e18 *self, const 
     u16 *dst;
     int i;
 
-    func_020a88ec(self, src);
+    func_020a88ec(self);
     self->vptr = &data_020de614;
     func_0205195c(self);
 

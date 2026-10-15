@@ -10,7 +10,7 @@ extern u8 func_020984d4(void);
 extern int func_ov004_0223cb20(void *o);
 extern int func_ov004_0223cb30(void *o);
 extern int func_02073d90(int a);
-extern void func_0203e0a8(void *s, int a);
+extern int func_0203e0a8(void *s, int a);
 extern unsigned int func_020b2300(void);
 extern int data_020ccf94;
 

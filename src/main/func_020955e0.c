@@ -8,11 +8,11 @@ extern void func_020996d4(void *ctx, void *p);
 extern void func_020996ec(void *ctx, void *p);
 extern void *func_02096718(void *obj);
 extern void func_02010680(void *obj, void *p);
-extern void func_0201063c(void *obj);
-extern void func_020103c0(void *obj, unsigned short *buf);
+extern int func_0201063c(void *obj);
+extern int func_020103c0(void *obj, unsigned short *buf);
 extern int func_020112e4(void *obj);
 extern int func_020112d0(void *obj);
-extern void func_020100e8(void *obj, unsigned short *buf, int a, int b, int c);
+extern int func_020100e8(void *obj, unsigned short *buf, int a, int b, int c);
 
 int func_020955e0(void *p, int mode, void *obj)
 {

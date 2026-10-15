@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02001c30(void);
+extern void func_02001c30(int mode);
 extern void GX_SetGraphicsMode(int, int, int);
 
 void func_02001bf0(int arg0)
@@ -13,7 +13,7 @@ void func_02001bf0(int arg0)
     int r2;
 
     r4 = arg0;
-    func_02001c30();
+    func_02001c30(arg0);
     r0 = 1;
     r1 = r4;
     r2 = r0;

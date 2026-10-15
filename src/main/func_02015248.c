@@ -2,7 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_02015248(unsigned char *r5)
+extern int func_02019e00(int *p0);
+extern int func_02019de8(void *arg0);
+extern void func_02068434(unsigned char *param0);
+extern void func_02016004(int p0);
+
+int func_02015248(unsigned char *r5)
 {
     unsigned char *r1;
     unsigned char *r0;
@@ -13,7 +18,7 @@ func_02015248(unsigned char *r5)
         r0 = (unsigned char *) (*(unsigned int *) (r5 + 0x40));
         if (r0 != 0) {
             r0 = r1 + 0x564;
-            if (func_02019e00(r0) == 0xe) {
+            if (func_02019e00((int *) r0) == 0xe) {
                 r1 = (unsigned char *) (*(unsigned int *) (r5 + 0x4c));
                 r0 = r1 + 0x564;
                 if (func_02019de8(r0) != 0) {
@@ -21,7 +26,7 @@ func_02015248(unsigned char *r5)
                     func_02068434(r0);
                     r0 = r5 + 0x94;
                     if (*(unsigned char *) r0 != 4) {
-                        func_02016004(r5);
+                        func_02016004((int) r5);
                     }
                     *(unsigned char *) (r5 + 0xac) = 2;
                     r4 = 1;

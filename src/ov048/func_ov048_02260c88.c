@@ -7,8 +7,8 @@ typedef struct {
     unsigned char flag812;
 } UnkStruct_02260c88;
 
-extern int func_02073044(UnkStruct_02260c88 *self);
-extern int func_020ec920(int arg);
+extern unsigned int func_02073044(void);
+extern int func_020ec920(void);
 extern int func_ov048_02260f64(UnkStruct_02260c88 *self, int flag);
 extern void func_02074120(void);
 extern int func_0207417c(int arg);
@@ -18,7 +18,8 @@ void func_ov048_02260c88(UnkStruct_02260c88 *self)
 {
     int flag;
 
-    if (func_020ec920(func_02073044(self)) == 0) {
+    func_02073044();
+    if (func_020ec920() == 0) {
         flag = 1;
     } else {
         flag = 0;

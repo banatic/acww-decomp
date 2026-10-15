@@ -33,10 +33,10 @@ typedef struct Work {
 
 extern int data_021fd004, data_021fd024, data_021fd014, data_021fd034;
 
-extern void func_020e8ce0(void *g, UnkStruct_01ffd1b4 *s);
-extern void func_020e8c70(void *g, UnkStruct_01ffd1b4 *s);
-extern void func_020e8ca8(void *g, UnkStruct_01ffd1b4 *s);
-extern void func_020ee8a8(void *g, UnkStruct_01ffd1b4 *s);
+extern int func_020e8ce0(void *g, UnkStruct_01ffd1b4 *s);
+extern int func_020e8c70(void *g, UnkStruct_01ffd1b4 *s);
+extern int func_020e8ca8(void *g, UnkStruct_01ffd1b4 *s);
+extern int func_020ee8a8(void *g, UnkStruct_01ffd1b4 *s);
 extern void func_020ee470(void *obj);
 extern Work *func_020ee45c(Work *w);
 

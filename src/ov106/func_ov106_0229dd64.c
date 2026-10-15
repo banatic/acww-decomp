@@ -4,10 +4,10 @@
 
 extern int func_ov002_0220909c(void *p);
 extern void func_ov002_022096d8(char *p, int v);
-extern void func_ov002_02207d24(char *p, int v);
+extern int func_ov002_02207d24(char *p, int v);
 extern int func_0208e4bc(void *p);
 extern void func_ov106_0229ca5c(void *p);
-extern void func_ov002_02208098(void *p, int v);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov106_0229dd64(void *s)
 {
@@ -19,6 +19,6 @@ void func_ov106_0229dd64(void *s)
         if (func_0208e4bc((void *) (self + 0x22a0)) != 0) {
             func_ov106_0229ca5c((void *) self);
         }
-        func_ov002_02208098((void *) self, 0x18);
+        func_ov002_02208098((void *) ((void *) self), 0x18);
     }
 }

@@ -8,14 +8,14 @@ struct UnkStruct_020bee74 {
     char unk_08;
 };
 
-extern void func_020beca4(int);
+extern void func_020beca4(int, int);
 
 void func_020bee74(struct UnkStruct_020bee74 *s, int value, int arg2)
 {
     s->unk_04++;
     if (value != s->unk_00) {
         s->unk_08 = 0;
-        func_020beca4(arg2);
+        func_020beca4(arg2, value);
         s->unk_00 = value;
     }
 }

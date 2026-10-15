@@ -5,7 +5,7 @@
 extern int data_020d1c20[];
 extern int func_02050974(void *p);
 extern void func_02050948(void *p);
-extern void func_02050a84(void *p, int a, int b, int c);
+extern int func_02050a84(void *p, int a, int b, int c);
 
 struct UnkStruct_020a1d94 {
     unsigned char pad_00[0xa0];

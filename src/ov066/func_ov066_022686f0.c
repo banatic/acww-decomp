@@ -21,18 +21,19 @@ struct UnkStruct_022686f0_2 {
 
 extern struct UnkStruct_022686f0 *data_ov066_0226bdf4;
 extern struct UnkStruct_022686f0_2 *data_ov066_0226bdec;
-extern void func_ov066_02268570(void);
-extern void func_ov066_0226686c(void);
-extern int WM_StartMPEx(void (*cb)(void), unsigned int a1, unsigned short a2, unsigned int a3, unsigned short a4,
+extern void func_ov066_02268570(void *argument0);
+extern void func_ov066_0226686c(int status);
+extern int WM_StartMPEx(void (*cb)(void *), unsigned int a1, unsigned short a2, unsigned int a3, unsigned short a4,
                         unsigned char a5, int a6, int a7, int a8, int a9, int a10);
 
 void func_ov066_022686f0(void)
 {
-    if (WM_StartMPEx(func_ov066_02268570, data_ov066_0226bdf4->unk_0C, data_ov066_0226bdf4->unk_1A,
-                     data_ov066_0226bdf4->unk_10, data_ov066_0226bdf4->unk_1C, data_ov066_0226bdec->unk_17, 4,
-                     data_ov066_0226bdec->b0, data_ov066_0226bdec->b1, 1, data_ov066_0226bdec->b2) == 2) {
+    int status = WM_StartMPEx((void (*)(void *)) func_ov066_02268570, data_ov066_0226bdf4->unk_0C, data_ov066_0226bdf4->unk_1A,
+                              data_ov066_0226bdf4->unk_10, data_ov066_0226bdf4->unk_1C, data_ov066_0226bdec->unk_17, 4,
+                              data_ov066_0226bdec->b0, data_ov066_0226bdec->b1, 1, data_ov066_0226bdec->b2);
+    if (status == 2) {
         return;
     }
-    func_ov066_0226686c();
+    func_ov066_0226686c(status);
     return;
 }

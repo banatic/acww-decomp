@@ -23,12 +23,12 @@ extern "C" void func_0202da88(UnkStruct_020237f4_2 *self, void *tbl);
 extern "C" void func_0206844c(UnkStruct_020237f4_3 *a, void *b, int c);
 
 extern int data_021c2fd4;
-extern "C" int func_02099fe8(UnkStruct_020237f4_2 *self);
+extern "C" int func_02099fe8(void);
 extern "C" void func_020237f4(UnkStruct_020237f4_2 *self)
 {
     unsigned char arg;
     UnkStruct_020237f4 out;
-    if (func_02099fe8(self) != -1) {
+    if (func_02099fe8() != -1) {
         func_0202da88(self, &data_021c2f74);
     } else {
         func_0202da88(self, &data_021c2fd4);

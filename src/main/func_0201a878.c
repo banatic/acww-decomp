@@ -13,7 +13,7 @@ typedef struct {
     short unk_26;
 } Func0201A878Struct;
 
-extern void func_020e8870(short *ptr, int a, int b);
+extern int func_020e8870(short *ptr, int a, int b);
 
 void func_0201a878(Func0201A878Struct *obj)
 {

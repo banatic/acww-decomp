@@ -11,7 +11,7 @@ typedef struct {
 
 extern char data_021d1554[];
 
-extern int func_0207c5e4(UnkStruct_0207c4e8 *self);
+extern int func_0207c5e4(UnkStruct_0207c4e8 *self, void *);
 extern int func_0207cd40(UnkStruct_0207c4e8 *self);
 extern void *func_0207cec0(UnkStruct_0207c4e8 *self, int t);
 extern void func_02081660(void *p);
@@ -27,7 +27,7 @@ void func_0207c4e8(UnkStruct_0207c4e8 *self, void *a1)
     void *o;
     int id;
 
-    if (func_0207c5e4(self) == 0) {
+    if (func_0207c5e4(self, a1) == 0) {
         return;
     }
     t = func_0207cd40(self);

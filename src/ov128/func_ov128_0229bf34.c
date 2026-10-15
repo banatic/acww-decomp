@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov128_0229bae0(void *self);
-extern void func_ov002_02208098(void *p, int x);
+extern int func_ov128_0229bae0(void);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov127_02299bbc(void *p, unsigned char c);
 extern void func_ov127_02299c08(void *p, unsigned char c, int n);
 extern void func_ov128_0229bb20(void *self);
@@ -19,9 +19,9 @@ void func_ov128_0229bf34(UnkStruct_0229bf34 *self)
 {
     int r;
 
-    r = func_ov128_0229bae0(self);
+    r = func_ov128_0229bae0();
     if (r != self->unk_2D6B) {
-        func_ov002_02208098(self, 6);
+        func_ov002_02208098((void *) (self), 6);
         func_ov127_02299bbc((char *) self + 0x4a4, self->unk_2D6B);
         func_ov128_0229bb20(self);
     } else {

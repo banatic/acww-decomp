@@ -45,7 +45,7 @@ extern Glob *data_020ccf94;
 extern "C" int func_02084d9c(UnkStruct_02084b74 *self, UnkStruct_02084b74_4 *c);
 extern "C" Entry *func_02084d34(Ctx2 *c, int a, int b);
 extern "C" int func_020b65c4(void);
-extern "C" int func_0204f934(int a);
+extern "C" void func_0204f934(int a);
 extern "C" void func_02084d8c(UnkStruct_02084b74 *self, int *p);
 extern "C" void func_02084d84(UnkStruct_02084b74 *self);
 extern "C" int func_02003348(int a, int b, void *v, void *s, UnkStruct_02084b74 *self);

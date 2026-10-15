@@ -3,7 +3,7 @@
  */
 
 extern int func_ov002_0220b8ac(void *p, int a);
-extern void func_ov002_02208098(void *p, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char c);
 extern void func_0208e5cc(void *p);
 
 struct BigStruct {

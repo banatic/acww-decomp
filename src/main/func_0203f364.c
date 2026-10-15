@@ -4,7 +4,7 @@
 
 extern unsigned int data_020ccf94;
 extern int func_02073d90(void *);
-extern void OS_ClearAlloc(int);
+extern int OS_ClearAlloc(int);
 extern void func_0203f490(int, int);
 
 void func_0203f364(void)

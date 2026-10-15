@@ -7,7 +7,7 @@ extern unsigned char data_021f6c54;
 extern void func_ov143_0229a2e0(void *self);
 extern int _s32_div_f(int diff, int b);
 extern unsigned char func_ov143_022997b0(void *self, unsigned char clamp);
-extern void func_0206e9ac(void);
+extern void func_0206e9ac(int value);
 
 void func_ov143_0229a6f8(unsigned char *self)
 {
@@ -38,7 +38,7 @@ void func_ov143_0229a6f8(unsigned char *self)
         return;
     }
 
-    func_0206e9ac();
+    func_0206e9ac((int) cur);
     base = *(unsigned char **) (self + 0xa0);
     base[idx] = cur;
 }

@@ -6,14 +6,14 @@
 
 extern "C" {
 extern void *func_020a13d0(void);
-extern void *func_020984fc(void);
+extern void *func_020984fc(void *arg0);
 extern int DWCi_GsMalloc(void *);
 extern void *func_020682e0(int);
 extern void func_020a8164(void *, void *);
 extern void func_02068340(void *, void *);
 extern void func_02068404(void *, int, void *);
 extern void *func_02099870(void *);
-extern void func_02095074(void *, void *);
+extern void *func_02095074(void *, void *);
 extern void *data_ov048_02263d20;
 }
 
@@ -51,7 +51,7 @@ extern "C" int func_ov048_02262cc0(UnkStruct_02262cc0_3 *obj)
     Res *r;
 
     a = func_020a13d0();
-    b = func_020984fc();
+    b = func_020984fc((void *) a);
     if (DWCi_GsMalloc(a) == 0) {
         r = (Res *) func_020682e0(0);
         obj->sub.v2();

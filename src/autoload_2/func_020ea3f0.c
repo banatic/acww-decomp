@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ea450(void *p);
+extern void func_020ea450(void *p, unsigned int unused1, unsigned int unused2, unsigned int unused3);
 extern int data_0213e608;
 
 typedef struct {
@@ -13,7 +13,7 @@ typedef struct {
 
 void *func_020ea3f0(UnkStruct_020ea3f0 *p, int a, int b, int c, unsigned int d)
 {
-    func_020ea450(p);
+    func_020ea450(p, a, b, c);
     p->unk_00 = (void *) &data_0213e608;
     p->unk_14 = d;
     return p;

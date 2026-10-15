@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int *func_ov123_02299d9c(int *p, int x);
+extern int *func_ov123_02299d9c(int *p);
 
 void func_ov123_0229a988(int *dst, int x)
 {
     int i;
     int val;
-    dst = func_ov123_02299d9c(dst, x);
+    dst = func_ov123_02299d9c(dst);
     val = x * 0x11111111;
     for (i = 0; i < 32; i++) {
         dst[0] = val;

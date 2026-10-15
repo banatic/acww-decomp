@@ -5,14 +5,14 @@
 #include "types.h"
 
 extern int func_020984e8(void);
-extern int func_02099734(void);
-extern int func_02098eb8(void);
-extern void func_02098f0c(int, void *, int, int);
+extern int func_02099734(int);
+extern int func_02098eb8(int object);
+extern int func_02098f0c(int, void *, int, int);
 extern int func_020996ac(int);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
-extern void func_0207de70(int, void *);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
+extern int func_0207de70(int, void *);
 extern void func_02098a24(int, int, int);
-extern void func_020154b4(void *, void *, int, int, int);
+extern int func_020154b4(void *, void *, int, int, int);
 
 typedef struct {
     u32 lo;
@@ -39,8 +39,8 @@ int func_0201d514(UnkStruct_0201d514 *p)
 
     if (p->unk_1A0 > 0 && p->unk_19C != 0xfff1) {
         a = func_020984e8();
-        b = func_02099734();
-        c = func_02098eb8();
+        b = func_02099734(a);
+        c = func_02098eb8((int) b);
 
         if (c >= 0) {
             func_02098f0c(b, &p->unk_19C, c, 0);

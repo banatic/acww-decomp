@@ -13,9 +13,9 @@ struct UnkStruct_02261174 {
 
 extern int func_0201b43c(unsigned char *a, int b);
 extern void func_0201b420(unsigned char *a, int b);
-extern void func_020984e8(void);
-extern int func_02099870(void);
-extern void func_0209871c(void *a, int b);
+extern int func_020984e8(void);
+extern int func_02099870(int argument0);
+extern int func_0209871c(void *a, int b);
 extern int func_020b65c4(void);
 extern void func_020ada48(int a, int b, int c, int d);
 
@@ -32,8 +32,8 @@ void func_ov050_02261174(struct UnkStruct_02261174 *self, int cond)
             self->value = 0x22;
             self->base[0x73c] = 1;
             func_0201b420(self->base, self->other);
-            func_020984e8();
-            v = func_02099870();
+
+            v = func_02099870((int) func_020984e8());
             func_0209871c((void *) data_021dc7bc, v);
             base = self->base;
             rv = func_020b65c4();

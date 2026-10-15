@@ -12,8 +12,8 @@ extern UnkStruct_02210838 data_ov004_02256dc8;
 extern int data_ov004_02256c68;
 extern int data_ov004_02256dbc;
 extern short FX_SinCosTable_[];
-extern void __register_global_object(UnkStruct_02210838 *a, void *cb, void *c);
-extern void func_020012dc(void);
+extern void __register_global_object(UnkStruct_02210838 *a, void *destructor, void *c);
+extern void func_020012dc(void *arg0);
 extern void *func_020961a8(int i);
 
 UnkStruct_02210838 *func_ov004_02210838(char *self)
@@ -22,7 +22,7 @@ UnkStruct_02210838 *func_ov004_02210838(char *self)
     int i;
 
     if ((data_ov004_02256c68 & 1) == 0) {
-        __register_global_object(&data_ov004_02256dc8, (void *) func_020012dc, &data_ov004_02256dbc);
+        __register_global_object(&data_ov004_02256dc8, ((void *) &func_020012dc), &data_ov004_02256dbc);
         data_ov004_02256c68 |= 1;
     }
     data_ov004_02256dc8.unk_00 = *(int *) (self + 0x5c);

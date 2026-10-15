@@ -5,15 +5,15 @@
 extern int func_ov004_02241ba8(void *self);
 extern void func_020eaca0(int *v, void *p, void *q);
 extern void func_ov004_02244fb8(int *v, int s);
-extern void func_020ea838(int *v);
+extern int func_020ea838(int *v);
 extern int func_020ea90c(int *a, int *b);
 extern int func_020ea990(void *a, void *b);
 extern const short data_02139d9c[];
 extern int func_0200322c(void *a, void *b);
-extern void func_020e8870(short *s, int a, int m);
+extern int func_020e8870(short *s, int a, int m);
 extern int FX_MulFunc(int a, int b);
 extern void func_ov004_02244f20(void *self);
-extern void func_ov004_02244be0(void *self, int k);
+extern int func_ov004_02244be0(void *self, int k);
 extern void func_020550e4(void *p, int k);
 extern int func_ov004_02244c20(void *self);
 extern int func_020644cc(int k);

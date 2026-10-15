@@ -7,7 +7,7 @@ extern int func_ov002_02208054(unsigned char *, int);
 extern void func_ov101_0229c51c(unsigned char *);
 extern int func_ov002_02208b00(unsigned char *, unsigned char, unsigned char);
 extern void func_ov002_02209114(unsigned char *, int, int);
-extern void func_ov002_02208098(unsigned char *, int);
+extern unsigned char *func_ov002_02208098(unsigned char *, unsigned char value);
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;

@@ -3,7 +3,7 @@
  */
 
 extern void func_02073404(int a, int b);
-void func_02073410(int a, int b)
+void func_02073410(int a)
 {
     func_02073404(a, 0);
 }

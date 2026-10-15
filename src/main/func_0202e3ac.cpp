@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_0202df18(void *, void *, unsigned short *);
+extern "C" int func_0202df18(void *, void *, unsigned short *);
 extern "C" void func_02080cd8(void *, unsigned short *);
 extern "C" void func_020783a8(void *, unsigned short *);
 

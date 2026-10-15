@@ -11,7 +11,7 @@ typedef struct UnkStruct_02264764 {
     unsigned short unk_730;
 } UnkStruct_02264764;
 
-extern void func_02019c6c(void *address, int n, unsigned short value);
+extern int func_02019c6c(void *address, int n, unsigned short value);
 extern int func_020644cc(int n);
 extern int func_ov050_02260510(UnkStruct_02264764 *self);
 extern int func_0202ea40(UnkStruct_02264764 *self, int *local, int n);

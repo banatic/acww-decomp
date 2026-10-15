@@ -9,7 +9,7 @@ typedef struct {
     unsigned int unk_0C;
 } ArrayElem;
 
-extern ArrayElem *func_020b03f8(int);
+extern ArrayElem *func_020b03f8(void);
 extern void func_ov068_0226fcbc(void *self);
 
 int func_ov068_0226f4b4(void *self)
@@ -22,7 +22,7 @@ int func_ov068_0226f4b4(void *self)
     *flag &= ~0x20;
 
     idx = *(unsigned int *) ((char *) self + 8) & 1;
-    arr = func_020b03f8(1);
+    arr = func_020b03f8();
     idx &= 1;
 
     arr[idx].unk_00 = 0;

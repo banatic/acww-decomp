@@ -89,33 +89,33 @@ typedef struct UnkStruct_02004f34 {
     int unk_C94;
 } UnkStruct_02004f34;
 
-extern void func_0203f130(void *);
-extern void func_02066a30(void *);
-extern void func_02089bd4(void *);
-extern void func_020b7ee8(void *);
-extern void func_02054bac(void *);
+extern void *func_0203f130(void *);
+extern void *func_02066a30(void *);
+extern void *func_02089bd4(void *);
+extern void *func_020b7ee8(void *);
+extern void *func_02054bac(void *);
 extern void func_0205f774(void *);
 extern void func_0205d0c0(void *);
-extern void func_0205577c(void *);
+extern void *func_0205577c(void *);
 extern void func_0205e4f0(void *);
 extern void func_0205df1c(void *);
-extern void func_0205efac(void *);
+extern void *func_0205efac(void *);
 extern void func_0205cce8(void *);
 extern void func_0205dcd8(void *);
 extern void func_0205d8ec(void *);
 extern void func_0205db70(void *);
-extern void func_02056928(void *);
+extern void *func_02056928(void *);
 extern void func_0206463c(void *);
 extern void func_0205d520(void *);
-extern void func_020b9e58(void *);
+extern void *func_020b9e58(void *);
 extern void func_0205f8d8(void *);
-extern void func_02032c64(void *);
+extern void *func_02032c64(void *);
 extern void func_0201a794(void *);
-extern void func_020f5430(void *);
-extern void func_020f55cc(void *);
-extern void func_0200e91c(void);
-extern void func_0200e92c(void);
-extern void __cxa_vec_ctor(void *, int, int, void (*)(void), void (*)(void));
+extern void *func_020f5430(void *);
+extern void *func_020f55cc(void *);
+extern int func_0200e91c(void *);
+extern unsigned int func_0200e92c(void *);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 extern int data_020d82b4;
 extern int data_020d832c;
 
@@ -162,7 +162,8 @@ UnkStruct_02004f34 *func_02004f34(UnkStruct_02004f34 *s)
     s->unk_8FC = 0;
     s->unk_900 = 0;
     func_0201a794(&s->unk_90C);
-    __cxa_vec_ctor(&s->unk_934, 0x1e, 0x1c, func_0200e92c, func_0200e91c);
+    __cxa_vec_ctor((void *) (&s->unk_934), 0x1e, 0x1c, (((void (*)(void *)) func_0200e92c)),
+                   (((void (*)(void *)) func_0200e91c)));
     s->unk_800 = 4;
     s->unk_704 = 0xa1;
     s->unk_708 = 0x144;

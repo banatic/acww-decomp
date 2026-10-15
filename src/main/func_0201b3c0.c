@@ -3,7 +3,7 @@
  */
 
 extern int func_020984e8(void);
-extern int func_02099734(void);
+extern int func_02099734(int);
 extern int func_02098cc0(int p1, int p2, int p3);
 
 int func_0201b3c0(int unused, int a, int b)
@@ -14,8 +14,7 @@ int func_0201b3c0(int unused, int a, int b)
     int result;
 
     if (func_020984e8() != 0) {
-        func_020984e8();
-        obj = func_02099734();
+        obj = func_02099734((int) func_020984e8());
     } else {
         obj = 0;
     }

@@ -4,10 +4,10 @@
 
 extern unsigned short data_021fbe40[2];
 extern int func_ov095_0229cf64(void *ptr, int num);
-extern void func_ov111_0229f730(void *ptr, int num);
+extern int func_ov111_0229f730(void *ptr, int num);
 extern void func_ov095_0229c8e4(void *ptr, int num);
 extern void func_ov111_0229f10c(void *ptr);
-extern void func_ov002_02208098(void *ptr, int num);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 int func_ov111_0229f2ec(unsigned char *arg)
 {
@@ -21,6 +21,6 @@ int func_ov111_0229f2ec(unsigned char *arg)
     func_ov095_0229c8e4((void *) (arg + 0xac), 0x10a);
     func_ov111_0229f10c(arg);
     arg[0x98] = arg[0x8d];
-    func_ov002_02208098(arg, 0xc);
+    func_ov002_02208098((void *) (arg), 0xc);
     return 1;
 }

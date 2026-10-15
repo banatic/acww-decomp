@@ -5,9 +5,9 @@
 extern unsigned char data_020e54a8;
 extern int data_021c9ac4;
 extern int func_02082240(void);
-extern void func_020b65c4(void);
-extern int func_020b5df8(void);
-extern int func_020b5e04(void);
+extern unsigned char func_020b65c4(void);
+extern int func_020b5df8(unsigned int);
+extern int func_020b5e04(unsigned int);
 extern int func_02085f08(void);
 extern int func_020e9968(int, int, int);
 
@@ -25,10 +25,8 @@ void func_02078cb0(int *out)
     if (cond != 0) {
         limit_part = func_02082240();
     } else {
-        func_020b65c4();
-        tmp1 = func_020b5df8();
-        func_020b65c4();
-        tmp2 = func_020b5e04();
+        tmp1 = func_020b5df8((unsigned int) func_020b65c4());
+        tmp2 = func_020b5e04((unsigned int) func_020b65c4());
         limit_part = tmp1 - tmp2;
     }
 

@@ -3,8 +3,8 @@
  */
 
 extern int data_020e27a8;
-extern void func_02034270(void *, int, int, int);
-extern int func_020b6598(int);
+extern int func_02034270(void *, int, int, int);
+extern int func_020b6598(void);
 extern int func_02094cf8(int, int, int, int, int, int *);
 extern void func_0203423c(void *);
 
@@ -17,7 +17,7 @@ int func_02092758(int a0, int a1, int a2, int a3)
     func_02034270(arr, a1, 0, 0);
     v = arr[13];
     result = -1;
-    if (func_020b6598(0) != 0 && v == 3) {
+    if (func_020b6598() != 0 && v == 3) {
         result = 0x8a;
     } else if (v == 0x13) {
         result = 0x89;

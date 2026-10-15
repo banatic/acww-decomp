@@ -25,19 +25,19 @@ extern void *data_020ccf94;
 extern int func_02073908(void *a, int b);
 extern int func_ov003_022203ac(void);
 extern void *func_020984e8(void);
-extern int func_020b65c4(void *d);
+extern int func_020b65c4(void);
 extern int func_02099020(void *d, int a);
 extern void *func_020b65b8(void);
 extern int func_020b67e8(void *g);
 extern void *func_0208602c(void);
 extern int func_02086108(void *i, int a);
-extern void func_020109a0(Self_ov003_big *self, int a, int b, int c);
+extern void func_020109a0(Self_ov003_big *self, int b, int c, unsigned short d);
 extern int func_020b29c0(void *p);
 extern void func_020109fc(Self_ov003_big *self, int a, int b, int c);
 extern void func_ov003_0221833c(void *field3, int a, int b);
-extern void func_ov003_02220368(Self_ov003_big *self);
+extern int func_ov003_02220368(Self_ov003_big *self);
 
-void func_ov003_02218210(Self_ov003_big *self, B_ov003_big *b)
+void func_ov003_02218210(Self_ov003_big *self, B_ov003_big *b, int previous)
 {
     int local0;
     void *gv;
@@ -62,7 +62,7 @@ void func_ov003_02218210(Self_ov003_big *self, B_ov003_big *b)
 
     if (func_02073908(gv, self->fieldBig)) {
         dres = func_020984e8();
-        if (func_020b65c4(dres) != 0) {
+        if (func_020b65c4() != 0) {
             goto L_else;
         }
         if (dres == 0) {

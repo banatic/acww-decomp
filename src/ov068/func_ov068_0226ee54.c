@@ -3,7 +3,7 @@
  */
 
 extern int FX_Div(int a, int b);
-extern void func_ov003_0221a35c(void *self, int n);
+extern int func_ov003_0221a35c(void *self, int n);
 
 typedef struct {
     unsigned char pad_00[0x5c];

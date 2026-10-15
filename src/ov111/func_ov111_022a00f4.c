@@ -8,8 +8,8 @@ extern unsigned char data_021fbddc;
 extern int func_ov095_0229afac(unsigned char *ptr);
 extern void func_ov111_022a0198(void *self);
 extern void func_ov111_0229fed8(void *self, int val);
-extern int func_ov095_0229b3ec(unsigned char *ptr);
-extern void func_ov002_02208098(void *self, int param);
+extern void func_ov095_0229b3ec(unsigned char *ptr);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct {
     unsigned char pad_00[0x9a];
@@ -44,7 +44,7 @@ void func_ov111_022a00f4(UnkStruct_022a00f4 *self)
             self->unk_9D--;
         } else {
             func_ov095_0229b3ec(&self->unk_AC);
-            func_ov002_02208098(self, 0xe);
+            func_ov002_02208098((void *) (self), 0xe);
         }
     }
 }

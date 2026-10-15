@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_0209ae70(unsigned int param1, unsigned int param2, unsigned int param3)
+void func_0209ae70(unsigned int param1, unsigned int param2, unsigned int param3)
 {
     unsigned short local_0;
     func_0209af04();

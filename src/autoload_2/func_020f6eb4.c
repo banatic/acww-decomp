@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_SndPlayerReadVariable(void *s, int index, short *out);
+extern int NNS_SndPlayerReadVariable(void *s, int index, short *out);
 
 typedef struct {
     char pad_00[14];

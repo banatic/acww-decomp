@@ -20,7 +20,7 @@ extern void *func_0207cec0(void *g, int i);
 extern int func_0208150c(void *e);
 extern int func_02003704(int x);
 extern int func_0207f1c8(void *e);
-extern int func_0209b5ec(int x);
+extern int func_0209b5ec(void *);
 extern int func_0209c1c0(int x, void *buf);
 extern int func_020798a0(unsigned short *h, int x0, int x1, int x2, int x3);
 extern void func_0207dac8(void *e, int a, int mode);
@@ -58,7 +58,7 @@ void func_020797bc(int a, Box *b)
             e = func_0207cec0(G, i);
             if (e != 0) {
                 if (func_02003704(func_0208150c(e))) {
-                    if (func_0209c1c0(func_0209b5ec(func_0207f1c8(e)), buf)) {
+                    if (func_0209c1c0((func_0209b5ec((void *) func_0207f1c8(e))), buf)) {
                         if (b != 0) {
                             h = (unsigned short) ((i & 0xfff) | 0xe000);
                             if (func_020798a0(&h, x0, x1, x2, x3)) {

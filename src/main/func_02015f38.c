@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b5630(void *);
-extern void func_020b45d0(void *, int, int, int, int, int);
-extern void func_020a8228(void *);
-extern void func_020b4a20(void *, void *, void *);
-extern void func_020a89dc(void *, void *);
-extern void func_020a8210(void *);
+extern void *func_020b5630(void *);
+extern int func_020b45d0(void *, int, int, int, int, int);
+extern void *func_020a8228(void *);
+extern int func_020b4a20(void *, void *, void *);
+extern int func_020a89dc(void *, void *);
+extern void *func_020a8210(void *);
 extern void func_020683b4(int, int, void *, int);
-extern void func_020b5618(void *);
+extern void *func_020b5618(void *);
 
 struct UnkStruct_02015f38 {
     char pad_00[0x40];

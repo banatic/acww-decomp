@@ -4,7 +4,7 @@
 
 extern int data_020e406c;
 extern void func_020aa82c(void *obj);
-extern void func_020ac2ec(void *obj);
+extern void *func_020ac2ec(void *obj);
 extern void func_020ab37c(void *dst, void *src);
 
 typedef struct {

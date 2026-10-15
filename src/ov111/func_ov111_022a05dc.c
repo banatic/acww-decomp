@@ -2,17 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(void *);
 extern int func_ov095_02299a54(void *, int);
 extern void func_ov002_0220a2b4(void *);
 extern void func_ov002_0220a254(void *);
 extern int func_ov090_02299078(int);
 extern int func_ov090_02299098(int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov111_0229f164(void *);
 extern void func_ov111_0229efc8(void *, int);
-extern void func_ov111_022a09f8(void *, int, int);
+extern int func_ov111_022a09f8(void *, int, int);
 extern int func_ov111_0229f3ac(void *);
 extern int func_ov111_0229f358(void *);
 extern int func_ov111_0229f24c(void *);
@@ -23,7 +23,7 @@ void func_ov111_022a05dc(void *p)
 {
     int res2;
     int r;
-    if (func_ov002_02208014(p) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov111_022a0204(p);
         return;
     }
@@ -41,7 +41,7 @@ void func_ov111_022a05dc(void *p)
         case 4:
             func_ov002_0220a2b4((char *) p + 0x3d38);
             func_ov111_0229efc8(p, 2);
-            func_ov002_02208098(p, 9);
+            func_ov002_02208098((void *) (p), 9);
             func_ov111_0229f164(p);
             break;
         case 0:

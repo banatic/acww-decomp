@@ -42,14 +42,14 @@ extern struct GC data_020c8da0;
 
 extern u8 *func_0209b408(void *);
 extern void func_0207de14(u16 *, void *);
-extern void func_0207de70(void *, u16 *);
+extern int func_0207de70(void *, u16 *);
 extern void func_0202d5e4(u16 *, int);
 extern int func_0205be38(void);
 extern int func_0202b510(int);
 extern void func_02027170(u16 *, int);
-extern void func_0208150c(void *);
-extern int func_020036e8(void);
-extern void func_0202da38(struct This *, u8 *, u8 *, int, int, void *, int, int, int);
+extern unsigned int func_0208150c(void *);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(struct This *, u8 *, u8 *, int, int, void *, int, int, int);
 
 void func_02026d70(struct This *t, struct UnkStruct_02026d70_3 *out)
 {
@@ -77,8 +77,8 @@ void func_02026d70(struct This *t, struct UnkStruct_02026d70_3 *out)
         func_02027170(&v.c, t->unk_1A0);
         t->unk_124 = v.c;
     }
-    func_0208150c(t->unk_100->unk_830);
-    func_0202da38(t, t->unk_104, &t->unk_122, 0x1e, func_020036e8(), data_020c8da0.x, data_020c8da0.y, 0, 0);
+    func_0202da38(t, t->unk_104, &t->unk_122, 0x1e, func_020036e8((unsigned char *) func_0208150c(t->unk_100->unk_830)),
+                  data_020c8da0.x, data_020c8da0.y, 0, 0);
     out->p = t->unk_104;
     out->c = t->unk_122;
 }

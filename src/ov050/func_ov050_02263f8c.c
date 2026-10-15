@@ -6,10 +6,10 @@
 
 extern int func_02019e00(void *);
 extern int func_02019de8(void *);
-extern void func_02019c6c(void *, int, unsigned short);
+extern int func_02019c6c(void *, int, unsigned short);
 extern int func_0201c2c8(void *, int);
 extern void func_0201aff4(void *, int);
-extern void func_0203e0a8(void *, int);
+extern int func_0203e0a8(void *, int);
 
 typedef struct {
     u8 pad_00[0x350];

@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020adf50(void) {}
+unsigned short *func_020adf50(void *record)
+{
+    return record;
+}

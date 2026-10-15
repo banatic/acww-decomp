@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020eed18(void *p, int n);
+extern int func_020eed18(void *p, int n);
 extern void NNS_SndHandleReleaseSeq(void *p);
 
 void func_020f4c28(void *p)

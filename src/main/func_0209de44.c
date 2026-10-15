@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209de88(int, int, int, int);
+extern int func_0209de88(int, int, int);
 extern int func_0209de24(int, int);
 
 int func_0209de44(int a, int b, int c, int d)
@@ -12,7 +12,7 @@ int func_0209de44(int a, int b, int c, int d)
     int t;
     int val;
     int ret2;
-    ret1 = func_0209de88(a, b, 1, d);
+    ret1 = func_0209de88(a, b, 1);
     if (c < ret1) {
         t = c - ret1 + 8;
     } else {

@@ -5,18 +5,18 @@
 
 #include "cpp/ov126/Obj_ov126_022a20c8.h"
 
-extern "C" int func_0206f58c(void *);
-extern "C" int func_0206f56c(int);
-extern "C" int func_0206fca4(int);
+extern "C" void func_0206f58c(void);
+extern "C" int func_0206f56c(void);
+extern "C" int func_0206fca4(void);
 extern "C" void func_ov126_0229f7a8(void *, int);
-extern "C" void func_ov126_0229ffdc(void *);
+extern "C" int func_ov126_0229ffdc(void *);
 extern "C" int func_020ee45c(void *);
 extern "C" void func_ov090_022993cc(int, int);
 extern "C" void func_ov126_0229f7b8(void *, int);
 extern "C" void func_ov002_02207f04(void *, int, int, int, int);
 extern "C" void func_ov126_022a16ac(void *);
 extern "C" void func_ov002_02208090(void *, int);
-extern "C" void func_ov002_022080a0(void *, int);
+extern "C" unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern "C" int func_ov126_0229fc54(void *);
 extern "C" void func_02077c40(int);
 extern "C" void func_ov126_022a1480(void *);
@@ -33,12 +33,12 @@ int Obj_ov126_022a20c8::func_ov126_022a1a6c()
     int v;
     int r5;
 
-    v = func_0206f56c(func_0206f58c(self));
+    v = ((void) (func_0206f58c()), func_0206f56c());
     if (v == 0) {
         goto exit;
     }
 
-    r5 = func_0206fca4(v);
+    r5 = func_0206fca4();
 
     switch (r5) {
         case 0x18:
@@ -65,7 +65,7 @@ int Obj_ov126_022a20c8::func_ov126_022a1a6c()
                     func_ov002_02207f04(self, 10, 0, 0, 0x30);
                     func_ov126_022a16ac(self);
                     func_ov002_02208090(self, 5);
-                    func_ov002_022080a0(self, 1);
+                    func_ov002_022080a0((void *) (self), 1);
                     if (r5 == 0x19 || r5 == 0x1b) {
                         func_02077c40(func_ov126_0229fc54(self));
                     }

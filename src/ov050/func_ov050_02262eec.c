@@ -3,11 +3,11 @@
  */
 
 extern int func_ov050_02263394(void *a, void *b);
-extern void func_020984e8(void);
-extern int func_02099640(void);
-extern void func_0209ad9c(int a, int b);
-extern void func_0209b4d4(void);
-extern int func_0209bba0(void);
+extern int func_020984e8(void);
+extern int func_02099640(int argument0);
+extern void *func_0209ad9c(int a, int b);
+extern void *func_0209b4d4(void *argument0);
+extern int func_0209bba0(void *argument0);
 
 typedef struct {
     char pad_00[0xb4];
@@ -25,11 +25,7 @@ void func_ov050_02262eec(Arg0 *arg0, Arg1 *arg1)
         return;
     }
 
-    func_020984e8();
-    func_0209ad9c(func_02099640(), 0);
-    func_0209b4d4();
-
-    if (func_0209bba0() == 1) {
+    if (func_0209bba0((void *) func_0209b4d4((void *) func_0209ad9c(func_02099640((int) func_020984e8()), 0))) == 1) {
         arg1->flag = 0x2c;
     } else {
         if (arg0->ptr[0x73e] == 0) {

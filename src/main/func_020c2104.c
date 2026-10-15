@@ -27,19 +27,19 @@ struct UnkStruct_020c2104 {
 extern void *func_020984e8(void);
 extern int func_020b65c4(void);
 extern void *func_0204e414(void);
-extern void func_0204e08c(void *a, Vec3 *b, int c, int d);
+extern int func_0204e08c(void *a, Vec3 *b, int c, int d);
 extern void func_0204f7e0(Vec3 *a, Vec3 *b);
 extern void func_0204f794(Vec3 *a, int b, int c);
 extern void *func_02095794(int a);
 extern int func_0201c378(UnkStruct_020c2104 *p, int a);
-extern void func_02099688(void *a);
-extern int func_0208829c(void);
+extern unsigned int func_02099688(void *a);
+extern int func_0208829c(void *);
 extern int func_02019e00(void *a);
 extern void func_020c26b4(UnkStruct_020c2104 *p, int a);
 extern int func_0201ae40(void *a);
 extern int func_020ea990(void *a, void *b);
 extern int func_020e8840(void *a);
-extern void func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
+extern int func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
 extern void func_0201b044(void *a, void *b);
 extern unsigned short data_020c80f8;
 
@@ -77,8 +77,7 @@ int func_020c2104(UnkStruct_020c2104 *p)
         if (func_020b65c4() != 0xc) {
             goto lab;
         }
-        func_02099688(a);
-        if (func_0208829c() != 0) {
+        if (func_0208829c((void *) func_02099688(a)) != 0) {
             goto lab;
         }
     }

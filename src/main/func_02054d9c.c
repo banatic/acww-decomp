@@ -15,7 +15,7 @@ typedef struct {
 } UnkStruct_02054d9c;
 
 extern void func_02056eb0(void **ptr);
-extern void func_0205517c(UnkStruct_02054d9c *self);
+extern void *func_0205517c(UnkStruct_02054d9c *self);
 
 UnkStruct_02054d9c *func_02054d9c(UnkStruct_02054d9c *self)
 {

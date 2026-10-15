@@ -4,7 +4,7 @@
 
 extern int NNS_G3dGetResultMtx(void *ptr, int a, int b, int c);
 extern int NNS_G3dGlbGetInvV(void);
-extern int MTX_Concat43(int a, int b, int c);
+extern void MTX_Concat43(int a, int b, int c);
 
 int func_02055d0c(char *a, int b, int c)
 {

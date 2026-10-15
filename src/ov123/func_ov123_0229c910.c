@@ -8,7 +8,7 @@ struct UnkStruct_0229c910 {
 };
 
 extern void func_ov123_0229bfe0(struct UnkStruct_0229c910 *p);
-extern void func_ov002_022080a0(struct UnkStruct_0229c910 *p, int n);
+extern unsigned char *func_ov002_022080a0(struct UnkStruct_0229c910 *p, unsigned char value);
 
 int func_ov123_0229c910(struct UnkStruct_0229c910 *self)
 {

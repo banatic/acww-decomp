@@ -26,10 +26,10 @@ struct UnkStruct_02278c18 {
 
 extern int data_ov084_02279558;
 extern int data_ov084_02279568;
-extern void func_020154b4(UnkStruct_02278c18 *p, void *m, int a, int b, int c);
-extern void func_0209a000(unsigned short *h, int a);
+extern int func_020154b4(UnkStruct_02278c18 *p, void *m, int a, int b, int c);
+extern int func_0209a000(unsigned short *h, int a);
 extern void func_0206844c(int a, void *m, int *t);
-extern int func_02099fe8(UnkStruct_02278c18 *p);
+extern int func_02099fe8(void);
 extern int func_02099e9c(unsigned short *h);
 extern int func_020644cc(int a);
 extern int func_020984e8(void);
@@ -68,7 +68,7 @@ void func_ov084_02278c18(UnkStruct_02278c18 *p)
         case 1:
         case 2:
         case 6:
-            n = func_02099fe8(p);
+            n = func_02099fe8();
             msg.unk_02 = 0xfff1;
             msg.unk_08 = 0x137e;
             m = func_02099e9c(&msg.unk_08);

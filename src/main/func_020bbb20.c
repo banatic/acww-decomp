@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020bba14(int arg);
-extern void func_02002bd0(int a, int b, int c, int d, int e);
+extern void func_020bba14(void);
+extern int func_02002bd0(int a, int b, int c, int d, int e);
 extern unsigned char data_020d22b4[];
 struct UnkStruct_020bbb20 {
     int unk_00;
@@ -18,13 +18,13 @@ struct UnkStruct_020bbb20_2 {
 extern struct UnkStruct_020bbb20 data_021f8b14;
 extern struct UnkStruct_020bbb20_2 data_021f8ab0;
 
-void func_020bbb20(int arg)
+int func_020bbb20(int arg)
 {
     struct UnkStruct_020bbb20 *p = &data_021f8b14;
-    func_020bba14(arg);
+    func_020bba14();
     if (data_021f8ab0.unk_28 != data_021f8ab0.unk_24) {
-        func_02002bd0(p->unk_08, data_020d22b4[arg], 1, 1, 1);
+        return func_02002bd0(p->unk_08, data_020d22b4[arg], 1, 1, 1);
     } else {
-        func_02002bd0(p->unk_00, data_020d22b4[arg], 1, 1, 1);
+        return func_02002bd0(p->unk_00, data_020d22b4[arg], 1, 1, 1);
     }
 }

@@ -16,7 +16,7 @@ extern void *func_02099870(void *p);
 extern int func_020804b8(void *a, void *b);
 extern void func_02081e14(int r, int a, int b, int c);
 extern void *func_0208150c(void *p);
-extern void func_0200366c(void *a, void *b, int n, void *c);
+extern int func_0200366c(void *a, void *b, int n, void *c);
 extern int func_020644cc(int n);
 extern void func_02015de4(void *self, void *p, int a, int b);
 extern char data_ov004_02257e40[];

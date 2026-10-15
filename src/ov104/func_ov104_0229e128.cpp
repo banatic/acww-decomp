@@ -6,7 +6,7 @@
 #include "cpp/ov104/Obj_ov104_0229f6d0.h"
 
 extern "C" int func_ov002_02209f64(void *ptr);
-extern "C" void func_ov002_02208098(void *ptr, unsigned char byte);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern "C" void func_ov104_0229d748(void *ptr, unsigned char byte);
 extern "C" void func_ov104_0229d528(void *ptr);
 
@@ -21,7 +21,7 @@ void Obj_ov104_0229f6d0::func_ov104_0229e128()
 {
     UnkStruct_0229e128 *p = (UnkStruct_0229e128 *) this;
     if (func_ov002_02209f64((char *) p + 0x24a0) == 0) {
-        func_ov002_02208098(p, p->bb);
+        func_ov002_02208098((void *) (p), p->bb);
         if (p->bb == 7) {
             func_ov104_0229d748(p, p->b8);
         }

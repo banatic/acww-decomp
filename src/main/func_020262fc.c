@@ -6,7 +6,7 @@ extern void func_02063414(volatile unsigned short *, int, int, int, int, int, in
 extern void *func_020984e8(void);
 extern int func_020644cc(int);
 
-void func_020262fc(unsigned short *out)
+void func_020262fc(unsigned short *out, int value, int object)
 {
     volatile unsigned short h[2];
     unsigned short v0, v1;

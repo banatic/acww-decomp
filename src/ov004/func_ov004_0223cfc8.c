@@ -2,4 +2,21 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov004_0223cfc8(void) {}
+typedef struct {
+    void *head;
+    void *tail;
+    unsigned short count;
+    unsigned short linkOffset;
+    void *handle;
+} SoundResources;
+
+typedef struct {
+    SoundResources resources;
+    unsigned char initialized;
+} SoundOwner;
+
+void *func_ov004_0223cfc8(void *object)
+{
+    SoundOwner *self = object;
+    return &self->resources;
+}

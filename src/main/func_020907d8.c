@@ -3,7 +3,7 @@
  */
 
 extern void func_02090710(void *ptr);
-extern void func_020e9fd4(void);
+extern void func_020e9fd4(void *);
 extern void *data_021d52c8;
 
 void func_020907d8(void *base)
@@ -18,7 +18,7 @@ void func_020907d8(void *base)
 
     p = data_021d52c8;
     if (p != 0) {
-        func_020e9fd4();
+        func_020e9fd4(p);
         data_021d52c8 = 0;
     }
 }

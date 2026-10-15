@@ -23,16 +23,16 @@ typedef struct {
 
 extern int func_0206f56c(void);
 extern void func_ov096_0229e898(UnkStruct_022a0880 *, int, int);
-extern void func_ov096_022a18dc(UnkStruct_022a0880 *, int);
+extern int func_ov096_022a18dc(UnkStruct_022a0880 *, int);
 extern int func_ov002_02208008(UnkStruct_022a0880 *);
 extern int func_ov096_0229c560(UnkStruct_022a0880 *, int, int);
 extern void func_ov096_0229eb14(UnkStruct_022a0880 *);
 extern void func_ov096_0229dd94(UnkStruct_022a0880 *);
-extern void func_ov002_02207d24(void *, int);
-extern int func_ov096_0229c310(UnkStruct_022a0880 *, int _x);
+extern int func_ov002_02207d24(void *, int);
+extern int func_ov096_0229c310(UnkStruct_022a0880 *);
 extern void func_ov096_0229c414(UnkStruct_022a0880 *);
 extern void func_ov096_0229db78(UnkStruct_022a0880 *, int);
-extern int func_ov096_0229f800(UnkStruct_022a0880 *);
+extern int func_ov096_0229f800(UnkStruct_022a0880 *, unsigned int code);
 extern int func_ov096_0229e4f8(UnkStruct_022a0880 *);
 extern int func_ov096_0229e170(UnkStruct_022a0880 *, int);
 extern void RtcSendPxiCommand(int);
@@ -47,7 +47,7 @@ extern void func_ov094_0229aa14(void *, int, int, int);
 extern void func_ov096_0229db30(UnkStruct_022a0880 *, int);
 extern int func_ov096_0229ee80(UnkStruct_022a0880 *, int);
 extern void func_ov096_0229c2ec(UnkStruct_022a0880 *, int);
-extern void func_ov096_0229ea5c(UnkStruct_022a0880 *);
+extern int func_ov096_0229ea5c(UnkStruct_022a0880 *);
 extern void func_ov002_02207d00(void *);
 
 extern struct {
@@ -73,14 +73,14 @@ void func_ov096_022a0880(UnkStruct_022a0880 *p)
     }
     if ((data_021fbe40.h2 & 1) != 0) {
         if (p->unk_B5 == 0x21) {
-            if (func_ov096_0229c310(p, p->unk_B5) == 0) {
+            if (func_ov096_0229c310(p) == 0) {
                 return;
             }
             func_ov096_0229c414(p);
             func_ov096_0229db78(p, p->unk_B5);
             return;
         }
-        if (func_ov096_0229f800(p) != 0) {
+        if (func_ov096_0229f800(p, p->unk_B5) != 0) {
             if (p->unk_B5 == 0x24) {
                 p->unk_C0 = (u8) func_ov096_0229e4f8(p);
                 func_ov096_0229db78(p, p->unk_B5);

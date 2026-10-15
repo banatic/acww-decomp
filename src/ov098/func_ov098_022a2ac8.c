@@ -11,10 +11,10 @@ typedef struct GameObj {
 } GameObj;
 
 extern void func_0204f794(int *out, int a, int b);
-extern int func_ov096_0229f0dc(GameObj *self, unsigned char byte);
+extern unsigned short func_ov096_0229f0dc(GameObj *self, unsigned char byte);
 extern int func_ov003_02219b90(int *a, short *b);
 extern void func_ov096_0229f5ac(GameObj *self, unsigned char byte);
-extern void func_ov002_02208098(GameObj *self, int param);
+extern unsigned char *func_ov002_02208098(GameObj *self, unsigned char value);
 
 void func_ov098_022a2ac8(GameObj *self)
 {

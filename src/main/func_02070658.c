@@ -12,7 +12,7 @@ extern int data_020c904c;
 
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int n);
 extern void func_02077978(unsigned char *src, int *out1, int *out2);
-extern void func_ov003_0222780c(unsigned char k, unsigned short idx, Pair *pr);
+extern int func_ov003_0222780c(unsigned char k, unsigned short idx, Pair *pr);
 extern void func_ov003_0222c3a8(Pair *pr, unsigned char k);
 
 void func_02070658(unsigned char *p, int arg)

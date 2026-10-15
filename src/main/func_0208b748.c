@@ -6,10 +6,10 @@ extern void func_0200452c(void);
 extern void func_0200453c(void);
 extern void RtcSendPxiCommand(int);
 
-void func_0208b748(unsigned char *param0, unsigned char param1)
+void func_0208b748(unsigned char *param0, int param1)
 {
     unsigned char *r5;
-    unsigned char r4;
+    int r4;
 
     r5 = param0;
     r4 = param1;

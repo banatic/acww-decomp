@@ -13,7 +13,7 @@ extern int func_ov003_02232598(void *self, int k);
 extern void func_ov003_02230f60(void *self);
 extern void func_ov003_022353a4(void *self, int a, int b);
 extern int func_0200322c(void *a, void *b);
-extern void func_020e8870(short *v, int ang, int k);
+extern int func_020e8870(short *v, int ang, int k);
 
 int func_ov068_02270328(char *self, int mode, void *arg, short *p)
 {

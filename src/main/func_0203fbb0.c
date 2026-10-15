@@ -22,7 +22,7 @@ typedef struct {
     unsigned char pad_04[0x18];
 } UnkStruct_0203fbb0;
 
-extern unsigned char func_0209de88(int t, int a, int b, int c);
+extern unsigned char func_0209de88(int t, int a, int b);
 extern void func_02040164(Rec *out, int max);
 extern int func_0203ff98(Rec *r, UnkStruct_0203fbb0 *e, int t, Packed p);
 extern int func_02040034(UnkStruct_0203fbb0 *e, Packed p, Rec *r, Rec *out, int count, int one, int zero);
@@ -43,7 +43,7 @@ int func_0203fbb0(Rec *out, int max, const unsigned char *src)
         b = src[3];
         c.p.b[2] = b;
         c.p.b[1] = 12;
-        c.p.b[0] = func_0209de88(t, a, b, 12);
+        c.p.b[0] = func_0209de88(t, a, b);
     }
     func_02040164(out, max);
     e = data_020dac08;

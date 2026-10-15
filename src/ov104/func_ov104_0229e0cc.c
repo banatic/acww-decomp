@@ -9,12 +9,12 @@ struct UnkStruct_0229e0cc {
 
 extern int func_0208e484(void *ptr);
 extern void func_ov104_0229d198(struct UnkStruct_0229e0cc *self);
-extern void func_ov002_02208098(struct UnkStruct_0229e0cc *self, int param);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov104_0229e0cc(struct UnkStruct_0229e0cc *self)
 {
     if (func_0208e484(self->sub)) {
         func_ov104_0229d198(self);
-        func_ov002_02208098(self, 7);
+        func_ov002_02208098((void *) (self), 7);
     }
 }

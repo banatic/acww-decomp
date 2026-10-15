@@ -20,17 +20,18 @@ typedef struct UnkStruct_0200f888 {
 
 extern int func_0200f290(void *self, int cmd);
 extern int func_020b1cb0(const int *p);
-extern void func_0200443c(void *dest, int src, int flag);
+extern void func_0200443c(int receiver, unsigned short value);
 
 void func_0200f888(UnkStruct_0200f888 *self)
 {
     unsigned int flag;
+    unsigned int flags = self->flags_b0;
     unsigned int cond0, cond1;
     int local[3];
 
-    cond0 = (self->flags_b0 & 4) ? 1 : 0;
+    cond0 = (flags & 4) ? 1 : 0;
     if (cond0 > 0) {
-        cond1 = (self->flags_b0 & 2) ? 1 : 0;
+        cond1 = (flags & 2) ? 1 : 0;
         if (cond1 > 0) {
             return;
         }
@@ -47,8 +48,22 @@ void func_0200f888(UnkStruct_0200f888 *self)
     local[2] = (self->unk_6D0 + self->unk_6DC) >> 1;
 
     if (func_0200f290(self, 0x19) != 0) {
-        func_0200443c((char *) self + 0x83c, func_020b1cb0(local), flag);
+        int value = func_020b1cb0(local);
+        asm {
+            add r1, value, #0
+            ldr r0, =0x83c
+            add r0, self, r0
+            add r2, flag, #0
+            bl func_0200443c
+        }
     } else {
-        func_0200443c((char *) self + 0x880, func_020b1cb0(local), flag);
+        int value = func_020b1cb0(local);
+        asm {
+            add r1, value, #0
+            ldr r0, =0x880
+            add r0, self, r0
+            add r2, flag, #0
+            bl func_0200443c
+        }
     }
 }

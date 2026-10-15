@@ -4,12 +4,12 @@
 
 extern void func_ov111_0229ff88(void *p);
 extern void func_ov002_02208090(void *p, int arg);
-extern void func_ov002_022080a0(void *p, int arg);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 int func_ov111_022a0de8(void *p)
 {
     func_ov111_0229ff88(p);
     func_ov002_02208090(p, 0);
-    func_ov002_022080a0(p, 1);
+    func_ov002_022080a0((void *) (p), 1);
     return 1;
 }

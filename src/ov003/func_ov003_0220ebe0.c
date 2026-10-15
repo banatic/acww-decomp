@@ -14,9 +14,9 @@ extern char data_ov003_02238118;
 extern void func_02054860(void *p);
 extern int func_02056f28(void *p, int k);
 extern void func_020110c4(u16 *out, void *self);
-extern void func_0203f7d0(Vec3 *dst, Vec3 *src);
-extern void func_020912d4(int a, Vec3 *v, void *b, int c);
-extern void func_02095694(int a, int b);
+extern int func_0203f7d0(Vec3 *dst, Vec3 *src);
+extern int func_020912d4(int a, Vec3 *v, void *b, int c);
+extern int func_02095694(int a, int b);
 extern void func_0200fa1c(Vec3 *out, void *self, void *sub, u16 *h, void *tbl);
 
 void func_ov003_0220ebe0(char *self)

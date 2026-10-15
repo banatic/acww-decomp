@@ -3,9 +3,9 @@
  */
 
 extern unsigned char data_020e54a8;
-extern void func_ov004_02225ef8(int a);
-extern void func_ov003_0220c57c(int a);
-void func_02010030(int a)
+extern int func_ov004_02225ef8(int a);
+extern int func_ov003_0220c57c(int a);
+int func_02010030(int a)
 {
     unsigned int ok;
     if (data_020e54a8 == 1) {
@@ -14,8 +14,8 @@ void func_02010030(int a)
         ok = 0;
     }
     if (ok > 0) {
-        func_ov004_02225ef8(a);
+        return func_ov004_02225ef8(a);
     } else {
-        func_ov003_0220c57c(a);
+        return func_ov003_0220c57c(a);
     }
 }

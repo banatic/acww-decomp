@@ -21,7 +21,7 @@ extern struct {
     unsigned char byte;
 } data_020c8a10;
 
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 
 int func_02022ddc(outer_t *obj)
 {

@@ -3,15 +3,15 @@
  */
 
 extern int func_ov002_02207f48(int a, int b);
-extern void func_ov002_022080a0(int a, int b);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov135_0229ca1c(int a);
-extern int func_ov135_0229d128(int a);
+extern void func_ov135_0229d128(int a);
 
-int func_ov135_0229d1b0(int a)
+void func_ov135_0229d1b0(int a)
 {
     if (func_ov002_02207f48(a, 0)) {
-        func_ov002_022080a0(a, 2);
+        func_ov002_022080a0((void *) (a), 2);
         func_ov135_0229ca1c(a);
     }
-    return func_ov135_0229d128(a);
+    func_ov135_0229d128(a);
 }

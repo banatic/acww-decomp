@@ -14,14 +14,14 @@ struct UnkStruct_020b9a18 {
     char sub2[0x14];
 };
 
-extern "C" void func_020b9c68(void);
+extern "C" void func_020b9c68(void *);
 extern "C" void func_020ba0f8(void *, int, int, int, int, int);
 extern "C" unsigned char func_020ba0cc(void *);
 extern "C" int func_020b98c4(void *);
 
 extern "C" int func_020b9a18(UnkStruct_020b9a18 *p, int a, int b, int c, int d, int e, int f, int g)
 {
-    func_020b9c68();
+    func_020b9c68(p);
     p->unk_0E = 8;
     func_020ba0f8(&p->sub1, a, c, d, d, e);
     p->unk_0F = func_020ba0cc(&p->sub1);

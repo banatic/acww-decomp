@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern void *func_0209cc30(void *self, u32 x, u32 y);
-extern void func_0209d01c(void *c, int v);
+extern int func_0209d01c(void *c, int v);
 extern int func_0209d030(void *c);
-extern int func_02037b14(int v);
+extern int func_02037b14(int);
 extern u32 func_020644cc(u32 n);
 
 int func_0209c618(void *self)
@@ -49,7 +49,7 @@ int func_0209c618(void *self)
 
     n = 0;
     for (i = 2; i <= 3; i++) {
-        if (func_02037b14(func_0209d030(func_0209cc30(self, i, 1))) == 0) {
+        if ((func_02037b14((int) func_0209d030(func_0209cc30(self, i, 1)))) == 0) {
             n++;
         }
     }
@@ -58,7 +58,7 @@ int func_0209c618(void *self)
 
     m = 0;
     for (i = 2; i <= 3; i++) {
-        if (func_02037b14(func_0209d030(func_0209cc30(self, i, 1))) == 0) {
+        if ((func_02037b14((int) func_0209d030(func_0209cc30(self, i, 1)))) == 0) {
             if (m == k) {
                 func_0209d01c(func_0209cc30(self, i, 0), 1);
                 func_0209d01c(func_0209cc30(self, i, 1), 0xa);

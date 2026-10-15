@@ -4,7 +4,7 @@
 
 extern int func_0208150c(int arg);
 extern int func_020036e8(int arg);
-extern void func_0200368c(char *buf, int len, int value, int extra);
+extern int func_0200368c(char *buf, int len, int value, int extra);
 extern int data_020c8b20;
 
 typedef struct UnkStructT {

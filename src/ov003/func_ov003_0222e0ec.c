@@ -19,7 +19,7 @@ extern void func_020e9744(Mtx43 *m, int a);
 extern void func_020e9714(Mtx43 *m, int a);
 extern int FX_MulFunc(int a, int b);
 extern void MTX_MultVec43(Vec3 *v, Mtx43 *m, Vec3 *out);
-extern void func_0203f7d0(Vec3 *a, Vec3 *b);
+extern int func_0203f7d0(Vec3 *a, Vec3 *b);
 extern int func_020912d4(int id, Vec3 *p, int a, short *h);
 extern void func_02091278(int id, Vec3 *p, int a, short *h);
 

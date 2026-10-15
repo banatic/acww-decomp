@@ -21,10 +21,10 @@ typedef struct Msg {
 
 extern int func_020160b4(UnkStruct_02278ab8 *self);
 extern int func_020ab504(int a);
-extern int func_020984e8(int a);
-extern int func_0209a050(int a);
-extern void func_02015330(UnkStruct_02278ab8 *self, u16 *p, int a, int b, int c);
-extern void func_02099020(int a, int b);
+extern int func_020984e8(void);
+extern void func_0209a050(int a);
+extern int func_02015330(UnkStruct_02278ab8 *self, u16 *p, int a, int b, int c);
+extern int func_02099020(int a, int b);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov080_02279398;
 
@@ -38,7 +38,7 @@ void func_ov080_02278ab8(UnkStruct_02278ab8 *self)
     int code;
 
     a = func_020ab504(func_020160b4(self));
-    t = func_020984e8(a);
+    t = func_020984e8();
     code = 0xff;
     v = self->unk_B4;
     if (v >= 0) {

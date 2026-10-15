@@ -6,7 +6,7 @@
 
 extern volatile unsigned short data_020c80f8;
 
-extern int func_020164cc(void *p);
+extern int func_020164cc(void *p, int);
 extern void func_02016764(void *p0, void *p1, int p2, unsigned short p3, int p4, int p5, int p6, int p7);
 extern void func_02012444(u32 w, u16 v, int flag);
 extern void func_02057cb8(void *p);
@@ -20,7 +20,7 @@ void func_02017ff4(char *a, char *b)
     u32 x;
     u32 w;
 
-    if (func_020164cc(b + 0x334) != 0) {
+    if (func_020164cc(b + 0x334, (int) b) != 0) {
         v = data_020c80f8;
         func_02016764(b + 0x334, b, 0, data_020c80f8, 0, 0x1000, 0, 0);
         x = *(u32 *) (b + 0x628);

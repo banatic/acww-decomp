@@ -2,10 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02050c40(int);
-extern int func_020a9334(int, int);
+extern int func_02050c40(void);
+extern void func_020a9334(void *object, void *next);
 
-int func_0206ac48(int a)
+int func_0206ac48(int object)
 {
-    return func_020a9334(a, func_02050c40(a));
+    register int preserved_result;
+    int next = func_02050c40();
+    func_020a9334((void *) object, (void *) next);
+    asm { mov preserved_result, r0 }
+    return preserved_result;
 }

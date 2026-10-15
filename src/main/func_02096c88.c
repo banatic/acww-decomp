@@ -10,11 +10,11 @@ extern int func_020900f4(int *);
 extern int func_020644cc(int);
 extern void func_02090100(int *);
 extern void func_020664e0(int);
-extern int func_02097f14(int);
-extern void func_02066830(int, int);
+extern void *func_02097f14(void *buffer);
+extern int func_02066830(int, int);
 extern void func_02066650(int);
 extern int func_02096d78(void);
-extern void func_02096de0(void);
+extern int func_02096de0(void);
 extern int data_021ee418;
 extern unsigned char data_020d18c8[];
 extern int data_021f36ec;
@@ -53,7 +53,7 @@ void func_02096c88(void)
 
     func_02090100(base);
     func_020664e0(r4_val);
-    tmp = func_02097f14((int) &data_021f36ec);
+    tmp = (int) func_02097f14(&data_021f36ec);
     func_02066830(tmp, r4_val);
     func_02066650(r4_val);
     if (func_02096d78() != 0) {

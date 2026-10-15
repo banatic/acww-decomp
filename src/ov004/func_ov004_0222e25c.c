@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern unsigned int func_ov004_022236c4(void);
+extern unsigned short func_ov004_022236c4(void);
 extern int func_ov004_022236a8(void);
 extern void func_ov004_0222db14(void *, int, void *, void *, int, int, int, int);
 void func_ov004_0222e25c(u8 *self)

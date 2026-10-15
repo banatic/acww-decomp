@@ -7,9 +7,9 @@
 extern int func_0206fc6c(void);
 extern int func_0206fc8c(void);
 extern int func_0209a034(int);
-extern int func_0209a050(void);
-extern void func_02015330(void *, u16 *, int, int, int);
-extern void func_020155cc(void *);
+extern void func_0209a050(void *object);
+extern int func_02015330(void *, u16 *, int, int, int);
+extern int func_020155cc(void *);
 extern void func_ov079_02279508(void *, int);
 extern void func_0206844c(int, u8 *, void *);
 extern char data_ov079_0227a1b0;
@@ -60,7 +60,7 @@ void func_ov079_02279374(UnkStruct_02279374 *p)
         }
 
         if (p->unk_C8 >= 0) {
-            func_0209a050();
+            func_0209a050((void *) (p->unk_C8));
             p->unk_C8 = -1;
         }
         func_02015330(p, &p->unk_C4, 0, 4, 0);

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void func_020eedb8(unsigned short a, unsigned short b, void *c);
+extern int func_020eedb8(unsigned short a, unsigned short b, void *c);
 extern void NNS_SndPlayerSetVolume(void *a, int b);
 extern void func_020f12cc(void *a, int b);
 

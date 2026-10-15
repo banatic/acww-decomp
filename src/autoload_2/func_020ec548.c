@@ -4,7 +4,7 @@
 
 extern void WXC_End(void);
 extern void func_020edb14(void);
-extern void UTi_PutString(int);
+extern int UTi_PutString(int);
 extern int data_021fbf48;
 extern int data_021fbf28;
 extern unsigned char data_021fbef8;

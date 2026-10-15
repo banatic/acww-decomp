@@ -9,14 +9,14 @@ extern PMF data_ov049_02263168;
 extern PMF data_ov049_02263130;
 extern void *data_ov049_02263298;
 
-extern "C" int func_ov049_02262084(void);
+extern "C" int func_ov049_02262084(void *unused0);
 extern "C" int func_020a12e8(void);
 extern "C" int strlen(void *p);
 extern "C" int strncmp(void *a, void *b, int c);
 
 extern "C" void func_ov049_02261960(UnkStruct_02261960 *self, int arg)
 {
-    if (func_ov049_02262084() == 2) {
+    if (func_ov049_02262084(self) == 2) {
         if (func_020a12e8() != 0) {
             return;
         }

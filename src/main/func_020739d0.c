@@ -16,7 +16,7 @@ extern unsigned int func_02073950(UnkStruct_020739d0 *, int);
 extern unsigned int func_02073bcc(UnkStruct_020739d0 *, int, unsigned int);
 extern unsigned int func_02073c04(UnkStruct_020739d0 *, int, unsigned int);
 extern void MI_CpuCopy8(unsigned int, int, int);
-extern int func_0207762c(void);
+extern int func_0207762c(unsigned int);
 extern void *func_020738bc(UnkStruct_020739d0 *, int);
 extern void func_02077a34(u8 *, u8 *, u8 *);
 extern int func_020b65c4(void);
@@ -76,7 +76,7 @@ void func_020739d0(UnkStruct_020739d0 *self)
                 if (c >= 0x46) {
                     break;
                 }
-                m = func_0207762c();
+                m = func_0207762c(c);
                 MI_CpuCopy8(p, (int) func_020738bc(self, c), m);
                 p = p + m;
                 k = (u16) (k + m);

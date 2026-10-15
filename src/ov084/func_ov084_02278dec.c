@@ -17,8 +17,8 @@ typedef struct {
 extern char data_ov084_02279558;
 extern char data_ov084_02279568;
 
-extern void func_020984e8(void);
-extern void func_02099640(void);
+extern int func_020984e8(void);
+extern int func_02099640(int);
 extern int func_02099e9c(u16 *p);
 extern int func_0202ea80(int a, int b);
 extern int func_020a13d0(void);
@@ -38,8 +38,7 @@ void func_ov084_02278dec(char *self, UnkStruct_02278dec_2 *out)
     u16 a0, a1;
     void *q;
 
-    func_020984e8();
-    func_02099640();
+    func_02099640((int) func_020984e8());
     out->fn = &data_ov084_02279558;
 
     if (*(int *) (self + 0xb4) == -1) {

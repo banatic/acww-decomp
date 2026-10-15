@@ -4,7 +4,7 @@
 
 extern char data_020e3ae8;
 extern char data_020da13c;
-extern void func_020a256c(void *ptr);
+extern void *func_020a256c(void *ptr);
 extern void func_020ee62c(void *ptr);
 
 typedef struct UnkStruct_0209fb74 {

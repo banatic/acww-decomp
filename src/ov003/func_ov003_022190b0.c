@@ -10,14 +10,14 @@ typedef struct {
 } UnkStruct_022190b0;
 
 extern int func_02056f28(void *, int);
-extern void func_0200f328(void *, int);
+extern int func_0200f328(void *, int);
 extern int func_02056f94(void *);
 extern void func_ov003_022195ac(void *, int);
 extern unsigned int func_ov003_022195a8(void *);
 extern int func_02073908(int, int);
 extern void func_0209129c(int);
-extern void func_020109a0(void *, int, int, int);
-extern void func_0200c9a8(void *, int, int, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
+extern int func_0200c9a8(void *, int, int, int);
 extern int data_020ccf94;
 
 void func_ov003_022190b0(char *a)

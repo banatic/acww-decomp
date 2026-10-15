@@ -20,20 +20,19 @@ typedef struct UnkStruct_0229a63c_2 {
 } UnkStruct_0229a63c_2;
 
 extern UnkStruct_0229a63c_2 *data_020ccf94;
-extern void func_020984e8(void);
-extern int func_0209985c(void);
+extern int func_020984e8(void);
+extern int func_0209985c(int);
 extern int func_ov121_0229abac(UnkStruct_0229a63c *self, int k);
 extern u16 data_ov121_0229c2b8[];
 extern int func_020435fc(void *a, int b);
 extern void func_ov121_0229af7c(UnkStruct_0229a63c *self, int n, int z);
 extern void RtcSendPxiCommand(int cmd);
-extern void func_ov002_02208098(UnkStruct_0229a63c *self, int n);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229a63c *self, unsigned char value);
 
 void func_ov121_0229a63c(UnkStruct_0229a63c *self)
 {
     int k;
-    func_020984e8();
-    k = func_0209985c();
+    k = func_0209985c((int) func_020984e8());
     self->unk_A0 = (u16) (data_ov121_0229c2b8[k] + func_ov121_0229abac(self, self->unk_AE));
     self->unk_98 = func_020435fc(data_020ccf94->unk_64, self->unk_A0);
     if (self->unk_98 == -1) {

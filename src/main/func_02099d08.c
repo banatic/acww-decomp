@@ -9,7 +9,7 @@ extern void func_02063ccc(void *, void *, int);
 extern void func_020638d4(void *, void *, int, int, int, int, int);
 extern void func_02063cc8(void *);
 extern int func_02099df4(void *);
-extern int func_02099dcc(void *, void *, int, void *, void *);
+extern void func_02099dcc(void *, void *, int, void *, void *);
 extern void *data_020d19c4[];
 
 int func_02099d08(void *a1, void *a2, int a3, void *a4)

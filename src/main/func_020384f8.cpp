@@ -38,7 +38,7 @@ struct LocBuf {
 };
 
 extern "C" {
-extern void func_020b45d0(Loc *, void *, int, int, int, int);
+extern int func_020b45d0(Loc *, void *, int, int, int, int);
 extern unsigned int func_020a8f74(Loc *);
 extern UnkStruct_020384f8 *func_020a8fe8(void *, int, int);
 extern void func_02051694(UnkStruct_020384f8 *);

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02019c6c(void *p, int a, unsigned short b);
+extern int func_02019c6c(void *p, int a, unsigned short b);
 extern unsigned short data_020c80f8;
 
 struct UnkStruct_022618a8 {

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02010a24(int, int, int, int, int, int, int, int);
+extern void func_02010a24(void *self, int p1, int p2, unsigned char p3, int p4, unsigned short p5, unsigned short p6, int p7);
 
-int func_020109a0(int a, int b, int c, int d)
+void func_020109a0(void *a, int b, int c, unsigned short d)
 {
-    return func_02010a24(a, b, c, 1, 0x1000, 0, d, 0x137);
+    func_02010a24(a, b, c, 1, 0x1000, 0, d, 0x137);
 }

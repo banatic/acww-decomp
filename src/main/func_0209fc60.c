@@ -11,7 +11,7 @@ extern void MI_CpuFill8(void *, int, int);
 extern int func_02000b7c(void);
 extern void DGT_Hash1CalcHmac(void *, void *, int, int, int);
 extern int func_02064344(void *, void *, int);
-extern void func_0203f5a4(void *);
+extern int func_0203f5a4(void *);
 extern void func_0203f5dc(void *);
 
 void func_0209fc60(void)

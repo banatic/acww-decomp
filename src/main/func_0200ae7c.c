@@ -43,18 +43,18 @@ extern int func_0200fbe0(UnkStruct_0200ae7c *self);
 extern void func_0205eae0(void *p, int a, int b, int c);
 extern void func_0203ee14(UnkStruct_0200ae7c *self, void *b);
 extern void func_0203ee08(UnkStruct_0200ae7c *self, void *b);
-extern void func_0200f27c(UnkStruct_0200ae7c *self, int a);
+extern unsigned int *func_0200f27c(UnkStruct_0200ae7c *self, int a);
 extern void func_0200f268(UnkStruct_0200ae7c *self, int a);
 extern void func_020a8164(void *p, void *g);
 extern int func_0203e190(void);
-extern void func_0209a110(u16 *p);
+extern int func_0209a110(u16 *p);
 extern int func_0206f6d4(int a);
 extern int func_0206fbc0(void);
 extern int func_0206fc6c(void);
 extern int func_02043540(int a, int b);
-extern void func_0203e19c(void);
+extern int func_0203e19c(void);
 extern int func_02008258(UnkStruct_0200ae7c *self, int a);
-extern void func_0200d4e8(UnkStruct_0200ae7c *self, int a, int b, int c);
+extern int func_0200d4e8(UnkStruct_0200ae7c *self, int a, int b, int c);
 
 void func_0200ae7c(UnkStruct_0200ae7c *self, u8 *state, int cond)
 {

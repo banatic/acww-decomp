@@ -5,7 +5,7 @@
 extern int gt2GetIncomingBufferSize(void *);
 extern void func_0201ad18(void *, int, int, int, int, int, int, int);
 extern int func_0201c314(void *, int);
-extern void func_020147fc(void *, int, int, int);
+extern int func_020147fc(void *, int, int, int);
 extern int data_020c814c;
 
 struct UnkStruct_02278e44 {

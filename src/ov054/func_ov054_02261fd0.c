@@ -4,7 +4,7 @@
 
 extern int func_0201c0e0(void *);
 extern int func_0201c040(void *, int *, int *);
-extern int func_020a7278(int);
+extern int func_020a7278(void);
 extern void func_0201c054(void *, int, void *, int);
 extern void func_ov054_02262528(void *, int);
 
@@ -28,7 +28,7 @@ int func_ov054_02261fd0(void *self)
     if (a != 4) {
         goto ret;
     }
-    if (!func_020a7278(a)) {
+    if (!func_020a7278()) {
         goto ret;
     }
     func_0201c054(self, 1, data_020ccf94->unk_64, 4);

@@ -3,11 +3,11 @@
  */
 
 extern int data_0213ec0c;
-extern void func_020f4514(void);
+extern void *func_020f4514(void *unused0);
 
 void *func_020f3298(void *obj)
 {
     *(int **) obj = &data_0213ec0c;
-    func_020f4514();
+    func_020f4514(obj);
     return obj;
 }

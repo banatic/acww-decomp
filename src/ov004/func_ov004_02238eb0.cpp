@@ -9,8 +9,8 @@ struct UnkStruct_02238eb0 {
     ~UnkStruct_02238eb0() {}
 };
 extern "C" {
-extern void func_020e89dc(void *, int, int);
-extern void func_ov004_02239bb4(void *, int, int);
+extern int func_020e89dc(void *, int, int);
+extern int func_ov004_02239bb4(void *, int, int);
 }
 extern "C" void func_ov004_02238eb0(char *self)
 {

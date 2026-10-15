@@ -10,9 +10,9 @@ extern int func_020644cc(int);
 extern void *data_020ccf94;
 extern int func_02073d90(void *);
 extern int func_020b65c4(void);
-extern void func_0204f538(void *, unsigned short *, int, int, int);
+extern int func_0204f538(void *, unsigned short *, int, int, int);
 extern void func_0204f380(void *, int, int);
-extern void func_0204f31c(void *, int, int);
+extern int func_0204f31c(void *, int, int);
 extern void func_0205f9d4(int, int, int, unsigned short, int);
 inline Pair *inline_fn(Pair *arg0)
 {

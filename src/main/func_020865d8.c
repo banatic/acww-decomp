@@ -6,10 +6,10 @@ extern void func_0209df64(void *);
 extern int func_0203fdc4(int);
 extern int func_0209dcdc(void *, void *);
 extern void *func_02098844(void *, int);
-extern int func_02099a28(void);
-extern void func_02099670(void *);
-extern void func_02088ac0(void);
-extern void func_02088aa0(void);
+extern int func_02099a28(unsigned int);
+extern int func_02099670(void *);
+extern void func_02088ac0(unsigned char *);
+extern void func_02088aa0(void *);
 extern void func_02098fd0(void *, int);
 extern void func_0209f100(void *, int);
 extern void func_0208683c(void *);
@@ -74,14 +74,12 @@ FAIL:
             i = 0;
             do {
                 void *p = func_02098844((void *) data_021dc7bc, i);
-                if (p != 0 && func_02099a28() != 0) {
+                if (p != 0 && func_02099a28((unsigned int) p) != 0) {
                     if (selector == 2) {
-                        func_02099670(p);
-                        func_02088ac0();
+                        func_02088ac0((unsigned char *) func_02099670(p));
                         func_02098fd0(p, 0xf);
                     } else {
-                        func_02099670(p);
-                        func_02088aa0();
+                        func_02088aa0((void *) func_02099670(p));
                     }
                 }
                 i++;

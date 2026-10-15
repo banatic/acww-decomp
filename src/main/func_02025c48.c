@@ -34,7 +34,7 @@ extern u32 data_020d9dd4[];
 extern int func_0209b914(int);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(struct UnkStruct_02025c48_2 *, u8 *, u8 *, int, int, u32, u8, int, int);
+extern int func_0202da38(struct UnkStruct_02025c48_2 *, u8 *, u8 *, int, int, int offset, int scale, int, int);
 
 void func_02025c48(struct UnkStruct_02025c48_2 *a, struct UnkStruct_02025c48_3 *out)
 {

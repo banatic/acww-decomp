@@ -3,10 +3,12 @@
  */
 
 extern unsigned int data_020e1858;
+extern void func_020781bc(void *object);
+extern void *func_02077f14(int index, int value);
 
-void func_02078194(void)
+void func_02078194(void *object)
 {
-    func_020781bc();
+    func_020781bc(object);
     func_02077f14(0, data_020e1858);
     func_02077f14(1, data_020e1858);
 }

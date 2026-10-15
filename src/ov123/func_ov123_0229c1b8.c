@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0229c1b8;
 
 extern int func_ov002_02207f48(UnkStruct_0229c1b8 *self, int a);
-extern void func_ov002_022080a0(UnkStruct_0229c1b8 *self, int a);
+extern unsigned char *func_ov002_022080a0(UnkStruct_0229c1b8 *self, unsigned char value);
 extern void func_ov123_0229b600(UnkStruct_0229c1b8 *self);
 extern int func_ov123_02299650(UnkStruct_0229c1b8 *self, int a);
 extern void func_ov123_02299684(UnkStruct_0229c1b8 *self);

@@ -9,7 +9,7 @@ typedef struct {
     int x, y, z;
 } UnkStruct_02220e20_2;
 
-extern void func_ov003_022213f8(int *data, int a1, int *pair, int *dest, int a5, int a6, int a7, int a8);
+extern int func_ov003_022213f8(int *data, int a1, int *pair, int *dest, int a5, int a6, int a7, int a8);
 extern int data_ov003_0223cfe4[];
 
 void func_ov003_02220e20(int a0, int id, UnkStruct_02220e20 *p2, UnkStruct_02220e20_2 *p3)

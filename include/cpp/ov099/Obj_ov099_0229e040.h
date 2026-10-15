@@ -20,6 +20,7 @@ class Obj_ov099_0229e040 : public Obj_ov002_0220bb24 {
     void func_ov099_0229d49c();
     void func_ov099_0229d44c();
     void func_ov099_0229d400();
+
     void func_ov099_0229d3e0();
     void func_ov099_0229d3b8();
     void func_ov099_0229d388();

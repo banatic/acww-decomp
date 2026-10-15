@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_0222c2bc(void *p);
-extern void func_ov004_0223b39c(int a, int b, void *p);
+extern int func_ov004_0222c2bc(void);
+extern int func_ov004_0223b39c(int a, int b);
 extern void *func_020960f8(int size, int align);
 extern void func_02068434(void *p);
 extern void func_0206844c(void *p, char *c, void *q);
@@ -26,9 +26,9 @@ typedef struct {
 void func_ov049_02260c94(UnkStruct_02260c94_2 *arg)
 {
     char c;
-    if (func_ov004_0222c2bc(arg) != 0) {
+    if (func_ov004_0222c2bc() != 0) {
         UnkStruct_02260c94 *sub = arg->sub;
-        func_ov004_0223b39c(sub->a, sub->b, sub);
+        func_ov004_0223b39c(sub->a, sub->b);
     }
     if (func_020960f8(16, 4) != 0) {
         void *p = arg->p;

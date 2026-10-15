@@ -12,7 +12,7 @@ typedef struct UnkStruct_020c2f60 {
 
 extern int func_0201ae40(u8 *p);
 extern int func_0201aff8(u8 *p, u8 *q, int n);
-extern void func_02019d0c(u8 *p, int a, int b, int c, int d, int e, int g, int h, int i, int j, int k);
+extern int func_02019d0c(u8 *p, int a, int b, int c, int d, int e, int g, int h, int i, int j, int k);
 extern int func_020c3060(u8 *p, UnkStruct_020c2f60 *s, void *t);
 extern void func_0201afd4(u8 *p, UnkStruct_020c2f60 *s);
 extern int func_0201afc0(u8 *p);

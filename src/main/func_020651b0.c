@@ -12,7 +12,7 @@ typedef union {
     u16 raw;
 } Pair;
 
-extern unsigned int func_0209def4(u16 *);
+extern void func_0209def4(u16 *);
 extern void func_0209ddd4(Pair p1, Pair p2, Pair *out);
 
 short func_020651b0(void *param)

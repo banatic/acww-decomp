@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02050d6c(void *);
+extern void *func_02050d6c(void *, unsigned int, unsigned int, unsigned int);
 extern char data_020e3dac;
 
 struct UnkStruct_020a8f50 {
@@ -12,9 +12,9 @@ struct UnkStruct_020a8f50 {
     unsigned int unk_80; // offset 0x80
 };
 
-struct UnkStruct_020a8f50 *func_020a8f50(struct UnkStruct_020a8f50 *this)
+struct UnkStruct_020a8f50 *func_020a8f50(struct UnkStruct_020a8f50 *this, unsigned int a1, unsigned int a2, unsigned int a3)
 {
-    func_02050d6c(this);
+    func_02050d6c(this, a1, a2, a3);
     this->unk_00 = &data_020e3dac;
     this->unk_7C = 0;
     this->unk_80 = 0;

@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02099728(void);
+extern int func_02099728(unsigned int);
 
-int func_0207e738(void)
+int func_0207e738(unsigned int object)
 {
     int r3;
     int r2;
     unsigned short r1;
     int r0;
 
-    r0 = func_02099728();
+    r0 = func_02099728(object);
     r3 = 1;
     r2 = 0;
     r1 = *(unsigned short *) r0;

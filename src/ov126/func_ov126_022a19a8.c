@@ -4,15 +4,15 @@
 
 struct Obj_ov126_022a20c8;
 extern int func_ov002_02207f48(struct Obj_ov126_022a20c8 *, int);
-extern void func_ov002_022080a0(struct Obj_ov126_022a20c8 *, int);
-extern void func_ov126_022a0be0(struct Obj_ov126_022a20c8 *);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
+extern int func_ov126_022a0be0(struct Obj_ov126_022a20c8 *);
 extern void func_ov126_022a0934(struct Obj_ov126_022a20c8 *);
 extern void func_ov126_022a16ac(struct Obj_ov126_022a20c8 *);
 
 void func_ov126_022a19a8(struct Obj_ov126_022a20c8 *obj)
 {
     if (func_ov002_02207f48(obj, 0) != 0) {
-        func_ov002_022080a0(obj, 2);
+        func_ov002_022080a0((void *) (obj), 2);
         func_ov126_022a0be0(obj);
         func_ov126_022a0934(obj);
     }

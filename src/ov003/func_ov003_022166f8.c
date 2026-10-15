@@ -7,7 +7,7 @@ struct UnkStruct_022166f8 {
     int unk_98;
 };
 extern void func_ov003_02216948(struct UnkStruct_022166f8 *self);
-extern void func_0201100c(struct UnkStruct_022166f8 *self);
+extern int func_0201100c(struct UnkStruct_022166f8 *self);
 extern void func_02010d64(struct UnkStruct_022166f8 *self);
 extern int func_02011398(int a, int b);
 extern void func_0201107c(struct UnkStruct_022166f8 *self, int *out);

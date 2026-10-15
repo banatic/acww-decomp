@@ -3,7 +3,7 @@
  */
 
 extern int func_02001910(const void *p, int len);
-extern void func_020b97b4(void *buf, void *param0, void *global, unsigned int word);
+extern void func_020b97b4(unsigned short *header, short *buffer, const char *format, ...);
 extern unsigned char data_020d34d8;
 
 void func_020018b4(void *param0, void *param1, unsigned int size)
@@ -28,7 +28,7 @@ void func_020018b4(void *param0, void *param1, unsigned int size)
             break;
         }
         tmp[1] = val;
-        func_020b97b4(tmp, param0, &data_020d34d8, *((unsigned int *) p));
+        func_020b97b4(tmp, param0, (const char *) &data_020d34d8, *((unsigned int *) p));
         param0 = ((char *) param0) + 0x10;
         val = (unsigned short) (val ^ 0x3000);
         p += 4;

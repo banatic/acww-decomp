@@ -3,9 +3,9 @@
  */
 
 extern char data_ov049_02263544;
-extern void func_02072da4(void *);
-extern void func_ov049_022620d0(void *);
-extern void func_0202ee5c(void *);
+extern void *func_02072da4(void *);
+extern void *func_ov049_022620d0(void *);
+extern void *func_0202ee5c(void *);
 extern void func_020edf54(void *);
 
 void *func_ov049_02260454(void *obj)

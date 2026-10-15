@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02010718(void);
+extern int func_02010718(char *);
 extern int func_020b67d4(void);
 extern unsigned char *func_0209626c(void);
-extern void func_02008dc0(unsigned char *, short, int, int);
+extern int func_02008dc0(unsigned char *, short, int, int);
 extern int func_0200d1a0(unsigned char *, unsigned char, int, int);
 extern int func_02010538(unsigned char *);
 extern int func_0200f748(unsigned char *);
-extern void func_020912d4(int, unsigned char *, short *, int);
+extern int func_020912d4(int, unsigned char *, short *, int);
 extern unsigned char data_021c75b8;
 extern unsigned char data_ov004_02259a08;
 
@@ -18,7 +18,7 @@ void func_0200d2bc(unsigned char *self)
     int r4;
     int r6;
 
-    r6 = func_02010718();
+    r6 = func_02010718((char *) self);
     r4 = 0;
 
     if (func_020b67d4() != 0) {

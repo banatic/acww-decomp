@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02019af0(int a, int b);
+extern void func_02019af0(void *p, unsigned long value);
 
-int func_020198b0(int a)
+void func_020198b0(void *self, void *event)
 {
-    return func_02019af0(a, 1);
+    func_02019af0(self, 1);
 }

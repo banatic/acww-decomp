@@ -4,9 +4,9 @@
 
 extern unsigned char data_020d2270[];
 
-extern void func_020a8228(void *);
-extern void func_020a8210(void *);
-extern void func_020b4980(unsigned char *, unsigned char *, int);
+extern void *func_020a8228(void *);
+extern void *func_020a8210(void *);
+extern int func_020b4980(unsigned char *, unsigned char *, int);
 extern void func_0208aa48(void *, unsigned char *);
 extern void func_0208a9e4(void *, int);
 extern void func_020b8fe0(void *);

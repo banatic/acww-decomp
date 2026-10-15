@@ -16,7 +16,7 @@ extern int func_ov002_02208ae4(void *);
 extern int func_ov002_02208ad8(void *, unsigned char);
 extern void func_ov002_0220a0b4(void *, int, int);
 extern void func_0208e4c0(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 
 void func_ov105_0229ce54(UnkStruct_0229ce54 *this)
 {

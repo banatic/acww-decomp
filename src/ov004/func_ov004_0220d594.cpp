@@ -11,12 +11,12 @@ struct UnkStruct_0220d594 {
     ~UnkStruct_0220d594() {}
 };
 
-extern "C" void func_ov004_0220db94(void *list);
+extern "C" char *func_ov004_0220db94(void *list);
 extern "C" void func_ov004_0220f27c(void *arg, void *list, int a, int b);
 extern "C" int func_ov004_0220d6b8(void *self, void *arg);
 extern "C" void func_ov004_0220d800(void *self);
 extern "C" void func_ov004_0220fc98(void *arg, int a, int b);
-extern "C" void MTX_Inverse43(void *a, void *b);
+extern "C" int MTX_Inverse43(void *a, void *b);
 extern "C" int *func_ov004_0220db5c(void *list, unsigned int i);
 extern "C" unsigned int func_ov004_0220db68(void *list);
 extern "C" void func_ov004_0220db90(void *list);

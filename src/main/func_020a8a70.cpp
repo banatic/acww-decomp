@@ -6,7 +6,7 @@ extern "C" {
 extern int func_020a798c(char *, unsigned short);
 extern const char *func_02050c20(void);
 extern const char *func_02050c28(void);
-extern void strcpy(char *, const char *);
+extern unsigned char *strcpy(char *, const char *);
 extern int strlen(const char *);
 extern void func_020a9b1c(void *, void *);
 }

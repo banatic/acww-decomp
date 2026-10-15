@@ -4,7 +4,7 @@
 
 extern int data_021fbf48;
 
-void func_020ed17c(int arg)
+void func_020ed17c(int arg, void *user_data)
 {
     if (arg == 0) {
         data_021fbf48 = 1;

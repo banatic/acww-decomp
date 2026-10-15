@@ -8,8 +8,8 @@ struct UnkStruct_020b2fc4 {
 
 extern struct UnkStruct_020b2fc4 *func_020b3038(int *a, int *b);
 extern void *func_0204e414(void);
-extern void func_0204e3f4(void *p, int a, int b, int c);
-extern void func_0204e404(void *p, unsigned short *s, int a, int b);
+extern int func_0204e3f4(void *p, int a, int b, int c);
+extern int func_0204e404(void *p, unsigned short *s, int a, int b);
 
 void func_020b2fc4(int param)
 {

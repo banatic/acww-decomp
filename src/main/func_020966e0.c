@@ -4,9 +4,9 @@
 
 extern unsigned int data_020ccf94;
 extern unsigned int data_020d1874[];
-extern void func_020738bc(unsigned int, unsigned int);
+extern int func_020738bc(unsigned int, unsigned int);
 
-void func_020966e0(int param)
+int func_020966e0(int param)
 {
-    func_020738bc(data_020ccf94, data_020d1874[param]);
+    return func_020738bc(data_020ccf94, data_020d1874[param]);
 }

@@ -3,22 +3,24 @@
  */
 
 extern char data_ov102_0229ea60;
-extern void func_02070be8(void);
-extern void __cxa_vec_cleanup(void *ptr, int a, int b, void (*cb)(void));
-extern void func_ov002_0220ba0c(void *ptr);
-extern void func_ov002_02209cb4(void *ptr);
+extern int **func_02070be8(void *element);
+extern void __cxa_vec_cleanup(void *ptr, int a, int b, void (*callback3)(void *));
+extern void *func_ov002_0220ba0c(void *ptr);
+extern void *func_ov002_02209cb4(void *ptr);
 extern void func_ov002_02209e38(void *ptr);
-extern void func_ov002_02207e28(void *ptr);
-extern void func_ov094_0229a2d0(void *ptr);
+extern void *func_ov002_02207e28(void *ptr);
+extern void *func_ov094_0229a2d0(void *ptr);
 extern void func_ov094_0229bc30(void *ptr);
-extern void func_ov094_0229afe0(void *ptr);
-extern void func_ov002_0220826c(void *ptr);
+extern void *func_ov094_0229afe0(void *ptr);
+extern void *func_ov002_0220826c(void *ptr);
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
 
 void *func_ov102_0229c180(void *self)
 {
     *(void **) self = &data_ov102_0229ea60;
 
-    __cxa_vec_cleanup((char *) self + 0x23f4, 2, 0x6c, &func_02070be8);
+    __cxa_vec_cleanup((char *) self + 0x23f4, 2, 0x6c, DisposeElement_func_02070be8);
     func_ov002_0220ba0c((char *) self + 0x22d8);
     func_ov002_02209cb4((char *) self + 0x2274);
     func_ov002_02209e38((char *) self + 0x225c);
@@ -30,3 +32,5 @@ void *func_ov102_0229c180(void *self)
 
     return self;
 }
+
+#undef DisposeElement_func_02070be8

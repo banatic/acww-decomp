@@ -11,8 +11,8 @@ typedef void (Actor::*Method)();
 extern "C" {
 extern Method data_ov004_0225949c[];
 extern void func_ov004_022355f4(void *);
-extern int func_02056f28(void *, u16), func_ov004_02239820(void *, int), func_ov004_02239460(int, int),
-    func_ov004_02236418(void *);
+extern void func_ov004_02239820(void *, int);
+extern int func_02056f28(void *, u16), func_ov004_02239460(int, int), func_ov004_02236418(void *);
 extern void func_ov004_02239700(void *), func_ov004_02239524(void *, int), func_ov004_0223592c(void *),
     func_ov004_022358c0(void *, int), func_ov004_02235870(void *), func_ov004_02235c54(void *), func_ov004_02235ddc(void *);
 void func_ov004_02237d28(u8 *self)

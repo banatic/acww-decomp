@@ -8,7 +8,7 @@ extern u8 data_020e2218[];
 
 extern void func_0208af30(void *p);
 extern void func_0208a1f8(void *p);
-extern void func_0208e024(void *p);
+extern void *func_0208e024(void *p);
 
 struct UnkStruct_0208d338 {
     void *unk_00;

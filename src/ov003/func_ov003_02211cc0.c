@@ -9,10 +9,10 @@ typedef struct {
 } Vec3;
 
 extern void *func_ov003_02211d3c(void *r0, unsigned char r1, Vec3 *r2);
-extern void func_020109a0(void *p, u32 a, u32 b, u32 c);
-extern void func_0200f27c(void *p, u32 msg);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
+extern unsigned int *func_0200f27c(void *p, u32 msg);
 
-void func_ov003_02211cc0(void *self, void *src)
+void func_ov003_02211cc0(void *self, void *src, int previous)
 {
     u8 *q;
     u8 b;

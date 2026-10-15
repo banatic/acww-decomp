@@ -4,7 +4,7 @@
 
 extern unsigned short data_021fbe40;
 
-extern void func_ov002_02208098(void *obj, int arg);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char value);
 extern int func_ov002_02208008(void *obj);
 extern int func_ov112_0229f56c(void *obj, int arg);
 extern void func_ov112_0229fd20(void *obj);

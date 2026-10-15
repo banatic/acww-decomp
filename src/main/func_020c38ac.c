@@ -3,7 +3,7 @@
  */
 
 extern int func_020b65c4(void);
-extern int func_0202eb88(int param1);
+extern int func_0202eb88(void);
 extern int data_020c8120;
 
 int func_020c38ac(int param1)
@@ -12,7 +12,8 @@ int func_020c38ac(int param1)
     int temp;
 
     if (func_020b65c4() != 0) {
-        result = func_0202eb88(param1);
+        asm { add r0, param1, #0 }
+        result = func_0202eb88();
     } else {
         result = data_020c8120;
     }

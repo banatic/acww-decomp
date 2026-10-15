@@ -11,8 +11,8 @@ typedef struct {
 } UnkStruct_0229e748;
 
 extern int func_ov115_0229ddb8(void *, int);
-extern int func_ov114_0229d52c(void *, u32);
-extern int func_0206fe54(int);
+extern void func_ov114_0229d52c(void *, u32);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *);
 extern void func_ov114_0229d5b8(void *, u32);
 extern void func_ov114_0229cbe4(void *, u32);
@@ -24,7 +24,7 @@ int func_ov115_0229e748(UnkStruct_0229e748 *self)
         return 1;
     }
 
-    if (func_0206fe54(func_ov114_0229d52c(self->sub, self->unk_1424)) != 0) {
+    if (((void) (func_ov114_0229d52c(self->sub, self->unk_1424)), func_0206fe54()) != 0) {
         func_ov002_02209eb8((char *) self + 0x94);
     }
 

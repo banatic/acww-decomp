@@ -27,15 +27,15 @@ typedef struct {
 } UnkStruct_02278b78;
 
 extern char data_ov076_022796e0;
-extern void func_ov076_02278f0c(void);
+extern int func_ov076_02278f0c(unsigned short *argument0, int argument1);
 extern void func_ov076_02278f5c(UnkStruct_02278b78 *, int);
 
 extern int func_020644cc(int);
-extern void func_020157d4(UnkStruct_02278b78 *, void (*)(void), int, int);
-extern void func_02015828(UnkStruct_02278b78 *, int);
-extern void func_020154b4(UnkStruct_02278b78 *, u16 *, int, int, int);
-extern void func_0209a000(u16 *, int);
-extern void func_0202ea80(int, int);
+extern void func_020157d4(void *self, int (*predicate)(unsigned short *, int), unsigned char kind, unsigned char flag);
+extern int func_02015828(UnkStruct_02278b78 *, int);
+extern int func_020154b4(UnkStruct_02278b78 *, u16 *, int, int, int);
+extern int func_0209a000(u16 *, int);
+extern int func_0202ea80(int, int);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
 extern int func_02099fe8(void);

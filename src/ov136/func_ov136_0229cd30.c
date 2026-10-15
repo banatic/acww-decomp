@@ -5,8 +5,8 @@
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021f6c54;
 extern void func_ov134_02299b18(char *, unsigned char);
-extern void func_ov134_02299a84(char *);
-extern void func_ov002_02208098(char *, int);
+extern int func_ov134_02299a84(char *);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov136_0229cd30(char *p)
 {
@@ -14,6 +14,6 @@ void func_ov136_0229cd30(char *p)
         func_ov134_02299b18(p + 0x2c4, data_021f6c54);
     } else {
         func_ov134_02299a84(p + 0x2c4);
-        func_ov002_02208098(p, 3);
+        func_ov002_02208098((void *) (p), 3);
     }
 }

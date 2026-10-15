@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209bc94(unsigned char byte);
+extern int func_0209bc94(unsigned char byte);
 
 struct Struct0209bc88 {
     unsigned char data[0xa];
     unsigned char byte;
 };
 
-void func_0209bc88(struct Struct0209bc88 *self)
+int func_0209bc88(struct Struct0209bc88 *self)
 {
-    func_0209bc94(self->byte);
+    return func_0209bc94(self->byte);
 }

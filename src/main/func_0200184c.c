@@ -7,7 +7,7 @@ extern void *data_0213fde0;
 extern void *data_0213fdd8;
 extern char data_020d34cc[];
 
-extern void func_020b97b4(void *a, void *b, void *c, void *d);
+extern void func_020b97b4(unsigned short *header, short *buffer, const char *format, ...);
 extern int func_02001910(void *a, int b);
 extern void func_020018b4(void *a, void *b, int c);
 
@@ -27,7 +27,7 @@ void func_0200184c(void)
         p5 = data_0213fdd8;
     }
 
-    func_020b97b4(buf, (char *) p4 + 0x40, data_020d34cc, p5);
+    func_020b97b4(buf, (short *) ((char *) p4 + 0x40), data_020d34cc, p5);
     if (func_02001910(p5, 4)) {
         p4 = (char *) p4 + 0x80;
         func_020018b4(p4, p5, 0x160);

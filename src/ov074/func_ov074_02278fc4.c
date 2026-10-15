@@ -3,7 +3,7 @@
  */
 
 extern char data_ov074_02279bd8[];
-extern void func_0202eb20(void *self, void *arg);
+extern void *func_0202eb20(void *self);
 extern void func_020edb3c(void *self);
 
 void *func_ov074_02278fc4(void *self)
@@ -12,7 +12,7 @@ void *func_ov074_02278fc4(void *self)
         void *field;
     } *obj = self;
     obj->field = data_ov074_02279bd8;
-    func_0202eb20(self, data_ov074_02279bd8);
+    func_0202eb20(self);
     func_020edb3c(self);
     return self;
 }

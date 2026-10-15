@@ -17,7 +17,7 @@ extern int func_0206fe54(void);
 extern void func_0208aa60(void *a, int b, int c);
 extern int func_ov108_0229cd70(struct UnkStruct_0229ca2c *p, unsigned char b);
 extern int func_ov108_0229cd5c(struct UnkStruct_0229ca2c *p, unsigned char b);
-extern void func_ov094_0229b9b4(void *a, void *b, int c);
+extern int func_ov094_0229b9b4(void *a, void *b, int c);
 
 void func_ov108_0229ca2c(struct UnkStruct_0229ca2c *p)
 {

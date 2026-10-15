@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02010f5c(void);
+extern void func_02010f5c(int argument0);
 extern int func_020912d4(int, void *, int, int);
-extern int func_02091278(int, void *, int, int);
+extern void func_02091278(int, void *, int, int);
 
 void func_ov003_0220f128(char *s)
 {
     int *pid;
-    func_02010f5c();
+    func_02010f5c((int) s);
     pid = (int *) (s + 0x7d4);
     if (*pid == -1) {
         *pid = func_020912d4(0x34, s + 0x6e0, 0, 0);

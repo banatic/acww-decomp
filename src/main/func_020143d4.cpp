@@ -52,7 +52,7 @@ extern "C" void func_0201a7cc(void *p);
 extern "C" int func_020160d4(unsigned int);
 extern "C" int func_02019e00(unsigned char *);
 extern "C" int func_02019de8(unsigned char *);
-extern "C" void func_02016024(void *, int, int);
+extern "C" int func_02016024(void *, int, int);
 extern "C" void func_0201462c(unsigned char *, unsigned char *);
 extern "C" void func_02016110(void *);
 extern "C" void func_0201481c(void *, void *);

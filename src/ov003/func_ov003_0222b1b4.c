@@ -52,7 +52,7 @@ extern int func_ov003_0222799c(UnkStruct_0222b1b4 *p, UnkStruct_0222b1b4 *t, int
 extern int func_ov003_0222793c(int a, int b);
 extern void func_0206026c(UnkStruct_0222b1b4_2 *h, int a);
 extern void func_02060480(UnkStruct_0222b1b4_2 *h);
-extern void func_020044c0(UnkStruct_0222b1b4_4 *self, int a, int b, int c);
+extern int func_020044c0(UnkStruct_0222b1b4_4 *self, int a, int b, int c);
 extern int func_02043368(int a, Pair *p, int c);
 extern long long func_020ea940(UnkStruct_0222b1b4 *a, UnkStruct_0222b1b4 *b);
 extern int FX_MulFunc(int a, int b);

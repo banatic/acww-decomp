@@ -2,14 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209a6ec(void);
-extern int func_020951bc(void);
+extern int func_0209a6ec(void *);
+extern int func_020951bc(void *object);
 
-int func_0209a67c(void)
+int func_0209a67c(void *argument0)
 {
+    int forwarded_value;
+
     int result;
 
-    if (func_0209a6ec() != 0 && func_020951bc() != 0) {
+    if ((forwarded_value = (int) func_0209a6ec((void *) argument0)) != 0 && func_020951bc((void *) forwarded_value) != 0) {
         result = 1;
     } else {
         result = 0;

@@ -8,7 +8,7 @@ struct UnkStruct_0201d3ec {
 };
 extern struct UnkStruct_0201d3ec data_020d8e60;
 extern void func_020157c8(void *, int, int);
-extern void func_02015828(void *, int);
+extern int func_02015828(void *, int);
 extern void func_0202dbf0(void *, struct UnkStruct_0201d3ec);
 
 int func_0201d3ec(void *param)

@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_0220a4c8(void *);
+extern void func_ov002_0220a4c8(void);
 extern void func_ov114_0229d4c0(void *);
 
 void func_ov114_0229d244(void *self)
@@ -42,7 +42,11 @@ void func_ov114_0229d244(void *self)
     }
 
     if (*(int *) ((char *) self + 0x1270) != original) {
-        func_ov002_0220a4c8((char *) self + 0x121c);
+        asm {
+            ldr r0, =0x121c
+            add r0, self, r0
+        }
+        func_ov002_0220a4c8();
     }
 
     func_ov114_0229d4c0(self);

@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov114_0229c628(char *p, int a, int b);
-int func_ov115_0229ded0(char *p, int a, int b)
+extern int func_ov114_0229c628(char *p);
+int func_ov115_0229ded0(char *p)
 {
-    return func_ov114_0229c628(p + 0xf8, a, b);
+    return func_ov114_0229c628(p + 0xf8);
 }

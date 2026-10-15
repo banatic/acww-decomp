@@ -41,10 +41,10 @@ extern "C" {
 void *func_ov004_0220fde0(void *self);
 int func_0204bc50(void *p, int a);
 void func_02061e2c(u16 *a, u16 *b);
-void func_ov004_0220ffa4(void *self);
-void *func_0209d324(void);
+int func_ov004_0220ffa4(void *self);
+void *func_0209d324(int *);
 int func_020e9948(void *a, int n);
-void func_0203d064(int a, u16 *b, int c);
+int func_0203d064(int a, u16 *b, int c);
 int func_ov004_0220d2b8(void *p);
 }
 
@@ -64,8 +64,7 @@ extern "C" int func_ov004_02213fb8(UnkStruct_02213fb8 *selfp)
     }
     if (m != 0) {
         func_02061e2c((u16 *) &vv[1], (u16 *) &vv[0]);
-        func_ov004_0220ffa4(self);
-        *(int *) (self + 0x844) = func_020e9948(func_0209d324(), 0x2c4);
+        *(int *) (self + 0x844) = func_020e9948(func_0209d324((int *) func_ov004_0220ffa4(self)), 0x2c4);
         func_0203d064(*(int *) (self + 0x844), (u16 *) &vv[1], 0);
         if (func_ov004_0220d2b8(self + 0x740) != 0) {
             selfp->v28(0, 0xff);

@@ -10,8 +10,8 @@ struct Func020f2f1c {
     char sub[1];
 };
 
-extern void func_020f95f8(void *);
-extern void func_020f4514(void *);
+extern void *func_020f95f8(void *);
+extern void *func_020f4514(void *);
 extern void func_020edb3c(void *);
 
 struct Func020f2f1c *func_020f2f1c(struct Func020f2f1c *self)

@@ -7,14 +7,14 @@ extern int func_0201c0e0(void *);
 extern int func_0201c040(void *, int *, int *);
 extern void func_0201c054(void *, int, unsigned int, unsigned int);
 extern int func_0201c2a4(void *, int);
-extern int func_02016108(void *, int);
+extern void func_02016108(void *, int);
 extern int func_0204bcdc(void *);
 extern int func_0204bc64(void *);
 extern int func_020a7278(void);
 extern int func_ov050_02260510(void *);
 extern void func_ov050_02263640(void *, int);
 extern void func_ov050_02264834(void *, int);
-extern void func_ov050_02260718(void *);
+extern int func_ov050_02260718(void *);
 }
 
 struct UnkStruct_02263e78 {

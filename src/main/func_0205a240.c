@@ -11,12 +11,12 @@ extern char data_021e5a2c[];
 extern char data_021c9704[];
 
 extern int func_0207ce98(char *g, void *d);
-extern void func_0200366c(void *d, char *g, int n, void *a);
+extern int func_0200366c(void *d, char *g, int n, void *a);
 extern int func_020036e8(void *d);
 extern int func_0209765c(int v);
 extern void func_02066694(void *o);
 extern void func_020662bc(void *o, UnkStruct_0205a240 *s, char *g, unsigned char *p, void *d, void *c, int one);
-extern void func_02065ed0(void *o, unsigned short v, int k);
+extern unsigned short func_02065ed0(void *o, unsigned short v, int k);
 extern int func_02097a54(void *o);
 extern void func_02066688(void *o);
 extern int func_020979f0(void *o, int k);

@@ -4,14 +4,14 @@
 
 #include "types.h"
 
-extern int func_ov002_02208014(char *self);
-extern void func_ov133_0229bbf0(char *self);
+extern int func_ov002_02208014(void);
+extern int func_ov133_0229bbf0(char *self);
 extern void *func_ov002_02208008(char *self);
 extern int func_ov133_0229b790(char *self, void *pad);
 extern void func_ov133_0229b9a8(char *self);
 extern void func_ov133_0229b978(char *self);
 extern int func_ov133_0229b1e8(char *self, int v);
-extern void func_ov002_02208098(char *self, int v);
+extern unsigned char *func_ov002_02208098(char *self, unsigned char value);
 extern int func_ov133_0229ba84(char *self);
 extern int func_ov133_0229ba34(char *self);
 extern void func_ov002_0220a0b4(char *p, int a, int b);
@@ -27,7 +27,7 @@ void func_ov133_0229be4c(char *self)
     int a;
     int b;
 
-    if (func_ov002_02208014(self)) {
+    if (func_ov002_02208014()) {
         func_ov133_0229bbf0(self);
         return;
     }

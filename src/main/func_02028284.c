@@ -33,7 +33,7 @@ extern int func_0209bc40(int x);
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
 extern int func_0209bb88(int x);
-extern void func_0202da38(UnkStruct_02028284_3 *a0, void *a1, void *a2, int a3, int a4, int a5, int a6, int a7, int a8);
+extern int func_0202da38(UnkStruct_02028284_3 *a0, void *a1, void *a2, int a3, int a4, int a5, int a6, int a7, int a8);
 extern int func_0209b4cc(u32 x, int y);
 extern void func_02015e10(UnkStruct_02028284_3 *self, int r, int idx);
 extern int func_0209bb70(int x);

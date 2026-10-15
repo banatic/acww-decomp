@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02029e78(int a, int b);
+extern int func_02029e78(int a);
 
-int func_02029e5c(int a, int b)
+int func_02029e5c(unsigned short *a, int b)
 {
-    if (func_02029e78(a, b) != 0 && b == 0) {
+    if (func_02029e78((int) a) != 0 && b == 0) {
         return 1;
     } else {
         return 0;

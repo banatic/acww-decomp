@@ -8,7 +8,7 @@ extern void func_ov096_0229f874(void *, int, int, int);
 extern void func_ov096_0229e82c(void *, int);
 extern int func_ov096_0229da6c(void *, int);
 extern void func_ov096_0229e6a0(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov096_0229c2dc(void *, int);
 
 int func_ov096_0229e71c(void *param)
@@ -32,7 +32,7 @@ int func_ov096_0229e71c(void *param)
             func_ov096_0229e6a0(param);
             return 1;
         } else if (ret == 2) {
-            func_ov002_02208098(param, 0x28);
+            func_ov002_02208098((void *) (param), 0x28);
             func_ov096_0229c2dc(param, 0x1000);
             return 0;
         } else {

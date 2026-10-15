@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov130_0229a678(int);
-extern void func_02064af4(const void *src, void *dst, unsigned int size);
+extern int func_ov130_0229a678(int);
+extern int func_02064af4(const void *src, void *dst, unsigned int size);
 extern void func_0206fdd4(void *addr, int a1, int a2, int a3, int a4, int a5);
-extern void func_02002b40(void *addr, int a1, unsigned int size, int a3);
+extern int func_02002b40(void *addr, int a1, unsigned int size, int a3);
 extern void *func_ov132_0229ad88(void *ctx);
-extern void func_0207094c(void *obj, int id);
+extern int func_0207094c(void *obj, int id);
 extern void func_02070adc(void *obj, int a1, unsigned int a2, int a3, int a4, int a5, int a6);
 extern void func_02070a04(void *obj, int a1, int a2);
 extern const unsigned char data_ov132_0229b9f0[];

@@ -3,7 +3,7 @@
  */
 
 extern unsigned int data_020da530;
-extern void func_020a8c38(void *);
+extern void *func_020a8c38(void *);
 
 void *func_02038d18(void *ptr)
 {

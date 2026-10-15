@@ -28,9 +28,9 @@ typedef struct {
 extern Global data_020c8d18;
 extern int data_021e5a2c[1];
 
-extern int func_020036e8(void);
+extern int func_020036e8(unsigned char *);
 extern int func_0208150c(int);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 extern int func_0207cec0(int *arr, int idx);
 extern void func_02015e10(UnkStruct_0201dda8 *self, int x, int y);
 
@@ -39,8 +39,7 @@ void func_0201dda8(UnkStruct_0201dda8 *self, UnkStruct_0201dda8_2 *out)
     int i;
     int result1, result2;
 
-    func_0208150c(*(int *) ((char *) self->unk_100 + 0x830));
-    result1 = func_020036e8();
+    result1 = func_020036e8((unsigned char *) func_0208150c(*(int *) ((char *) self->unk_100 + 0x830)));
     result2 = data_020c8d18.unk_00;
 
     func_0202da38(self, &self->arr104, &self->unk_122, 0x1e, result1, result2, 1, 6, data_020c8d18.unk_04);

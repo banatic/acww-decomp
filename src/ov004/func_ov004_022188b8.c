@@ -19,7 +19,9 @@ typedef struct {
 extern void func_ov004_0220cfec(void *, int), func_0204f818(int *, int *, Vec *), func_ov004_0220db90(List *),
     func_ov004_02218848(void *, Vec *, void *);
 extern List *func_ov004_0220db94(List *);
-extern void func_ov004_0220f27c(void *, List *, int, int), func_ov004_0220ffbc(void *), func_ov004_022107d4(void *);
+extern void func_ov004_0220f27c(void *, List *, int, int);
+extern int func_ov004_0220ffbc(void *);
+extern int func_ov004_022107d4(void *);
 extern int func_ov004_0222c268(Vec *, unsigned), func_ov004_0223c700(void), func_ov004_0223cb20(void *),
     func_ov004_0220fe24(Vec *, int, int, int, int), func_ov004_0223cb30(void *),
     func_ov004_0222c0b8(int *, int *, short *, u8 *);

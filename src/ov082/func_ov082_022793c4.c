@@ -19,11 +19,11 @@ extern char data_021f3aa4;
 extern char data_021e5a2c;
 extern char data_021dc7a8;
 
-extern int func_0202ec58(void);
+extern int func_0202ec58(void *arg0);
 extern void func_ov082_02279324(char *self, int a);
 extern void func_020866b8(void *g, int a);
 extern void func_0208674c(u16 *dst, void *g);
-extern void func_020867e0(void *g);
+extern void *func_020867e0(void *g);
 extern int func_020644cc(int a);
 extern void func_0209e474(int *p);
 extern int func_020617d8(int a);
@@ -32,7 +32,7 @@ extern void func_02086754(void *g, UnkStruct_022793c4 *w);
 extern int func_02086564(UnkStruct_022793c4 *w);
 extern void func_02086748(void *g, int a);
 extern int func_0207cc94(void *g, int a, int b);
-extern int func_0208150c(void);
+extern int func_0208150c(unsigned int object);
 extern void func_020867a4(void *g, int a);
 extern void func_02086834(void *g, int a);
 extern void func_0209f128(void *p, int a);
@@ -46,9 +46,10 @@ int func_ov082_022793c4(char *self)
     int idx;
     int t;
     int f;
+    int object;
     u16 a0, a1;
 
-    if (func_0202ec58() == 0) {
+    if (func_0202ec58((void *) self) == 0) {
         return 0;
     }
 
@@ -88,8 +89,8 @@ int func_ov082_022793c4(char *self)
             f = 1;
         }
         if (f != 0) {
-            if (func_0207cc94(&data_021e5a2c, 0, 0) != 0) {
-                func_020867a4(g, func_0208150c());
+            if ((object = func_0207cc94(&data_021e5a2c, 0, 0)) != 0) {
+                func_020867a4(g, func_0208150c((unsigned int) object));
                 func_02086834(g, 2);
                 func_0209f128(&data_021dc7a8, 0xf);
             }

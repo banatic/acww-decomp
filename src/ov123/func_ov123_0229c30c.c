@@ -7,8 +7,8 @@ extern void func_020019f4(void);
 extern void func_ov123_02299630(int, int);
 extern void func_ov123_0229c07c(int);
 extern int func_ov002_02207f3c(int, int);
-extern void func_ov002_022080a0(int, int);
-extern void func_ov002_0220ad0c(int);
+extern unsigned char *func_ov002_022080a0(int, unsigned char value);
+extern void *func_ov002_0220ad0c(int);
 
 void func_ov123_0229c30c(int r0)
 {

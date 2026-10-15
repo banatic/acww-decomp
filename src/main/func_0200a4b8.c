@@ -7,7 +7,7 @@ extern void func_02010f5c(void *p);
 extern void func_02010d64(void *p);
 extern void func_0200a528(void *p);
 extern void func_0200ae7c(void *p, unsigned char *ptr, unsigned char byte);
-extern void func_0200f530(void *p, unsigned int *arr);
+extern int func_0200f530(void *p, unsigned int *arr);
 extern void func_0200ae04(void *p);
 extern int func_02073908(unsigned int a, unsigned int b);
 struct UnkStruct_0200a4b8_2 {

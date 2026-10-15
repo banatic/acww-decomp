@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02035fc0(void *self, int value);
+extern void func_02035fc0(void *self);
 
 void *func_02035ff8(void *self, int value)
 {
     *(int *) self = value;
-    func_02035fc0(self, value);
+    func_02035fc0(self);
     return self;
 }

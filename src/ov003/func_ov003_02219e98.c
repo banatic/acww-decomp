@@ -10,7 +10,7 @@ struct UnkStruct_02219e98_2 {
     char pad_00[0x12c];
     struct UnkStruct_02219e98 *ptr;
 };
-extern void func_ov003_0221a004(void *obj, int arg);
+extern int func_ov003_0221a004(void *obj, int arg);
 
 void func_ov003_02219e98(struct UnkStruct_02219e98_2 *obj)
 {

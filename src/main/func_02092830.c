@@ -28,11 +28,11 @@ typedef struct UnkStruct_02092830_3 {
     short s1;
     short s2;
     char pad_42[0x36];
-    void (*func)(void);
+    void (*func)(struct UnkStruct_02092830_3 *a, int b);
 } UnkStruct_02092830_3;
 
 extern void func_02090db0(UnkStruct_02092830_3 *ctx);
-extern void func_02092898(void);
+extern void func_02092898(UnkStruct_02092830_3 *a, int b);
 
 void func_02092830(UnkStruct_02092830_3 *ctx)
 {

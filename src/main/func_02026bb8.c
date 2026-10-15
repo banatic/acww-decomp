@@ -26,7 +26,7 @@ typedef struct DataGlobal {
 extern DataGlobal data_020c8b68;
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(UnkStruct_02026bb8 *, unsigned char *, unsigned char *, int, int, int, int, int, int);
+extern int func_0202da38(UnkStruct_02026bb8 *, unsigned char *, unsigned char *, int, int, int, int, int, int);
 
 void func_02026bb8(UnkStruct_02026bb8 *a, UnkStruct_02026bb8_2 *b)
 {

@@ -40,14 +40,14 @@ typedef struct {
 extern Cfg data_020c8bf0;
 extern int data_020d90c8[];
 
-extern int func_02020a5c(void);
+extern int func_02020a5c(void *, void *);
 extern void func_0202d8f8(UnkStruct_0201f858 *s, int *a, int *b, int c, int d);
 extern void func_0208674c(volatile unsigned short *dst, UnkStruct_0201f858_2 *t);
 extern void func_0209e474(int *v);
-extern int func_020819bc(void);
+extern int func_020819bc(void *record);
 extern int func_020867e0(UnkStruct_0201f858_2 *t);
 extern unsigned char *func_020867a0(UnkStruct_0201f858_2 *t);
-extern int func_02003704(void);
+extern int func_02003704(void *);
 extern unsigned char *func_0208150c(int t);
 extern int memcmp(const void *a, const void *b, int n);
 extern int func_0201fc14(int k);
@@ -58,7 +58,7 @@ extern int func_02086744(UnkStruct_0201f858_2 *t);
 extern void func_02015fb0(UnkStruct_0201f858 *s, int a, int b, int c, int d, int e);
 extern void func_02015de4(UnkStruct_0201f858 *s, Blk *b, int c, int d);
 extern int func_020036e8(unsigned char *p);
-extern void func_0202da38(UnkStruct_0201f858 *s, int *a, unsigned char *b, int c, int d, int e, int f, int g, int h);
+extern int func_0202da38(UnkStruct_0201f858 *s, int *a, unsigned char *b, int c, int d, int e, int f, int g, int h);
 
 void func_0201f858(UnkStruct_0201f858 *s, UnkStruct_0201f858_3 *out)
 {
@@ -71,7 +71,7 @@ void func_0201f858(UnkStruct_0201f858 *s, UnkStruct_0201f858_3 *out)
     UnkStruct_0201f858_2 *P;
     volatile unsigned short *q;
 
-    if (func_02020a5c() != 0) {
+    if (func_02020a5c(s, out) != 0) {
         func_0202d8f8(s, &s->unk_12C, &s->unk_128, s->unk_100->f830, 0);
         return;
     }
@@ -93,7 +93,7 @@ void func_0201f858(UnkStruct_0201f858 *s, UnkStruct_0201f858_3 *out)
     func_0209e474(&blk.w[0]);
     k = ((unsigned char *) &blk)[0xa];
 
-    if (s->unk_12C == 0 || func_020819bc() == 0) {
+    if (s->unk_12C == 0 || func_020819bc((void *) s->unk_12C) == 0) {
         kind = 0;
     } else {
         if (P != 0) {
@@ -110,7 +110,7 @@ void func_0201f858(UnkStruct_0201f858 *s, UnkStruct_0201f858_3 *out)
             if (ok != 0) {
                 p2 = func_020867e0(P);
                 e = func_020867a0(P);
-                if (func_02003704() != 0) {
+                if (func_02003704(e) != 0) {
                     unsigned char *o = func_0208150c(t);
                     if (*(unsigned short *) e == *(unsigned short *) o && memcmp(e + 2, o + 2, 0xc) == 0 && e[0xf] == o[0xf]) {
                         kind = 3;

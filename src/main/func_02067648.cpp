@@ -3,11 +3,11 @@
  */
 
 extern signed char data_020ccea0[];
-extern "C" void func_020984e8(void *);
-extern "C" void *func_02099870(void);
+extern "C" int func_020984e8(void);
+extern "C" void *func_02099870(int object);
 extern "C" void *func_020807dc(void *, void *);
 extern "C" void *func_020807c0(void *, void *);
-extern "C" void func_02081cec(void *, signed char);
+extern "C" signed char func_02081cec(void *, signed char);
 extern "C" void *func_02081d20(void *);
 extern "C" void func_020787d4(void *, void *, void *);
 
@@ -49,15 +49,17 @@ struct Main {
 
 extern "C" void func_02067648(Main *a, int index)
 {
+    int forwarded_value;
+
     if (index == 0) {
         return;
     }
     void *ret1 = a->sub->target();
-    func_020984e8(ret1);
+    (forwarded_value = (int) func_020984e8());
     if (ret1 == 0) {
         return;
     }
-    void *p1 = func_02099870();
+    void *p1 = func_02099870((int) forwarded_value);
     void *p2 = func_020807dc(ret1, p1);
     void *p3 = func_020807c0(ret1, p2);
     if (p3 == 0) {

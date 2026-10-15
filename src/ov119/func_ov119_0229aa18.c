@@ -4,21 +4,21 @@
 
 #include "types.h"
 
-extern void func_020984e8(void);
-extern u32 func_02099870(void);
+extern int func_020984e8(void);
+extern u32 func_02099870(int);
 extern u32 func_ov119_0229bb44(u32);
-extern void func_020641c8(void *);
+extern void *func_020641c8(void *);
 extern u32 func_02095040(u32);
 extern void func_02064210(u32, void *);
-extern void func_020b496c(u32, void *);
-extern void func_0207094c(u32, u32);
+extern void *func_020b496c(u32, void *);
+extern int func_0207094c(u32, u32);
 extern void func_02070adc(u32, u32, u32, u32, u32, u32, u32);
 extern void func_02070a04(u32, u32, u32);
-extern void func_02094fd4(void *);
-extern void func_02095074(u32, void *);
-extern void func_020a8bb8(u32, void *);
-extern void func_02094fbc(void *);
-extern void func_020641b0(void *);
+extern void *func_02094fd4(void *);
+extern void *func_02095074(u32, void *);
+extern void *func_020a8bb8(u32, void *);
+extern void *func_02094fbc(void *);
+extern void *func_020641b0(void *);
 
 void func_ov119_0229aa18(u32 p)
 {
@@ -27,8 +27,7 @@ void func_ov119_0229aa18(u32 p)
     u32 b;
     u32 a;
 
-    func_020984e8();
-    b = func_02099870();
+    b = func_02099870((int) func_020984e8());
     a = func_ov119_0229bb44(p);
     func_020641c8(loc0);
     func_02064210(func_02095040(b), loc0);

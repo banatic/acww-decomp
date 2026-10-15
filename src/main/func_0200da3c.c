@@ -11,7 +11,7 @@ extern int func_02096614(u16 *a, u32 *b, u32 *c, int d, u32 e);
 extern int func_0209658c(u16 *a, int b, u32 c);
 extern void func_020110a0(void *a, u16 *b);
 extern int func_020984fc(u32 a);
-extern u16 *func_02099728(void);
+extern u16 *func_02099728(unsigned int);
 extern void func_0205eb8c(void *a, u16 *b, int c);
 extern int func_0204bcdc(u16 *a);
 extern int func_0204bc64(u16 *a);
@@ -69,7 +69,7 @@ void func_0200da3c(UnkStruct_0200da3c *self, int kind)
 
     if (func_0200f290(self, 0) != 0) {
         q = func_020984fc(self->unk_800);
-        buf[2] = *func_02099728();
+        buf[2] = *func_02099728(q);
         func_0205eb8c((unsigned char *) self + 0x5a0, &buf[2], q);
 
         if (func_0204bcdc(&buf[2]) != 0) {

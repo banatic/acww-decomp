@@ -3,9 +3,9 @@
  */
 
 extern void func_020a0194(void);
-extern void func_020984e8(void);
-extern void func_02099664(void);
-extern void func_02077be8(void);
+extern int func_020984e8(void);
+extern int func_02099664(int);
+extern void func_02077be8(unsigned char *);
 extern void func_020a0174(void);
 extern void func_ov048_02261e78(int, int);
 
@@ -16,9 +16,7 @@ void func_ov048_02261ee4(int r0, int r1)
 
     if (r4 == 0) {
         func_020a0194();
-        func_020984e8();
-        func_02099664();
-        func_02077be8();
+        func_02077be8((unsigned char *) func_02099664((int) func_020984e8()));
         func_020a0174();
     }
 

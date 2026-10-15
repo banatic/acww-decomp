@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *MI_CpuFill8(void *s, int c, unsigned int n);
+extern void MI_CpuFill8(void *s, int c, unsigned int n);
 
 extern void func_020b48ec(void *dst, unsigned int size, int a, int b);
 extern void func_020b48b4(void *dst, unsigned int size, int a);

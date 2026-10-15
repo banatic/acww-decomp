@@ -8,7 +8,7 @@ struct UnkStruct_020f31c4 {
     void *unk_00;
 };
 
-extern void func_020f4514(struct UnkStruct_020f31c4 *self);
+extern void *func_020f4514(struct UnkStruct_020f31c4 *self);
 
 struct UnkStruct_020f31c4 *func_020f31c4(struct UnkStruct_020f31c4 *self)
 {

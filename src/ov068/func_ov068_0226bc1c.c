@@ -41,7 +41,7 @@ extern int func_0201ac28(char *p, UnkStruct_0226bc1c_2 *b);
 extern void func_ov068_02266c70(int *p, UnkStruct_0226bc1c_2 *b);
 extern int func_02019e00(char *w);
 extern int func_0201b354(char *p);
-extern void func_02019c6c(char *w, int a, int b);
+extern int func_02019c6c(char *w, int a, int b);
 extern unsigned int func_020e92e8(char *p);
 extern int func_ov068_0226c6ac(UnkStruct_0226bc1c *a, int *v, UnkStruct_0226bc1c_2 *b);
 extern int func_ov068_0226c754(UnkStruct_0226bc1c *a, char *p, int n);

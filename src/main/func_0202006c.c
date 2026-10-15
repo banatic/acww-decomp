@@ -4,10 +4,10 @@
 
 extern int func_0206fc6c(void);
 extern int func_0206fc44(void);
-extern int func_02081b68(int, int, int);
-extern int func_020984e8(int);
+extern void func_02081b68(int, int, int);
+extern int func_020984e8(void);
 extern int func_02099870(int);
-extern int func_0208016c(int, int, int, int);
+extern void func_0208016c(int, int, int, int);
 
 void func_0202006c(int *r0)
 {
@@ -28,7 +28,7 @@ void func_0202006c(int *r0)
             func_02081b68(r0_2, r1, 0xa);
         } else {
             r5 = (int *) func_0206fc44();
-            r3 = func_02099870(func_020984e8((int) r5));
+            r3 = func_02099870(func_020984e8());
             func_0208016c(r4, (int) r5, 0xa, r3);
         }
     }

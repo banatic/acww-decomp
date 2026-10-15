@@ -14,7 +14,8 @@ struct Obj_ov004_02250f88 : public Obj_ov004_02251438 {
     void func_ov004_0221593c();
     void func_ov004_02215758();
     int func_ov004_02215788();
-    void func_ov004_022157d4();
+    int func_ov004_022157d4();
+
     int func_ov004_022157fc();
     void func_ov004_02215844();
     int func_ov004_02215874();

@@ -12,17 +12,17 @@ typedef struct {
     int unk_528;
 } UnkStruct_0229b184;
 
-extern int func_0206f56c(UnkStruct_0229b184 *this);
+extern int func_0206f56c(void);
 extern void func_ov121_0229a53c(UnkStruct_0229b184 *this);
 extern int func_0208e484(int *field_3a8);
 extern int func_ov121_0229ab80(UnkStruct_0229b184 *this, int b3);
 extern void RtcSendPxiCommand(int cmd);
 extern void func_ov002_02209114(int *field_528, int b3, int r5);
-extern void func_ov002_02208098(UnkStruct_0229b184 *this, int cmd);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229b184 *this, unsigned char value);
 
 void func_ov121_0229b184(UnkStruct_0229b184 *this)
 {
-    if (func_0206f56c(this)) {
+    if (func_0206f56c()) {
         func_ov121_0229a53c(this);
         return;
     }

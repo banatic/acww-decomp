@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov095_0229aa74(void);
+extern void func_ov095_0229aa74(void *unused0);
 
 void func_ov095_0229a148(void *r0)
 {
     *(unsigned int *) ((char *) r0 + 0x28) = 0xf7;
-    func_ov095_0229aa74();
+    func_ov095_0229aa74(r0);
 }

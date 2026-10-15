@@ -26,7 +26,7 @@ typedef struct {
     u32 d[5];
 } Table5;
 
-extern int func_0206fe54(UnkStruct_0229b038 *self);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *);
 extern void *func_ov139_022995d8(void *, int);
 extern void func_ov139_02299a68(void *, int, void *);
@@ -49,7 +49,7 @@ int func_ov140_0229b038(UnkStruct_0229b038 *self)
     int unknown;
     int i;
 
-    if (func_0206fe54(self)) {
+    if (func_0206fe54()) {
         func_ov002_02209eb8(&self->use128c);
     }
 

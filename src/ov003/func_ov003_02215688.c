@@ -5,9 +5,9 @@
 extern int func_02073908(int a, int b);
 extern int func_020604b0(void *p);
 extern void func_0200f2a0(unsigned char *a, int b, unsigned char *c);
-extern void func_ov003_02215494(unsigned char *a, int b, int c);
+extern void *func_ov003_02215494(unsigned char *a, int b, int c);
 extern void func_02035624(int a);
-extern void func_ov003_0221535c(unsigned char *a, int b, int c);
+extern void *func_ov003_0221535c(unsigned char *a, int b, int c);
 
 extern int data_020ccf94;
 

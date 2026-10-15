@@ -4,11 +4,11 @@
 
 extern unsigned int func_ov004_02222b3c(void *self);
 extern void func_0201ad18(void *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_ov004_0222fd94(void);
-extern void func_020147e0(void *p, int a, int b);
+extern int func_ov004_0222fd94(void);
+extern int func_020147e0(void *p, int a, int b);
 extern int gt2GetIncomingBufferSize(void *p);
 extern int func_0201c314(void *self, int n);
-extern void func_020147fc(void *p, int a, int b, int c);
+extern int func_020147fc(void *p, int a, int b, int c);
 extern int data_021fbee8;
 extern int data_020c814c;
 

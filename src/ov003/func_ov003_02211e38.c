@@ -28,13 +28,13 @@ extern void func_0200fa8c(int *out, void *self);
 extern void func_0204f818(volatile int *px, volatile int *pz, int *p);
 extern u16 *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
 extern void func_ov003_02224384(int h, int *pos, int k);
-extern void func_0200f27c(void *self, int k);
-extern void func_0200f328(void *self, int k);
+extern unsigned int *func_0200f27c(void *self, int k);
+extern int func_0200f328(void *self, int k);
 extern void func_020110c4(short *p, void *self);
 extern int func_02073908(void *a, int b);
 extern int func_ov003_0221abf8(int h, int k);
 extern int FX_MulFunc(int a, int b);
-extern void func_020912d4(int a, int *v, short *p, int q);
+extern int func_020912d4(int a, int *v, short *p, int q);
 
 void func_ov003_02211e38(char *self)
 {

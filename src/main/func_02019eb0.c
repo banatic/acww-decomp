@@ -26,7 +26,7 @@ typedef struct UnkStruct_02019eb0 {
     unsigned int unk_B0;
 } UnkStruct_02019eb0;
 
-extern void func_02019d78(UnkStruct_02019eb0 *param, int arg);
+extern void func_02019d78(UnkStruct_02019eb0 *param);
 extern void func_02019af0(UnkStruct_02019eb0 *param, int arg);
 
 UnkStruct_02019eb0 *func_02019eb0(UnkStruct_02019eb0 *param)
@@ -36,7 +36,7 @@ UnkStruct_02019eb0 *func_02019eb0(UnkStruct_02019eb0 *param)
     param->unk_1C = 0x16;
     param->unk_20 = 0;
     param->unk_14 = 0;
-    func_02019d78(param, 0);
+    func_02019d78(param);
     func_02019af0(param, 1);
     param->unk_99 = 0;
     param->unk_9C = 0;

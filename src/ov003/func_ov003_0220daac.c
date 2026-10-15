@@ -9,12 +9,12 @@ extern int data_ov003_02260558[3];
 
 extern int func_02073908(int, int);
 extern int func_020984fc(int);
-extern void *func_02099728(void);
-extern int func_0200f1a4(void *, int, unsigned short);
+extern void *func_02099728(unsigned int argument0);
+extern void func_0200f1a4(void *, int, unsigned short);
 extern int func_0203b144(void);
-extern int func_02036448(void *);
-extern int func_0209129c(int);
-extern int func_0200fa6c(void *, void *);
+extern void func_02036448(void *);
+extern void func_0209129c(int);
+extern void func_0200fa6c(void *, void *);
 
 struct UnkStruct_0220daac {
     unsigned char pad_00[0x7d4];
@@ -30,8 +30,7 @@ void func_ov003_0220daac(void *a0)
         int z = *(int *) ((char *) a0 + 0x800);
         void *p;
 
-        func_020984fc(z);
-        p = func_02099728();
+        p = func_02099728((unsigned int) func_020984fc(z));
         if (p) {
             func_0200f1a4(a0, 3, *(unsigned short *) p);
         }

@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f56c(const void *);
+extern int func_0206f56c(void);
 extern void func_ov109_0229c534(const void *);
-extern int func_ov002_02208014(const void *);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(const void *);
 extern int func_ov002_02209044(const void *, int, const void *, int);
 extern void func_ov109_0229c75c(const void *);
 extern void func_ov002_0220a1dc(const void *);
-extern void func_ov002_02208098(const void *, int);
-extern void func_ov109_0229c6f8(const void *);
+extern unsigned char *func_ov002_02208098(const void *, unsigned char value);
+extern int func_ov109_0229c6f8(const void *);
 extern unsigned short data_021fbe40[];
 
 void func_ov109_0229d048(void *arg)
@@ -18,11 +18,15 @@ void func_ov109_0229d048(void *arg)
     int v;
     unsigned short flags;
 
-    if (func_0206f56c(arg) != 0) {
+    if (func_0206f56c() != 0) {
         func_ov109_0229c534(arg);
         return;
     }
-    if (func_ov002_02208014(arg) != 0) {
+    asm {
+        mov r0, arg
+    }
+    if (func_ov002_02208014() != 0)
+    {
         func_ov109_0229c534(arg);
         return;
     }

@@ -3,9 +3,9 @@
  */
 
 extern void RtcSendPxiCommand(int);
-extern void func_ov002_0220a720(int, int);
+extern void *func_ov002_0220a720(int, int);
 extern void func_ov105_0229c320(int, int);
-extern void func_ov002_02208098(int, int);
+extern unsigned char *func_ov002_02208098(int, unsigned char value);
 
 void func_ov105_0229c62c(int param)
 {

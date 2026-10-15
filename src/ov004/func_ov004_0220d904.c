@@ -7,11 +7,11 @@
 typedef struct {
     int x, y, z;
 } Vec3;
-extern int func_ov004_0220d94c(char *self, u16 *b, Vec3 *c);
+extern int func_ov004_0220d94c(char *self);
 int func_ov004_0220d904(char *self, u16 *b, Vec3 *c)
 {
     int r;
-    if (func_ov004_0220d94c(self, b, c) == 0) {
+    if (func_ov004_0220d94c(self) == 0) {
         *(u16 *) (self + 2) = *b;
         *(int *) (self + 4) = c->x;
         *(int *) (self + 8) = c->y;

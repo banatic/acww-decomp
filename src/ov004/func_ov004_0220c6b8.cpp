@@ -49,7 +49,7 @@ struct UnkStruct_0220c6b8 {
 
 extern "C" void func_ov004_0220fefc(UnkStruct_0220c6b8_2 *, UnkStruct_0220c6b8 *);
 extern "C" void func_ov004_0223bac8(UnkStruct_0220c6b8 *);
-extern "C" void func_02095380(int);
+extern "C" int func_02095380(int);
 
 extern "C" int func_ov004_0220c6b8(UnkStruct_0220c6b8_2 *self)
 {

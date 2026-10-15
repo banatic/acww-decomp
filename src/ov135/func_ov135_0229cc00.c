@@ -3,7 +3,7 @@
  */
 
 extern int func_ov134_02299a60(char *addr);
-extern void func_ov002_02208098(char *ptr, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov135_0229c630(char *ptr);
 extern int func_ov135_0229c7a8(char *ptr);
 extern int func_ov135_0229c754(char *ptr);
@@ -12,7 +12,7 @@ extern void func_ov002_0220a0b4(char *ptr, int a, int b);
 void func_ov135_0229cc00(char *ptr)
 {
     if (func_ov134_02299a60(ptr + 0x2c8) != 0) {
-        func_ov002_02208098(ptr, 7);
+        func_ov002_02208098((void *) (ptr), 7);
         func_ov135_0229c630(ptr);
     }
     {

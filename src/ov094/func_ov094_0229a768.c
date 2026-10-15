@@ -6,7 +6,7 @@ extern int func_ov094_0229a328(const void *ptr, int id);
 extern int func_ov094_0229a524(const void *ptr, int id);
 extern int func_02088d9c(int val);
 extern int func_02088d94(int val);
-extern void func_ov094_0229a668(const void *ptr, int x, int y);
+extern int func_ov094_0229a668(const void *ptr, int x, int y);
 
 void func_ov094_0229a768(const void *a, int b, int c)
 {

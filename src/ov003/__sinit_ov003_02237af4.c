@@ -13,14 +13,23 @@ typedef struct {
 
 extern void __cxa_vec_ctor(void *, int, int, void *, void *);
 extern void __register_global_object(void *, void *, void *);
-extern void func_ov003_02228f8c(void *);
+extern void *func_ov003_02228f8c(void *);
 extern void func_ov003_0222c418(void *, int);
 
-extern int data_ov003_0225f76c, func_ov003_0222902c, func_ov003_02228fe8, data_ov003_0225f4dc, func_ov003_02228ed4,
-    func_ov003_02228ec4, data_ov003_0225f35c, func_ov003_0222c3e0, func_ov003_0222c3d0;
-extern int func_ov003_0222c494, data_ov003_0225f0c4, data_ov003_0225f220, func_ov003_02228f54, data_ov003_0225f0d0,
-    func_ov003_0222c474, data_ov003_0225f0dc, data_021c80bc, data_ov003_0225f0b4, func_ov003_0222c414, data_ov003_0225f0e8,
-    func_ov003_0222c454, data_ov003_0225f0f4;
+extern int data_ov003_0225f76c, data_ov003_0225f4dc, data_ov003_0225f35c;
+extern char *func_ov003_0222902c(void *argument0);
+extern void *func_ov003_02228fe8(void *argument0);
+extern void *func_ov003_02228ed4(void *argument0);
+extern void *func_ov003_02228ec4(void *argument0);
+extern void *func_ov003_0222c3e0(void *argument0);
+extern void *func_ov003_0222c3d0(void *argument0);
+extern int data_ov003_0225f0c4, data_ov003_0225f220, data_ov003_0225f0d0, data_ov003_0225f0dc, data_021c80bc,
+    data_ov003_0225f0b4, data_ov003_0225f0e8, data_ov003_0225f0f4;
+extern void func_ov003_0222c494(void *object);
+extern void *func_ov003_02228f54(void *argument0);
+extern void func_ov003_0222c474(void *object);
+extern void func_ov003_0222c414(void *object);
+extern void func_ov003_0222c454(void *object);
 extern struct GW {
     int unk_00;
 } data_ov003_0225f0bc;
@@ -91,22 +100,34 @@ extern UnkStruct_02237af4 data_ov003_0223be08, data_ov003_0223be10, data_ov003_0
 extern UnkStruct_02237af4 data_ov003_0223bdd0, data_ov003_0223be90, data_ov003_0223be58, data_ov003_0223be88,
     data_ov003_0223bdd8, s35, s36, s37, s38, s39;
 
+#define DestroyGlobal_ov003_0222c494 &func_ov003_0222c494
+#define DestroyGlobal_ov003_02228f54 &func_ov003_02228f54
+#define DestroyGlobal_ov003_0222c474 &func_ov003_0222c474
+#define DestroyGlobal_ov003_0222c414 &func_ov003_0222c414
+#define DestroyGlobal_ov003_0222c454 &func_ov003_0222c454
+#define VisitElement_ov003_0222902c &func_ov003_0222902c
+#define VisitElement_ov003_02228fe8 &func_ov003_02228fe8
+#define VisitElement_ov003_02228ed4 &func_ov003_02228ed4
+#define VisitElement_ov003_02228ec4 &func_ov003_02228ec4
+#define VisitElement_ov003_0222c3e0 &func_ov003_0222c3e0
+#define VisitElement_ov003_0222c3d0 &func_ov003_0222c3d0
+
 void __sinit_ov003_02237af4(void)
 {
     int v;
 
-    __cxa_vec_ctor(&data_ov003_0225f76c, 6, 0x24c, &func_ov003_0222902c, &func_ov003_02228fe8);
-    __register_global_object(0, &func_ov003_0222c494, &data_ov003_0225f0c4);
+    __cxa_vec_ctor(&data_ov003_0225f76c, 6, 0x24c, VisitElement_ov003_0222902c, VisitElement_ov003_02228fe8);
+    __register_global_object(0, DestroyGlobal_ov003_0222c494, &data_ov003_0225f0c4);
     func_ov003_02228f8c(&data_ov003_0225f220);
-    __register_global_object(&data_ov003_0225f220, &func_ov003_02228f54, &data_ov003_0225f0d0);
-    __cxa_vec_ctor(&data_ov003_0225f4dc, 4, 164, &func_ov003_02228ed4, &func_ov003_02228ec4);
-    __register_global_object(0, &func_ov003_0222c474, &data_ov003_0225f0dc);
+    __register_global_object(&data_ov003_0225f220, DestroyGlobal_ov003_02228f54, &data_ov003_0225f0d0);
+    __cxa_vec_ctor(&data_ov003_0225f4dc, 4, 164, VisitElement_ov003_02228ed4, VisitElement_ov003_02228ec4);
+    __register_global_object(0, DestroyGlobal_ov003_0222c474, &data_ov003_0225f0dc);
     v = data_021c80bc;
     data_ov003_0225f0bc.unk_00 = v;
     func_ov003_0222c418(&data_ov003_0225f0b4, v);
-    __register_global_object(&data_ov003_0225f0b4, &func_ov003_0222c414, &data_ov003_0225f0e8);
-    __cxa_vec_ctor(&data_ov003_0225f35c, 4, 96, &func_ov003_0222c3e0, &func_ov003_0222c3d0);
-    __register_global_object(0, &func_ov003_0222c454, &data_ov003_0225f0f4);
+    __register_global_object(&data_ov003_0225f0b4, DestroyGlobal_ov003_0222c414, &data_ov003_0225f0e8);
+    __cxa_vec_ctor(&data_ov003_0225f35c, 4, 96, VisitElement_ov003_0222c3e0, VisitElement_ov003_0222c3d0);
+    __register_global_object(0, DestroyGlobal_ov003_0222c454, &data_ov003_0225f0f4);
 
     data_ov003_0225f100.unk_00 = data_ov003_0223bee0;
     data_ov003_0225f100.unk_08 = data_ov003_0223bea8;
@@ -158,3 +179,15 @@ void __sinit_ov003_02237af4(void)
     data_ov003_0225f1d0.unk_40 = data_ov003_0223be88;
     data_ov003_0225f1d0.unk_48 = data_ov003_0223bdd8;
 }
+
+#undef DestroyGlobal_ov003_0222c494
+#undef DestroyGlobal_ov003_02228f54
+#undef DestroyGlobal_ov003_0222c474
+#undef DestroyGlobal_ov003_0222c414
+#undef DestroyGlobal_ov003_0222c454
+#undef VisitElement_ov003_0222902c
+#undef VisitElement_ov003_02228fe8
+#undef VisitElement_ov003_02228ed4
+#undef VisitElement_ov003_02228ec4
+#undef VisitElement_ov003_0222c3e0
+#undef VisitElement_ov003_0222c3d0

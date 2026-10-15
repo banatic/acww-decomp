@@ -24,7 +24,7 @@ typedef struct {
     int unk_34;
 } UnkStruct_0205fe6c_3;
 
-extern void func_02034270(void *buf, UnkStruct_0205fe6c *p, int a, int b);
+extern int func_02034270(void *buf, UnkStruct_0205fe6c *p, int a, int b);
 extern void func_020eaad0(int *dst, void *src, int n);
 extern int func_020e8ed8(int a, int b);
 extern void VEC_Add(UnkStruct_0205fe6c *a, int *b, UnkStruct_0205fe6c *c);

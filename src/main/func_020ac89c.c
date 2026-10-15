@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int MI_CpuFill8(int, int, int);
-int func_020ac89c(int a, int b)
+extern void MI_CpuFill8(int, int, int);
+void func_020ac89c(int a, int b)
 {
-    return MI_CpuFill8(a, 0x10, b);
+    MI_CpuFill8(a, 0x10, b);
 }

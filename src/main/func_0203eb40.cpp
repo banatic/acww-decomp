@@ -43,7 +43,7 @@ extern void *data_020ccf94;
 int func_0203f338(void);
 int func_02073d90(void *a);
 UnkStruct_0203eb40_2 *func_0203ef90(int a);
-int func_0203ed8c(void);
+int func_0203ed8c(int);
 int func_020961a8(int a);
 int func_02095904(void);
 void func_0203dfe4(int a);
@@ -58,7 +58,7 @@ int func_0203eb40(UnkStruct_0203eb40 *s)
         case 2:
             if (func_02073d90(data_020ccf94) != 0) {
                 UnkStruct_0203eb40_2 *o = func_0203ef90(s->unk_10);
-                if (func_0203ed8c() != 0 && s->unk_17 == 1) {
+                if (func_0203ed8c((int) o) != 0 && s->unk_17 == 1) {
                     if (o->m(func_020961a8(4)) == 0) {
                         return 0;
                     }

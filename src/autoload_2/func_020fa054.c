@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void ENV_AppendResourceSet(void *resource, unsigned short kind);
+extern void ENV_AppendResourceSet(void *resource);
 
 struct ResSet {
     int pad_00;
@@ -17,7 +17,7 @@ struct ResSet {
 
 void func_020fa054(struct ResSet *self, unsigned short val)
 {
-    ENV_AppendResourceSet(self, val);
+    ENV_AppendResourceSet(self);
     self->unk_04 = val;
     self->unk_06 = 0;
     self->unk_0D = -1;

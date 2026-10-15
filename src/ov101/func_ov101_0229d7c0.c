@@ -13,8 +13,8 @@ extern u8 data_021f6c54;
 extern int func_ov101_0229cdd0(void *self, int a, int b, int c);
 extern void func_ov101_0229cef8(void *self, int n);
 extern int func_ov002_0220a784(void *p, int a);
-extern void func_ov002_0220a720(void *p, int a);
-extern void func_ov002_02208098(void *self, int a);
+extern void *func_ov002_0220a720(void *p, int a);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void RtcSendPxiCommand(int a);
 
 void func_ov101_0229d7c0(char *self)

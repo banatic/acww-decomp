@@ -21,7 +21,7 @@ struct Seg {
 };
 
 extern int func_0202fb28(struct UnkStruct_0202fc94 *, void *);
-extern void func_0203005c(struct Seg *, Vec *, Vec *);
+extern int func_0203005c(struct Seg *, Vec *, Vec *);
 extern int func_0202ffbc(struct Seg *, Vec *, void *);
 extern int func_0202ff14(struct Seg *, void *);
 extern void func_020eaca0(Vec *, void *, Vec *);

@@ -6,11 +6,11 @@
 
 typedef int (Obj_ov004_02252f2c::*Pmf)(void);
 
-extern "C" void func_ov004_0220fdc8(Obj_ov004_02252f2c *self, unsigned int i);
+extern "C" int func_ov004_0220fdc8(Obj_ov004_02252f2c *self, unsigned int i, int parameter2);
 
-extern "C" int func_ov004_0221a240(Obj_ov004_02252f2c *self, unsigned int i)
+extern "C" int func_ov004_0221a240(Obj_ov004_02252f2c *self, unsigned int i, int arg2)
 {
-    func_ov004_0220fdc8(self, i);
+    func_ov004_0220fdc8(self, i, arg2);
     {
         static Pmf tbl[] = {&Obj_ov004_02252f2c::func_ov004_0221a1b0, &Obj_ov004_02252f2c::func_ov004_0221a158};
         if (i < 2) {

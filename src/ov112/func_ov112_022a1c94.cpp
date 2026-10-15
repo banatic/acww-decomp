@@ -8,7 +8,7 @@ struct VTblClass {
     virtual void f2();
 };
 
-extern "C" int func_ov112_0229fb70(void);
+extern "C" int func_ov112_0229fb70(int parameter0);
 extern "C" void func_ov112_0229fae8(void *);
 extern "C" void func_0200284c(int, int, int);
 extern "C" int func_ov112_0229fe70(void *, int);
@@ -16,14 +16,14 @@ extern "C" void func_02088df8(int, void *, int, void *, int, int, int, int, int,
 extern "C" void func_ov095_0229b1c8(void *, int, void *, int);
 extern "C" void func_ov095_0229ae84(void *, int, void *);
 extern "C" int func_0206fe54(void);
-extern "C" void func_020896b8(int, void *, int, void *, int, int, int);
+extern "C" int func_020896b8(int, void *, int, void *, int, int, int);
 extern "C" void func_0208ea70(void *, int, int);
 extern "C" int func_ov002_0220a4f8(void *);
 extern "C" int func_ov002_0220a4d4(void *);
 extern "C" void func_ov095_02299b30(void *, int, int);
 extern "C" void func_ov002_0220a0b4(void *, int, int);
 extern "C" void func_ov002_02209eb8(void *);
-extern "C" void func_ov095_0229af58(void *, int, int, int);
+extern "C" int func_ov095_0229af58(void *, int, int, int);
 extern "C" void func_ov002_0220ad18(void *, int);
 
 extern unsigned char data_ov112_022a2098;
@@ -33,7 +33,7 @@ extern "C" int func_ov112_022a1c94(void *self)
 {
     unsigned char *base = (unsigned char *) self;
 
-    if (func_ov112_0229fb70()) {
+    if (func_ov112_0229fb70((int) (self))) {
         func_ov112_0229fae8(self);
         func_0200284c(4, 0, base[0xb6] + 8);
     }

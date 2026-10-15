@@ -7,9 +7,9 @@ struct UnkStruct_02050a84 {
     int result;
 };
 
-extern void CARDi_RequestStreamCommand(int b, int a, int c, int d, int e, int f, int g, int h, int i);
+extern int CARDi_RequestStreamCommand(int b, int a, int c, int d, int e, int f, int g, int h, int i);
 extern void func_0211ec44(unsigned short value);
-extern int OS_GetLockID(unsigned int size, int sum, int b, int c);
+extern int OS_GetLockID(void);
 extern int func_02050974(struct UnkStruct_02050a84 *p);
 extern void func_02050948(struct UnkStruct_02050a84 *p);
 
@@ -21,7 +21,7 @@ int func_02050a84(struct UnkStruct_02050a84 *p, int a, int b, int c)
         return ret;
     }
 
-    p->result = OS_GetLockID(p->size, a + c, b, c);
+    p->result = OS_GetLockID();
 
     if (p->result == -3) {
         return ret;

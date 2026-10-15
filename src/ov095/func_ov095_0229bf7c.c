@@ -3,10 +3,10 @@
  */
 
 extern int func_ov095_022999b0(void *p, int mode);
-extern int func_020b9bbc(void *a, void *b, void *c, int d, int e);
+extern int func_020b9bbc(void *a, void *b, unsigned int bank, int d, int e);
 extern void func_ov095_022999a0(void *p, int mode);
 
-void func_ov095_0229bf7c(void *p, void *q)
+void func_ov095_0229bf7c(void *p, unsigned int q)
 {
     if (func_ov095_022999b0(p, 1)) {
         if (func_020b9bbc((char *) p + 0x232c, (char *) p + 0x2428, q, 0x800, 0)) {

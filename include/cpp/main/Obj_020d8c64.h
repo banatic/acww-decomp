@@ -9,9 +9,9 @@
 class Obj_020d8c64 : public Base_0203f080 {
   public:
     virtual ~Obj_020d8c64();
-    virtual void vfunc_60();
-    virtual void vfunc_64();
-    virtual void vfunc_68();
+    virtual int vfunc_60();
+    virtual int vfunc_64();
+    virtual int vfunc_68();
 };
 
 #endif

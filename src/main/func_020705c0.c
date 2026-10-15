@@ -9,11 +9,11 @@ extern void *func_020e9958(void *, int);
 extern void MI_CpuCopy8(void *, void *, int);
 extern void func_020e993c(void *, void *);
 extern void *func_020900f0(void *);
-extern void func_02066830(void *, void *);
+extern int func_02066830(void *, void *);
 extern void func_02090100(void *);
 extern void func_02090140(void *, int);
 
-void func_020705c0(char *s)
+void func_020705c0(char *s, int player)
 {
     void *heap;
     void *buf;

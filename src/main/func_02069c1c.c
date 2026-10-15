@@ -24,7 +24,7 @@ struct UnkStruct_02069c1c_2 {
 
 extern void *func_0206837c(struct UnkStruct_02069c1c *);
 extern int func_020ab550(void *, int);
-extern int func_020ab5e4(void *);
+extern void func_020ab5e4(void *);
 extern int func_020ab788(int);
 extern int func_020ab794(int);
 extern int func_020ab53c(void *);

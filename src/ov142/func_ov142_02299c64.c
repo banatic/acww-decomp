@@ -10,9 +10,9 @@ typedef struct {
     volatile unsigned char unk_C0;
 } UnkStruct_02299c64;
 
-extern void func_ov142_02299fa4(UnkStruct_02299c64 *);
+extern int func_ov142_02299fa4(UnkStruct_02299c64 *);
 extern void func_ov142_02299f5c(UnkStruct_02299c64 *);
-extern void func_ov142_0229a07c(UnkStruct_02299c64 *);
+extern int func_ov142_0229a07c(UnkStruct_02299c64 *);
 extern int func_ov142_0229a6d8(UnkStruct_02299c64 *);
 extern void func_ov142_0229a05c(UnkStruct_02299c64 *);
 extern void func_ov142_02299f8c(UnkStruct_02299c64 *);

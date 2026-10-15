@@ -15,11 +15,11 @@ extern struct UnkStruct_020f4220_3 {
     unsigned char pad_00[0x62];
     unsigned char unk_62;
 } data_021fd1bc;
-extern int func_020eef70(int);
+extern int func_020eef70(void);
 extern void func_020f2344(struct UnkStruct_020f4220_3 *);
-extern void NNS_SndPlayerCreateHeap(int, int, int);
-extern void NNS_SndHeapSaveState(int);
-extern void func_020ef040(struct UnkStruct_020f4220_2 *, int, int, UnkStruct_020f4220);
+extern int NNS_SndPlayerCreateHeap(int, int, int);
+extern int NNS_SndHeapSaveState(int);
+extern int func_020ef040(struct UnkStruct_020f4220_2 *, int, int, UnkStruct_020f4220);
 extern void func_020f59b4(void);
 
 void func_020f4220(int a0, int a1, unsigned char a2)
@@ -27,7 +27,7 @@ void func_020f4220(int a0, int a1, unsigned char a2)
     int h;
     UnkStruct_020f4220 t;
 
-    h = func_020eef70(a0);
+    h = func_020eef70();
     if (data_021fd1bc.unk_62 == 0) {
         func_020f2344(&data_021fd1bc);
         NNS_SndPlayerCreateHeap(0, h, a1);

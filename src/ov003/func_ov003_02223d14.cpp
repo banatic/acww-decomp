@@ -25,7 +25,7 @@ extern "C" void func_ov003_02223dc8(struct UnkStruct_02223d14 *, struct Node *, 
                                     struct Pair *);
 extern "C" void func_ov003_022240fc(struct Node *, int, int, int, int, struct Vec *, int);
 extern "C" int func_ov003_022240cc(struct Node *);
-extern "C" void func_02090ac4(void *, struct Vec *, int, struct M16 *);
+extern "C" int func_02090ac4(void *, struct Vec *, int, struct M16 *);
 extern const struct M16 data_ov003_0223a188;
 extern unsigned char data_ov003_02236b1c[];
 extern void *data_ov003_022368ec[];

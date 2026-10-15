@@ -20,8 +20,8 @@ struct UnkStruct_02279178 {
     int unk_720;
     u16 unk_724;
 };
-extern void func_02019c20(u8 *, int, int, int, int, int);
-extern void func_0200442c(u8 *, int, int, int);
+extern int func_02019c20(u8 *, int, int, int, int, int);
+extern int func_0200442c(u8 *, int, int, int);
 extern void func_0201aff4(u8 *, int);
 extern void func_0201ad18(u8 *, int, int, int, void *, int, int, int);
 extern int data_020c814c;

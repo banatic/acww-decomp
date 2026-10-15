@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020af880(void);
+extern void func_020af880(void *);
 
 void func_020afbcc(void *param)
 {
@@ -11,7 +11,7 @@ void func_020afbcc(void *param)
     unsigned short val;
     unsigned char *r;
 
-    func_020af880();
+    func_020af880(param);
     p = (unsigned short *) ((char *) param + 0x5a);
     val = *p;
     val &= 0xfffff9ff;

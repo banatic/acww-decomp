@@ -12,7 +12,7 @@ typedef struct {
 extern void *func_020682e0(int);
 extern void func_02068320(void *);
 extern int func_020b5e10(void);
-extern void func_020b6434(int, int, int, int);
+extern int func_020b6434(int, int, int, int);
 extern void func_ov147_0229a01c(void *);
 
 void func_ov147_02299c34(void *a)

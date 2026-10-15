@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern char *func_020831c0(unsigned int, unsigned int);
+extern char *func_020831c0(void);
 
 typedef struct {
     unsigned int unk_00;
@@ -12,7 +12,7 @@ typedef struct {
 char *func_02083110(self_t *self, unsigned int index)
 {
     if (index < self->count) {
-        char *p = func_020831c0(self->count, index) + 8;
+        char *p = func_020831c0() + 8;
         return p + index * 0x6C + 4;
     } else {
         return 0;

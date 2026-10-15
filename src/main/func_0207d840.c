@@ -4,21 +4,21 @@
 
 extern int func_0208150c(int);
 extern int func_0207f1c8(int);
-extern int func_0209b5ec(int);
+extern int func_0209b5ec(void *);
 extern int func_0209c330(int);
 extern int func_02003704(int);
 extern int func_0209c370(int);
 extern int func_0209c2c0(int);
 extern int func_0207db48(int, int);
 extern int func_0209c108(int);
-extern int func_0207d9d4(int, int);
+extern void func_0207d9d4(int, int);
 extern int func_0209c168(int);
 extern int func_0209c38c(int);
 extern int func_0209b5e8(int);
-extern int func_0209baf4(int);
+extern void func_0209baf4(int);
 extern int func_0207f270(int);
 extern int func_020794d0(int);
-extern int func_0209bd5c(int);
+extern void func_0209bd5c(int);
 extern int func_0209c310(int);
 extern void func_0209bd30(int, int, short *, int);
 extern void func_0207f414(int, int, int);
@@ -31,7 +31,7 @@ int func_0207d840(int param0, int param1)
     unsigned short sh;
 
     var_a = func_0208150c(param0);
-    r6 = func_0209b5ec(func_0207f1c8(param0));
+    r6 = (func_0209b5ec((void *) func_0207f1c8(param0)));
     r4 = 12;
     r7 = func_0209c330(r6);
 

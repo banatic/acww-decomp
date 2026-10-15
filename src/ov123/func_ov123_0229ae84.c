@@ -13,8 +13,8 @@ typedef struct {
 
 extern void func_ov123_0229b5cc(UnkStruct_0229ae84 *);
 extern void func_ov123_0229b598(UnkStruct_0229ae84 *);
-extern void func_ov123_0229a278(UnkStruct_0229ae84 *);
-extern void func_ov123_0229a248(UnkStruct_0229ae84 *);
+extern void func_ov123_0229a278(UnkStruct_0229ae84 *, unsigned char arg1);
+extern void func_ov123_0229a248(UnkStruct_0229ae84 *, unsigned char arg1);
 extern void func_ov123_0229b0dc(UnkStruct_0229ae84 *, unsigned char);
 extern void RtcSendPxiCommand(int);
 extern void func_ov123_02299dc4(UnkStruct_0229ae84 *);
@@ -44,14 +44,14 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
     }
 
     if (cmd <= 0xb && cmd != 5) {
-        func_ov123_0229a278(self);
+        func_ov123_0229a278(self, cmd);
         return;
     }
 
     if (cmd == 0xc) {
         unsigned char val;
 
-        func_ov123_0229a248(self);
+        func_ov123_0229a248(self, cmd);
         val = (unsigned char) ((self->unk_A1 + 1) & 0xf);
         func_ov123_0229b0dc(self, val);
         RtcSendPxiCommand(0x868);
@@ -59,7 +59,7 @@ void func_ov123_0229ae84(UnkStruct_0229ae84 *self)
     }
 
     if (cmd == 5) {
-        func_ov123_0229a248(self);
+        func_ov123_0229a248(self, cmd);
         func_ov123_02299dc4(self);
         return;
     }

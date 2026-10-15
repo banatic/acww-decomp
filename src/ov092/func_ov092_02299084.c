@@ -12,7 +12,7 @@ struct UnkStruct_02299084 {
 };
 
 extern void func_0206f55c(void);
-extern void func_0207000c(int id);
+extern int func_0207000c(int id);
 
 void func_ov092_02299084(struct UnkStruct_02299084 *self)
 {

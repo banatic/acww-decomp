@@ -49,7 +49,7 @@ extern struct Pair data_020d9228;
 
 extern int func_0208150c(int a);
 extern int func_020036e8(int a);
-extern void func_0202da38(UnkStruct_0201e074_3 *s, u8 *a, u8 *b, int c, int d, int e, int f, int g, int h);
+extern int func_0202da38(UnkStruct_0201e074_3 *s, u8 *a, u8 *b, int c, int d, int e, int f, int g, int h);
 extern int func_020984e8(void);
 extern int func_02099870(int a);
 extern int func_020951bc(int a);
@@ -57,10 +57,12 @@ extern int func_02003704(int a);
 extern int func_0207cec0(void *p, int i);
 extern int memcmp(const void *a, const void *b, int n);
 extern int func_020807a8(int a, int b);
-extern int func_02081d20(void);
+extern int func_02081d20(void *object);
 
 void func_0201e074(UnkStruct_0201e074_3 *self, UnkStruct_0201e074_4 *out)
 {
+    int forwarded_value;
+
     int x;
     int g0;
     int one;
@@ -126,10 +128,10 @@ loop:
             }
         }
     }
-    if (func_020807a8(t, h) == 0) {
+    if ((forwarded_value = (int) func_020807a8(t, h)) == 0) {
         goto cont;
     }
-    if (func_02081d20() < 0x40) {
+    if (func_02081d20((void *) forwarded_value) < 0x40) {
         goto cont;
     }
     self->unk_194 = (u8) (self->unk_194 | (1 << i));

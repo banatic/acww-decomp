@@ -8,7 +8,7 @@ extern void func_ov136_0229c650(void *arg);
 extern void func_ov136_0229c734(void *arg);
 extern void func_ov136_0229c92c(void *arg);
 extern int func_ov136_0229c58c(void *arg, int v);
-extern int func_ov002_02208014(void *arg);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(void *arg);
 
 struct _FlagsStruct {
@@ -22,7 +22,7 @@ void func_ov136_0229cc90(void *param)
     int v;
     unsigned short flags;
 
-    if (func_ov002_02208014(param)) {
+    if (func_ov002_02208014()) {
         func_ov136_0229c9b0(param);
         return;
     }

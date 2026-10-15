@@ -2,10 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern void func_ov125_0229f75c(unsigned short *object, unsigned short mask);
+
 extern void func_ov125_0229faf8(void *);
 extern void func_0206fc4c(int);
-extern void func_ov002_02207d24(void *, int);
-extern void func_ov002_022080a0(void *, int);
+extern int func_ov002_02207d24(void *, int);
+extern unsigned char *func_ov002_022080a0(void *, unsigned char value);
 extern void RtcSendPxiCommand(int);
 
 void func_ov125_0229fe58(void *arg0)

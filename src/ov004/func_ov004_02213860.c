@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_020e895c(void *p, int a, int b);
+extern int func_020e895c(void *p, int a, int b);
 extern int FX_MulFunc(int a, s16 b);
 
 int func_ov004_02213860(char *self)

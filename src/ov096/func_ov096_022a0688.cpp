@@ -19,15 +19,15 @@ typedef struct UnkStruct_022a0688_2 {
 } UnkStruct_022a0688_2;
 
 extern "C" int func_ov002_02209f64(const UnkStruct_022a0688 *);
-extern "C" void func_ov002_02208098(UnkStruct_022a0688_2 *, unsigned char);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern "C" void func_ov096_0229ed74(UnkStruct_022a0688_2 *, unsigned char);
-extern "C" void func_ov096_0229ea5c(UnkStruct_022a0688_2 *);
+extern "C" int func_ov096_0229ea5c(UnkStruct_022a0688_2 *);
 
 void Obj_ov096_022a23e8::func_ov096_022a0688()
 {
     UnkStruct_022a0688_2 *self = (UnkStruct_022a0688_2 *) this;
     if (func_ov002_02209f64(&self->sub) == 0) {
-        func_ov002_02208098(self, self->unk_BA);
+        func_ov002_02208098((void *) (self), self->unk_BA);
         if ((unsigned char) (self->unk_BA + 0xf6) <= 2) {
             func_ov096_0229ed74(self, self->unk_B5);
         }

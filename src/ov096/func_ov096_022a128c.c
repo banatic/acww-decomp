@@ -16,7 +16,7 @@ extern int func_ov096_0229f4f8(void *self, int a, int b, int c);
 extern int func_ov096_0229f39c(void *self, int a, int b);
 extern void func_ov096_0229cc74(void *self, int a, int b);
 extern int func_ov096_0229f320(void *self, int a, int b);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov094_02299c74(void *p, int v);
 extern int func_ov096_0229f3bc(void *self, int a, int b);
 
@@ -59,7 +59,7 @@ void func_ov096_022a128c(char *self)
             func_ov096_0229cc74(self, 0x27, 0);
             break;
         case 2:
-            func_ov002_02208098(self, 9);
+            func_ov002_02208098((void *) (self), 9);
             func_ov094_02299c74(self + 0xde0, *(u8 *) (self + 0xbf));
             break;
         default:

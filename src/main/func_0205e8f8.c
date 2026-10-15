@@ -7,7 +7,7 @@
 extern u32 data_021ca16c[];
 extern u16 *func_0205f100(u32 *t, u8 k);
 extern void *func_0205f130(u32 *t, u8 k);
-extern void func_02055d0c(void *src, void *dst, u32 n);
+extern int func_02055d0c(void *src, void *dst, u32 n);
 
 typedef struct {
     u32 data[12];

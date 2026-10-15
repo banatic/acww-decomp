@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_02211db0;
 
 extern void func_ov003_02211e38(UnkStruct_02211db0 *obj);
-extern void func_0201100c(UnkStruct_02211db0 *obj);
+extern int func_0201100c(UnkStruct_02211db0 *obj);
 extern void func_02010d64(UnkStruct_02211db0 *obj);
 extern unsigned int func_02011398(int a, int b);
 extern void func_0201107c(UnkStruct_02211db0 *obj, unsigned int *p);

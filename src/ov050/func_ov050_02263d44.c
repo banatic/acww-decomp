@@ -5,7 +5,7 @@
 extern int func_02019e00(void *);
 extern int func_02019de8(void *);
 extern void func_ov050_02264834(void *, int);
-extern void func_ov050_02260718(void *);
+extern int func_ov050_02260718(void *);
 
 int func_ov050_02263d44(void *param)
 {

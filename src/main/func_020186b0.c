@@ -16,10 +16,10 @@ typedef struct {
 
 extern int func_02057bf0(int);
 extern CFake *func_02019de4(void *);
-extern void func_02057b90(int, void *);
+extern int func_02057b90(int, void *);
 extern int func_02057c20(int);
-extern int func_ov004_0222bf50(int);
-extern void func_0200442c(void *, int, int, int);
+extern int func_ov004_0222bf50(void);
+extern int func_0200442c(void *, int, int, int);
 
 void func_020186b0(void *a, void *b)
 {
@@ -30,7 +30,7 @@ void func_020186b0(void *a, void *b)
         c = func_02019de4(a);
         func_02057b90(9, b);
         res = func_02057c20(c->unk_28);
-        if (res != 0 && func_ov004_0222bf50(res) != 0) {
+        if (res != 0 && func_ov004_0222bf50() != 0) {
             *((unsigned char *) a + 0x98) = 2;
         }
     } else {

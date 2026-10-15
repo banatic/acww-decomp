@@ -16,8 +16,8 @@ typedef struct UnkStruct_02261c28 {
 
 extern int func_0206fc6c(void);
 extern int func_0206fc8c(void);
-extern void func_02094fd4(void *);
-extern void func_02094fbc(void *);
+extern void *func_02094fd4(void *);
+extern void *func_02094fbc(void *);
 extern int func_0209a034(int);
 extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
@@ -28,8 +28,8 @@ extern int func_02070fe4(void *, void *, u16 *);
 extern void func_02068404(int, int, void *);
 extern int func_020644cc(int);
 extern void func_0209a088(u16 *, int, int);
-extern void func_02015330(UnkStruct_02261c28 *, u16 *, int, int, int);
-extern void func_020155cc(UnkStruct_02261c28 *);
+extern int func_02015330(UnkStruct_02261c28 *, u16 *, int, int, int);
+extern int func_020155cc(UnkStruct_02261c28 *);
 extern void func_ov047_02261f74(UnkStruct_02261c28 *, int);
 extern void func_0206844c(int, u8 *, int);
 extern int data_ov047_02262fc0;

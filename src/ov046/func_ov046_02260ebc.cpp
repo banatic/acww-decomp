@@ -13,7 +13,7 @@ struct E {
 };
 
 extern "C" int func_020a12e8(void);
-extern "C" void func_020984e8(void);
+extern "C" int func_020984e8(void);
 extern "C" void func_0206844c(int, unsigned char *, void *);
 extern void *data_ov046_02261fe8;
 

@@ -5,8 +5,8 @@
 extern unsigned int data_020ccf94;
 extern void func_ov003_02211ac0(void *self);
 extern int func_02073908(unsigned int a, unsigned int b);
-extern void func_0201100c(void *self);
-extern void func_0200f434(void *self, unsigned int *arr);
+extern int func_0201100c(void *self);
+extern int func_0200f434(void *self, unsigned int *arr);
 extern void func_02010d64(void *self);
 extern void func_ov003_02211a4c(void *self);
 

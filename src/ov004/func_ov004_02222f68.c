@@ -4,13 +4,13 @@
 
 #include "types.h"
 
-extern void func_ov004_0222fd94(void *);
+extern int func_ov004_0222fd94(void);
 
 int func_ov004_02222f68(char *self)
 {
     // DECLS
     // ENDDECLS
-    func_ov004_0222fd94(self);
+    func_ov004_0222fd94();
     *(u16 *) (self + 0x710) = (*(int *) (self + 0x190) >> 12);
     return 0x1;
 }

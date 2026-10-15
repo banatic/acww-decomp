@@ -4,12 +4,12 @@
 
 extern int func_ov004_0220fde0(void *self);
 extern int func_ov004_0220d2a8(void *p);
-extern void func_0205265c(void *self, int a, int b, int c);
-extern void func_ov004_0220d290(void *p, int a);
+extern int func_0205265c(void *self, int a, int b, int c);
+extern void func_ov004_0220d290(unsigned char *self, int pending);
 extern int func_ov004_0220ffbc(void *self);
-extern void func_ov004_022107d4(void *self);
+extern int func_ov004_022107d4(void *self);
 extern int func_02056f28(void *p, int a);
-extern void func_ov004_02210744(void *self);
+extern int func_ov004_02210744(void *self);
 
 void func_ov004_02219e54(char *self)
 {
@@ -23,7 +23,7 @@ void func_ov004_02219e54(char *self)
             }
             break;
     }
-    func_ov004_0220d290(self + 0x740, 0);
+    func_ov004_0220d290((unsigned char *) self + 0x740, 0);
     if (func_ov004_0220ffbc(self) != 0) {
         func_0205265c(self, 0, 0xff, 1);
     } else {

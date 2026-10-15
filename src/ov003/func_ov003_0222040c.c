@@ -5,7 +5,7 @@
 extern void *func_020b3b50(int);
 extern unsigned int func_020b3ed4(void *);
 extern int func_020b3db8(void *, int *, int *, int *, unsigned int);
-extern void func_02030920(int, int, unsigned char);
+extern int func_02030920(int, int, unsigned char);
 
 int func_ov003_0222040c(int unused, int key, int baseX, int baseY)
 {

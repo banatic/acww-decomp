@@ -3,16 +3,16 @@
  */
 
 extern int func_0209ad9c(void *p, int q);
-extern int func_0209b4d4(int x);
+extern int func_0209b4d4(void *object);
 extern int func_0209bd44(int x);
 extern int func_0209bc40(int x);
 extern void func_0209bb90(int x, int y);
 extern int func_02099fe8(void);
-extern void func_02094fd4(void *p);
+extern void *func_02094fd4(void *p);
 extern void func_0209ab34(void *p);
-extern void func_0209ac50(void *p, void *q, void *r);
+extern int func_0209ac50(void *p, void *q, void *r);
 extern void func_02068404(int a, int b, void *c);
-extern void func_02094fbc(void *p);
+extern void *func_02094fbc(void *p);
 
 typedef struct {
     char pad_00[0x40];
@@ -29,7 +29,7 @@ void func_ov050_02262a28(UnkStruct_02262a28 *a, void *p1)
     int local2[9];
     int ret;
 
-    ret = func_0209b4d4(func_0209ad9c(p1, 0));
+    ret = func_0209b4d4((void *) (func_0209ad9c(p1, 0)));
     if (func_0209bd44(ret) != 0) {
         if (func_0209bc40(ret) == 0xd) {
             func_0209bb90(ret, 1);

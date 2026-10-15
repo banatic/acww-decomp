@@ -18,10 +18,10 @@ extern int func_0201b43c(char *a, int b);
 extern void func_ov050_02260dd4(UnkStruct_02261200 *self);
 extern int func_0204bcdc(u16 *p);
 extern int func_0204bc64(u16 *p);
-extern void func_ov004_0224730c(void);
-extern void func_ov004_022472ec(void);
-extern void func_02034b80(u16 *p, int a, int b, int c);
-extern void func_02034b04(u16 *p, int a, int b, int c);
+extern int func_ov004_0224730c(void);
+extern int func_ov004_022472ec(void);
+extern int func_02034b80(u16 *p, int a, int b, int c);
+extern void *func_02034b04(u16 *p, int a, int b, int c);
 
 void func_ov050_02261200(UnkStruct_02261200 *self, int mode)
 {

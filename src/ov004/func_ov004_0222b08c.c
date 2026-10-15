@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200fbc4(void *, int, int, int);
+extern void func_0200fbc4(void *, int, int, int);
 
-int func_ov004_0222b08c(char *self)
+void func_ov004_0222b08c(char *self)
 {
     // DECLS
     // ENDDECLS
-    return func_0200fbc4(self, *(int *) (self + 0x5c), *(int *) (self + 0x64), *(short *) (self + 0x7dc));
+    func_0200fbc4(self, *(int *) (self + 0x5c), *(int *) (self + 0x64), *(short *) (self + 0x7dc));
 }

@@ -51,11 +51,11 @@ struct TE {
 extern "C" {
 extern int func_02019de8(void *p);
 extern int func_ov068_022697cc(void *self, UnkStruct_02269684 *obj, int c);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern int func_020164a0(void *p, int a);
 extern int func_020644cc(int a);
-extern void func_020912d4(int a, Vec *v, s16 *ang, int d);
-extern void func_0200442c(void *p, int a, int b, int c);
+extern int func_020912d4(int a, Vec *v, s16 *ang, int d);
+extern int func_0200442c(void *p, int a, int b, int c);
 extern void func_ov068_0226cce8(void *self, UnkStruct_02269684 *obj, int c);
 extern void func_0207d0f0(void *p, int a);
 }

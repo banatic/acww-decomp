@@ -20,11 +20,11 @@ typedef struct UnkStruct_02028648_2 {
 extern int data_021c2a34, data_021c2a4c, data_021c2a1c;
 extern const UnkStruct_02028648_2 data_020d9140;
 
-extern void func_0202d9c4(UnkStruct_02028648_3 *c);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(UnkStruct_02028648_3 *c);
+extern int func_0209bc40(unsigned char *);
 extern int func_020984e8(void);
-extern void func_02099734(void);
-extern int func_02098eb8(void);
+extern int func_02099734(int);
+extern int func_02098eb8(int);
 extern int func_0209a1e8(void);
 extern void func_0201cfb4(UnkStruct_02028648_3 *c, UnkStruct_02028648 *w);
 extern void func_0201cf90(UnkStruct_02028648_3 *c, UnkStruct_02028648 *w, int i, int a, int b, void *p);
@@ -38,13 +38,10 @@ void func_02028648(UnkStruct_02028648_3 *c)
     void *p;
 
     p = &data_021c2a34;
-    func_0202d9c4(c);
-    switch (func_0209bc40()) {
+    switch (func_0209bc40((unsigned char *) func_0202d9c4(c))) {
         case 0xa:
             if (func_020984e8()) {
-                func_020984e8();
-                func_02099734();
-                if (func_02098eb8() != -1) {
+                if (func_02098eb8((int) func_02099734((int) func_020984e8())) != -1) {
                     p = &data_021c2a4c;
                 }
             }

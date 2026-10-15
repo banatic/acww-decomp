@@ -23,20 +23,20 @@ typedef struct UnkStruct_02273ff0_2 {
     UnkStruct_02273ff0 *base;
 } UnkStruct_02273ff0_2;
 
-extern void *func_0206fc44(UnkStruct_02273ff0_2 *self);
+extern void *func_0206fc44(void);
 extern void MI_CpuCopy8(void *dst, const void *src, u32 size);
-extern void func_02062fbc(void *p);
-extern void func_02062e50(void *p);
+extern void *func_02062fbc(void *p);
+extern void *func_02062e50(void *p);
 extern void func_020a8874(void *dst, const void *src, u32 count);
-extern void func_020a8a70(void *a, void *b, u32 c, u32 d);
+extern int func_020a8a70(void *a, void *b, u32 c, u32 d);
 extern void func_020683b4(void *a, u32 b, void *c, u32 d);
 extern int func_0206fc6c(void);
 extern u32 func_0206fc8c(void);
 extern void func_02015de4(UnkStruct_02273ff0_2 *self, u16 *half, u32 a, u32 b);
-extern u16 func_ov068_02273980(UnkStruct_02273ff0 *base);
+extern u16 func_ov068_02273980(void);
 extern void func_0206844c(void *a, void *b, u32 c);
-extern void func_02062e00(void *p);
-extern void func_02062f4c(void *p);
+extern void *func_02062e00(void *p);
+extern void *func_02062f4c(void *p);
 
 extern u32 data_ov068_02277ca4[];
 
@@ -49,7 +49,7 @@ void func_ov068_02273ff0(UnkStruct_02273ff0_2 *self)
     u32 ret;
     u16 val;
 
-    MI_CpuCopy8(func_0206fc44(self), self->base->unk_734, 0x14);
+    MI_CpuCopy8(func_0206fc44(), self->base->unk_734, 0x14);
     func_02062fbc(buf1);
     func_02062e50(buf2);
     func_020a8874(buf2, self->base->unk_734, 10);
@@ -69,7 +69,7 @@ void func_ov068_02273ff0(UnkStruct_02273ff0_2 *self)
         func_02015de4(self, &half0, 1, 7);
     } else {
         self->base->unk_74B = 1;
-        self->base->unk_652 = func_ov068_02273980(self->base);
+        self->base->unk_652 = ((void) *(UnkStruct_02273ff0 *volatile *) &self->base, func_ov068_02273980());
     }
 
     byte0 = 8;

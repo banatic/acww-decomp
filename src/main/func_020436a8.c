@@ -47,7 +47,7 @@ extern int func_0204ba94(volatile unsigned short *p);
 extern int func_0204b710(volatile unsigned short *p);
 extern void func_02045f08(UnkStruct_020436a8 *p, int a);
 extern void func_ov003_02220e20(int a, int b, UnkStruct_020436a8 *p, UnkStruct_020436a8_2 *v);
-extern void func_ov003_02221118(int a, int b, UnkStruct_020436a8 *p);
+extern int func_ov003_02221118(int a, int b, UnkStruct_020436a8 *p);
 
 int func_020436a8(unsigned int idx)
 {

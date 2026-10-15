@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void RtcSendPxiCommand(int cmd);
 extern void func_ov119_0229a410(void *p, int n);
 extern int func_ov119_0229c608(void *p, int n);

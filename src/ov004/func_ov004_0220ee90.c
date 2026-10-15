@@ -11,14 +11,14 @@ struct Iter {
     u8 data[0x14];
 };
 
-extern void func_ov004_0220db94(struct UnkStruct_0220ee90 *l);
+extern char *func_ov004_0220db94(struct UnkStruct_0220ee90 *l);
 extern void func_ov004_0220f27c(void *self, struct UnkStruct_0220ee90 *l, int a, int b);
-extern void func_ov004_0220dad0(struct Iter *it, struct UnkStruct_0220ee90 *l, int k);
-extern void func_ov004_0220f100(void *self, int a, int b);
+extern void *func_ov004_0220dad0(struct Iter *it, struct UnkStruct_0220ee90 *l, int k);
+extern void func_ov004_0220f100(void *self, unsigned char a, int b);
 extern void func_ov004_0220ef14(void *obj, int a, int b, int c, int d);
 extern void *func_ov004_0220dab0(struct Iter *it, unsigned int i);
 extern unsigned int func_ov004_0220dabc(struct Iter *it);
-extern void func_ov004_0220dac0(struct Iter *it);
+extern int func_ov004_0220dac0(struct Iter *it);
 extern void func_ov004_0220db90(struct UnkStruct_0220ee90 *l);
 
 void func_ov004_0220ee90(char *self, int a, int b)

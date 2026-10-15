@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020a7e44(int);
+extern "C" unsigned char func_020a7e44(void);
 
 class UnkStruct_0208c638 {
   public:
@@ -16,7 +16,7 @@ class UnkStruct_0208c638 {
 extern "C" int func_0208c638(UnkStruct_0208c638 *obj)
 {
     if (obj->unk_C0 == 2) {
-        func_020a7e44(obj->unk_C0);
+        func_020a7e44();
     }
     return obj->vfunc2();
 }

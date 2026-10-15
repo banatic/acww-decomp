@@ -3,13 +3,13 @@
  */
 
 extern int func_020984e8(void);
-extern int func_02099734(void);
-extern int func_02098eb8(void);
-extern void func_02098f0c(int, void *, int, int);
+extern int func_02099734(int);
+extern int func_02098eb8(int object);
+extern int func_02098f0c(int, void *, int, int);
 extern int func_020996ac(int);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
-extern void func_0207de70(void *, void *);
-extern void func_020154b4(void *, void *, int, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
+extern int func_0207de70(void *, void *);
+extern int func_020154b4(void *, void *, int, int, int);
 
 typedef struct {
     unsigned char pad_00[0x100];
@@ -29,8 +29,8 @@ int func_0201d448(TStruct *base)
     }
 
     r4 = func_020984e8();
-    r6 = func_02099734();
-    r2 = func_02098eb8();
+    r6 = func_02099734(r4);
+    r2 = func_02098eb8((int) r6);
     if (r2 < 0) {
         goto fail;
     }

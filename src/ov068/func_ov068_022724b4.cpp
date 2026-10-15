@@ -6,7 +6,7 @@
 #include "cpp/ov068/Obj_ov068_02277750.h"
 
 extern "C" void *func_ov003_02220174(int a);
-extern "C" void func_ov009_0226305c(void);
+extern "C" int func_ov009_0226305c(void *argument0);
 extern "C" void *func_ov009_02262fc0(void *p);
 extern "C" void *func_ov009_02262fb4(void *p);
 
@@ -19,7 +19,7 @@ void Obj_ov068_02277750::func_ov068_022724b4()
     void *r5 = p;
     r4 = func_ov003_02220174(0x5000);
     if (r4 != 0) {
-        func_ov009_0226305c();
+        func_ov009_0226305c((void *) r4);
         r0 = func_ov009_02262fc0(r4);
         r1 = (void *) 0x2b8;
         *(void **) ((char *) r5 + (int) r1) = r0;

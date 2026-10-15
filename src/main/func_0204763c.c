@@ -15,9 +15,9 @@ typedef struct {
 
 extern int data_021c79c4;
 
-FieldStruct *func_0204e414(void *a, int b);
+FieldStruct *func_0204e414(void);
 void func_0209e474(UnkStruct_0204763c *l);
-void func_0204a3cc(int *g, FieldStruct *b);
+int func_0204a3cc(int *g, FieldStruct *b);
 void func_02047688(void *a, FieldStruct *b, int c, int d, UnkStruct_0204763c *e, int f);
 
 void func_0204763c(void *a, int b)
@@ -26,7 +26,7 @@ void func_0204763c(void *a, int b)
     FieldStruct *p;
     int c, d;
 
-    p = func_0204e414(a, b);
+    p = func_0204e414();
     if (p == 0) {
         return;
     }

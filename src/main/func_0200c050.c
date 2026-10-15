@@ -7,7 +7,7 @@ extern void *func_02018fdc(unsigned char);
 extern void func_0201a698(void *a, void *b, int c);
 extern void func_02010a24(void *a, int b, int c, unsigned char d, int e, int f, int g, int h);
 
-void func_0200c050(unsigned char *p0, unsigned char *p1)
+void func_0200c050(unsigned char *p0, unsigned char *p1, int previous)
 {
     unsigned char *q;
     unsigned char *p4;

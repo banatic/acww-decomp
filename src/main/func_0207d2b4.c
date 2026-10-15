@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02003704(void);
+extern int func_02003704(void *);
 extern void *func_0207f270(void *);
 extern void *func_020984e8(void);
 extern int func_02099870(void *);
-extern int func_020951bc(void);
+extern int func_020951bc(void *);
 extern int func_02099020(void *, int);
 extern int func_020807a8(void *, int);
-extern int func_02081d20(void);
+extern int func_02081d20(void *object);
 extern int func_020644cc(int);
-extern void func_0208150c(void *, void *);
+extern unsigned int func_0208150c(void *);
 
 typedef struct {
     char pad_00[0x1e];
@@ -20,11 +20,12 @@ typedef struct {
 
 void func_0207d2b4(void *a, void *b)
 {
+    int forwarded_value;
+
     UnkStruct_0207d2b4 *ptr;
     int c, d, e, val;
 
-    func_0208150c(a, b);
-    if (func_02003704() == 0) {
+    if (func_02003704((void *) func_0208150c(a)) == 0) {
         goto end;
     }
     ptr = (UnkStruct_0207d2b4 *) func_0207f270(a);
@@ -35,18 +36,17 @@ void func_0207d2b4(void *a, void *b)
     if (b == 0) {
         goto end;
     }
-    func_02099870(b);
-    if (func_020951bc() == 0) {
+    if (func_020951bc((void *) func_02099870(b)) == 0) {
         goto end;
     }
     if (func_02099020(b, 1) != 0) {
         goto end;
     }
     c = (int) func_02099870(b);
-    if (func_020807a8(a, c) == 0) {
+    if ((forwarded_value = (int) func_020807a8(a, c)) == 0) {
         goto end;
     }
-    d = (int) func_02081d20();
+    d = (int) func_02081d20((void *) forwarded_value);
     e = (int) func_020644cc(10);
     val = (d + 0x100) >> 7;
     val *= e + 1;

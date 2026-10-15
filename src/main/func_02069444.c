@@ -2,9 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206b97c(int, int, int);
+extern void func_0206b97c(void);
 
-void func_02069444(int *p0)
+// clang-format off
+asm void func_02069444(register int *p0)
 {
-    func_0206b97c((int) p0, ((int) (((int) (p0[9]) + (5304))) + (552)), ((int) (p0[9]) + (5304)));
+    ldr r2, [r0, #0x24]
+    ldr r1, =0x14b8
+    add r2, r2, r1
+    ldr r1, =0x228
+    add r1, r2, r1
+    ldr r3, =func_0206b97c
+    bx r3
 }
+// clang-format on

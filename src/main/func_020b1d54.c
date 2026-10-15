@@ -3,19 +3,20 @@
  */
 
 extern unsigned char data_020e54a8;
-extern unsigned short *func_ov004_022320d8(int p0);
-extern void func_02062300(unsigned short *);
+extern unsigned short *func_ov004_022320d8(void);
+extern unsigned char func_02062300(unsigned short *);
 
-void func_020b1d54(int p0)
+int func_020b1d54(int p0)
 {
     unsigned int flag;
     unsigned short value;
     if (p0 == 0x1a) {
         flag = (data_020e54a8 == 1) ? 1u : 0u;
         if (flag == 0) {
-            return;
+            return p0;
         }
-        value = *func_ov004_022320d8(p0);
-        func_02062300(&value);
+        value = *func_ov004_022320d8();
+        return func_02062300(&value);
     }
+    return p0;
 }

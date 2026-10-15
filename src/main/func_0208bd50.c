@@ -8,7 +8,7 @@ extern void func_0208bd18(void *);
 extern int func_0208bf48(void *);
 extern void func_0208bc30(void *);
 extern int func_0208be84(void *, int);
-extern void func_0203e204(void);
+extern int func_0203e204(void);
 
 void func_0208bd50(void *param)
 {

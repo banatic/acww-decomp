@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern struct UnkStruct_0229d268;
+struct UnkStruct_0229d268;
 typedef void (UnkStruct_0229d268::*PMF)();
 extern const PMF data_ov135_0229d5e8;
 extern const PMF data_ov135_0229d5e0;

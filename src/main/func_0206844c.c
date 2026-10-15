@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void strncpy(void *, int, int);
+extern char *strncpy(void *, int, int);
 extern void MI_CpuFill8(void *, int, int);
 
 void func_0206844c(unsigned char *base, const unsigned char *src, int flag)

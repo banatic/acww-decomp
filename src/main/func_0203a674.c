@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_0203a674(void) {}
+unsigned short *func_0203a674(void *record)
+{
+    return (unsigned short *) record;
+}

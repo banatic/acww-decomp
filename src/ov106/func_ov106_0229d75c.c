@@ -6,7 +6,7 @@ extern void func_ov106_0229ccc8(void *);
 extern void func_ov106_0229cea8(void *);
 extern void func_ov106_0229d028(void *, unsigned char);
 extern void func_ov002_02207fc0(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov106_0229d75c(void *r0)
 {
@@ -19,7 +19,7 @@ void func_ov106_0229d75c(void *r0)
     func_ov106_0229ccc8(r0);
     func_ov002_02207fc0(r0);
     func_ov106_0229cea8(r0);
-    func_ov002_02208098(r0, 7);
+    func_ov002_02208098((void *) (r0), 7);
     q = p + 0xb8;
     func_ov106_0229d028(r0, *q);
 }

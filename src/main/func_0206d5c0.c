@@ -10,7 +10,7 @@ struct UnkStruct_0206d5c0 {
 
 extern char data_020def7c;
 extern void func_020a8fb8(void *ptr);
-extern void func_020a9260(struct UnkStruct_0206d5c0 *self);
+extern void *func_020a9260(struct UnkStruct_0206d5c0 *self);
 
 struct UnkStruct_0206d5c0 *func_0206d5c0(struct UnkStruct_0206d5c0 *self)
 {

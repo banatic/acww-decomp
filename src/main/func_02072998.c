@@ -6,15 +6,15 @@ extern int func_020e98b4(int);
 extern void func_020e9898(int);
 extern void func_020721dc(void);
 extern void func_020721c4(int);
-extern void func_02072994(int);
-extern int func_02072da0(void);
-extern void func_020721b0(int, int);
+extern void *func_02072994(void *record);
+extern void *func_02072da0(void *record);
+extern int func_020721b0(int, int);
 extern int func_02072260(void);
-extern int func_02072d4c(void);
-extern int func_02072ee8(int);
-extern int func_02095040(int);
+extern void *func_02072d4c(void *record);
+extern void *func_02072ee8(void *record);
+extern void *func_02095040(void *record);
 extern void func_020642d0(int, int);
-extern void func_02072268(int, int, int);
+extern int func_02072268(int, int, int);
 extern void func_020950cc(int, unsigned short);
 extern unsigned short data_020d1860;
 
@@ -32,14 +32,11 @@ void func_02072998(int param)
         func_020721dc();
     }
     func_020721c4(result);
-    func_02072994(param);
-    func_020721b0(result, func_02072da0());
+    func_020721b0(result, (int) func_02072da0(func_02072994((void *) param)));
     r6 = func_02072260();
-    func_02072994(param);
-    func_02072268(r6, func_02072d4c(), 0x10);
-    func_02072994(param);
-    func_020642d0(func_02095040(func_02072ee8(func_02072d4c())), (unsigned int) data_021dc7aa);
-    func_02072994(param);
-    func_020950cc(func_02072ee8(func_02072d4c()), data_020d1860);
+    func_02072268(r6, (int) func_02072d4c(func_02072994((void *) param)), 0x10);
+    func_020642d0((int) func_02095040(func_02072ee8(func_02072d4c(func_02072994((void *) param)))),
+                  (unsigned int) data_021dc7aa);
+    func_020950cc((int) func_02072ee8(func_02072d4c(func_02072994((void *) param))), data_020d1860);
     func_020e9898(result);
 }

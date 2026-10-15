@@ -7,9 +7,9 @@ extern unsigned char data_ov051_022614c4[];
 extern int data_ov051_022615c0;
 
 extern int func_020a12ac(void);
-extern void func_020984e8(void);
-extern void func_02099870(void);
-extern int func_020950c0(void);
+extern int func_020984e8(void);
+extern int func_02099870(int argument0);
+extern int func_020950c0(void *argument0);
 extern void func_0206844c(int, unsigned char *, int);
 
 typedef struct {
@@ -25,9 +25,8 @@ void func_ov051_022606c8(UnkStruct_022606c8 *p, int p1)
     int result;
 
     if (func_020a12ac() != 0) {
-        func_020984e8();
-        func_02099870();
-        result = *(unsigned char *) (data_ov051_022614c8 + 2 * p1 + func_020950c0());
+
+        result = *(unsigned char *) (data_ov051_022614c8 + 2 * p1 + func_020950c0((void *) func_02099870(func_020984e8())));
     } else {
         result = data_ov051_022614c4[p1];
     }

@@ -3,10 +3,10 @@
  */
 
 extern void func_ov004_0222c394(void *p);
-extern void func_ov004_0222c538(void *p);
-extern void func_020551e0(void *p);
-extern void func_020565b0(void *p);
-extern void func_ov004_0222c7a0(void *p);
+extern int func_ov004_0222c538(void *p);
+extern void *func_020551e0(void *p);
+extern void *func_020565b0(void *p);
+extern void *func_ov004_0222c7a0(void *p);
 
 extern unsigned char data_ov068_022778f4[];
 

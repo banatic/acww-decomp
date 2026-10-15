@@ -18,7 +18,7 @@ struct UnkStruct_02270d54 {
 extern int func_020e8bb0(void *addr, u32 a, u32 b, u32 c, u32 d);
 extern void func_02035624(int);
 extern void func_020356c4(int, int, int, int);
-extern void func_02095ea4(int, int);
+extern int func_02095ea4(int, int);
 
 void func_ov068_02270d54(struct UnkStruct_02270d54 *p)
 {

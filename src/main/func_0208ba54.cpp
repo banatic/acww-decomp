@@ -3,6 +3,7 @@
  */
 
 #include "cpp/main/Obj_020e21fc.h"
+
 typedef void (Obj_020e21fc::*Pmf)();
 extern "C" void func_0208ba54(Obj_020e21fc *self)
 {

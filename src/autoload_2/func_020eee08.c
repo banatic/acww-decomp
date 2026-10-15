@@ -2,21 +2,19 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int func_020eef70(void);
-extern int NNS_SndHeapAlloc(int, int, void (*)(void), int, int);
-extern void func_020eeea0(void);
-extern int OS_Terminate(void);
+extern void *func_020eef70(void);
+extern void *NNS_SndHeapAlloc(void *heap, unsigned int size, void (*dispose)(void *, unsigned int, unsigned int, unsigned int),
+                              unsigned int data1, unsigned int data2);
+extern void func_020eeea0(void *memory, unsigned int size, unsigned int data1, unsigned int data2);
+extern void OS_Terminate(void);
 extern int data_021fd050;
 
-int func_020eee08(void)
+void func_020eee08(void)
 {
-    int ret;
-
-    ret = NNS_SndHeapAlloc(func_020eef70(), 0x1020, func_020eeea0, 0, 0);
-    data_021fd050 = ret;
-    if (ret != 0) {
-        return ret;
+    void *result = NNS_SndHeapAlloc(func_020eef70(), 0x1020, func_020eeea0, 0, 0);
+    data_021fd050 = (int) result;
+    if (result != 0) {
+        return;
     }
-
-    return OS_Terminate();
+    OS_Terminate();
 }

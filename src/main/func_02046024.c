@@ -20,7 +20,7 @@ struct Entry {
 extern struct Entry data_021c7884[];
 extern int func_02045cec(void *pair, u8 b);
 extern int func_020460ec(int a0, void *pair, u32 a2, u32 a3, u8 a4, u8 a5, u8 a6, u8 a7, u8 a8, s8 a9);
-extern void func_02046194(int idx, int a0, void *pair, u32 a2, u32 a3, u8 a4, u8 a5, u8 a6, u8 a7, u8 a8, s8 a9);
+extern int func_02046194(int idx, int a0, void *pair, u32 a2, u32 a3, u8 a4, u8 a5, u8 a6, u8 a7, u8 a8, s8 a9);
 
 int func_02046024(int p0, Pair *p1, u32 p2, u32 p3, u8 p4, u8 p5, u8 p6, u8 p7, u8 p8, s8 p9)
 {

@@ -30,7 +30,7 @@ static __inline struct UnkStruct_0223c080 *get(void)
     return g->unk_00;
 }
 
-void func_ov004_0223c080(void *self)
+void func_ov004_0223c080(void)
 {
     struct UnkStruct_0223c080 *q = get();
     u32 k;

@@ -20,9 +20,9 @@ typedef struct {
 } Buf;
 
 extern void *func_020984e8(void);
-extern void *func_02099640(void);
+extern int func_02099640(int object);
 extern void *func_0209a850(void *);
-extern int func_ov054_02260474(void *);
+extern int func_ov054_02260474(void);
 extern int func_020a12e8(void);
 extern int func_02099020(void *, int);
 extern int func_020a12d4(void);
@@ -46,10 +46,10 @@ void func_ov054_02261df8(UnkStruct_02261df8 *obj, void *m)
 
     h = func_020984e8();
     sel = 0;
-    y = func_0209a850(func_02099640());
+    y = func_0209a850((void *) func_02099640((int) h));
     flag = sel;
 
-    if (func_ov054_02260474(obj->unk_B0) != 0) {
+    if (((void) *(u8 *volatile *) &obj->unk_B0, func_ov054_02260474()) != 0) {
         flag = 1;
     } else if (func_020a12e8() != 0) {
         if (func_02099020(h, 9) == 0) {

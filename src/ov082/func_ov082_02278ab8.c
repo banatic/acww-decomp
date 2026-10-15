@@ -22,7 +22,7 @@ typedef struct LocalData {
 extern int func_020160b4(void *);
 extern int func_020ab504(int);
 extern void func_0209a050(int);
-extern void func_02015330(UnkStruct_02278ab8 *, u16 *, int, int, int);
+extern int func_02015330(UnkStruct_02278ab8 *, u16 *, int, int, int);
 extern void func_0206844c(void *, void *, void *);
 extern int func_ov082_02278dec(UnkStruct_02278ab8 *);
 extern u8 data_ov082_022798c8[];

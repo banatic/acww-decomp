@@ -22,15 +22,14 @@ extern struct GlobalData data_020c8aa0;
 extern struct GlobalData data_020c8ae0;
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
-extern void func_0202da38(void *, void *, void *, int, int, int, int, int, int);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
+extern int func_0202da38(void *, void *, void *, int, int, int, int, int, int);
 void func_020259e4(struct MainA *a, struct UnkStruct_020259e4 *out)
 {
     struct GlobalData *g = &data_020c8aa0;
     int v1, v2, v3;
-    func_0202d9c4();
-    if (func_0209bc40() == 1) {
+    if (func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) a)) == 1) {
         g = &data_020c8ae0;
     }
     v1 = func_020036e8(func_0208150c(((struct InnerB *) a->unk_100)->value));

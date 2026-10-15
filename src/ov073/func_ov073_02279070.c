@@ -3,20 +3,13 @@
  */
 
 extern volatile unsigned short data_020c80f8;
-extern void func_02019d0c(char *p, int a, int b, int c);
+extern int func_02019d0c(char *p, int kind, int value, int r3val, int argA, short argB, short argC, int argD, int argE,
+                         unsigned short argF, unsigned short argG);
 extern void func_02013c04(char *p);
 
 int func_ov073_02279070(char *r4)
 {
-    volatile int arr[7];
-    arr[0] = 0;
-    arr[1] = 0;
-    arr[2] = 0;
-    arr[3] = 0;
-    arr[4] = 0;
-    arr[5] = data_020c80f8;
-    arr[6] = 0;
-    func_02019d0c(r4 + 0x564, 0, 1, 0);
+    func_02019d0c(r4 + 0x564, 0, 1, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
     *(r4 + 0x651) = 0;
     func_02013c04(r4 + 0x558);
     return 1;

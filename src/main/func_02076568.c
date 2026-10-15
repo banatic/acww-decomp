@@ -10,7 +10,7 @@ void func_0207835c(unsigned int *key, unsigned short *arr, void *buf);
 void *func_0207cec0(void *table, unsigned int key);
 unsigned short *func_0207dfd4(void *handle, unsigned int index);
 
-void func_02076568(void)
+void func_02076568(int length, int sequence, unsigned char category, unsigned int player)
 {
     unsigned int key;
     unsigned short arr[4];

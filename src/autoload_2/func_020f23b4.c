@@ -11,7 +11,7 @@ extern void func_020f2344(void *);
 extern void func_0210ab38(int);
 extern int func_020eef70(void);
 extern void func_0210fe08(int, int);
-extern void func_020eecb0(int);
+extern int func_020eecb0(int);
 extern void func_0210fbf8(void *);
 extern void ENV_AppendResourceSet(void *);
 

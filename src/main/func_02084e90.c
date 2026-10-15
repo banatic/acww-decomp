@@ -8,12 +8,12 @@ extern void *data_021c80bc;
 extern void MI_CpuFill8(void *dst, int fill, unsigned int len);
 extern u16 *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
 extern void func_0204f794(void *v, int x, int z);
-extern void func_02034270(void *a, void *v, int c, int d);
+extern int func_02034270(void *a, void *v, int c, int d);
 extern int func_020341c8(void *a, int f);
 extern void func_0203423c(void *a);
 extern int func_02084e20(void *self, int x, int z);
-extern void func_02084e40(void *self, int x, int z);
-extern void func_02084e68(void *self, int x, int z);
+extern int func_02084e40(void *self, int x, int z);
+extern int func_02084e68(void *self, int x, int z);
 
 int func_02084e90(void *self)
 {

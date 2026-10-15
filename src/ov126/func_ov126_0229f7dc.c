@@ -3,10 +3,10 @@
  */
 
 extern void func_020a8874(void *, void *, unsigned char);
-extern void func_020a8a70(void *, void *, int, int);
+extern int func_020a8a70(void *, void *, int, int);
 extern int func_020b4424(void *);
-extern void func_020a87e0(void *, void *);
-extern void func_0205182c(void *, void *, unsigned char);
+extern int func_020a87e0(void *, void *);
+extern int func_0205182c(void *, void *, unsigned char);
 
 void func_ov126_0229f7dc(void *self)
 {

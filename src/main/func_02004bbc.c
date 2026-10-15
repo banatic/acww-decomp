@@ -4,7 +4,7 @@
 
 extern int func_020952e0(void);
 extern __arm int func_020e9968(int a, int b, int c);
-extern __arm void memset(int a, int b, int c);
+extern void *__arm memset(int a, int b, int c);
 extern int data_021c9ab4;
 
 int func_02004bbc(int arg)

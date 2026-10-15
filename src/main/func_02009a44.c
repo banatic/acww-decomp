@@ -6,11 +6,11 @@ struct Triple {
     unsigned int a, b, c;
 };
 
-extern void func_0200e92c(void *ptr);
+extern unsigned int func_0200e92c(void *ptr);
 extern void func_0200e90c(void *ptr, int a, int b, short c);
 extern void func_02009a9c(void *ptr, struct Triple data, int arg);
 extern int func_0200e894(void *ptr1, void *ptr2);
-extern void func_0200e91c(void *ptr);
+extern int func_0200e91c(void *ptr);
 
 int func_02009a44(unsigned char *obj, unsigned int *data, int a3, int a4, short a5)
 {

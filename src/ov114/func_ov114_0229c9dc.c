@@ -17,7 +17,7 @@ typedef struct {
 
 extern void MI_CpuCopy8(const void *src, void *dest, unsigned int size);
 extern int func_02088d94(const void *arg);
-extern void func_ov114_0229cb7c(BigStruct *base, int arg);
+extern int func_ov114_0229cb7c(BigStruct *base, int arg);
 extern const unsigned char data_ov114_0229dac0[8];
 extern const char data_ov114_0229db20[];
 

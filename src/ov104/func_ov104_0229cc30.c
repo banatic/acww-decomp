@@ -7,7 +7,7 @@ struct UnkStruct_0229cc30 {
     unsigned char unk_B8;
 };
 
-extern int func_ov104_0229c344(struct UnkStruct_0229cc30 *a, int x, int c);
+extern void func_ov104_0229c344(struct UnkStruct_0229cc30 *a, int x);
 extern int func_ov104_0229da80(struct UnkStruct_0229cc30 *a, unsigned char b);
 extern int func_ov104_0229da70(struct UnkStruct_0229cc30 *a, unsigned char b);
 extern int func_ov104_0229da5c(struct UnkStruct_0229cc30 *a, unsigned char b);
@@ -18,7 +18,7 @@ extern void func_ov104_0229ccb4(struct UnkStruct_0229cc30 *a, int b);
 int func_ov104_0229cc30(struct UnkStruct_0229cc30 *a, int b, int c)
 {
     unsigned char initial = a->unk_B8;
-    func_ov104_0229c344(a, 0x30, c);
+    func_ov104_0229c344(a, 0x30);
     if (b == 0) {
         return 0;
     }

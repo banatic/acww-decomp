@@ -17,10 +17,10 @@ typedef struct UnkStruct_0204d0ac_2 {
 } UnkStruct_0204d0ac_2;
 
 extern void func_0204f800(int *a, int *b, int c, int d, int e, int f);
-extern void func_0204ed08(UnkStruct_0204d0ac *p, int x, int y);
+extern int func_0204ed08(UnkStruct_0204d0ac *p, int x, int y);
 extern UnkStruct_0204d0ac_2 *func_0204f5e0(UnkStruct_0204d0ac *p, int a, int b, int c, int d, int e);
 extern int func_0204ba94(UnkStruct_0204d0ac_2 *e);
-extern void func_0204f538(UnkStruct_0204d0ac *p, u16 *m, int x, int y, int z);
+extern int func_0204f538(UnkStruct_0204d0ac *p, u16 *m, int x, int y, int z);
 
 static __inline int Chk(UnkStruct_0204d0ac_2 *p)
 {

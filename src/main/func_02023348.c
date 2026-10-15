@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(void *);
+extern int func_020984e8(void);
 extern int func_02099640(int);
 extern void func_0206f80c(void *);
 extern int func_0208150c(int);
@@ -20,7 +20,7 @@ void func_02023348(void *param)
     int local[2];
     int r1;
 
-    p4 = (void *) func_02099640(func_020984e8(param));
+    p4 = (void *) func_02099640(func_020984e8());
     local[0] = 0;
     local[1] = 0;
     func_0206f80c(local);

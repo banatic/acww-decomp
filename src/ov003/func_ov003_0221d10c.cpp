@@ -4,9 +4,9 @@
 
 extern "C" void func_020a8164(void *, void *);
 extern "C" void *data_ov003_02238ef8;
-extern "C" void func_02094fd4(void *);
-extern "C" void func_02082438(void *, void *);
-extern "C" void func_02094fbc(void *);
+extern "C" void *func_02094fd4(void *);
+extern "C" int func_02082438(void *, void *);
+extern "C" void *func_02094fbc(void *);
 extern "C" void func_02066954(void *, int, int);
 
 struct LocalObj {

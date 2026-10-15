@@ -3,7 +3,7 @@
  */
 
 extern void func_ov144_0229a17c(void *p);
-extern void func_ov002_022080a0(void *p, int n);
+extern unsigned char *func_ov002_022080a0(void *p, unsigned char value);
 
 struct S_f858 {
     unsigned char pad_00[0xc0];

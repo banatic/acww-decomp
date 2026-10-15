@@ -51,7 +51,7 @@ extern void func_0202d8f8(void *self, void *p12c, void *p128, void *p830, int ze
 extern int func_020819bc(void *a);
 extern void *func_0208150c(void *a);
 extern int func_020036e8(void *a);
-extern void func_0202da38(void *self, void *p104, void *p122, int len, int e, u32 a, int b, int h, int i);
+extern int func_0202da38(void *self, void *p104, void *p122, int len, int e, int offset, int b, int h, int i);
 extern int func_0207a47c(void *a, void *b);
 extern int func_020644cc(int a);
 extern void func_0202da88(UnkStruct_020208ec_4 *self, void *str);

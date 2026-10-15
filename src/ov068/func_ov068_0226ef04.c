@@ -7,8 +7,8 @@
 extern void *func_ov003_02236128(void *self);
 extern void func_0204f7e0(void *a, void *b);
 extern int FX_Div(int a, int b);
-extern void *func_020b03f8(int arg);
-extern void func_020044c0(void *ptr, int a, long long b);
+extern void *func_020b03f8(void);
+extern int func_020044c0(int, int, int, int);
 typedef struct UnkStruct_0226ef04_2 {
     u8 pad_00[0x5c];
     u32 unk_5C;
@@ -63,7 +63,7 @@ int func_ov068_0226ef04(UnkStruct_0226ef04_3 *self)
     ptr2->unk_380 = ptr2->unk_380 + ((((2 * x) - (x >> 3)) - (y >> 3)) - 0x400);
     ptr2->unk_A8 = -(FX_Div(0, 0x3e8000) + 0x8f2);
     idx = ptr2->unk_08 & 1;
-    p = (UnkStruct_0226ef04 *) func_020b03f8(1);
+    p = (UnkStruct_0226ef04 *) func_020b03f8();
     p[idx & 1].a = 3 * 0;
     p[idx & 1].b = 0;
     p[idx & 1].c = 0;
@@ -71,6 +71,6 @@ int func_ov068_0226ef04(UnkStruct_0226ef04_3 *self)
     ptr2->unk_314 = FX_Div(ptr2->unk_37C - ptr2->unk_5C, 0x10000);
     ptr2->unk_318 = FX_Div(ptr2->unk_384 - ptr2->unk_64, 0x10000);
     ptr2->unk_399 = 0;
-    func_020044c0(&ptr2->unk_328[0], 0x81e, 0x7f);
+    func_020044c0((int) (&ptr2->unk_328[0]), (int) (0x81e), (int) (0x7f), 0);
     return 1;
 }

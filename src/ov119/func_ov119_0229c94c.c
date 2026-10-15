@@ -5,11 +5,11 @@
 #include "types.h"
 
 extern int func_ov119_0229a420(void *self, int);
-extern int func_ov002_0220919c(void *p);
-extern int func_0206fe54(int v);
+extern void func_ov002_0220919c(void *p);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *p);
 extern void func_02088df8(int, const void *, int, void *, int, int, int, int, int, int, int, int);
-extern void func_020896b8(int, const void *, int, void *, int, int, int);
+extern int func_020896b8(int, const void *, int, void *, int, int, int);
 
 extern u8 data_ov119_0229ccc0[];
 extern void *data_ov119_0229cca8[];
@@ -43,7 +43,8 @@ int func_ov119_0229c94c(UnkStruct_0229c94c *self)
         return 1;
     }
 
-    if (func_0206fe54(func_ov002_0220919c((char *) self + 0xdc)) != 0) {
+    func_ov002_0220919c((char *) self + 0xdc);
+    if (func_0206fe54() != 0) {
         func_ov002_02209eb8((char *) self + 0xda8);
     }
 

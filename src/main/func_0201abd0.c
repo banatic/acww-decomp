@@ -2,12 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201ac10(void);
-extern int func_0201abac(int a, int b);
+extern int func_0201ac10(int, int, int, int);
+extern int func_0201abac(void *a, int b);
 
-int func_0201abd0(int a)
+int func_0201abd0(int a, int position, int target, int angleOffset)
 {
-    int r4 = a;
-    int r1 = func_0201ac10();
-    return func_0201abac(r4, r1);
+    int angle = func_0201ac10(a, position, target, angleOffset);
+    return func_0201abac((void *) a, angle);
 }

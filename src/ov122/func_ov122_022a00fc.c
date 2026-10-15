@@ -9,10 +9,10 @@ struct GlobalInfo {
 
 extern struct GlobalInfo data_021fbe40;
 extern int func_ov095_0229cf64(void *ptr, int val);
-extern void func_ov122_022a0be4(void *ptr, int val);
+extern int func_ov122_022a0be4(void *ptr, int val);
 extern void func_ov095_0229c8e4(void *ptr, int val);
 extern void func_ov122_0229f1b4(void *ptr);
-extern void func_ov002_02208098(void *ptr, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 int func_ov122_022a00fc(void *self)
 {
@@ -26,6 +26,6 @@ int func_ov122_022a00fc(void *self)
     func_ov095_0229c8e4((char *) self + 0xc0, 266);
     func_ov122_0229f1b4(self);
     ((unsigned char *) self)[0xb4] = ((unsigned char *) self)[0x8d];
-    func_ov002_02208098(self, 15);
+    func_ov002_02208098((void *) (self), 15);
     return 1;
 }

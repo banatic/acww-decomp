@@ -9,7 +9,7 @@ extern u32 func_020984e8(void);
 extern u32 func_020c1b20(void *self);
 extern void func_02098ff8(u32 a, u32 b);
 extern u32 func_020644cc(u32 a);
-extern void func_0202ea80(u32 a, u32 b);
+extern int func_0202ea80(u32 a, u32 b);
 
 struct UnkStruct_020c1a34 {
     u8 pad_00[0xb0];

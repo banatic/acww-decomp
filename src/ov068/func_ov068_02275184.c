@@ -4,9 +4,9 @@
 
 extern char data_ov068_02277f3c;
 extern void func_ov004_0222c394(char *);
-extern void func_ov004_0222c538(char *);
-extern void func_020551e0(char *);
-extern void func_ov004_0222c7a0(char *);
+extern int func_ov004_0222c538(char *);
+extern void *func_020551e0(char *);
+extern void *func_ov004_0222c7a0(char *);
 
 char *func_ov068_02275184(char *self)
 {

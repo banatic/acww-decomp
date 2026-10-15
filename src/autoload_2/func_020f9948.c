@@ -27,7 +27,7 @@ typedef struct {
 extern short data_021fd26c;
 extern UnkStruct_020f9948_2 data_021fd1bc;
 extern short data_021fd270;
-extern void NNS_SndPlayerReadVariable(UnkStruct_020f9948_3 *self, int idx, short *out);
+extern int NNS_SndPlayerReadVariable(UnkStruct_020f9948_3 *self, int idx, short *out);
 extern int FX_Div(int a, int b);
 
 int func_020f9948(UnkStruct_020f9948_3 *self)

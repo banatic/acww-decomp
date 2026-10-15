@@ -17,7 +17,7 @@ extern int func_0208a844(struct UnkStruct_020b866c *sub);
 extern void func_020b884c(struct UnkStruct_020b866c_2 *self);
 extern int func_020b8854(struct UnkStruct_020b866c_2 *self);
 extern int func_020b9030(struct UnkStruct_020b866c *sub);
-extern void func_0208a9ac(struct UnkStruct_020b866c *sub);
+extern void *func_0208a9ac(struct UnkStruct_020b866c *sub);
 extern int func_020b904c(struct UnkStruct_020b866c *sub);
 extern void func_020b88f0(struct UnkStruct_020b866c_2 *self, int value);
 

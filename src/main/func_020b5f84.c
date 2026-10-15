@@ -4,7 +4,7 @@
 
 extern int data_021f69a0;
 extern int func_020b64c0(int);
-extern int func_020b64f0(int *p, int b, int c, int d, int e, int f, int g);
+extern void func_020b64f0(int *p, int b, int c, int d, int e, int f, int g);
 
 int func_020b5f84(int a, int b, int c, int d, short e, int f, int g)
 {

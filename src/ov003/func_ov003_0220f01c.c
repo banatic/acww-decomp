@@ -10,7 +10,7 @@ extern int func_02073908(int a, int b);
 extern int func_0204e108(int a, void *b, int c, int d);
 extern int func_0204e08c(int a, void *b, int c, int d);
 extern int func_020b5e10(void);
-extern void func_020b63f4(int a, int b, void *c, int d, int e, int f, int g);
+extern int func_020b63f4(int a, int b, void *c, int d, int e, int f, int g);
 
 extern int data_020ccf94;
 extern int data_021c526c;

@@ -6,7 +6,7 @@ extern int func_ov109_0229c85c(unsigned char *p);
 extern int func_ov109_0229c84c(unsigned char *p);
 extern void func_ov002_0220a0b4(unsigned char *a, int b, int c);
 extern void func_ov002_0220a374(unsigned char *a, int b);
-extern void func_ov109_0229c658(unsigned char *p);
+extern int func_ov109_0229c658(unsigned char *p);
 
 void func_ov109_0229c8a4(unsigned char *p)
 {

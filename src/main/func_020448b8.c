@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204e414(void *self);
+extern int func_0204e414(void);
 extern int func_0204f5e0(int p1, int p2, int p3, int p4, int p5, int p6);
 extern int func_020644cc(int size);
 extern void func_02044958(int value, int *data, int flag);
@@ -23,7 +23,7 @@ void func_020448b8(SELF *self)
     int ash;
     int bsh;
 
-    result1 = func_0204e414(self);
+    result1 = func_0204e414();
     if (result1 == 0) {
         return;
     }

@@ -5,7 +5,7 @@
 extern void *func_0201ce50(void *);
 extern void *func_0201c314(void *, void *);
 extern void func_ov068_0226cfd4(void *);
-extern void func_02019d0c(void *, int, int, int, int, int, void *, int, int, unsigned short, int);
+extern int func_02019d0c(void *, int, int, int, int, int, void *, int, int, unsigned short, int);
 extern void func_ov068_02266c34(void *, void *, int, int, void *, void *, int, int, int);
 extern void func_0202e188(void *);
 extern void func_ov068_0226ad78(void *, void *, int, int, int);

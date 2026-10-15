@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void func_0200a684(void *a, u32 *b, u8 *c);
-extern void func_0200a6a0(void *a, u32 *b, u8 c, int d, int e);
+extern int func_0200a6a0(void *a, u32 *b, u8 c, int d, int e);
 
 void func_0200a5b8(void *self, int arg)
 {

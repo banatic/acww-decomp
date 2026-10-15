@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov100_0229c5b0(int a, int b);
+extern int func_ov100_0229c5b0(int a);
 extern void func_02070adc(int a1, int a2, int a3, int a4, int a5, int a6, int a7);
-extern void func_0207094c(int a1, int a2);
+extern int func_0207094c(int a1, int a2);
 extern void func_02070a04(int a1, int a2, int a3);
 
 void func_ov100_0229c528(int a, int b)
@@ -14,7 +14,7 @@ void func_ov100_0229c528(int a, int b)
     if (b != 0) {
         x = 15;
     }
-    ret = func_ov100_0229c5b0(a, b);
+    ret = func_ov100_0229c5b0(a);
     func_02070adc(ret, 4, 0x1d6, 6, x, 9, 0);
     func_0207094c(ret, 101);
     func_02070a04(ret, 1, 1);

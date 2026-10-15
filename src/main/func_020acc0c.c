@@ -25,14 +25,14 @@ typedef struct {
     int c;
 } UnkStruct_020acc0c_2;
 
-extern int func_020ad2c4(void);
-extern void func_02034270(void *buf, UnkStruct_020acc0c *p, int a, int b);
+extern int func_020ad2c4(int, int);
+extern int func_02034270(void *buf, UnkStruct_020acc0c *p, int a, int b);
 extern int func_020341c8(void *buf, int a);
 extern void func_0203423c(void *buf);
 extern int func_020b66d8(void);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
-extern int func_020310c8(int a);
+extern int func_020310c8(void);
 extern int func_0203f8d0(UnkStruct_020acc0c *out, UnkStruct_020acc0c *in);
 extern void func_020e96c8(Big48 *g, int a, int b, int c);
 extern void func_020e9774(Big48 *g, int a);
@@ -64,7 +64,7 @@ void func_020acc0c(UnkStruct_020acc0c *p, int amt, int a2, int a3)
     if (amt == 0) {
         return;
     }
-    r4 = func_020ad2c4();
+    r4 = func_020ad2c4((int) p, (int) amt);
     y = 0;
     if (data_020e54a8 == 0) {
         f = 1;
@@ -113,7 +113,8 @@ void func_020acc0c(UnkStruct_020acc0c *p, int amt, int a2, int a3)
     v1.x = p->x;
     v1.y = p->y;
     v1.z = p->z;
-    v1.y = y + func_020310c8(0);
+    asm { mov r0, #0 }
+    v1.y = y + func_020310c8();
     h = func_0203f8d0(&v2, &v1);
     func_020e96c8(&data_021fbe48, v2.x, v2.y, v2.z);
     func_020e9774(&data_021fbe48, h);

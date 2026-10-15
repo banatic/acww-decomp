@@ -4,7 +4,7 @@
 
 extern int data_ov045_02261380;
 extern int func_0202ea80(int arg0, int arg1);
-extern int func_ov045_02260644(int arg0);
+extern int func_ov045_02260644(void);
 
 typedef struct {
     int unk_00;
@@ -36,7 +36,7 @@ void func_ov045_02260c28(Param *param, Result *result)
             result->unk_04 = 0x19;
         }
     }
-    if (func_ov045_02260644(param->unk_B4) != 0) {
+    if (((void) *(volatile int *) &param->unk_B4, func_ov045_02260644()) != 0) {
         result->unk_04 = 0x13;
     }
 }

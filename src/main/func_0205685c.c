@@ -15,7 +15,7 @@ struct UnkStruct_0205685c {
 extern void *data_021fbe94;
 extern void *func_021077e8(int);
 extern void *func_020e9948(void *, int);
-extern void func_02056a8c(void *);
+extern void *func_02056a8c(void *);
 extern int func_02056a4c(void *);
 
 int func_0205685c(struct UnkStruct_0205685c *s, int a, int b, unsigned char c, void *heap)

@@ -15,7 +15,7 @@ extern void func_ov135_0229c97c(void *self);
 extern void func_ov135_0229c954(void *self);
 extern int func_ov134_0229b168(void *p, int a, int b);
 extern void func_0206f768(void);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov134_0229abd4(void *p, int a, int b);
 extern void func_ov135_0229c924(void *self, int n);
 
@@ -49,7 +49,7 @@ void func_ov135_0229cf3c(char *self)
     b = data_021f6c54;
     if (func_ov134_0229b168(self + 0x2c8, a, b) != 0) {
         func_0206f768();
-        func_ov002_02208098(self, 1);
+        func_ov002_02208098((void *) (self), 1);
     }
     n = func_ov134_0229abd4(self + 0x2c8, a, b);
     if (n != 6) {

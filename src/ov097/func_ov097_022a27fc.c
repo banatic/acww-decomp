@@ -23,7 +23,7 @@ extern void func_ov096_0229fb9c(UnkStruct_022a27fc *self);
 extern void func_ov096_0229f874(UnkStruct_022a27fc *self, int a, int b, int c);
 extern void RtcSendPxiCommand(int cmd);
 extern int func_020435fc(int value, unsigned short param);
-extern void func_ov004_0223c660(int value);
+extern int func_ov004_0223c660(int value);
 
 int func_ov097_022a27fc(UnkStruct_022a27fc *self, unsigned short param2)
 {

@@ -5,8 +5,8 @@
 #include "types.h"
 
 extern void *func_0204df30(int);
-extern void func_0205a370(void *self, void *p1, void *p2, void *p3, void *obj);
-extern void func_0205a6f0(void *self, void *obj, u8 *b0, u8 *b1);
+extern int func_0205a370(void *self, void *p1, void *p2, void *p3, void *obj);
+extern int func_0205a6f0(void *self, void *obj, u8 *b0, u8 *b1);
 extern void func_0205ad00(void *self, void *obj);
 extern int func_0205affc(void *self, void *obj, unsigned int *p);
 extern int func_0205aec0(void *self, void *obj);

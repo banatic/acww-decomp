@@ -7,11 +7,11 @@ typedef struct Pair {
     int b;
 } Pair;
 
-extern void func_0200e92c(char *);
+extern unsigned int func_0200e92c(char *);
 extern void func_0200e90c(char *, int, int, int);
 extern void func_0200ad78(char *, Pair *, unsigned int, int);
 extern int func_0200e894(int, char *);
-extern void func_0200e91c(char *);
+extern int func_0200e91c(char *);
 
 int func_0200ad24(int a, Pair *p, int c, int d, short e)
 {

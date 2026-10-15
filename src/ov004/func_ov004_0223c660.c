@@ -9,13 +9,13 @@ extern int func_ov004_0223cda4(void *);
 extern int func_ov004_02211388(void *);
 extern int func_02053de4(int);
 extern int func_ov004_0221137c(void *);
-extern unsigned int func_ov004_0223c264(void (*)(void));
-extern char *func_ov004_0223c1ec(void (*)(void), int);
+extern unsigned int func_ov004_0223c264(int (*)(void *));
+extern char *func_ov004_0223c1ec(int (*)(void *), int);
 extern void func_ov004_0220d280(void *, int, int);
 extern int func_020b65c4(void);
 extern void func_02051f4c(int, void *, int);
 extern int func_02003348(int, void *, int, int, void *);
-extern void func_ov004_02211280(void);
+extern int func_ov004_02211280(void *);
 extern u16 data_ov004_02247f54[];
 extern void *data_ov004_022595c0;
 

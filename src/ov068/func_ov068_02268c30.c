@@ -4,8 +4,8 @@
 
 extern int func_02019e00(const unsigned char *p);
 extern int func_02019de8(const unsigned char *p);
-extern void func_0203e020(const unsigned char *p);
-extern void func_02019c6c(const unsigned char *p, int a, unsigned short b);
+extern int func_0203e020(const unsigned char *p);
+extern int func_02019c6c(const unsigned char *p, int a, unsigned short b);
 extern void func_0203e2e0(void);
 extern unsigned short data_020c80f8;
 

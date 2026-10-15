@@ -5,8 +5,8 @@
 extern int func_ov002_02208054(unsigned char *self, int a);
 extern void func_ov125_0229feb8(unsigned char *self);
 extern int func_ov125_0229fdc4(unsigned char *self);
-extern void func_ov002_0220a720(unsigned char *p, int a);
-extern void func_ov002_02208098(unsigned char *p, int a);
+extern void *func_ov002_0220a720(unsigned char *p, int a);
+extern unsigned char *func_ov002_02208098(unsigned char *p, unsigned char value);
 extern void func_ov125_0229fc90(unsigned char *self);
 extern void func_ov125_0229fc24(unsigned char *self);
 extern unsigned char data_021fbdd8;

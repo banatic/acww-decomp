@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_G3dRenderObjRemoveAnmObj(int param1, int param2, void *param3);
+extern void NNS_G3dRenderObjRemoveAnmObj(int param1, int param2);
 
 struct UnkStruct_020563cc {
     char pad_00[0x18];
@@ -11,5 +11,5 @@ struct UnkStruct_020563cc {
 
 void func_020563cc(struct UnkStruct_020563cc *a, int b)
 {
-    NNS_G3dRenderObjRemoveAnmObj(b, a->unk_18, a);
+    NNS_G3dRenderObjRemoveAnmObj(b, a->unk_18);
 }

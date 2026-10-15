@@ -3,31 +3,35 @@
  */
 
 extern void *func_020edf70(int size);
-extern void func_0203f130(void);
-extern void func_0205467c(void *p);
+extern void *func_0203f130(void *arg0);
+extern void *func_0205467c(void *p);
 extern void func_0201b394(void *p);
-extern void func_0201a430(void *p);
-extern void func_020169a8(void *p);
-extern void func_0201b324(void *p);
+extern void *func_0201a430(void *p);
+extern int func_020169a8(void *p);
+extern int func_0201b324(void *p);
 extern void func_0201af14(void *p);
 extern void func_0201b370(void *p);
 extern void func_0201adec(void *p);
-extern void func_0201a7ec(void *p);
+extern void *func_0201a7ec(void *p);
 extern void func_0201a794(void *p);
-extern void func_02032c64(void *p);
-extern void func_02089c88(void *p);
-extern void func_020f55cc(void *p);
+extern void *func_02032c64(void *p);
+extern void *func_02089c88(void *p);
+extern void *func_020f55cc(void *p);
 extern void func_02013c2c(void *p);
-extern void func_02019eb0(void *p);
+extern void *func_02019eb0(void *p);
 extern void func_0201489c(void *p);
-extern void func_02082f60(void *p);
-extern void func_ov052_02261140(void *p);
-extern void func_02034ce0(void);
-extern void func_020051b0(void);
-extern void __cxa_vec_ctor(void *p, int a, int b, void (*c)(void), void (*d)(void));
+extern void *func_02082f60(void *p);
+extern void *func_ov052_02261140(void *p);
+extern void func_02034ce0(void *element);
+extern void func_020051b0(void *element);
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*callback3)(void *), void (*callback4)(void *));
 extern char data_020d8c64;
 extern char data_020da088;
 extern char data_ov052_02261f40;
+
+#define DisposeElement_func_02034ce0 ((void (*)(void *)) func_02034ce0)
+
+#define DisposeElement_func_020051b0 ((void (*)(void *)) func_020051b0)
 
 void *func_ov052_02261a8c(void)
 {
@@ -35,7 +39,7 @@ void *func_ov052_02261a8c(void)
     if (self == 0) {
         goto end;
     }
-    func_0203f130();
+    func_0203f130((void *) self);
     *(unsigned int *) self = (unsigned int) &data_020d8c64;
     *(unsigned short *) (self + 0xea) = 0xfff1;
     func_0205467c(self + 0xec);
@@ -59,9 +63,12 @@ void *func_ov052_02261a8c(void)
     *(unsigned int *) self = (unsigned int) &data_ov052_02261f40;
     func_ov052_02261140(self + 0x658);
     *(unsigned short *) (self + 0x71e) = 0xfff1;
-    __cxa_vec_ctor(self + 0x720, 3, 2, func_02034ce0, func_020051b0);
+    __cxa_vec_ctor(self + 0x720, 3, 2, DisposeElement_func_02034ce0, DisposeElement_func_020051b0);
     *(unsigned int *) (self + 0x728) = 0;
     *(unsigned int *) (self + 0x72c) = 0;
 end:
     return self;
 }
+
+#undef DisposeElement_func_02034ce0
+#undef DisposeElement_func_020051b0

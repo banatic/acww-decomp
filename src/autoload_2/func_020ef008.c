@@ -7,12 +7,12 @@ struct UnkStruct_020ef008 {
     int unk_0C;
 };
 
-extern void func_020eef80(struct UnkStruct_020ef008 *p, int b);
+extern void func_020eef80(struct UnkStruct_020ef008 *p);
 extern void func_020eefd4(struct UnkStruct_020ef008 *p);
 
 int func_020ef008(struct UnkStruct_020ef008 *p, int b)
 {
-    func_020eef80(p, b);
+    func_020eef80(p);
     if (b != 0) {
         func_020eefd4(p);
     }

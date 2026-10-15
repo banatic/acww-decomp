@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200443c(void *dst, int src, int mode);
+extern void func_0200443c(int receiver, unsigned short value);
 extern int func_020b1cb0(void *ptr);
 
 void func_02013bb0(unsigned char *data, void *param)
@@ -19,6 +19,13 @@ void func_02013bb0(unsigned char *data, void *param)
     }
 
     if (*data != 0) {
-        func_0200443c((char *) param + 0x514, func_020b1cb0((char *) param + 0x5c), 0);
+        int value = func_020b1cb0((char *) param + 0x5c);
+        asm {
+            add r1, value, #0
+            ldr r0, =0x514
+            add r0, param, r0
+            mov r2, #0
+            bl func_0200443c
+        }
     }
 }

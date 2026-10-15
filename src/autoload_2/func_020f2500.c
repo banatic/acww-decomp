@@ -2,16 +2,28 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f4220(void *p, void *q, int n);
-extern void *func_020f4038(void *p);
-extern void *func_020eef70(void *p);
-extern void NNS_SndHeapSaveState(void *p);
-#define gSource ((unsigned char *) 0x0002a824)
+extern void func_020f4220(void *receiver, void *resource, int count);
+extern int func_020f4038(void);
+extern void *func_020eef70(void);
+extern int NNS_SndHeapSaveState(void *heap);
 extern unsigned char data_021fd1bc[];
 
-void func_020f2500(void *param)
+// clang-format off
+asm void func_020f2500(register void *receiver)
 {
-    func_020f4220(param, gSource, 29);
-    NNS_SndHeapSaveState(func_020eef70(func_020f4038(param)));
-    data_021fd1bc[0x62] = 0;
+    stmfd sp!, {r4, lr}
+    ldr r1, =0x2a824
+    mov r4, r0
+    mov r2, #29
+    bl func_020f4220
+    mov r0, r4
+    bl func_020f4038
+    bl func_020eef70
+    bl NNS_SndHeapSaveState
+    ldr r0, =data_021fd1bc
+    mov r1, #0
+    strb r1, [r0, #0x62]
+    ldmfd sp!, {r4, lr}
+    bx lr
 }
+// clang-format on

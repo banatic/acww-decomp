@@ -7,13 +7,13 @@ typedef struct {
 } UnkStruct_022612cc;
 
 extern int data_ov046_0226204c;
-extern void func_0202eb20(UnkStruct_022612cc *, void *);
+extern void *func_0202eb20(UnkStruct_022612cc *);
 extern void func_020edb3c(UnkStruct_022612cc *);
 
 UnkStruct_022612cc *func_ov046_022612cc(UnkStruct_022612cc *self)
 {
     self->vtable = (void *) &data_ov046_0226204c;
-    func_0202eb20(self, (void *) &data_ov046_0226204c);
+    func_0202eb20(self);
     func_020edb3c(self);
     return self;
 }

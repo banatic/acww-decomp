@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern void func_ov126_022a0a90(int);
+extern int func_ov126_022a0a90(int);
 
 int func_ov126_0229fcd8(int arg)
 {

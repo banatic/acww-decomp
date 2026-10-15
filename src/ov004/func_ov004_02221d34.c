@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern unsigned short data_020c80f8;
-extern void func_02019c90(void *, int, int, int);
+extern int func_02019c90(void *, int, int, int);
 int func_ov004_02221d34(u8 *self)
 {
     if (*(int *) (self + 0x89c) == 1) {

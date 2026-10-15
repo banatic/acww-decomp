@@ -4,7 +4,7 @@
 
 extern int func_020b6840(int);
 extern void func_02004290(void *p, int val);
-extern void func_02137550(void *ptr, int size);
+extern char *func_02137550(void *ptr, int size);
 extern void func_020042b0(void *p, void *local);
 extern void func_020bbdc8(void *p);
 extern int data_020d2334[];

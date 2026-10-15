@@ -10,8 +10,8 @@ struct Dir {
     Dir(s16 a, s16 b) : x(a), y(b) {}
 };
 extern "C" int func_0209cc30(void *ctx, int x, int y);
-extern "C" int func_0209d030(void);
-extern "C" void func_0209d01c(int t, int arg);
+extern "C" int func_0209d030(int *);
+extern "C" int func_0209d01c(int t, int arg);
 extern "C" int func_020644cc(int n);
 extern "C" int func_0209ca6c(void *ctx, int want, int arg)
 {
@@ -26,8 +26,7 @@ extern "C" int func_0209ca6c(void *ctx, int want, int arg)
     found = 0;
     for (y = 1; y < 5; y++) {
         for (x = 1; x < 5; x++) {
-            func_0209cc30(ctx, x, y);
-            if (want == func_0209d030()) {
+            if (want == func_0209d030((int *) func_0209cc30(ctx, x, y))) {
                 found = 1;
                 break;
             }
@@ -41,8 +40,7 @@ extern "C" int func_0209ca6c(void *ctx, int want, int arg)
         count = 0;
         for (i = 0; i < 4; i++) {
             d = &dirs[i];
-            func_0209cc30(ctx, x + d->x, y + d->y);
-            if (func_0209d030() == 9) {
+            if (func_0209d030((int *) func_0209cc30(ctx, x + d->x, y + d->y)) == 9) {
                 count++;
             }
         }
@@ -51,8 +49,7 @@ extern "C" int func_0209ca6c(void *ctx, int want, int arg)
             j = 0;
             for (i = 0; i < 4; i++) {
                 d = &dirs[i];
-                func_0209cc30(ctx, x + d->x, y + d->y);
-                if (func_0209d030() == 9) {
+                if (func_0209d030((int *) func_0209cc30(ctx, x + d->x, y + d->y)) == 9) {
                     if (k == j) {
                         func_0209d01c(func_0209cc30(ctx, x + d->x, y + d->y), arg);
                         return 1;

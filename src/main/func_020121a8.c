@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02082c98(int a, int b);
-extern int func_0205eac4(int a, int b);
+extern int func_02082c98(int a);
+extern void func_0205eac4(unsigned char *key, int value);
+extern unsigned char data_021ca16c[];
 
-int func_020121a8(int param0, int param1)
+void func_020121a8(int param0, int param1)
 {
     int result;
 
-    result = func_02082c98(param0 + 4, param1);
+    result = func_02082c98(param0 + 4);
     if (result) {
-        result = func_0205eac4(result, param1);
+        func_0205eac4((unsigned char *) result, param1);
     }
-    return result;
 }

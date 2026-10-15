@@ -4,13 +4,13 @@
 
 extern void func_0200fbc4(void *p, int a, int b, short c);
 extern int func_02056f94(void *ptr);
-extern void func_ov003_0220e5c4(void *p, int a, int b, int c);
-extern void func_0200f27c(void *p, int n);
-extern void func_020109a0(void *p, int a, int b, int c);
-extern void func_02034270(void *dst, void *src, int a, int b);
-extern void func_02091254(int a, void *src, int b, int c);
-extern void func_0200f328(void *p, int n);
-extern void func_ov003_02221228(int a, void *src);
+extern int func_ov003_0220e5c4(void *p, int a, int b, int c);
+extern unsigned int *func_0200f27c(void *p, int n);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
+extern int func_02034270(void *dst, void *src, int a, int b);
+extern int func_02091254(int a, void *src, int b, int c);
+extern int func_0200f328(void *p, int n);
+extern int func_ov003_02221228(int a, void *src);
 extern void func_0200f268(void *p, int n);
 extern int func_0200fbe0(void *p);
 extern void func_0205eae0(void *ptr, int a, int b, int c);

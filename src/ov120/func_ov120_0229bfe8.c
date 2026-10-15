@@ -9,7 +9,7 @@ struct UnkStruct_0229bfe8 {
 
 extern int func_020ee45c(struct UnkStruct_0229bfe8 *obj);
 extern void func_ov092_02299324(int a, int b, int c);
-extern void func_ov002_022080a0(struct UnkStruct_0229bfe8 *obj, int a);
+extern unsigned char *func_ov002_022080a0(struct UnkStruct_0229bfe8 *obj, unsigned char value);
 
 int func_ov120_0229bfe8(struct UnkStruct_0229bfe8 *obj)
 {

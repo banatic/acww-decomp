@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int DWC_CanChangeFriendList(int, void *);
+extern int DWC_CanChangeFriendList(void);
 extern unsigned short data_021fbefc;
 extern int data_0213e6c4;
 typedef struct {
@@ -11,17 +11,18 @@ typedef struct {
 extern SomeObj *data_021fbf3c;
 extern void MI_CpuCopy8(const void *, void *, unsigned int);
 extern void MI_CpuFill8(void *, int, unsigned int);
-extern int func_ov065_02277edc(int, void (*)(void), int, void (*)(void), int, void (*)(void), int);
-extern void func_020ed440(void);
-extern void func_020ed540(void);
-extern void func_020ed4cc(void);
+extern int func_ov065_02277edc(int, void (*)(void *, int, void *), int, void (*)(int, int, void *, void *), int,
+                               void (*)(int, int, void *), int);
+extern void func_020ed440(int index, int reason, void *user_data);
+extern void func_020ed540(void *result, int changed, void *user_data);
+extern void func_020ed4cc(int index, int status, void *profile, void *user_data);
 
 int func_020eaf48(int idx, void *data)
 {
     int result;
     int offset;
 
-    if (DWC_CanChangeFriendList(idx, data) == 0) {
+    if (DWC_CanChangeFriendList() == 0) {
         goto fail;
     }
     if (data_021fbefc < 5) {

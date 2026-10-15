@@ -11,8 +11,8 @@ typedef struct {
     int b;
     int c;
 } UnkStruct_020c714c_2;
-extern void __register_global_object(UnkStruct_020c714c_2 *, void *, void *);
-extern void func_020012dc(void);
+extern void __register_global_object(void *, void *, void *);
+extern void func_020012dc(void *);
 extern UnkStruct_020c714c_2 data_021fbcc0[2];
 extern int data_021fbca8, data_021fbcb4;
 extern char data_021fbc98[4];
@@ -95,10 +95,10 @@ void __sinit_020c714c(void)
     p->a = 0x800;
     p->b = 0;
     p->c = 0x1000;
-    __register_global_object(p, (void *) func_020012dc, &data_021fbca8);
+    __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021fbca8));
     p = &data_021fbcc0[1];
     p->a = -0x800;
     p->b = 0;
     p->c = 0x1000;
-    __register_global_object(p, (void *) func_020012dc, &data_021fbcb4);
+    __register_global_object((void *) (p), (((void *) func_020012dc)), (void *) (&data_021fbcb4));
 }

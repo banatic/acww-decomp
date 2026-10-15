@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_SndPlayerReadGlobalVariable(int, short *);
+extern int NNS_SndPlayerReadGlobalVariable(int, short *);
 extern short data_021fd26c;
 
 unsigned char func_020f9f98(void)

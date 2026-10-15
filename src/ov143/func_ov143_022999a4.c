@@ -3,7 +3,7 @@
  */
 
 extern int func_ov143_022997d8(unsigned int a, unsigned int b);
-extern void func_02089300(int p1, void *p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9);
+extern void *func_02089300(int p1, void *p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9);
 extern void func_02088df8(int p1, void *p2, int p3, int p4, int p5, int p6, int p7, int p8, int p9, int p10, int p11, int p12);
 
 extern void *data_ov143_0229b178[];

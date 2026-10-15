@@ -10,9 +10,9 @@ typedef struct {
 
 extern UnkStruct_020bc078 data_021f8ab0;
 extern unsigned short *data_020e6098[];
-extern int func_020b68c8(int);
+extern void func_020b68c8(unsigned int value);
 
-unsigned int func_020bc078(unsigned int a0, unsigned int x, unsigned int y, unsigned int z)
+void func_020bc078(unsigned int a0, unsigned int x, unsigned int y, unsigned int z)
 {
     unsigned int f24 = data_021f8ab0.unk_24;
     unsigned int f28 = data_021f8ab0.unk_28;
@@ -23,7 +23,8 @@ unsigned int func_020bc078(unsigned int a0, unsigned int x, unsigned int y, unsi
         v = ((0x1000 - a0) * row[y] + a0 * row[z]) << 4 >> 16;
         row = data_020e6098[f28];
         w = ((0x1000 - a0) * row[y] + a0 * row[z]) << 4 >> 16;
-        return func_020b68c8(((v * (0x1000 - x) + w * x) << 4) >> 16);
+        func_020b68c8(((v * (0x1000 - x) + w * x) << 4) >> 16);
+        return;
     }
-    return func_020b68c8(((0x1000 - a0) * data_020e6098[f24][y] + a0 * data_020e6098[f24][z]) << 4 >> 16);
+    func_020b68c8(((0x1000 - a0) * data_020e6098[f24][y] + a0 * data_020e6098[f24][z]) << 4 >> 16);
 }

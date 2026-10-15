@@ -4,11 +4,11 @@
 
 extern int func_020160b4(void *arg);
 extern int func_020ab504(int value);
-extern void func_020157d4(void *arg, void (*func)(void), int, int);
-extern void func_02015828(void *arg, int);
+extern void func_020157d4(void *obj, unsigned int address, unsigned char state, unsigned char flags);
+extern int func_02015828(void *arg, int);
 extern void func_ov079_02279518(void *arg, int);
 extern void func_0206844c(void *, char *, void *);
-extern void func_ov079_022794fc(void);
+extern int func_ov079_022794fc(int argument0, int argument1);
 extern char data_ov079_0227a1b0;
 
 typedef struct {
@@ -34,7 +34,7 @@ void func_ov079_02278ac4(UnkStruct_02278ac4 *arg)
     switch (field) {
         case 0:
             if (result == 0) {
-                func_020157d4(arg, func_ov079_022794fc, 0xD, 1);
+                func_020157d4(arg, (unsigned int) func_ov079_022794fc, 0xD, 1);
                 func_02015828(arg, 0);
                 func_ov079_02279518(arg, 0);
             }

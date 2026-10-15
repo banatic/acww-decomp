@@ -30,7 +30,7 @@ extern void func_ov003_02215ba8(void *e, Vec3 *p, int k);
 extern void func_ov003_02215b90(void *e, Vec3 *p, u8 *mode);
 extern void func_0206026c(void *p, int a);
 extern void func_02060428(void *p, Vec3 *v);
-extern void func_0200f328(UnkStruct_02215958 *self, int a);
+extern int func_0200f328(UnkStruct_02215958 *self, int a);
 
 void func_ov003_02215958(UnkStruct_02215958 *self)
 {

@@ -3,17 +3,17 @@
  */
 
 extern int func_020a259c(int a, int b);
-extern void func_020a01b4(int a);
-extern int func_020a4e94(int a, int b);
+extern void func_020a01b4(void);
+extern void func_020a4e94(int a, int b);
 
-int func_020a2dbc(int param)
+void func_020a2dbc(int param)
 {
     int result;
 
     result = func_020a259c(param, 1);
     if (result == 0) {
-        return result;
+        return;
     }
-    func_020a01b4(result);
-    return func_020a4e94(param, 0x1d);
+    func_020a01b4();
+    func_020a4e94(param, 0x1d);
 }

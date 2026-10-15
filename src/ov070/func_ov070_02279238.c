@@ -12,7 +12,7 @@ typedef struct UnkStruct_02279238 {
 } UnkStruct_02279238;
 
 extern int func_020984e8(void);
-extern int func_02099670(void);
+extern int func_02099670(int arg0);
 extern u16 *func_020996f8(int);
 extern u16 *func_020996e0(int);
 extern u16 *func_02099710(int);
@@ -34,7 +34,7 @@ void func_ov070_02279238(UnkStruct_02279238 *self)
     int c;
 
     g = func_020984e8();
-    h = func_02099670();
+    h = func_02099670(g);
 
     self->unk_C4 = *func_020996f8(g);
     if (func_0204bcdc(&self->unk_C4) != 0) {

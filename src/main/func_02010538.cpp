@@ -56,10 +56,10 @@ struct UnkStruct_02010538_2 {
 extern int data_020d72f8;
 
 extern "C" {
-extern int func_0203e31c(UnkStruct_02010538 *);
+extern int func_0203e31c(void);
 extern int func_0200f290(UnkStruct_02010538 *, int);
 extern int func_0200dc04(UnkStruct_02010538 *);
-extern void func_0203e0e0(UnkStruct_02010538 *, UnkStruct_02010538_3 *);
+extern int func_0203e0e0(UnkStruct_02010538 *, UnkStruct_02010538_3 *);
 extern int func_0203ef5c(UnkStruct_02010538 *);
 extern int func_0203ee34(UnkStruct_02010538_3 *, UnkStruct_02010538 *);
 extern int func_02010030(UnkStruct_02010538 *);
@@ -72,7 +72,7 @@ int func_02010538(UnkStruct_02010538 *a1)
     UnkStruct_02010538_2 tmp;
     int r;
 
-    if (func_0203e31c(a1) || func_0200f290(a1, 0x13)) {
+    if (func_0203e31c() || func_0200f290(a1, 0x13)) {
         return 0;
     }
     if (func_0200dc04(a1)) {

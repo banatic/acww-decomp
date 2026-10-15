@@ -29,13 +29,13 @@ struct DStruct {
     int unk_3C;
 };
 
-extern void func_0205fc3c(UnkStruct_0205fff4 *self, int field_30);
+extern void func_0205fc3c(UnkStruct_0205fff4 *self);
 extern void func_0205fbc4(u32 *a, u32 *b, u32 *c, u32 *d, int e);
-extern void func_0205fb28(u32 *a, int b, u32 *c, u32 *d, int e);
-extern void func_02034270(void *d, void *src, int a, int b);
+extern int func_0205fb28(u32 *a, int b, u32 *c, u32 *d, int e);
+extern int func_02034270(void *d, void *src, int a, int b);
 extern void func_0203423c(void *d);
 extern void func_0206026c(UnkStruct_0205fff4 *self, int arg);
-extern void func_020912d4(int size, void *ptr, int a, int b);
+extern int func_020912d4(int size, void *ptr, int a, int b);
 extern void func_ov003_0222a56c(void);
 
 void func_0205fff4(UnkStruct_0205fff4 *self)
@@ -48,7 +48,7 @@ void func_0205fff4(UnkStruct_0205fff4 *self)
     u32 C[3];
 
     if (self->unk_30 < 15) {
-        func_0205fc3c(self, self->unk_30);
+        func_0205fc3c(self);
         if (self->unk_30 == 14) {
             A[0] = self->unk_1C;
             A[1] = self->unk_20;

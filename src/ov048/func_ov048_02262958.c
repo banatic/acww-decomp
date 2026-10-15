@@ -3,8 +3,8 @@
  */
 
 extern void *func_020682e0(int);
-extern void func_0208602c(void);
-extern int func_020860cc(void);
+extern int func_0208602c(void);
+extern int func_020860cc(int);
 extern void *func_020961a8(int);
 extern void func_0204f818(int *, int *, int *);
 extern void func_02087e88(int, int);
@@ -12,7 +12,7 @@ extern void func_02087e80(int, int);
 extern void func_0203acd8(void);
 extern void func_020a18f4(void);
 extern int func_020b5e10(void);
-extern void func_020b63f4(int, int, int *, unsigned int, int, int, int);
+extern int func_020b63f4(int, int, int *, unsigned int, int, int, int);
 extern void func_ov048_022635f4(void *, int);
 
 typedef struct {
@@ -45,8 +45,7 @@ int func_ov048_02262958(void *obj)
 
     e = func_020682e0(0);
     if (e->unk_04 == 5) {
-        func_0208602c();
-        r6 = func_020860cc();
+        r6 = func_020860cc((int) func_0208602c());
         p = func_020961a8(4);
         sp = &p->sub;
         sub[0] = p->sub.unk_00;

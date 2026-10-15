@@ -15,8 +15,8 @@ typedef struct {
 } UnkStruct_0221a128;
 
 extern int func_0208a020(char *);
-extern void func_ov003_0221abf8(UnkStruct_0221a128 *, int);
-extern void func_0203e0a8(UnkStruct_0221a128 *, int);
+extern int func_ov003_0221abf8(void *object);
+extern int func_0203e0a8(UnkStruct_0221a128 *, int);
 
 void func_ov003_0221a128(UnkStruct_0221a128 *self)
 {
@@ -24,7 +24,13 @@ void func_ov003_0221a128(UnkStruct_0221a128 *self)
     if (self->unk_2E0 != 0) {
         int ret = func_0208a020(&self->unk_2A4);
         if (ret != 0 && *(int *) ((char *) ret + 0x98) > 0x666) {
-            func_ov003_0221abf8(self, 1);
+            // clang-format off
+            asm {
+                mov r0, self
+                mov r1, #1
+                bl func_ov003_0221abf8
+            }
+            // clang-format on
             return;
         }
     }

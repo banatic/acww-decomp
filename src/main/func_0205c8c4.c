@@ -3,9 +3,11 @@
  */
 
 extern int data_021c9afc; // at 0x021c9afc
-extern int GX_ResetBankForSubOBJExtPltt(void);
+extern void *GX_ResetBankForSubOBJExtPltt(int size, void *heap);
 
-void func_0205c8c4(void)
+int func_0205c8c4(int size, int type)
 {
-    data_021c9afc = GX_ResetBankForSubOBJExtPltt();
+    int result = (int) GX_ResetBankForSubOBJExtPltt(size, (void *) type);
+    data_021c9afc = result;
+    return result;
 }

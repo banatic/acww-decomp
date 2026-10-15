@@ -3,7 +3,7 @@
  */
 
 extern int func_020984e8(void);
-extern int func_02098a0c(void);
+extern int func_02098a0c(int);
 extern int func_02097cd4(int, int);
 
 int func_0209727c(int r0, int r1)
@@ -17,8 +17,7 @@ int func_0209727c(int r0, int r1)
 
     r5 = r0;
     r7 = r1;
-    func_020984e8();
-    sp = func_02098a0c();
+    sp = func_02098a0c((int) func_020984e8());
     r6 = 0;
     r4 = 0;
     while (r4 < r7) {

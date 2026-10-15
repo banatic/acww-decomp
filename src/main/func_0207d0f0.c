@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0208150c(void *a, int b);
+extern int func_0208150c(void *a);
 extern int func_02003704(int c);
 typedef struct {
     unsigned char pad_00[0x1e];
@@ -12,7 +12,7 @@ extern UnkStruct_0207d0f0 *func_0207f270(void *a);
 
 void func_0207d0f0(void *arg0, int arg1)
 {
-    if (func_02003704(func_0208150c(arg0, arg1))) {
+    if (func_02003704(func_0208150c(arg0))) {
         UnkStruct_0207d0f0 *p;
         int value;
         p = func_0207f270(arg0);

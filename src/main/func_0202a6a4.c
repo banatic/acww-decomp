@@ -6,7 +6,7 @@
 
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0200368c(void *, int, void *, int);
+extern int func_0200368c(void *, int, void *, int);
 extern void *data_020c8b20;
 
 struct B_0202a6a4 {

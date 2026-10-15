@@ -19,8 +19,8 @@ extern int func_020b6744(int);
 extern int func_020b6774(int);
 extern u16 *func_020349e8(int);
 extern u16 *func_020349b8(int);
-extern void __register_global_object(u16 *, void (*)(void), void *);
-extern void func_020051b0(void);
+extern void __register_global_object(u16 *, void *destructor, void *);
+extern void func_020051b0(void *object);
 extern char data_021ebcd4[];
 extern char data_021e5a2c[];
 extern int data_ov004_022589f4;
@@ -77,17 +77,17 @@ void func_ov004_02232c48(char *self, u16 *wall, int *outA, u16 *floor, int *outB
         } else {
             if ((data_ov004_022589f4 & 1) == 0) {
                 data_ov004_02258a6c[0] = 0x1140;
-                __register_global_object(&data_ov004_02258a6c[0], func_020051b0, &data_ov004_02258ac0);
+                __register_global_object(&data_ov004_02258a6c[0], ((void *) &func_020051b0), &data_ov004_02258ac0);
                 data_ov004_02258a6c[1] = 0x1141;
-                __register_global_object(&data_ov004_02258a6c[1], func_020051b0, &data_ov004_02258ab4);
+                __register_global_object(&data_ov004_02258a6c[1], ((void *) &func_020051b0), &data_ov004_02258ab4);
                 data_ov004_02258a6c[2] = 0x1142;
-                __register_global_object(&data_ov004_02258a6c[2], func_020051b0, &data_ov004_02258a0c);
+                __register_global_object(&data_ov004_02258a6c[2], ((void *) &func_020051b0), &data_ov004_02258a0c);
                 data_ov004_02258a6c[3] = 0x1143;
-                __register_global_object(&data_ov004_02258a6c[3], func_020051b0, &data_ov004_02258a9c);
+                __register_global_object(&data_ov004_02258a6c[3], ((void *) &func_020051b0), &data_ov004_02258a9c);
                 data_ov004_02258a6c[4] = 0x1143;
-                __register_global_object(&data_ov004_02258a6c[4], func_020051b0, &data_ov004_02258a90);
+                __register_global_object(&data_ov004_02258a6c[4], ((void *) &func_020051b0), &data_ov004_02258a90);
                 data_ov004_02258a6c[5] = 0x1143;
-                __register_global_object(&data_ov004_02258a6c[5], func_020051b0, &data_ov004_02258a60);
+                __register_global_object(&data_ov004_02258a6c[5], ((void *) &func_020051b0), &data_ov004_02258a60);
                 data_ov004_022589f4 |= 1;
             }
             *wall = data_ov004_02258a6c[slot];
@@ -103,17 +103,17 @@ void func_ov004_02232c48(char *self, u16 *wall, int *outA, u16 *floor, int *outB
         } else {
             if ((data_ov004_022589f8 & 1) == 0) {
                 data_ov004_02258a18[0] = 0x1184;
-                __register_global_object(&data_ov004_02258a18[0], func_020051b0, &data_ov004_02258a78);
+                __register_global_object(&data_ov004_02258a18[0], ((void *) &func_020051b0), &data_ov004_02258a78);
                 data_ov004_02258a18[1] = 0x1185;
-                __register_global_object(&data_ov004_02258a18[1], func_020051b0, &data_ov004_02258aa8);
+                __register_global_object(&data_ov004_02258a18[1], ((void *) &func_020051b0), &data_ov004_02258aa8);
                 data_ov004_02258a18[2] = 0x1186;
-                __register_global_object(&data_ov004_02258a18[2], func_020051b0, &data_ov004_02258acc);
+                __register_global_object(&data_ov004_02258a18[2], ((void *) &func_020051b0), &data_ov004_02258acc);
                 data_ov004_02258a18[3] = 0x1187;
-                __register_global_object(&data_ov004_02258a18[3], func_020051b0, &data_ov004_02258a3c);
+                __register_global_object(&data_ov004_02258a18[3], ((void *) &func_020051b0), &data_ov004_02258a3c);
                 data_ov004_02258a18[4] = 0x1187;
-                __register_global_object(&data_ov004_02258a18[4], func_020051b0, &data_ov004_02258a00);
+                __register_global_object(&data_ov004_02258a18[4], ((void *) &func_020051b0), &data_ov004_02258a00);
                 data_ov004_02258a18[5] = 0x1187;
-                __register_global_object(&data_ov004_02258a18[5], func_020051b0, &data_ov004_02258a24);
+                __register_global_object(&data_ov004_02258a18[5], ((void *) &func_020051b0), &data_ov004_02258a24);
                 data_ov004_022589f8 |= 1;
             }
             *floor = data_ov004_02258a18[slot];

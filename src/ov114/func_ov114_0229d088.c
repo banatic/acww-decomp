@@ -17,7 +17,7 @@ extern const char data_ov114_0229dbac[];
 extern const char data_ov114_0229dbbc[];
 
 extern void func_020a8c1c(void *ptr);
-extern void func_020b4a20(void *buf, unsigned char *byte, const char *data);
+extern int func_020b4a20(void *buf, unsigned char *byte, const char *data);
 extern unsigned char func_ov114_0229d030(UnkStruct_0229d088 *obj);
 extern void func_ov114_0229cf58(UnkStruct_0229d088 *obj);
 

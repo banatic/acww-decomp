@@ -12,9 +12,9 @@ extern int func_02072ba4(int);
 extern u32 func_02072b64(int, u32);
 extern u16 *func_02099710(void *);
 extern u16 *func_020996f8(void *);
-extern void func_02095b58(void *);
-extern void func_02095b40(void *);
-extern void func_02071d8c(int, u8, int, u32, int);
+extern int func_02095b58(void *);
+extern int func_02095b40(void *);
+extern int func_02071d8c(int, u8, int, u32, int);
 extern void func_0206844c(u32, void *, void *);
 extern void *data_ov049_02263298;
 struct UnkStruct_02260ec8 {

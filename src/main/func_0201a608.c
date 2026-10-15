@@ -3,8 +3,8 @@
  */
 
 extern unsigned char *func_02018fdc(int);
-extern void func_020044b0(int, int, int, int);
-extern void func_020044c0(int, int, int, int);
+extern int func_020044b0(int, int, int, int);
+extern int func_020044c0(int, int, int, int);
 extern void func_0200455c(int);
 extern void func_0200456c(int);
 

@@ -37,7 +37,7 @@ extern "C" UnkStruct_0203e814_2 *func_0203ef90(unsigned int);
 extern "C" int func_02095d84(void);
 extern "C" int func_0209583c(void);
 extern "C" int func_020b5e10(void);
-extern "C" void func_020b6098(int, unsigned char);
+extern "C" int func_020b6098(int, unsigned char);
 
 extern "C" int func_0203e814(UnkStruct_0203e814 *self)
 {

@@ -5,12 +5,12 @@
 extern int func_0205790c(int x, void *d);
 extern void func_ov004_0220d398(void *p, signed char a, signed char b);
 extern void func_02055dc8(void *p, void *fn, void *self);
-extern void func_ov004_02211450(void);
+extern void func_ov004_02211450(char *arg0);
 extern void func_ov004_0220cff0(void *p, int a, int b);
 extern void *func_ov004_0220e068(void *p);
 extern void *func_ov004_0220e050(void *p);
-extern void NNS_G3dBindMdlTex(void *a, void *b);
-extern void NNS_G3dBindMdlPltt(void *a, void *b);
+extern int NNS_G3dBindMdlTex(void *a, void *b);
+extern int NNS_G3dBindMdlPltt(void *a, void *b);
 extern void func_ov004_0220f450(void *self);
 extern int data_ov004_02250018;
 extern int data_ov004_02250020;

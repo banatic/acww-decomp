@@ -7,7 +7,7 @@ extern void func_020109fc(void *, int, int, int);
 extern int func_0200fbe0(void *);
 extern void func_0205eae0(void *, int, int, int);
 extern void func_ov003_0220e8ec(void *, unsigned char, unsigned char);
-extern void func_0200f328(void *, int);
+extern int func_0200f328(void *, int);
 typedef struct {
     int x, y, z;
 } Vec;
@@ -26,7 +26,7 @@ struct UnkStruct_0220e860_2 {
     char pad_7E0[0x8f0 - 0x7e0];
     char sub8f0[1];
 };
-void func_ov003_0220e860(struct UnkStruct_0220e860_2 *o, struct UnkStruct_0220e860 *b)
+void func_ov003_0220e860(struct UnkStruct_0220e860_2 *o, struct UnkStruct_0220e860 *b, int previous)
 {
     Vec v;
     unsigned char *p = &b->c0;

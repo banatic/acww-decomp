@@ -16,10 +16,10 @@ extern void *func_02072a48(void *p, u8 idx);
 extern void *func_02072bd0(void *p, u8 idx);
 extern void *func_020996b8(void *ctx);
 extern int func_0203cff8(void *out, void *s);
-extern void func_02064328(Buf *b, void *tbl, int n, int m);
+extern int func_02064328(Buf *b, void *tbl, int n, int m);
 extern int func_02064af4(Buf *b, void *out, int n);
-extern void func_020051b0(void);
-extern void __register_global_object(void *obj, void (*dtor)(void), void *node);
+extern void func_020051b0(void *);
+extern void __register_global_object(void *, void *, void *);
 inline static int IdxIn(u16 id, u16 lo, u16 hi)
 {
     if ((id >= lo) && (id <= hi)) {
@@ -82,7 +82,7 @@ int func_0203d064(void *out, const u16 *pid, void *ctx)
     if ((data_021c6988 & 1) == 0) {
         data_021c6984 = 0x11a8;
         ptr = &data_021c6984;
-        __register_global_object(ptr, func_020051b0, &data_021c698c);
+        __register_global_object((void *) (ptr), (((void *) func_020051b0)), (void *) (&data_021c698c));
         data_021c6988 |= 1;
     }
     return func_0203d064(out, &data_021c6984, ctx);

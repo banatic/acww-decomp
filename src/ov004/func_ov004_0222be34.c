@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0();
-extern int func_02096718();
+extern void func_020109a0(int a, int b, int c, unsigned short d);
+extern int func_02096718(int argument0);
 
-int func_ov004_0222be34(char *self)
+int func_ov004_0222be34(void)
 {
     // DECLS
     int v1;

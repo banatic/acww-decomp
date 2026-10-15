@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200fc90(void);
+extern int func_0200fc90(void *);
 
-int func_0200fbe0(void)
+int func_0200fbe0(void *argument0)
 {
     int x;
     unsigned short v;
 
-    x = func_0200fc90();
+    x = func_0200fc90((void *) argument0);
     if (x <= 0) {
         return 0;
     }

@@ -13,22 +13,23 @@ struct UnkStruct_0202b598 {
     u8 unk_19E;
 };
 
-extern int func_02099fe8(UnkStruct_0202b598 *self);
+extern int func_02099fe8(void);
 extern void func_0202d694(u16 *p);
-extern void func_0208150c(u32 val);
-extern u32 func_020036e8(void);
+extern unsigned int func_0208150c(u32 val);
+extern u32 func_020036e8(unsigned char *);
 extern struct {
     u32 a;
     u8 b;
 } data_020c8ca8;
-extern void func_0202da38(UnkStruct_0202b598 *self, char *p1, char *p2, int count, u32 a1, u32 a2, u8 a3, int a4, int a5);
+extern int func_0202da38(UnkStruct_0202b598 *self, char *p1, char *p2, int count, int base, int offset, int scale, int a4,
+                         int a5);
 
 int func_0202b598(UnkStruct_0202b598 *self)
 {
     u16 local;
     u16 val;
 
-    if (func_02099fe8(self) == -1) {
+    if (func_02099fe8() == -1) {
         goto fail;
     }
 
@@ -37,9 +38,9 @@ int func_0202b598(UnkStruct_0202b598 *self)
     self->unk_19C = val;
     self->unk_19E = 0;
 
-    func_0208150c(*(u32 *) ((char *) self->unk_100 + 0x830));
-    func_0202da38(self, (char *) self + 0x104, (char *) self + 0x122, 0x1e, func_020036e8(), data_020c8ca8.a, data_020c8ca8.b,
-                  0, 0);
+    func_0202da38(self, (char *) self + 0x104, (char *) self + 0x122, 0x1e,
+                  func_020036e8((unsigned char *) func_0208150c(*(u32 *) ((char *) self->unk_100 + 0x830))), data_020c8ca8.a,
+                  data_020c8ca8.b, 0, 0);
 
     return 1;
 

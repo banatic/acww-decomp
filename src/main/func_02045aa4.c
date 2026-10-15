@@ -13,14 +13,14 @@ struct UnkStruct_02045aa4_2 {
 };
 
 extern int func_02044878(int arg);
-extern void func_02045ac4(struct UnkStruct_02045aa4_2 *local, int val);
+extern int func_02045ac4(struct UnkStruct_02045aa4_2 *local, int val);
 
-void func_02045aa4(struct UnkStruct_02045aa4 *src, int arg)
+int func_02045aa4(struct UnkStruct_02045aa4 *src, int arg)
 {
     struct UnkStruct_02045aa4_2 local;
     int val;
     local.a = src->a;
     local.b = src->b;
     val = func_02044878(arg);
-    func_02045ac4(&local, val);
+    return func_02045ac4(&local, val);
 }

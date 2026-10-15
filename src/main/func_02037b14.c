@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_02037bc4(void);
+extern unsigned int func_02037bc4(int);
 
-unsigned int func_02037b14(void)
+unsigned int func_02037b14(int index)
 {
-    unsigned int value = func_02037bc4();
+    unsigned int value = func_02037bc4(index);
     if (value & 0x7f000) {
         unsigned char count = 0;
         if (value & 0x1000) {

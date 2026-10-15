@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0200354c(void *p);
+extern int func_0200354c(void);
 extern void func_0203edf4(void *p, unsigned int val);
 extern void func_0203eddc(void *p);
 
@@ -17,7 +17,7 @@ struct UnkStruct_0203f030 {
 int func_0203f030(void *p)
 {
     struct UnkStruct_0203f030 *s = (struct UnkStruct_0203f030 *) p;
-    if (func_0200354c(p) == 0) {
+    if (func_0200354c() == 0) {
         return 0;
     }
     s->unk_DC = 0;

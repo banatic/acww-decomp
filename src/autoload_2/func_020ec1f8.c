@@ -3,16 +3,16 @@
  */
 
 extern unsigned char data_021fbef8;
-extern int func_ov066_0226997c(unsigned char);
-extern int func_ov065_02277b98(unsigned char);
+extern int func_ov066_0226997c(void);
+extern int func_ov065_02277b98(void);
 
 int func_020ec1f8(void)
 {
     unsigned char c = data_021fbef8;
     if ((unsigned char) (c + 0xff) <= 1) {
-        return func_ov066_0226997c((unsigned char) (c + 0xff));
+        return func_ov066_0226997c();
     } else if ((unsigned char) (c + 0xfd) <= 1) {
-        return (unsigned short) func_ov065_02277b98((unsigned char) (c + 0xfd));
+        return (unsigned short) func_ov065_02277b98();
     } else {
         return 1;
     }

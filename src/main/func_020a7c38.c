@@ -19,7 +19,7 @@ extern UnkStruct_020a7c38_2 data_021f4588;
 
 extern void func_020a7a64(UnkStruct_020a7c38 *ptr);
 extern void func_020a9354(UnkStruct_020a7c38 *ptr, int arg);
-extern void func_020a92d8(UnkStruct_020a7c38 *ptr, int arg);
+extern int func_020a92d8(UnkStruct_020a7c38 *ptr, int arg);
 
 int func_020a7c38(int param)
 {

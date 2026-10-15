@@ -3,7 +3,7 @@
  */
 
 extern void *func_020b3b50(void *);
-extern unsigned char func_020b3d90(void);
+extern unsigned char func_020b3d90(void *argument0);
 extern void *func_020e9948(void *, int);
 extern int func_ov003_02220150(void *);
 extern int func_020b3d04(void *, void *, void *, void *, int);
@@ -11,11 +11,11 @@ extern void func_ov009_02265660(void *, void *, void *);
 extern void func_01ffd070(void *, void *, void *);
 extern void *func_020b8038(void *);
 extern int func_020b6590(void);
-extern void func_020b7cf4(int, void *, void *, void *, void *, int, int);
+extern int func_020b7cf4(int, void *, void *, void *, void *, int, int);
 extern void *func_ov009_02264370(void *);
 extern int func_ov009_02264c90(void *);
 extern void func_020326c4(void *, void *, void *, void *, int);
-extern void func_02032694(void *);
+extern int func_02032694(void *);
 extern void *data_021c9b1c;
 
 typedef struct {
@@ -63,7 +63,7 @@ void func_ov009_02264444(UnkStruct_02264444 *self, void *arg2)
         return;
     }
 
-    self->unk_290 = func_020b3d90();
+    self->unk_290 = func_020b3d90(ptr0);
     if (self->unk_290 == 0) {
         return;
     }

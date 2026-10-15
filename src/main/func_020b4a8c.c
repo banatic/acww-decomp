@@ -6,7 +6,7 @@ struct UnkStruct_020b4a8c {
     volatile void *unk_00;
 };
 
-extern void func_020a941c(struct UnkStruct_020b4a8c *this);
+extern void *func_020a941c(struct UnkStruct_020b4a8c *this);
 extern void func_020edb3c(struct UnkStruct_020b4a8c *this);
 
 extern unsigned char data_020e3e68[];

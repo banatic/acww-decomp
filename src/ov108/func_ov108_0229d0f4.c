@@ -3,8 +3,8 @@
  */
 
 extern int func_0206fe54(void);
-extern int func_ov108_0229c628(void *);
-extern void func_ov002_02208098(void *, int);
+extern void func_ov108_0229c628(void *);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov002_02208e28(void *);
 
 void func_ov108_0229d0f4(void *arg0)
@@ -14,8 +14,8 @@ void func_ov108_0229d0f4(void *arg0)
     }
     if (func_0206fe54() != 0) {
         func_ov108_0229c628(arg0);
-        func_ov002_02208098(arg0, 8);
+        func_ov002_02208098((void *) (arg0), 8);
     } else {
-        func_ov002_02208098(arg0, 5);
+        func_ov002_02208098((void *) (arg0), 5);
     }
 }

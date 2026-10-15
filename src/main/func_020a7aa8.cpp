@@ -5,10 +5,10 @@
 #include "cpp/main/Obj_020e3e44.h"
 typedef void (Obj_020e3e44::*Pmf)();
 extern Pmf __ptmf_null;
-extern "C" void func_020a8764(int *);
-extern "C" void func_020a7aa8(Obj_020e3e44 *self)
+extern "C" void func_020a8764(int *, int);
+extern "C" void func_020a7aa8(Obj_020e3e44 *self, int argument1)
 {
-    func_020a8764(&self->unk_28);
+    func_020a8764(&self->unk_28, (int) argument1);
     static Pmf tbl[] = {&Obj_020e3e44::func_020a7a14, __ptmf_null, __ptmf_null, __ptmf_null, __ptmf_null};
     Pmf p = tbl[self->unk_24];
     if (p) {

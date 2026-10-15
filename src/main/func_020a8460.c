@@ -4,7 +4,7 @@
 
 extern void func_020a8658(void *input, unsigned char *b0, unsigned char *b1, unsigned char *b2, unsigned char *b3,
                           unsigned char *b4);
-extern void func_020a8a34(void *item, int offset);
+extern int func_020a8a34(void *item, int offset);
 
 typedef struct {
     int unk_00;

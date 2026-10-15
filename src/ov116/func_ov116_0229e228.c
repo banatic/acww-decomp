@@ -11,7 +11,7 @@ extern void func_ov116_0229df8c(char *self);
 extern int func_ov114_0229d564(char *p, unsigned char a, unsigned char b);
 extern int func_ov114_0229d3f4(char *p, unsigned char a, unsigned char b);
 extern int func_ov114_0229ca50(char *p, unsigned char a, unsigned char b);
-extern void func_ov002_02208098(char *self, int a);
+extern unsigned char *func_ov002_02208098(char *self, unsigned char value);
 void func_ov116_0229e228(char *self)
 {
     unsigned int cond;

@@ -5,7 +5,7 @@
 typedef struct UnkStruct_0202eb38 {
     void *unk_00;
 } UnkStruct_0202eb38;
-extern void func_0201615c(UnkStruct_0202eb38 *);
+extern void *func_0201615c(UnkStruct_0202eb38 *);
 extern void func_020edb3c(UnkStruct_0202eb38 *);
 extern unsigned char data_020d9ff8[];
 

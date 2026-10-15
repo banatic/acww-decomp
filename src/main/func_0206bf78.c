@@ -11,13 +11,13 @@ typedef struct UnkStruct_0206bf78 {
     unsigned char unk_39;
 } UnkStruct_0206bf78;
 
-extern void func_020a94a4(UnkStruct_0206bf78 *param0, int param1, int param2, unsigned char param3);
+extern void func_020a94a4(UnkStruct_0206bf78 *param0);
 extern void func_020a9354(UnkStruct_0206bf78 *param0, int param1);
 
 void func_0206bf78(UnkStruct_0206bf78 *param0, int param1, int param2, unsigned char param3)
 {
     if (param2 > 0) {
-        func_020a94a4(param0, param1, param2, param3);
+        func_020a94a4(param0);
         func_020a9354(param0, param1);
         param0->unk_30 = 0;
         param0->unk_34 = param2;

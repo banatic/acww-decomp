@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02051c14(const unsigned short *a, int b, int c, int *d, int e);
+extern int func_02051c14(const unsigned short *a, int b, int c, int *d, int e);
 extern int func_02051d30(int v);
 
 unsigned char func_ov095_0229bb34(int unused, const unsigned short *arr, int p3, int p4, unsigned char threshold,

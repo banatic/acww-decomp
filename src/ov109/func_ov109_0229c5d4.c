@@ -3,7 +3,7 @@
  */
 
 extern int func_ov109_0229ca7c(void *self, unsigned char byte);
-extern int func_02060a34(void);
+extern int func_02060a34(unsigned int arg0);
 extern void func_ov109_0229cccc(void *self, int num);
 extern void func_020609dc(int result);
 extern void func_ov109_0229cc0c(void *self, unsigned char byte, int constant, int zero);
@@ -23,7 +23,7 @@ void func_ov109_0229c5d4(struct UnkStruct_0229c5d4 *self)
         case 0: {
             int result;
             result = func_ov109_0229ca7c(self, self->unk_29D4);
-            if (func_02060a34() != 0) {
+            if (func_02060a34(result) != 0) {
                 func_ov109_0229cccc(self, 17);
             } else {
                 func_020609dc(result);

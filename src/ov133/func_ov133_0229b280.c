@@ -4,10 +4,10 @@
 
 #include "types.h"
 
-extern int func_ov133_0229ad78(void *, int);
+extern void func_ov133_0229ad78(void *, int);
 extern void func_ov133_0229b320(void *, int);
 
-int func_ov133_0229b280(char *self)
+void func_ov133_0229b280(char *self)
 {
     // DECLS
     int i;
@@ -16,5 +16,5 @@ int func_ov133_0229b280(char *self)
         *(u8 *) (self + i + 0xa4) = 0xa;
     }
     func_ov133_0229b320(self, 0x0);
-    return func_ov133_0229ad78(self, 0x8);
+    func_ov133_0229ad78(self, 0x8);
 }

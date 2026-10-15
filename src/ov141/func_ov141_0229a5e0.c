@@ -13,7 +13,7 @@ typedef struct {
 
 extern int func_0208e484(void *addr);
 extern void func_ov141_0229a3a4(UnkStruct_0229a5e0 *obj);
-extern void func_ov002_02208098(UnkStruct_0229a5e0 *obj, unsigned char byte);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov141_02299f7c(UnkStruct_0229a5e0 *obj, int x);
 extern void func_ov141_02299f5c(UnkStruct_0229a5e0 *obj, int x);
 extern void func_ov141_0229a428(UnkStruct_0229a5e0 *obj);
@@ -22,7 +22,7 @@ void func_ov141_0229a5e0(UnkStruct_0229a5e0 *obj)
 {
     if (func_0208e484(&obj->unk_A38) != 0) {
         func_ov141_0229a3a4(obj);
-        func_ov002_02208098(obj, obj->unk_1A7E);
+        func_ov002_02208098((void *) (obj), obj->unk_1A7E);
         if (func_ov141_02299f7c(obj, 8) != 0) {
             func_ov141_02299f5c(obj, 8);
             obj->unk_1A8C = 7;

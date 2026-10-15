@@ -2,27 +2,29 @@
  * mwccarm 1.2/base -O4,s
  */
 
-typedef void (*Handler)(void);
+typedef void (*Handler)(void *);
 
 extern void *func_ov002_02207f80(unsigned int);
-extern void func_ov002_0220830c(void);
+extern void *func_ov002_0220830c(void *argument0);
 extern void func_02066694(void *);
-extern void func_020b9af4(void *);
-extern void func_ov094_0229b000(void *);
+extern void *func_020b9af4(void *);
+extern void *func_ov094_0229b000(void *);
 extern void func_ov094_0229bc3c(void *);
-extern void func_ov094_0229a2ec(void *);
-extern void func_ov002_02207e40(void *);
+extern void *func_ov094_0229a2ec(void *);
+extern void *func_ov002_02207e40(void *);
 extern void func_ov002_02209e44(void *);
-extern void func_ov002_02209ccc(void *);
-extern void func_ov002_02209b14(void *);
-extern void func_ov002_0220ba24(void *);
-extern void func_0206e388(void *);
-extern void func_ov002_0220b47c(void *);
-extern void func_ov002_0220b008(void *);
-extern void func_02066688(void);
+extern void *func_ov002_02209ccc(void *);
+extern void *func_ov002_02209b14(void *);
+extern void *func_ov002_0220ba24(void *);
+extern void *func_0206e388(void *);
+extern void *func_ov002_0220b47c(void *);
+extern void *func_ov002_0220b008(void *);
+extern void func_02066688(void *argument0);
 extern void __cxa_vec_ctor(void *, int, int, Handler, Handler);
 
 extern char data_ov104_0229f6d0;
+
+#define VisitElement_02066688 (Handler)(void (*)(void *)) func_02066688
 
 void *func_ov104_0229f460(void)
 {
@@ -35,7 +37,7 @@ void *func_ov104_0229f460(void)
         goto done;
     }
 
-    func_ov002_0220830c();
+    func_ov002_0220830c(obj);
     ((void **) obj)[0] = (void *) &data_ov104_0229f6d0;
 
     func_02066694((char *) obj + 0xc0);
@@ -59,11 +61,13 @@ void *func_ov104_0229f460(void)
     func_0206e388((char *) obj + 0x2a14);
     func_ov002_0220b47c((char *) obj + 0x2d3c);
 
-    __cxa_vec_ctor((char *) obj + 0x2db4, 0xa, 0x100, (Handler) func_02066694, (Handler) func_02066688);
-    __cxa_vec_ctor((char *) obj + 0x37b4, 0xa, 0x100, (Handler) func_02066694, (Handler) func_02066688);
+    __cxa_vec_ctor((char *) obj + 0x2db4, 0xa, 0x100, (Handler) func_02066694, VisitElement_02066688);
+    __cxa_vec_ctor((char *) obj + 0x37b4, 0xa, 0x100, (Handler) func_02066694, VisitElement_02066688);
 
     func_ov002_0220b008((char *) obj + 0x41b4);
 
 done:
     return obj;
 }
+
+#undef VisitElement_02066688

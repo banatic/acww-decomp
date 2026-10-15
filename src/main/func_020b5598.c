@@ -8,7 +8,7 @@ struct UnkStruct_020b5598 {
     void *vtable;
 };
 
-extern void func_020a8c38(struct UnkStruct_020b5598 *self);
+extern void *func_020a8c38(struct UnkStruct_020b5598 *self);
 extern void func_020edb3c(struct UnkStruct_020b5598 *self);
 
 struct UnkStruct_020b5598 *func_020b5598(struct UnkStruct_020b5598 *self)

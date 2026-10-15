@@ -9,7 +9,7 @@ struct State {
     int count;
 };
 
-extern void func_ov095_0229b3ec(struct State *self, int count, int idx);
+extern void func_ov095_0229b3ec(struct State *self);
 extern u16 func_ov095_0229b704(struct State *self, struct State *other);
 
 int func_ov095_0229b3a0(struct State *self, u16 *out, int idx)
@@ -19,7 +19,7 @@ int func_ov095_0229b3a0(struct State *self, u16 *out, int idx)
 
     cnt = self->count;
     if (cnt <= 1) {
-        func_ov095_0229b3ec(self, cnt, idx);
+        func_ov095_0229b3ec(self);
         return 0;
     } else {
         if (idx == 0) {

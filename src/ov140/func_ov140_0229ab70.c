@@ -2,11 +2,23 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov139_02299964(void *);
-extern void func_ov002_0220af94(void *);
+extern void func_ov139_02299964(void);
+extern void func_ov002_0220af94(void);
 
 void func_ov140_0229ab70(void *arg0)
 {
-    func_ov139_02299964((char *) arg0 + 0x8e8);
-    func_ov002_0220af94((char *) arg0 + 0x12f0);
+    // clang-format off
+    asm {
+        ldr r0, =0x8e8
+        add r0, arg0, r0
+    }
+    // clang-format on
+    func_ov139_02299964();
+    // clang-format off
+    asm {
+        ldr r0, =0x12f0
+        add r0, arg0, r0
+    }
+    // clang-format on
+    func_ov002_0220af94();
 }

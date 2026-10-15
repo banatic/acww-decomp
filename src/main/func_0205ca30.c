@@ -2,10 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern __arm int GX_ResetBankForSubOBJExtPltt(void);
+extern void *GX_ResetBankForSubOBJExtPltt(int size, void *heap);
 extern int data_021c9b18;
 
-void func_0205ca30(void)
+int func_0205ca30(int size, int heapword)
 {
-    data_021c9b18 = GX_ResetBankForSubOBJExtPltt();
+    int result;
+    result = (int) GX_ResetBankForSubOBJExtPltt(size, (void *) heapword);
+    data_021c9b18 = result;
+    return result;
 }

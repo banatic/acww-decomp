@@ -16,11 +16,11 @@ extern const unsigned char data_ov124_0229f5d0[];
 extern const unsigned char data_ov124_0229f610[];
 
 extern void *func_02064b2c(void *a, void *b, int c, void *d);
-extern void func_02002a88(void *a, int b, int c, int d, int e);
-extern void func_02002cd8(const void *a, void *b, int c, int d, int e);
+extern int func_02002a88(void *a, int b, int c, int d, int e);
+extern int func_02002cd8(const void *a, void *b, int c, int d, int e);
 extern void func_ov002_0220b36c(void *self, const void *data, int a, int b);
 extern void func_ov002_0220b318(void *self, int a);
-extern __arm void func_020e993c(void *a, void *b);
+extern void func_020e993c(void *a, void *b);
 extern int func_0206fca4(void);
 
 void func_ov124_0229ef4c(UnkStruct_0229ef4c *o, int p1)

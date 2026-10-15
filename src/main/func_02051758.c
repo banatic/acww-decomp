@@ -3,7 +3,7 @@
  */
 
 extern void func_020e9898(void *);
-extern void FS_CloseFile(void *);
+extern int FS_CloseFile(void *);
 
 typedef struct {
     void *unk_00;

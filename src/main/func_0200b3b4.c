@@ -3,7 +3,7 @@
  */
 
 extern void func_0200b794(void *, int *, void *, unsigned short *, unsigned char *);
-extern void func_0200b7e8(void *, int *, unsigned short, unsigned char, int, int);
+extern int func_0200b7e8(void *, int *, unsigned short, unsigned char, int, int);
 
 void func_0200b3b4(void *self, int arg2)
 {

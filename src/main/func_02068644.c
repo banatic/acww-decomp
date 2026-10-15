@@ -104,27 +104,27 @@ typedef struct UnkStruct_02068644 {
     char unk_1E9A;
 } UnkStruct_02068644;
 
-extern void func_02069128(void *);
-extern void func_020a9d88(void *);
-extern void func_020ab6c8(void *);
-extern void func_0206d688(void *);
-extern void func_020a82e8(void *);
+extern void *func_02069128(void *);
+extern void *func_020a9d88(void *);
+extern void *func_020ab6c8(void *);
+extern void *func_0206d688(void *);
+extern int func_020a82e8(void *);
 extern void func_020a7a04(void *);
-extern void func_020b5630(void *);
-extern void func_020a8228(void *);
-extern void func_020821bc(void *);
-extern void func_020641c8(void *);
-extern void func_02094fd4(void *);
-extern void func_020820f8(void *);
-extern void func_02082048(void *);
-extern void func_020a8210(void *);
+extern void *func_020b5630(void *);
+extern void *func_020a8228(void *);
+extern void *func_020821bc(void *);
+extern void *func_020641c8(void *);
+extern void *func_02094fd4(void *);
+extern void *func_020820f8(void *);
+extern void *func_02082048(void *);
+extern void *func_020a8210(void *);
 extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 extern void MI_CpuFill8(void *, int, int);
 extern unsigned char data_021f43f8;
-extern void func_0206c368(void *, void *);
-extern void func_0206bde0(void *, void *, void *);
+extern unsigned char *func_0206c368(void *, void *);
+extern void *func_0206bde0(void *, void *, void *);
 extern void func_020a9524(void *, void *);
-extern void func_02068b30(void *, void *);
+extern void *func_02068b30(void *, void *);
 
 UnkStruct_02068644 *func_02068644(UnkStruct_02068644 *s)
 {
@@ -151,8 +151,10 @@ UnkStruct_02068644 *func_02068644(UnkStruct_02068644 *s)
     func_020a9524(&s->unk_149C, &s->unk_13B8);
     s->unk_14A8 = 0;
     func_020a82e8(&s->unk_14AC);
-    __cxa_vec_ctor(&s->unk_14B8, 0xb, 0x5c, func_020a8228, func_020a8210);
-    __cxa_vec_ctor(&s->unk_18AC, 4, 0x5c, func_020a8228, func_020a8210);
+    __cxa_vec_ctor((void *) (&s->unk_14B8), 0xb, 0x5c, (((void (*)(void *)) func_020a8228)),
+                   (((void (*)(void *)) func_020a8210)));
+    __cxa_vec_ctor((void *) (&s->unk_18AC), 4, 0x5c, (((void (*)(void *)) func_020a8228)),
+                   (((void (*)(void *)) func_020a8210)));
     func_02068b30(&s->unk_1A2C, s);
     func_020a7a04(&s->unk_1A58);
     s->unk_1A64 = 0;

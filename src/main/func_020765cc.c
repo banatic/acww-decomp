@@ -8,11 +8,11 @@ extern void *data_020ccf94;
 extern u8 data_021e5a2c[];
 
 extern void func_020736bc(void *h, u8 *out, int n);
-extern void func_02078448(int *out, volatile u16 *id, u8 *buf);
+extern unsigned int func_02078448(int *out, volatile u16 *id, u8 *buf);
 extern int func_0207cec0(u8 *tbl, int key);
 extern void func_02080cd8(int a, volatile u16 *id);
 
-void func_020765cc(void)
+void func_020765cc(int length, int sequence, unsigned char category, unsigned int player)
 {
     volatile u16 id;
     u8 buf[3];

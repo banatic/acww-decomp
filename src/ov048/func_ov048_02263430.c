@@ -6,12 +6,12 @@ typedef struct {
     int a, b, c;
 } UnkStruct_02263430;
 
-extern void func_020984e8(void *);
+extern int func_020984e8(void);
 extern UnkStruct_02263430 *func_02095794(int);
 extern int func_02014868(void *);
-extern void func_02095ab0(void *, int, int);
+extern int func_02095ab0(void *, int, int);
 extern int DWCi_GsMalloc(int);
-extern void func_0203e020(void *);
+extern int func_0203e020(void *);
 extern UnkStruct_02263430 data_ov048_02263974;
 
 int func_ov048_02263430(unsigned char *self)
@@ -20,7 +20,7 @@ int func_ov048_02263430(unsigned char *self)
     UnkStruct_02263430 local2;
     UnkStruct_02263430 *ptr;
 
-    func_020984e8(self);
+    func_020984e8();
 
     ptr = func_02095794(4);
     saved.a = ptr->a;

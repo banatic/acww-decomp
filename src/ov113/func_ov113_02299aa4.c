@@ -12,12 +12,12 @@ typedef struct {
     unsigned char unk_9D;
 } UnkStruct_02299aa4;
 
-extern int RtcSendPxiCommand(int cmd);
+extern void RtcSendPxiCommand(int command);
 extern void func_ov113_02299a80(UnkStruct_02299aa4 *o);
 extern void func_ov113_02299c44(UnkStruct_02299aa4 *o, int a);
 extern void func_ov113_02299d84(UnkStruct_02299aa4 *o, int a);
 extern void func_ov113_02299d94(UnkStruct_02299aa4 *o, int a);
-extern void func_ov002_022080a0(UnkStruct_02299aa4 *o, int a);
+extern unsigned char *func_ov002_022080a0(UnkStruct_02299aa4 *o, unsigned char value);
 extern __arm void *func_020ee45c(UnkStruct_02299aa4 *o);
 extern void func_ov092_02299324(void *p, int a, int b);
 

@@ -5,7 +5,7 @@
 extern void func_0206f58c(void);
 extern int func_0206f56c(void);
 extern int func_0206fe60(void);
-extern int func_ov090_022990e0(int);
+extern int func_ov090_022990e0(void);
 extern int func_ov096_022a18dc(void *, int);
 
 typedef struct {
@@ -42,7 +42,7 @@ int func_ov096_022a192c(UnkStruct_022a192c *self)
     result = -1;
     ret = func_0206fe60();
     if (ret != 0) {
-        result = func_ov090_022990e0(ret);
+        result = func_ov090_022990e0();
     } else {
         unsigned short val = data_021fbe40.unk_02;
         if (val & 0x800) {

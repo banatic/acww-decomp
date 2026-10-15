@@ -11,12 +11,12 @@ typedef struct {
 extern char data_021dc7aa;
 
 extern void *func_02065f7c(void *p);
-extern void func_0209527c(UnkStruct_02081418 *it, void *x);
+extern int func_0209527c(UnkStruct_02081418 *it, void *x);
 extern int func_020951bc(UnkStruct_02081418 *it);
 extern void *func_020807a8(void *self, UnkStruct_02081418 *it);
-extern void func_0209526c(UnkStruct_02081418 *it);
+extern int func_0209526c(UnkStruct_02081418 *it);
 extern void func_02081cc4(void *obj);
-extern void func_02066830(void *a, void *p);
+extern int func_02066830(void *a, void *p);
 extern void func_020642d0(void *a, void *b);
 extern int func_02065f18(void *p);
 extern void func_02061b1c(u16 *dst, u16 *src, int one);

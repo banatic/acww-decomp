@@ -9,8 +9,8 @@ extern int data_021fd004;
 extern int data_021fd024;
 extern int data_021fcff8;
 
-extern void func_020ee834(int *arg);
-extern void func_020eea4c(int *arg);
+extern int func_020ee834(int *arg);
+extern int func_020eea4c(int *arg);
 
 void func_020ee9a0(void)
 {

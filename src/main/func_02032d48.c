@@ -11,7 +11,7 @@ typedef struct {
     Elem arr[1];
 } UnkStruct_02032d48;
 
-extern void func_02032fc0(Elem *a, int arg, Elem *b);
+extern int func_02032fc0(Elem *a, int arg, Elem *b);
 
 void func_02032d48(UnkStruct_02032d48 *self, int arg)
 {

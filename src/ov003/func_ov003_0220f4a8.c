@@ -8,11 +8,11 @@ struct UnkStruct_0220f4a8 {
     int z;
 };
 
-extern void func_020109a0(void *a, int b, int c, int d);
+extern void func_020109a0(void *a, int b, int c, unsigned short d);
 extern void func_ov003_0220f524(void *a, struct UnkStruct_0220f4a8 s);
 extern void func_ov003_0220f508(void *a, struct UnkStruct_0220f4a8 *s);
 
-void func_ov003_0220f4a8(void *self, void *other)
+void func_ov003_0220f4a8(void *self, void *other, int previous)
 {
     struct UnkStruct_0220f4a8 local;
     struct UnkStruct_0220f4a8 *src;

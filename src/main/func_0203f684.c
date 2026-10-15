@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0203c57c(void);
+extern short func_0203c57c(void *);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
 extern int data_021c67a4;
@@ -30,13 +30,14 @@ struct UnkStruct_0203f684 {
 
 void func_0203f684(struct UnkStruct_0203f684 *out, const struct In *in)
 {
+    void *tested_value0;
     unsigned int flag;
     out->a = in->a;
     out->b = in->b;
     out->c = in->c;
 
-    if (data_021c67a4 != 0) {
-        int v = func_0203c57c();
+    if ((tested_value0 = (void *) (data_021c67a4)) != 0) {
+        int v = func_0203c57c(tested_value0);
         if (v > 0x27f7) {
             v = 0x27f7;
         } else if (v < 0x21fd) {

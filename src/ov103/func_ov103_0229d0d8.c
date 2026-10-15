@@ -6,7 +6,7 @@ extern int func_ov002_0220909c(int data);
 extern void func_ov002_022096d8(int data, int val);
 extern int func_0208e4bc(int data);
 extern void func_ov103_0229c6a0(int data);
-extern void func_ov002_02208098(int data, int val);
+extern unsigned char *func_ov002_02208098(int data, unsigned char value);
 
 void func_ov103_0229d0d8(int param)
 {

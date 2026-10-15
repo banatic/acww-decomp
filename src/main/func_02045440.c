@@ -26,7 +26,7 @@ extern void func_02063cc8(UnkStruct_02045440 *o);
 extern void func_0204f794(O12 *o, int x, int z);
 extern int func_ov003_02223078(void *c, O12 *o);
 extern int func_020456b0(u8 *self, Pt *p, int i, void *ctx);
-extern void func_02046024(int a, Pt *p, int r, int s, int a5, int a6, int a7, int a8, int a9, int a10);
+extern int func_02046024(int a, Pt *p, int r, int s, int a5, int a6, int a7, int a8, int a9, int a10);
 extern int data_020ca67c[];
 extern u8 data_020ca640[];
 

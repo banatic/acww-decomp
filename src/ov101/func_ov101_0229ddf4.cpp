@@ -3,13 +3,13 @@
  */
 
 extern "C" void func_ov002_0220919c(void *);
-extern "C" int func_0206fe54(int);
+extern "C" int func_0206fe54(void);
 extern "C" void func_ov002_02209eb8(void *);
 extern "C" int func_ov101_0229c2ac(void *, int);
 extern "C" void func_ov002_0220ad18(void *, void *);
 extern "C" void func_ov094_0229a850(void *, int, int);
 extern "C" void func_ov094_0229b738(void *, int, int);
-extern "C" void func_ov094_02299d84(void *, int);
+extern "C" void func_ov094_02299d84(void);
 
 extern "C" int func_ov101_0229ddf4(unsigned char *self)
 {
@@ -18,7 +18,8 @@ extern "C" int func_ov101_0229ddf4(unsigned char *self)
         return 1;
     }
 
-    if (func_0206fe54((*(int (**)(void *))((char *) *(void **) (self + 0x21b4) + 8))(self + 0x21b4)) != 0) {
+    (*(int (**)(void *))((char *) *(void **) (self + 0x21b4) + 8))(self + 0x21b4);
+    if (func_0206fe54() != 0) {
         func_ov002_02209eb8(self + 0x229c);
     }
 
@@ -27,7 +28,15 @@ extern "C" int func_ov101_0229ddf4(unsigned char *self)
         int n = *(int *) (self + 0x98) - 0x10;
         func_ov094_0229a850(self + 0xf4, 0, n);
         func_ov094_0229b738(self + 0xb54, 0, n);
-        func_ov094_02299d84(self + 0xb7c, n);
+        {
+            void *hook_object = (void *) (self + 0xb7c);
+            int hook_value = (int) (n);
+            asm {
+                mov r0, hook_object
+                mov r1, hook_value
+            }
+            func_ov094_02299d84();
+        }
     }
     return 1;
 }

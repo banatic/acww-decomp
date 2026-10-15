@@ -4,8 +4,8 @@
 
 #include "types.h"
 
-extern void func_020984e8(void);
-extern void func_02099640(void);
+extern int func_020984e8(void);
+extern int func_02099640(int argument0);
 extern int func_02099e9c(u16 *p);
 extern void func_0209e474(int *p);
 extern void *func_0208602c(void);
@@ -34,8 +34,7 @@ void func_ov083_02278c60(struct UnkStruct_02278c60_2 *self, struct UnkStruct_022
     } local;
     u8 v;
 
-    func_020984e8();
-    func_02099640();
+    func_02099640(func_020984e8());
     out->ptr = &data_ov083_02279338;
 
     if (self->unk_B4 == -1) {

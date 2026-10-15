@@ -27,7 +27,7 @@ extern UnkStruct_0203c2d4 *data_021f6948;
 extern int data_020ca0e8;
 extern CondStruct *data_021c80bc;
 
-extern void func_02030738(void *, void *, void *, void *);
+extern int func_02030738(void *, void *, void *, void *);
 extern int func_020b65c4(void);
 extern int func_02037e84(u32);
 

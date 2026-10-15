@@ -3,17 +3,17 @@
  */
 
 extern int func_0206f56c(void);
-extern int func_ov119_0229a4e4(void *);
+extern void func_ov119_0229a4e4(void *);
 extern int func_ov002_02208054(void *, int);
-extern int func_ov119_0229b828(void *);
-extern int func_ov002_02208098(void *, int);
+extern void func_ov119_0229b828(void *);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 extern int func_ov002_02208b00(void *, unsigned char, unsigned char);
 extern int func_ov119_0229a420(void *, int);
-extern int func_ov002_02209114(void *, int, int);
+extern void func_ov002_02209114(void *, int, int);
 extern int func_ov119_0229a5cc(void *, int);
 
 void func_ov119_0229c090(void *self)

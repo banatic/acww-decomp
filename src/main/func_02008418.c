@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02008458(void *obj, int arg, unsigned short val);
+extern int func_02008458(void *obj, int arg, unsigned short val);
 
 void func_02008418(void *obj, unsigned short val)
 {

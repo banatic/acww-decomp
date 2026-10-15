@@ -10,7 +10,7 @@ typedef struct {
 extern int func_020e8ed8(fx32, fx32);
 extern void func_0204f818(fx32 *, fx32 *, Vec *);
 extern void func_ov003_0220f744(void *, int, fx32, fx32, unsigned char, unsigned char);
-extern void func_020109a0(void *, int, int, int);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
 typedef struct {
     char pad_00[0x5c];
     Vec pos;
@@ -24,7 +24,7 @@ typedef struct {
 typedef volatile struct {
     fx32 x, y, z;
 } DT;
-void func_ov003_0220f6dc(UnkStruct_0220f6dc *self, void *data)
+void func_ov003_0220f6dc(UnkStruct_0220f6dc *self, void *data, int previous)
 {
     fx32 a, b;
     DT d;

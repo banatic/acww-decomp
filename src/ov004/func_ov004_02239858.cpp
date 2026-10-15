@@ -11,7 +11,7 @@ struct UnkStruct_02239858 {
 
 extern "C" {
 extern int func_02056f28(void *, unsigned);
-extern void func_ov004_02239804(void *);
+extern int func_ov004_02239804(void *);
 }
 extern "C" int func_ov004_02239858(char *self)
 {

@@ -9,7 +9,7 @@ struct UnkStruct_0229c55c {
     unsigned char byte;
 };
 
-extern void func_020896b8(int, void *, void *, int, int, int, int);
+extern int func_020896b8(int, void *, void *, int, int, int, int);
 extern char data_ov105_0229fa80[];
 
 void func_ov105_0229c55c(struct UnkStruct_0229c55c *self)

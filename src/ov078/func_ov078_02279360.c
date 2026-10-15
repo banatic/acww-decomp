@@ -7,7 +7,7 @@ extern int func_0201aff8(void *p, void *self, int flag);
 extern int func_0201afc0(void *p);
 extern void func_0201af48(void *p);
 extern void func_0201afd4(void *p, void *buf);
-extern void func_02019d0c(void *p, int r1, int r2, int r3, int s1, int s2, int s3, int s4, int s5, int s6, int s7);
+extern int func_02019d0c(void *p, int r1, int r2, int r3, int s1, int s2, int s3, int s4, int s5, int s6, int s7);
 extern unsigned short data_020c80f8;
 
 extern char data_ov078_02279c3c;

@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbefc;
-extern int DWCi_GetProfileIDFromList(int, unsigned short);
+extern int DWCi_GetProfileIDFromList(int index);
 
 int func_020eb868(int a)
 {
@@ -11,5 +11,5 @@ int func_020eb868(int a)
     if (s < 4) {
         return -1;
     }
-    return DWCi_GetProfileIDFromList(a, s);
+    return DWCi_GetProfileIDFromList(a);
 }

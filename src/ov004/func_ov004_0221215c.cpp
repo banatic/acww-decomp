@@ -7,11 +7,16 @@
 
 typedef void (Obj_ov004_022509ac::*Pmf)(void);
 
+#define DISCARD_HANDLER(Class, Method) (Pmf) & Class::Method
+
 void Obj_ov004_022509ac::func_ov004_0221215c()
 {
-    static Pmf tbl[] = {&Obj_ov004_022509ac::func_ov004_022120e8, &Obj_ov004_022509ac::func_ov004_0221206c};
+    static Pmf tbl[] = {DISCARD_HANDLER(Obj_ov004_022509ac, func_ov004_022120e8),
+                        DISCARD_HANDLER(Obj_ov004_022509ac, func_ov004_0221206c)};
     unsigned char i = unk_89c;
     if (i < 2) {
         (this->*(tbl[i]))();
     }
 }
+
+#undef DISCARD_HANDLER

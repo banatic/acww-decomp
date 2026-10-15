@@ -12,9 +12,9 @@ extern unsigned char data_020e54a8;
 extern int func_02073dd4(Object *, unsigned int);
 extern int func_02084af0(void);
 extern int func_020883cc(void);
-extern void func_0208602c(void);
-extern void func_020860c4(void);
-extern void func_02087f58(void);
+extern int func_0208602c(void);
+extern int func_020860c4(int);
+extern void func_02087f58(void *);
 
 void func_02084210(void)
 {
@@ -32,8 +32,6 @@ void func_02084210(void)
 
     flag = (data_020e54a8 != 0) ? 0 : 1;
     if (flag > 0) {
-        func_0208602c();
-        func_020860c4();
-        func_02087f58();
+        func_02087f58((void *) func_020860c4((int) func_0208602c()));
     }
 }

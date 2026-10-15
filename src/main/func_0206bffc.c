@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a9484(void *, int, int);
+extern void *func_020a9484(void *);
 
 typedef struct UnkStruct_0206bffc {
     void *unk_00;
@@ -21,7 +21,7 @@ extern unsigned char data_020e3e68[];
 
 UnkStruct_0206bffc *func_0206bffc(UnkStruct_0206bffc *this, int a, int b)
 {
-    func_020a9484(this, a, b);
+    func_020a9484(this);
     this->unk_00 = (void *) data_020e3e68;
     this->unk_00 = (void *) data_020def9c;
     this->unk_24 = a;

@@ -5,7 +5,7 @@
 extern void func_0204f794(int *out, int a, int b);
 extern void *func_020961a8(int arg);
 extern int func_020644e4(int value);
-extern void func_ov003_022213f8(int *data, int a1, int *pair, int *dest, int arg5, int arg6, int arg7, int arg8);
+extern int func_ov003_022213f8(int *data, int a1, int *pair, int *dest, int arg5, int arg6, int arg7, int arg8);
 extern int data_ov003_0223cfe4[];
 
 typedef struct {

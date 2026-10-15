@@ -17,8 +17,12 @@ struct UnkStruct_0229c918_2 {
 extern int func_ov002_02209d84(void *);
 extern int func_ov002_02209d7c(void *);
 
-void func_ov108_0229c918(struct UnkStruct_0229c918_2 *self)
+int func_ov108_0229c918(struct UnkStruct_0229c918_2 *self)
 {
     self->unk_A4 = func_ov002_02209d84(&self->sub);
-    self->unk_A8 = func_ov002_02209d7c(&self->sub);
+    {
+        int result = func_ov002_02209d7c(&self->sub);
+        self->unk_A8 = result;
+        return result;
+    }
 }

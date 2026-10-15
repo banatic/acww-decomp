@@ -6,7 +6,7 @@ typedef struct Something {
     void *unk_00;
 } Something;
 
-extern void func_020a8c38(Something *self);
+extern void *func_020a8c38(Something *self);
 extern char data_020e1904;
 
 Something *func_020821a4(Something *self)

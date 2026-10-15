@@ -7,7 +7,7 @@ extern int func_02056f28(void *p, int n);
 extern unsigned int data_020ccf94;
 extern int func_02073908(unsigned int a, unsigned int b);
 extern void func_020f1fb4(unsigned int a, int b);
-extern void func_0200f328(void *p, int n);
+extern int func_0200f328(void *p, int n);
 
 struct UnkStruct020089dc {
     char pad_00[0x2d0];

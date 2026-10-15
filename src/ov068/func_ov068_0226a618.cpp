@@ -82,7 +82,7 @@ extern int func_0207cf74(int x);
 extern void func_02080cd8(void *p, u16 *src);
 extern void func_ov068_0226ae00(SomeState *self, Object *obj, void *data);
 extern void func_ov068_0226ad78(SomeState *self, Object *obj, int a, int b, int c);
-extern void func_020172d8(void *p, int a, u16 *src);
+extern int func_020172d8(void *p, int a, u16 *src);
 
 extern u8 data_ov068_02276754[];
 extern List data_021e5a2c;

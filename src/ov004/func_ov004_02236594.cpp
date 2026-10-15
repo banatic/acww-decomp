@@ -10,7 +10,7 @@ extern unsigned char data_ov004_02247924[];
 extern unsigned char *data_ov004_022594d4[];
 extern void func_ov004_0223635c(void *, void *);
 extern void func_ov004_02239b80(void *);
-extern int func_ov004_02239768(void *);
+extern void func_ov004_02239768(void *);
 extern void func_ov004_022395d0(void *, int, int);
 extern void func_ov004_022396a0(void *);
 extern void func_ov004_0223592c(void *);

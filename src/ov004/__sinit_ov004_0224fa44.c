@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void __register_global_object(void *, void *, void *);
+extern void __register_global_object(void *, void *destructor, void *);
 extern struct {
     unsigned char f0;
     unsigned char f1;
@@ -66,7 +66,7 @@ extern struct {
     long f18;
     long f1c;
 } data_ov004_0225698c;
-extern void func_0203cb30(void);
+extern void func_0203cb30(void *arg0);
 extern unsigned char data_ov004_0225fff4;
 extern unsigned char data_ov004_02260000;
 extern unsigned char data_ov004_0225ffe8;
@@ -99,21 +99,21 @@ void __sinit_ov004_0224fa44(void)
     data_ov004_0225ffdc.f1 = 24;
     data_ov004_0225ffdc.f2 = 24;
     data_ov004_0225ffdc.f3 = 31;
-    __register_global_object((void *) &data_ov004_022569ac, (void *) &func_0203cb30, (void *) &data_ov004_0225fff4);
+    __register_global_object((void *) &data_ov004_022569ac, ((void *) &func_0203cb30), (void *) &data_ov004_0225fff4);
     data_ov004_022569ac.f8 = 0;
     data_ov004_022569ac.fc = 7700;
     data_ov004_022569ac.f10 = 3850;
     data_ov004_022569ac.f14 = 79360;
     data_ov004_022569ac.f18 = 512;
     data_ov004_022569ac.f1c = 95744;
-    __register_global_object((void *) &data_ov004_022569cc, (void *) &func_0203cb30, (void *) &data_ov004_02260000);
+    __register_global_object((void *) &data_ov004_022569cc, ((void *) &func_0203cb30), (void *) &data_ov004_02260000);
     data_ov004_022569cc.f8 = 0;
     data_ov004_022569cc.fc = 7700;
     data_ov004_022569cc.f10 = 3850;
     data_ov004_022569cc.f14 = 66560;
     data_ov004_022569cc.f18 = 512;
     data_ov004_022569cc.f1c = 76544;
-    __register_global_object((void *) &data_ov004_0225698c, (void *) &func_0203cb30, (void *) &data_ov004_0225ffe8);
+    __register_global_object((void *) &data_ov004_0225698c, ((void *) &func_0203cb30), (void *) &data_ov004_0225ffe8);
     data_ov004_0225698c.f8 = 0;
     data_ov004_0225698c.fc = 7700;
     data_ov004_0225698c.f10 = 3850;

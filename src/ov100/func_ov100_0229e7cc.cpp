@@ -7,18 +7,34 @@
 
 typedef void (Obj_ov100_0229ecb8::*PMF)();
 
+#define STATE_func_ov100_0229d9c0 (PMF) & Obj_ov100_0229ecb8::func_ov100_0229d9c0
+
 void Obj_ov100_0229ecb8::func_ov100_0229e7cc()
 {
-    static PMF table[22] = {&Obj_ov100_0229ecb8::func_ov100_0229e17c, &Obj_ov100_0229ecb8::func_ov100_0229e124,
-                            &Obj_ov100_0229ecb8::func_ov100_0229e098, &Obj_ov100_0229ecb8::func_ov100_0229df98,
-                            &Obj_ov100_0229ecb8::func_ov100_0229de18, &Obj_ov100_0229ecb8::func_ov100_0229dd54,
-                            &Obj_ov100_0229ecb8::func_ov100_0229dcd8, &Obj_ov100_0229ecb8::func_ov100_0229dc88,
-                            &Obj_ov100_0229ecb8::func_ov100_0229dc38, &Obj_ov100_0229ecb8::func_ov100_0229dbf8,
-                            &Obj_ov100_0229ecb8::func_ov100_0229dbd0, &Obj_ov100_0229ecb8::func_ov100_0229dba0,
-                            &Obj_ov100_0229ecb8::func_ov100_0229db70, &Obj_ov100_0229ecb8::func_ov100_0229db18,
-                            &Obj_ov100_0229ecb8::func_ov100_0229dad0, &Obj_ov100_0229ecb8::func_ov100_0229da7c,
-                            &Obj_ov100_0229ecb8::func_ov100_0229da40, &Obj_ov100_0229ecb8::func_ov100_0229da04,
-                            &Obj_ov100_0229ecb8::func_ov100_0229d9c0, &Obj_ov100_0229ecb8::func_ov100_0229d9a0,
-                            &Obj_ov100_0229ecb8::func_ov100_0229d968, &Obj_ov100_0229ecb8::func_ov100_0229d928};
+    static PMF table[22] = {&Obj_ov100_0229ecb8::func_ov100_0229e17c,
+                            &Obj_ov100_0229ecb8::func_ov100_0229e124,
+                            &Obj_ov100_0229ecb8::func_ov100_0229e098,
+                            &Obj_ov100_0229ecb8::func_ov100_0229df98,
+                            &Obj_ov100_0229ecb8::func_ov100_0229de18,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dd54,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dcd8,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dc88,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dc38,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dbf8,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dbd0,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dba0,
+                            &Obj_ov100_0229ecb8::func_ov100_0229db70,
+                            &Obj_ov100_0229ecb8::func_ov100_0229db18,
+                            &Obj_ov100_0229ecb8::func_ov100_0229dad0,
+                            &Obj_ov100_0229ecb8::func_ov100_0229da7c,
+                            &Obj_ov100_0229ecb8::func_ov100_0229da40,
+                            &Obj_ov100_0229ecb8::func_ov100_0229da04,
+                            STATE_func_ov100_0229d9c0,
+                            &Obj_ov100_0229ecb8::func_ov100_0229d9a0,
+                            &Obj_ov100_0229ecb8::func_ov100_0229d968,
+                            &Obj_ov100_0229ecb8::func_ov100_0229d928};
+
     (this->*table[subState])();
 }
+
+#undef STATE_func_ov100_0229d9c0

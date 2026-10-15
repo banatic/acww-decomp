@@ -5,7 +5,7 @@
 extern unsigned char data_020e37f8;
 extern void *func_020984e8(void);
 extern void *func_0209847c(unsigned char);
-extern int MI_CpuCopy8(void *, const void *, unsigned int);
+extern void MI_CpuCopy8(void *, const void *, unsigned int);
 
 void func_020a24ac(void)
 {

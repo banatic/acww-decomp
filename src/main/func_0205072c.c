@@ -4,8 +4,8 @@
 
 extern void func_020f5958(char *);
 extern void func_0209d34c(char *);
-extern void func_0209d11c(char *);
-extern void func_02055210(char *);
+extern void *func_0209d11c(char *);
+extern void *func_02055210(char *);
 extern void func_0209d0a4(char *);
 
 void *func_0205072c(void *self)

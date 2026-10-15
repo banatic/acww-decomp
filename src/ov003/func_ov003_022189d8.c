@@ -21,12 +21,12 @@ struct UnkStruct_022189d8_3 {
 };
 
 extern void func_0204f818(int *a, int *b, UnkStruct_022189d8 *c);
-extern void func_020912d4(int a, UnkStruct_022189d8 *b, short *c, int d);
-extern void func_02091230(int a, UnkStruct_022189d8 *b, int c, int d);
+extern int func_020912d4(int a, UnkStruct_022189d8 *b, short *c, int d);
+extern int func_02091230(int a, UnkStruct_022189d8 *b, int c, int d);
 extern void VEC_Add(UnkStruct_022189d8 *a, UnkStruct_022189d8 *b, UnkStruct_022189d8 *dst);
 extern void func_02044a14(short *a, UnkStruct_022189d8_2 *b, int c, int d);
 extern void func_02045f08(UnkStruct_022189d8_2 *a, int b);
-extern void func_0200f328(struct UnkStruct_022189d8_3 *self, int a);
+extern int func_0200f328(struct UnkStruct_022189d8_3 *self, int a);
 extern void func_0200f268(struct UnkStruct_022189d8_3 *self, int a);
 
 void func_ov003_022189d8(struct UnkStruct_022189d8_3 *self)

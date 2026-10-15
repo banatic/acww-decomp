@@ -35,12 +35,12 @@ extern int data_021c29ec;
 extern int data_021c1d6c;
 extern UnkStruct_02028f5c_2 data_020d8db0;
 
-extern void func_0207f270(void *q);
-extern int func_020794d0(void);
+extern int func_0207f270(void *q);
+extern int func_020794d0(int);
 extern int func_0209bbec(int h);
 extern void *func_0209ad9c(void *r, int x);
-extern void func_0207f1c8(void *q);
-extern int func_0209b5ec(void);
+extern unsigned int func_0207f1c8(void *q);
+extern int func_0209b5ec(void *);
 extern void func_0209e474(UnkStruct_02028f5c *s);
 extern int func_0209b4d4(void *o);
 extern int func_0209bd44(int x);
@@ -69,11 +69,9 @@ int func_02028f5c(UnkStruct_02028f5c_3 *p, void *q, void *r)
     void *obj;
     int qq;
 
-    func_0207f270(q);
-    h = func_020794d0();
+    h = func_020794d0((int) func_0207f270(q));
     obj = func_0209ad9c(r, func_0209bbec(h));
-    func_0207f1c8(q);
-    qq = func_0209b5ec();
+    qq = func_0209b5ec((void *) func_0207f1c8(q));
     s.a = 0;
     s.b = 0;
     func_0209e474(&s);

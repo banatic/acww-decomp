@@ -5,8 +5,8 @@
 extern int FX_MulFunc(int a, int b);
 extern void func_02031e28(int *arr, int val);
 extern void func_02031e08(int *arr, int val);
-extern void func_0202fc5c(void *out, int *src, int a, int b);
-extern void func_0202fc18(void *out, int *src, int a, int b, void *param);
+extern int func_0202fc5c(void *out, int *src, int a, int b);
+extern int func_0202fc18(void *out, int *src, int a, int b, void *param);
 
 typedef struct {
     char pad_00[0x3c];

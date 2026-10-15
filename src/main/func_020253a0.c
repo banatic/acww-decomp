@@ -6,12 +6,12 @@ typedef struct {
     int a;
     int b;
 } Pair;
-extern void func_02015094(int arg);
-extern int func_0202dbf0(int arg, Pair p);
+extern int func_02015094(int arg);
+extern void func_0202dbf0(int arg, Pair p);
 extern Pair data_020d9230;
 
-int func_020253a0(int arg)
+void func_020253a0(int arg, int event)
 {
     func_02015094(arg);
-    return func_0202dbf0(arg, data_020d9230);
+    func_0202dbf0(arg, data_020d9230);
 }

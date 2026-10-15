@@ -2,15 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_01ffcb2c(void);
+extern int func_01ffcb2c(int, int);
 extern unsigned char data_020c9081[];
 
-int func_02031af0(void)
+int func_02031af0(int r0, int r1)
 {
-    int r0;
-    int r1;
 
-    r0 = func_01ffcb2c();
+    r0 = func_01ffcb2c(r0, r1);
     if (r0 < 0x7c) {
         r1 = 0x1e;
         r0 = r0 * r1;

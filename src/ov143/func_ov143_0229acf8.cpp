@@ -5,10 +5,10 @@
 
 #include "cpp/ov143/Obj_ov143_0229b1c0.h"
 
-typedef int (Obj_ov143_0229b1c0::*PMF)();
+typedef void (Obj_ov143_0229b1c0::*PMF)();
 
-extern "C" int func_ov143_0229a91c(void *);
-extern "C" int func_ov143_0229a914(void *);
+extern "C" void func_ov143_0229a91c(void *);
+extern "C" void func_ov143_0229a914(void *);
 
 int Obj_ov143_0229b1c0::func_ov143_0229acf8()
 {

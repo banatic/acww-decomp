@@ -11,7 +11,7 @@ extern Entry data_021f20fc;
 
 extern Entry *func_02097ff0(Entry *arg, int arg1);
 extern int func_02065ec0(Entry *p);
-extern void func_02066830(Entry *p, int a);
+extern int func_02066830(Entry *p, int a);
 extern void func_020664e0(Entry *p);
 
 int func_020979f0(int a, int b)

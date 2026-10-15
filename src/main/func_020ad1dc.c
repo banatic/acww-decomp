@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020ad1dc(void *r0)
+void *func_020ad1dc(void *r0)
 {
     unsigned int *p = (unsigned int *) r0;
     p[0] = 0;
@@ -15,4 +15,5 @@ void func_020ad1dc(void *r0)
     p[10] = 0;
     p[11] = 0;
     p[12] = 0;
+    return r0;
 }

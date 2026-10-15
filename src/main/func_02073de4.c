@@ -4,7 +4,7 @@
 
 extern int func_02073dd4(void *, int);
 extern unsigned int func_020ec2d4(void);
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 
 typedef struct {

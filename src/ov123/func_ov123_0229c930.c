@@ -3,15 +3,19 @@
  */
 
 extern void *func_ov002_02207f80(int size);
-extern void func_ov002_0220830c(void);
-extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*f1)(void), void (*f2)(void));
-extern void func_020b9af4(void *ptr);
-extern void func_ov002_02209ccc(void *ptr);
-extern void func_ov002_0220b008(void *ptr);
-extern void func_02070be8(void);
-extern void func_02070c08(void);
+extern void *func_ov002_0220830c(void *arg0);
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*callback3)(void *), void (*callback4)(void *));
+extern void *func_020b9af4(void *ptr);
+extern void *func_ov002_02209ccc(void *ptr);
+extern void *func_ov002_0220b008(void *ptr);
+extern int **func_02070be8(void *element);
+extern void *func_02070c08(void *element);
 
 extern unsigned char data_ov123_0229d024[];
+
+#define DisposeElement_func_02070c08 ((void (*)(void *)) func_02070c08)
+
+#define DisposeElement_func_02070be8 ((void (*)(void *)) func_02070be8)
 
 void *func_ov123_0229c930(void)
 {
@@ -21,9 +25,9 @@ void *func_ov123_0229c930(void)
 
     p = func_ov002_02207f80(0x51fc);
     if (p != 0) {
-        func_ov002_0220830c();
+        func_ov002_0220830c((void *) p);
         ((void **) p)[0] = (void *) data_ov123_0229d024;
-        __cxa_vec_ctor((char *) p + 0xb8, 1, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor((char *) p + 0xb8, 1, 0x6c, DisposeElement_func_02070c08, DisposeElement_func_02070be8);
         ptr = (char *) p + 0x124;
         end = (char *) p + 0x1cc;
         do {
@@ -35,3 +39,6 @@ void *func_ov123_0229c930(void)
     }
     return p;
 }
+
+#undef DisposeElement_func_02070c08
+#undef DisposeElement_func_02070be8

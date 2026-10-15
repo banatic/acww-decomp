@@ -2,22 +2,22 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02082f48(void *);
+extern void *func_02082f48(void *);
 extern void func_02014898(void *);
 extern void func_02019eac(void *);
 extern void func_02013c28(void *);
-extern void func_020f5914(void *, void *);
-extern void func_02089c70(void *);
-extern void func_02032c50(void *);
+extern void func_020f5914(void *);
+extern void *func_02089c70(void *);
+extern void *func_02032c50(void *);
 extern void func_0201a790(void *);
 extern void func_0201a7e8(void *);
 extern void func_0201ade4(void *);
 extern void func_0201b320(void *);
-extern void func_02016998(void *);
-extern void func_0201a3f8(void *);
+extern int func_02016998(void *);
+extern void *func_0201a3f8(void *);
 extern void func_0201b390(void *);
-extern void func_02054630(void *);
-extern void func_0203f080(void *);
+extern void *func_02054630(void *);
+extern void *func_0203f080(void *);
 
 extern unsigned char data_020d8414[];
 extern unsigned char data_020d8c64[];
@@ -32,7 +32,7 @@ void *func_0202ee5c(void *self)
     func_02019eac((char *) self + 0x564);
     func_02013c28((char *) self + 0x558);
     *(void **) ((char *) self + 0x514) = (void *) data_020d8414;
-    func_020f5914((char *) self + 0x514, (void *) data_020d8414);
+    func_020f5914((char *) self + 0x514);
     func_02089c70((char *) self + 0x4cc);
     func_02032c50((char *) self + 0x49c);
     func_0201a790((char *) self + 0x420);

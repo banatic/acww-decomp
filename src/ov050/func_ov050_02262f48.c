@@ -20,16 +20,16 @@ struct UnkStruct_02262f48_2 {
 };
 
 extern int func_ov050_02263394(struct UnkStruct_02262f48 *a, struct UnkStruct_02262f48_2 *b);
-extern void func_020984e8(void);
-extern void *func_02099640(void);
+extern int func_020984e8(void);
+extern void *func_02099640(int argument0);
 extern void *func_0209ad9c(void *a, int b);
-extern void *func_0209b4d4(void);
+extern void *func_0209b4d4(void *object);
 extern void *func_0209b4cc(void *a, int b);
-extern void func_02094fd4(void *local);
+extern void *func_02094fd4(void *local);
 extern int func_0209bba0(void *handle);
-extern void func_02003618(void *h, void *local);
+extern int func_02003618(void *h, void *local);
 extern void func_02068404(void *a, int b, void *local);
-extern void func_02094fbc(void *local);
+extern void *func_02094fbc(void *local);
 
 void func_ov050_02262f48(struct UnkStruct_02262f48 *self, struct UnkStruct_02262f48_2 *status)
 {
@@ -40,9 +40,9 @@ void func_ov050_02262f48(struct UnkStruct_02262f48 *self, struct UnkStruct_02262
     if (func_ov050_02263394(self, status) != 0) {
         return;
     }
-    func_020984e8();
-    handle = func_0209ad9c(func_02099640(), 0);
-    handle2 = func_0209b4d4();
+
+    handle = func_0209ad9c(func_02099640((int) func_020984e8()), 0);
+    handle2 = func_0209b4d4((void *) handle);
     handle = func_0209b4cc(handle, 1);
     func_02094fd4(local);
 

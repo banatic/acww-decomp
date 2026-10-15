@@ -8,7 +8,7 @@ extern void func_020736bc(void *, int, void *);
 extern void func_02073404(void *, void *);
 extern void func_020a6db0(void);
 
-void func_0207626c(void *param)
+void func_0207626c(void *param, int sequence, unsigned char category, unsigned int player)
 {
     void *ptr = data_020ccf94;
     int ret = func_02073424(ptr);

@@ -28,8 +28,8 @@ typedef struct {
 
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(UnkStruct_0202760c_2 *a, char *p1, unsigned char *p2, int len, int arg5, int arg6, int arg7,
-                          int arg8, int arg9);
+extern int func_0202da38(UnkStruct_0202760c_2 *a, char *p1, unsigned char *p2, int len, int arg5, int arg6, int arg7, int arg8,
+                         int arg9);
 extern Global1 data_020c8e10;
 extern Global2 data_020d94b0;
 

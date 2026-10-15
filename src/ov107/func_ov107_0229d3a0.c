@@ -3,8 +3,8 @@
  */
 
 extern unsigned char data_021f43ec;
-extern void func_ov002_0220b9b8(void *dst, const void *src, int a, int b);
-extern void func_ov002_02208098(void *self, int arg);
+extern int func_ov002_0220b9b8(void *dst, const void *src, int a, int b);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_0208e5c4(void *self);
 
 void func_ov107_0229d3a0(unsigned char *self, unsigned char byte1, unsigned char byte2)
@@ -20,6 +20,6 @@ void func_ov107_0229d3a0(unsigned char *self, unsigned char byte1, unsigned char
         c = byte1;
         func_ov002_0220b9b8(self + 0x270c, &c, 1, 0);
     }
-    func_ov002_02208098(self, 0xe);
+    func_ov002_02208098((void *) (self), 0xe);
     func_0208e5c4(self + 0x22b4);
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220a39c(void *);
+extern void *func_ov002_0220a39c(void *);
 extern void func_020edb3c(void *);
 extern char data_ov002_0220bc50;
 

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_02235e58(void *, int);
+extern void func_ov004_02235e58(void *);
 
 void func_ov004_02235870(char *self)
 {
@@ -12,7 +12,7 @@ void func_ov004_02235870(char *self)
     // ENDDECLS
     if (*(u8 *) (self + 0x1ee) != 0x1) {
         if (*(int *) (self + 0x1a8) <= 0x5000 || *(int *) (self + 0x1a8) >= 0x1e000) {
-            func_ov004_02235e58(self, *(int *) (self + 0x1a8));
+            func_ov004_02235e58(self);
             if (*(u8 *) (self + 0x1ee) == 0x6) {
                 *(u8 *) (self + 0x1ee) = 0x2;
             }

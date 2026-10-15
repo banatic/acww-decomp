@@ -33,11 +33,11 @@ typedef struct {
 extern void func_ov118_0229afd4(UnkStruct_0229c098 *self, int a);
 extern void func_ov118_0229b564(UnkStruct_0229c098 *self);
 extern Vec3 *func_02095794(int a);
-extern void func_020b5e10(void);
+extern int func_020b5e10(void);
 extern Vec3 *func_020b64ec(void *p);
 extern void func_0208e95c(void *p, int a);
-extern void func_020ee45c(UnkStruct_0229c098 *self);
-extern int func_ov090_02298f74(void);
+extern int func_020ee45c(UnkStruct_0229c098 *self);
+extern int func_ov090_02298f74(void *);
 extern void func_ov118_0229a450(UnkStruct_0229c098 *self, int a);
 extern u8 data_020e54a8;
 extern char data_021f69b8[];
@@ -80,8 +80,7 @@ void func_ov118_0229c098(UnkStruct_0229c098 *self)
     self->unk_9E = (u8) (b - 8);
     self->unk_9F = (u8) (a + 0xd);
     func_0208e95c(&self->unk_678, 1);
-    func_020ee45c(self);
-    if (func_ov090_02298f74() != 0) {
+    if (func_ov090_02298f74((void *) func_020ee45c(self)) != 0) {
         func_ov118_0229a450(self, 0x2000);
     }
 }

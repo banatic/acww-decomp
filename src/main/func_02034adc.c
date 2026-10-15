@@ -3,7 +3,7 @@
  */
 
 extern void func_02034c64(void *dst, void *src);
-extern void func_02034b04(void *dst, void *src, void *a, void *b);
+extern void *func_02034b04(void *dst, void *src, void *a, void *b);
 
 void func_02034adc(void *a, void *b, void *c, void *d)
 {

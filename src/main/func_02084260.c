@@ -3,8 +3,8 @@
  */
 
 extern unsigned char data_020e54a8;
-extern void func_0208602c(void);
-extern int func_020860c4(void);
+extern int func_0208602c(void);
+extern int func_020860c4(int);
 extern void func_02087f40(int a, int *b);
 extern void func_0204f794(int *a, int b, int c);
 
@@ -14,8 +14,7 @@ int func_02084260(int unused, int *p)
 
     flag = data_020e54a8 ? 0 : 1;
     if (flag != 0) {
-        func_0208602c();
-        func_02087f40(func_020860c4(), p);
+        func_02087f40(func_020860c4((int) func_0208602c()), p);
         return 1;
     } else {
         func_0204f794(p, 6, 0x11);

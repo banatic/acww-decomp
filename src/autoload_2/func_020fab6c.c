@@ -4,7 +4,7 @@
 
 extern int (*NNS_GfdDefaultFuncAllocPlttVram)(int, int, int);
 
-int func_020fab6c(int a, int b, int c)
+int func_020fab6c(int a, int b)
 {
     return (NNS_GfdDefaultFuncAllocPlttVram(a, b, 0) & 0xffff) << 3;
 }

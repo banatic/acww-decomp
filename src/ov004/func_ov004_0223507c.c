@@ -10,10 +10,10 @@ extern char data_ov004_022593dc[], data_ov004_022593c4[];
 extern void *func_0205c8c4(int, void *);
 extern void func_0205c8a8(void);
 extern int func_0209d180(char *, int, int, int, int, void *(*) (int, void *), void (*)(void), int);
-extern void func_ov004_02234eac(char *);
-extern void func_ov004_02234c64(char *);
+extern int func_ov004_02234eac(char *);
+extern int func_ov004_02234c64(char *);
 extern void *func_020b6590(void);
-extern void func_020b7dc8(void *, char *, char *, int, int, int, short, int, u8);
+extern int func_020b7dc8(void *, char *, char *, int, int, int, short, int, u8);
 extern void func_02004658(int);
 int func_ov004_0223507c(char *self)
 {

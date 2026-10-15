@@ -15,14 +15,14 @@ typedef struct {
     int threshold;
 } UnkStruct_02278fec;
 
-extern void func_0201aff4(void *);
+extern void func_0201aff4(void *, int arg1);
 extern void func_020ee470(void *);
 
 int func_ov076_02278fec(UnkStruct_02278fec *self)
 {
     self->flags_high = 0;
     self->flags_low = 0;
-    func_0201aff4(&self->sub);
+    func_0201aff4(&self->sub, 0);
     self->counter += 0xeb;
     if (self->counter > (self->threshold + 0x14000)) {
         func_020ee470(self);

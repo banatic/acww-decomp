@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02053c68(void);
+extern int func_02053c68(int);
 extern int func_0204bc50(int, int);
 extern int func_0204bc64(void *);
 extern int func_0204bcdc(void *);
@@ -13,7 +13,7 @@ unsigned char func_0205352c(unsigned short *a0)
     int flagA = 0;
     int argB = 0;
     int flagC = 0;
-    int wanted = func_02053c68();
+    int wanted = func_02053c68((int) a0);
     int count = 0;
     unsigned int i;
     int found;

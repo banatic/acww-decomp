@@ -15,9 +15,9 @@ typedef struct A_s {
     int unk_12C;
 } A_s;
 
-extern int func_0202d8f8(A_s *a, int *b, int *c, int d, int e);
+extern void func_0202d8f8(A_s *a, int *b, int *c, int d, int e);
 
-int func_0202bca0(A_s *a)
+void func_0202bca0(A_s *a, void *event)
 {
-    return func_0202d8f8(a, &a->unk_12C, &a->unk_128, a->unk_100->unk_830, 0);
+    func_0202d8f8(a, &a->unk_12C, &a->unk_128, a->unk_100->unk_830, 0);
 }

@@ -3,11 +3,11 @@
  */
 
 extern int func_0207b3dc(char *);
-extern void func_0208150c(char *);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(char *);
+extern int func_02003704(void *);
 extern int func_0207dca8(char *);
 extern int func_0207cc54(unsigned char, int, int);
-void func_0207bfdc(char *param)
+int func_0207bfdc(char *param)
 {
     char *ptr = param;
     int result = func_0207b3dc(param);
@@ -18,8 +18,7 @@ void func_0207bfdc(char *param)
         if ((i == ((signed char *) param)[0x4075]) || (i == result)) {
             continue;
         }
-        func_0208150c(ptr);
-        if (func_02003704() == 0) {
+        if (func_02003704((void *) func_0208150c(ptr)) == 0) {
             continue;
         }
         if (func_0207dca8(ptr) == 0) {
@@ -29,5 +28,5 @@ void func_0207bfdc(char *param)
         count++;
     }
 
-    func_0207cc54(flags, count, 8);
+    return func_0207cc54(flags, count, 8);
 }

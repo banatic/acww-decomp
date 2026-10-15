@@ -3,9 +3,9 @@
  */
 
 struct UnkStruct_022611f0;
-extern int func_0206fc6c(struct UnkStruct_022611f0 *self);
+extern int func_0206fc6c(void);
 extern int func_0206fc8c(void);
-extern void func_02073100(int x);
+extern void func_02073100(void);
 extern int func_020eb868(int x);
 extern void func_0206844c(void *ctx, char *msg, int val);
 extern void func_ov048_022616b8(struct UnkStruct_022611f0 *self, int param);
@@ -22,9 +22,9 @@ void func_ov048_022611f0(struct UnkStruct_022611f0 *self)
 {
     char msg[2];
 
-    if (func_0206fc6c(self)) {
+    if (func_0206fc6c()) {
         int x = func_0206fc8c();
-        func_02073100(x);
+        func_02073100();
         self->unk_3EC = func_020eb868(x);
         msg[0] = 'b';
         func_0206844c(self->unk_40, &msg[0], data_ov048_02263d20);

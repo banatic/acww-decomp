@@ -27,13 +27,13 @@ struct UnkStruct_0202add4 {
 
 extern int data_021c274c;
 
-extern "C" int func_0206fc6c(UnkStruct_0202add4 *self);
+extern "C" int func_0206fc6c(void);
 extern "C" void func_0202da88(UnkStruct_0202add4 *self, void *arg);
 extern "C" void *func_0206fc44(void);
 extern "C" void func_02080a4c(void *dst, void *src, int n);
-extern "C" int func_02081edc(void *p);
+extern "C" int func_02081edc(void *object);
 extern "C" void func_02081ac8(void *p, void *q, int n);
-extern "C" void *func_020984e8(void *p);
+extern "C" void *func_020984e8(void);
 extern "C" void *func_02099870(void *p);
 extern "C" void func_02080108(void *a, void *b, int n, void *c);
 extern "C" void func_0206844c(u32 base, void *local, u32 data);
@@ -48,7 +48,7 @@ extern "C" void func_0202add4(UnkStruct_0202add4 *self)
     };
     UnkStruct_0202add4_2 local;
 
-    if (func_0206fc6c(self)) {
+    if (func_0206fc6c()) {
         void *word = (void *) self->unk_100->unk_830;
         func_0202da88(self, (void *) &data_021c274c);
         if (self->unk_100->unk_824 == 0) {
@@ -58,7 +58,7 @@ extern "C" void func_0202add4(UnkStruct_0202add4 *self)
                 func_02081ac8(self->unk_12C, func_0206fc44(), 0xa);
             } else {
                 void *tmp = func_0206fc44();
-                void *tmp2 = func_020984e8(tmp);
+                void *tmp2 = func_020984e8();
                 void *tmp3 = func_02099870(tmp2);
                 func_02080108(word, tmp, 0xa, tmp3);
             }

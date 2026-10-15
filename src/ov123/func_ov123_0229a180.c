@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov123_0229ae7c(int, int, int, int);
+extern int func_ov123_0229ae7c(int, int);
 extern int func_ov123_0229ae74(int, int);
-extern void func_020896b8(int, void *, int, int, int, int, int);
+extern int func_020896b8(int, void *, int, int, int, int, int);
 
 struct FuncOv123Data {
     unsigned short pad_00;
@@ -22,7 +22,7 @@ void func_ov123_0229a180(int p0, int p1, int p2, int p3)
     int b;
     unsigned short t;
 
-    a = func_ov123_0229ae7c(p0, p1, p2, p3);
+    a = func_ov123_0229ae7c(p0, p1);
     b = func_ov123_0229ae74(p0, p2);
     t = data_ov123_0229cf20.field & ~0x18;
     t |= data_ov123_0229cea0[p3];

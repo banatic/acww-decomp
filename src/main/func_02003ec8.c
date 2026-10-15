@@ -18,7 +18,7 @@ extern unsigned char data_0213f1f0[];
 extern unsigned char data_0213f210[];
 extern unsigned char data_0213f230[];
 
-void func_02003ec8(void *heap, int kind)
+void *func_02003ec8(void *heap, int kind)
 {
     void *obj;
 
@@ -115,4 +115,5 @@ void func_02003ec8(void *heap, int kind)
             }
             break;
     }
+    return obj;
 }

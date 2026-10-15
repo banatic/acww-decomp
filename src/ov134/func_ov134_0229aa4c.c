@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov134_0229aaa8(void);
+extern int func_ov134_0229aaa8(void *object, int index);
 extern int func_ov134_0229aa6c(int, int);
 
 int func_ov134_0229aa4c(int a, int b)
 {
-    int x = func_ov134_0229aaa8();
+    int x = func_ov134_0229aaa8((void *) a, b);
     int y = func_ov134_0229aa6c(a, b);
     return x + y - 1;
 }

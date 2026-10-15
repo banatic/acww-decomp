@@ -20,7 +20,7 @@ extern int func_ov123_02299650(UnkStruct_0229b9bc *self, int x);
 extern void func_ov123_02299630(UnkStruct_0229b9bc *self, int x);
 extern void func_ov123_02299640(UnkStruct_0229b9bc *self, int x);
 extern int func_ov123_022999b0(UnkStruct_0229b9bc *self, int a, int b);
-extern void func_ov123_0229ac80(UnkStruct_0229b9bc *self, int a, int b, int c, int d, int e);
+extern int func_ov123_0229ac80(UnkStruct_0229b9bc *self, int a, int b, int c, int d, int e);
 extern int func_ov002_02208008(UnkStruct_0229b9bc *self);
 extern void func_02004644(int a, int b);
 extern void func_02004658(int a);

@@ -13,7 +13,7 @@ typedef struct {
     char pad_34[0x10];
 } UnkStruct_020137ec;
 
-extern void func_02034240(UnkStruct_020137ec *o, u32 x, u32 y, int a, int b);
+extern int func_02034240(UnkStruct_020137ec *o, u32 x, u32 y, int a, int b);
 extern void func_0203423c(UnkStruct_020137ec *o);
 extern int func_0204ed58(void *ctx, u32 x, u32 y);
 extern void func_0204f794(void *p, u32 x, u32 y);

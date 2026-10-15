@@ -4,7 +4,7 @@
 
 extern unsigned char *data_020ccf94;
 
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 extern int func_02077a8c(void *p);
 extern unsigned char *func_02073d28(unsigned char *g, int k);

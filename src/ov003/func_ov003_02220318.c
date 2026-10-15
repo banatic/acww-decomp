@@ -3,13 +3,14 @@
  */
 
 extern int func_ov003_02220174(int);
-extern int func_ov009_02262fd8(void);
+extern int func_ov009_02262fd8(void *object);
 
 int func_ov003_02220318(int a)
 {
+    int object;
     unsigned short x = (unsigned short) (a + 0x5001);
-    if (func_ov003_02220174(x) != 0) {
-        return func_ov009_02262fd8();
+    if ((object = func_ov003_02220174(x)) != 0) {
+        return func_ov009_02262fd8((void *) object);
     }
     return 0;
 }

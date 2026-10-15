@@ -24,7 +24,7 @@ typedef struct SPLResHeader {
     } flags;
 } SPLResHeader;
 
-typedef void (*SPLBehaviorFn)(void);
+typedef void (*SPLBehaviorFn)(void *, void *, void *, void *);
 
 typedef struct SPLBehavior {
     SPLBehaviorFn fn;
@@ -53,12 +53,12 @@ typedef struct SPLManager {
 
 extern void MI_CpuFill8(void *dst, u8 data, u32 size);
 
-extern void func_020ff808(void);
-extern void func_020ff740(void);
-extern void func_020ff6bc(void);
-extern void func_020ff5e4(void);
-extern void func_020ff4c8(void);
-extern void func_020ff434(void);
+extern void func_020ff808(void *behavior, void *particle, void *acceleration, void *emitter);
+extern void func_020ff740(void *behavior, void *particle, void *acceleration, void *emitter);
+extern void func_020ff6bc(void *behavior, void *particle, void *acceleration, void *emitter);
+extern void func_020ff5e4(void *behavior, void *particle, void *acceleration, void *emitter);
+extern void func_020ff4c8(void *behavior, void *particle, void *acceleration, void *emitter);
+extern void func_020ff434(void *behavior, void *particle, void *acceleration, void *emitter);
 
 void func_020fa564(SPLManager *mgr, u8 *base)
 {

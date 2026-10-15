@@ -6,9 +6,9 @@ extern unsigned short data_021fbe40;
 extern void func_ov144_0229a42c(char *p);
 extern int func_ov144_0229a208(char *p);
 extern int func_ov144_0229a198(char *p);
-extern void func_ov144_0229a4b8(char *p);
+extern int func_ov144_0229a4b8(char *p);
 extern void func_ov002_0220a0b4(char *p, int a, int b);
-extern void func_ov002_02208098(char *p, int n);
+extern unsigned char *func_ov002_02208098(char *p, unsigned char value);
 
 void func_ov144_0229aa70(char *p)
 {

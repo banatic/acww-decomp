@@ -40,20 +40,15 @@ extern "C" void func_ov051_022604a8(UnkStruct_022604a8 *self)
     int i = 0;
     unsigned char *p = (unsigned char *) self + 0x1e;
     int offset;
-    goto loop_test;
 
-loop_body:
-    offset = i * 12;
-    int key = table[i].key;
-    if (key == *p) {
-        int arg = func_020ab504(func_0206837c(*(unsigned int *) ((char *) self + 0x40)));
-        PMF *pmf = (PMF *) ((char *) table + offset + 4);
-        (self->**pmf)(arg);
-    }
-    i++;
-
-loop_test:
-    if ((unsigned int) i < 14) {
-        goto loop_body;
+    while ((unsigned int) i < 14) {
+        offset = i * 12;
+        int key = table[i].key;
+        if (key == *p) {
+            int arg = func_020ab504(func_0206837c(*(unsigned int *) ((char *) self + 0x40)));
+            PMF *pmf = (PMF *) ((char *) table + offset + 4);
+            (self->**pmf)(arg);
+        }
+        i++;
     }
 }

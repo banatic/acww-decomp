@@ -10,11 +10,11 @@ struct UnkStruct_0229aee4 {
 };
 
 extern void func_ov002_0220a164(void *p);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov131_0229aee4(struct UnkStruct_0229aee4 *self)
 {
     func_ov002_0220a164((char *) self + 0x94);
     self->unk_1556 = self->unk_8D;
-    func_ov002_02208098(self, 5);
+    func_ov002_02208098((void *) (self), 5);
 }

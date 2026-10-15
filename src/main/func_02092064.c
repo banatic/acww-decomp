@@ -5,8 +5,8 @@
 extern int FX_Div(int, int);
 extern int data_020e28dc;
 extern int data_020e27b0;
-extern void func_020920e4(void);
-extern int func_0209418c(int, int, int, short *, int *, int *, void (*)(void));
+extern void func_020920e4(void *);
+extern int func_0209418c(int, int, int, short *, int *, int *, void (*)(void *));
 
 int func_02092064(int a0, int a1, int a2, short *ptr)
 {

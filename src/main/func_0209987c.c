@@ -27,7 +27,7 @@ extern void func_02077d04(void *p);
 extern void func_02099794(void *self, UnkStruct_0209987c w);
 extern void func_020992c4(void *self);
 extern void func_02088c08(void *p);
-extern void func_02088754(void *p);
+extern int func_02088754(void *p);
 extern void func_020983f4(void *p);
 extern void func_0203fa84(void *p);
 extern void *func_02099308(void *self);

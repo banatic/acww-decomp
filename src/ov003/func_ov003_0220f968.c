@@ -9,8 +9,8 @@ struct UnkStruct_0220f968 {
     short unk_7DC;
 };
 
-extern void func_020113e0(short *a, int b);
-extern void func_020110a0(struct UnkStruct_0220f968 *a, short *b);
+extern int func_020113e0(short *a, int b);
+extern void func_020110a0(void *object, short *values);
 
 void func_ov003_0220f968(struct UnkStruct_0220f968 *self)
 {
@@ -18,5 +18,5 @@ void func_ov003_0220f968(struct UnkStruct_0220f968 *self)
 
     local = self->unk_8E;
     func_020113e0(&local, self->unk_7DC);
-    func_020110a0(self, &local);
+    func_020110a0((void *) (self), (short *) (&local));
 }

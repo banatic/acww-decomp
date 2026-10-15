@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_02207d24(void *ptr, int arg);
+extern int func_ov002_02207d24(void *ptr, int arg);
 extern void func_ov002_0220a374(void *ptr, int arg);
-extern void func_ov002_02208098(void *ptr, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov104_0229d0d4(void *p, unsigned char val)
 {
@@ -12,5 +12,5 @@ void func_ov104_0229d0d4(void *p, unsigned char val)
     *((unsigned char *) ((char *) p + 0xbb)) = *((unsigned char *) ((char *) p + 0x8d));
     *((unsigned char *) ((char *) p + 0xba)) = val;
     func_ov002_0220a374((char *) p + 0x24a0, 6);
-    func_ov002_02208098(p, 0x13);
+    func_ov002_02208098((void *) (p), 0x13);
 }

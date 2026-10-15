@@ -62,7 +62,7 @@ struct Ctl {
     char pad2[1];
     unsigned char unk_0D;
 };
-extern "C" void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern "C" int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 
 extern "C" void func_02014244(Ctl *c, UnkStruct_02014244 *o)
 {

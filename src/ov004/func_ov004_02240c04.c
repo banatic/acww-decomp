@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_ov004_02240f2c(void *, int, int, int, int, int, int);
+extern int func_ov004_02240f2c(void *, int, int, int, int, int, int);
 extern void func_ov004_02241008(void *, void *, void *);
 struct Pt {
     int a;

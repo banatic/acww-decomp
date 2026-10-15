@@ -16,14 +16,14 @@ extern void *data_021fbf44;
 extern unsigned int data_021fbf4c;
 extern int data_0213e6c0;
 
-extern void STD_CopyString(char *, const char *);
-extern void STD_ConcatenateString(char *, const char *);
+extern char *STD_CopyString(char *, const char *);
+extern char *STD_ConcatenateString(char *, const char *);
 extern int STD_GetStringLength(const char *);
 extern void MATH_CalcSHA1(void *, const void *, unsigned int);
-extern long long func_020eb694(void *);
-extern void OS_SNPrintf(void *, int, const char *, ...);
-extern void func_020ed370(void);
-extern void DWC_GetGHTTPData(void *, void (*)(void), char *);
+extern unsigned long long func_020eb694(void *);
+extern int OS_SNPrintf(void *, int, const char *, ...);
+extern void func_020ed370(int buffer, int size, int result, int user_data);
+extern int DWC_GetGHTTPData(void *, void (*)(int, int, int, int), char *);
 
 void func_020ed194(const char *s, int len, int flag, char *buf)
 {

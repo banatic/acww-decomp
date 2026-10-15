@@ -14,15 +14,15 @@ typedef struct {
 
 extern void *func_020984e8(void);
 extern void *func_02099870(void *);
-extern int func_020951bc(void);
+extern int func_020951bc(void *);
 extern void *func_0208150c(void *);
 extern int func_02003704(void *);
 extern void *func_020807a8(void *, void *);
-extern void func_02094fd4(void *);
-extern void func_02094fbc(void *);
-extern void func_02095074(void *, void *);
+extern void *func_02094fd4(void *);
+extern void *func_02094fbc(void *);
+extern void *func_02095074(void *, void *);
 extern void func_02081c94(void *, void *);
-extern void func_02081c40(void *, void *);
+extern void *func_02081c40(void *, void *);
 extern int func_020a89ac(void *, void *);
 extern void func_020a8c1c(void *);
 
@@ -42,7 +42,7 @@ void func_020801c4(void *a, void *b, void *c)
     }
 
     obj = func_02099870(c);
-    if (func_020951bc() == 0) {
+    if (func_020951bc(obj) == 0) {
         return;
     }
     if (func_02003704(func_0208150c(a)) == 0) {

@@ -86,8 +86,10 @@ extern int func_0204a824(UnkStruct_0204a3cc *, int);
 extern void func_0204b0c0(void *, Pair *, Cell *);
 extern int func_0204a398(UnkStruct_0204a3cc *, int *, int, int);
 
-void func_0204a3cc(UnkStruct_0204a3cc *p, UnkStruct_0204a3cc_3 *q)
+int func_0204a3cc(UnkStruct_0204a3cc *p, UnkStruct_0204a3cc_3 *q)
 {
+    int result;
+
     int i;
     int j;
     int nx;
@@ -165,5 +167,7 @@ void func_0204a3cc(UnkStruct_0204a3cc *p, UnkStruct_0204a3cc_3 *q)
     loc.a = A;
     loc.b = B;
     func_0204b0c0(&p->unk_18, &loc, &p->grid[A][B]);
-    p->unk_00 = func_0204a398(p, data_021c79c4.counts, nx, ny);
+    result = func_0204a398(p, data_021c79c4.counts, nx, ny);
+    p->unk_00 = result;
+    return result;
 }

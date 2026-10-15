@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02096a90(void);
+extern void *func_02096a90(void *);
 extern void *func_020edf70(unsigned int);
 
 void func_02096ab0(void)
@@ -14,5 +14,5 @@ void func_02096ab0(void)
     if (result == 0) {
         return;
     }
-    func_02096a90();
+    func_02096a90(result);
 }

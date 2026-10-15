@@ -5,7 +5,7 @@
 extern int func_02019e00(void *ptr);
 extern int func_02019de8(void *ptr);
 extern void func_0201b044(void *dst, void *src);
-extern void func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
+extern int func_02019d0c(void *a, int b, int c, int d, int e, int f, int g, int h, int i, int j, int k);
 extern void func_ov053_02261524(void *p, int n);
 
 typedef struct {

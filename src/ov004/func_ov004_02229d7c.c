@@ -8,9 +8,9 @@ extern int func_0200dc8c(void *);
 extern void func_ov004_02229ea8(void *, int);
 extern int func_02008258(void *, int);
 extern int func_0200dc10(void *);
-extern void func_ov004_0222a23c(void *, int, int, int, int);
+extern int func_ov004_0222a23c(void *, int, int, int, int);
 extern int func_02056f94(void *);
-extern void func_0200d4e8(void *, int, int, int);
+extern int func_0200d4e8(void *, int, int, int);
 extern void func_02056fcc(void *, int, int, int, unsigned);
 
 void func_ov004_02229d7c(char *self)

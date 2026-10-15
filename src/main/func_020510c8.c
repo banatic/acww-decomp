@@ -27,8 +27,8 @@ typedef struct UnkStruct_020510c8_3 {
 
 extern u8 data_021c8344[];
 extern u32 func_0205171c(UnkStruct_020510c8_2 *c, u32 a);
-extern void FS_SeekFile(void *p, u32 n, int z);
-extern void FS_ReadFile(void *p, u8 *buf, u32 n);
+extern int FS_SeekFile(void *p, u32 n, int z);
+extern int FS_ReadFile(void *p, u8 *buf, u32 n);
 extern int func_02050ef4(UnkStruct_020510c8_3 *s);
 extern int func_02050edc(UnkStruct_020510c8_3 *s);
 extern int func_02050ea8(UnkStruct_020510c8_3 *s);

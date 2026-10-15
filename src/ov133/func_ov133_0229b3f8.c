@@ -6,9 +6,9 @@
 
 extern void func_ov133_0229b280(char *self);
 extern void func_ov130_02299dbc(void);
-extern void func_ov133_0229b1e8(char *self, int x);
+extern int func_ov133_0229b1e8(char *self, int x);
 extern int func_ov133_0229b0f0(char *self, int x);
-extern void func_0200457c(int x);
+extern int func_0200457c(int x);
 extern const u8 data_ov133_0229c790[];
 
 int func_ov133_0229b3f8(char *self, int flag)

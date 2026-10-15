@@ -11,7 +11,7 @@ extern unsigned char data_021f6c54;
 extern int func_ov109_0229cc4c(char *a, int b, int c, int d);
 extern void func_ov109_0229cd10(void *p, int val);
 extern int func_ov002_0220a784(void *ptr, int x);
-extern int func_ov109_0229c4cc(void *arg);
+extern void func_ov109_0229c4cc(void *arg);
 
 void func_ov109_0229d368(void *self)
 {

@@ -14,7 +14,7 @@ typedef struct UnkStruct_020305b0_3 {
     int unk_04;
     int unk_08;
 } UnkStruct_020305b0_4;
-extern int func_020ea990(UnkStruct_020305b0_2 *a, UnkStruct_020305b0_4 *b, int c);
+extern int func_020ea990(UnkStruct_020305b0_2 *a, UnkStruct_020305b0_4 *b);
 extern int func_020ea838(int *vec);
 extern int FX_MulFunc(int a, int b);
 int func_020305b0(UnkStruct_020305b0_2 *a, UnkStruct_020305b0_4 *b, int c)
@@ -23,7 +23,7 @@ int func_020305b0(UnkStruct_020305b0_2 *a, UnkStruct_020305b0_4 *b, int c)
     int vec[3];
     int val;
     int overlap;
-    ret = func_020ea990(a, b, c);
+    ret = func_020ea990(a, b);
     if (ret < (c + a->unk_0C)) {
         if (b->unk_04 < (a->unk_04 + a->unk_10)) {
             val = b->unk_08 - a->unk_08;

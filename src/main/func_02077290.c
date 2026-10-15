@@ -4,7 +4,7 @@
 
 extern void func_0208520c(int a, int b);
 
-void func_02077290(int a)
+void func_02077290(int a, void *object, int mode)
 {
     func_0208520c(a, 0x40);
 }

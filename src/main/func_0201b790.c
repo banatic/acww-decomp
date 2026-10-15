@@ -33,8 +33,8 @@ typedef struct UnkStruct_0201b790 {
 
 extern void func_02054848(void *a, int b);
 extern void func_0201adbc(void *a, void *b);
-extern void func_02055d0c(void *a, void *b, unsigned int c);
-extern void func_0203f7d0(void *a, void *b);
+extern int func_02055d0c(void *a, void *b, unsigned int c);
+extern int func_0203f7d0(void *a, void *b);
 extern void func_020acc0c(void *a, unsigned int b, unsigned int c, unsigned int d);
 
 int func_0201b790(UnkStruct_0201b790 *self)

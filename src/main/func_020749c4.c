@@ -12,7 +12,7 @@ extern UnkStruct_020749c4 *data_020ccf94;
 extern void *data_021c9b30;
 
 extern unsigned int func_020e9a3c(void *t, unsigned int f);
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ec4a8(void);
 extern void func_020b8d6c(void);
 extern void func_02077ae8(int r);
@@ -50,8 +50,7 @@ int func_020749c4(void)
     if (data_020ccf94->unk_74 != 0) {
         h = data_021c9b30;
         old = func_020e9a3c(h, 0x8000);
-        func_020e9a3c(h, old | 0x2000);
-        func_02073044();
+        ((unsigned int) func_020e9a3c(h, old | 0x2000), func_02073044());
         if (func_020ec4a8() == 0) {
             func_020b8d6c();
             ret = 0;

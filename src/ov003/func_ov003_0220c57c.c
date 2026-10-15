@@ -35,7 +35,7 @@ typedef struct {
 extern int data_021c80bc;
 extern int data_ov003_02236608[];
 
-extern int func_0200fbe0(UnkStruct_0220c57c *);
+extern int func_0200fbe0(void *argument0);
 extern int func_0201005c(UnkStruct_0220c57c *, Vec *, int);
 extern int func_02010004(UnkStruct_0220c57c *, int);
 extern int func_ov003_0220c3d0(UnkStruct_0220c57c *, int, Vec *);
@@ -44,7 +44,7 @@ extern void func_0204f818(int *, int *, Vec *);
 extern u16 *func_0204f5e0(int, int, int, int, int, int);
 extern int func_02031614(Vec *);
 extern int func_020ba310(void);
-extern void func_ov003_0220ea40(UnkStruct_0220c57c *, int, int);
+extern void *func_ov003_0220ea40(UnkStruct_0220c57c *, int, int);
 extern void func_0200fa1c(Vec *, UnkStruct_0220c57c *, Vec *, s16 *, int *);
 extern int func_020e8ed8(int, int);
 

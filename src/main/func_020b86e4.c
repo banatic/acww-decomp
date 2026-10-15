@@ -13,7 +13,7 @@ extern int func_0208a844(void *arg);
 extern void func_020b884c(void *arg);
 extern int func_020b8854(void *arg);
 extern int func_020b8878(void *arg);
-extern void func_0208a9ac(void *arg);
+extern void *func_0208a9ac(void *arg);
 
 void func_020b86e4(void *p)
 {

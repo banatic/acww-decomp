@@ -12,8 +12,8 @@ struct UnkStruct_020ac2a0_2 {
     struct UnkStruct_020ac2a0 sub;
 };
 
-extern void func_020ac9ec(struct UnkStruct_020ac2a0 *);
-extern void func_020ac954(struct UnkStruct_020ac2a0_2 *);
+extern void *func_020ac9ec(struct UnkStruct_020ac2a0 *);
+extern void *func_020ac954(struct UnkStruct_020ac2a0_2 *);
 extern void func_020edb3c(struct UnkStruct_020ac2a0_2 *);
 
 extern unsigned char data_020e3ffc[];

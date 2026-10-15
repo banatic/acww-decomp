@@ -10,7 +10,7 @@ extern void func_020789f4(int *a, int *b, signed char *buf);
 extern void *func_0207cec0(UnkStruct_02076900 *h, int a);
 extern void *func_020807c0(void *x, int b);
 extern void func_02081d18(void *x, int v);
-void func_02076900(void)
+void func_02076900(int length, int sequence, unsigned char category, unsigned int player)
 {
     signed char buf[2];
     int ab[2];

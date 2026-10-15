@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void __cxa_vec_cleanup(void *addr, int a, int b, void (*callback)());
-extern void func_02055764();
-extern void func_02055ce8();
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern void *func_02055764(void *);
+extern void func_02055ce8(void *);
 
 struct UnkStruct_02060844 {
     char pad_00[0x24];
@@ -15,7 +15,7 @@ struct UnkStruct_02060844 {
 
 void *func_02060844(struct UnkStruct_02060844 *self)
 {
-    __cxa_vec_cleanup(&self->unk_1D4, 9, 156, func_02055764);
-    __cxa_vec_cleanup(&self->unk_24, 9, 20, func_02055ce8);
+    __cxa_vec_cleanup((void *) (&self->unk_1D4), 9, 156, (((void (*)(void *)) func_02055764)));
+    __cxa_vec_cleanup((void *) (&self->unk_24), 9, 20, (void (*)(void *)) func_02055ce8);
     return self;
 }

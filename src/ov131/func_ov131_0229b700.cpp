@@ -3,7 +3,7 @@
  */
 
 class UnkStruct_0229b700;
-typedef int (UnkStruct_0229b700::*PMF)();
+typedef void (UnkStruct_0229b700::*PMF)();
 class UnkStruct_0229b700 {
   public:
     char pad_00[0x8c];

@@ -3,21 +3,21 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern int func_ov002_02208014(unsigned char *self);
+extern int func_ov002_02208014(void);
 extern void func_ov105_0229cbb0(unsigned char *self);
 extern int func_ov002_02208008(unsigned char *self);
 extern int func_ov105_0229c340(unsigned char *self, int arg);
 extern int func_ov002_02209044(unsigned char *a, int b, unsigned char *c, unsigned char d);
 extern void func_ov105_0229cebc(unsigned char *self);
 extern void func_ov002_0220a1dc(unsigned char *a);
-extern void func_ov002_02208098(unsigned char *self, int arg);
+extern unsigned char *func_ov002_02208098(unsigned char *self, unsigned char value);
 extern void func_ov105_0229ce54(unsigned char *self);
 
 void func_ov105_0229e230(unsigned char *self)
 {
     int r4;
     unsigned char d;
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov105_0229cbb0(self);
         return;
     }

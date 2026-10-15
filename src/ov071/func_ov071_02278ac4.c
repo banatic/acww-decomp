@@ -7,12 +7,12 @@
 extern int func_020160b4(void *);
 extern int func_020ab504(int);
 extern int func_0201b43c(int, int);
-extern void func_0202ea80(int, int);
+extern int func_0202ea80(int, int);
 extern void func_02040adc(int, int);
-extern void func_020157d4(void *, void (*)(void), int, int);
-extern void func_02015828(void *, int);
+extern void func_020157d4(void *self, int (*predicate)(unsigned short *, int), unsigned char kind, unsigned char flag);
+extern int func_02015828(void *, int);
 extern void func_ov071_02279128(void *, int);
-extern void func_ov071_022790f0(void);
+extern unsigned short func_ov071_022790f0(unsigned short *argument0, int argument1);
 extern void MI_CpuFill8(void *, int, int);
 extern void func_0206844c(int, u8 *, void *);
 extern char data_ov071_0227a180;
@@ -27,6 +27,8 @@ typedef struct {
     int unk_B4;
     u8 unk_B8;
 } UnkStruct_02278ac4;
+
+#define TilePredicate_func_ov071_022790f0 ((int (*)(unsigned short *, int)) func_ov071_022790f0)
 
 void func_ov071_02278ac4(UnkStruct_02278ac4 *p)
 {
@@ -108,7 +110,7 @@ void func_ov071_02278ac4(UnkStruct_02278ac4 *p)
             }
             break;
         case 0x23:
-            func_020157d4(p, func_ov071_022790f0, 0xd, 1);
+            func_020157d4(p, TilePredicate_func_ov071_022790f0, 0xd, 1);
             func_02015828(p, 0);
             func_ov071_02279128(p, 0);
             break;
@@ -119,3 +121,5 @@ void func_ov071_02278ac4(UnkStruct_02278ac4 *p)
         func_0206844c(p->unk_40, &m, dp);
     }
 }
+
+#undef TilePredicate_func_ov071_022790f0

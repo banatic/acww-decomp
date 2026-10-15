@@ -16,10 +16,10 @@ typedef struct {
     UnkStruct_02062ea4 sub;
 } UnkStruct_02062ea4_2;
 
-void func_02061e2c(void *p);
+void func_02061e2c(void *p, unsigned short *);
 int func_0204bd08(void *p);
 int func_02062a28(void *p);
-void func_02062e78(UnkStruct_02062ea4_2 *self, int value);
+int func_02062e78(UnkStruct_02062ea4_2 *self, int value);
 int func_020629e4(void *p);
 u8 func_020629dc(void *p);
 u8 func_020629d4(void *p);
@@ -30,7 +30,7 @@ int func_02053da4(int value);
 u8 func_02053d9c(int value);
 u8 func_02053d94(int value);
 
-int func_02062ea4(UnkStruct_02062ea4_2 *self)
+int func_02062ea4(UnkStruct_02062ea4_2 *self, unsigned short *argument1)
 {
     struct {
         u32 pad;
@@ -38,7 +38,7 @@ int func_02062ea4(UnkStruct_02062ea4_2 *self)
     } s;
     UnkStruct_02062ea4 *sub;
 
-    func_02061e2c(&s.local);
+    func_02061e2c(&s.local, (unsigned short *) argument1);
     sub = &self->sub;
 
     if (func_0204bd08(&s.local) != 0) {

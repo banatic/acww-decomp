@@ -2,18 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *arg);
+extern void *func_020984e8(void);
 extern void *func_02099688(void *arg);
-extern void *MI_CpuCopy8(void *dest, const void *src, unsigned int len);
+extern void MI_CpuCopy8(const void *src, void *dest, unsigned int len);
 
 extern char data_021dc7a8;
 
-void *func_02088368(void *arg)
+void func_02088368(void)
 {
     char *base = &data_021dc7a8;
-    void *p = func_020984e8(arg);
+    void *p = func_020984e8();
     if (p && base) {
-        return MI_CpuCopy8(func_02099688(p), base + 0x173e2, 16);
+        MI_CpuCopy8(func_02099688(p), base + 0x173e2, 16);
     }
-    return p;
 }

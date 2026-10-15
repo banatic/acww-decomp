@@ -22,7 +22,7 @@ int func_ov004_0223b958(int *, int *, Vec *, int, u32);
 void func_0204f794(Vec *, int, int);
 int func_ov004_0223b7f8(int *, int, int, int, int, u8, int, int);
 u16 func_0204bc50(int, int);
-void func_02052e3c(Footprint *, u16 *);
+int *func_02052e3c(Footprint *, u16 *);
 void func_02052e38(Footprint *);
 u8 func_02052e20(Footprint *);
 short *func_02052dc0(Footprint *, u32);

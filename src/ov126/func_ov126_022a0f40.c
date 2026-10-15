@@ -11,7 +11,7 @@ typedef struct UnkStruct_022a0f40 {
     unsigned char unk_3F90[1];
 } UnkStruct_022a0f40;
 
-extern int func_ov002_02208014(UnkStruct_022a0f40 *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(UnkStruct_022a0f40 *self);
 extern int func_ov126_022a0768(UnkStruct_022a0f40 *self, int val);
 extern void func_ov095_0229b3ec(unsigned char *ptr);
@@ -27,9 +27,9 @@ extern int func_ov126_0229fdd4(UnkStruct_022a0f40 *self);
 extern int func_ov126_0229fcfc(UnkStruct_022a0f40 *self);
 extern int func_ov126_0229fd64(UnkStruct_022a0f40 *self);
 extern int func_ov126_0229fcd8(UnkStruct_022a0f40 *self);
-extern void func_ov002_02208098(UnkStruct_022a0f40 *self, int num);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov126_022a06b4(UnkStruct_022a0f40 *self);
-extern void func_ov126_022a0c1c(UnkStruct_022a0f40 *self);
+extern unsigned char *func_ov126_022a0c1c(UnkStruct_022a0f40 *self);
 
 extern struct {
     unsigned short pad;
@@ -42,7 +42,7 @@ void func_ov126_022a0f40(UnkStruct_022a0f40 *self)
     int val;
     unsigned char prev;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov126_022a0c1c(self);
         return;
     }
@@ -71,7 +71,7 @@ void func_ov126_022a0f40(UnkStruct_022a0f40 *self)
             }
             if (func_ov126_0229fcfc(self) == 0 && func_ov126_0229fd64(self) == 0 && func_ov126_0229fcd8(self) == 0 &&
                 (data_021fbe40.flag & 1) != 0) {
-                func_ov002_02208098(self, 7);
+                func_ov002_02208098((void *) (self), 7);
                 func_ov126_022a06b4(self);
             }
             break;

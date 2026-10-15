@@ -7,10 +7,13 @@ struct func_020b3858_s {
     unsigned char unk_234;
 };
 
-void func_020b3858(struct func_020b3858_s *p)
+int func_020b3858(struct func_020b3858_s *p)
 {
-    if (p->unk_234 >= 3) {
-        p->unk_234 = (unsigned int) p->unk_234 % 3;
-        func_020b3858(p);
+    unsigned int value = p->unk_234;
+
+    if (value >= 3) {
+        p->unk_234 = value % 3;
+        return func_020b3858(p);
     }
+    return value;
 }

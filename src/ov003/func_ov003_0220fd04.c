@@ -4,11 +4,11 @@
 
 extern int func_020e8ed8(int, int);
 extern void func_ov003_0220fd90(void *, int, void *);
-extern void func_020109a0(void *, int, int, int);
-extern void func_ov003_02220db4(void *, void *);
+extern void func_020109a0(void *, int b, int c, unsigned short d);
+extern int func_ov003_02220db4(void *, void *);
 extern void func_0200f268(void *, int);
-extern void func_0200f328(void *, int);
-extern void func_0200f27c(void *, int);
+extern int func_0200f328(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
 
 typedef struct {
     int x, y, z;
@@ -34,7 +34,7 @@ struct UnkStruct_0220fd04_3 {
     Vec d, v, v2, v3;
 };
 
-void func_ov003_0220fd04(struct UnkStruct_0220fd04_4 *o, struct UnkStruct_0220fd04_2 *b)
+void func_ov003_0220fd04(struct UnkStruct_0220fd04_4 *o, struct UnkStruct_0220fd04_2 *b, int previous)
 {
     struct UnkStruct_0220fd04_3 t;
     int ang;

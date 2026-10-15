@@ -13,7 +13,7 @@ extern void func_0201b458(Vec3 *out, void *s, Vec3 *v);
 extern int func_020eaa2c(Vec3 *w, void *p);
 extern void func_ov004_0221fdf4(void *s, int a);
 extern int func_ov004_0221ef2c(void *s);
-extern void func_ov004_0221ef70(void *s);
+extern int func_ov004_0221ef70(void *s);
 
 int func_ov004_0221fcdc(char *s)
 {

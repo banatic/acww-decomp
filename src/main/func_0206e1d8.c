@@ -3,7 +3,7 @@
  */
 
 extern void func_02051bf8(void *p, int n);
-extern void func_02065f4c(void *dst, void *src);
+extern int func_02065f4c(void *dst, void *src);
 extern void *func_02051c8c_unk(void *p, int n);
 extern void *func_02051d08(void *p, int n);
 

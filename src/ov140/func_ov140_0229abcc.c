@@ -2,7 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_ov140_0229abcc(void)
+extern void func_02001c08(unsigned char mode);
+extern void func_020029e8(int layer, int priority);
+extern void func_020028bc(unsigned int layer, int a, int b, int c);
+
+void func_ov140_0229abcc(void)
 {
     func_02001c08(0);
     func_020029e8(6, 2);

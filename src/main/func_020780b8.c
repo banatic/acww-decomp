@@ -7,7 +7,7 @@ typedef struct {
 } UnkStruct_020780b8;
 
 extern char data_020e1888;
-extern void func_020a8c38(void *);
+extern void *func_020a8c38(void *);
 
 UnkStruct_020780b8 *func_020780b8(UnkStruct_020780b8 *obj)
 {

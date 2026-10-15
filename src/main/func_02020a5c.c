@@ -40,8 +40,8 @@ extern ErrData data_020c8a38;
 extern ErrData data_020c8970;
 extern ErrData data_020c8c88;
 
-extern Obj2 *func_0207f270(void);
-extern void *func_020794c4(void);
+extern Obj2 *func_0207f270(int);
+extern void *func_020794c4(unsigned char *);
 extern int func_0202c424(UnkStruct_02020a5c_2 *self, int *out);
 extern void func_0202bcd4(UnkStruct_02020a5c_2 *self);
 extern int func_0202c420(UnkStruct_02020a5c_2 *self);
@@ -58,9 +58,9 @@ extern ErrData *func_0202c254(UnkStruct_02020a5c_2 *self, int *a, Obj2 *obj2);
 extern int func_0202c248(UnkStruct_02020a5c_2 *self, void *a);
 extern int func_0202c23c(UnkStruct_02020a5c_2 *self, void *a);
 extern int func_0202c230(UnkStruct_02020a5c_2 *self, void *a);
-extern void func_0208150c(void *p);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_02020a5c_2 *self, char *name, u8 *byte, int len, int a, int b, int c, int d, int e);
+extern unsigned int func_0208150c(void *p);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_02020a5c_2 *self, char *name, u8 *byte, int len, int a, int b, int c, int d, int e);
 
 int func_02020a5c(UnkStruct_02020a5c_2 *self, UnkStruct_02020a5c_3 *out)
 {
@@ -75,8 +75,8 @@ int func_02020a5c(UnkStruct_02020a5c_2 *self, UnkStruct_02020a5c_3 *out)
     int r7;
 
     local_18 = self->inner->unk_830;
-    r6 = func_0207f270();
-    local_20 = func_020794c4();
+    r6 = func_0207f270((int) local_18);
+    local_20 = func_020794c4((unsigned char *) r6);
     flag = 0;
     local_28 = 0;
     local_2c = 0;
@@ -112,8 +112,8 @@ int func_02020a5c(UnkStruct_02020a5c_2 *self, UnkStruct_02020a5c_3 *out)
     }
 
     if (err != 0) {
-        func_0208150c(local_18);
-        func_0202da38(self, self->name, &self->unk_122, 0x1e, func_020036e8(), err->a, err->b, local_28, 0);
+        func_0202da38(self, self->name, &self->unk_122, 0x1e, func_020036e8((unsigned char *) func_0208150c(local_18)), err->a,
+                      err->b, local_28, 0);
         flag = 1;
     }
 

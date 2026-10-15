@@ -15,13 +15,13 @@ struct UnkStruct_02070a54_2 {
     struct UnkStruct_02070a54 *b;
 };
 
-extern void func_02070b84(struct UnkStruct_02070a54_2 *a, struct UnkStruct_02070a54 *b);
+extern void func_02070b84(struct UnkStruct_02070a54_2 *a);
 extern struct UnkStruct_02070a54 *func_020a8fe8(int, int, int);
 
 void func_02070a54(struct UnkStruct_02070a54_2 *a, int arg1, int arg2, int arg3, unsigned char arg4)
 {
     if (a->b) {
-        func_02070b84(a, a->b);
+        func_02070b84(a);
     }
     a->b = func_020a8fe8(arg1, arg2, 2);
     if (a->b) {

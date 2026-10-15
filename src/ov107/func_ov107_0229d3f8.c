@@ -18,7 +18,7 @@ typedef struct Something {
     char unk_21CC;
 } Something;
 
-extern void func_ov002_02208098(Something *p, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_02207cf8(char *p);
 extern void func_ov002_02207d00(char *p);
 extern int func_ov107_0229d29c(Something *p, unsigned char b);
@@ -33,7 +33,7 @@ void func_ov107_0229d3f8(Something *p, int val)
     int r;
 
     p->unk_B6 = val;
-    func_ov002_02208098(p, 1);
+    func_ov002_02208098((void *) (p), 1);
     a = data_021f6c58;
     b = data_021f6c54;
     r = func_ov107_0229d29c(p, p->unk_B6);

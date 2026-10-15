@@ -6,10 +6,10 @@ extern int func_ov094_02299d40(void *p);
 extern void func_ov096_0229e6a0(void *p);
 extern void func_ov094_02299e1c(void *p);
 extern int func_ov096_0229c2fc(void *p, int val);
-extern void func_ov096_0229f8cc(void *p, int a, unsigned char b, unsigned short c, int d);
+extern unsigned char *func_ov096_0229f8cc(void *p, int a, unsigned char b, unsigned short c, int d);
 extern void func_ov096_0229e9f8(void *p, unsigned short c, int d);
 extern void func_ov096_0229e82c(void *p, int val);
-extern void func_ov002_02208098(void *p, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov096_0229fe9c(void *p);
 
 typedef struct {
@@ -34,6 +34,6 @@ void func_ov096_0229fecc(UnkStruct_0229fecc *p)
         func_ov096_0229e9f8(p, p->unk_AC, 0);
         func_ov096_0229e82c(p, 1);
     }
-    func_ov002_02208098(p, 0x27);
+    func_ov002_02208098((void *) (p), 0x27);
     func_ov096_0229fe9c(p);
 }

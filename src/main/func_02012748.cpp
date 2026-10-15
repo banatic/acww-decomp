@@ -3,7 +3,7 @@
  */
 
 extern "C" {
-extern unsigned char *func_020800d0(void);
+extern int func_020800d0(int object);
 extern void func_020131dc(unsigned int *, void *, unsigned int *, void *);
 extern void *data_021c80bc;
 }
@@ -55,10 +55,8 @@ extern "C" void func_02012748(unsigned int *out, void *a1, void *a2, void *a3)
         return;
     }
 
-    ((UnkStruct_02012748 *) a3)->f25();
-
     {
-        unsigned char *p = func_020800d0();
+        unsigned char *p = (unsigned char *) func_020800d0(((UnkStruct_02012748 *) a3)->f25());
         coords[0] = 0;
         coords[1] = 0;
         unsigned char b1 = p[1];

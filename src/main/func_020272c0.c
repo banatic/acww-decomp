@@ -30,18 +30,18 @@ typedef struct {
 extern UnkStruct_020272c0_3 data_020c8df0;
 extern UnkStruct_020272c0_3 data_020c8de8;
 
-extern void func_0202d9c4(void);
-extern int func_0209bc40(void);
+extern unsigned int func_0202d9c4(unsigned int *);
+extern int func_0209bc40(unsigned char *);
 extern unsigned int func_0209b4d4(unsigned int);
 extern void func_0209bb90(unsigned int, int);
 extern void func_0207df18(unsigned int, unsigned short *);
-extern void func_020984e8(void);
-extern void func_02099734(void);
-extern int func_0202d754(void);
+extern int func_020984e8(void);
+extern int func_02099734(int);
+extern int func_0202d754(void *);
 extern void func_02066650(int);
-extern void func_0208150c(unsigned int);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_020272c0 *, char *, unsigned char *, int, int, int, int, int, int);
+extern unsigned int func_0208150c(unsigned int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_020272c0 *, char *, unsigned char *, int, int, int, int, int, int);
 
 void func_020272c0(UnkStruct_020272c0 *self, UnkStruct_020272c0_4 *out)
 {
@@ -51,8 +51,7 @@ void func_020272c0(UnkStruct_020272c0 *self, UnkStruct_020272c0_4 *out)
     UnkStruct_020272c0_3 *data = &data_020c8df0;
     unsigned int flag;
 
-    func_0202d9c4();
-    mode = func_0209bc40();
+    mode = func_0209bc40((unsigned char *) func_0202d9c4((unsigned int *) self));
 
     switch (mode) {
         case 10:
@@ -66,9 +65,7 @@ void func_020272c0(UnkStruct_020272c0 *self, UnkStruct_020272c0_4 *out)
             }
             break;
         case 19:
-            func_020984e8();
-            func_02099734();
-            r7 = func_0202d754();
+            r7 = func_0202d754((void *) func_02099734((int) func_020984e8()));
             func_0209bb90(func_0209b4d4(self->unk_160), 1);
             data = &data_020c8de8;
             if (r7 != 0) {
@@ -79,8 +76,7 @@ void func_020272c0(UnkStruct_020272c0 *self, UnkStruct_020272c0_4 *out)
             break;
     }
 
-    func_0208150c(((UnkStruct_020272c0_2 *) self->unk_100)->unk_830);
-    v = func_020036e8();
+    v = func_020036e8((unsigned char *) func_0208150c(((UnkStruct_020272c0_2 *) self->unk_100)->unk_830));
     func_0202da38(self, self->unk_104, &self->unk_122, 30, v, data->a, data->b, 0, 0);
 
     out->ptr = self->unk_104;

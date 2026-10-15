@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02002d14(int, int, int, int, int, int);
-extern void func_02002c6c(int, int, int, int, int, int);
-extern void func_02064af4(int, int, int);
+extern int func_02002d14(int, int, int, int, int, int);
+extern int func_02002c6c(int, int, int, int, int, int);
+extern int func_02064af4(int, int, int);
 extern int func_ov121_0229adac(int, int);
 extern void func_ov121_0229af00(int, int, int);
 extern void func_ov121_02299a4c(int, int);

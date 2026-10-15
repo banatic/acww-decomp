@@ -7,11 +7,11 @@ extern int func_02088d94(int a);
 extern int func_ov094_0229ab7c(unsigned char *p, int a);
 extern int func_ov094_0229ab68(unsigned char *p);
 extern int func_ov094_0229a328(unsigned char *p, int a);
-extern void func_ov094_0229a668(unsigned char *p, int a, int b);
+extern int func_ov094_0229a668(unsigned char *p, int a, int b);
 extern int func_ov094_0229a8bc(unsigned char *p, unsigned char a);
-extern void func_020896b8(int a, int b, int c, int d, int e, unsigned int f, int g);
+extern int func_020896b8(int a, int b, int c, int d, int e, unsigned int f, int g);
 extern void func_ov094_0229a634(unsigned char *p, int a, int b, int c);
-extern void func_ov094_0229a600(unsigned char *p, int a, int b);
+extern int func_ov094_0229a600(unsigned char *p, int a, int b);
 
 void func_ov094_0229a530(unsigned char *p0, int p1, int p2, int p3, int p4)
 {

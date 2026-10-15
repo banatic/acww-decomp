@@ -3,10 +3,10 @@
  */
 
 extern void func_020a8874(void *dst, void *src, int size);
-extern void func_020a8a70(void *dst, void *src, int a, int b);
+extern int func_020a8a70(void *dst, void *src, int a, int b);
 extern int func_020b4424(void *p);
-extern void func_020a87e0(void *dst, void *src);
-extern void func_0205182c(void *dst, void *src, int size);
+extern int func_020a87e0(void *dst, void *src);
+extern int func_0205182c(void *dst, void *src, int size);
 
 void func_ov112_0229f1f4(void *self)
 {

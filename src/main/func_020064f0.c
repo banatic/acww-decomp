@@ -6,7 +6,7 @@ extern unsigned char data_020c7864[];
 extern void func_0208ffcc(void);
 extern void func_0208ffc0(void);
 extern void func_0208ffd8(void);
-extern void func_0200f234(void *, unsigned char);
+extern void func_0200f234(void *);
 
 struct UnkStruct_020064f0 {
     unsigned char pad_00[0x170];
@@ -30,6 +30,6 @@ void func_020064f0(struct UnkStruct_020064f0 *p, int index)
                 break;
         }
     } else {
-        func_0200f234(p, b);
+        func_0200f234(p);
     }
 }

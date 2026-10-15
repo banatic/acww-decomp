@@ -10,14 +10,14 @@ typedef struct {
 
 extern int func_0202cbdc(void *, int, int, unsigned char, unsigned char);
 
-int func_0202669c(unsigned short *dst, const SrcType *src)
+void func_0202669c(unsigned short *dst, const SrcType *src)
 {
     int result;
 
     *dst = 0xfff1;
     result = func_0202cbdc(dst, 0, 1, src->unk_04, src->unk_03);
     if (result != 0) {
-        return result;
+        return;
     }
-    return func_0202cbdc(dst, 2, 4, src->unk_04, src->unk_03);
+    func_0202cbdc(dst, 2, 4, src->unk_04, src->unk_03);
 }

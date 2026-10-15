@@ -6,13 +6,13 @@ typedef struct {
     char data[32];
 } UnkStruct_020662bc;
 
-extern void func_02094fd4(UnkStruct_020662bc *);
-extern void func_02003618(int, UnkStruct_020662bc *);
-extern void func_0203d7c4(int, UnkStruct_020662bc *);
-extern void func_02094fbc(UnkStruct_020662bc *);
-extern void func_02095074(int, UnkStruct_020662bc *);
+extern void *func_02094fd4(UnkStruct_020662bc *);
+extern int func_02003618(int, UnkStruct_020662bc *);
+extern int func_0203d7c4(int, UnkStruct_020662bc *);
+extern void *func_02094fbc(UnkStruct_020662bc *);
+extern void *func_02095074(int, UnkStruct_020662bc *);
 extern void func_0203d73c(UnkStruct_020662bc *);
-extern void func_0203d930(void *, void *, void *, int *, int, int);
+extern int func_0203d930(void *, void *, void *, int *, int, int);
 extern void func_02066344(int, void *, void *, void *, int, int, int, int);
 
 extern char data_021cd8c4;

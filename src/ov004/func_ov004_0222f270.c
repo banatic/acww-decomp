@@ -3,9 +3,9 @@
  */
 
 extern void *func_ov004_0222f320(void *p);
-extern void func_ov004_0222c600(void *self, int a, int b);
+extern int func_ov004_0222c600(void *self, int a, int b);
 extern void func_02055dc8(void *p, void *fn, void *self);
-extern void func_ov004_0222f2f4(void);
+extern void func_ov004_0222f2f4(char *arg0);
 extern void func_ov004_0222f1b4(void *self);
 
 int func_ov004_0222f270(void *self)

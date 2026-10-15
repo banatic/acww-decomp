@@ -4,7 +4,7 @@
 
 extern int func_ov002_02207f48(void *obj, int arg);
 extern void func_ov142_0229b1b8(void *obj);
-extern void func_ov002_022080a0(void *obj, int arg);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern int func_ov002_02207f60(void *obj);
 
 typedef struct {
@@ -16,7 +16,7 @@ void func_ov142_0229bbc4(UnkStruct_0229bbc4 *obj)
 {
     if (func_ov002_02207f48(obj, -1) != 0) {
         func_ov142_0229b1b8(obj);
-        func_ov002_022080a0(obj, 2);
+        func_ov002_022080a0((void *) (obj), 2);
     }
     obj->value = func_ov002_02207f60(obj);
 }

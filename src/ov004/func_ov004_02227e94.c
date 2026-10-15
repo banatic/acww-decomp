@@ -16,13 +16,13 @@ struct Msg {
     u8 pad_0E[0x1c - 0xe];
 };
 
-extern void func_0200e92c(struct Msg *m);
+extern unsigned int func_0200e92c(struct Msg *m);
 extern void func_0200e90c(struct Msg *m, int kind, int arg, short v);
 extern int func_0200e894(void *self, struct Msg *m);
-extern void func_0200e91c(struct Msg *m);
+extern int func_0200e91c(struct Msg *m);
 extern int func_020b5e10(void);
 extern int func_020b6044(int x, int h, int *v, short *s);
-extern void func_ov004_02227f00(struct Pair *p, int v, short s, short *ps);
+extern void func_ov004_02227f00(struct Pair *p, int v, short s);
 
 int func_ov004_02227e94(char *self, int a, short b)
 {
@@ -47,7 +47,7 @@ int func_ov004_02227e94(char *self, int a, short b)
     pp = &m.p;
     vv = v;
     ps = &s;
-    func_ov004_02227f00(pp, vv, *ps, ps);
+    func_ov004_02227f00(pp, vv, *ps);
     r = func_0200e894(self, &m);
     func_0200e91c(&m);
     return r;

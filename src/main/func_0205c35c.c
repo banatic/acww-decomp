@@ -9,9 +9,9 @@ extern int data_020cd418;
 extern unsigned int data_021c9ac4;
 
 extern unsigned int func_02082240(void);
-extern void func_020b65c4(void);
-extern unsigned int func_020b5df8(void);
-extern unsigned int func_020b5e04(void);
+extern unsigned char func_020b65c4(void);
+extern unsigned int func_020b5df8(unsigned int);
+extern unsigned int func_020b5e04(unsigned int);
 extern unsigned int func_02085f08(void);
 extern unsigned int func_020ea0e0(unsigned int, int);
 
@@ -26,10 +26,8 @@ unsigned int func_0205c35c(int param)
     if (flag != 0) {
         count1 = func_02082240();
     } else {
-        func_020b65c4();
-        count1 = func_020b5df8();
-        func_020b65c4();
-        count1 -= func_020b5e04();
+        count1 = func_020b5df8((unsigned int) func_020b65c4());
+        count1 -= func_020b5e04((unsigned int) func_020b65c4());
     }
 
     sum = count1 + func_02085f08();

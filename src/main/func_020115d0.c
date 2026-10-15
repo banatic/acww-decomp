@@ -3,11 +3,12 @@
  */
 
 extern int func_02004bbc(int);
-extern void func_02004f34(void);
+extern void *func_02004f34(void *);
 
 void func_020115d0(void)
 {
-    if (func_02004bbc(0xca0) != 0) {
-        func_02004f34();
+    void *condition_value0;
+    if ((condition_value0 = (void *) (func_02004bbc(0xca0))) != 0) {
+        func_02004f34(condition_value0);
     }
 }

@@ -27,8 +27,8 @@ typedef struct UnkStruct_020af3a0_2 {
 extern void func_020ae9c0(void *);
 extern int func_020ad798(void);
 extern void func_020ad78c(int);
-extern void func_020b5e70(void);
-extern int func_020b6744(void);
+extern int func_020b5e70(void);
+extern int func_020b6744(unsigned int code);
 extern int func_020b65c4(void);
 extern void func_0209e474(int *);
 extern void func_0209e140(int *, int);
@@ -82,8 +82,7 @@ void func_020af3a0(UnkStruct_020af3a0_3 *self, int arg1)
         func_020ad78c(2);
         return;
     }
-    func_020b5e70();
-    if (func_020b6744() == 0) {
+    if (func_020b6744((unsigned int) func_020b5e70()) == 0) {
         v = func_020b65c4();
         if (v == 0x2c) {
             return;
@@ -153,7 +152,8 @@ void func_020af3a0(UnkStruct_020af3a0_3 *self, int arg1)
                 if (func_020afb48(self, &s.a) == 0) {
                     if ((data_021f4a08 & 1) == 0) {
                         func_02063ccc(&data_021f4a0c, 0, 4);
-                        __register_global_object(&data_021f4a0c, (void *) func_02063cc8, data_021f4a98);
+                        __register_global_object((void *) (&data_021f4a0c), (((void *) func_02063cc8)),
+                                                 (void *) (data_021f4a98));
                         data_021f4a08 |= 1;
                     }
                     if (func_02063cd4(data_021f4a80, 5) == 0) {

@@ -3,7 +3,7 @@
  */
 
 extern void func_0208c260(void *p);
-extern int func_0208c5bc(void *p, int b);
+extern int func_0208c5bc(void);
 extern int func_020a7e50(void);
 extern int func_020a7e44(void);
 extern int func_0208c56c(void *p);
@@ -17,7 +17,7 @@ void func_0208c2ac(unsigned char *self)
         func_0208c260(self);
         return;
     }
-    if (func_0208c5bc(self, b) == 0) {
+    if (func_0208c5bc() == 0) {
         int flag = 0;
         if (func_020a7e50() != 0) {
             if (func_0208c56c(self) != 0) {

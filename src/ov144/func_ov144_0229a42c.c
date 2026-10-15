@@ -10,7 +10,7 @@ struct UnkStruct_0229a42c {
 extern unsigned short data_021fbe40;
 extern void func_ov144_0229a3a4(struct UnkStruct_0229a42c *);
 extern void func_ov144_0229a3dc(struct UnkStruct_0229a42c *);
-extern void func_ov002_0220a4c8(void *);
+extern void func_ov002_0220a4c8(void);
 
 void func_ov144_0229a42c(struct UnkStruct_0229a42c *self)
 {
@@ -32,6 +32,10 @@ void func_ov144_0229a42c(struct UnkStruct_0229a42c *self)
     if (original != self->unk_A8) {
         func_ov144_0229a3a4(self);
         func_ov144_0229a3dc(self);
-        func_ov002_0220a4c8((char *) self + 0x128);
+        asm {
+            ldr r0, =0x128
+            add r0, self, r0
+        }
+        func_ov002_0220a4c8();
     }
 }

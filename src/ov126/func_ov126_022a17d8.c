@@ -5,14 +5,14 @@
 extern int func_ov002_02207f3c(void *, int);
 extern void func_020027f0(int);
 extern void func_ov126_0229f7a8(void *, int);
-extern void func_ov002_022080a0(void *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern int func_ov126_0229f7c8(void *, int);
 extern void func_0206fc4c(int);
 extern void func_ov126_0229f83c(void *);
-extern void func_0206fc1c(void *, unsigned char);
+extern int func_0206fc1c(void *, unsigned char);
 extern int func_0206fca4(void);
-extern void func_020ee45c(void *);
-extern void func_ov090_02298fa4(void);
+extern int func_020ee45c(void *);
+extern void func_ov090_02298fa4(int argument0);
 extern void func_ov126_022a16ac(void *);
 
 struct UnkStruct_022a17d8 {
@@ -28,7 +28,7 @@ void func_ov126_022a17d8(struct UnkStruct_022a17d8 *obj)
         func_020027f0(4);
         func_020027f0(6);
         func_ov126_0229f7a8(obj, 1);
-        func_ov002_022080a0(obj, 5);
+        func_ov002_022080a0((void *) (obj), 5);
         if (func_ov126_0229f7c8(obj, 0x40)) {
             func_0206fc4c(0);
         } else {
@@ -48,8 +48,8 @@ void func_ov126_022a17d8(struct UnkStruct_022a17d8 *obj)
             }
             goto end;
         body:
-            func_020ee45c(obj);
-            func_ov090_02298fa4();
+
+            func_ov090_02298fa4(func_020ee45c(obj));
         end:;
         }
     } else {

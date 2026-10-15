@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020154b4(void *a, unsigned short *b, int c, int d, int e);
+extern int func_020154b4(void *a, unsigned short *b, int c, int d, int e);
 
-void func_ov050_02262700(void *p)
+void func_ov050_02262700(void *p, int event)
 {
     int zero;
     unsigned short hw;

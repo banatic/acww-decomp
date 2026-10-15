@@ -5,11 +5,11 @@
 #include "types.h"
 
 extern char data_020da520;
-extern void func_0205577c(void *);
-extern void func_020ba01c(void *);
-extern void func_02038d30(void *);
-extern void func_02038ccc(void *);
-extern void func_02038c6c(void *);
+extern void *func_0205577c(void *);
+extern void *func_020ba01c(void *);
+extern int func_02038d30(void *);
+extern void *func_02038ccc(void *);
+extern void *func_02038c6c(void *);
 extern void MI_CpuFill8(void *, unsigned int, unsigned int);
 
 typedef struct {

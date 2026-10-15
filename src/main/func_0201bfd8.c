@@ -3,7 +3,7 @@
  */
 
 extern void *func_02085148(void *ptr);
-extern void MI_CpuCopy8(char *ptr, int a, unsigned int b) __attribute__((target("arm")));
+extern void __arm MI_CpuCopy8(char *ptr, int a, unsigned int b);
 
 int func_0201bfd8(char *param0, int param1, unsigned int param2)
 {

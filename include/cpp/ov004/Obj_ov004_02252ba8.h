@@ -14,6 +14,7 @@ struct Obj_ov004_02252ba8 : public RoomObject {
     void func_ov004_02214d34();
     int func_ov004_02214df8();
     void func_ov004_02214fc8();
+
     int func_ov004_02215020();
     // update: runs the state handlers, then advances the counter at 0x85c
     int func_ov004_02215374();

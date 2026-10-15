@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020896b8(int, const void *, int, int, int, int, int);
+extern int func_020896b8(int, const void *, int, int, int, int, int);
 typedef struct {
     int a;
     int b;

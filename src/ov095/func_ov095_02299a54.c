@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov095_022999a0(void *, int, int);
+extern void func_ov095_022999a0(void *, int);
 extern int func_ov095_022999b0(void *, int);
 extern void func_ov095_0229a720(void *, void *);
 extern void func_ov095_0229a4d4(void *, void *);
@@ -25,7 +25,7 @@ int func_ov095_02299a54(UnkStruct_02299a54 *s, void *p)
     void *saved = s->unk_28;
 
     s->unk_43 = 0;
-    func_ov095_022999a0(s, 0x10, 0);
+    func_ov095_022999a0(s, 0x10);
 
     switch (s->unk_16) {
         case 0:

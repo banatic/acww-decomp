@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void *func_020984e8(void);
-extern void *func_02098a0c(void);
+extern void *func_02098a0c(int);
 extern void *func_020992e4(void *);
 extern u32 func_02097cc8(void *);
 extern void MI_CpuCopy8(const void *, void *, unsigned int);
@@ -21,7 +21,7 @@ int func_02097430(u32 *arg)
     int flag;
 
     h1 = func_020984e8();
-    h2 = func_02098a0c();
+    h2 = func_02098a0c((int) h1);
     p = func_020992e4(h1);
 
     if (*(u16 *) p == 0) {

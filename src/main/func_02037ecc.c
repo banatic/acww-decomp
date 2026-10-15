@@ -13,7 +13,7 @@ typedef struct {
     unsigned char pad_0C[0x14];
     UnkStruct_02037ecc *unk_20;
 } UnkStruct_02037ecc_2;
-extern void func_02030c84(int a, int b, int c, int d);
+extern int func_02030c84(int a, int b, int c, int d);
 void func_02037ecc(UnkStruct_02037ecc_2 *p, UnkStruct_02037ecc *v, int flag, int d)
 {
     p->unk_20 = v;

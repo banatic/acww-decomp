@@ -3,8 +3,8 @@
  */
 
 extern int data_ov003_02236e64[][3];
-int func_0204cab4(void *self);
+int func_0204cab4(void);
 int func_ov003_02227170(void *self, int k)
 {
-    return data_ov003_02236e64[func_0204cab4(self)][k];
+    return data_ov003_02236e64[func_0204cab4()][k];
 }

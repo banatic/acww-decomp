@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fca4(int a, int b);
-extern int func_ov107_0229c354(int a);
-extern void func_02045d98(void);
+extern int func_0206fca4(void);
+extern int func_ov107_0229c354(void);
+extern void func_02045d98(int key);
 extern int func_02073d90(void *ptr);
 extern void func_02073820(void *ptr);
 extern void func_020737f0(void *ptr, unsigned char *buf, int len);
 extern void func_02073770(void *ptr, int a, int b);
-extern void func_0206f7bc(void);
+extern unsigned int *func_0206f7bc(void);
 extern void func_ov003_0222e6c4(int a, int b);
-extern void func_ov003_0222aae8(void);
+extern int func_ov003_0222aae8(void *argument0);
 extern void *data_020ccf94;
 
 void func_ov107_0229c2c8(int a, int b)
@@ -21,15 +21,20 @@ void func_ov107_0229c2c8(int a, int b)
     unsigned char buf[2];
     void *ptr;
 
-    r4 = func_0206fca4(a, b);
-    r6 = func_ov107_0229c354(a);
+    r4 = func_0206fca4();
+    // clang-format off
+    asm {
+        mov r0, a
+    }
+    // clang-format on
+    r6 = func_ov107_0229c354();
     switch (r4 - 0x29) {
         case 0:
         case 1:
             if (b == 0) {
                 return;
             }
-            func_02045d98();
+            func_02045d98(r6);
             if (func_02073d90(data_020ccf94) == 0) {
                 return;
             }
@@ -44,8 +49,8 @@ void func_ov107_0229c2c8(int a, int b)
             func_ov003_0222e6c4(r6, 1);
             break;
         case 3:
-            func_0206f7bc();
-            func_ov003_0222aae8();
+
+            func_ov003_0222aae8(func_0206f7bc());
             break;
     }
 }

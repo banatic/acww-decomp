@@ -7,9 +7,9 @@ typedef struct {
     unsigned char unk_30;
 } UnkStruct_020aaabc;
 
-extern int func_020a7e50(int);
-extern int func_020aaa38(UnkStruct_020aaabc *);
-extern int func_020a7e44(int);
+extern int func_020a7e50(void);
+extern int func_020aaa38(void);
+extern int func_020a7e44(void);
 extern int func_020aaa20(UnkStruct_020aaabc *);
 extern void func_020a7e7c(void);
 extern int func_020aaa74(UnkStruct_020aaabc *);
@@ -25,13 +25,15 @@ void func_020aaabc(UnkStruct_020aaabc *self)
     b = self->unk_30;
     if (b) {
         flag = 0;
-        res = func_020a7e50(b);
+        res = func_020a7e50();
         if (res) {
-            if (func_020aaa38(self)) {
+            asm { add r0, self, #0 }
+            if (func_020aaa38())
+            {
                 flag = 1;
             }
         } else {
-            if (func_020a7e44(res) && func_020aaa20(self)) {
+            if (func_020a7e44() && func_020aaa20(self)) {
                 flag = 1;
             }
         }
@@ -41,13 +43,13 @@ void func_020aaabc(UnkStruct_020aaabc *self)
         }
     } else {
         flag = 0;
-        res = func_020a7e50(b);
+        res = func_020a7e50();
         if (res) {
             if (func_020aaa74(self)) {
                 flag = 1;
             }
         } else {
-            if (func_020a7e44(res) && func_020aaa54(self)) {
+            if (func_020a7e44() && func_020aaa54(self)) {
                 flag = 1;
             }
         }

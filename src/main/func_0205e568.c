@@ -22,10 +22,11 @@ typedef struct {
 
 extern void func_02055b40(void *p);
 extern int data_021c9ae4;
-extern void func_020e9b9c(void);
+extern void func_020e9b9c(void *);
 
 void func_0205e568(UnkStruct_0205e568 *obj)
 {
+    void *condition_value0;
     int i;
 
     for (i = 0; i < 4; i++) {
@@ -39,8 +40,8 @@ void func_0205e568(UnkStruct_0205e568 *obj)
         obj->arr2[i].b = 0;
     }
 
-    if (data_021c9ae4) {
-        func_020e9b9c();
+    if ((condition_value0 = (void *) (data_021c9ae4))) {
+        func_020e9b9c(condition_value0);
     }
 
     for (i = 0; i < 4; i++) {

@@ -3,13 +3,13 @@
  */
 
 extern void func_ov066_02268be4(void);
-extern void func_ov066_0226686c(void);
+extern void func_ov066_0226686c(int status);
 
 void func_ov066_02268c18(unsigned short *arg0)
 {
     if (arg0[1] == 0) {
         func_ov066_02268be4();
     } else {
-        func_ov066_0226686c();
+        func_ov066_0226686c(arg0[1]);
     }
 }

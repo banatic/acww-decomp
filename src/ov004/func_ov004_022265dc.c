@@ -10,11 +10,11 @@ typedef struct {
     int x, y, z;
 } UnkStruct_022265dc_2;
 
-extern void func_0200e92c(UnkStruct_022265dc *t);
+extern unsigned int func_0200e92c(UnkStruct_022265dc *t);
 extern void func_0200e90c(UnkStruct_022265dc *t, int x, int y, int z);
 extern void func_ov004_0222661c(void *p, UnkStruct_022265dc_2 v);
 extern int func_0200e894(void *self, UnkStruct_022265dc *t);
-extern void func_0200e91c(UnkStruct_022265dc *t);
+extern int func_0200e91c(UnkStruct_022265dc *t);
 
 int func_ov004_022265dc(void *self, UnkStruct_022265dc_2 *v, int c, int d)
 {

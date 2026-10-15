@@ -9,7 +9,7 @@ extern void func_02010d64(void *self);
 extern int func_02073908(int a, int b);
 extern void func_ov003_02214d2c(void *self);
 extern int func_02008258(void *self, int a);
-extern void func_0200faf0(void *self, int a);
+extern int func_0200faf0(void *self, int a);
 
 extern int data_020ccf94;
 

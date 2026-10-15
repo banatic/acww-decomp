@@ -9,9 +9,9 @@ typedef struct {
 
 extern UnkStruct_02261088 *func_020682e0(int);
 extern int func_020644cc(int);
-extern void func_ov068_02273030(void);
+extern int func_ov068_02273030(void);
 extern void func_0203ac18(void);
-extern void func_02041d14(int, int);
+extern int func_02041d14(int, int);
 extern void func_0200468c(void);
 extern void func_ov051_0226122c(void *, int);
 

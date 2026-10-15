@@ -16,8 +16,8 @@ typedef struct UnkStruct_020f51c4_2 {
     u16 unk_18;
 } UnkStruct_020f51c4_2;
 
-extern void func_020eed18(void *p, int k);
-extern void func_020eedb8(u16 m, int k, void *p);
+extern int func_020eed18(void *p, int k);
+extern int func_020eedb8(u16 m, int k, void *p);
 extern void func_020f50e4(UnkStruct_020f51c4_2 *s);
 
 void func_020f51c4(UnkStruct_020f51c4_2 *s)

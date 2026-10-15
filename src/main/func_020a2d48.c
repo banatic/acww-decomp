@@ -12,7 +12,7 @@ extern void *func_020642a4(void *p);
 extern void MI_CpuCopy8(void *dest, void *src, int n);
 extern int func_0209f180(void *p);
 extern void func_020730c8(void);
-extern void func_020eb9f0(void *p, int n);
+extern int func_020eb9f0(void *p, int n);
 extern unsigned char func_0209877c(void *p);
 
 void func_020a2d48(unsigned char *param)

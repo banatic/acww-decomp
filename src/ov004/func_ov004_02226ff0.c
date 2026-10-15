@@ -6,7 +6,7 @@ extern int func_02056f94(void *p);
 extern int func_0200dc8c(void *self);
 extern int func_0200dc48(void *self);
 extern int func_02064558(short v);
-extern void func_ov004_02228850(void *self, int a, int b);
+extern int func_ov004_02228850(void *self, int a, int b);
 
 void func_ov004_02226ff0(char *self)
 {

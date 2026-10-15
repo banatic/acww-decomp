@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020124e4(int arg0, int arg1, int arg2, int arg3);
+extern void func_020124e4(int a, int b, int c, int d);
 
 void func_0201240c(int arg0, unsigned short *arg1, int arg2, int arg3)
 {

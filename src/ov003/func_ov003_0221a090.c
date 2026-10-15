@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_0221a004(void *, int);
+extern int func_ov003_0221a004(void *, int);
 
 struct func_ov003_0221a090_data {
     char pad_00[0x378];

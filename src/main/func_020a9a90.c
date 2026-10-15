@@ -10,7 +10,7 @@ struct UnkStruct_020a9a90_2 {
 };
 
 extern void FS_InitFile(struct UnkStruct_020a9a90_2 *sub);
-extern void *MI_CpuFill8(void *s, int c, unsigned int n);
+extern void MI_CpuFill8(void *s, int c, unsigned int n);
 
 struct UnkStruct_020a9a90 {
     void *unk_00;

@@ -3,7 +3,7 @@
  */
 
 extern int func_0207cf14(void *p, int x);
-extern int func_0207cf74(void);
+extern int func_0207cf74(unsigned int index);
 extern int func_0207b3dc(void *p);
 extern int func_0208150c(void *p);
 extern int func_02003704(int t);
@@ -11,7 +11,7 @@ extern int func_0207f074(void *p);
 extern int func_0207cc54(int a, int b, int c);
 extern int func_0207cec0(void *p, int x);
 
-void func_0207cb9c(void *p, int *arr, int count)
+int func_0207cb9c(void *p, int *arr, int count)
 {
     int i;
     unsigned char mask;
@@ -27,7 +27,7 @@ void func_0207cb9c(void *p, int *arr, int count)
     while (i < count) {
         if (*arr != 0) {
             v = func_0207cf14(p, *arr);
-            if (func_0207cf74() != 0) {
+            if (func_0207cf74((unsigned int) v) != 0) {
                 mask = (unsigned char) (mask | (1 << v));
             }
         }
@@ -36,7 +36,7 @@ void func_0207cb9c(void *p, int *arr, int count)
     }
 
     b = func_0207b3dc(p);
-    if (func_0207cf74() != 0) {
+    if (func_0207cf74((unsigned int) b) != 0) {
         mask = (unsigned char) (mask | (1 << b));
     }
 
@@ -56,5 +56,5 @@ void func_0207cb9c(void *p, int *arr, int count)
         i++;
     } while (i < 8);
 
-    func_0207cec0(p, func_0207cc54(result, count2, 8));
+    return func_0207cec0(p, func_0207cc54(result, count2, 8));
 }

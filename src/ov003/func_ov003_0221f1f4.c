@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02055764(int);
+extern void *func_02055764(int);
 
 int func_ov003_0221f1f4(int x)
 {

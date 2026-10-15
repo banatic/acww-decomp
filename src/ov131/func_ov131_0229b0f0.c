@@ -4,11 +4,11 @@
 
 extern void func_ov131_0229aff8(void *param);
 extern void func_ov002_02207fc0(void *param);
-extern void func_ov002_02208098(void *param, int mode);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov131_0229b0f0(void *param)
 {
     func_ov131_0229aff8(param);
     func_ov002_02207fc0(param);
-    func_ov002_02208098(param, 2);
+    func_ov002_02208098((void *) (param), 2);
 }

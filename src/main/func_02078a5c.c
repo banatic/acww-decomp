@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02078c2c(void *param1, void *param2);
+extern unsigned long func_02078c2c(void *param1, void *param2);
 
 extern unsigned char data_021d1310[];
 
-void func_02078a5c(void *param)
+unsigned long func_02078a5c(void *param)
 {
     void *addr = (void *) data_021d1310;
-    func_02078c2c(addr, *(void **) param);
+    return func_02078c2c(addr, *(void **) param);
 }

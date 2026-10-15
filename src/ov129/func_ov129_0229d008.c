@@ -21,7 +21,7 @@ typedef struct UnkStruct_0229d008 {
 extern int func_ov002_02208054(void *self, int x);
 extern int func_ov127_02299d20(void *p, int a, int b);
 extern void func_ov127_02299c08(void *p, u8 a, int b);
-extern void func_ov002_02208098(void *self, int x);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov002_0220a620(void *p, int x);
 extern int func_ov002_0220a784(void *p, int x);
 extern void func_ov129_0229c848(UnkStruct_0229d008 *self);
@@ -48,7 +48,7 @@ void func_ov129_0229d008(UnkStruct_0229d008 *self)
             self->unk_AD = func_ov127_02299d20(self->sub734, a, b);
             if (self->unk_AD != 4) {
                 func_ov127_02299c08(self->sub734, self->unk_AD, 0);
-                func_ov002_02208098(self, 1);
+                func_ov002_02208098((void *) (self), 1);
                 func_ov129_0229c1d4(self);
                 return;
             }

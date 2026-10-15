@@ -20,7 +20,7 @@ typedef struct UnkStruct_02015688_2 {
     int unk_6C;
     int unk_70;
     int unk_74;
-    int unk_78;
+    int (*unk_78)(u16 *, int);
     u16 unk_7C;
     char pad_7E[6];
     u8 unk_84;
@@ -35,7 +35,7 @@ typedef struct UnkStruct_02015688_2 {
     u8 unk_AC;
 } UnkStruct_02015688_2;
 
-extern int func_0206f9d8(int);
+extern u16 func_0206f9d8(int (*)(u16 *, int));
 extern int func_0206fa28(int, u8);
 extern int func_0206f99c(void);
 extern int func_0206fbf8(u8);

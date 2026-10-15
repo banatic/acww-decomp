@@ -16,7 +16,7 @@ struct UnkStruct_022793e4 {
     u8 flag; // offset 0x561
 };
 
-extern int func_0208602c(struct UnkStruct_022793e4 *);
+extern int func_0208602c(void);
 extern int func_020860c0(int);
 extern int func_02087e38(int);
 extern void func_02087e4c(int, struct Vec3 *);
@@ -28,7 +28,7 @@ int func_ov075_022793e4(struct UnkStruct_022793e4 *obj)
     u32 *src;
     u32 *dst;
 
-    a = func_0208602c(obj);
+    a = func_0208602c();
     b = func_020860c0(a);
     c = func_02087e38(b);
     if (c != 0) {

@@ -20,9 +20,9 @@ extern void func_02016108(UnkStruct_02260718 *, int);
 extern int func_ov052_022610c4(UnkStruct_02260718 *);
 extern int *func_02095794(int);
 extern int func_02030818(int *);
-extern void func_020307f8(int);
+extern int func_020307f8(void);
 extern int func_020b5e10(void);
-extern void func_020b6098(int, int);
+extern int func_020b6098(int, int);
 
 void func_ov052_02260718(char *a, unsigned int cmd, int v)
 {
@@ -60,7 +60,7 @@ void func_ov052_02260718(char *a, unsigned int cmd, int v)
                 t[2] = p[2];
                 rc = func_02030818(t);
                 if (rc) {
-                    func_020307f8(rc);
+                    func_020307f8();
                 } else {
                     func_ov052_02261908(a, 1);
                 }

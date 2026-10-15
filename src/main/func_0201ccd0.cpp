@@ -31,8 +31,8 @@ struct UnkStruct_0201ccd0 {
     virtual int target() = 0;
 };
 
-extern "C" void func_0208150c();
-extern "C" int func_020036e8();
+extern "C" unsigned int func_0208150c(unsigned int);
+extern "C" int func_020036e8(unsigned char *);
 extern "C" void func_0201b38c(void *, unsigned int);
 extern "C" void func_0201b388(void *, unsigned int);
 extern unsigned int data_020c8ed4[];
@@ -42,8 +42,7 @@ extern "C" void func_0201ccd0(int unused, UnkStruct_0201ccd0 *obj, int mode)
 {
     int result = obj->target();
     if (mode == 4 && result != 0) {
-        func_0208150c();
-        int r = func_020036e8();
+        int r = func_020036e8((unsigned char *) func_0208150c(result));
         if (r == 0 || r == 3) {
             mode = 3;
         } else {

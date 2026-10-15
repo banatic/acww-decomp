@@ -2,11 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-#include "types.h"
+extern void func_ov004_0220d280(unsigned char *object, unsigned char value, int pending);
 
-extern int func_ov004_0220d280(char *self, int t, int a);
-int func_ov004_0220d290(char *self, int a)
+#pragma opt_propagation off
+void func_ov004_0220d290(unsigned char *self, int pending)
 {
-    int t = ((*(u8 *) (self + 1) + 1) & 1) != 0;
-    return func_ov004_0220d280(self, t, a);
+    unsigned char value = self[1];
+    int next = value + 1;
+    value = 1;
+    if ((next & value) == 0) {
+        value = 0;
+    }
+    func_ov004_0220d280(self, value, pending);
 }

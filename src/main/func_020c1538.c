@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(unsigned int size);
-extern void func_020ee660(void *obj);
+extern void *func_020ee660(void *obj);
 
 typedef struct {
     volatile void *unk_00;

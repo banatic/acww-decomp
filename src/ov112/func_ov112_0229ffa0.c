@@ -3,7 +3,7 @@
  */
 
 extern int func_ov112_0229fe70(void *arg, int size);
-extern void func_ov112_0229f45c(void *arg, int a, int b);
+extern void func_ov112_0229f45c(void *object, unsigned char flags, int mode);
 extern void func_ov112_0229fe50(void *arg, int size);
 extern void RtcSendPxiCommand(int cmd);
 

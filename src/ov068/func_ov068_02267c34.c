@@ -47,11 +47,11 @@ extern void func_ov068_02266c34(void *p, UnkStruct_02267c34 *b, int c, int d, in
 extern void func_0202e188(UnkStruct_02267c34 *b);
 extern void func_02013c0c(void *p);
 extern void func_02012444(void *p, int a, int b);
-extern void func_0203e0a8(UnkStruct_02267c34 *b, int a);
+extern int func_0203e0a8(UnkStruct_02267c34 *b, int a);
 extern void func_0203edd0(UnkStruct_02267c34 *b);
 extern void *func_02096190(int a);
 extern s32 func_0201c2b0(UnkStruct_02267c34 *b, void *p);
-extern void func_02019c20(void *p, int a, int b, int c, int d, int e);
+extern int func_02019c20(void *p, int a, int b, int c, int d, int e);
 extern void func_0201cbbc(void *p);
 
 int func_ov068_02267c34(UnkStruct_02267c34_2 *a, UnkStruct_02267c34 *b)

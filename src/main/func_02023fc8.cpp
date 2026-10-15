@@ -26,14 +26,14 @@ class UnkStruct_02023fc8 {
 };
 
 extern "C" {
-void *func_0206fc6c(UnkStruct_02023fc8 *self);
-void *func_0206fc8c(void *arg);
-void *func_020984e8(void *arg);
+void *func_0206fc6c(void);
+void *func_0206fc8c(void);
+void *func_020984e8(void);
 void *func_02099734(void *arg);
 u16 *func_02098f48(void *arg1, void *arg2);
 void func_0209a088(u16 *addr, int zero, void *arg);
 void func_0202da88(UnkStruct_02023fc8 *self, void *addr);
-void func_02015330(UnkStruct_02023fc8 *self, u16 *ptr, int zero, int five, int stackarg);
+int func_02015330(UnkStruct_02023fc8 *self, u16 *ptr, int zero, int five, int stackarg);
 void func_0206844c(void *field40, UnkStruct_02023fc8_2 *local, u32 c);
 }
 
@@ -43,10 +43,10 @@ extern unsigned char data_021c2efc[];
 extern "C" void func_02023fc8(UnkStruct_02023fc8 *self)
 {
     UnkStruct_02023fc8_2 local;
-    void *v1 = func_0206fc6c(self);
+    void *v1 = func_0206fc6c();
     if (v1 != 0) {
-        void *v2 = func_0206fc8c(v1);
-        void *v3 = func_020984e8(v2);
+        void *v2 = func_0206fc8c();
+        void *v3 = func_020984e8();
         void *v4 = func_02099734(v3);
         u16 *p = func_02098f48(v4, v2);
         self->unk_124 = *p;

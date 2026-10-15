@@ -7,9 +7,9 @@ typedef struct {
     unsigned char unk_29D3;
 } UnkStruct_0229c84c;
 
-extern void func_ov109_0229cb9c(UnkStruct_0229c84c *p, int arg);
+extern int func_ov109_0229cb9c(UnkStruct_0229c84c *p, int arg);
 
-void func_ov109_0229c84c(UnkStruct_0229c84c *p)
+int func_ov109_0229c84c(UnkStruct_0229c84c *p)
 {
-    func_ov109_0229cb9c(p, p->unk_29D3);
+    return func_ov109_0229cb9c(p, p->unk_29D3);
 }

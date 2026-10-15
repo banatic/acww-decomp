@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0203ec98(void *p);
+extern int func_0203ec98(void);
 extern unsigned int func_020960d8(int x);
 
 struct UnkStruct_0208bf48 {
@@ -12,7 +12,7 @@ struct UnkStruct_0208bf48 {
 
 int func_0208bf48(struct UnkStruct_0208bf48 *arg)
 {
-    int r4 = func_0203ec98(arg) != 0;
+    int r4 = func_0203ec98() != 0;
     unsigned int a = func_020960d8(4);
     int r1 = (a - 8) <= 7;
     int r2 = (a - 0x24) <= 8;

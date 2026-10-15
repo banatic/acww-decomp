@@ -5,8 +5,8 @@
 extern char data_020dce48;
 extern char data_020da13c;
 extern void func_0209d2b4(void *);
-extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
-extern void func_02050704(void);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern void *func_02050704(void *);
 extern void func_020ee62c(void *);
 extern void func_020edf54(void *);
 
@@ -25,7 +25,7 @@ void *func_0204fcf0(UnkStruct_0204fcf0 *p)
 {
     p->vtable = (void *) &data_020dce48;
     func_0209d2b4(&p->sub);
-    __cxa_vec_cleanup(p->elems, 4, 0x16c, func_02050704);
+    __cxa_vec_cleanup((void *) (p->elems), 4, 0x16c, (((void (*)(void *)) func_02050704)));
     p->vtable = (void *) &data_020da13c;
     func_020ee62c(p);
     func_020edf54(p);

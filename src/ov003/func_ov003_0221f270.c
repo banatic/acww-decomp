@@ -42,7 +42,7 @@ extern void *func_0203750c(void);
 extern int func_02037594(void *a);
 extern int func_02037588(void *a);
 extern int func_0203757c(void *a);
-extern void func_02055f40(void *sub, void *field8, int tmp);
+extern int func_02055f40(void *sub, void *field8, int tmp);
 extern int func_0205650c(void *sub, void *field8, int global);
 extern void func_02056478(void *sub, int a, int b, int c, int d);
 extern int func_02055e00(void *sub);
@@ -51,10 +51,10 @@ extern void func_020e96c8(void *arr, int a, int b, int c);
 extern void func_020e9774(void *arr, int v);
 extern int func_0203f760(void);
 extern int func_02037bd8(void *a);
-extern int func_02057a50(void *p, int *tbl);
+extern int func_02057a50(void *object, const char *name);
 extern void func_02055dc8(void *sub, void *fn, UnkStruct_0221f270 *obj);
 extern void func_ov003_0221f668(void *sub, int a);
-extern void func_ov003_0221fdb8(void);
+extern void func_ov003_0221fdb8(void *unused0);
 
 int func_ov003_0221f270(UnkStruct_0221f270 *obj, Src *src, int a2, int a3)
 {
@@ -92,7 +92,7 @@ int func_ov003_0221f270(UnkStruct_0221f270 *obj, Src *src, int a2, int a3)
     obj->copyData = data_021fbe48;
 
     if ((func_02037bd8(obj->unk_00) & 8) != 0) {
-        obj->unk_E8 = (s8) func_02057a50(field8, data_ov003_02239aa0);
+        obj->unk_E8 = (s8) func_02057a50((void *) (field8), (const char *) (data_ov003_02239aa0));
         if (obj->unk_E8 != -1) {
             func_02055dc8(obj->subB, func_ov003_0221fdb8, obj);
         }

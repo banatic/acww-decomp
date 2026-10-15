@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020110e8(int);
+extern int func_020110e8(void *);
 extern int func_0201111c(int);
-extern void func_0205f874(int);
-extern void func_0205f848(int, int);
+extern int func_0205f874(int, int);
+extern int func_0205f848(int, int);
 
 void func_020106a8(int p0, int p1, int p2)
 {
-    int k = func_020110e8(p0);
+    int k = func_020110e8((void *) p0);
     int r4;
     int r1;
 
@@ -37,7 +37,7 @@ void func_020106a8(int p0, int p1, int p2)
     r4 = p2 + ((p1 << 3) + 0x80);
 
     if (r1 < 0x80) {
-        func_0205f874(p0 + 0x7a0);
+        func_0205f874(p0 + 0x7a0, r1);
     }
     if (r4 >= 0x80 && r4 < 0xc0) {
         func_0205f848(p0 + 0x7a0, r4);

@@ -8,12 +8,16 @@
 #define H(p, o) (*(u16 *) ((p) + (o)))
 #define P(p, o) (*(u8 **) ((p) + (o)))
 extern void *data_ov004_02254594;
-extern int func_ov004_0222dc00(void), func_ov004_0222dc3c(void), func_ov004_0222be58(void), func_ov004_0222dbac(void),
+extern int func_ov004_0222dc00(), func_ov004_0222dc3c(void), func_ov004_0222be58(void), func_ov004_0222dbac(void),
     func_020950c0(void *), func_020644cc(int), func_0202ea80(int, int), func_02088bd4(void *);
 extern void *func_020984e8(void), *func_02099870(void *), *func_02099670(void *);
-extern void func_0200442c(void *, int, int, int), func_02035684(int, int, int), func_02035624(int),
-    func_020356c4(int, int, int, int), func_0206844c(void *, u8 *, void *), func_02088bc4(void *, int),
-    func_ov004_0222421c(void *, int);
+extern int func_0200442c(void *, int, int, int);
+extern void func_02035684(int, int, int);
+extern void func_02035624(int);
+extern void func_020356c4(int, int, int, int);
+extern void func_0206844c(void *, u8 *, void *);
+extern void func_02088bc4(void *, int);
+extern void func_ov004_0222421c(void *, int);
 void func_ov004_02223c40(u8 *self)
 {
     u8 message;

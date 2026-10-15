@@ -3,8 +3,8 @@
  */
 
 extern int data_021eed68;
-extern int func_020781d0(void *);
-extern int func_020984d4(int);
+extern int func_020781d0(void *, int arg1);
+extern int func_020984d4(void);
 extern int func_02078268(int, int);
 extern void func_0206fdd4(void *, int, int, int, int, int);
 extern int func_02078234(int);
@@ -15,17 +15,17 @@ typedef struct UnkStruct_02299e20 {
     char pad_00[0xa0];
 } UnkStruct_02299e20;
 
-void func_ov113_02299e20(UnkStruct_02299e20 *p)
+void func_ov113_02299e20(UnkStruct_02299e20 *p, int cond1)
 {
     int ret1;
     int ret2;
-    int cond1;
+
     int cond2;
     int arg6;
     int arg6_2;
 
-    ret1 = func_020781d0(&data_021eed68);
-    ret2 = func_020984d4(ret1);
+    ret1 = func_020781d0(&data_021eed68, cond1);
+    ret2 = func_020984d4();
 
     cond1 = func_02078268(ret1, ret2);
     if (cond1 != 0) {

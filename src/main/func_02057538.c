@@ -4,8 +4,8 @@
 
 extern void func_02056ffc(void *);
 extern void func_020574c4(void *, int *, int *);
-extern int func_0205772c(void *);
-extern int func_02057778(void *, int, int, int, int, int, int);
+extern const char *func_0205772c(const void *text);
+extern int func_02057778(void *, int, const char *, const char *, int, int, int);
 
 typedef struct UnkStruct_02057538 {
     unsigned char pad_00[0x18];
@@ -40,8 +40,8 @@ int func_02057538(UnkStruct_02057538 *self)
     }
 
     {
-        int r4 = func_0205772c(&self->unk_54);
-        int r3 = func_0205772c(&self->unk_65);
+        const char *r4 = func_0205772c(&self->unk_54);
+        const char *r3 = func_0205772c(&self->unk_65);
         if (func_02057778(&self->unk_18, self->unk_50, r4, r3, self->unk_78, local0, local1) != 0) {
             if (local0 != -1) {
                 self->unk_84 = local0;

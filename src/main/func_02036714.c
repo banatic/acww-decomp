@@ -4,7 +4,7 @@
 
 extern int func_020b65c4(void);
 extern int func_020b5e10(void);
-extern int func_020b5e84(void);
+extern int func_020b5e84(unsigned char *);
 extern int func_02036754(int);
 
 int func_02036714(void)
@@ -14,8 +14,7 @@ int func_02036714(void)
     int r0;
 
     r4 = func_020b65c4();
-    func_020b5e10();
-    r5 = func_020b5e84();
+    r5 = func_020b5e84((unsigned char *) func_020b5e10());
     r4 = func_02036754(r4);
     r0 = func_02036754(r5);
     if (r4 == r0) {

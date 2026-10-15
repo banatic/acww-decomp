@@ -8,7 +8,7 @@ extern int func_02077898(void *p);
 extern void func_02077a34(void *a, void *b, void *c);
 extern void func_0205f9d4(signed char a, signed char b, unsigned char c, int d, int e);
 
-void func_02076198(unsigned int count)
+void func_02076198(unsigned int count, int sequence, unsigned char category, unsigned int player)
 {
     unsigned char data[7];
     unsigned int i = 0;

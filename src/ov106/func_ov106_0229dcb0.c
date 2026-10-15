@@ -14,9 +14,9 @@ typedef struct {
 extern int func_ov002_0220b804(void *p);
 extern int func_ov002_02207f3c(void *p, int n);
 extern unsigned int func_ov002_02207f60(void *p);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_02207eb4(void *p, int a, int b);
-extern void func_ov002_0220a99c(void *p);
+extern int func_ov002_0220a99c(void *p);
 extern void func_ov002_0220a6b8(void *p);
 
 void func_ov106_0229dcb0(UnkStruct_0229dcb0 *self)
@@ -25,7 +25,7 @@ void func_ov106_0229dcb0(UnkStruct_0229dcb0 *self)
     temp &= func_ov002_02207f3c(self, -1);
     self->unk_A0 = func_ov002_02207f60(self);
     if (temp != 0) {
-        func_ov002_02208098(self, 0x1b);
+        func_ov002_02208098((void *) (self), 0x1b);
         func_ov002_02207eb4(self, 0, 0);
         func_ov002_0220a99c(&self->unk_3FB4);
         func_ov002_0220a6b8(&self->unk_3FB4);

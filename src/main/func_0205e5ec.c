@@ -7,7 +7,7 @@ extern void *data_021c9ae4;
 extern int func_0205e6f8(void);
 extern int func_0205e6f4(void);
 extern int func_0205e6f0(void);
-extern void func_02055c80(void *dst, int a, int b, int c);
+extern int func_02055c80(void *dst, int a, int b, int c);
 extern int func_0205e700(void);
 extern int func_020e9968(void *a, int b, int c);
 

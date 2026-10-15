@@ -5,8 +5,8 @@
 #include "types.h"
 
 extern const u8 data_020cbaf0[];
-extern void func_020e895c(void *dst, u32 a, u32 b);
-extern void func_020044c0(void *p, int a, int b, int c);
+extern int func_020e895c(void *dst, u32 a, u32 b);
+extern int func_020044c0(void *p, int a, int b, int c);
 extern void func_02059674(void *self, int a);
 
 struct UnkStruct_020586b0 {

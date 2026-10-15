@@ -81,7 +81,7 @@ extern int func_02019df8(void *p);
 extern int func_020984e8(void);
 extern int func_020644cc(int n);
 extern void func_ov068_0226ad44(SomeState *self, Object *obj, void *data, int a, int b, int c);
-extern void func_02019c90(void *p, int a, int b, int c);
+extern int func_02019c90(void *p, int a, int b, int c);
 
 extern u8 data_ov068_02276740[];
 extern u8 data_ov068_0227679c[];

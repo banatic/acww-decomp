@@ -8,7 +8,7 @@ typedef struct {
     char pad_48[8];
 } Elem;
 extern Elem *data_021c8184;
-extern void func_0209d238(void *, void *);
+extern void *func_0209d238(void *, void *);
 extern void func_0209d0a4(void *);
 extern void func_0200451c(void *);
 

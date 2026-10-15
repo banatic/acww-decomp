@@ -7,7 +7,7 @@ extern int func_0207cf14(void *self, void *item);
 extern int func_0207cf74(int idx);
 extern int func_02003704(void *p);
 extern int func_020644cc(int v);
-extern void *MI_CpuFill8(void *, int, unsigned int);
+extern void MI_CpuFill8(void *, int, unsigned int);
 
 void *func_0207cc94(void *self, void **list, int n)
 {

@@ -15,7 +15,7 @@ struct UnkStruct_0202f288 {
 extern int func_0202f660(struct UnkStruct_0202f288 *a, int b);
 extern void func_0202f8fc(Vec2 *v, int a, int b);
 extern int func_0202f520(struct UnkStruct_0202f288 *a, Vec2 *v, int b, int c);
-extern void func_0202f874(Vec2 *v, int a);
+extern int *func_0202f874(Vec2 *v, int a);
 extern void func_0202f8b4(int b, Vec2 *v);
 
 int func_0202f288(struct UnkStruct_0202f288 *a, int b, int c, int d)

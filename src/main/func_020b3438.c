@@ -7,10 +7,10 @@ struct _S {
     unsigned char count;
 };
 
-extern int func_020b3428(int a);
+extern int func_020b3428(void);
 extern int func_020b365c(int a, int b, int c);
 extern int func_020b34e0(void *a, int b);
-extern int NNSi_G3dModifyMatFlag(struct _S *a, int b, int c);
+extern void NNSi_G3dModifyMatFlag(struct _S *a, int b, int c);
 extern void NNS_G3dMdlSetMdlEmi(struct _S *a, int b, int c);
 
 void func_020b3438(void *arg0, struct _S *arg1, int arg2)
@@ -24,7 +24,7 @@ void func_020b3438(void *arg0, struct _S *arg1, int arg2)
     int value;
 
     if (arg2 != 0) {
-        v6 = func_020b3428(NNSi_G3dModifyMatFlag(arg1, 1, 0x400));
+        v6 = (NNSi_G3dModifyMatFlag(arg1, 1, 0x400), func_020b3428());
 
         v7 = func_020b365c(arg2, ((v6 >> 10) & 0x1f) << 12, 0x1f000);
         v8 = func_020b365c(arg2, (v6 & 0x1f) << 12, 0x1f000);

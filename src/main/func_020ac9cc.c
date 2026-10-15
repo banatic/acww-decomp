@@ -6,7 +6,7 @@ typedef struct {
     unsigned int unk_00;
 } UnkStruct_020ac9cc;
 
-extern void func_0208e7f0(UnkStruct_020ac9cc *p);
+extern void *func_0208e7f0(UnkStruct_020ac9cc *p);
 extern void func_020edb3c(UnkStruct_020ac9cc *p);
 extern unsigned int data_020e4030;
 

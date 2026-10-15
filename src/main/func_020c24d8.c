@@ -21,11 +21,11 @@ typedef struct {
 
 extern int func_02016884(void *, int, void *);
 extern int func_02019de8(void *);
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern void func_0201b38c(void *, int);
 extern void func_0201b388(void *, int);
 extern u32 func_020912d4(int, void *, void *, int);
-extern u32 func_02091278(u32, void *, void *, int);
+extern void func_02091278(u32, void *, void *, int);
 extern u16 data_020c80f8;
 
 int func_020c24d8(SELF *self)

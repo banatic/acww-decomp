@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_02208098(void *p, int a, int b);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
-void func_ov096_0229f860(void *p)
+unsigned char *func_ov096_0229f860(void *p)
 {
     ((char *) p)[0xc1] = 0xe;
-    func_ov002_02208098(p, 0x32, 0xe);
+    return func_ov002_02208098((void *) (p), 0x32);
 }

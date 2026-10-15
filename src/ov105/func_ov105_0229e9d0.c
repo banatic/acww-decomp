@@ -6,9 +6,9 @@ extern void *data_021fbe94;
 extern char data_ov105_0229fb30;
 extern char data_ov105_0229fb50;
 extern char data_ov105_0229fb74;
-extern void func_02002d14(void *, void *, int, int, int, int);
-extern void func_02002ca4(void *, void *, int);
-extern void func_02002c6c(void *, void *, int, int, int, int);
+extern int func_02002d14(void *, void *, int, int, int, int);
+extern int func_02002ca4(void *, void *, int);
+extern int func_02002c6c(void *, void *, int, int, int, int);
 
 void func_ov105_0229e9d0(void)
 {

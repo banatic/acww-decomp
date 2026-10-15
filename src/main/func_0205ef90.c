@@ -3,7 +3,7 @@
  */
 
 extern void func_020606bc(void *ptr);
-extern void func_0205eff4(void *ptr);
+extern void *func_0205eff4(void *ptr);
 
 struct UnkStruct_0205ef90 {
     char pad_00[8];

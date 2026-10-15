@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02072a48(void *a, void *b);
+extern unsigned int func_02072a48(unsigned int a, unsigned int b);
 
 extern unsigned char data_021ed278[];
 
-void func_020716b4(void *arg0)
+int func_020716b4(int selector)
 {
-    func_02072a48((void *) data_021ed278, arg0);
+    return (int) func_02072a48((unsigned int) data_021ed278, (unsigned int) selector);
 }

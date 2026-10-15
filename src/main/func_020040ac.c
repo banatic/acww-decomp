@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f9f74(void);
+extern void func_020f9f74(void *, int);
 
-void func_020040ac(void)
+void func_020040ac(void *argument0, int argument1)
 {
-    func_020f9f74();
+    func_020f9f74((void *) argument0, (int) argument1);
 }

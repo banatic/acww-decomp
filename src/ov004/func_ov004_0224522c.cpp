@@ -10,11 +10,12 @@ extern unsigned short data_ov004_0225f538, data_ov004_0225f534;
 extern unsigned short *func_0204f5e0(void *, unsigned int, unsigned int, int, int, unsigned char);
 extern int func_02071298(void *, unsigned short *);
 extern void func_020051b0(void *);
-extern void __register_global_object(void *, void (*)(void *), void *);
+extern void __register_global_object(void *, void *destructor, void *);
 extern int func_02053bc0(unsigned short *);
 extern int func_0204f564(void *, unsigned short *, unsigned int, unsigned int, int, int, unsigned char);
 }
 // This scan is restricted to acre (0,0); x/y are its local tile coordinates.
+
 static inline unsigned short *lookup(void *g, int x, int y)
 {
     return func_0204f5e0(g, 0, 0, x, y, 0);
@@ -48,12 +49,12 @@ extern "C" int func_ov004_0224522c(void)
             if (p && is_range(p) && !in_dex(p)) {
                 if (!(data_ov004_0225f53c & 1)) {
                     data_ov004_0225f538 = 0x4a54;
-                    __register_global_object(&data_ov004_0225f538, func_020051b0, data_ov004_0225f754);
+                    __register_global_object(&data_ov004_0225f538, ((void *) &func_020051b0), data_ov004_0225f754);
                     data_ov004_0225f53c |= 1;
                 }
                 if (!(data_ov004_0225f540 & 1)) {
                     data_ov004_0225f534 = 0xfff1;
-                    __register_global_object(&data_ov004_0225f534, func_020051b0, data_ov004_0225f634);
+                    __register_global_object(&data_ov004_0225f534, ((void *) &func_020051b0), data_ov004_0225f634);
                     data_ov004_0225f540 |= 1;
                 }
                 int kind = func_02053bc0(p);

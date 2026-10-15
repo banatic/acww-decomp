@@ -9,7 +9,7 @@ extern unsigned int func_0200fbe0(void *self);
 extern int func_020438dc(int arg0, int *arg1, int arg2);
 extern int func_0200ffec(void *self);
 extern void func_0200e854(void *self);
-extern void func_0200f27c(void *self, int param);
+extern unsigned int *func_0200f27c(void *self, int param);
 
 typedef struct {
     unsigned char pad_00[0x5c];

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020fa3e4(int, void (*)(void));
-extern void func_020fab6c(void);
+extern int func_020fa3e4(int, int (*)(unsigned int, int));
+extern int func_020fab6c(int a, int b);
 
-void func_020fa3bc(int arg)
+int func_020fa3bc(int arg)
 {
-    func_020fa3e4(arg, func_020fab6c);
+    return func_020fa3e4(arg, (int (*)(unsigned int, int)) func_020fab6c);
 }

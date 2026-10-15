@@ -11,27 +11,29 @@ typedef struct {
     short unk_8E;
 } UnkStruct_022a2df4;
 
-extern int func_ov096_0229cbbc(Obj_ov096_022a23e8 *);
+extern int func_ov096_0229cbbc(void);
 extern int func_ov003_0222ea84(int);
 extern unsigned short func_ov096_0229f0dc(Obj_ov096_022a23e8 *, int);
 extern int func_020644cc(int);
 extern UnkStruct_022a2df4 *func_020961a8(int);
 extern void func_ov003_0222e898(unsigned char, int);
 extern void func_ov003_0222eabc(int, int);
-extern void func_ov003_02219b38(int);
+extern int func_ov003_02219b38(int);
 extern void func_ov098_022a2dac(Obj_ov096_022a23e8 *, unsigned char, int);
-extern void func_ov096_0229f860(Obj_ov096_022a23e8 *);
+extern unsigned char *func_ov096_0229f860(Obj_ov096_022a23e8 *);
 
-void func_ov098_022a2df4(Obj_ov096_022a23e8 *o)
+int func_ov098_022a2df4(Obj_ov096_022a23e8 *o)
 {
     volatile unsigned short v;
     unsigned int ok;
     unsigned short t1, t2;
     int h, y, r, d;
+    int status;
 
-    h = func_ov096_0229cbbc(o);
-    if (func_ov003_0222ea84(h) != 0) {
-        return;
+    h = func_ov096_0229cbbc();
+    status = func_ov003_0222ea84(h);
+    if (status != 0) {
+        return status;
     }
     v = func_ov096_0229f0dc(o, o->unk_B6);
     ok = 0;
@@ -52,5 +54,5 @@ void func_ov098_022a2df4(Obj_ov096_022a23e8 *o)
     func_ov003_0222eabc(h, y);
     func_ov003_02219b38(0);
     func_ov098_022a2dac(o, (unsigned char) d, r);
-    func_ov096_0229f860(o);
+    return (int) func_ov096_0229f860(o);
 }

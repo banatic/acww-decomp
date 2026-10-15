@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020b9c68(void *, int, int, int);
+extern "C" void func_020b9c68(void *);
 extern "C" void func_020ba0c0(void *, int, int, int, int);
 extern "C" unsigned char func_020ba0a4(void *);
 extern "C" int func_020b98c4(void *);
@@ -21,7 +21,7 @@ class UnkStruct_020b9bbc {
 
 extern "C" int func_020b9bbc(UnkStruct_020b9bbc *self, int a, int b, int c, int d)
 {
-    func_020b9c68(self, a, b, c);
+    func_020b9c68(self);
     self->unk_0E = 5;
     func_020ba0c0((void *) ((char *) self + 0x10), a, b, c, d);
     self->unk_0F = func_020ba0a4((void *) ((char *) self + 0x10));

@@ -3,7 +3,7 @@
  */
 
 extern int func_02056f94(void *p);
-extern void func_ov003_022186cc(void *a, int b, int c, int d, int e, int f, int g);
+extern int func_ov003_022186cc(void *a, int b, int c, int d, int e, int f, int g);
 
 struct Sub_02218754 {
     int unk_00;

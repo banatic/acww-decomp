@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a12e8(void *, void *);
+extern int func_020a12e8(void);
 extern int func_0202ea80(int, int);
 extern int func_02073d90(void *);
 extern void *func_0209d358(int, int);
@@ -28,7 +28,7 @@ void func_ov046_02261158(struct Param0 *p, struct UnkStruct_02261158 *out)
 {
     int state;
 
-    if (func_020a12e8(p, out) != 0) {
+    if (func_020a12e8() != 0) {
         out->ptr = (void *) data_ov046_0226242c;
         out->byte = 0x14;
         return;

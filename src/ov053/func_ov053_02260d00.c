@@ -7,12 +7,12 @@ extern void func_ov053_02260bb0(void *ptr, int val);
 extern void func_ov053_02261524(void *ptr, int val);
 extern unsigned char func_ov053_02261514(void *ptr);
 extern unsigned char func_ov053_0226151c(void *ptr);
-extern void func_ov004_0222bf20(void *ptr1, void *ptr2);
-extern void func_ov004_0222c8c8(void);
-extern void func_0200442c(void *ptr, int a, int b, int c);
+extern int func_ov004_0222bf20(void *ptr1, void *ptr2);
+extern int func_ov004_0222c8c8(void);
+extern int func_0200442c(void *ptr, int a, int b, int c);
 extern int func_02016884(void *ptr, int a, void *ptr2);
 extern int func_02019de8(void *ptr);
-extern void func_02019d0c(void *ptr, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(void *ptr, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern unsigned short data_020c80f8;
 int func_ov053_02260d00(void *self)
 {
@@ -24,7 +24,8 @@ int func_ov053_02260d00(void *self)
         unsigned char pair[2];
         pair[1] = func_ov053_02261514(((char *) self) + 0x658);
         pair[0] = func_ov053_0226151c(((char *) self) + 0x658);
-        func_ov004_0222bf20(&pair[0], &pair[1]);
+
+        (void) ((void *) func_ov004_0222bf20(&pair[0], &pair[1]));
         func_ov004_0222c8c8();
         func_0200442c(((char *) self) + 0x514, 0x41, 0x7f, 0);
     }

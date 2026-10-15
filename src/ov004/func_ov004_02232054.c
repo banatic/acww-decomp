@@ -4,7 +4,7 @@
 
 extern char *data_ov004_022589fc;
 extern char data_ov004_022589ec[];
-extern void *func_ov004_022329c0(void *p);
+extern unsigned short *func_ov004_022329c0(void *record);
 
 void *func_ov004_02232054(void)
 {

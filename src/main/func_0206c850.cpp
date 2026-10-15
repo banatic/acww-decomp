@@ -15,7 +15,7 @@ class UnkStruct_0206c850_2 {
     virtual int vf3(); // vtable offset 0xc
 };
 
-extern "C" void func_020678f8(char *);
+extern "C" int func_020678f8(char *);
 extern "C" void func_020a9334(struct UnkStruct_0206c850 *, int);
 extern "C" void func_020a7994(char *, int);
 

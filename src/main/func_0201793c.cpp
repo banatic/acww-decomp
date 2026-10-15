@@ -7,7 +7,7 @@
 
 void Obj_020d8bd4::func_0201793c(int p2)
 {
-    static int (Obj_020d8bd4::*table[20])(int) = {
+    static void (Obj_020d8bd4::*table[20])(int) = {
         &Obj_020d8bd4::func_020183cc, &Obj_020d8bd4::func_02018340, &Obj_020d8bd4::func_02018304,
         &Obj_020d8bd4::func_02018298, &Obj_020d8bd4::func_02018090, &Obj_020d8bd4::func_02017ff4,
         &Obj_020d8bd4::func_02017ee4, &Obj_020d8bd4::func_02017e7c, &Obj_020d8bd4::func_02017e20,

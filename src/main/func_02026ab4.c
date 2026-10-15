@@ -30,7 +30,7 @@ extern void func_02015f38(struct UnkStruct_02026ab4 *self, int word, int a2, int
 extern void func_02015de4(struct UnkStruct_02026ab4 *self, void *ptr, int a2, int a3);
 extern int func_0208150c(int arg);
 extern int func_020036e8(int arg);
-extern void func_0202da38(void *self, void *p1, void *p2, int len, int a5, int a6, int a7, int a8, int a9);
+extern int func_0202da38(void *self, void *p1, void *p2, int len, int a5, int a6, int a7, int a8, int a9);
 
 void func_02026ab4(struct UnkStruct_02026ab4 *self, struct UnkStruct_02026ab4_2 *out)
 {

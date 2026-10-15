@@ -13,13 +13,13 @@ struct Entry {
 };
 
 extern struct Entry *data_020dd31c[];
-extern int func_02059d28(struct Params *a, unsigned short field);
+extern int func_02059d28(struct Params *a);
 
 void *func_02059cc4(struct Params *a, int index)
 {
     if (a->unk_0C == 9) {
         return data_020dd31c[3][index].data;
     } else {
-        return data_020dd31c[func_02059d28(a, a->unk_0C)][index].data;
+        return data_020dd31c[func_02059d28(a)][index].data;
     }
 }

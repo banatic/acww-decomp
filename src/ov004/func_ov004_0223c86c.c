@@ -3,9 +3,9 @@
  */
 
 extern int func_ov004_0220cefc();
-extern int func_ov004_0223ca6c();
-extern int func_ov004_0223cadc();
-extern int func_ov004_0223cb18();
+extern int func_ov004_0223ca6c(char *argument0, int argument1);
+extern int func_ov004_0223cadc(char *argument0, int argument1);
+extern int func_ov004_0223cb18(void *argument0);
 
 int func_ov004_0223c86c(char *self)
 {
@@ -14,9 +14,9 @@ int func_ov004_0223c86c(char *self)
     int v2;
     // ENDDECLS
     v1 = func_ov004_0223cadc(self, 0x0);
-    v2 = func_ov004_0223ca6c(self, 0x0);
+    v2 = func_ov004_0223ca6c((char *) ((char *) (self)), (int) ((int) (0x0)));
     if (v1 != 0x0 && v2 != 0x0) {
-        return func_ov004_0220cefc(v2, func_ov004_0223cb18(v1));
+        return func_ov004_0220cefc(v2, func_ov004_0223cb18((void *) (v1)));
     }
     return 0x0;
 }

@@ -3,11 +3,11 @@
  */
 
 extern char data_0213ef4c;
-extern void func_020f4514(void *a, void *b);
+extern void *func_020f4514(void *a);
 
 void *func_020f256c(void *p)
 {
     *(void **) p = &data_0213ef4c;
-    func_020f4514(p, &data_0213ef4c);
+    func_020f4514(p);
     return p;
 }

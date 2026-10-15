@@ -19,15 +19,15 @@ extern int func_02015330(void *, u16 *, unsigned int, u8, unsigned int);
 extern int func_0209a1e8(void);
 extern void *func_0209a1d0(void);
 extern void *func_020a8228(void *);
-extern void func_020a8210(void *);
+extern void *func_020a8210(void *);
 extern int func_020b4a20(void *, u8 *, int);
 extern int func_0203d7c4(int, void *);
 extern void *func_02099870(void *);
 extern void func_02066024(void *, u8 *, void *, void *, void *, void *);
 extern unsigned int func_0204bd20(unsigned int, unsigned int);
 extern void *func_020996ac(void *);
-extern void OS_UnlockByWord_IrqAndFiq(void *, u16 *, int);
-extern void func_0202ea80(int, int);
+extern int OS_UnlockByWord_IrqAndFiq(void *, u16 *, int);
+extern int func_0202ea80(int, int);
 extern void func_0206844c(void *, u8 *, void *);
 typedef struct {
     int a;

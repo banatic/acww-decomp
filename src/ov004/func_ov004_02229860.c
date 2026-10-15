@@ -9,7 +9,7 @@ struct VV {
     volatile int x, y, z;
 };
 
-extern void func_0201100c(void *self);
+extern int func_0201100c(void *self);
 
 void func_ov004_02229860(char *self)
 {

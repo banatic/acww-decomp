@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short *func_020996f8(void);
-extern int func_0204bcdc(void);
+extern unsigned short *func_020996f8(int);
+extern int func_0204bcdc(void *);
 extern int func_0204bc64(const unsigned short *);
 
-int func_0207e9c4(void)
+int func_0207e9c4(int argument0)
 {
     unsigned short local;
-    unsigned short *p = func_020996f8();
+    unsigned short *p = func_020996f8((int) argument0);
 
-    if (func_0204bcdc() != 0) {
+    if (func_0204bcdc(p) != 0) {
         local = 0x1405;
         if (func_0204bc64(p) == func_0204bc64(&local)) {
             return 1;

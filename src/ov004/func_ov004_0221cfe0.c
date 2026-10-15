@@ -2,12 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_0221d08c(void);
-extern void func_020819ac(void);
+extern int func_ov004_0221d08c(void *parameter0);
+extern void func_020819ac(void *argument0);
 
-void func_ov004_0221cfe0(void)
+void func_ov004_0221cfe0(void *arg0)
 {
-    if (func_ov004_0221d08c() != 0) {
-        func_020819ac();
+    void *conditionInput0;
+
+    if ((conditionInput0 = (void *) (func_ov004_0221d08c((void *) arg0))) != 0) {
+        func_020819ac((void *) conditionInput0);
     }
 }

@@ -10,11 +10,11 @@ typedef struct UnkStruct_020f78e8 {
     signed char d;
 } UnkStruct_020f78e8;
 
-extern void func_020f7bc4(UnkStruct_020f78e8 *obj, int id, int *slot);
+extern int func_020f7bc4(UnkStruct_020f78e8 *obj, int id, int *slot);
 extern void ciAddUNQUIETFilter(UnkStruct_020f78e8 *obj, int arg);
-extern void NNS_SndArcPlayerStartSeq(int *slot, int a);
+extern int NNS_SndArcPlayerStartSeq(int *slot, int a);
 extern void NNS_SndPlayerMoveVolume(int *slot, int a, int b);
-extern void NNS_SndPlayerWriteVariable(int *slot, int a, int b);
+extern int NNS_SndPlayerWriteVariable(int *slot, int a, int b);
 extern void NNS_SndPlayerStopSeq(int *slot, int a);
 extern void NNS_SndPlayerSetTrackVolume(int *slot, int a, int b);
 

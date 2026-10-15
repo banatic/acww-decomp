@@ -3,7 +3,7 @@
  */
 
 extern int func_0200f290(void *self, int a);
-extern void func_020044b0(void *dest, void *src, int len, int flag);
+extern int func_020044b0(void *dest, void *src, int len, int flag);
 
 void func_0200f2a0(void *self, void *param2, void *param3)
 {

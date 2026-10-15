@@ -10,7 +10,7 @@ struct UnkStruct_02234be0 {
 };
 
 extern int _s32_div_f(int n, int k);
-extern void func_02064328(char *buf, const char *fmt, int a, int b, int c);
+extern int func_02064328(char *buf, const char *fmt, int a, int b, int c);
 extern int func_02064b2c(char *buf, int h, int k, int m);
 extern const char data_ov004_02255f38[];
 extern const char data_ov004_02255f54[];

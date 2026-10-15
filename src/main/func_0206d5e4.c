@@ -3,7 +3,7 @@
  */
 
 extern int data_020def7c;
-void func_020a92b0(void *self, int flag);
+void *func_020a92b0(void *self, int flag);
 void func_020a8754(void *sub);
 void *func_020a9034(int a, int b, int c);
 void func_020a8eec(void *ptr, void *self);

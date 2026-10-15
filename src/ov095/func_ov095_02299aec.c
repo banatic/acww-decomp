@@ -9,9 +9,9 @@ struct UnkStruct_02299aec {
     int unk_28;
 };
 
-extern void func_ov095_0229ab68(void);
-extern void func_ov095_0229aae0(void);
-extern void func_ov095_0229aaac(void);
+extern void func_ov095_0229ab68(void *unused0);
+extern void func_ov095_0229aae0(void *unused0);
+extern void func_ov095_0229aaac(void *unused0);
 
 void func_ov095_02299aec(struct UnkStruct_02299aec *self)
 {
@@ -20,17 +20,17 @@ void func_ov095_02299aec(struct UnkStruct_02299aec *self)
             break;
         case 1:
             self->unk_28 = 0x3b;
-            func_ov095_0229ab68();
+            func_ov095_0229ab68(self);
             break;
         case 2:
             self->unk_28 = 0x70;
-            func_ov095_0229aae0();
+            func_ov095_0229aae0(self);
             break;
         case 3:
             break;
         case 4:
             self->unk_28 = 0xc9;
-            func_ov095_0229aaac();
+            func_ov095_0229aaac(self);
             break;
     }
 }

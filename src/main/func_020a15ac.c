@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984d4(int, int, int, int);
+extern int func_020984d4(void);
 extern int func_02098844(char *, int);
 extern void *func_02099664(int);
 extern int func_02077bb8(void *);
@@ -15,9 +15,9 @@ extern char data_021dc7a8[];
 extern char data_021c8188[];
 extern char *data_020d1c20[2];
 
-int func_020a15ac(int a, int b, int c, int d)
+int func_020a15ac(void)
 {
-    int t1 = func_020984d4(a, b, c, d);
+    int t1 = func_020984d4();
     int t2 = func_02098844(data_021dc7bc, t1);
     void *ptr = func_02099664(t2);
     int x = func_02077bb8(ptr);

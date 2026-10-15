@@ -7,11 +7,11 @@ typedef struct {
     int data[4];
 } UnkStruct_0222b4e0;
 
-extern void func_0200e92c(UnkStruct_0222b4e0 *lp);
+extern unsigned int func_0200e92c(UnkStruct_0222b4e0 *lp);
 extern void func_0200e90c(UnkStruct_0222b4e0 *lp, int a, int b, int c);
 extern void func_ov004_0222b520(int *data, int p2);
 extern int func_0200e894(int p1, UnkStruct_0222b4e0 *lp);
-extern void func_0200e91c(UnkStruct_0222b4e0 *lp);
+extern int func_0200e91c(UnkStruct_0222b4e0 *lp);
 
 int func_ov004_0222b4e0(int p1, int p2, int p3, int p4)
 {

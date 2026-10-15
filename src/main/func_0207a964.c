@@ -9,7 +9,7 @@ extern void func_02079204(char c);
 extern void func_020791d4(char c);
 extern int func_020791bc(void);
 extern int func_0207cec0(void *obj, int a);
-extern int func_02080928(void);
+extern int func_02080928(void *object);
 extern int func_0207aa8c(void *obj, int a);
 extern int func_0207b3dc(void *obj);
 extern void func_0209a77c(void *p);
@@ -21,6 +21,8 @@ typedef struct {
 
 void func_0207a964(void *obj)
 {
+    int forwarded_value;
+
     Pair p;
     int a;
     int b;
@@ -34,8 +36,8 @@ void func_0207a964(void *obj)
         func_02079204(-1);
         func_020791d4(-1);
     } else if (a == b) {
-        if (func_0207cec0(obj, func_020791bc()) != 0) {
-            if (func_02080928() != 0) {
+        if ((forwarded_value = (int) func_0207cec0(obj, func_020791bc())) != 0) {
+            if (func_02080928((void *) forwarded_value) != 0) {
                 return;
             }
         }

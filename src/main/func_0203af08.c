@@ -13,7 +13,7 @@ extern UnkStruct_0203af08 *data_021c67a4;
 extern int *func_02095794(int a);
 extern int func_0203affc(int *a, int *b, int *c, int *out, int *extra);
 extern int func_0203b144(void);
-extern void func_0203c0ac(UnkStruct_0203af08 *p, int mode);
+extern int func_0203c0ac(UnkStruct_0203af08 *p, int mode);
 
 void func_0203af08(int *a, int *b)
 {

@@ -12,10 +12,10 @@ extern u8 data_021f6c54;
 extern int func_ov002_02208054(void *self, int a);
 extern void func_ov142_0229b23c(void *self);
 extern int func_ov142_0229a1fc(void *self, int a, int b);
-extern void func_ov142_0229a298(void *self, int a);
+extern int func_ov142_0229a298(void *self, int a);
 extern int func_ov142_02299668(void *self, int a);
 extern int func_ov142_02299c1c(void *self, int a, int b);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov142_02299928(void *self);
 extern void func_ov142_02299918(void *self);
 extern void func_ov002_0220a574(void *p);
@@ -51,7 +51,7 @@ void func_ov142_0229b700(void *self)
     }
 
     if (func_ov142_02299c1c(self, r6, r4) != 0) {
-        func_ov002_02208098(self, 1);
+        func_ov002_02208098((void *) (self), 1);
         return;
     }
 
@@ -62,7 +62,7 @@ void func_ov142_0229b700(void *self)
     if (func_ov142_02299668(self, 0x400) == 0) {
         if (r4 >= 0x19 && r4 < 0x29) {
             func_ov142_02299928(self);
-            func_ov002_02208098(self, 3);
+            func_ov002_02208098((void *) (self), 3);
             return;
         }
     }
@@ -70,13 +70,13 @@ void func_ov142_0229b700(void *self)
     if (func_ov142_02299668(self, 0x800) == 0) {
         if (r4 >= 0x95 && r4 < 0xa5) {
             func_ov142_02299918(self);
-            func_ov002_02208098(self, 3);
+            func_ov002_02208098((void *) (self), 3);
             return;
         }
     }
 
     if (r4 >= 0x2c && r4 <= 0x86) {
         func_ov002_0220a574((char *) self + 0x14c);
-        func_ov002_02208098(self, 2);
+        func_ov002_02208098((void *) (self), 2);
     }
 }

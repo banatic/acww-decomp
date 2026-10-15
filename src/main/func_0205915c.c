@@ -27,8 +27,8 @@ extern struct Vec data_021c939c;
 
 extern void func_0205967c(struct This *, struct Vec *);
 extern int func_0204fd3c(int);
-extern int func_02059cc4(void *, int);
-extern void VEC_Add();
+extern void *func_02059cc4(void *, int);
+extern void VEC_Add(const struct Vec *, const struct Vec *, struct Vec *);
 extern void func_02059598(struct Vec *, struct This *, int);
 extern void func_020595fc(struct This *, int *, struct Vec *, int);
 extern int _s32_div_f(int, int);

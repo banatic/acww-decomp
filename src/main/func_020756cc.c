@@ -2,20 +2,21 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b65c4(const unsigned char *p);
-extern int func_020a132c(int x);
-extern int func_020a1284(int x, unsigned short y);
+extern int func_020b65c4(void);
+extern int func_020a132c(void);
+extern void func_020a1284(int x, unsigned short y);
 extern void func_020a127c(int x, unsigned char y);
 
-void func_020756cc(const unsigned char *p)
+void func_020756cc(unsigned char *payload, unsigned int length, int player)
 {
-    int a = func_020b65c4(p);
+    int a = func_020b65c4();
     if (a == 12) {
-        int b = func_020a132c(a);
+        int b = (a, func_020a132c());
         if (b != 0) {
-            unsigned char c = *p;
-            int d = func_020a132c(b);
-            func_020a127c(func_020a132c(func_020a1284(d, (unsigned short) (c & 0xf))), (unsigned char) ((c >> 6) & 3));
+            unsigned char c = *payload;
+            int d = (b, func_020a132c());
+            func_020a127c((((int) (func_020a1284(d, (unsigned short) (c & 0xf)), d)), func_020a132c()),
+                          (unsigned char) ((c >> 6) & 3));
         }
     }
 }

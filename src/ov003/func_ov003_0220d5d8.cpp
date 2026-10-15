@@ -49,9 +49,9 @@ class UnkStruct_0220d5d8 {
 };
 
 extern "C" void func_02010f5c(UnkStruct_0220d5d8 *self);
-extern "C" void func_0200f27c(UnkStruct_0220d5d8 *self, int param);
+extern "C" unsigned int *func_0200f27c(UnkStruct_0220d5d8 *self, int param);
 extern "C" void func_0200f268(UnkStruct_0220d5d8 *self, int param);
-extern "C" void func_ov003_0222c214(u32 value);
+extern "C" int func_ov003_0222c214(u32 value);
 
 extern "C" void func_ov003_0220d5d8(UnkStruct_0220d5d8 *self)
 {

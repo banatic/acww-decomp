@@ -21,7 +21,7 @@ struct UnkStruct_02269dcc_2 {
     unsigned char unk_08;
 };
 extern struct UnkStruct_02269dcc_2 *data_ov066_0226bdec;
-extern int MI_CpuFill8(void *buf, int mode, int len);
+extern void MI_CpuFill8(void *buf, int mode, int len);
 void func_ov066_02269dcc(void)
 {
     unsigned char buf[6];

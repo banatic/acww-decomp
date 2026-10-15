@@ -24,7 +24,9 @@ extern UnkStruct_022799d8_3 data_ov074_02279d84[2];
 extern void func_020012dc(void *);
 extern int data_ov074_02279d5c;
 extern int data_ov074_02279d68;
-extern void __register_global_object(void *o, void (*d)(void *), void *n);
+extern void __register_global_object(void *object, void *destructor, void *node);
+
+#define DestroyGlobal_020012dc ((void *) &func_020012dc)
 
 void __sinit_ov074_022799d8(void)
 {
@@ -67,10 +69,12 @@ void __sinit_ov074_022799d8(void)
     data_ov074_02279d84[0].x = 0x800;
     data_ov074_02279d84[0].y = 0;
     data_ov074_02279d84[0].z = 0x1000;
-    __register_global_object(&data_ov074_02279d84[0], func_020012dc, &data_ov074_02279d5c);
+    __register_global_object(&data_ov074_02279d84[0], DestroyGlobal_020012dc, &data_ov074_02279d5c);
     p = &data_ov074_02279d84[1];
     p->x = -0x800;
     p->y = 0;
     p->z = 0x1000;
-    __register_global_object(p, func_020012dc, &data_ov074_02279d68);
+    __register_global_object(p, DestroyGlobal_020012dc, &data_ov074_02279d68);
 }
+
+#undef DestroyGlobal_020012dc

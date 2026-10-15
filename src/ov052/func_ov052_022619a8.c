@@ -9,8 +9,8 @@ typedef struct {
 } UnkStruct_022619a8;
 
 extern int func_0202ec58(UnkStruct_022619a8 *s);
-extern int func_020b65b8(int r);
-extern void func_02030864(int x);
+extern int func_020b65b8(void);
+extern int func_02030864(int x);
 extern void func_ov052_02261908(UnkStruct_022619a8 *s, int flag);
 
 int func_ov052_022619a8(UnkStruct_022619a8 *s)
@@ -22,7 +22,7 @@ int func_ov052_022619a8(UnkStruct_022619a8 *s)
     if (r == 0) {
         return 0;
     }
-    if (func_020b65b8(r) != 0) {
+    if (func_020b65b8() != 0) {
         func_ov052_02261908(s, 1);
     } else {
         func_ov052_02261908(s, 0);

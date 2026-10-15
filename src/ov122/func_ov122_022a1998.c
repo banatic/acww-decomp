@@ -4,7 +4,7 @@
 
 extern int func_ov002_02207f3c(void *, int);
 extern void func_020027f0(int);
-extern void func_ov002_022080a0(void *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov002_02207e80(void *, int, int, int);
 extern int func_ov002_02207f60(void *);
 
@@ -20,7 +20,7 @@ void func_ov122_022a1998(struct UnkStruct_022a1998 *param)
         func_020027f0(6);
         func_020027f0(4);
         func_020027f0(3);
-        func_ov002_022080a0(param, 5);
+        func_ov002_022080a0((void *) (param), 5);
     } else {
         func_ov002_02207e80(param, 6, 0, 0);
         func_ov002_02207e80(param, 4, 0, 0);

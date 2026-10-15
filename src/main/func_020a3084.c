@@ -29,9 +29,9 @@ extern void *func_02090040(int a);
 extern void MI_CpuCopy8(void *d, void *s, int n);
 extern void func_02090174(void *d);
 extern void func_020a2480(struct UnkStruct_020a3084 *o);
-extern void func_020a05e8(struct UnkStruct_020a3084 *o, unsigned char *p, int a, int b, int c, int d, int e, int f, int g);
+extern int func_020a05e8(struct UnkStruct_020a3084 *o, unsigned char *p, int a, int b, int c, int d, int e, int f, int g);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern void func_02073d74(void *g, int a);
 extern void func_02073820(void *g);
 extern void func_02073770(void *g, int a, int b);
@@ -43,7 +43,7 @@ extern void func_020750fc(void);
 extern void func_020750f4(void);
 extern void func_020a1038(struct UnkStruct_020a3084 *o, int a, int b);
 extern void func_020a0174(void);
-extern void func_020a0848(struct UnkStruct_020a3084 *o, unsigned char *p, int a, int b, int c, int d);
+extern int func_020a0848(struct UnkStruct_020a3084 *o, unsigned char *p, int a, int b, int c, int d);
 extern void func_020a25cc(struct UnkStruct_020a3084 *o);
 extern int func_020682e0(int a);
 extern void func_0206844c(int a, unsigned char *p, char *q);
@@ -135,7 +135,7 @@ void func_020a3084(struct UnkStruct_020a3084 *self)
                 func_02074078();
                 return;
             }
-            if (!func_020ebf70(func_02073044())) {
+            if (!(func_02073044(), func_020ebf70())) {
                 return;
             }
             if (!func_020a01ec()) {

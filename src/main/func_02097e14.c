@@ -2,4 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02097e14(void) {}
+typedef struct MailRecord_02097e14 {
+    unsigned char data[0x100];
+} MailRecord_02097e14;
+
+unsigned char *func_02097e14(MailRecord_02097e14 *p)
+{
+    return p->data;
+}

@@ -3,7 +3,7 @@
  */
 
 extern int data_ov004_0224fe0c;
-extern void func_0203248c(void *);
+extern void *func_0203248c(void *);
 
 void *func_ov004_0220dff0(void *arg)
 {

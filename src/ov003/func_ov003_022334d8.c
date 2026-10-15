@@ -11,8 +11,8 @@ extern void func_ov003_02232f78(void *self, short *p);
 extern int func_ov003_02232598(void *self, int a);
 extern void *func_0209d088(void *p);
 extern void NNS_G3dMdlSetMdlAlpha(void *m, int a, int b);
-extern void func_02042200(int a);
-extern void *func_0204e414(void *a);
+extern void func_02042200(void);
+extern void *func_0204e414(void);
 extern void func_0204f818(int *x, int *y, int *p);
 extern u16 *func_0204f5e0(void *hnd, int i, int j, int u, int v, int w);
 extern int func_ov003_0222d738(int *p);
@@ -42,11 +42,11 @@ void func_ov003_022334d8(char *self)
                 p[0] = 0;
                 p[1] = 0;
                 p[2] = 0;
-                func_02042200(0);
+                func_02042200();
             }
             break;
         case 0x12:
-            hnd = func_0204e414(self);
+            hnd = func_0204e414();
             p = (int *) (self + 0x204);
             func_0204f818(&x, &y, p);
             px = x;

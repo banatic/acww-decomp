@@ -13,9 +13,9 @@ typedef struct UnkStruct_02260930 {
     char *unk_B0;
 } UnkStruct_02260930;
 
-extern int func_02073090(void);
-extern int func_020ead58(int a);
-extern void func_020ead88(int a);
+extern void func_02073090(void);
+extern int func_020ead58(void);
+extern void func_020ead88(void);
 extern void func_020ead94(char *a, char *b, int n);
 extern void func_02074af8(void);
 extern void MI_CpuFill8(char *p, int v, int n);
@@ -35,7 +35,7 @@ void func_ov055_02260930(UnkStruct_02260930 *self)
     h = self->unk_40;
     switch (self->unk_1E) {
         case 0x39:
-            if (func_020ead58(func_02073090()) == 0) {
+            if (((void) (func_02073090()), func_020ead58()) == 0) {
                 if (*(u8 *) (self->unk_B0 + 0x710) != 0) {
                     code = 0x36;
                     func_0206844c(h, &code, data_ov055_02260e60);
@@ -46,9 +46,9 @@ void func_ov055_02260930(UnkStruct_02260930 *self)
                 p = self->unk_B0;
                 func_02073090();
                 func_020ead94(p + 0x714, p + 0x116c, 0xa58);
-                func_020ead88(func_02073090());
+                ((void) (func_02073090()), func_020ead88());
             }
-            func_020ead88(func_02073090());
+            ((void) (func_02073090()), func_020ead88());
             func_02068440(h);
             func_ov055_02260870(self, 1);
             break;

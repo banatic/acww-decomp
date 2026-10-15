@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020e9fc8(int);
+extern void func_020e9fc8(void *parameter0);
 
 void func_ov004_0223ac14(char *self)
 {
     // DECLS
     // ENDDECLS
     if (*(int *) (self) != 0x0) {
-        func_020e9fc8(*(int *) (self));
+        func_020e9fc8((void *) (*(int *) ((char *) (((unsigned int) (self) + (0x0))) + 0)));
         *(void **) (self) = 0x0;
     }
     *(void **) (self + 0xc) = 0x0;

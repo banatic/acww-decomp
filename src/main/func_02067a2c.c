@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_020a8c1c(unsigned int param1);
+extern void func_020a8c1c(unsigned int param1);
 
 void func_02067a2c(unsigned int param1)
 {

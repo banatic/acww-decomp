@@ -3,11 +3,13 @@
  */
 
 extern int CARD_IsEnabled(void);
-extern void func_0203ac2c(void);
+extern int func_0203ac2c(void);
 
-void func_ov121_0229a50c(void)
+int func_ov121_0229a50c(void)
 {
-    if (CARD_IsEnabled()) {
-        func_0203ac2c();
+    int result = CARD_IsEnabled();
+    if (result) {
+        result = func_0203ac2c();
     }
+    return result;
 }

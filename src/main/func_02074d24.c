@@ -4,10 +4,10 @@
 
 extern unsigned char *data_020ccf94;
 extern unsigned int func_0207762c(int);
-extern int func_0205cb68(int, int);
-extern int func_020ecf20(int);
+extern void func_0205cb68(int, int);
+extern void func_020ecf20(void);
 
-int func_02074d24(int arg)
+void func_02074d24(int arg)
 {
     unsigned int max = 0;
     int i = 0x45;
@@ -22,5 +22,5 @@ int func_02074d24(int arg)
     } while (i >= 0);
 
     data_020ccf94[0x6d] = max;
-    return func_020ecf20(func_0205cb68(0x4b000, arg));
+    (func_0205cb68(0x4b000, arg), func_020ecf20());
 }

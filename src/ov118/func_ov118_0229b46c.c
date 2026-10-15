@@ -3,19 +3,19 @@
  */
 
 extern void func_020a8c1c(int);
-extern int func_020984e8(int);
+extern int func_020984e8(void);
 extern int func_02099870(int);
-extern void func_ov002_02209018(int, int);
-extern void func_ov002_02208ff8(int, int);
-extern void func_ov002_02208fac(int, int);
-extern void func_0207094c(int, int);
+extern int func_ov002_02209018(int, int);
+extern int func_ov002_02208ff8(int, int);
+extern int func_ov002_02208fac(int, int);
+extern int func_0207094c(int, int);
 
 void func_ov118_0229b46c(int a, int b, unsigned int c)
 {
     if (c == 0) {
         func_020a8c1c(b);
     } else if (c == 1) {
-        func_ov002_02209018(b, func_02099870(func_020984e8(a)));
+        func_ov002_02209018(b, func_02099870(func_020984e8()));
     } else if (c >= 2 && c < 6) {
         func_ov002_02208ff8(b, c - 2);
     } else if (c >= 6 && c < 14) {

@@ -4,7 +4,7 @@
 
 extern int func_ov002_02209f9c(void *ptr);
 extern void func_ov110_0229d728(void *ptr, unsigned char byte);
-extern void func_ov002_02208098(void *ptr, int value);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov110_0229db18(char *s)
 {
@@ -12,5 +12,5 @@ void func_ov110_0229db18(char *s)
         return;
     }
     func_ov110_0229d728(s, *(unsigned char *) (s + 0xf5));
-    func_ov002_02208098(s, 0xc);
+    func_ov002_02208098((void *) (s), 0xc);
 }

@@ -24,7 +24,7 @@ extern int func_0201ad8c(UnkStruct_0201aa94 *a, void *buf);
 extern int func_0201ab94(UnkStruct_0201aa94 *a, int d, void *buf, int zero);
 extern int func_0201abac(UnkStruct_0201aa94 *a, int x);
 extern int func_020ea9e4(void *p1, void *p2);
-extern void func_020e8870(short *target, int val, short other);
+extern int func_020e8870(short *target, int val, short other);
 
 void func_0201aa94(UnkStruct_0201aa94 *a, SomeB *b, void *c, int d, int e, unsigned char f)
 {

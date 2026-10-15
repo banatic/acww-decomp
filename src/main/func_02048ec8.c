@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204ed80(void);
+extern int func_0204ed80(void *, int, int);
 
-int func_02048ec8(void)
+int func_02048ec8(void *argument0, int argument1, int argument2)
 {
     int ret = 0;
     int v;
-    v = func_0204ed80();
+    v = func_0204ed80((void *) argument0, (int) argument1, (int) argument2);
     if (v == 0) {
         goto set;
     }

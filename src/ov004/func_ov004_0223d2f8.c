@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern void __cxa_vec_ctor();
-extern void func_ov004_0223d2b0();
-extern void func_020051b0();
-extern void func_02034ce0();
+extern void func_ov004_0223d2b0(char *argument0);
+extern void func_020051b0(void *arg0);
+extern void func_02034ce0(unsigned short *arg0);
 
 void *func_ov004_0223d2f8(char *self)
 {

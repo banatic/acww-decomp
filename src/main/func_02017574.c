@@ -4,7 +4,7 @@
 
 extern int func_02057bf0(int);
 
-void func_02017574(unsigned char *p)
+void func_02017574(unsigned char *p, int event)
 {
     if (func_02057bf0(8)) {
         p[0x98] = 1;

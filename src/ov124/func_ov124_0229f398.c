@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov124_0229f0ec(void *r0, void *r1, int r2);
-extern void func_02002ca4(void *r0, void *r1, int r2);
+extern int func_ov124_0229f0ec(void *r0, void *r1, int r2);
+extern int func_02002ca4(void *r0, void *r1, int r2);
 extern int func_0206fca4(void);
-extern void func_0207094c(void *r0, int r1);
+extern int func_0207094c(void *r0, int r1);
 extern void func_02070adc(void *r0, void *r1, int r2, int r3, int r4, int r5, int r6);
 extern void func_02070a04(void *r0, int r1, int r2);
 

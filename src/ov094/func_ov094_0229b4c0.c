@@ -3,7 +3,7 @@
  */
 
 extern int data_ov094_0229c124[];
-extern void func_020896b8(int, void *, int, int, int, int, int);
+extern int func_020896b8(int, void *, int, int, int, int, int);
 
 struct UnkStruct_0229b4c0 {
     char pad_00[0x20];

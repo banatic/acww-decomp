@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void *func_020984e8(void *);
+extern void *func_020984e8(void);
 extern u8 *func_02099640(void *);
 extern void func_0209e234(void *, int);
 extern void func_0209e474(void *);
@@ -17,7 +17,7 @@ int func_ov068_022763e4(void *arg0)
     u32 b[2];
     u32 c[2];
 
-    MI_CpuCopy8(func_02099640(func_020984e8(arg0)) + 0xc0, a, 8);
+    MI_CpuCopy8(func_02099640(func_020984e8()) + 0xc0, a, 8);
     MI_CpuCopy8(a, b, 8);
     func_0209e234(b, 0x1e);
 

@@ -9,7 +9,7 @@ extern struct {
     int field_0x34;
 } data_021f8ab0;
 
-extern void func_020e88dc(int *ptr, int a, int b);
+extern int func_020e88dc(int *ptr, int a, int b);
 
 typedef struct {
     char pad_00[0x0c];

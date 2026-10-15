@@ -8,7 +8,7 @@ extern void func_0200bb60(void *self);
 extern void func_02010d64(void *self);
 extern void func_0200b930(void *self);
 extern void func_02010f5c(void *self);
-extern void func_0200f530(void *self, void *loc);
+extern int func_0200f530(void *self, void *loc);
 extern int func_02008258(void *self, int arg);
 typedef struct {
     char pad_00[0x7d4];

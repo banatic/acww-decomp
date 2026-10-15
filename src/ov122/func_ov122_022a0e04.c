@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_022080a0(void *p, int a);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov122_0229f454(void *p, int a);
 extern void func_ov122_0229efc8(void *p, int a);
 extern void func_ov122_0229f940(void *p);
@@ -21,7 +21,7 @@ struct Work {
 void func_ov122_022a0e04(Work *self)
 {
     self->byte = 4;
-    func_ov002_022080a0(self, 1);
+    func_ov002_022080a0((void *) (self), 1);
     func_ov122_0229f454(self, 0);
     func_ov122_0229efc8(self, 4);
     func_ov122_0229f940(self);

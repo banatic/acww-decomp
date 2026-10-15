@@ -10,14 +10,14 @@ typedef struct {
     int unk_3C;
 } UnkStruct_020b4bb4;
 
-extern void func_020a92d8(UnkStruct_020b4bb4 *);
+extern int func_020a92d8(void *, int);
 
 int func_020b4bb4(UnkStruct_020b4bb4 *p)
 {
     p->unk_24 = 3;
     p->unk_3C = 1;
     p->unk_38 = 0;
-    func_020a92d8(p);
+    func_020a92d8(p, 0);
     p->unk_24 = 0;
     return p->unk_38;
 }

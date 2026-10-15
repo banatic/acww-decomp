@@ -7,7 +7,7 @@ extern void *func_020733c4(void *);
 extern void func_020736bc(void *, void *, void *);
 extern void func_020733a0(void *, void *);
 
-void func_0207623c(void *param)
+void func_0207623c(void *param, int sequence, unsigned char category, unsigned int player)
 {
     void *p = data_020ccf94;
     void *res;

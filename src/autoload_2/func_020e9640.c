@@ -3,12 +3,12 @@
  */
 
 extern short FX_SinCosTable_[];
-extern void MTX_RotY43_(int, short, short, short *);
+extern void MTX_RotY43_(int, int, int);
 
 void func_020e9640(int a, int b)
 {
     int idx = ((unsigned short) b) >> 4;
     short s1 = FX_SinCosTable_[idx * 2];
     short s2 = FX_SinCosTable_[idx * 2 + 1];
-    MTX_RotY43_(a, s1, s2, FX_SinCosTable_);
+    MTX_RotY43_(a, s1, s2);
 }

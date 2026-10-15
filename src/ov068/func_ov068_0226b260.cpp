@@ -42,7 +42,7 @@ u8 *func_020800d0(void *arg);
 void func_ov068_0226cfd4(void *arg);
 void func_ov068_02266c34(void *a0, void *a1, int a2, int a3, int a4, void *a5, int a6, void *a7, int a8);
 void func_0204f794(void *arg, u8 b, int c);
-void func_0201aff4(void *arg);
+void func_0201aff4(void *arg, int value);
 void func_0202e194(void *arg);
 void func_0201cbbc(void *arg);
 
@@ -59,7 +59,7 @@ int func_ov068_0226b260(void *a0, GameObj *thiz)
     *(u16 *) ((char *) thiz + 0x8e) = 0;
     *(u16 *) ((char *) thiz + 0x94) = 0;
 
-    func_0201aff4((char *) thiz + 0x350);
+    func_0201aff4((char *) thiz + 0x350, 0);
 
     *(int *) ((char *) thiz + 0x64) += 0x1000;
 

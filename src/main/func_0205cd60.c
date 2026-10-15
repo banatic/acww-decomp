@@ -9,17 +9,18 @@ typedef struct {
 } my_struct;
 
 extern int data_021c9af8;
-extern void func_020e9b9c(void);
+extern void func_020e9b9c(void *);
 
 void func_0205cd60(my_struct *p)
 {
+    void *condition_value0;
     int i;
     for (i = 0; i < 25; i++) {
         p->arr0[i] = 0;
         p->arr1[i] = 0x144;
         p->arr2[i] = 0;
     }
-    if (data_021c9af8) {
-        func_020e9b9c();
+    if ((condition_value0 = (void *) (data_021c9af8))) {
+        func_020e9b9c(condition_value0);
     }
 }

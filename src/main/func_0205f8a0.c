@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0205f8b4(void);
+extern int func_0205f8b4(unsigned char *);
 extern int func_0205f970(void);
 
-int func_0205f8a0(void)
+int func_0205f8a0(unsigned char *argument0)
 {
     int r4;
     int result;
 
-    r4 = func_0205f8b4();
+    r4 = func_0205f8b4((unsigned char *) argument0);
     result = func_0205f970();
     return r4 + result;
 }

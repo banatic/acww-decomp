@@ -7,16 +7,16 @@ typedef struct {
     unsigned int b;
 } Pair;
 
-extern int func_02015774(int, int, const void *, int, int);
+extern void func_02015774(int, int, const void *, int, int);
 extern int func_02015828(int, int);
-extern int func_0202dbf0(int, Pair);
+extern void func_0202dbf0(int, Pair);
 extern Pair data_020d9310;
 
 extern unsigned char data_021c1e84[];
 
-int func_020200cc(int param)
+void func_020200cc(int param, int event)
 {
     func_02015774(param, 23, (const void *) data_021c1e84, 10, 0);
     func_02015828(param, 6);
-    return func_0202dbf0(param, data_020d9310);
+    func_0202dbf0(param, data_020d9310);
 }

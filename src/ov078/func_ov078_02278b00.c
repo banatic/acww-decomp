@@ -18,10 +18,10 @@ struct UnkStruct_02278b00 {
 extern int func_020160b4(struct UnkStruct_02278b00 *self);
 extern int func_020ab504(int arg);
 extern int func_02099fe8(void);
-extern void func_0209a050(void);
-extern void func_0209a000(void *ptr, int val);
-extern void func_020154b4(struct UnkStruct_02278b00 *self, u16 *ptr, int a, int b, int c);
-extern void func_02015330(struct UnkStruct_02278b00 *self, u16 *ptr, int a, int b, int c);
+extern void func_0209a050(void *parameter0);
+extern int func_0209a000(void *ptr, int val);
+extern int func_020154b4(struct UnkStruct_02278b00 *self, u16 *ptr, int a, int b, int c);
+extern int func_02015330(struct UnkStruct_02278b00 *self, u16 *ptr, int a, int b, int c);
 extern void func_0206844c(void *dst, void *src, void *data);
 extern char data_ov078_02279bd8[];
 
@@ -70,7 +70,10 @@ void func_ov078_02278b00(struct UnkStruct_02278b00 *self)
         case 20:
             if (res == 0) {
                 if (self->unk_B4 >= 0) {
-                    func_0209a050();
+                    func_0209a050((void *) (*(
+                        int *) ((char *) (((unsigned int) (((unsigned int) (((unsigned int) (self) + (0x0))) + (0x0))) +
+                                           (0xb4))) +
+                                0)));
                     loc.b = 0x13ac;
                     func_02015330(self, &loc.b, 0, 5, 0);
                 }

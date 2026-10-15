@@ -7,7 +7,7 @@ extern int func_02073d90(int);
 extern short *func_0209d358(int, int);
 extern int func_0202e9fc(void);
 extern int func_02071298(const char *, const char *);
-extern void func_02014f60(const char *);
+extern int func_02014f60(const char *);
 
 extern unsigned char data_021f38f8[];
 

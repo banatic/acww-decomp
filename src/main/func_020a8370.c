@@ -19,7 +19,7 @@ typedef struct {
 } Buf;
 
 extern void func_020a8630(UnkStruct_020a8370_2 *self, u8 *dst, int n);
-extern void func_020a8a34(UnkStruct_020a8370 *o, int pos);
+extern int func_020a8a34(UnkStruct_020a8370 *o, int pos);
 
 int func_020a8370(UnkStruct_020a8370_2 *self, u8 *a, u8 *b, u8 *c, u8 *d, u8 *e, u8 *f, u8 *g, u8 *h, UnkStruct_020a8370 *o0,
                   UnkStruct_020a8370 *o1)

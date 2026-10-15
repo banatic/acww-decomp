@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a8a70(void *, int, int, int);
+extern int func_020a8a70(void *, int, int, int);
 
 struct UnkStruct_0206dbc0 {
     unsigned char pad_00[0x6c];

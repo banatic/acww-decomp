@@ -4,7 +4,7 @@
 
 extern void func_02095eec(int a, int b);
 
-void func_0201b6e4(int a, int b)
+void func_0201b6e4(int a, int b, int participant)
 {
     if (b == 8) {
         func_02095eec(0, 4);

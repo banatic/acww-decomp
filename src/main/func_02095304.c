@@ -6,7 +6,7 @@ extern int func_020b65c4(void);
 extern int func_020961a8(int a);
 extern int func_020960f8(int a, int b);
 extern void func_0204f818(int *a, int *b, int *c);
-extern void func_0204a2a4(int a, int b, int c, int d);
+extern void func_0204a2a4(int a, int b, int c, int d, int e);
 
 void func_02095304(int *p0, unsigned char *p1, int *p2, int *p3, int *p4, int *p5)
 {
@@ -30,13 +30,12 @@ void func_02095304(int *p0, unsigned char *p1, int *p2, int *p3, int *p4, int *p
         }
     }
     {
-        int buf[7];
+        int buf[5];
         int temp = *p5;
-        buf[3] = *p4;
-        buf[4] = 0;
-        buf[5] = temp;
-        func_0204f818(&buf[1], &buf[2], &buf[3]);
-        buf[0] = 0;
-        func_0204a2a4(buf[0], buf[1], buf[2], 0xfff1);
+        buf[2] = *p4;
+        buf[3] = 0;
+        buf[4] = temp;
+        func_0204f818(&buf[0], &buf[1], &buf[2]);
+        func_0204a2a4(0, buf[0], buf[1], 0xfff1, 0);
     }
 }

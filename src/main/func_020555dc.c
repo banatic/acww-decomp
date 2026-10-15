@@ -15,10 +15,10 @@ extern unsigned int func_02064b2c(unsigned int, unsigned int, int, int);
 extern unsigned char *func_02107828(unsigned int);
 extern void *func_02056268(void *, void *);
 extern void *func_020561fc(void *, unsigned int);
-extern void NNS_G3dBindMdlTex(void *, void *);
+extern int NNS_G3dBindMdlTex(void *, void *);
 extern void *func_021077e8(unsigned int);
-extern void func_02056064(void *, void *);
-extern void NNS_G3dForceBindMdlPltt(void *, void *, int, unsigned int);
+extern int func_02056064(void *, void *);
+extern int NNS_G3dForceBindMdlPltt(void *, void *, int, unsigned int);
 extern void func_020e993c(unsigned int, unsigned int);
 extern void func_02055f6c(struct UnkStruct_020555dc *);
 

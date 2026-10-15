@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02082d1c(void *);
+extern void *func_02082d1c(void *);
 
 struct UnkStruct_0201259c {
     unsigned short tag;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a94a4(void);
+extern void func_020a94a4(void *);
 
 void func_020b4c40(void *r0)
 {
@@ -17,5 +17,5 @@ void func_020b4c40(void *r0)
     p[14] = 0; // offset 0x38
     p[15] = 0; // offset 0x3c
 
-    func_020a94a4();
+    func_020a94a4(r0);
 }

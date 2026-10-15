@@ -32,16 +32,16 @@ typedef struct Count {
 extern UnkStruct_0226a960 *data_ov066_0226be08;
 extern Count *data_ov066_0226bdec;
 
-extern int OS_DisableInterrupts(int arg);
+extern int OS_DisableInterrupts(void);
 extern void func_ov066_0226bb7c(int value, int n);
-extern void OS_RestoreInterrupts(int value);
+extern unsigned int OS_RestoreInterrupts(int value);
 
-void func_ov066_0226a960(int arg)
+unsigned int func_ov066_0226a960(void)
 {
     int saved;
     u16 i;
 
-    saved = OS_DisableInterrupts(arg);
+    saved = OS_DisableInterrupts();
 
     data_ov066_0226be08->unk_10 = data_ov066_0226be08->unk_08;
     func_ov066_0226bb7c(data_ov066_0226be08->unk_08, 3);
@@ -69,5 +69,5 @@ void func_ov066_0226a960(int arg)
     data_ov066_0226be08->unk_28 = -1;
     data_ov066_0226be08->unk_2C = 0;
 
-    OS_RestoreInterrupts(saved);
+    return OS_RestoreInterrupts(saved);
 }

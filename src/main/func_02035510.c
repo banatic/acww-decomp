@@ -16,22 +16,22 @@ typedef struct {
     unsigned char unk_2F4;
 } UnkStruct_02035510;
 
-extern void __cxa_vec_ctor(void *a, int b, int c, void (*d)(void), void (*e)(void));
-extern void func_0203652c(void *a, void *b);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
+extern int *func_0203652c(void *a, void *b);
 extern void func_02037454(void *a);
-extern void func_020369fc(void *a, void *b);
+extern void *func_020369fc(void *a, void *b);
 extern void func_02036870(void *a, void *b);
-extern void func_02035ff8(void *a, void *b);
+extern void *func_02035ff8(void *a, void *b);
 extern void func_02035f50(void *a, void *b);
 extern void func_02035b20(void *a, void *b);
 extern void func_02035a24(void *a);
 
-void func_020374cc(void);
-void func_020374fc(void);
+extern void func_020374cc(void *);
+extern int func_020374fc(void *);
 
 UnkStruct_02035510 *func_02035510(UnkStruct_02035510 *self)
 {
-    __cxa_vec_ctor(self, 0x10, 0x1c, func_020374fc, func_020374cc);
+    __cxa_vec_ctor((void *) (self), 0x10, 0x1c, (((void (*)(void *)) func_020374fc)), (void (*)(void *)) func_020374cc);
     self->unk_1C0 = 0;
     func_0203652c(self->unk_1C4, self);
     func_02037454(self->unk_24C);

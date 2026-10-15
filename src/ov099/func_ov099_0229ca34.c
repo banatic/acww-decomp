@@ -13,7 +13,7 @@ extern int func_ov099_0229cf04(u8 *self, u8 byte);
 extern void func_ov094_0229abb8(void *a, void *b, int c);
 extern int func_ov099_0229cf20(u8 *self, u8 byte);
 extern int func_ov099_0229ce14(u8 *self, u8 byte);
-extern void func_ov094_0229b9b4(void *a, void *b, int c);
+extern int func_ov094_0229b9b4(void *a, void *b, int c);
 
 void func_ov099_0229ca34(u8 *self)
 {

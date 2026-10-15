@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020b45d0(void *sub, int arg1, int arg2, int arg3, int arg4, int arg5);
+extern "C" int func_020b45d0(void *sub, int arg1, int arg2, int arg3, int arg4, int arg5);
 extern "C" void func_02051694(void *ptr);
 
 class UnkStruct_0208d6dc {

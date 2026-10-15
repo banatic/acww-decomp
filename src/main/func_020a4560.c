@@ -3,9 +3,9 @@
  */
 
 extern int func_020682e0(int);
-extern int func_02068320(int);
+extern void func_02068320(int);
 extern int func_020b5e10(void);
-extern void func_020b6434(int, int, int, int);
+extern int func_020b6434(int, int, int, int);
 extern void func_020a4e94(int, int);
 
 void func_020a4560(int arg)

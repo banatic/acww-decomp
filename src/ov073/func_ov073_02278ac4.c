@@ -27,15 +27,15 @@ extern int data_ov073_02279a10;
 extern int data_021f3b0c;
 extern int data_021dc7a8;
 
-extern void func_020160b4(void);
-extern int func_020ab504(void);
+extern int func_020160b4(void *argument0);
+extern int func_020ab504(void *argument0);
 extern int func_020874c4(int *p);
 extern void func_02015fb0(UnkStruct_02278ac4 *self, int a, int b, int c, int d, int e);
 extern int func_02099fe8(void);
 extern int func_0201b43c(int a, int b);
 extern int func_ov073_02278d94(UnkStruct_02278ac4 *self);
 extern void func_0201b420(int a, int b);
-extern void func_020154b4(UnkStruct_02278ac4 *self, unsigned short *p, int a, int b, int c);
+extern int func_020154b4(UnkStruct_02278ac4 *self, unsigned short *p, int a, int b, int c);
 extern int func_0209f150(int *p, int a);
 extern void func_0208b520(void);
 extern int func_0209a000(unsigned short *p, int a);
@@ -50,8 +50,7 @@ void func_ov073_02278ac4(UnkStruct_02278ac4 *self)
     int status;
     int *tail;
 
-    func_020160b4();
-    r = func_020ab504();
+    r = func_020ab504((void *) func_020160b4(self));
     tail = &data_ov073_02279a10;
     status = 0xff;
     switch (self->unk_1E) {

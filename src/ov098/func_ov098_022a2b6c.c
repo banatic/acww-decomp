@@ -3,7 +3,6 @@
  */
 
 typedef struct {
-    int header;
     int data[2];
 } UnkStruct_022a2b6c;
 
@@ -25,15 +24,15 @@ typedef struct {
 extern int func_ov098_022a2bfc(void *p);
 extern void func_ov096_0229fb9c(void *p);
 extern void func_ov096_0229f874(void *p, int a, int b, int c);
-extern int func_ov096_0229f0dc(void *p, int val);
-extern int func_02043db4(int a, int *arr, int count, int flag);
-extern void func_ov002_02208098(void *p, int val);
+extern unsigned short func_ov096_0229f0dc(void *p, int val);
+extern int func_02043db4(int a, int *arr, int count, int flag, unsigned short extra);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern GlobalType *data_020ccf94;
 
 void func_ov098_022a2b6c(UnkStruct_022a2b6c_2 *p)
 {
     UnkStruct_022a2b6c local;
-    int h;
+    unsigned short h;
 
     if (func_ov098_022a2bfc(p) == 0) {
         func_ov096_0229fb9c(p);
@@ -44,8 +43,7 @@ void func_ov098_022a2b6c(UnkStruct_022a2b6c_2 *p)
     h = func_ov096_0229f0dc(p, p->byte6);
     local.data[0] = p->unk_2E20;
     local.data[1] = p->unk_2E24;
-    local.header = h;
-    p->unk_C4 = func_02043db4(data_020ccf94->unk_64, local.data, 2, 0);
+    p->unk_C4 = func_02043db4(data_020ccf94->unk_64, local.data, 2, 0, h);
 
     if (p->unk_C4 == -1) {
         func_ov096_0229fb9c(p);

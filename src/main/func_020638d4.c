@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020638b0(void *out, int flag, int *tmp, int value1, int value2, int byte_arg, int arg6, int arg7);
+extern int func_020638b0(void *out, int flag, int *tmp, int value1, int value2, int byte_arg, int arg6, int arg7);
 extern void func_02063cc8(int *tmp);
 
 void func_020638d4(unsigned short *out, int *inp, int value1, int value2, unsigned char byte_arg, int arg6, int arg7)

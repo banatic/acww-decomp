@@ -26,7 +26,7 @@ extern int func_0203f8d0(void *a, void *b);
 extern void func_020031d4(void *a, void *b);
 extern void func_02055d38(void *a, int b);
 extern void func_02054848(void *a, int b);
-extern void func_02055d0c(void *a, void *b, int c);
+extern int func_02055d0c(void *a, void *b, int c);
 
 void func_0200ee40(struct UnkStruct_0200ee40 *self)
 {

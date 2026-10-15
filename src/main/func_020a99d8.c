@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void FS_CloseFile(void *ptr);
+extern int FS_CloseFile(void *ptr);
 
 extern unsigned char data_021f43ec;
 

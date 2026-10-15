@@ -9,7 +9,7 @@ typedef struct {
     unsigned char unk_43;
 } UnkStruct_0229a4d4;
 
-extern int func_ov095_02299bb4(UnkStruct_0229a4d4 *);
+extern int func_ov095_02299bb4(UnkStruct_0229a4d4 *, void *unused1);
 extern void func_ov095_0229a1d4(UnkStruct_0229a4d4 *);
 extern void func_ov095_0229aa3c(UnkStruct_0229a4d4 *);
 extern void func_ov095_0229a9d4(UnkStruct_0229a4d4 *);
@@ -20,7 +20,7 @@ extern int func_ov002_0220889c(void *);
 
 void func_ov095_0229a4d4(UnkStruct_0229a4d4 *self, void *pad)
 {
-    if (func_ov095_02299bb4(self)) {
+    if (func_ov095_02299bb4(self, pad)) {
         return;
     }
 

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203e0a8(void *, int);
+extern int func_0203e0a8(void *, int);
 extern int func_02019e00(void *);
 extern int func_02019de8(void *);
-extern void func_02019c6c(void *, int, unsigned short);
+extern int func_02019c6c(void *, int, unsigned short);
 extern unsigned short data_020c80f8;
 
 typedef struct {

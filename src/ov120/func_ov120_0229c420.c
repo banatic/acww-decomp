@@ -3,8 +3,8 @@
  */
 
 extern __arm int func_020ee45c(void *arg);
-extern int func_ov092_0229929c(int arg);
-extern int func_ov120_0229bc54(void *arg);
+extern void func_ov092_0229929c(int arg);
+extern void func_ov120_0229bc54(void *arg);
 
 int func_ov120_0229c420(void *arg)
 {

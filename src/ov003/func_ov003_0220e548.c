@@ -20,7 +20,7 @@ typedef struct UnkStruct_0220e548 {
     int unk_18;
 } UnkStruct_0220e548;
 
-void func_ov003_0220e548(void *p1, void *p2)
+void func_ov003_0220e548(void *p1, void *p2, int previous)
 {
     int x;
     UnkStruct_0220e548 *sub;

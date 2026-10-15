@@ -12,8 +12,10 @@ struct E {
     PMF fn;
 };
 
-extern "C" void func_020160b4(void);
-extern "C" int func_020ab504(void);
+#define STATE_func_ov050_022612f4 (PMF) & Obj_ov050_02265b14::func_ov050_022612f4
+
+extern "C" int func_020160b4(void *argument0);
+extern "C" int func_020ab504(void *argument0);
 extern "C" int func_ov050_02260510(int);
 extern "C" void func_0206844c(int, unsigned char *, void *);
 
@@ -29,8 +31,7 @@ void Obj_ov050_02265b14::func_ov050_02261560(int arg)
     unsigned char c;
     void *s;
 
-    func_020160b4();
-    r = func_020ab504();
+    r = func_020ab504((void *) func_020160b4((void *) this));
     unk_D0 = 0xff;
     {
         static E tbl[37] = {{0, &Obj_ov050_02265b14::func_ov050_022614c8},    {2, &Obj_ov050_02265b14::func_ov050_022614c8},
@@ -43,7 +44,7 @@ void Obj_ov050_02265b14::func_ov050_02261560(int arg)
                             {0x1a, &Obj_ov050_02265b14::func_ov050_022613d8}, {0x1b, &Obj_ov050_02265b14::func_ov050_022614c8},
                             {0x1c, &Obj_ov050_02265b14::func_ov050_022614c8}, {0x1d, &Obj_ov050_02265b14::func_ov050_022614c8},
                             {0x1e, &Obj_ov050_02265b14::func_ov050_02261390}, {0x2a, &Obj_ov050_02265b14::func_ov050_02261390},
-                            {0x2b, &Obj_ov050_02265b14::func_ov050_02261200}, {0x2c, &Obj_ov050_02265b14::func_ov050_022612f4},
+                            {0x2b, &Obj_ov050_02265b14::func_ov050_02261200}, {0x2c, STATE_func_ov050_022612f4},
                             {0x2e, &Obj_ov050_02265b14::func_ov050_02261174}, {0x31, &Obj_ov050_02265b14::func_ov050_02261390},
                             {0x35, &Obj_ov050_02265b14::func_ov050_02261138}, {0x40, &Obj_ov050_02265b14::func_ov050_022610b0},
                             {0x42, &Obj_ov050_02265b14::func_ov050_02261094}, {0x43, &Obj_ov050_02265b14::func_ov050_02261094},
@@ -58,6 +59,7 @@ void Obj_ov050_02265b14::func_ov050_02261560(int arg)
     body:
         k = tbl[i].key;
         if (k == *q) {
+
             (this->*((E *) ((char *) tbl + i * sizeof(E)))->fn)(r);
         }
         i++;
@@ -72,3 +74,5 @@ void Obj_ov050_02265b14::func_ov050_02261560(int arg)
         func_0206844c(unk_40, &c, s);
     }
 }
+
+#undef STATE_func_ov050_022612f4

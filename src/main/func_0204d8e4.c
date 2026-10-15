@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204d924(void);
+extern int func_0204d924(int, int);
 
 int func_0204d8e4(int a, int b, int c)
 {
@@ -11,7 +11,7 @@ int func_0204d8e4(int a, int b, int c)
     int r2;
     int r0;
 
-    if (func_0204d924() != 0) {
+    if (func_0204d924(a, b) != 0) {
         r1 = a + (b << 3);
         r2 = *(int *) r1;
         if (r2 != 0) {

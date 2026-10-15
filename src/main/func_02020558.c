@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206e94c(void *arg);
+extern void func_0206e94c(void);
 extern int func_0208150c(int value);
-extern int func_0207a4c0(void *base, int value);
+extern void func_0207a4c0(void *base, void *value);
 
 typedef struct StructB_02020558 {
     unsigned char pad_00[0x830];
@@ -18,15 +18,15 @@ typedef struct StructA_02020558 {
 
 extern unsigned char data_021e5a2c[];
 
-int func_02020558(StructA_02020558 *arg)
+void func_02020558(StructA_02020558 *arg, int event)
 {
     StructB_02020558 *p;
     int v;
     int res;
 
-    func_0206e94c(arg);
+    func_0206e94c();
     p = arg->unk_100;
     v = p->unk_830;
     res = func_0208150c(v);
-    return func_0207a4c0((void *) data_021e5a2c, res);
+    func_0207a4c0((void *) data_021e5a2c, (void *) res);
 }

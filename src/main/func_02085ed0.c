@@ -6,7 +6,7 @@ extern char data_020da13c;
 extern char data_020e1cc0;
 
 extern void *func_020edf70(unsigned int size);
-extern void func_020ee660(void *obj);
+extern void *func_020ee660(void *obj);
 extern void func_02084f88(void *data);
 
 struct UnkStruct_02085ed0 {

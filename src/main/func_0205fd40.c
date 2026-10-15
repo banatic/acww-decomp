@@ -9,7 +9,7 @@ struct UnkStruct_0205fd40_2;
 extern void *data_020ccf94;
 extern int func_02073918(void *, unsigned int);
 extern void func_0206026c(struct UnkStruct_0205fd40_2 *, int);
-extern void func_02034270(void *, void *, int, int);
+extern int func_02034270(void *, void *, int, int);
 extern int func_020912d4(int, struct Vec3 *, int, int);
 extern void func_02091278(int, struct Vec3 *, int, int);
 extern void func_0203423c(void *);

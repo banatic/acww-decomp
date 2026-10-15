@@ -2,20 +2,20 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b15b0(int a, int b);
+extern int func_020b15b0(void);
 extern int func_020b1974(int a, int b);
 extern char *func_020b1530(int a);
-extern void func_020b18fc(char *a);
+extern void *func_020b18fc(char *a);
 extern void func_020a8874(char *dst, const char *src, int len);
-extern void func_020a8a70(int a, char *b, int c, int d);
-extern void func_020b18e4(char *a);
+extern int func_020a8a70(int a, char *b, int c, int d);
+extern void *func_020b18e4(char *a);
 
 int func_020b1394(int a0, int a1)
 {
     char buf[0x1c];
     char *p;
 
-    if (func_020b1974(func_020b15b0(a0, a1), a1) == 0) {
+    if (func_020b1974(func_020b15b0(), a1) == 0) {
         return 0;
     }
 

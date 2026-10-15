@@ -21,16 +21,16 @@ typedef struct Struct0208F518 {
     unsigned char unk_75;
 } Struct0208F518;
 
-extern void func_0208af30(void *self, int param1, int param2);
+extern void func_0208af30(void *self);
 extern void func_0208a1f8(char *data);
-extern void func_0208f640(char *data);
-extern void func_0208f0c4(void *self);
+extern void *func_0208f640(char *data);
+extern void func_0208f0c4(void *, int);
 
 extern unsigned char data_020e23a0[];
 
 Struct0208F518 *func_0208f518(Struct0208F518 *self, int param1, int param2)
 {
-    func_0208af30(self, param1, param2);
+    func_0208af30(self);
     self->unk_00 = (void *) data_020e23a0;
     self->unk_0C = 0;
     self->unk_10 = 0;
@@ -46,6 +46,6 @@ Struct0208F518 *func_0208f518(Struct0208F518 *self, int param1, int param2)
     self->unk_73 = 0;
     self->unk_74 = 0;
     self->unk_75 = 0;
-    func_0208f0c4(self);
+    func_0208f0c4(self, 0);
     return self;
 }

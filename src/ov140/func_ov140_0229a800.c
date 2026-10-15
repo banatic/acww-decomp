@@ -5,7 +5,7 @@
 extern void func_ov140_0229a164(unsigned char *, int);
 extern int func_0206fe60(void);
 extern void func_ov140_0229a7e8(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov140_0229a544(void *);
 extern void func_ov140_02299f90(void *, int);
 
@@ -20,7 +20,7 @@ void func_ov140_0229a800(unsigned char *p)
         if (func_0206fe60()) {
             func_ov140_0229a7e8(p);
         } else {
-            func_ov002_02208098(p, 1);
+            func_ov002_02208098((void *) (p), 1);
             func_ov140_0229a544(p);
         }
         func_ov140_02299f90(p, 0x20);

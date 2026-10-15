@@ -8,7 +8,7 @@ extern "C" {
 void func_ov103_0229ca48(void *);
 void func_ov103_0229cbac(void *, unsigned char);
 void func_ov002_02207fc0(void *);
-void func_ov002_02208098(void *, int);
+unsigned char *func_ov002_02208098(void *, unsigned char value);
 }
 
 extern "C" void func_ov103_0229cfc0(void *p)

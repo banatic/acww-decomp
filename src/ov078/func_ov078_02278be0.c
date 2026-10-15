@@ -32,19 +32,19 @@ typedef struct UnkStruct_02278be0_2 {
 
 extern int data_ov078_02279bd8;
 
-extern void func_02094fd4(UnkStruct_02278be0 *t);
-extern void func_02094fbc(UnkStruct_02278be0 *t);
-extern void func_020984e8(void);
-extern void func_02099640(void);
-extern void *func_0209a850(void);
+extern void *func_02094fd4(UnkStruct_02278be0 *t);
+extern void *func_02094fbc(UnkStruct_02278be0 *t);
+extern int func_020984e8(void);
+extern int func_02099640(int);
+extern void *func_0209a850(int);
 extern int func_02099fe8(void);
 extern void func_0209b0f4(void *o);
 extern void *func_0209b0f0(void *o);
 extern unsigned short *func_0209bb70(void *o);
-extern int func_0204bcdc(void);
+extern int func_0204bcdc(void *arg0);
 extern int func_0204bc64(unsigned short *p);
 extern int func_0209a000(unsigned short *p, int a);
-extern void func_020154b4(UnkStruct_02278be0_2 *self, unsigned short *p, int a, int b, int c);
+extern int func_020154b4(UnkStruct_02278be0_2 *self, unsigned short *p, int a, int b, int c);
 extern int func_0209b0c4(void *o, UnkStruct_02278be0 *t);
 extern void func_02068404(int a, int b, UnkStruct_02278be0 *t);
 extern void func_02063ccc(Fmt *f, int a, int b);
@@ -70,9 +70,7 @@ void func_ov078_02278be0(UnkStruct_02278be0_2 *self)
 
     m.a = 0xfff1;
     func_02094fd4(&tmp);
-    func_020984e8();
-    func_02099640();
-    obj = func_0209a850();
+    obj = func_0209a850((int) func_02099640((int) func_020984e8()));
     tail = &data_ov078_02279bd8;
     status = 0;
     switch (self->unk_1E) {
@@ -86,7 +84,7 @@ void func_ov078_02278be0(UnkStruct_02278be0_2 *self)
                 func_0209b0f4(obj);
             }
             p = func_0209bb70(func_0209b0f0(obj));
-            if (func_0204bcdc() != 0) {
+            if (func_0204bcdc((void *) p) != 0) {
                 m.d = 0x155f;
                 n = func_0204bc64(p);
                 ok = (n == func_0204bc64(&m.d));

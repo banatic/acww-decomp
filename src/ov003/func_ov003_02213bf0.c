@@ -6,10 +6,10 @@ extern int func_02056f94(const void *);
 extern void *func_0205e8e4(const void *);
 extern int func_ov003_0222e538(int, unsigned char);
 extern int func_ov003_0222e5fc(int);
-extern void func_ov003_02213ae4(const void *, int, int, int, int, int);
+extern void *func_ov003_02213ae4(const void *, int, int, int, int, int);
 extern unsigned int func_02008258(const void *, unsigned int);
 extern int func_02073908(const void *, unsigned int);
-extern void func_0200d4e8(const void *, int, int, int);
+extern int func_0200d4e8(const void *, int, int, int);
 extern void *data_020ccf94;
 
 void func_ov003_02213bf0(char *self)

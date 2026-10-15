@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fe54(void *);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(char *);
 extern int func_ov131_0229ad44(void *, int);
 extern int func_ov002_02207f60(void *);
@@ -11,7 +11,7 @@ extern void func_ov130_02299de8(char *, int);
 
 int func_ov131_0229b794(void *param0)
 {
-    if (func_0206fe54(param0)) {
+    if (func_0206fe54()) {
         func_ov002_02209eb8((char *) param0 + 0x94);
     }
     if (!func_ov131_0229ad44(param0, 1)) {

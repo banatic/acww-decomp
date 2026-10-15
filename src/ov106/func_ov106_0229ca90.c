@@ -5,8 +5,8 @@
 extern int func_ov106_0229c364(void *p, int flag);
 extern int func_ov002_02208ae4(void *p);
 extern int func_ov002_02208ad8(void *p, unsigned char b);
-extern int func_ov002_0220a0b4(void *p, int v1, int v2);
-extern int func_ov002_0220a374(void *p, int v);
+extern void func_ov002_0220a0b4(void *p, int v1, int v2);
+extern void func_ov002_0220a374(void *p, int v);
 
 struct UnkStruct_0229ca90 {
     char pad_00[0xBD];

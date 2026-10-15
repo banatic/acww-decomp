@@ -7,7 +7,7 @@ extern int func_ov002_02208ae4(void *p);
 extern int func_ov002_02208ad8(void *p, unsigned char v);
 extern void func_ov002_0220a0b4(void *p, int a, int b);
 extern void func_0208e4c0(void *p, int v);
-extern void func_ov002_02208098(void *p, int v);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 
 typedef struct Sub1 {
     int a;

@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b9ccc(void);
+extern void func_020b9ccc(void *);
 extern int func_020644cc(int);
-extern void func_02064af4(int, void *, int);
+extern int func_02064af4(int, void *, int);
 extern void MI_CpuCopy8(void *, const void *, int);
-extern void func_02002bd0(void *, int, int, int, int);
+extern int func_02002bd0(void *, int, int, int, int);
 extern int data_020e4220[5];
 
 typedef struct {
@@ -22,7 +22,7 @@ void func_020b177c(UnkStruct_020b177c *obj, int param1)
 {
     int i;
 
-    func_020b9ccc();
+    func_020b9ccc(obj);
 
     for (i = 0; i < 5; i++) {
         obj->arr1[i] = (char) (func_020644cc(0x5a) + 10);

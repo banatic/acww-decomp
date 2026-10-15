@@ -3,8 +3,8 @@
  */
 
 extern char data_020df008;
-extern void func_020a81b8(void *);
-extern void func_02066a9c(void *);
+extern void *func_020a81b8(void *);
+extern void *func_02066a9c(void *);
 
 struct Func02066a04Sub {
     char data[0x20];

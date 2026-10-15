@@ -9,13 +9,15 @@
 typedef Obj_ov090_02299820 S;
 typedef void (S::*PMF)();
 
+#define DISCARD_HANDLER(Class, Method) (PMF) & Class::Method
+
 extern u8 data_ov090_02299960;
 extern "C" volatile u16 data_021fbe40[2];
 
 extern "C" void func_ov090_02299058(S *self);
 extern "C" int func_020a1518(void);
 extern "C" void func_0206efc0(void);
-extern "C" void func_ov002_0220b9b8(void *a, void *b, int c, int d);
+extern "C" int func_ov002_0220b9b8(void *a, void *b, int c, int d);
 extern "C" int func_ov090_02299078(u8 v);
 extern "C" int func_ov090_02299098(u8 v);
 extern "C" void func_ov090_02298fac(S *self, int v);
@@ -23,7 +25,7 @@ extern "C" void RtcSendPxiCommand(int cmd);
 
 int Obj_ov090_02299820::func_ov090_02299470()
 {
-    static PMF tbl[3] = {&S::func_ov090_02299348, &S::func_ov090_0229926c, &S::func_ov090_02299258};
+    static PMF tbl[3] = {&S::func_ov090_02299348, &S::func_ov090_0229926c, DISCARD_HANDLER(S, func_ov090_02299258)};
 
     func_ov090_02299058(this);
 
@@ -79,3 +81,5 @@ int Obj_ov090_02299820::func_ov090_02299470()
 
     return 1;
 }
+
+#undef DISCARD_HANDLER

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f70d0(void *p);
+extern void *func_020f70d0(void *p);
 
 struct S0206eac0 {
     char pad_00[0x14];

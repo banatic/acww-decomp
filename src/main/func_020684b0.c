@@ -4,24 +4,24 @@
 
 extern void func_020675c0(void *p);
 extern void func_02068320(void *p);
-extern void func_02082030(void *p);
-extern void func_020820e0(void *p);
-extern void func_02094fbc(void *p);
-extern void func_020a8210(void *p);
-extern void func_020641b0(void *p);
-extern void func_020821a4(void *p);
-extern void func_020b5618(void *p);
+extern void *func_02082030(void *p);
+extern void *func_020820e0(void *p);
+extern void *func_02094fbc(void *p);
+extern void *func_020a8210(void *);
+extern void *func_020641b0(void *p);
+extern void *func_020821a4(void *p);
+extern void *func_020b5618(void *p);
 extern void func_020a79f8(void *p);
 extern void func_02068b24(void *p);
-extern void __cxa_vec_cleanup(void *list, int count, int size, void *ctor);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 extern void func_020a82e4(void *p);
 extern void func_020a9520(void *p);
-extern void func_0206bdac(void *p);
-extern void func_0206d670(void *p);
-extern void func_0206c34c(void *p);
-extern void func_020ab694(void *p);
-extern void func_020a9d70(void *p);
-extern void func_02069100(void *p);
+extern void *func_0206bdac(void *p);
+extern void *func_0206d670(void *p);
+extern void *func_0206c34c(void *p);
+extern void *func_020ab694(void *p);
+extern void *func_020a9d70(void *p);
+extern void *func_02069100(void *p);
 
 void *func_020684b0(char *self)
 {
@@ -48,8 +48,8 @@ void *func_020684b0(char *self)
     func_020b5618(self + 0x1a78);
     func_020a79f8(self + 0x1a58);
     func_02068b24(self + 0x1a2c);
-    __cxa_vec_cleanup(self + 0x18ac, 4, 0x5c, (void *) func_020a8210);
-    __cxa_vec_cleanup(self + 0x14b8, 0xb, 0x5c, (void *) func_020a8210);
+    __cxa_vec_cleanup((void *) (self + 0x18ac), 4, 0x5c, (((void (*)(void *)) func_020a8210)));
+    __cxa_vec_cleanup((void *) (self + 0x14b8), 0xb, 0x5c, (((void (*)(void *)) func_020a8210)));
     func_020a82e4(self + 0x14ac);
     func_020a9520(self + 0x149c);
     func_0206bdac(self + 0x13b8);

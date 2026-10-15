@@ -8,9 +8,9 @@
 extern "C" unsigned char data_021fbdd8;
 
 extern "C" int func_ov101_0229cc50(void *self, unsigned char b);
-extern "C" void func_ov002_02208098(void *self, int v);
+extern "C" unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern "C" void func_ov002_02207ce4(void *sub, int v);
-extern "C" int AOSS_FD_SET(void *sub);
+extern "C" int func_ov002_02207cc0(int);
 extern "C" void func_ov101_0229c42c(void *self, unsigned char b, int v);
 extern "C" void func_ov002_02207d00(void *sub);
 
@@ -37,7 +37,7 @@ void Obj_ov101_0229e078::func_ov101_0229d720()
         }
     } else {
         if (func_ov101_0229cc50(self, self->b0) == 0) {
-            if (AOSS_FD_SET((char *) self + 0x21b4) != 0) {
+            if (func_ov002_02207cc0((int) ((char *) self + 0x21b4)) != 0) {
                 if (self->b9 != 0) {
                     self->b9--;
                     return;

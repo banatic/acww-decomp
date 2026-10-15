@@ -14,7 +14,7 @@ typedef struct {
 extern int func_0208e484(void *ptr);
 extern int func_ov136_0229c574(void *self, int n);
 extern int func_ov134_02299b70(void *ptr);
-extern void func_ov002_02208098(void *self, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov134_022997b0(void *ptr);
 extern void func_ov136_0229c8d4(void *self);
 extern void func_ov136_0229c628(void *self);
@@ -26,14 +26,14 @@ void func_ov136_0229cab4(UnkStruct_ov136 *self)
     if (func_0208e484(&self->unk_94) != 0) {
         if (func_ov136_0229c574(self, 2) != 0) {
             if (func_ov134_02299b70(&self->unk_2C4) != 0) {
-                func_ov002_02208098(self, 8);
+                func_ov002_02208098((void *) (self), 8);
                 return;
             } else {
                 if (func_ov134_022997b0(&self->unk_2C4) != 0) {
                     func_ov136_0229c8d4(self);
                     return;
                 } else {
-                    func_ov002_02208098(self, 7);
+                    func_ov002_02208098((void *) (self), 7);
                     func_ov136_0229c628(self);
                 }
             }

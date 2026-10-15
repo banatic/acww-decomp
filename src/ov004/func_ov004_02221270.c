@@ -8,8 +8,8 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern void func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
-extern void func_0203e020(char *self);
+extern int func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_0203e020(char *self);
 extern void func_ov004_02221550(char *self, int n);
 extern int FX_MulFunc(int a, int b);
 extern short FX_SinCosTable_[];

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_020984e8(u32 *p, int n);
+extern int func_020984e8(void);
 extern int func_0209782c(void);
 extern int func_02097ad0(int);
 extern int func_02098a0c(int);
@@ -22,7 +22,7 @@ void func_0209751c(u32 *p, int n)
     int r6;
     int r4;
 
-    r6 = func_020984e8(p, n);
+    r6 = func_020984e8();
     if (r6 == 0) {
         return;
     }

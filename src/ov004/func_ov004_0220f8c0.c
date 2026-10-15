@@ -17,8 +17,8 @@ extern int *func_ov004_0223ce84(void);
 extern int func_ov004_0223cd78(int *a, int v);
 extern int func_020b67ac(void);
 extern int func_020b6590(void);
-extern void func_020b7dc8(int h, void *o, Vec3 *v, int x, int z, int y, int k, int f, int c);
-extern void func_020b7e04(int h, void *o);
+extern int func_020b7dc8(int h, void *o, Vec3 *v, int x, int z, int y, int k, int f, int c);
+extern int func_020b7e04(int h, void *o);
 
 void func_ov004_0220f8c0(char *self)
 {

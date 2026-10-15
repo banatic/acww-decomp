@@ -5,7 +5,7 @@
 extern char data_020e22f8;
 extern void func_0208af30(void *);
 extern void func_0208a1f8(void *);
-extern void func_0203a404(void *);
+extern void *func_0203a404(void *);
 
 struct Sub1 {
     char data[0x14];

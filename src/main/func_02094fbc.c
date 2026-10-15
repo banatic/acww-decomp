@@ -7,7 +7,7 @@ struct UnkStruct_02094fbc {
 };
 
 extern char data_020e2f6c[];
-void func_020a8c38(struct UnkStruct_02094fbc *arg);
+void *func_020a8c38(struct UnkStruct_02094fbc *arg);
 
 struct UnkStruct_02094fbc *func_02094fbc(struct UnkStruct_02094fbc *arg)
 {

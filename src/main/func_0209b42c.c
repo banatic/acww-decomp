@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209bd44(void);
+extern int func_0209bd44(void *);
 extern int func_0209bc94(int);
 extern int func_0209bc40(int);
 extern int func_0209bc44(int, int *);
@@ -13,7 +13,7 @@ int func_0209b42c(int a, int b)
 {
     int flag = 0;
     int local;
-    if (func_0209bd44() != 0) {
+    if (func_0209bd44((void *) a) != 0) {
         if (func_0209bc94(b) == 1) {
             if (b == func_0209bc40(a)) {
                 if (func_0209bc44(a, &local) != 0) {

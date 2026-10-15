@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02098050(unsigned short *ptr, unsigned short value)
+void func_02098050(unsigned short *ptr, unsigned int value)
 {
     ptr[0x500] = value;
 }

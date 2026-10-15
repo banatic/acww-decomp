@@ -40,7 +40,7 @@ extern void func_0206844c(int a, void *b, int c);
 extern int func_0209bb70(void *a);
 extern int func_02029a18(int a);
 extern void func_02015800(UnkStruct_020255d8_2 *self, int b, int c, int d);
-extern void func_02015828(UnkStruct_020255d8_2 *self, int b);
+extern int func_02015828(UnkStruct_020255d8_2 *self, int b);
 extern void func_0202dbf0(UnkStruct_020255d8_2 *self, Pair p);
 
 extern unsigned char data_021c2d94[];

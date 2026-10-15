@@ -3,8 +3,8 @@
  */
 
 extern int func_0202ec14(int arg);
-extern int func_020b65c4(int *ptr);
-extern void func_0203e328(int val);
+extern int func_020b65c4(void);
+extern void func_0203e328(void);
 extern int data_021fbbe0;
 
 int func_020c2868(int arg)
@@ -15,9 +15,9 @@ int func_020c2868(int arg)
         return 0;
     }
     data_021fbbe0 = 0;
-    result = func_020b65c4(&data_021fbbe0);
+    result = func_020b65c4();
     if (result == 0x2f) {
-        func_0203e328(result);
+        func_0203e328();
     }
     return 1;
 }

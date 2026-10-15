@@ -10,7 +10,7 @@ class Scope {
     int a, b;
 };
 
-extern "C" void func_02046d50(int);
+extern "C" void func_02046d50(void);
 extern "C" void func_02046d38(int);
 extern "C" void func_02046d14(int);
 extern "C" void func_02046cac(int);
@@ -20,7 +20,7 @@ extern "C" void func_02046c2c(int p)
 {
     unsigned short *cur;
     Scope scope;
-    func_02046d50(p);
+    func_02046d50();
     func_02046d38(p);
     func_02046d14(p);
     func_02046cac(p);

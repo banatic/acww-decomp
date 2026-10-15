@@ -8,8 +8,8 @@ typedef struct {
     int member;
 } UnkStruct_020f2f84;
 
-extern void func_020f45c4(UnkStruct_020f2f84 *self);
-extern void func_020f9624(int *member);
+extern void *func_020f45c4(UnkStruct_020f2f84 *self);
+extern void *func_020f9624(int *member);
 extern int data_0213ecdc;
 
 UnkStruct_020f2f84 *func_020f2f84(UnkStruct_020f2f84 *self)

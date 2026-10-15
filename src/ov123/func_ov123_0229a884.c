@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int *func_ov123_02299d9c(int, int, int, int);
+extern unsigned int *func_ov123_02299d9c(int);
 
 int func_ov123_0229a884(int a0, int a1, int a2, int a3, int a4)
 {
-    unsigned int (*base)[4] = (unsigned int (*)[4]) func_ov123_02299d9c(a0, a1, a2, a3);
+    unsigned int (*base)[4] = (unsigned int (*)[4]) func_ov123_02299d9c(a0);
     int x = a1;
     int end = a2;
     int zero = 0;

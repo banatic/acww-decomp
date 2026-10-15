@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a1350(int p0, int p1);
+extern int func_020a1350(void);
 extern char *func_020a00fc(int x);
 extern int func_02075ff8(int p0, int p1, char *p2, int p3, int p4);
 
@@ -11,7 +11,7 @@ int func_02075fc4(int p0, int p1)
     int a;
     char *b;
     char *c;
-    a = func_020a1350(p0, p1);
+    a = func_020a1350();
     b = func_020a00fc(a);
     if (b == 0) {
         c = (char *) 0x17400;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void memcpy(void *dst, const void *src, unsigned int size);
+extern void *memcpy(void *dst, const void *src, unsigned int size);
 
 extern unsigned char data_021c1d54[];
 extern unsigned char data_021c1d6c[];

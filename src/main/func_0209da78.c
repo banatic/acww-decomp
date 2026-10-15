@@ -3,14 +3,14 @@
  */
 
 extern void func_020b3bd4(void);
-extern void func_02037c48(void);
+extern int func_02037c48(void);
 extern void func_02053e7c(void);
 extern void func_02062b04(void);
-extern void func_02072260(void);
-extern void func_02072338(void);
-extern void func_0204d9d8(int x);
-extern void func_0204e65c(int x);
-extern void func_0204dea0(int x);
+extern int func_02072260(void);
+extern void func_02072338(int);
+extern int func_0204d9d8(int x);
+extern int func_0204e65c(int x);
+extern int func_0204dea0(int x);
 extern void func_02074d24(int x);
 extern void func_020a6c94(void);
 extern void func_02085e94(void);
@@ -24,8 +24,7 @@ int func_0209da78(int param)
     func_02037c48();
     func_02053e7c();
     func_02062b04();
-    func_02072260();
-    func_02072338();
+    func_02072338((int) func_02072260());
     func_0204d9d8(data_021fbe94);
     func_0204e65c(data_021fbe94);
     func_0204dea0(data_021fbe94);

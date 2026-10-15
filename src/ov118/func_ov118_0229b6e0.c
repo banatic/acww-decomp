@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int MIi_CpuCopy16(void *, void *, int);
+extern void MIi_CpuCopy16(void *, void *, int);
 extern void *func_ov118_0229b3b0(void *);
 extern int func_ov118_0229b68c(void *, unsigned char, int);
 extern void func_ov118_0229a450(void *, int);

@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern u64 _s32_div_f(int, int);
-extern void func_02064328(void *, void *, void *, int, int, int);
-extern void func_02002c6c(void *, void *, int, int, int, int);
-extern void func_02002cd8(void *, void *, int, int, int);
+extern int func_02064328(void *, void *, void *, int, int, int);
+extern int func_02002c6c(void *, void *, int, int, int, int);
+extern int func_02002cd8(void *, void *, int, int, int);
 
 extern u8 data_ov114_0229db68[];
 extern u8 data_ov114_0229db78[];

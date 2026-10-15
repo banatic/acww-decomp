@@ -3,7 +3,7 @@
  */
 
 extern unsigned int data_020ccf94;
-extern void func_02073d90(unsigned int, unsigned short);
+extern int func_02073d90(unsigned int);
 extern void func_020044d0(void *, void *);
 extern void func_ov003_022226c8(void *);
 extern void func_ov003_02222598(void *);
@@ -39,7 +39,7 @@ void func_ov003_02221948(struct Entry *p)
     unsigned short *plocal;
     unsigned int *ptemp;
     int i;
-    func_02073d90(data_020ccf94, local);
+    func_02073d90(data_020ccf94);
     i = 0;
     plocal = &local;
     ;

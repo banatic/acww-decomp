@@ -5,7 +5,7 @@
 extern int func_0201c0e0(void *);
 extern int func_0201c040(void *, int *, int *);
 extern int func_020a7278(void);
-extern int func_0201c054(void *, int, int, int);
+extern void func_0201c054(void *, int, int, int);
 extern void func_ov050_02264834(void *, int);
 
 typedef struct {

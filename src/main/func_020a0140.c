@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int MI_CompressLZ(const void *a, int b, int *c) __attribute__((target("arm")));
-extern void MI_CpuCopy8(const void *a, int *b, int c) __attribute__((target("arm")));
+extern int __arm MI_CompressLZ(const void *a, int b, int *c);
+extern void __arm MI_CpuCopy8(const void *a, int *b, int c);
 
 extern char data_021dc7a8[];
 

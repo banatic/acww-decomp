@@ -5,13 +5,13 @@
 extern int func_ov048_02260f64(void *self, int x);
 extern int func_ov048_02260f00(void *self);
 extern int func_02074308(void);
-extern int func_020ec148(int a);
-extern int func_020730c8(void);
-extern void **func_020eb92c(int a);
+extern int func_020ec148(void);
+extern void func_020730c8(void);
+extern void **func_020eb92c(void);
 extern int func_020eb998(void *p);
 extern void *func_020eb9c4(void *p);
 extern void MI_CpuCopy8(void *a, void *buf, int b);
-extern void func_020eb8d8(void *p);
+extern int func_020eb8d8(void *p);
 extern void func_ov048_022616b8(void *self, int a);
 
 typedef struct {
@@ -37,12 +37,14 @@ void func_ov048_02260d28(void *self)
         return;
     }
 
-    n = func_020ec148(func_02074308());
+    func_02074308();
+    n = func_020ec148();
     if (n <= 0) {
         return;
     }
 
-    tbl = func_020eb92c(func_020730c8());
+    func_020730c8();
+    tbl = func_020eb92c();
     flag_init = 0;
 
     for (i = 0; i < n; i++) {

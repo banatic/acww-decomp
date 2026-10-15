@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202e8e4();
-extern void func_02084f88();
-extern void *func_020edf70();
-extern void func_ov004_0221ebf8();
+extern void *func_0202e8e4(void *argument0);
+extern void func_02084f88(void *object);
+extern void *func_020edf70(int argument0);
+extern void func_ov004_0221ebf8(int *argument0);
 extern void *data_ov004_022539cc;
 
 void *func_ov004_0221ee98(void)
@@ -17,7 +17,7 @@ void *func_ov004_0221ee98(void)
     if (self != 0) {
         func_0202e8e4(self);
         *(void **) (self) = &data_ov004_022539cc;
-        func_ov004_0221ebf8(self + 0x8a0);
+        func_ov004_0221ebf8((int *) (self + 0x8a0));
         func_02084f88(self + 0x8b4);
     }
     return self;

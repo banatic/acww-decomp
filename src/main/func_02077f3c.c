@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020780d0(void *);
+extern void *func_020780d0(void *);
 extern void func_02078070(void *, int, int);
 extern int func_02078148(const void *);
 extern void func_020782a0(int, void *);
-extern void func_02077f8c(int, void *);
-extern void func_020780b8(void *);
+extern int func_02077f8c(int, void *);
+extern void *func_020780b8(void *);
 extern int data_021eed68;
 
-void func_02077f3c(int a, int b, unsigned char c, unsigned char d, unsigned char e)
+void *func_02077f3c(int a, int b, unsigned char c, unsigned char d, unsigned char e)
 {
     struct {
         unsigned char x;
@@ -28,5 +28,5 @@ void func_02077f3c(int a, int b, unsigned char c, unsigned char d, unsigned char
     small.x = e;
     func_020782a0(temp, &small);
     func_02077f8c(temp, buf);
-    func_020780b8(buf);
+    return func_020780b8(buf);
 }

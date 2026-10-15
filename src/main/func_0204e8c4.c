@@ -13,11 +13,11 @@ typedef struct {
     int d;
 } UnkStruct_0204e8c4;
 
-extern UnkStruct_0204e8c4 *func_0204f86c(int size);
+extern UnkStruct_0204e8c4 *func_0204f86c(int size, int);
 extern int func_0204ea00(unsigned char *p0, Point *pt);
 extern int func_0204e9c0(unsigned char *p0, Point *pt);
 
-UnkStruct_0204e8c4 *func_0204e8c4(unsigned char *p0)
+UnkStruct_0204e8c4 *func_0204e8c4(unsigned char *p0, int argument1)
 {
     Point pt;
     Point o;
@@ -27,7 +27,7 @@ UnkStruct_0204e8c4 *func_0204e8c4(unsigned char *p0)
 
     pt.x = 0;
     pt.y = 0;
-    arr = func_0204f86c(0x24);
+    arr = func_0204f86c(0x24, (int) argument1);
     if (arr == 0) {
         goto ret;
     }

@@ -38,7 +38,7 @@ typedef struct {
 
 extern u8 data_020c75c0[];
 extern TB data_020c75e8[];
-extern void func_020058b4(void);
+extern void func_020058b4(void *state);
 
 extern int func_0205cfe8(u8 *p);
 extern int func_0205cfd4(u8 *p);
@@ -46,13 +46,13 @@ extern void func_020554b0(u8 *p, int a);
 extern int func_020961d0(int a);
 extern void func_0205f750(u8 *p, int a);
 extern int func_0205f73c(u8 *p);
-extern void func_020548cc(u8 *p, int a);
-extern void func_02055478(u8 *p, int a);
+extern int func_020548cc(u8 *p, int a);
+extern int func_02055478(u8 *p, int a);
 extern void func_02010c34(UnkStruct_0200d900_2 *s);
 extern void func_0205ccc4(u8 *p, int a);
 extern void func_020109fc(UnkStruct_0200d900_2 *s, int a, int b, int c);
 extern void func_02055050(u8 *p);
-extern void func_02055de0(u8 *p, void (*fn)(void), int a, int b, UnkStruct_0200d900_2 *s, int c);
+extern void func_02055de0(u8 *p, int callback, int a, int b, UnkStruct_0200d900_2 *s, int c);
 extern void func_02056730(u8 *p);
 
 int func_0200d900(UnkStruct_0200d900_2 *s)
@@ -90,7 +90,7 @@ int func_0200d900(UnkStruct_0200d900_2 *s)
             func_0205ccc4(&s->unk_701, data_020c75e8[k].b);
             func_020109fc(s, 0, 0, 0);
             func_02055050(&s->unk_234);
-            func_02055de0(&s->unk_234, func_020058b4, 6, 1, s, 0);
+            func_02055de0(&s->unk_234, (int) func_020058b4, 6, 1, s, 0);
             func_02056730(&s->unk_710);
             func_02056730(&s->unk_73C);
             ret = 1;

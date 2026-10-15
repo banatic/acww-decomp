@@ -20,9 +20,9 @@ typedef struct UnkStruct_02213d18 {
 } UnkStruct_02213d18;
 
 extern int func_ov003_02213ec0(UnkStruct_02213d18 *self);
-extern void func_0203f7d0(Vec3 *dst, Vec3 *src);
+extern int func_0203f7d0(Vec3 *dst, Vec3 *src);
 extern void func_ov003_02214200(UnkStruct_02213d18 *self, Vec3 *in, Vec3 *out1, Vec3 *out2);
-extern void func_ov003_02213da0(UnkStruct_02213d18 *self, Vec3 *in, Vec3 *out1, Vec3 *out2);
+extern int func_ov003_02213da0(UnkStruct_02213d18 *self, Vec3 *in, Vec3 *out1, Vec3 *out2);
 
 void func_ov003_02213d18(UnkStruct_02213d18 *self)
 {

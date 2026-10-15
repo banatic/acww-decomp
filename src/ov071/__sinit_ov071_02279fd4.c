@@ -22,18 +22,20 @@ extern Pair data_ov071_0227a3a4[12];
 extern Timer data_ov071_0227a38c;
 extern Timer data_ov071_0227a398;
 
-extern void func_020012dc(void);
+extern void func_020012dc(void *object);
 extern u8 data_ov071_0227a34c[];
 extern u8 data_ov071_0227a358[];
 
-extern void __register_global_object(Timer *t, void (*cb)(void), void *name);
+extern void __register_global_object(Timer *t, void *destructor, void *name);
+
+#define DisposeGlobal_func_020012dc ((void *) &func_020012dc)
 
 static __inline void InitTimer(Timer *t, s32 period, void *name)
 {
     t->unk_00 = period;
     t->unk_04 = 0;
     t->unk_08 = 0x1000;
-    __register_global_object(t, func_020012dc, name);
+    __register_global_object(t, DisposeGlobal_func_020012dc, name);
 }
 
 void __sinit_ov071_02279fd4(void)
@@ -59,6 +61,8 @@ void __sinit_ov071_02279fd4(void)
         p->unk_00 = -0x800;
         p->unk_04 = 0;
         p->unk_08 = 0x1000;
-        __register_global_object(p, func_020012dc, data_ov071_0227a358);
+        __register_global_object(p, DisposeGlobal_func_020012dc, data_ov071_0227a358);
     }
 }
+
+#undef DisposeGlobal_func_020012dc

@@ -10,8 +10,8 @@ extern int func_0204e414(void);
 extern int func_0204df68(int, void *);
 extern int func_0204e188(int, void *, int, int);
 extern int func_020b5e10(void);
-extern void func_020b5ee4(int, int);
-extern void func_020b63f4(int, int, void *, int, int, int, int);
+extern int func_020b5ee4(int, int);
+extern int func_020b63f4(int, int, void *, int, int, int, int);
 extern void func_02035c64(int, int, int);
 
 struct UnkStruct_020414e0 {

@@ -4,7 +4,7 @@
 
 extern void func_0208a1f4(void *);
 extern void func_0208af00(void *);
-extern __arm void func_020edb3c(void *);
+extern void func_020edb3c(void *);
 
 struct UnkStruct_0208ebe4 {
     unsigned int unk_00;

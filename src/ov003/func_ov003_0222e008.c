@@ -10,7 +10,7 @@ extern Actor data_ov003_02260994[];
 extern Actor data_ov003_02260e4c[];
 extern void func_ov003_0222fe18(void *a, void *b, int c);
 extern void func_020e9898(void *a);
-extern void func_0209d138(void *a);
+extern int func_0209d138(void *a);
 extern void func_02044528(void);
 
 int func_ov003_0222e008(char *self)

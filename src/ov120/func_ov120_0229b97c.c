@@ -6,8 +6,8 @@ extern void *data_021fbe94;
 extern const char data_ov120_0229c6b0[];
 extern const char data_ov120_0229c6c8[];
 extern const char data_ov120_0229c6e4[];
-extern void func_02002d14(const char *data, void *obj, int a, int b, int c, int d);
-extern void func_02002c6c(const char *data, void *obj, int a, int b, int c, int d);
+extern int func_02002d14(const char *data, void *obj, int a, int b, int c, int d);
+extern int func_02002c6c(const char *data, void *obj, int a, int b, int c, int d);
 
 void func_ov120_0229b97c(void)
 {

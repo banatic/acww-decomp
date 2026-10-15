@@ -9,12 +9,12 @@ extern void func_02110ab4(void);
 extern void func_02110af0(void);
 extern void func_02110adc(void);
 extern void func_02110ac8(void);
-extern void GX_ResetBankForBGExtPltt(void);
-extern void GX_ResetBankForOBJExtPltt(void);
+extern unsigned int GX_ResetBankForBGExtPltt(void);
+extern unsigned int GX_ResetBankForOBJExtPltt(void);
 extern void func_02110a8c(void);
 extern void func_02110a78(void);
-extern void GX_ResetBankForSubBGExtPltt(void);
-extern void GX_ResetBankForSubOBJExtPltt__autoload_2_02110a28(void);
+extern unsigned int GX_ResetBankForSubBGExtPltt(void);
+extern unsigned int GX_ResetBankForSubOBJExtPltt__autoload_2_02110a28(void);
 
 void func_02053fdc(void)
 {

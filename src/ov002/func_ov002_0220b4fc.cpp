@@ -11,7 +11,7 @@ class UnkStruct_0220b4fc {
     virtual void f4(int a, int b);
 };
 
-extern "C" void func_ov002_0220b550(void *self, void *p);
+extern "C" int func_ov002_0220b550(void *self, void *p);
 extern "C" void func_0208f210(void *self, int a, int b);
 extern "C" void func_0208f250(void *self);
 extern "C" void func_0208f0c4(void *self, int a);

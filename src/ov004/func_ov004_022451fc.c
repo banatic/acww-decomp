@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov004_022454fc(void *arg);
+extern void *func_ov004_022454fc(void *arg);
 extern int data_ov004_022566d8;
 
 void *func_ov004_022451fc(void *arg)

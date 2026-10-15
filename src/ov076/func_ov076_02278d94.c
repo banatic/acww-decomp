@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f9d8(void *);
+extern unsigned short func_0206f9d8(int (*predicate)(unsigned short *, int));
 extern int func_020644cc(int);
-extern int func_ov076_02278f0c;
+extern int func_ov076_02278f0c(unsigned short *, int);
 extern const unsigned char data_ov076_02279598[][8];
 extern const unsigned int data_ov076_02279594[][2];
 
@@ -20,7 +20,7 @@ struct UnkStruct_02278d94_2 {
 
 void func_ov076_02278d94(struct UnkStruct_02278d94 *s, struct UnkStruct_02278d94_2 *out)
 {
-    if (func_0206f9d8(&func_ov076_02278f0c) != 0) {
+    if (func_0206f9d8(func_ov076_02278f0c) != 0) {
         s->unk_B0 = 0;
     } else {
         if (func_020644cc(2) == 0) {

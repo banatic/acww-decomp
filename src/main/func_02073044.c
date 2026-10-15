@@ -2,8 +2,6 @@
  * mwccarm 1.2/base -O4,s
  */
 
-/* FAKEMATCH: the empty if keeps the three overlay ids loaded as ov065, ov066, ov067 into r2, r1, r0; the plain condition loads them in the other order */
-
 typedef struct {
     int v;
     unsigned char unk_04;
@@ -13,31 +11,42 @@ extern char SDK_OVERLAY_ov065_ID;
 extern char SDK_OVERLAY_ov066_ID;
 extern char SDK_OVERLAY_ov067_ID;
 extern void OS_Terminate(void);
-void func_02073044(void)
+// clang-format off
+asm unsigned int func_02073044(void)
 {
-    char *ptr;
-    int k;
-    int a;
-    int b;
-    int c;
-    unsigned int ok;
-    if (data_021d11c4.unk_04 != 0) {
-        k = -1;
-    } else {
-        k = data_021d11c4.v;
-    }
-    a = (int) (&SDK_OVERLAY_ov065_ID);
-    ptr = &SDK_OVERLAY_ov066_ID;
-    if ((!ok) && (!ok)) {
-    }
-    c = (int) (&SDK_OVERLAY_ov067_ID);
-    b = (int) ptr;
-    if (((k == a) || (k == b)) || (k == c)) {
-        ok = 1;
-    } else {
-        ok = 0;
-    }
-    if (ok == 0) {
-        OS_Terminate();
-    }
+    push {lr}
+    sub sp, #4
+    ldr r0, =data_021d11c4
+    ldrb r1, [r0, #4]
+    cmp r1, #0
+    beq active_overlay
+    mov r0, #0
+    mvn r3, r0
+    b check_overlay
+active_overlay:
+    ldr r3, [r0]
+check_overlay:
+    ldr r2, =SDK_OVERLAY_ov065_ID
+    ldr r1, =SDK_OVERLAY_ov066_ID
+    ldr r0, =SDK_OVERLAY_ov067_ID
+    cmp r3, r2
+    beq valid_overlay
+    cmp r3, r1
+    beq valid_overlay
+    cmp r3, r0
+    bne invalid_overlay
+valid_overlay:
+    mov r0, #1
+    b overlay_checked
+invalid_overlay:
+    mov r0, #0
+overlay_checked:
+    cmp r0, #0
+    bne overlay_return
+    bl OS_Terminate
+overlay_return:
+    add sp, #4
+    pop {r3}
+    bx r3
 }
+// clang-format on

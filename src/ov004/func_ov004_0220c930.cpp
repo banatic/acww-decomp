@@ -64,9 +64,9 @@ struct UnkStruct_0220c930_2 {
 };
 
 extern "C" {
-void func_ov004_0220d594(void *p, UnkStruct_0220c930 *self);
+int func_ov004_0220d594(void *p, UnkStruct_0220c930 *self);
 void func_ov004_0220ee90(UnkStruct_0220c930 *self, int a, int b);
-void func_ov004_0220db94(UnkStruct_0220c930_2 *l);
+char *func_ov004_0220db94(UnkStruct_0220c930_2 *l);
 void func_ov004_0220f27c(UnkStruct_0220c930 *self, UnkStruct_0220c930_2 *l, int a, int b);
 unsigned int func_ov004_0220db68(UnkStruct_0220c930_2 *l);
 Pair *func_ov004_0220db5c(UnkStruct_0220c930_2 *l, unsigned int i);

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02090db0(void);
+extern void func_02090db0(void *);
 
 extern unsigned char data_021d5658[];
 
@@ -28,6 +28,6 @@ void func_02094ef4(void *arg0)
     puVar1 = *(unsigned int **) ((int) arg0 + 0x18);
     val2 = *(unsigned int *) (*puVar1 + 0xc);
     *(unsigned int *) ((int) arg0 + 0x28) = val + val2;
-    func_02090db0();
+    func_02090db0(arg0);
     return;
 }

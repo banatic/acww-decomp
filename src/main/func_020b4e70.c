@@ -3,11 +3,10 @@
  */
 
 extern int func_02050c18(void);
-extern int func_020a9334(int, int);
+extern void func_020a9334(void *object, void *next);
 
-int func_020b4e70(int r0)
+void func_020b4e70(int object)
 {
-    int r4 = r0;
-    int r1 = func_02050c18();
-    return func_020a9334(r4, r1);
+    int next = func_02050c18();
+    func_020a9334((void *) object, (void *) next);
 }

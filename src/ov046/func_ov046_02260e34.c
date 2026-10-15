@@ -6,10 +6,10 @@ extern int data_020ccf94;
 extern int func_02073d90(int);
 extern short *func_0209d358(int, int);
 extern int func_020b1328(int *);
-extern void func_020b1954(void *);
-extern void func_020b1394(void *, int);
+extern void *func_020b1954(void *);
+extern int func_020b1394(void *, int);
 extern void func_02068404(int, int, void *);
-extern void func_020b193c(void *);
+extern void *func_020b193c(void *);
 extern void func_020b1310(void);
 
 void func_ov046_02260e34(void *self)

@@ -3,8 +3,8 @@
  */
 
 extern volatile unsigned char data_021f43ec;
-extern void func_ov002_0220b9b8(void *, void *, int, int);
-extern void func_ov002_02208098(void *, int);
+extern int func_ov002_0220b9b8(void *, void *, int, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_0208e5c4(void *);
 
 void func_ov109_0229cccc(unsigned char *obj, unsigned char arg)

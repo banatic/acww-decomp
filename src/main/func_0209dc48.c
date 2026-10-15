@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209dc74(unsigned char *);
+extern int func_0209dc74(unsigned char *);
 
-void func_0209dc48(unsigned char *arg0)
+int func_0209dc48(unsigned char *arg0)
 {
     unsigned char local_4[4];
     unsigned char *local_0;
@@ -17,5 +17,5 @@ void func_0209dc48(unsigned char *arg0)
     local_4[2] = arg0[5];
     local_4[1] = arg0[4];
     local_4[0] = arg0[3];
-    func_0209dc74(local_4);
+    return func_0209dc74(local_4);
 }

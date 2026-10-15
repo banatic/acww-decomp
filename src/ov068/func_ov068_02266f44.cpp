@@ -101,7 +101,7 @@ extern "C" UnkStruct_02266f44 *func_0201ce50(UnkStruct_02266f44_2 *);
 extern "C" int func_ov068_0226cbe4(int *, int);
 extern "C" int func_0201cddc(UnkStruct_02266f44_2 *);
 extern "C" int func_ov068_0226cf58(UnkStruct_02266f44_2 *);
-extern "C" void func_02079400(void);
+extern "C" void func_02079400(void *context);
 extern "C" void func_ov068_0226cce8(int *, UnkStruct_02266f44_2 *, int);
 extern "C" void func_0202dc3c(int *, UnkStruct_02266f44_2 *, int);
 extern "C" int func_0201c2a4(UnkStruct_02266f44_2 *, int);
@@ -112,10 +112,10 @@ extern "C" void func_ov068_0226ccd8(int *);
 extern "C" int func_0207f1d8(void *);
 extern "C" u8 *func_020800d0(void *);
 extern "C" void func_0204f794(Vec3 *, int, int);
-extern "C" int func_020791ec(Vec3 *);
+extern "C" int func_020791ec(void);
 extern "C" int func_0207f294(void *);
 extern "C" int func_ov068_0226ccb0(int *, UnkStruct_02266f44_2 *);
-extern "C" void func_020793f0(void);
+extern "C" void func_020793f0(void *context);
 extern "C" void func_0203eddc(UnkStruct_02266f44_2 *);
 extern "C" void func_0207d0f0(void *, int);
 extern "C" void func_0201b6e4(UnkStruct_02266f44_2 *, int, int);
@@ -176,8 +176,9 @@ extern "C" void func_ov068_02266f44(UnkStruct_02266f44_2 *self, int kind, int ar
                 }
             }
             if (self->unk_9FC == 0) {
-                if (func_ov068_0226cf58(self) != 0) {
-                    func_02079400();
+                int context = func_ov068_0226cf58(self);
+                if (context != 0) {
+                    func_02079400((void *) context);
                 }
             }
             func_ov068_0226cce8(&self->unk_8B8, self, 8);
@@ -237,7 +238,7 @@ extern "C" void func_ov068_02266f44(UnkStruct_02266f44_2 *self, int kind, int ar
                     dp->y = sp->y;
                     dp->z = sp->z;
                 }
-                a = func_020791ec(&self->unk_68);
+                a = func_020791ec();
                 b = func_0207f294(self->v25());
                 if (a == b || (unsigned int) (n - 3) <= 4) {
                     func_ov068_0226cce8(&self->unk_8B8, self, 0xc);
@@ -254,8 +255,9 @@ extern "C" void func_ov068_02266f44(UnkStruct_02266f44_2 *self, int kind, int ar
                 if (func_ov068_0226ccb0(&self->unk_8B8, self) == 0) {
                     func_ov068_0226cce8(&self->unk_8B8, self, 0);
                 }
-                if (func_ov068_0226cf58(self) != 0) {
-                    func_020793f0();
+                int context = func_ov068_0226cf58(self);
+                if (context != 0) {
+                    func_020793f0((void *) context);
                 }
             }
             func_0203eddc(self);

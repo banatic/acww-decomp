@@ -37,9 +37,9 @@ class UnkStruct_02217da8 {
     virtual void s28(int a, int b);
 };
 
-extern "C" void *func_ov004_0223cb10(UnkStruct_02217da8 *self);
+extern "C" void *func_ov004_0223cb10(void);
 extern "C" void *func_ov004_0223ca9c(void *a, UnkStruct_02217da8 *self);
-extern "C" u16 func_ov004_0223cb18(void *h);
+extern "C" int func_ov004_0223cb18(void *h);
 extern "C" char *func_ov004_0223cb28(void *h);
 extern "C" int func_ov004_0222c14c(char *a, char *b, u16 *t, s16 d, int e);
 
@@ -49,7 +49,7 @@ extern "C" void func_ov004_02217da8(UnkStruct_02217da8 *self)
     void *h;
     char *a;
 
-    h = func_ov004_0223ca9c(func_ov004_0223cb10(self), self);
+    h = func_ov004_0223ca9c(func_ov004_0223cb10(), self);
     t = func_ov004_0223cb18(h);
     a = func_ov004_0223cb28(h);
     if (func_ov004_0222c14c(a, func_ov004_0223cb28(h) + 8, &t, (s16) (*(s16 *) ((char *) self + 0x8e) - 0x4000), 1)) {

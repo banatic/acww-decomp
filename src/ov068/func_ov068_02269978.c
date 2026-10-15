@@ -15,13 +15,13 @@ typedef struct UnkStruct_02269978 {
 
 extern int func_02096190(int);
 extern int func_ov068_0226d598(UnkStruct_02269978 *);
-extern int func_02081d20(int, int);
+extern int func_02081d20(int);
 extern int func_0208150c(u32);
 extern int func_020036e8(int);
 extern int func_0201c314(UnkStruct_02269978 *, int);
-extern int func_ov068_0226cfd4(UnkStruct_02269978 *);
-extern void func_ov003_02219874(int);
-extern void func_020147b8(void *, int, int, int, int);
+extern void func_ov068_0226cfd4(UnkStruct_02269978 *);
+extern int func_ov003_02219874(void);
+extern int func_020147b8(void *, int, int, int, int);
 extern void func_ov068_02266c34(void *, UnkStruct_02269978 *, int, int, int, u32, int, u32, int);
 extern u32 data_020c814c;
 extern char data_021fbee8[];
@@ -42,7 +42,7 @@ int func_ov068_02269978(int unused, UnkStruct_02269978 *self)
     temp = func_ov068_0226d598(self);
     t2 = 0;
     if (temp != 0) {
-        t2 = func_02081d20(temp, 0);
+        t2 = func_02081d20(temp);
     }
 
     if (t2 >= 0) {
@@ -74,7 +74,7 @@ int func_ov068_02269978(int unused, UnkStruct_02269978 *self)
         r7 = func_0201c314(self, r6);
     }
 
-    func_ov003_02219874(func_ov068_0226cfd4(self));
+    ((void) (func_ov068_0226cfd4(self)), func_ov003_02219874());
     func_020147b8(&self->unk_618, r5, 0, r7, 0);
     func_ov068_02266c34(&self->unk_898, self, 1, 0, 0, (u32) data_021fbee8, 4, data_020c814c, 1);
 

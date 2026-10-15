@@ -8,7 +8,7 @@ extern void *func_020984fc(void *);
 extern void func_0209971c(void *, void *);
 extern void func_0205eb8c(void *, void *, int);
 extern int func_02008258(void *, int);
-extern void func_0200d4e8(void *, int, int, int);
+extern int func_0200d4e8(void *, int, int, int);
 
 struct UnkStruct_0220d914 {
     char pad_00[0x5a0];

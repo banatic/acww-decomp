@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fc6c(void *);
+extern int func_0206fc6c(void);
 extern int func_02070dc0(void *);
 extern int func_02070fa0(void *);
 extern void func_0206844c(void *, void *, void *);
@@ -23,7 +23,7 @@ void func_ov047_02261b10(struct UnkStruct_02261b10 *param)
     int ret;
 
     field40 = param->unk_40;
-    if (func_0206fc6c(param) != 0) {
+    if (func_0206fc6c() != 0) {
         byte = 0x13;
         addr = &data_021f38f8;
         ret = func_02070dc0(addr);

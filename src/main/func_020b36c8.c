@@ -12,7 +12,7 @@ typedef struct {
 } UnkStruct_020b36c8;
 
 extern unsigned int data_020d1e90[];
-extern void func_020e895c(UnkStruct_020b36c8 *self, unsigned int a, unsigned int b);
+extern int func_020e895c(UnkStruct_020b36c8 *self, unsigned int a, unsigned int b);
 
 void func_020b36c8(UnkStruct_020b36c8 *self)
 {

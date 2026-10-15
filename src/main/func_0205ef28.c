@@ -4,13 +4,13 @@
 
 extern int func_0205f130(void *a, unsigned char b);
 extern void func_02054cf4(int a, void *b);
-extern void func_0205ef5c(void);
+extern void func_0205ef5c(void *p);
 
 typedef struct {
     char pad_00[0x4];
     void *unk_04;
     char pad_08[0x1C];
-    void (*func24)(void);
+    void (*func24)(void *p);
     char pad_28[0x6A];
     unsigned char flag92;
 } UnkStruct_0205ef28;

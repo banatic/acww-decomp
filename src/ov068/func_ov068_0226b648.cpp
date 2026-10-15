@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" int func_020984e8(void *);
+extern "C" int func_020984e8(void);
 extern "C" int func_02099020(int, int);
 extern "C" void *func_0207f270(int);
 extern "C" void func_ov068_0226cfd4(void *);
 extern "C" void func_ov068_02266c34(void *, void *, int, int, int, void *, int, int, int);
-extern "C" void func_02019c6c(void *, int, unsigned short);
-extern "C" int func_02079540(void *, int);
+extern "C" int func_02019c6c(void *, int, unsigned short);
+extern "C" void func_02079540(void *, int);
 extern "C" int func_0207d578(int, int);
 extern "C" void func_020794d4(void *, int);
 extern "C" void func_0207f454(int);
@@ -53,7 +53,7 @@ extern unsigned char data_021fbee8[];
 
 extern "C" int func_ov068_0226b648(void *r6, void *r5)
 {
-    int t = func_020984e8(r6);
+    int t = func_020984e8();
     int r7;
     if (t != 0) {
         r7 = func_02099020(t, 1);

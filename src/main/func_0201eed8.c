@@ -21,14 +21,14 @@ typedef struct OutType {
 } OutType;
 
 extern int data_020c8ba0;
-extern void func_0208150c(int);
-extern int func_020036e8(void);
-extern void func_0202da38(SelfType *a, char *b, char *c, int d, int e, int f, int g, int h, int i);
+extern unsigned int func_0208150c(int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(SelfType *a, char *b, char *c, int d, int e, int f, int g, int h, int i);
 
 void func_0201eed8(SelfType *self, OutType *out)
 {
-    func_0208150c(self->ptr->value);
-    func_0202da38(self, &self->unk_104, (char *) &self->unk_122, 30, func_020036e8(), data_020c8ba0, 1, 0x13, 2);
+    func_0202da38(self, &self->unk_104, (char *) &self->unk_122, 30,
+                  func_020036e8((unsigned char *) func_0208150c(self->ptr->value)), data_020c8ba0, 1, 0x13, 2);
     out->unk_00 = &self->unk_104;
     out->unk_04 = self->unk_122;
 }

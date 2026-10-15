@@ -20,8 +20,8 @@ typedef struct {
     unsigned char c;
 } Param5;
 
-extern void *func_0203f504(int, int, int, int);
-extern void func_02065c2c(void *, void *);
+extern void *func_0203f504(void);
+extern int func_02065c2c(void *, void *);
 
 extern unsigned char data_021c72c4[];
 
@@ -29,7 +29,7 @@ int func_0203e478(int a0, int a1, int a2, int a3, Param5 a4)
 {
     UnkStruct_0203e478 *p;
 
-    p = func_0203f504(a0, a1, a2, a3);
+    p = func_0203f504();
     if (p == 0) {
         return 0;
     }

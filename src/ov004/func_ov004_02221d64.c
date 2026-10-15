@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02019c90(void *p, int a, int b, unsigned short c);
+extern int func_02019c90(void *p, int a, int b, unsigned short c);
 extern unsigned short data_020c80f8;
 extern int func_020644cc(int a);
 extern int func_ov004_02222178(void *self, int a);

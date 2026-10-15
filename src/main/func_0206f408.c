@@ -6,7 +6,7 @@ extern short data_021cfc1c[];
 extern unsigned char data_021cfc14;
 extern char data_021cfc2c;
 extern unsigned char data_027e0438[24];
-extern void func_0205bfdc(char *);
+extern int func_0205bfdc(char *);
 extern void func_02001ca0(int, int, int, int);
 
 #define REG_BLDY (*(volatile unsigned short *) 0x04000042)

@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0205dad0(int *p, int offset);
+extern int func_0205dad0(void);
 
 int func_0205d978(int *arr, int idx, int flag)
 {
     if (flag == 1) {
         int v = arr[idx];
-        return v + func_0205dad0(arr, idx * 4);
+        return v + func_0205dad0();
     } else {
         return arr[idx];
     }

@@ -9,7 +9,7 @@ extern int data_020e5fe0[];
 extern int data_021fbe94;
 
 extern int func_02064b2c(int, int, int, int *);
-extern void func_02064af4(int, int, int, int);
+extern int func_02064af4(int, int, int);
 
 int func_020bbd30(void)
 {
@@ -31,7 +31,7 @@ int func_020bbd30(void)
                     return 0;
                 }
             } else {
-                func_02064af4(pD[j], val, *(int *) (pA + j * 4 + 0x1554), 0x1554);
+                func_02064af4(pD[j], val, *(int *) (pA + j * 4 + 0x1554));
             }
         }
     }

@@ -25,7 +25,7 @@ extern "C" {
 extern FlagEntry data_ov051_02261bb0[];
 extern PMFEntry data_ov051_02261ba8[];
 extern int func_020e8858(void *);
-extern void func_02019c20(int, int, int, int, int, int);
+extern int func_02019c20(int, int, int, int, int, int);
 extern unsigned short data_020c80f8;
 int func_ov051_02261270(UnkStruct_02261270 *self);
 }

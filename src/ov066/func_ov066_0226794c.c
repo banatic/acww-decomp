@@ -4,7 +4,7 @@
 
 extern void func_ov066_02267908(void);
 
-void func_ov066_0226794c(void)
+void func_ov066_0226794c(void *argument)
 {
     func_ov066_02267908();
 }

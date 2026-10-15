@@ -7,9 +7,14 @@
 
 typedef void (Obj_ov147_0229ac1c::*PMF_t)();
 
+#define STATE_func_ov147_0229a250 (PMF_t) & Obj_ov147_0229ac1c::func_ov147_0229a250
+
 void Obj_ov147_0229ac1c::func_ov147_0229a634()
 {
     static PMF_t PMFs[3] = {&Obj_ov147_0229ac1c::func_ov147_0229a2dc, &Obj_ov147_0229ac1c::func_ov147_0229a2a8,
-                            &Obj_ov147_0229ac1c::func_ov147_0229a250};
+                            STATE_func_ov147_0229a250};
+
     (this->*(PMFs[unk_04]))();
 }
+
+#undef STATE_func_ov147_0229a250

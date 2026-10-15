@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202f144(void);
+extern void func_0202f144(int, int);
 
-void func_02003530(void *arg0)
+void func_02003530(void *arg0, int argument1)
 {
     unsigned int *ptr;
     unsigned int val;
 
-    func_0202f144();
+    func_0202f144((int) arg0, (int) argument1);
     ptr = (unsigned int *) ((char *) arg0 + 0xb0);
     val = *ptr;
     val |= 4;

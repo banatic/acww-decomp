@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_0209d3d0();
+extern int func_0209d3d0(unsigned int arg0);
 
 int func_ov004_0222c574(char *self)
 {

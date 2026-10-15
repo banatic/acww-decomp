@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020835a0(unsigned int, int);
+extern void *func_020835a0(void);
 extern void func_02083640(void *, int);
 
 void func_02083578(void *self, unsigned int index)
@@ -11,7 +11,7 @@ void func_02083578(void *self, unsigned int index)
         unsigned int n4 = 0;
         void *base;
         n4 += index;
-        base = func_020835a0(0, index);
+        base = func_020835a0();
         func_02083640((char *) base + 8 + index * 8, n4);
     }
 }

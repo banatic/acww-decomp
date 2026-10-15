@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02062f90(void *buf, unsigned int val);
+extern void *func_02062f90(void *buf, unsigned int val);
 extern void func_0208aa48(void *a, void *b);
-extern void func_02062f4c(void *b);
+extern void *func_02062f4c(void *b);
 
 typedef struct {
     unsigned char pad_00[8];

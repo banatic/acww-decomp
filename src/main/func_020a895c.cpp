@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020a8c1c(void);
+extern "C" void func_020a8c1c(void *);
 extern "C" void MI_CpuCopy8(unsigned int a, unsigned int b, unsigned int c);
 
 class UnkStruct_020a895c {
@@ -16,7 +16,7 @@ class UnkStruct_020a895c {
 
 extern "C" bool func_020a895c(UnkStruct_020a895c *obj, unsigned int b, unsigned int c)
 {
-    func_020a8c1c();
+    func_020a8c1c(obj);
     unsigned int v2 = obj->v3();
     unsigned int v1 = obj->v2();
     unsigned int diff = c - b;

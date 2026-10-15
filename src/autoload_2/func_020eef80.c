@@ -2,20 +2,23 @@
  * mwccarm 1.2/base -O4,p
  */
 
-func_020eef80(unsigned char *arg0)
-{
-    unsigned int local_0;
-    unsigned int local_4;
+extern void OS_Terminate(void);
+extern unsigned long MIi_ReadWordStreamFromMemory(const unsigned long *p);
+extern void func_020ef284(int node);
+extern void *func_020efc2c(void *list, void *object);
 
-    if (arg0 == 0) {
+void func_020eef80(void *list)
+{
+    void *node;
+    if (list == 0) {
         OS_Terminate();
     }
-    local_4 = MIi_ReadWordStreamFromMemory(arg0);
-    if (local_4 == 0) {
+    node = (void *) MIi_ReadWordStreamFromMemory((const unsigned long *) list);
+    if (node == 0) {
         return;
     }
     do {
-        func_020ef284(local_4);
-        local_4 = func_020efc2c(arg0, local_4);
-    } while (local_4 != 0);
+        func_020ef284((int) node);
+        node = func_020efc2c(list, node);
+    } while (node != 0);
 }

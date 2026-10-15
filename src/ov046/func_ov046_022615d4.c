@@ -23,15 +23,15 @@ struct UnkStruct_022615d4 {
 
 extern void *func_0206837c(void *p);
 extern void func_020ab5e4(void *p);
-extern void func_020b1954(Obj20 *o);
-extern void func_020b4980(Obj20 *o, char *sep, int z);
+extern void *func_020b1954(Obj20 *o);
+extern int func_020b4980(Obj20 *o, char *sep, int z);
 extern int func_020b1394(Obj20 *o, int cur);
-extern void func_020b55d0(Obj114 *o);
+extern void *func_020b55d0(Obj114 *o);
 extern int func_020ab550(void *p, int i);
-extern void func_020a89dc(Obj114 *o, Obj20 *src);
+extern int func_020a89dc(Obj114 *o, Obj20 *src);
 extern int func_020ab798(int v);
-extern void func_020a8bb8(int a, Obj114 *o);
-extern void func_020b55b8(Obj114 *o);
+extern void *func_020a8bb8(int a, Obj114 *o);
+extern void *func_020b55b8(Obj114 *o);
 extern void func_020ab778(int v, char *sep);
 extern int func_020ab39c(int one);
 extern void func_020ab774(int v, int r);
@@ -39,7 +39,7 @@ extern void func_020ab71c(int v);
 extern void func_020ab4bc(void *p, int i);
 extern void func_020ab4a8(void *p);
 extern void func_02068388(void *p, int one);
-extern void func_020b193c(Obj20 *o);
+extern void *func_020b193c(Obj20 *o);
 
 void func_ov046_022615d4(struct UnkStruct_022615d4 *s)
 {

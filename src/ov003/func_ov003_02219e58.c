@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void DWC_Alloc(int, int);
+extern int DWC_Alloc(int, int);
 
-void func_ov003_02219e58(int a)
+int func_ov003_02219e58(int a)
 {
-    DWC_Alloc(9, a);
+    return DWC_Alloc(9, a);
 }

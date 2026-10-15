@@ -17,7 +17,7 @@ struct UnkStruct_02268570_2 {
     char pad1[2];
     char unk_22;
     char pad_23[0x9c - 0x23];
-    void (*unk_9C)(void);
+    unsigned int (*unk_9C)(void);
     void (*unk_A0)(void);
     void (*unk_A4)(void);
     char pad_A8[0xc0 - 0xa8];
@@ -38,7 +38,7 @@ extern void func_ov066_022695ac(int a, void *b);
 extern void func_ov066_0226943c(void);
 extern void func_ov066_02266bf4(void);
 extern void func_ov066_02269528(void);
-extern void func_ov066_02268c90(void);
+extern int func_ov066_02268c90(void);
 extern void func_ov066_0226686c(int code);
 
 void func_ov066_02268570(struct UnkStruct_02268570_3 *p)

@@ -4,15 +4,15 @@
 
 #include "types.h"
 
-extern int func_0209d3f8();
+extern int func_0209d3f8(void *argument0, unsigned char argument1);
 extern void *data_ov004_02258224;
 
-int func_ov004_0222c8c8(char *self)
+int func_ov004_0222c8c8(void)
 {
     // DECLS
     int v2;
     // ENDDECLS
-    v2 = func_0209d3f8(*(int *) ((char *) &data_ov004_02258224), 0x1);
+    v2 = func_0209d3f8((void *) (*(int *) ((char *) &data_ov004_02258224)), (unsigned char) (0x1));
     if (v2 != 0x0) {
         *(u8 *) ((char *) *(int *) ((char *) &data_ov004_02258224) + 0x374) = 0x1;
         return 0x374;

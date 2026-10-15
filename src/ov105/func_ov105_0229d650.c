@@ -6,7 +6,7 @@ int func_ov105_0229d650(int a, int b);
 
 extern int func_ov105_0229d428(int, int);
 extern int func_ov105_0229d59c(int, int);
-extern void func_02066830(int, int);
+extern int func_02066830(int, int);
 extern void func_ov105_0229d5dc(int, unsigned char, int);
 extern void func_ov105_0229d0d4(int, int);
 

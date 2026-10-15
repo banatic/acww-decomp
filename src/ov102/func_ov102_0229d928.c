@@ -5,9 +5,9 @@
 #include "types.h"
 
 extern int func_ov002_02209f9c(void *ptr);
-extern void func_ov102_0229d320(void *self);
+extern int func_ov102_0229d320(void *self, int index);
 extern void func_ov102_0229cdf4(void *self);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov094_022999d8(void);
 extern void func_ov102_0229d54c(void *self, u8 a, int b);
 extern void func_ov102_0229cd38(void *self);
@@ -22,7 +22,7 @@ void func_ov102_0229d928(UnkStruct_0229d928 *self)
 {
     if (func_ov002_02209f9c((char *) self + 0x2274) == 0) {
         if (self->unk_25A5 == self->unk_25A6) {
-            func_ov102_0229d320(self);
+            func_ov102_0229d320(self, self->unk_25A6);
             func_ov102_0229cdf4(self);
             func_ov002_02208098(self, 3);
             func_ov094_022999d8();

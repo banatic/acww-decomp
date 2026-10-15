@@ -12,7 +12,7 @@ typedef struct UnkStruct_02011150 {
 } UnkStruct_02011150;
 
 extern u32 data_020ccf94;
-extern u8 func_020112bc(UnkStruct_02011150 *);
+extern u8 func_020112bc(void *);
 extern int func_020b65c4(void);
 extern int func_020b67ac(void);
 extern int func_02096180(u32);

@@ -7,7 +7,7 @@ extern void func_ov134_02299980(void *ptr, int value);
 extern void func_ov135_0229c564(void *ptr, int value);
 extern void func_ov135_0229c7fc(void *ptr);
 extern void func_ov002_02207fc0(void *ptr);
-extern void func_ov002_02208098(void *ptr, int value);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov135_0229c878(char *param)
 {
@@ -17,5 +17,5 @@ void func_ov135_0229c878(char *param)
     func_ov135_0229c564(param, 2);
     func_ov135_0229c7fc(param);
     func_ov002_02207fc0(param);
-    func_ov002_02208098(param, 7);
+    func_ov002_02208098((void *) (param), 7);
 }

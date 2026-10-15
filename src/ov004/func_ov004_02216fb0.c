@@ -4,10 +4,10 @@
 
 #include "types.h"
 
-extern void *func_ov004_0223cb10(void *self);
+extern void *func_ov004_0223cb10(void);
 extern void *func_ov004_0223ca9c(void *a, void *self);
 extern int func_ov004_02217230(void *self);
-extern u16 func_ov004_0223cb18(void *h);
+extern int func_ov004_0223cb18(void *h);
 extern char *func_ov004_0223cb24(void *h);
 extern int func_ov004_0222c030(int *v, char *a, char *b, u16 *t);
 
@@ -18,7 +18,7 @@ int func_ov004_02216fb0(void *self)
     void *h;
     char *a;
 
-    h = func_ov004_0223ca9c(func_ov004_0223cb10(self), self);
+    h = func_ov004_0223ca9c(func_ov004_0223cb10(), self);
     v = func_ov004_02217230(self);
     if (v != -1) {
         t = func_ov004_0223cb18(h);

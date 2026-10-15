@@ -4,10 +4,10 @@
 
 #include "types.h"
 
-extern int func_ov110_0229d0fc(void);
+extern int func_ov110_0229d0fc(int object, int value);
 extern int func_ov110_0229d078(void *a, void *b);
 extern int func_ov110_0229d0b8(void *a, void *b);
-extern int func_ov094_02299a54(void);
+extern int func_ov094_02299a54(int id);
 extern int func_ov094_02299b04(int id);
 extern int func_0206fca4(void);
 extern int func_0209ded0(void);
@@ -17,14 +17,14 @@ int func_ov110_0229d1b8(void *a, void *b)
     volatile u16 id;
     int v;
 
-    if (func_ov110_0229d0fc() != 0) {
+    if (func_ov110_0229d0fc((int) a, (int) b) != 0) {
         return 0;
     }
     if (func_ov110_0229d078(a, b) != 0) {
         return 1;
     }
     v = func_ov110_0229d0b8(a, b);
-    if (func_ov094_02299a54() != 0) {
+    if (func_ov094_02299a54(v) != 0) {
         return 1;
     }
     id = (u16) v;

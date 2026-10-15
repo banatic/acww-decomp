@@ -9,7 +9,7 @@ typedef struct UnkStruct_02067fd4 {
     unsigned char data[1];
 } UnkStruct_02067fd4;
 
-extern void func_020b45d0(void *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+extern int func_020b45d0(void *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
 
 unsigned char *func_02067fd4(UnkStruct_02067fd4 *self)
 {

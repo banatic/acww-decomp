@@ -6,7 +6,7 @@ extern int data_020da1a4;
 extern int data_020da210;
 extern void func_0202f8fc(void *ptr, int x, int y);
 extern void func_020342a4(void *ptr);
-extern void func_020338c4(int *a, int b, int c, int d, int e, int f, int g, int h);
+extern int func_020338c4(int *a, int b, int c, int d, int e, int f, int g, int h);
 
 int *func_0203394c(int *a, int b, int c, int d, int e, int f, int g, int h)
 {

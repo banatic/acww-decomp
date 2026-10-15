@@ -7,7 +7,7 @@ extern int func_0200fbe0(void *a);
 extern void func_0205eae0(void *a, int b, int c, int d);
 extern void func_0200d198(void *a);
 
-void func_0200d148(void *a, void *b)
+void func_0200d148(void *a, void *b, int previous)
 {
     unsigned char *q = (unsigned char *) b + 0xc;
     unsigned int *p = (unsigned int *) ((char *) a + 0x7d4);

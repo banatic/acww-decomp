@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_020b3f2c(void *, int *, int *, unsigned int);
+extern unsigned int func_020b3f2c(void *);
 
 int func_020b3e58(void *a, int *b, int *c, unsigned int d)
 {
-    if (d < func_020b3f2c(a, b, c, d)) {
+    if (d < func_020b3f2c(a)) {
         char *base = (char *) a + (d << 2);
         *b = *(signed char *) (base + 2);
         *c = *(signed char *) (base + 3);

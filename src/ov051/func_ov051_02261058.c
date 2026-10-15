@@ -7,7 +7,7 @@ struct UnkStruct_02261058 {
 };
 
 extern char data_ov051_02261804;
-extern void func_0201615c(struct UnkStruct_02261058 *p);
+extern void *func_0201615c(struct UnkStruct_02261058 *p);
 
 struct UnkStruct_02261058 *func_ov051_02261058(struct UnkStruct_02261058 *self)
 {

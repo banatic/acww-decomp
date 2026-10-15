@@ -5,7 +5,7 @@
 extern void func_ov106_0229c354(unsigned int self, int mask);
 extern void func_ov106_0229c894(unsigned int self, int value);
 extern void func_ov002_02208d30(void *addr, int value);
-extern void func_ov002_02208d4c(void *addr, int idx, int size);
+extern int func_ov002_02208d4c(void *addr, int idx, int size);
 
 static __inline void *base(unsigned int self)
 {

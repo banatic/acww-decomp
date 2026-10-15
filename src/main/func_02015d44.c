@@ -3,14 +3,14 @@
  */
 
 extern int func_020b65c4(void);
-extern void func_020a13d0(void);
-extern void func_020952ec(void);
+extern unsigned char func_020a13d0(void);
+extern int func_020952ec(void);
 
-void func_02015d44(void)
+int func_02015d44(void)
 {
     if (func_020b65c4() == 0x2f) {
-        func_020a13d0();
+        return func_020a13d0();
     } else {
-        func_020952ec();
+        return func_020952ec();
     }
 }

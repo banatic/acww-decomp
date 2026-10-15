@@ -6,7 +6,7 @@
 
 extern "C" void *func_0207f270(void *p);
 extern "C" void *func_020800d0(void *p);
-extern "C" void func_02019c6c(void *p, int a, unsigned short b);
+extern "C" int func_02019c6c(void *p, int a, unsigned short b);
 extern "C" void func_ov068_02266c34(void *a, void *b, int c, int d, int e, void *f, int g, int h, int i);
 extern "C" int func_02079544(void *p);
 extern "C" void func_02079540(void *p, int b);

@@ -12,7 +12,7 @@ extern struct Pair {
 } data_020d9370;
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *, void *, void *, int);
+extern int func_0202da38(void *, void *, void *, int, int base, int offset, int scale, int multiplier, int selected);
 extern void func_0202db48(void *, struct Pair);
 
 typedef struct {
@@ -22,7 +22,7 @@ typedef struct {
 
 void func_02025e70(void *param0, Param1 *param1)
 {
-    volatile struct {
+    struct {
         int a;
         int b;
         int c;
@@ -36,7 +36,7 @@ void func_02025e70(void *param0, Param1 *param1)
     local.d = 0;
     local.e = 0;
 
-    func_0202da38(param0, (char *) param0 + 0x104, (char *) param0 + 0x122, 30);
+    func_0202da38(param0, (char *) param0 + 0x104, (char *) param0 + 0x122, 30, local.a, local.b, local.c, local.d, local.e);
     param1->ptr = (char *) param0 + 0x104;
     param1->byte = *(unsigned char *) ((char *) param0 + 0x122);
 

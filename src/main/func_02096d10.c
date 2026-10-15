@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02096d78(int);
-extern int func_02097f14(void *);
+extern int func_02096d78(void);
+extern void *func_02097f14(void *buffer);
 extern int func_02065ec0(int);
-extern void func_02096de0(void);
+extern int func_02096de0(void);
 extern int func_020644cc(int);
 extern int func_02097e38(void *);
 extern int func_02096df4(const char *);
@@ -19,14 +19,14 @@ void func_02096d10(int param0)
     if (param0 <= 0) {
         return;
     }
-    if (func_02096d78(param0) != 0) {
+    if (func_02096d78() != 0) {
         return;
     }
     {
         int n;
         void *p = &data_021f36ec;
         char tmp;
-        if (func_02065ec0(func_02097f14(p)) != 0) {
+        if (func_02065ec0((int) func_02097f14(p)) != 0) {
             func_02096de0();
             return;
         }

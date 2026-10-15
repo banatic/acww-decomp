@@ -4,18 +4,18 @@
 
 extern unsigned char data_ov104_0229f6d0;
 extern void func_02066688(void *);
-extern void func_0206e35c(void *);
-extern void func_ov002_0220afdc(void *);
-extern void func_ov002_0220b464(void *);
-extern void func_ov002_0220ba0c(void *);
-extern void func_ov002_02209ac8(void *);
-extern void func_ov002_02209cb4(void *);
+extern void *func_0206e35c(void *);
+extern void *func_ov002_0220afdc(void *);
+extern void *func_ov002_0220b464(void *);
+extern void *func_ov002_0220ba0c(void *);
+extern void *func_ov002_02209ac8(void *);
+extern void *func_ov002_02209cb4(void *);
 extern void func_ov002_02209e38(void *);
-extern void func_ov002_02207e28(void *);
-extern void func_ov094_0229a2d0(void *);
+extern void *func_ov002_02207e28(void *);
+extern void *func_ov094_0229a2d0(void *);
 extern void func_ov094_0229bc30(void *);
-extern void func_ov094_0229afe0(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov094_0229afe0(void *);
+extern void *func_ov002_0220826c(void *);
 extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 
 void *func_ov104_0229c180(void *self)

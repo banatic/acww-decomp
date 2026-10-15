@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int NNS_G3dRenderObjAddAnmObj(void *arg1, unsigned int arg2);
+extern void NNS_G3dRenderObjAddAnmObj(void *arg1, unsigned int arg2);
 
-int func_02055050(void *p)
+void func_02055050(void *p)
 {
-    return NNS_G3dRenderObjAddAnmObj((char *) p + 8, *(unsigned int *) ((char *) p + 0xB4));
+    NNS_G3dRenderObjAddAnmObj((char *) p + 8, *(unsigned int *) ((char *) p + 0xB4));
 }

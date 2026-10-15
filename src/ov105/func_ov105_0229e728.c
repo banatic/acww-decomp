@@ -10,7 +10,7 @@ extern int func_ov105_0229d650(unsigned char *, int);
 extern void func_ov105_0229d82c(unsigned char *, unsigned char, int);
 extern void func_ov105_0229d354(unsigned char *, int);
 extern void func_ov105_0229db14(unsigned char *);
-extern void func_ov094_022999d8(int);
+extern void func_ov094_022999d8(void);
 extern unsigned char data_021fbdd8;
 
 void func_ov105_0229e728(unsigned char *self)
@@ -46,7 +46,7 @@ call_d82c:
     return;
 
 ext_block:
-    func_ov094_022999d8(y);
+    func_ov094_022999d8();
     func_ov105_0229db14(self);
     return;
 

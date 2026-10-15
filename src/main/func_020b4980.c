@@ -17,11 +17,11 @@ extern SomeData data_020e5308;
 typedef int SomeGlobal;
 extern SomeGlobal data_021f4dac;
 
-extern void func_020b4044(UnkStruct_020b4980 *p);
+extern void *func_020b4044(UnkStruct_020b4980 *p);
 extern void func_020a8164(UnkStruct_020b4980 *p, SomeData *d);
 extern void func_020b43f4(SomeGlobal *p);
 extern int func_020b4344(SomeGlobal *p, UnkStruct_020b4980 *q);
-extern void func_020b402c(UnkStruct_020b4980 *p);
+extern void *func_020b402c(UnkStruct_020b4980 *p);
 
 int func_020b4980(int a, unsigned char *b, SomeData *c)
 {

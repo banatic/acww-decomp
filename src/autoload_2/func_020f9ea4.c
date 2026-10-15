@@ -9,7 +9,7 @@ extern void func_020f9e00(void *);
 extern void func_020f9b50(void *, int);
 extern int func_020f9948(void *);
 extern void func_020f9fcc(void *, int);
-extern void NNS_SndPlayerReadGlobalVariable(int, short *);
+extern int NNS_SndPlayerReadGlobalVariable(int, short *);
 extern short data_021fd26c;
 
 struct UnkStruct_020f9ea4 {

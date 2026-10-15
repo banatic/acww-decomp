@@ -12,7 +12,7 @@ struct UnkStruct_0229de2c {
 };
 
 extern void func_ov002_0220a05c(char *p, int a, int b, int c, int d);
-extern void func_ov002_02208098(struct UnkStruct_0229de2c *p, int c);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229de2c *p, unsigned char value);
 
 void func_ov116_0229de2c(struct UnkStruct_0229de2c *self, int a, int b)
 {

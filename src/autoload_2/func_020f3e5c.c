@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f4318(void);
-extern void func_020f1d84(unsigned int, unsigned int);
+extern void func_020f4318(void *argument0);
+extern int func_020f1d84(unsigned int, unsigned int);
 
 extern unsigned char data_021fd1bc[];
 
-void func_020f3e5c(void)
+void func_020f3e5c(void *argument0)
 {
     unsigned int *p;
 
-    func_020f4318();
+    func_020f4318(argument0);
     p = (unsigned int *) data_021fd1bc;
     func_020f1d84((unsigned int) p, 0x8f);
 }

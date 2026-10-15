@@ -47,9 +47,9 @@ extern int func_020b6680(void);
 extern int func_020b66b0(void);
 extern int func_0207f294(void *);
 extern int func_02037d64(Cell *, int);
-extern void func_0208150c(void *);
-extern int func_020036e8(void);
-extern void func_0202da38(UnkStruct_02022034_2 *, u8 *, u8 *, int, int, int, u8, int, int);
+extern unsigned int func_0208150c(void *);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(UnkStruct_02022034_2 *, u8 *, u8 *, int, int, int, int scale, int, int);
 
 int func_02022034(UnkStruct_02022034_2 *p)
 {
@@ -95,7 +95,7 @@ int func_02022034(UnkStruct_02022034_2 *p)
             }
         }
     }
-    func_0208150c(p->unk_100->unk_830);
-    func_0202da38(p, p->unk_104, &p->unk_122, 0x1e, func_020036e8(), data_020c8c50.a, data_020c8c50.b, mode, 0);
+    func_0202da38(p, p->unk_104, &p->unk_122, 0x1e, func_020036e8((unsigned char *) func_0208150c(p->unk_100->unk_830)),
+                  data_020c8c50.a, data_020c8c50.b, mode, 0);
     return 1;
 }

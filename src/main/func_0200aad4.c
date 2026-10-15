@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void func_0200ac8c(void *a, u32 *w, u16 *h, u8 *b);
-extern void func_0200acd4(void *a, u32 *buf, u16 h, u8 b, u32 c, u32 d);
+extern int func_0200acd4(void *a, u32 *buf, u16 h, u8 b, u32 c, u32 d);
 
 typedef struct {
     u8 pad_00[0x7f0];

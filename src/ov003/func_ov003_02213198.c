@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02077910(int a);
+extern void func_02077910(int a, int argument1);
 
-void func_ov003_02213198(int a)
+void func_ov003_02213198(int a, int argument1)
 {
-    func_02077910(a + 2);
+    func_02077910(a + 2, argument1);
 }

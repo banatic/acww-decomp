@@ -19,7 +19,7 @@ extern void func_ov096_0229e9a0(struct St *self, unsigned char b);
 extern int func_ov096_0229f290(struct St *self, unsigned char b);
 extern int func_ov096_0229f200(struct St *self, unsigned char b);
 extern int func_0206fe54(void);
-extern void func_ov002_02208098(struct St *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov094_0229a47c(void *ptr, unsigned short a, unsigned char b);
 
 void func_ov096_0229d664(struct St *self)
@@ -33,6 +33,6 @@ void func_ov096_0229d664(struct St *self)
         self->unk_A4 -= 2;
         self->unk_A8 -= 2;
     }
-    func_ov002_02208098(self, 0x2B);
+    func_ov002_02208098((void *) (self), 0x2B);
     func_ov094_0229a47c(&self->unk_358[0], self->unk_AC, self->unk_B0);
 }

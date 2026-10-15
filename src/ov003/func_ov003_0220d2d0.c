@@ -12,11 +12,11 @@ extern int func_ov003_0222a938(void *o);
 extern VecFx32 *func_ov003_0222a918(void *o);
 extern int func_020e8ed8(int a, int b);
 extern int func_020ea990(VecFx32 *a, VecFx32 *b);
-extern void func_02095518(int a, int b, void *o);
-extern void func_02011404(void *p, int a, int b, int c, int d);
+extern int func_02095518(int a, int b, void *o);
+extern int func_02011404(void *p, int a, int b, int c, int d);
 extern int func_02008258(u8 *self, int a);
-extern void func_0200c9a8(u8 *self, int a, int b, int c);
-extern void func_0200d4e8(u8 *self, int a, int b, int c);
+extern int func_0200c9a8(u8 *self, int a, int b, int c);
+extern int func_0200d4e8(u8 *self, int a, int b, int c);
 
 void func_ov003_0220d2d0(u8 *self)
 {

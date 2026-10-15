@@ -12,7 +12,7 @@ struct UnkStruct_0221e1a0 {
 extern int func_0202e364(struct UnkStruct_0221e1a0 *self);
 extern void func_0201c280(struct UnkStruct_0221e1a0 *self, void *p);
 extern void func_ov004_0221defc(void *p, struct UnkStruct_0221e1a0 *self);
-extern void func_ov004_0221dd24(struct UnkStruct_0221e1a0 *self, int a);
+extern int func_ov004_0221dd24(struct UnkStruct_0221e1a0 *self, int a);
 extern struct UnkStruct_0221e1a0 *data_ov004_02257bc4;
 
 int func_ov004_0221e1a0(struct UnkStruct_0221e1a0 *self)

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_01ffcc10(void);
+extern int func_01ffcc10(void *, void *);
 extern void func_02054a9c(void *self, void *arg);
 extern void func_02054524(void *self, void *param);
 extern void func_020549d8(void *self, void *param);
@@ -34,7 +34,7 @@ void func_02054474(UnkStruct_02054474 *self, void *param)
     u32 bit1, bit2;
     Param *p = (Param *) param;
 
-    if (func_01ffcc10() != 0) {
+    if (func_01ffcc10(self, param) != 0) {
         return;
     }
 

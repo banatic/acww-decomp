@@ -7,7 +7,7 @@ extern int func_020e8ed8(int, int);
 extern void func_ov003_022100ac(void *, int, int, void *);
 extern void func_ov003_022100a0(void *, void *);
 extern void func_020109fc(void *, int, int, int);
-extern void func_0200f27c(void *, int);
+extern unsigned int *func_0200f27c(void *, int);
 
 typedef struct {
     int x, y, z;
@@ -37,7 +37,7 @@ struct UnkStruct_02210010_2 {
     Vec v2;
 };
 
-void func_ov003_02210010(struct UnkStruct_02210010_3 *o, struct UnkStruct_02210010 *b)
+void func_ov003_02210010(struct UnkStruct_02210010_3 *o, struct UnkStruct_02210010 *b, int previous)
 {
     int k;
     int pair[2];

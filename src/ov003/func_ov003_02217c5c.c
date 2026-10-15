@@ -4,12 +4,12 @@
 
 extern void func_020110c4(void *out, void *self);
 extern int func_ov003_02217838(void *self, int a, int b, int c, int a5, short a6, int a7, short a8);
-extern void func_0200e92c(void *w);
+extern unsigned int func_0200e92c(void *w);
 extern void func_0200e90c(void *w, int k, int a7, short a8);
 extern void func_ov003_02217d1c(void *p, int a, int b, int c, int a5, short a6);
 extern void func_0200f268(void *self, int f);
 extern int func_0200e894(void *self, void *w);
-extern void func_0200e91c(void *w);
+extern int func_0200e91c(void *w);
 
 typedef struct {
     volatile unsigned short a;

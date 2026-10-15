@@ -8,7 +8,7 @@ typedef struct {
 } GameState;
 
 extern int func_02056f94(void *p);
-extern void func_ov004_02228850(GameState *p, int a, int b);
+extern int func_ov004_02228850(GameState *p, int a, int b);
 
 void func_ov004_02228b68(GameState *p)
 {

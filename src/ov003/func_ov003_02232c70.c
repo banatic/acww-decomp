@@ -13,12 +13,12 @@ extern UnkStruct_02232c70 *data_020ccf94;
 extern int func_ov003_022353e0(void *self, int *p);
 extern int func_ov003_02232598(void *self, int a);
 extern void func_ov003_02230f60(void *self);
-extern void func_ov003_02233e4c(void *self, int *v);
+extern int func_ov003_02233e4c(void *self, int *v);
 extern void func_020550e4(void *p, int a);
 extern int func_0200322c(int *p, int *v);
 extern int func_02073dd4(void *a, int b);
 extern int func_020a7278(void);
-extern void func_ov003_02235834(void *self, int a, int b);
+extern int func_ov003_02235834(void *self, int a, int b);
 
 void func_ov003_02232c70(char *self)
 {

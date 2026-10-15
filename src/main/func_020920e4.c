@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int FX_MulFunc(int, short, void *);
-extern int func_02094260(int, int);
+extern int FX_MulFunc(int, int);
+extern void func_02094260(unsigned int *object, unsigned int value);
 
 struct Glob {
     char pad_00[0x10];
@@ -12,9 +12,8 @@ struct Glob {
 
 extern struct Glob data_021d5658;
 
-int func_020920e4(int arg)
+void func_020920e4(void *arg)
 {
-    int sum;
-    sum = FX_MulFunc(0x2000, data_021d5658.unk_10, &data_021d5658) + 0x99A;
-    return func_02094260(arg, sum);
+    int sum = FX_MulFunc(0x2000, data_021d5658.unk_10) + 0x99a;
+    func_02094260((unsigned int *) arg, sum);
 }

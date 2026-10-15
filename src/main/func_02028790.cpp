@@ -20,7 +20,7 @@ class UnkStruct_02028790_2 {
 
 extern int data_021c2a04;
 extern "C" void func_0202da88(UnkStruct_02028790_2 *self, void *tbl);
-extern "C" void func_02068484(int a, void *b, int c);
+extern "C" int func_02068484(int a, void *b, int c);
 
 extern "C" void func_02028790(UnkStruct_02028790_2 *self)
 {

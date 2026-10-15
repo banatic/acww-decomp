@@ -7,13 +7,13 @@ struct UnkStruct_0229d380 {
     unsigned char unk_8C;
 };
 
-extern void func_ov138_0229cff4(struct UnkStruct_0229d380 *p, int a2);
-extern void func_ov002_022080a0(struct UnkStruct_0229d380 *p, int a2);
+extern void func_ov138_0229cff4(struct UnkStruct_0229d380 *p);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 
 int func_ov138_0229d380(struct UnkStruct_0229d380 *p, int a2)
 {
-    func_ov138_0229cff4(p, a2);
+    func_ov138_0229cff4(p);
     p->unk_8C = 0;
-    func_ov002_022080a0(p, 0);
+    func_ov002_022080a0((void *) (p), 0);
     return 1;
 }

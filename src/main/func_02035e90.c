@@ -9,7 +9,7 @@ extern int func_02035e54(void);
 extern void func_02036784(int, int);
 extern int func_02035e68(void);
 extern void func_02036894(int, int);
-extern void func_02035e7c(void);
+extern int func_02035e7c(void);
 extern void func_02035930(void);
 
 typedef struct UnkStruct_02035e90 {

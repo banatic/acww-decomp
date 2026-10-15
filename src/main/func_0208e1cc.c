@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208e1bc(void);
+extern void func_0208e1bc(void *);
 
 void func_0208e1cc(void *r0)
 {
@@ -14,6 +14,6 @@ void func_0208e1cc(void *r0)
     *(int *) ((char *) r0 + 0x78) -= 1;
     if (*(int *) ((char *) r0 + 0x78) <= 0) {
         *(int *) ((char *) r0 + 0x30) = 0;
-        func_0208e1bc();
+        func_0208e1bc(r0);
     }
 }

@@ -32,13 +32,13 @@ struct Pair {
 
 extern "C" {
 extern u32 data_020d9048[2];
-extern int func_0206fc6c(UnkStruct_0201f094 *self);
-extern void *func_0206fc8c(int arg);
-extern void *func_020984e8(void *arg);
+extern int func_0206fc6c(void);
+extern void *func_0206fc8c(void);
+extern void *func_020984e8(void);
 extern void *func_02099734(void *arg);
 extern u16 *func_02098f48(void *a, void *b);
 extern void func_0209a088(u16 *p, int x, void *y);
-extern void func_02015330(UnkStruct_0201f094 *self, u16 *field, int a, int b, int c);
+extern int func_02015330(UnkStruct_0201f094 *self, u16 *field, int a, int b, int c);
 extern void func_0202dbdc(UnkStruct_0201f094 *self, struct Pair pair);
 extern void func_0202da88(UnkStruct_0201f094 *self, void *addr);
 extern void func_0206844c(void *field, UnkStruct_0201f094_2 *local, u32 c);
@@ -51,10 +51,10 @@ extern "C" void func_0201f094(UnkStruct_0201f094 *self)
     UnkStruct_0201f094_2 local;
     int r;
 
-    r = func_0206fc6c(self);
+    r = func_0206fc6c();
     if (r != 0) {
-        void *p = func_0206fc8c(r);
-        void *t = func_020984e8(p);
+        void *p = func_0206fc8c();
+        void *t = func_020984e8();
         void *q = func_02099734(t);
         u16 *res = func_02098f48(q, p);
 

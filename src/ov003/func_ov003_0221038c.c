@@ -4,7 +4,7 @@
 
 extern void func_ov003_02210504(char *p);
 extern void func_02010d64(char *p);
-extern void func_02010ca4(char *p);
+extern int func_02010ca4(char *p);
 extern void func_ov003_02210474(char *p);
 extern void func_ov003_022103cc(char *p);
 extern int func_02073908(int a, int b);

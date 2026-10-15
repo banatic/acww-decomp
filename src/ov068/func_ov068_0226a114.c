@@ -16,7 +16,7 @@ typedef struct UnkStruct_0226a114 {
 
 extern int func_02019e00(void *p);
 extern int func_02019de8(void *p);
-extern void func_02019c6c(void *p, int v, unsigned short s);
+extern int func_02019c6c(void *p, int v, unsigned short s);
 extern unsigned short data_020c80f8;
 extern int data_ov068_022767b8[];
 extern int func_ov068_0226ae80(F_0226a114 *self, void *other);

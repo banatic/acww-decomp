@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02054e18(void *);
-extern void func_0209d104(void *);
+extern void *func_02054e18(void *);
+extern int func_0209d104(void *);
 extern void func_0209d340(void *);
-extern void __cxa_vec_cleanup(void *, int, int, void *);
-extern void func_ov004_02239c28(void *);
-extern void func_020012dc();
+extern void __cxa_vec_cleanup(void *, int, int, void (*callback3)(void *));
+extern void *func_ov004_02239c28(void *);
+extern void func_020012dc(void *arg0);
 extern void *data_ov004_02255db4;
 
 void *func_ov004_0223a594(char *self)
@@ -15,7 +15,7 @@ void *func_ov004_0223a594(char *self)
     // DECLS
     // ENDDECLS
     *(void **) (self) = &data_ov004_02255db4;
-    __cxa_vec_cleanup(self + 0x1d0, 0x2, 0xc, (void *) func_020012dc);
+    __cxa_vec_cleanup(self + 0x1d0, 0x2, 0xc, ((void (*)(void *)) func_020012dc));
     func_0209d104(self + 0x168);
     func_0209d340(self + 0x166);
     func_02054e18(self + 0x64);

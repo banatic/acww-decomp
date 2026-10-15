@@ -4,8 +4,8 @@
 
 extern unsigned char data_021fd1bc[];
 extern unsigned int data_021fd234;
-extern void func_020f51c4(void);
-extern void func_020f4eec(unsigned int a, void *b, const unsigned int *c);
+extern void func_020f51c4(void *unused0);
+extern void func_020f4eec(unsigned int a, void *b);
 
 struct Dst {
     char pad_00[0xc];
@@ -35,8 +35,8 @@ void func_020f5054(struct Dst *dst, int type, struct Src *src)
     dst->unk_1A = 0;
     dst->unk_1B = 1;
     if (type == 0x4ef) {
-        func_020f51c4();
+        func_020f51c4(dst);
     } else {
-        func_020f4eec(data_021fd234, dst, &data_021fd234);
+        func_020f4eec(data_021fd234, dst);
     }
 }

@@ -14,7 +14,7 @@ typedef struct UnkStruct_022762c0 {
     u8 unk_A60;
 } UnkStruct_022762c0;
 
-extern void func_ov068_02275c78(UnkStruct_022762c0 *self, int mode);
+extern int func_ov068_02275c78(UnkStruct_022762c0 *self, int mode);
 extern void func_ov068_022761d0(void *dst, UnkStruct_022762c0 *src);
 extern void func_ov068_0227647c(UnkStruct_022762c0 *self);
 extern int func_020644cc(int arg);

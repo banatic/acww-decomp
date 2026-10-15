@@ -9,7 +9,7 @@ typedef struct {
     int pad2 : 26;
 } UnkStruct_02048ab0;
 extern unsigned char data_021c7a08[];
-extern void func_02048bc0(void *a, void *b, int j, int i, int k);
+extern int func_02048bc0(void *a, void *b, int j, int i, int k);
 void func_02048ab0(void *a, void *b, int c, int d)
 {
     int j;

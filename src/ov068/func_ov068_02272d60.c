@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_ov068_02272d60(void)
+int func_ov068_02272d60(void *object)
 {
     return 0;
 }

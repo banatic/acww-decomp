@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(unsigned long);
-extern void func_020ee660(void);
+extern void *func_020ee660(void *arg0);
 extern char data_020da13c;
 extern char data_ov056_022604b0;
 
@@ -14,7 +14,7 @@ void *func_ov056_02260420(void)
 
     ret = func_020edf70(0x50);
     if (ret != 0) {
-        func_020ee660();
+        func_020ee660((void *) ret);
         p = (volatile unsigned int *) ret;
         p[0] = (unsigned int) &data_020da13c;
         p[0] = (unsigned int) &data_ov056_022604b0;

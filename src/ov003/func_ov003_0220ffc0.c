@@ -3,7 +3,7 @@
  */
 
 extern void func_ov003_02210094(int *src, int *dst);
-extern void func_ov003_022100c4(void *self, int *out, int a, int b, int c);
+extern int func_ov003_022100c4(void *self, int *out, int a, int b, int c);
 
 typedef struct {
     char pad_00[0x7f0];

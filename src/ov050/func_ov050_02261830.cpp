@@ -12,7 +12,7 @@ extern PMF data_ov050_02265700;
 extern PMF data_ov050_02265560;
 
 extern "C" int func_020984e8(void);
-extern "C" void func_02099640(void);
+extern "C" int func_02099640(int argument0);
 extern "C" int func_02099020(int, int);
 
 void Obj_ov050_02265b14::func_ov050_02261830(int param)
@@ -24,7 +24,7 @@ void Obj_ov050_02265b14::func_ov050_02261830(int param)
 
     index = 0;
     a = func_020984e8();
-    func_02099640();
+    func_02099640((int) a);
     b = func_02099020(a, 1);
     if (b) {
         index = 2;

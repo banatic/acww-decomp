@@ -21,7 +21,7 @@ extern u8 *data_020ccf94;
 extern u8 data_ov004_022476dc[][7], data_ov004_022476d4[];
 extern Choice data_ov004_022476f8[];
 extern void *data_ov004_02254338[];
-extern unsigned func_ov004_02222b3c(void *);
+extern unsigned func_ov004_02222b3c(void);
 extern int func_02073d90(void *), func_020a12e8(void), func_0202ea40(void *, void *, int), func_0202ea80(int, int),
     func_0209ded0(void), func_020644cc(int);
 extern short *func_0209d358(int, int);
@@ -30,7 +30,7 @@ extern void *func_02082644(int);
 void func_ov004_02222d0c(u8 *self, Output *out)
 {
     u8 packed[4];
-    unsigned kind = func_ov004_02222b3c(P(self, 0xb0));
+    unsigned kind = ((void) *(u8 *volatile *) (self + 0xb0), func_ov004_02222b3c());
     u8 *world = data_020ccf94;
     if (func_02073d90(world) || *func_0209d358(0, 0x4a) != 0) {
         kind = 0;

@@ -16,19 +16,19 @@ typedef struct {
 extern char data_021dc7bc[];
 
 extern void *func_02065f7c(void *p);
-extern void func_0209527c(UnkStruct_0207a51c *it, void *x);
+extern int func_0209527c(UnkStruct_0207a51c *it, void *x);
 extern int func_020951bc(UnkStruct_0207a51c *it);
 extern void *func_02098868(char *g, UnkStruct_0207a51c *it);
 extern void *func_02065f64(void *p);
 extern void *func_02099640(void *p);
-extern void func_0209a9a8(void *a, void *b);
-extern void func_02003760(Rec *r, void *v);
+extern int func_0209a9a8(void *a, void *b);
+extern void *func_02003760(Rec *r, void *v);
 extern int func_02003704(Rec *r);
 extern void *func_0207ce98(void *self, Rec *r);
 extern void func_02081144(void *a, void *b, void *c);
 extern int func_02081418(void *a, void *b);
-extern void func_02003750(Rec *r);
-extern void func_0209526c(UnkStruct_0207a51c *it);
+extern int func_02003750(Rec *r);
+extern int func_0209526c(UnkStruct_0207a51c *it);
 
 int func_0207a51c(void *self, void *p1)
 {

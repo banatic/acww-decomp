@@ -4,9 +4,9 @@
 
 extern int func_ov002_02209f9c(void *);
 extern void func_ov106_0229ce0c(void *);
-extern void func_ov106_0229d29c(void *);
+extern int func_ov106_0229d29c(void *, int argument1);
 extern void func_ov106_0229cea8(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov094_022999d8(void);
 extern void func_ov106_0229d518(void *, unsigned char, int);
 
@@ -19,9 +19,9 @@ void func_ov106_0229dec0(unsigned char *arg)
         ba = arg[0xba];
         b8 = arg[0xb8];
         if (b8 == ba) {
-            func_ov106_0229d29c(arg);
+            func_ov106_0229d29c(arg, ba);
             func_ov106_0229cea8(arg);
-            func_ov002_02208098(arg, 7);
+            func_ov002_02208098((void *) (arg), 7);
             func_ov094_022999d8();
         } else {
             func_ov106_0229d518(arg, ba, 4);

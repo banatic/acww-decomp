@@ -27,7 +27,7 @@ typedef struct {
 
 extern void func_0209df64(UnkStruct_0204ce64 *self);
 extern u32 func_020644cc(int value);
-extern void func_0209de88(int a, int b, int c);
+extern int func_0209de88(int a, int b, int c);
 extern void func_0204cc34(UnkStruct_0204ce64 *a, UnkStruct_0204ce64 *b);
 extern void func_0204cc24(UnkStruct_0204ce64 *self);
 extern void func_0204cc14(UnkStruct_0204ce64 *self);

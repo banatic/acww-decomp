@@ -10,7 +10,7 @@
 extern "C" {
 void func_ov004_0220d030(void *);
 int func_ov004_0220e4b0(void *);
-void func_ov004_0220ffbc(void *);
+int func_ov004_0220ffbc(void *);
 }
 
 int Obj_ov004_022525cc::func_ov004_022199a8()

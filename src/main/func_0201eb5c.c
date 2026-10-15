@@ -32,7 +32,7 @@ extern int func_02003704(void *);
 extern void *func_0208150c(void *);
 extern int func_020036e8(void *);
 extern void func_02015e10(UnkStruct_0201eb5c_2 *, void *, int);
-extern void func_0202da38(UnkStruct_0201eb5c_2 *, char *, char *, int, int, void *, int, int, int);
+extern int func_0202da38(UnkStruct_0201eb5c_2 *, char *, char *, int, int, void *, int, int, int);
 extern int memcmp(const void *, const void *, unsigned int);
 
 void func_0201eb5c(UnkStruct_0201eb5c_2 *self, UnkStruct_0201eb5c_3 *out)

@@ -3,7 +3,7 @@
  */
 
 extern int func_0209a1d0(void);
-extern void func_02066830(int, void *);
+extern int func_02066830(int, void *);
 extern unsigned char data_021cfd68[];
 
 void func_0206f910(void)

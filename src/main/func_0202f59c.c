@@ -10,7 +10,7 @@ typedef struct {
     int x, y;
 } UnkStruct_0202f59c_2;
 
-extern void func_0202f740(UnkStruct_0202f59c *o, int p, int q);
+extern void *func_0202f740(UnkStruct_0202f59c *o, int p, int q);
 extern int FX_MulFunc(int x, int y);
 extern int FX_Div(int x, int y);
 extern void func_0202f6e8(UnkStruct_0202f59c *o);

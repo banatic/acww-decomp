@@ -17,9 +17,9 @@ typedef struct {
 } Obj_ov090_02299820;
 
 extern void *func_ov002_02207f80(unsigned int);
-extern void func_ov002_0220830c(void *);
-extern void func_020b9af4(UnkStruct_02299774 *);
-extern void func_ov002_0220ba24(OtherObj *);
+extern void *func_ov002_0220830c(void *);
+extern void *func_020b9af4(UnkStruct_02299774 *);
+extern void *func_ov002_0220ba24(OtherObj *);
 extern char data_ov090_02299820[];
 
 Obj_ov090_02299820 *func_ov090_02299774(void)

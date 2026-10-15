@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02072808(void);
+extern void func_02072808(void *);
 extern void func_020725b4(void *p);
 extern void func_020723a8(void *self);
 extern void *data_021fbe94;
@@ -12,7 +12,7 @@ extern int data_021d047c;
 extern int data_021d0470;
 extern int data_021d0480;
 extern void func_0203d228(void *p);
-extern void func_020578ec(void *p);
+extern void *func_020578ec(void *p);
 
 typedef struct {
     unsigned char pad_00[0x38];
@@ -29,7 +29,7 @@ void func_020726b8(void *self)
     ElemA *e2;
     unsigned int i;
 
-    func_02072808();
+    func_02072808(self);
     func_020725b4((char *) self + 4);
     func_020723a8(self);
 

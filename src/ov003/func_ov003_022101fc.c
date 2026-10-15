@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0200faa8(void *p, int n);
+extern int func_0200faa8(void *p, int n);
 extern void func_02010f5c(void *p);
 extern void func_0200f2a0(void *p, int n, int *arr);
 extern int func_02056f28(void *p, int n);
 extern void func_0206026c(void *p, int n);
 extern void func_02060428(void *p, int *arr);
-extern void func_0200f328(void *p, int n);
-extern void func_0200f27c(void *p, int n);
+extern int func_0200f328(void *p, int n);
+extern unsigned int *func_0200f27c(void *p, int n);
 
 typedef struct {
     unsigned int : 12;

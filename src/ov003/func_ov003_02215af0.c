@@ -10,7 +10,7 @@ extern void func_02060428(void *a, void *b);
 extern void func_0205eae0(void *a, int b, int c, int d);
 extern void func_ov003_02215ba8(void *a, void *b, unsigned char c);
 
-void func_ov003_02215af0(unsigned char *self)
+void func_ov003_02215af0(unsigned char *self, void *message, int previous)
 {
     struct Output {
         unsigned char flag;

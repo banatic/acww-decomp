@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020aef28(int a, int b);
-extern int func_020b00fc(int a, int b, int c, int d, int e, int f, int g);
+extern int func_020aef28(void);
+extern void func_020b00fc(void *buffer, int *index, int a, int b, unsigned int count, int unused, unsigned char flag);
 
-int func_020aeb6c(int arg0, int arg1)
+void func_020aeb6c(char *arg0, int *arg1)
 {
     int ret_val;
-    ret_val = func_020aef28(arg0, arg1);
-    return func_020b00fc(arg0 + 4, arg1, 0x155e, 1, ret_val, 0x25, 0);
+    ret_val = func_020aef28();
+    func_020b00fc(arg0 + 4, arg1, 0x155e, 1, ret_val, 0x25, 0);
 }

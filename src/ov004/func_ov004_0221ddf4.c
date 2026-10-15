@@ -7,7 +7,7 @@ typedef struct {
 } T20;
 
 extern int func_0208150c(int a);
-extern void func_0200366c(int a, void *b, int c, void *d);
+extern int func_0200366c(int a, void *b, int c, void *d);
 extern int func_ov004_0221df34(char *self);
 extern int func_ov004_0221d4c0(void);
 extern void func_ov004_0221df1c(char *self);
@@ -15,8 +15,8 @@ extern int func_020644cc(int n);
 extern int func_020b66b0(void);
 extern int func_0207cee4(void *a, int b);
 extern int func_0207cec0(char *a, int b);
-extern void func_02094fd4(T20 *o);
-extern void func_02094fbc(T20 *o);
+extern void *func_02094fd4(T20 *o);
+extern void *func_02094fbc(T20 *o);
 extern void func_02015e10(char *a, int b, int c);
 extern int data_ov004_02257be0;
 extern int data_ov004_02253928;

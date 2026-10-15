@@ -4,14 +4,14 @@
 
 #include "types.h"
 
-extern void func_02054e54();
-extern void func_0209d0a4();
-extern void func_0209d11c();
-extern void func_0209d34c();
+extern void *func_02054e54(void *argument0);
+extern void func_0209d0a4(void *argument0);
+extern void *func_0209d11c(void *argument0);
+extern void func_0209d34c(unsigned short *argument0);
 extern void __cxa_vec_ctor();
-extern void func_ov004_02239c40();
-extern void func_020012dc();
-extern void func_020012e8();
+extern void *func_ov004_02239c40(char *argument0);
+extern void func_020012dc(void *arg0);
+extern void func_020012e8(void *arg0);
 extern void *data_ov004_02255db4;
 
 void *func_ov004_0223a5e4(char *self)
@@ -22,7 +22,7 @@ void *func_ov004_0223a5e4(char *self)
     *(void **) (self) = &data_ov004_02255db4;
     func_ov004_02239c40(self + 0x4);
     func_02054e54(self + 0x64);
-    func_0209d34c(self + 0x166);
+    func_0209d34c((unsigned short *) (self + 0x166));
     func_0209d11c(self + 0x168);
     __cxa_vec_ctor(self + 0x1d0, 0x2, 0xc, (void *) func_020012e8, (void *) func_020012dc);
     *(int *) (self + 0x15c) = -0x1;

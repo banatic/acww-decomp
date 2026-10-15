@@ -14,10 +14,10 @@ extern char *func_0207dfd4(void *a, int b);
 extern int func_0207f76c(void *a, char *b);
 extern void func_0207dfec(void *a);
 extern void *func_0207f294(void *a);
-extern void func_02052fdc(void *a);
+extern int func_02052fdc(void *a);
 extern void *func_0207f1c8(void *a);
 extern void *func_0209b5e8(void *a);
-extern void func_0209b998(void *a);
+extern void func_0209b998(void *object);
 
 void func_0207f454(void *self)
 {

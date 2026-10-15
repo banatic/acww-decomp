@@ -4,12 +4,12 @@
 
 extern int func_0208e484(void *p);
 extern void func_ov128_0229bc30(void *p);
-extern void func_ov002_02208098(void *p, unsigned char b);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov128_0229be78(unsigned char *param)
 {
     if (func_0208e484(param + 0x110) != 0) {
         func_ov128_0229bc30(param);
-        func_ov002_02208098(param, param[0x2d6a]);
+        func_ov002_02208098((void *) (param), param[0x2d6a]);
     }
 }

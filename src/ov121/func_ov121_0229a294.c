@@ -4,8 +4,8 @@
 
 extern int func_ov002_02208ae4(void *p);
 extern int func_ov002_02208ad8(void *p, unsigned char c);
-extern void func_ov002_0220a08c(void *p, int a, int b, int c);
-extern void func_ov002_02208098(void *p, int c);
+extern int func_ov002_0220a08c(void *p, int a, int b, int c);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 
 typedef struct {
     char pad_00[0x8d];

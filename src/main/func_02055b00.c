@@ -3,7 +3,7 @@
  */
 
 extern char data_020dd10c[];
-extern void func_020ba01c(void *);
+extern void *func_020ba01c(void *);
 
 typedef struct {
     char *data;

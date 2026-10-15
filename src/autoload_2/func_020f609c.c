@@ -13,9 +13,9 @@ struct UnkStruct_020f609c_2 {
 };
 extern unsigned char *data_021fd268;
 extern struct UnkStruct_020f609c_2 data_021fd1bc;
-extern void func_020eed18(struct UnkStruct_020f609c *, int);
+extern int func_020eed18(struct UnkStruct_020f609c *, int);
 extern int func_020f1d3c(struct UnkStruct_020f609c_2 *, int);
-extern void NNS_SndArcPlayerStartSeqArc(struct UnkStruct_020f609c *, unsigned short, unsigned short);
+extern int NNS_SndArcPlayerStartSeqArc(struct UnkStruct_020f609c *, unsigned short, unsigned short);
 extern void func_020f5fa8(struct UnkStruct_020f609c *, int);
 
 void func_020f609c(struct UnkStruct_020f609c *self, int a1)

@@ -6,8 +6,8 @@ extern void *func_0204e414(void);
 extern int func_02037da8(void *a, void *b, void *c, void *d, void *e, int f);
 extern int func_0204e3bc(void *a, int b, int c, int d, int e, void *f);
 extern void func_02085f48(void);
-extern void __register_global_object(void *a, void (*b)(void), void *c);
-extern void func_020051b0(void);
+extern void __register_global_object(void *, void *, void *);
+extern void func_020051b0(void *);
 extern unsigned short data_021f4b20;
 extern unsigned short data_021f4b24;
 extern unsigned int data_021f4b38;
@@ -19,6 +19,7 @@ typedef struct {
     unsigned int width;
     unsigned int height;
 } UnkStruct_020b2a90;
+
 int func_020b2a90(void)
 {
     UnkStruct_020b2a90 *self = (UnkStruct_020b2a90 *) func_0204e414();
@@ -35,7 +36,7 @@ int func_020b2a90(void)
     }
     if ((data_021f4b38 & 1) == 0) {
         data_021f4b20 = 0x5020;
-        __register_global_object(&data_021f4b20, func_020051b0, &data_021f4b88);
+        __register_global_object((void *) (&data_021f4b20), (((void *) func_020051b0)), (void *) (&data_021f4b88));
         data_021f4b38 |= 1;
     }
     a = 1;
@@ -52,7 +53,8 @@ int func_020b2a90(void)
                 if (func_02037da8(ptr, &d, &e, &data_021f4b20, &data_021f4b20, 0) != 0) {
                     if ((data_021f4b4c & b) == 0) {
                         data_021f4b24 = 0x500a;
-                        __register_global_object(&data_021f4b24, func_020051b0, &data_021f4b94);
+                        __register_global_object((void *) (&data_021f4b24), (((void *) func_020051b0)),
+                                                 (void *) (&data_021f4b94));
                         data_021f4b4c |= c;
                     }
                     if (func_0204e3bc(self, r4, r5, d, e, &data_021f4b24) != 0) {

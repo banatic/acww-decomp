@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
 extern void func_0205eae0(void *p, int a, int b, int c);
 extern unsigned char func_0203cc1c(void);
 extern void func_020109fc(void *self, int a, int b, int c);
 extern int func_02073908(int a, int b);
 extern void func_02035684(int a, int b, int c);
-extern void func_0208b500(void);
-extern void func_0208d07c(void);
+extern int func_0208b500(void);
+extern void func_0208d07c(void *argument0);
 extern void func_02079774(void *p);
 extern void func_ov003_02213ac4(void *p, unsigned char s, int a, int b, int c, int d);
 
@@ -45,7 +45,7 @@ typedef struct {
     int unk_8F0;
 } UnkStruct_02213988_4;
 
-void func_ov003_02213988(UnkStruct_02213988_4 *self, UnkStruct_02213988 *a)
+void func_ov003_02213988(UnkStruct_02213988_4 *self, UnkStruct_02213988 *a, int previous)
 {
     UnkStruct_02213988_3 *p;
     UnkStruct_02213988_2 *q;
@@ -80,8 +80,8 @@ void func_ov003_02213988(UnkStruct_02213988_4 *self, UnkStruct_02213988 *a)
     } else {
         if (func_02073908(data_020ccf94, self->unk_800) != 0) {
             func_02035684(0x12, 0, 0);
-            func_0208b500();
-            func_0208d07c();
+
+            func_0208d07c((void *) func_0208b500());
             func_02079774(&self->unk_5C);
         }
         q->unk_09 = 0;

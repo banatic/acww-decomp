@@ -6,7 +6,7 @@ typedef struct {
     unsigned char pad_00[28];
     unsigned char unk_1C;
 } UnkStruct_0226b640;
-void func_ov068_0226b640(UnkStruct_0226b640 *p)
+void func_ov068_0226b640(UnkStruct_0226b640 *p, int event)
 {
     p->unk_1C = 1;
 }

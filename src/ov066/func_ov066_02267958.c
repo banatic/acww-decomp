@@ -55,11 +55,11 @@ extern void DC_InvalidateRange(void *p, int n);
 extern void MI_CpuCopy8(const void *src, void *dest, u32 size);
 extern void DC_StoreRange(void *p, int n);
 extern void OS_CancelAlarm(void *q);
-extern void OS_SetAlarm(void *q, int a, int b, void (*cb)(void), int e);
+extern void OS_SetAlarm(void *alarm, unsigned long long ticks, void (*handler)(void *), void *argument);
 extern int func_ov066_0226783c(Peer *p, Msg *m);
 extern void func_ov066_02267908(void);
-extern void func_ov066_0226794c(void);
-extern void func_ov066_0226a494(void *obj, int a, void *name, int tag, int id, void *link);
+extern void func_ov066_0226794c(void *argument);
+extern int func_ov066_0226a494(void *obj, int a, void *name, int tag, int id, void *link);
 
 void func_ov066_02267958(Peer *peer)
 {
@@ -105,6 +105,6 @@ void func_ov066_02267958(Peer *peer)
         return;
     }
     OS_CancelAlarm(&data_ov066_0226bdf0->queue);
-    OS_SetAlarm(&data_ov066_0226bdf0->queue, 0x3d5d, 0, func_ov066_0226794c, 0);
+    OS_SetAlarm(&data_ov066_0226bdf0->queue, 0x3d5dULL, func_ov066_0226794c, 0);
     data_ov066_0226bdf0->f0 = 1;
 }

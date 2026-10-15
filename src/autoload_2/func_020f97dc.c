@@ -3,7 +3,7 @@
  */
 
 extern int FX_Div(int, int);
-extern void func_020eed18(int, int, int);
+extern int func_020eed18(int, int);
 extern int data_021fd1f8;
 
 typedef struct {
@@ -30,6 +30,6 @@ void func_020f97dc(UnkStruct_020f97dc *self, unsigned char b)
         return;
     } else {
         self->unk_0E = 120;
-        func_020eed18((int) &data_021fd1f8, 0, 120);
+        func_020eed18((int) &data_021fd1f8, 0);
     }
 }

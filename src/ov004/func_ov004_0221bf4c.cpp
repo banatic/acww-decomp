@@ -15,13 +15,13 @@ typedef struct {
 } T20;
 
 extern int func_ov004_0221b98c(char *self);
-extern void func_02062f90(T28 *t, u16 *h);
-extern void func_02062f4c(T28 *t);
+extern void *func_02062f90(T28 *t, u16 *h);
+extern void *func_02062f4c(T28 *t);
 extern void func_020683b4(void *a, unsigned int i, T28 *t, int k);
 extern void func_ov004_0221b9a0(char *self);
-extern void func_02094fd4(T20 *o);
-extern void func_02094fbc(T20 *o);
-extern void func_02070fe4(void *a, T20 *o, u16 *h);
+extern void *func_02094fd4(T20 *o);
+extern void *func_02094fbc(T20 *o);
+extern int func_02070fe4(void *a, T20 *o, u16 *h);
 extern void func_02068404(void *a, int b, T20 *o);
 extern int data_021f38f8;
 }

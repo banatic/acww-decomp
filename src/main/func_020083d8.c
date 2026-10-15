@@ -11,7 +11,7 @@ typedef struct BigStruct {
 
 extern int func_02056f94(char *p);
 extern int func_02008258(BigStruct *p, int x);
-extern void func_0200c9a8(BigStruct *p, int a, int b, int c);
+extern int func_0200c9a8(BigStruct *p, int a, int b, int c);
 
 void func_020083d8(BigStruct *p)
 {

@@ -18,13 +18,13 @@ struct UnkStruct_02229010_3 {
     int c;
     int d;
 };
-extern void func_0200e92c(struct UnkStruct_02229010_2 *c);
+extern unsigned int func_0200e92c(struct UnkStruct_02229010_2 *c);
 extern void func_0200e90c(struct UnkStruct_02229010_2 *c, int k, int a, int b);
 extern void func_0200fa1c(struct UnkStruct_02229010 *out, void *self, struct UnkStruct_02229010 *in, unsigned short *p,
                           int *q);
 extern void func_ov004_02229078(struct UnkStruct_02229010_3 *o, int a, int c, short ang);
 extern int func_0200e894(void *self, struct UnkStruct_02229010_2 *c);
-extern void func_0200e91c(struct UnkStruct_02229010_2 *c);
+extern int func_0200e91c(struct UnkStruct_02229010_2 *c);
 extern int data_ov004_02247780;
 int func_ov004_02229010(unsigned char *self, int a, int b)
 {

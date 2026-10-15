@@ -27,8 +27,8 @@ struct UnkStruct_02001610_2 {
     u16 unk_0C;
 };
 
-extern void func_020b97b4();
-extern void func_020b97d4(u16 *buf, void *dst, void *v);
+extern void func_020b97b4(unsigned short *header, short *buffer, const char *format, ...);
+extern void func_020b97d4(u16 *buf, short *dst, const char *text);
 extern int func_020eea3c(int a);
 extern int OS_GetProcMode(void);
 extern void *OS_GetIrqStackStatus(void);
@@ -81,12 +81,12 @@ void func_02001610(void)
     base = data_0213fdd0;
     buf[0] = 0xd000;
     buf[1] = 0xd000;
-    func_020b97b4(buf, base + 0x40, data_020d3420, data_0213fdd4);
-    func_020b97d4(buf, base, data_021c5914);
+    func_020b97b4(buf, (short *) (base + 0x40), data_020d3420, data_0213fdd4);
+    func_020b97d4(buf, (short *) (base), data_021c5914);
 
     n = data_0213e7fc;
     if (n != 0 && n < 6) {
-        func_020b97b4(buf, base + 0x180, data_020d3428, n, func_020eea3c(n));
+        func_020b97b4(buf, (short *) (base + 0x180), data_020d3428, n, func_020eea3c(n));
     }
 
     id = 0xffff;
@@ -100,35 +100,35 @@ void func_02001610(void)
         id = data_021fcfdc;
     }
     if (id != 0xffff) {
-        func_020b97b4(buf, base + 0x1c0, data_020d3438, id, data_021fcfd4);
+        func_020b97b4(buf, (short *) (base + 0x1c0), data_020d3438, id, data_021fcfd4);
     }
 
     tbl = data_0213fde0;
     if (tbl != 0) {
         for (i = 0; i < 0x12; i++) {
-            func_020b97b4(buf, base + ((i + 2) << 6) + 0x28, data_020d3450, &data_020c7538[i * 3], tbl[i]);
+            func_020b97b4(buf, (short *) (base + ((i + 2) << 6) + 0x28), data_020d3450, &data_020c7538[i * 3], tbl[i]);
         }
         q = (char *) data_0213fde0 + 0x64;
-        func_020b97b4(buf, base + 0x528, data_020d345c, *(int *) q);
-        func_020b97b4(buf, base + 0x568, data_020d3468, *(int *) (q + 4));
+        func_020b97b4(buf, (short *) (base + 0x528), data_020d345c, *(int *) q);
+        func_020b97b4(buf, (short *) (base + 0x568), data_020d3468, *(int *) (q + 4));
     } else {
-        func_020b97b4(buf, base + 0x428, data_020d3474, data_0213fdd8);
-        func_020b97b4(buf, base + 0x4a8, data_020d3480, data_0213fdcc);
+        func_020b97b4(buf, (short *) (base + 0x428), data_020d3474, data_0213fdd8);
+        func_020b97b4(buf, (short *) (base + 0x4a8), data_020d3480, data_0213fdcc);
     }
 
     if (data_0213fdec != 0) {
-        func_020b97b4(buf, base + 0x480, data_020d348c, data_0213fdec, data_0213fde8);
-        func_020b97d4(buf, base + 0x4c0, data_0213fde4);
+        func_020b97b4(buf, (short *) (base + 0x480), data_020d348c, data_0213fdec, data_0213fde8);
+        func_020b97d4(buf, (short *) (base + 0x4c0), data_0213fde4);
     }
 
     res = OS_GetProcMode();
     node = OSi_ThreadInfo.unk_04;
-    func_020b97b4(buf, base + 0x80, data_020d3494, node->unk_6C, res);
-    func_020b97b4(buf, base + 0xc0, data_020d34a4, node->unk_90, node->unk_94);
+    func_020b97b4(buf, (short *) (base + 0x80), data_020d3494, node->unk_6C, res);
+    func_020b97b4(buf, (short *) (base + 0xc0), data_020d34a4, node->unk_90, node->unk_94);
 
     q = (char *) OS_GetIrqStackStatus();
     if (q != 0) {
-        func_020b97b4(buf, base + 0x100, data_020d34b0, q);
+        func_020b97b4(buf, (short *) (base + 0x100), data_020d34b0, q);
     } else {
         node = OSi_ThreadInfo.unk_08;
         res = 0;
@@ -140,7 +140,7 @@ void func_02001610(void)
             node = node->unk_68;
         }
         if (node != 0) {
-            func_020b97b4(buf, base + 0x100, data_020d34bc, res, node->unk_6C, node->unk_98);
+            func_020b97b4(buf, (short *) (base + 0x100), data_020d34bc, res, node->unk_6C, node->unk_98);
         }
     }
 }

@@ -25,10 +25,14 @@ extern "C" {
 extern int func_0200dc8c(void *), func_02008258(void *, int), func_020b2300(void), func_0200dc10(void *), func_020b67d4(void),
     func_0203e1c4(void), func_0203e19c(void);
 extern int func_0200d4e8(void *, int, int, int);
-extern void func_ov004_02229bb4(void *, int, int), func_ov004_02229d24(void *, int, int);
+extern int func_ov004_02229bb4(void *, int, int);
+extern int func_ov004_02229d24(void *, int, int);
 extern int func_ov004_02229eac(void *, int, int, int);
-extern void func_0203ee14(void *, void *), func_0203ee08(void *, void *), func_0200f27c(void *, int),
-    func_0200f268(void *, int), func_020a8164(void *, void *);
+extern void func_0203ee14(void *, void *);
+extern void func_0203ee08(void *, void *);
+extern unsigned int *func_0200f27c(void *, int);
+extern void func_0200f268(void *, int);
+extern void func_020a8164(void *, void *);
 extern u8 data_ov004_02254b00[];
 void func_ov004_02229fb8(u8 *self)
 {

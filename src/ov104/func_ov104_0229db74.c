@@ -17,14 +17,14 @@ struct UnkStruct_0229db74_2 {
 };
 
 extern void func_ov002_02209d68(void *base, void *a8, void *ac);
-extern void func_ov002_02209d38(void *base, int r1, int r2, int r3);
-extern void func_ov002_02209d8c(void *base);
-extern void func_ov002_02208098(void *self, int value);
+extern int func_ov002_02209d38(void *base, int r1, int r2, int r3);
+extern int func_ov002_02209d8c(void *base);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov104_0229d8a8(void *self, int value);
 extern int func_ov104_0229d858(void *self, int value);
 extern void func_ov104_0229d500(void *self);
 
-void func_ov104_0229db74(UnkStruct_0229db74_2 *self, int value, int arg3)
+unsigned char *func_ov104_0229db74(UnkStruct_0229db74_2 *self, int value, int arg3)
 {
     int result1;
     int result2;
@@ -36,5 +36,5 @@ void func_ov104_0229db74(UnkStruct_0229db74_2 *self, int value, int arg3)
     func_ov002_02209d38(&self->sub, result1, result2, arg3);
     func_ov002_02209d8c(&self->sub);
     func_ov104_0229d500(self);
-    func_ov002_02208098(self, 0x15);
+    return func_ov002_02208098((void *) (self), 0x15);
 }

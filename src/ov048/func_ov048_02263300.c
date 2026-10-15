@@ -19,24 +19,24 @@ struct UnkStruct_02263300 {
 
 extern int func_02014868(void *);
 extern int func_0203ad88(void);
-extern void func_ov004_0222d518(void);
+extern int func_ov004_0222d518(void);
 extern int func_020ec1e8(void);
 extern void func_02073100(void);
-extern void func_020eb7ac(void);
+extern int func_020eb7ac(void);
 extern void func_020732b4(void *, int);
 extern void func_020742b4(void);
 extern int func_020e8840(void *);
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ec920(void);
-extern void func_0203e020(void *);
-extern int func_ov048_02262618(void *, int, int);
+extern int func_0203e020(void *);
+extern void func_ov048_02262618(void *, int, int);
 extern void *func_020984e8(void);
 extern void *func_020642a4(const void *);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-extern void func_02099870(void *);
-extern void *func_020950a8(void);
+extern int func_02099870(void *);
+extern void *func_020950a8(int);
 extern void func_020730c8(void);
-extern void func_020eb9f0(void *, int);
+extern int func_020eb9f0(void *, int);
 extern void *data_020ccf94;
 extern const char data_021dc7aa[];
 
@@ -76,8 +76,7 @@ int func_ov048_02263300(struct UnkStruct_02263300 *self)
                         func_ov048_02262618(&self->unk_658, 1, 0);
                         v = func_020984e8();
                         MI_CpuCopy8(func_020642a4(data_021dc7aa), buf, 12);
-                        func_02099870(v);
-                        MI_CpuCopy8(func_020950a8(), buf + 12, 12);
+                        MI_CpuCopy8(func_020950a8((int) func_02099870(v)), buf + 12, 12);
                         buf[0x18] = 0;
                         func_020730c8();
                         func_020eb9f0(buf, 0x1a);

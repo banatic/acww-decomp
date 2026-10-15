@@ -14,7 +14,7 @@ struct UnkStruct_020b99a0 {
     char sub2;
 };
 
-extern "C" void func_020b9c68(void);
+extern "C" void func_020b9c68(void *);
 extern "C" void func_020ba0f8(void *, int, int, int, int, int);
 extern "C" unsigned char func_020ba0cc(void *);
 extern "C" void func_020ba09c(void *, int, int, unsigned char);
@@ -23,7 +23,7 @@ extern "C" int func_020b98c4(void *);
 
 extern "C" int func_020b99a0(UnkStruct_020b99a0 *p, int a, int b, int c, int d, int e, int f, unsigned char g)
 {
-    func_020b9c68();
+    func_020b9c68(p);
     p->unk_0E = 9;
     func_020ba0f8(&p->sub1, a, b, c, d, e);
     p->unk_0F = func_020ba0cc(&p->sub1);

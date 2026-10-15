@@ -12,7 +12,7 @@ struct UnkStruct_02299938 {
     short unk_B4;
 };
 
-extern int func_ov142_0229a6d8(UnkStruct_02299938 *self, int offset);
+extern int func_ov142_0229a6d8(UnkStruct_02299938 *self);
 extern void func_ov142_0229a4d4(UnkStruct_02299938 *self, int value);
 extern void func_ov142_02299a54(UnkStruct_02299938 *self);
 extern void func_ov142_022999ec(UnkStruct_02299938 *self);
@@ -25,7 +25,7 @@ void func_ov142_02299938(UnkStruct_02299938 *self)
     int result;
 
     r5 = self->unk_B4;
-    result = func_ov142_0229a6d8(self, 0xb4) - 8;
+    result = func_ov142_0229a6d8(self) - 8;
     if (result < 0) {
         result = 0;
     }

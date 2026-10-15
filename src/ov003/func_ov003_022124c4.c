@@ -6,13 +6,13 @@ extern int func_02011398(void *, int);
 extern void func_0201107c(void *, int *);
 extern void func_02010f5c(void *);
 extern int func_02073908(int, unsigned int);
-extern void func_0201100c(void *);
+extern int func_0201100c(void *);
 extern void func_02010d64(void *);
-extern void func_ov003_02212574(void *, int *, int _x);
+extern int func_ov003_02212574(void *, int *, int _x);
 extern int func_0200f554(void *);
 extern unsigned int func_02008258(void *, unsigned int);
 extern void func_ov003_02212728(void *);
-extern void func_020912d4(int, void *, void *, int);
+extern int func_020912d4(int, void *, void *, int);
 extern int data_020ccf94;
 
 typedef struct UnkStruct_022124c4 {

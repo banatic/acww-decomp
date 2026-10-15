@@ -34,17 +34,17 @@ struct UnkStruct_0203ea80 {
 };
 
 extern "C" UnkStruct_0203ea80_2 *func_0203ef90(void *);
-extern "C" int func_0203ed8c(void);
+extern "C" int func_0203ed8c(int);
 extern "C" int func_0203f338(void);
 extern "C" void func_0203f320(void *, void *);
 extern "C" void func_0203dfe4(int);
-extern "C" void func_02095f08(int);
+extern "C" int func_02095f08(int);
 
 extern "C" void func_0203ea80(UnkStruct_0203ea80 *arg5, void *arg4)
 {
     UnkStruct_0203ea80_2 *obj = func_0203ef90(arg5->unk_10);
     if (obj != 0) {
-        if (func_0203ed8c() != 0) {
+        if (func_0203ed8c((int) obj) != 0) {
             if (func_0203f338() == 1) {
                 func_0203f320(arg5->unk_10, arg4);
             }

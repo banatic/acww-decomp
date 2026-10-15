@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int NNS_FndAllocFromExpHeapEx(void *);
+extern void *NNS_FndAllocFromExpHeapEx(void *heap, unsigned int size, int alignment);
 
 struct func_020e9ec4_arg {
     char pad_00[0x14];
     void *unk_14;
 };
 
-int func_020e9ec4(struct func_020e9ec4_arg *arg)
+void *func_020e9ec4(struct func_020e9ec4_arg *arg, unsigned int size, int alignment)
 {
-    return NNS_FndAllocFromExpHeapEx(arg->unk_14);
+    return NNS_FndAllocFromExpHeapEx(arg->unk_14, size, alignment);
 }

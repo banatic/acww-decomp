@@ -7,10 +7,10 @@ extern void MI_CpuCopy8(unsigned char *, const void *, unsigned int);
 extern int func_020979f0(const void *, int);
 extern int func_0209782c(void);
 extern void func_020e993c(void *, const void *);
-extern int func_0207055c(int, int);
+extern void func_0207055c(int, int);
 extern void *data_021fbe94;
 
-int func_02070500(unsigned char *p, int q)
+void func_02070500(unsigned char *p, int q)
 {
     void *heap;
     void *r;
@@ -28,5 +28,5 @@ int func_02070500(unsigned char *p, int q)
         }
     }
     func_020e993c(heap, r);
-    return func_0207055c(err, q);
+    func_0207055c(err, q);
 }

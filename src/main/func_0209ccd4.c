@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern void *func_0209cc30(int a, u32 b, u32 c);
-extern int func_0209d030(void);
+extern int func_0209d030(int *);
 extern int func_02037c0c(u32 a);
 extern int func_020644cc(u32 a);
 extern void func_0209d02c(void *a, u32 b);
@@ -35,8 +35,7 @@ int func_0209ccd4(int param)
 
     for (sp8 = 0; sp8 < 6; sp8++) {
         for (r6 = sp14; r6 < 6; r6++) {
-            func_0209cc30(param, r6, sp8);
-            r7 = func_0209d030();
+            r7 = func_0209d030((int *) func_0209cc30(param, r6, sp8));
 
             r5 = sp18;
             r4 = r5;

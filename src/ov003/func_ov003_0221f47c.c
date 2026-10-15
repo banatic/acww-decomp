@@ -38,7 +38,7 @@ extern RetPtr *func_02037608(void *a, int b);
 extern int func_02037594(void *a);
 extern int func_02037588(void *a);
 extern int func_0203757c(void *a);
-extern void func_02055f40(UnkStruct_0221f47c *obj, void *field8, int tmp);
+extern int func_02055f40(UnkStruct_0221f47c *obj, void *field8, int tmp);
 extern int func_0205650c(void *sub, void *field8, int global);
 extern void func_02056478(void *sub, int a, int b, int c, int d);
 extern int func_02055e00(UnkStruct_0221f47c *obj);

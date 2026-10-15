@@ -37,7 +37,7 @@ extern int func_020c00f8(int a, int b);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
 extern void func_020c0324(void *p, int a, int b, int c);
-extern void func_020bdc50(void *p, int a, int b, UnkStruct_020bfd1c *w, u32 v);
+extern void *func_020bdc50(void *p, int a, int b, UnkStruct_020bfd1c *w, u32 v);
 
 void func_020bfd1c(UnkStruct_020bfd1c_2 *self)
 {

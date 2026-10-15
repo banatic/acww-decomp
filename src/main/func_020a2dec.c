@@ -26,9 +26,9 @@ extern void func_020a02b4(struct UnkStruct_020a2dec *o, unsigned char *p, int a)
 extern int func_020a01ec(void);
 extern int func_020a2438(struct UnkStruct_020a2dec *o, int a);
 extern void func_020a2480(struct UnkStruct_020a2dec *o);
-extern void func_020a03e0(struct UnkStruct_020a2dec *o, unsigned char *p, int a, int b, int c, int d, int e, int f);
+extern int func_020a03e0(struct UnkStruct_020a2dec *o, unsigned char *p, int a, int b, int c, int d, int e, int f);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern void func_02073d74(void *g, int a);
 extern int func_02073dd4(void *a, int b);
 extern int func_02073918(void *a, int b);
@@ -36,11 +36,11 @@ extern int func_02073c90(void *a, int b);
 extern int func_02075918(void);
 extern int func_02075848(void);
 extern void func_020732b4(void *g, int a);
-extern int func_020ec920(int a);
+extern int func_020ec920(void);
 extern void func_020a1038(struct UnkStruct_020a2dec *o, int a, int b);
 extern void func_020a0174(void);
-extern void func_020a0848(struct UnkStruct_020a2dec *o, unsigned char *p, int a, int b, int c, int d);
-extern void func_020a25cc(struct UnkStruct_020a2dec *o);
+extern int func_020a0848(struct UnkStruct_020a2dec *o, unsigned char *p, int a, int b, int c, int d);
+extern void func_020a25cc(void);
 extern int func_020682e0(int a);
 extern void func_0206844c(int a, unsigned char *p, char *q);
 extern void func_020a4e94(struct UnkStruct_020a2dec *o, int a);
@@ -107,7 +107,7 @@ void func_020a2dec(struct UnkStruct_020a2dec *self)
                 func_02074078();
                 return;
             }
-            if (!func_020ebf70(func_02073044())) {
+            if (!(func_02073044(), func_020ebf70())) {
                 return;
             }
             if (!func_020a01ec()) {
@@ -168,7 +168,7 @@ void func_020a2dec(struct UnkStruct_020a2dec *self)
             return;
 
         case 16:
-            if (func_020ec920(func_02073044())) {
+            if ((func_02073044(), func_020ec920())) {
                 return;
             }
             func_020a1038(self, data_020e37f8, 0);
@@ -192,7 +192,8 @@ void func_020a2dec(struct UnkStruct_020a2dec *self)
             return;
 
         default:
-            func_020a25cc(self);
+            asm { add r0, self, #0 }
+            func_020a25cc();
             if (func_020a01ec()) {
                 tmp = 6;
                 func_0206844c(func_020682e0(0), &tmp, data_020e3c40);

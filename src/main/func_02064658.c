@@ -13,7 +13,7 @@ typedef struct {
     int unk_28;
 } UnkStruct_02064658;
 
-extern void FS_SeekFile(UnkStruct_02064658 *f, int pos, int mode);
+extern int FS_SeekFile(UnkStruct_02064658 *f, int pos, int mode);
 extern int FS_ReadFile(UnkStruct_02064658 *f, void *dst, int n);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int n);
 extern void MI_UncompressLZ8(const void *src, void *dst);

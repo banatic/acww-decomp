@@ -7,8 +7,8 @@ extern void *data_021fbe94;
 extern const char data_020df2d8[];
 
 extern int func_020984e8(void);
-extern void *func_020993a8(void);
-extern void func_0203d064(void *a, void *b, int c);
+extern void *func_020993a8(unsigned int);
+extern int func_0203d064(void *a, void *b, int c);
 extern void *func_0203cfd0(void *p);
 extern void func_0206eb1c(void *a, void *b);
 extern int func_02002bd0(void *a, void *b, int c, int d, int e);
@@ -38,7 +38,7 @@ int func_0206efd4(void *param0)
     }
     heap = data_021fbe94;
     val5 = func_020984e8();
-    p0 = func_020993a8();
+    p0 = func_020993a8(val5);
     h = *(unsigned short *) p0;
     p6 = func_020e9958(heap, 0x200);
     if (p6 == 0) {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020516b8(int a, ...);
+extern int func_020516b8(int a, int key);
 extern int func_0205171c(int a, int b);
 
 struct UnkStruct_0205156c {
@@ -15,11 +15,11 @@ struct UnkStruct_0205156c {
     int unk_68; // 0x68
 };
 
-void func_0205156c(struct UnkStruct_0205156c *self)
+void func_0205156c(struct UnkStruct_0205156c *self, int key)
 {
     int tmp;
 
-    self->unk_64 = func_020516b8(self->unk_28);
+    self->unk_64 = func_020516b8(self->unk_28, key);
     if (self->unk_64 == -1) {
         self->unk_64 = func_020516b8(self->unk_28, 0xff20);
     }

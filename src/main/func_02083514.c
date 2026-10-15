@@ -3,11 +3,12 @@
  */
 
 extern void func_0205d8e8(int);
-extern void func_02083cb4(int);
+extern void func_02083cb4(void);
 
 int func_02083514(int x)
 {
     func_0205d8e8(x + 1);
-    func_02083cb4(x);
+    asm { add r0, x, #0 }
+    func_02083cb4();
     return x;
 }

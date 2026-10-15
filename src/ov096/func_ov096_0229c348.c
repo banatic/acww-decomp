@@ -9,8 +9,8 @@ typedef struct UnkStruct_0229c348 {
     u16 unk_AC;
 } UnkStruct_0229c348;
 
-extern void func_020984e8(void);
-extern u16 *func_020993a8(void);
+extern int func_020984e8(void);
+extern u16 *func_020993a8(unsigned int argument0);
 extern void func_0206f190(volatile u16 *out, void *a, void *b, void *c);
 extern void func_ov096_0229e82c(UnkStruct_0229c348 *self, int a);
 extern void func_ov096_0229e6a0(UnkStruct_0229c348 *self);
@@ -23,8 +23,7 @@ void func_ov096_0229c348(UnkStruct_0229c348 *self)
     u16 lo;
     u16 hi;
 
-    func_020984e8();
-    t[0] = *func_020993a8();
+    t[0] = *func_020993a8((unsigned int) func_020984e8());
     t[1] = self->unk_AC;
     func_0206f190(&t[1], (char *) self + 0x320, (char *) self + 0xe8, (char *) self + 0xc8);
 

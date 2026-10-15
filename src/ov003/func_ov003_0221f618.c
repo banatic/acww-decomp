@@ -2,15 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0205577c(void *p);
-extern void __cxa_vec_ctor(void *p, int a, int b, void (*func1)(void), void (*func2)(void));
-extern void func_020565b0(void);
-extern void func_020565c8(void);
+extern void *func_0205577c(void *p);
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*func1)(void *), void (*func2)(void *));
+extern void *func_020565b0(void *argument0);
+extern void func_020565c8(void *argument0);
+
+#define VisitElement_020565c8 (void (*)(void *)) func_020565c8
+#define VisitElement_020565b0 (void (*)(void *)) func_020565b0
 
 void *func_ov003_0221f618(void *this)
 {
     func_0205577c(this);
-    __cxa_vec_ctor((char *) this + 0xb4, 2, 0x20, func_020565c8, func_020565b0);
+    __cxa_vec_ctor((char *) this + 0xb4, 2, 0x20, VisitElement_020565c8, VisitElement_020565b0);
     *((int *) ((char *) this + 0xac)) = -1;
     *((int *) ((char *) this + 0xb0)) = -1;
     *((int *) ((char *) this + 0x9c)) = 0;
@@ -18,3 +21,6 @@ void *func_ov003_0221f618(void *this)
     *((int *) ((char *) this + 0xa4)) = 0;
     return this;
 }
+
+#undef VisitElement_020565c8
+#undef VisitElement_020565b0

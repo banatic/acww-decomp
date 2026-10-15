@@ -17,7 +17,7 @@ struct UnkStruct_0226f178 {
     s16 unk_396;
 };
 
-extern void func_02034270(int *dst, int *src, int a, int b);
+extern int func_02034270(int *dst, int *src, int a, int b);
 extern void func_0203423c(int *buf);
 extern int FX_MulFunc(int a, int b);
 extern void func_020ee470(struct UnkStruct_0226f178 *self);

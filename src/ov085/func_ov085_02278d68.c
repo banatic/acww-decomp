@@ -18,16 +18,16 @@ typedef struct Msg {
 } Msg;
 
 extern void *func_020984e8(void);
-extern void *func_02099640(void);
+extern void *func_02099640(int);
 extern int func_02099e9c(u16 *);
 extern int func_0209f150(void *, int);
 extern void func_0209f128(void *, int);
 extern void *func_020867a0(void *);
 extern void *func_0208675c(void *);
 extern int func_02003704(void *);
-extern void func_02094fd4(int *);
-extern void func_02094fbc(int *);
-extern void func_02003618(void *, int *);
+extern void *func_02094fd4(int *);
+extern void *func_02094fbc(int *);
+extern int func_02003618(void *, int *);
 extern void func_02068404(void *, int, int *);
 extern int func_020644cc(int);
 extern int func_0202ea80(int, int);
@@ -44,8 +44,7 @@ void func_ov085_02278d68(UnkStruct_02278d68 *obj, Msg *m)
     int blk2[8];
     void *h;
 
-    func_020984e8();
-    func_02099640();
+    func_02099640((int) func_020984e8());
     m->tag = (const void *) &data_ov085_0227959c;
 
     if (obj->unk_B4 == -1) {

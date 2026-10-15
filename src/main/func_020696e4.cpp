@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" int func_020a8718(void *, unsigned char *, unsigned char *);
-extern "C" int func_020984d4(int);
+extern "C" void func_020a8718(void *, unsigned char *, unsigned char *);
+extern "C" int func_020984d4(void);
 extern "C" int func_020988d8(int);
 extern "C" void func_0206b964(void *, unsigned char *);
 
@@ -43,7 +43,7 @@ extern "C" void func_020696e4(Parent *p)
 
     p->wrap->v->method(12, 2);
 
-    result = local[(func_020988d8(func_020984d4(func_020a8718(&p->obj, &local[0], &local[1]))) != 1)];
+    result = local[(func_020988d8((((int) (func_020a8718(&p->obj, &local[0], &local[1]), &p->obj)), func_020984d4())) != 1)];
 
     func_0206b964(p, &result);
 }

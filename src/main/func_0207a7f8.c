@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207a810(void);
-extern int func_02079174(signed char);
+extern int func_0207a810(char *);
+extern void func_02079174(signed char);
 
-int func_0207a7f8(void)
+void func_0207a7f8(char *argument0)
 {
-    return func_02079174((signed char) func_0207a810());
+    func_02079174((signed char) func_0207a810((char *) argument0));
 }

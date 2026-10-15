@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206f56c(unsigned char *);
+extern int func_0206f56c(void);
 extern int func_ov002_02208054(unsigned char *, int);
 extern int func_ov002_02208b00(unsigned char *, unsigned char, unsigned char);
 extern unsigned char func_ov121_0229ab80(unsigned char *, int);
 extern void func_ov121_0229a53c(unsigned char *);
 extern void func_ov121_0229a1e4(unsigned char *);
-extern void func_ov002_02208098(unsigned char *, int);
+extern unsigned char *func_ov002_02208098(unsigned char *, unsigned char value);
 extern void func_ov002_02209114(unsigned char *, int, int);
 extern void RtcSendPxiCommand(int);
 
@@ -22,7 +22,7 @@ void func_ov121_0229b574(unsigned char *self)
     int ret, flag;
     unsigned char byte;
 
-    if (func_0206f56c(self) != 0) {
+    if (func_0206f56c() != 0) {
         func_ov121_0229a53c(self);
         return;
     }

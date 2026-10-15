@@ -5,9 +5,9 @@
 extern void *func_02096718(int);
 extern int func_02073908(void *, int);
 extern int func_02008258(void *, int);
-extern void func_0203e140(void);
-extern void func_0200d4e8(void *, int, int, int);
-extern void func_ov003_02210154(void *, int, int);
+extern int func_0203e140(void);
+extern int func_0200d4e8(void *, int, int, int);
+extern int func_ov003_02210154(void *, int, int);
 
 struct UnkStruct_022197c4_2 {
     char pad_00[0x7f0];

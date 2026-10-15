@@ -10,7 +10,7 @@ typedef struct UnkStruct_0229dc04 {
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 
-extern int func_0206f56c(UnkStruct_0229dc04 *obj);
+extern int func_0206f56c(void);
 extern int func_ov002_02208054(UnkStruct_0229dc04 *obj, int x);
 extern int func_ov002_0220a784(void *ptr, int x);
 extern void func_ov106_0229d3bc(UnkStruct_0229dc04 *obj);
@@ -21,7 +21,7 @@ void func_ov106_0229dc04(UnkStruct_0229dc04 *obj)
 {
     int v;
 
-    if (func_0206f56c(obj)) {
+    if (func_0206f56c()) {
         func_ov106_0229d3bc(obj);
     }
     if (func_ov002_02208054(obj, 1)) {

@@ -25,10 +25,10 @@ struct OuterClass {
     char *unk_24;
 };
 
-extern "C" int func_0206a5a8(OuterClass *self)
+extern "C" void func_0206a5a8(OuterClass *self)
 {
     TargetClass *target = *(TargetClass **) (self->unk_24 + 0x14a8);
     unsigned char local[8];
     func_020a873c((char *) self + 0x38, local);
-    return target->call(local[0]);
+    target->call(local[0]);
 }

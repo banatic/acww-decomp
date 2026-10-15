@@ -13,13 +13,13 @@ typedef struct UnkStruct_0229b500 {
 } UnkStruct_0229b500;
 
 extern "C" int func_ov002_02209f64(unsigned char *ptr);
-extern "C" void func_ov002_02208098(UnkStruct_0229b500 *p, unsigned char b);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void Obj_ov142_0229c3e8::func_ov142_0229b500()
 {
     UnkStruct_0229b500 *p = (UnkStruct_0229b500 *) this;
     if (func_ov002_02209f64(&p->unk_E8) == 0) {
-        func_ov002_02208098(p, p->unk_BA);
+        func_ov002_02208098((void *) (p), p->unk_BA);
         ((Obj_ov142_0229c3e8 *) p)->func_ov142_0229bd90();
     }
 }

@@ -19,7 +19,7 @@ extern int data_021f6940;
 extern int func_02095fc0(UnkStruct_020b5ee4_2 *outA, UnkStruct_020b5ee4 *outC);
 extern void func_0204f818(int *out1, int *out2, UnkStruct_020b5ee4_2 *outA);
 extern int func_020b65c4(void);
-extern int func_020b5e10(int);
+extern int func_020b5e10(void);
 extern int func_020b5f84(int a, int b, UnkStruct_020b5ee4_2 *c, unsigned int d, int e, int f, int g);
 
 int func_020b5ee4(int unused, int b)
@@ -49,7 +49,7 @@ int func_020b5ee4(int unused, int b)
     }
     local18.unk_08 = local18.unk_08 + b;
 
-    b = func_020b5e10(local18.unk_08);
+    b = func_020b5e10();
     r1 = func_020b65c4();
 
     return func_020b5f84(b, r1, &local18, ((unsigned int) r4 << 22) & 0x3fc00000, localc.unk_00, out10, out14);

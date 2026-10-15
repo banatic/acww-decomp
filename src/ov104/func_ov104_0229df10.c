@@ -5,16 +5,16 @@
 extern int func_ov002_02208e28(const char *addr);
 extern int func_0206fe54(void);
 extern void func_ov104_0229d1ec(char *p);
-extern void func_ov002_02208098(char *p, int param);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov104_0229df10(char *p)
 {
     if (func_ov002_02208e28(p + 0x2504)) {
         if (func_0206fe54()) {
             func_ov104_0229d1ec(p);
-            func_ov002_02208098(p, 11);
+            func_ov002_02208098((void *) (p), 11);
         } else {
-            func_ov002_02208098(p, 6);
+            func_ov002_02208098((void *) (p), 6);
         }
     }
 }

@@ -8,7 +8,7 @@ extern unsigned char data_020dd0cc;
 
 extern void func_02056ed4(void *p);
 extern void func_02057078(void *p);
-extern void func_02054d9c(void *p);
+extern void *func_02054d9c(void *p);
 
 typedef struct {
     void *unk_00;

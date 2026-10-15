@@ -9,20 +9,20 @@ extern int func_020b65c4(void);
 extern int func_020a132c(void);
 extern void func_020a242c(int param1, int param2, int param3);
 
-void func_0207560c(char *a, int b, int c)
+void func_0207560c(unsigned char *payload, unsigned int length, int player)
 {
-    if (b != 0) {
+    if (length != 0) {
         int local;
         char *val;
-        MI_CpuCopy8(a, &local, 4);
-        val = func_02090040(c);
-        MI_CpuCopy8(a + 4, val + local, b - 4);
+        MI_CpuCopy8(payload, &local, 4);
+        val = func_02090040(player);
+        MI_CpuCopy8(payload + 4, val + local, length - 4);
     } else {
-        func_02090174(func_02090040(c));
+        func_02090174(func_02090040(player));
     }
     if (func_020b65c4() == 13 || func_020b65c4() == 47) {
         if (func_020a132c() != 0) {
-            func_020a242c(func_020a132c(), c, 1);
+            func_020a242c(func_020a132c(), player, 1);
         }
     }
 }

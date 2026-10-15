@@ -42,7 +42,7 @@ class UnkStruct_022132f4 {
 
 extern "C" {
 int func_ov004_0220d2a8(void *p);
-void func_0205265c(UnkStruct_022132f4 *self, int a, int b, int c);
+int func_0205265c(UnkStruct_022132f4 *self, int a, int b, int c);
 }
 
 extern "C" int func_ov004_022132f4(UnkStruct_022132f4 *self)

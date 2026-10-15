@@ -22,7 +22,7 @@ typedef struct {
 
 extern int data_021c2f74;
 extern int data_021c2fa4;
-extern int func_02099fe8(UnkStruct_02023b70_2 *self);
+extern int func_02099fe8(void);
 extern void func_0202da88(UnkStruct_02023b70_2 *self, void *tbl);
 extern void func_0206844c(int a, void *b, int c);
 
@@ -32,7 +32,7 @@ void func_02023b70(UnkStruct_02023b70_2 *self)
     UnkStruct_02023b70 out;
     Fn f;
 
-    if (func_02099fe8(self) != -1) {
+    if (func_02099fe8() != -1) {
         func_0202da88(self, &data_021c2f74);
     } else {
         func_0202da88(self, &data_021c2fa4);

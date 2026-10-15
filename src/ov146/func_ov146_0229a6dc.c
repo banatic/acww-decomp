@@ -14,7 +14,7 @@ extern void func_0206fc4c(int);
 extern void func_0206fc80(int);
 extern void func_ov146_02299660(struct UnkStruct_0229a6dc *, int);
 extern void func_ov002_02208090(struct UnkStruct_0229a6dc *, int);
-extern void func_ov002_02208098(struct UnkStruct_0229a6dc *, int);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229a6dc *, unsigned char value);
 extern void RtcSendPxiCommand(int);
 
 void func_ov146_0229a6dc(struct UnkStruct_0229a6dc *self)

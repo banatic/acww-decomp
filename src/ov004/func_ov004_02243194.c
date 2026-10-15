@@ -16,11 +16,11 @@ typedef struct UnkStruct_02243194 {
     short ang;
 } UnkStruct_02243194;
 
-extern void func_ov004_02241ba8(UnkStruct_02243194 *self);
+extern int func_ov004_02241ba8(UnkStruct_02243194 *self);
 extern int func_ov004_02244e38(UnkStruct_02243194 *self, Vec3 *p);
 extern int func_ov004_0224105c(int a);
 extern int func_020644cc(int a);
-extern void func_02090c2c(int a, Vec3 *b, int c, void *d);
+extern int func_02090c2c(int a, Vec3 *b, int c, void *d);
 extern int func_0209d088(void *p);
 extern void NNS_G3dMdlSetMdlAlpha(int a, int b, int c);
 

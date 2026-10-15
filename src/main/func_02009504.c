@@ -9,7 +9,7 @@ typedef struct {
     signed short unk_7D4;
 } UnkStruct_02009504;
 
-extern void func_0200c3b0(void *param, int a, int b, int c);
+extern int func_0200c3b0(void *param, int a, int b, int c);
 extern void func_0200f268(void *param, int a);
 
 void func_02009504(UnkStruct_02009504 *param)

@@ -7,7 +7,7 @@ typedef struct {
 } MtxFx43;
 
 extern void MTX_MultVec43(int *vec, MtxFx43 *m, int *out);
-extern void func_0203f7d0(void *obj, int *out);
+extern int func_0203f7d0(void *obj, int *out);
 extern int FX_Div(int numer, int denom);
 
 typedef struct {

@@ -5,11 +5,12 @@
 extern void func_0205dc38(void *);
 extern void __register_global_object(void *, void *, void *);
 extern int data_021c9df4;
-extern int func_0205dc34;
+extern void func_0205dc34(void *);
 extern int data_021c9de8;
 
 void __sinit_020c58a8(void)
 {
     func_0205dc38((void *) &data_021c9df4);
-    __register_global_object((void *) &data_021c9df4, (void *) &func_0205dc34, (void *) &data_021c9de8);
+    __register_global_object((void *) ((void *) &data_021c9df4), (((void *) func_0205dc34)),
+                             (void *) ((void *) &data_021c9de8));
 }

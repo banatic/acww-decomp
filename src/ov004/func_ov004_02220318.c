@@ -9,7 +9,7 @@ typedef struct {
 } Vec3;
 extern Vec3 *func_02095794(int a);
 extern int func_02030818(Vec3 *v);
-extern void func_0203e0a8(void *s, int a);
+extern int func_0203e0a8(void *s, int a);
 extern int func_0203ec98(void);
 extern void func_0209e474(int *p);
 extern int func_0209e350(void *p, int *q);

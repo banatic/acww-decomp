@@ -5,6 +5,8 @@
 
 #include "cpp/ov122/Obj_ov122_022a2738.h"
 
+#define STATE_func_ov122_022a1a84 (PMF) & Obj_ov122_022a2738::func_ov122_022a1a84
+
 extern "C" void func_ov122_022a1854(Obj_ov122_022a2738 *);
 extern "C" void func_ov122_022a1850(Obj_ov122_022a2738 *);
 
@@ -24,7 +26,7 @@ static const PMF pmf7 = &Obj_ov122_022a2738::func_ov122_022a1b60;
 static const PMF pmf8 = &Obj_ov122_022a2738::func_ov122_022a1b50;
 static const PMF pmf9 = &Obj_ov122_022a2738::func_ov122_022a1b24;
 static const PMF pmf10 = &Obj_ov122_022a2738::func_ov122_022a1ac4;
-static const PMF pmf11 = &Obj_ov122_022a2738::func_ov122_022a1a84;
+static const PMF pmf11 = STATE_func_ov122_022a1a84;
 static const PMF pmf12 = &Obj_ov122_022a2738::func_ov122_022a1a58;
 static const PMF pmf13 = &Obj_ov122_022a2738::func_ov122_022a1a04;
 static const PMF pmf14 = &Obj_ov122_022a2738::func_ov122_022a1998;
@@ -50,7 +52,11 @@ int Obj_ov122_022a2738::func_ov122_022a2110()
         g_flag |= 1;
     }
     func_ov122_022a1854(this);
+
     (this->*g_table[state])();
+
     func_ov122_022a1850(this);
     return 1;
 }
+
+#undef STATE_func_ov122_022a1a84

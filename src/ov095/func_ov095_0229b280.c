@@ -12,17 +12,17 @@ struct UnkStruct_0229b280 {
     u8 data[0x8000];
 };
 
-extern u8 func_0203fa58(struct UnkStruct_0229b280 *p);
+extern u8 func_0203fa58(void);
 extern u8 func_0203fa14(int x);
-extern void func_02064af4(const void *src, void *dst, unsigned int size);
-extern void func_02002a88(void *dst, int a, int b, int c, int d);
+extern int func_02064af4(const void *src, void *dst, unsigned int size);
+extern int func_02002a88(void *dst, int a, int b, int c, int d);
 extern const u8 data_ov095_0229edf4[];
 
 void func_ov095_0229b280(struct UnkStruct_0229b280 *self)
 {
     int i;
 
-    self->count = func_0203fa58(self);
+    self->count = func_0203fa58();
 
     for (i = 0; i < self->count; i++) {
         self->tiles[i] = func_0203fa14(i);

@@ -3,20 +3,23 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void);
-extern void func_020b9af4(void *p);
-extern void func_ov094_0229b000(void *p);
+extern void *func_ov002_0220830c(void *argument0);
+extern void *func_020b9af4(void *p);
+extern void *func_ov094_0229b000(void *p);
 extern void func_ov094_0229bc3c(void *p);
-extern void func_ov094_0229a2ec(void *p);
-extern void func_ov002_02207e40(void *p);
+extern void *func_ov094_0229a2ec(void *p);
+extern void *func_ov002_02207e40(void *p);
 extern void func_ov002_02209e44(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_ov002_02209b14(void *p);
-extern void func_ov002_0220ba24(void *p);
-extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void), void (*cb2)(void));
-extern void func_02070c08(void);
-extern void func_02070be8(void);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_ov002_02209b14(void *p);
+extern void *func_ov002_0220ba24(void *p);
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void *), void (*cb2)(void *));
+extern void *func_02070c08(void *argument0);
+extern int **func_02070be8(void *argument0);
 extern char data_ov100_0229ecb8;
+
+#define VisitElement_02070c08 (void (*)(void *)) func_02070c08
+#define VisitElement_02070be8 (void (*)(void *)) func_02070be8
 
 void *func_ov100_0229eaec(void)
 {
@@ -26,7 +29,7 @@ void *func_ov100_0229eaec(void)
 
     p = func_ov002_02207f80(0x292c);
     if (p != 0) {
-        func_ov002_0220830c();
+        func_ov002_0220830c(p);
         *(void **) p = (void *) &data_ov100_0229ecb8;
 
         q = (char *) p + 0x94;
@@ -44,8 +47,11 @@ void *func_ov100_0229eaec(void)
         func_ov002_02209ccc((char *) p + 0x2274);
         func_ov002_02209b14((char *) p + 0x22d8);
         func_ov002_0220ba24((char *) p + 0x26cc);
-        __cxa_vec_ctor((char *) p + 0x27e8, 2, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor((char *) p + 0x27e8, 2, 0x6c, VisitElement_02070c08, VisitElement_02070be8);
     }
 
     return p;
 }
+
+#undef VisitElement_02070c08
+#undef VisitElement_02070be8

@@ -15,7 +15,7 @@ extern volatile unsigned char data_020e54a8;
 extern UnkStruct_020afdc8_2 *data_021c80bc;
 extern int func_020b65c4(void);
 extern UnkStruct_020afdc8 *func_02037e0c(void *obj, int x, int y, int k);
-extern int func_0204bcdc(void);
+extern int func_0204bcdc(void *);
 extern int func_0204bc64(UnkStruct_020afdc8 *e);
 extern void func_020afe94(int x, int y, int a, int b);
 
@@ -52,7 +52,7 @@ void func_020afdc8(UnkStruct_020afdc8 *self, int p1, int p2)
             if (e == 0) {
                 continue;
             }
-            if (func_0204bcdc() != 0) {
+            if (func_0204bcdc(e) != 0) {
                 int a = func_0204bc64(e);
                 ok = (a == func_0204bc64(self)) ? 1 : 0;
             } else {

@@ -10,9 +10,9 @@ extern u8 data_021dc7a8[];
 extern int func_020a1b68(void *a0, void *a1);
 extern int func_02050920(u8 *p, int n);
 extern int func_0209f180(u8 *p);
-extern void func_02098844(u8 *p, int i);
-extern u8 *func_02099664(void);
-extern u8 *func_02099658(void);
+extern int func_02098844(u8 *p, int i);
+extern u8 *func_02099664(int);
+extern u8 *func_02099658(int);
 
 int func_020a1bdc(void *a0, void *a1)
 {
@@ -44,10 +44,8 @@ int func_020a1bdc(void *a0, void *a1)
         i = 0;
         p = b + 0x14;
         do {
-            func_02098844(p, i);
-            func_02050920(func_02099664(), 0x50);
-            func_02098844(b + 0x14, i);
-            func_02050920(func_02099658(), 0x484);
+            func_02050920(func_02099664((int) func_02098844(p, i)), 0x50);
+            func_02050920(func_02099658((int) func_02098844(b + 0x14, i)), 0x484);
             i++;
         } while (i < 4);
     } else {

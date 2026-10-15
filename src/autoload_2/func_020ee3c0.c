@@ -17,8 +17,8 @@ typedef struct {
 
 extern int data_0213e7fc;
 extern int data_021fd004;
-extern void func_020e8ce0(void *p, UnkStruct_020ee3c0_2 *dst);
-extern void func_020ee8a8(void *p);
+extern int func_020e8ce0(void *p, UnkStruct_020ee3c0_2 *dst);
+extern int func_020ee8a8(void *p, void *node);
 
 void func_020ee3c0(UnkStruct_020ee3c0 *self, unsigned short val)
 {
@@ -39,7 +39,7 @@ void func_020ee3c0(UnkStruct_020ee3c0 *self, unsigned short val)
             sub2->c = val;
             sub2->e = val;
         }
-        func_020ee8a8(&data_021fd004);
+        func_020ee8a8(&data_021fd004, (char *) self + 0x28);
         return;
     }
 

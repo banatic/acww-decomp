@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov114_0229c690(void);
+extern int func_ov114_0229c690(void *arg0);
 extern int _s32_div_f(int a, int b);
 
 typedef struct {
@@ -14,7 +14,7 @@ typedef struct {
 
 unsigned char func_ov114_0229c370(UnkNisB *self)
 {
-    int ret = func_ov114_0229c690();
+    int ret = func_ov114_0229c690((void *) self);
     ret = ret - (21 - self->unk_127C);
     if (ret < 0) {
         ret = 0;

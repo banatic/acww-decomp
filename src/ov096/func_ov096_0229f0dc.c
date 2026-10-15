@@ -8,10 +8,10 @@ extern int func_ov096_0229f820(void *a, int b);
 extern int func_ov096_0229f150(void *a, int b);
 extern int func_ov096_0229f054(void *a, int b);
 extern int func_ov096_0229f800(void *a, int b);
-extern int func_02065f18(int x);
-extern int func_ov094_0229aaac(void *addr, int x);
+extern unsigned short func_02065f18(int x);
+extern unsigned short func_ov094_0229aaac(void *addr, int x);
 
-int func_ov096_0229f0dc(void *a, int b)
+unsigned short func_ov096_0229f0dc(void *a, int b)
 {
     if (func_ov096_0229f830(a, b)) {
         return func_ov094_0229aaac((char *) a + 0x358, func_ov096_0229f7ac(a, b));

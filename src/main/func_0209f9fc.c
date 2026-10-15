@@ -3,8 +3,8 @@
  */
 
 extern void *func_020edf70(int size);
-extern void func_020ee660(void);
-static void sub_0209f538(void *ptr);
+extern void *func_020ee660(void *);
+extern void *func_0209f538(void *ptr);
 
 extern unsigned char data_020da13c[];
 extern unsigned char data_020e3708[];
@@ -15,15 +15,10 @@ void *func_0209f9fc(void)
 
     obj = func_020edf70(0xa4);
     if (obj != 0) {
-        func_020ee660();
+        func_020ee660(obj);
         *(volatile void **) obj = (void *) data_020da13c;
         *(volatile void **) obj = (void *) data_020e3708;
-        sub_0209f538((char *) obj + 0x54);
+        func_0209f538((char *) obj + 0x54);
     }
     return obj;
-}
-
-static void sub_0209f538(void *ptr)
-{
-    (void) ptr;
 }

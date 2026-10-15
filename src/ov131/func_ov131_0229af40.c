@@ -3,7 +3,7 @@
  */
 
 extern void func_ov002_0220a05c(void *p, int a, int b, int c, int d);
-extern void func_ov002_02208098(void *p, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct {
     unsigned char pad_00[0x8d];
@@ -18,5 +18,5 @@ void func_ov131_0229af40(UnkStruct_0229af40 *obj, int a, int b)
 {
     func_ov002_0220a05c(&obj->unk_94, a, b, 3, 1);
     obj->unk_1556 = obj->unk_8D;
-    func_ov002_02208098(obj, 3);
+    func_ov002_02208098((void *) (obj), 3);
 }

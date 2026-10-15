@@ -11,7 +11,7 @@ typedef struct {
 extern char data_ov003_0225f76c[];
 extern u8 data_ov003_0223c014[];
 extern int data_020ccf94;
-extern char *func_02060924(void);
+extern char *func_02060924(int);
 extern int func_02073d90(int g);
 extern int func_ov003_0222a578(Vec3 *v, int h, int owner, int kind);
 extern int func_ov003_0222a558(void);
@@ -34,7 +34,7 @@ int func_ov003_0222a634(char *self)
     int i;
     // /P
     ret = 0;
-    p = func_02060924();
+    p = func_02060924(0);
     if (p == 0) {
         return 0;
     }

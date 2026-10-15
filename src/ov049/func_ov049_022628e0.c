@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
 
 int func_ov049_022628e0(void *arg0)
 {

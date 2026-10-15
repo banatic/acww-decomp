@@ -7,11 +7,11 @@ typedef struct {
     unsigned char pad_04[0x60];
 } Buffer;
 
-extern void func_020a88ec(void *p);
+extern void *func_020a88ec(void *p);
 extern void func_020a8874(void *dst, const void *src, unsigned int len);
 extern void func_0206db74(void *p);
 extern void func_0206dbc0(void *p, void *q);
-extern void func_020a887c(void *p);
+extern void *func_020a887c(void *p);
 extern char data_020df270[];
 
 void func_0206dff8(char *obj, const void *data)

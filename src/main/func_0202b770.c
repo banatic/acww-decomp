@@ -3,11 +3,11 @@
  */
 
 extern void func_0209df64(void *p);
-extern int func_02081d20(void);
+extern int func_02081d20(signed char *object);
 extern int func_0207a650(void *a, void *b);
-extern void func_0208150c(int val);
-extern int func_020036e8(void);
-extern void func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
+extern unsigned int func_0208150c(int val);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *a, void *b, void *c, int d, int e, int f, int g, int h, int i);
 extern void func_0202da88(void *a, void *b);
 
 typedef struct {
@@ -35,18 +35,19 @@ extern char data_021c2794;
 int func_0202b770(UnkStruct_0202b770 *p)
 {
     int local;
+    signed char *object;
     func_0209df64(&local);
-    if (p->unk_12C == 0) {
+    if ((object = (signed char *) p->unk_12C) == 0) {
         goto fail;
     }
-    if (func_02081d20() < 0) {
+    if (func_02081d20(object) < 0) {
         goto fail;
     }
     if (func_0207a650(&data_021e5a2c, &local) == 0) {
         goto fail;
     }
-    func_0208150c(p->unk_100->unk_830);
-    func_0202da38(p, p->unk_104, p->unk_122, 30, func_020036e8(), data_020c8b20.word, data_020c8b20.byte, 0, 0);
+    func_0202da38(p, p->unk_104, p->unk_122, 30, func_020036e8((unsigned char *) func_0208150c(p->unk_100->unk_830)),
+                  data_020c8b20.word, data_020c8b20.byte, 0, 0);
     func_0202da88(p, &data_021c2794);
     return 1;
 fail:

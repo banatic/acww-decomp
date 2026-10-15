@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_020c80f8;
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 
 struct UnkStruct_022622fc {
     char pad_00[0x564];

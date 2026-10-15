@@ -12,7 +12,7 @@ extern int func_ov125_0229fe4c(struct UnkStruct_0229fc24 *self, int b);
 extern int func_ov125_0229fe40(struct UnkStruct_0229fc24 *self, int b);
 extern void func_ov002_022098ec(void *addr, int a, int b);
 extern void func_ov002_0220970c(void *addr, int n);
-extern void func_ov002_02208098(struct UnkStruct_0229fc24 *self, int n);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229fc24 *self, unsigned char value);
 
 void func_ov125_0229fc24(struct UnkStruct_0229fc24 *self)
 {

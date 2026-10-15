@@ -4,27 +4,27 @@
 
 #include "types.h"
 
-extern void func_020984e8(void);
+extern int func_020984e8(void);
 extern int func_0206837c(int);
-extern void func_02094fd4(void *);
-extern void func_020ab8dc(void *);
+extern void *func_02094fd4(void *);
+extern void *func_020ab8dc(void *);
 extern void func_020ab5e4(int);
 extern int func_0203fa14(int);
 extern int func_0203fa58(void);
 extern int func_ov088_02279100(void *, void *, int);
 extern int func_020ab550(int, int);
-extern void func_020b4a20(void *, void *, void *);
+extern int func_020b4a20(void *, void *, void *);
 extern int func_020ab798(int);
-extern void func_020a8bb8(int, void *);
-extern void func_020ab778(int, void *, int);
+extern void *func_020a8bb8(int, void *);
+extern void func_020ab778(int, void *);
 extern int func_020ab39c(int);
 extern void func_020ab774(int, int);
 extern void func_020ab71c(int);
 extern void func_020ab4bc(int, int);
 extern void func_020ab4a8(int);
 extern void func_02068388(int, int);
-extern void func_020ab8c4(void *);
-extern void func_02094fbc(void *);
+extern void *func_020ab8c4(void *);
+extern void *func_02094fbc(void *);
 
 extern char data_ov088_02279da8[];
 extern char data_ov088_02279db4[];
@@ -95,7 +95,7 @@ void func_ov088_02278fb0(struct UnkStruct_02278fb0 *self, int arg2)
         res = func_020ab550(p, i);
         r6 = res;
         c[1] = 5;
-        func_020ab778(r6, &c[1], 5);
+        func_020ab778(r6, &c[1]);
         {
             int t = func_020ab39c(1);
             func_020ab774(r6, t);

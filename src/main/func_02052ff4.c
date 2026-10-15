@@ -2,13 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02052f3c(void);
-extern void func_02053088(void);
+extern int func_02052f3c(int);
+extern void func_02053088(void *);
 
-int func_02052ff4(void)
+int func_02052ff4(int argument0)
 {
-    if (func_02052f3c() != 0) {
-        func_02053088();
+    void *condition_value0;
+    if ((condition_value0 = (void *) (func_02052f3c((int) argument0))) != 0) {
+        func_02053088(condition_value0);
         return 1;
     }
     return 0;

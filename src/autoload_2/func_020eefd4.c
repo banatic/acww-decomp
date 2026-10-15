@@ -9,13 +9,13 @@ struct UnkStruct020eefd4 {
     int unk_1C;
 };
 
-extern void OS_Terminate(int);
+extern void OS_Terminate(void);
 extern void func_020eec60(int);
 
 void func_020eefd4(struct UnkStruct020eefd4 *self)
 {
     if (self->unk_15 == 0xff) {
-        OS_Terminate(self->unk_15);
+        OS_Terminate();
     }
     if (self->unk_1C == 0xff) {
         return;

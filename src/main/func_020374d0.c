@@ -10,15 +10,15 @@ typedef struct {
     unsigned char unk_10;
 } UnkStruct_020374d0;
 
-extern void func_020374ac(UnkStruct_020374d0 *p, int x, short y, int z);
+extern void func_020374ac(UnkStruct_020374d0 *p);
 
-UnkStruct_020374d0 *func_020374d0(UnkStruct_020374d0 *p, int x, short y, int z, int w, unsigned char c)
+UnkStruct_020374d0 *func_020374d0(UnkStruct_020374d0 *p, int x, int y, int z, int w, int c)
 {
-    func_020374ac(p, x, y, z);
+    func_020374ac(p);
     p->unk_00 = x;
     p->unk_04 = y;
     p->unk_0C = z;
     p->unk_08 = w;
-    p->unk_10 = c;
+    p->unk_10 = *(unsigned char *) &c;
     return p;
 }

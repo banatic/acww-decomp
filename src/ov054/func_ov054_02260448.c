@@ -3,8 +3,8 @@
  */
 
 extern char data_ov054_02263094;
-extern void func_ov054_02261f98(void *);
-extern void func_0202ee5c(void *);
+extern void *func_ov054_02261f98(void *);
+extern void *func_0202ee5c(void *);
 extern void func_020edf54(void *);
 
 typedef struct UnkStruct_02260448 {

@@ -9,12 +9,11 @@ struct UnkStruct_02075dcc {
 
 extern struct UnkStruct_02075dcc *data_020ccf94;
 
-void func_02096284(void *ptr);
-int func_0209847c(void);
-void func_02075ff8(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
+unsigned char func_02096284(void *ptr);
+int func_0209847c(void *);
+int func_02075ff8(unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
 
-void func_02075dcc(unsigned int a, unsigned int b)
+int func_02075dcc(unsigned int a, unsigned int b)
 {
-    func_02096284(data_020ccf94->unk_68);
-    func_02075ff8(a, func_0209847c(), 0x249c, 4, b);
+    return func_02075ff8(a, func_0209847c((void *) func_02096284(data_020ccf94->unk_68)), 0x249c, 4, b);
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov142_0229abfc(void *self);
+extern void func_ov142_0229abfc(void *object);
 extern void func_ov142_02299648(void *self, int val);
 extern int func_ov142_02299668(void *self, int val);
 extern void func_ov142_02299658(void *self, int val);
@@ -12,8 +12,8 @@ extern int func_0204c7f0(void *local);
 extern void func_ov142_0229ac38(void *self);
 extern void func_ov142_0229ac9c(void *self, int val);
 extern int func_ov004_0223d03c(void);
-extern void func_ov004_0223d064(void);
-extern void func_ov004_0223d08c(int a, void *arg);
+extern void func_ov004_0223d064(void *argument0);
+extern int func_ov004_0223d08c(int a, void *arg);
 extern unsigned char data_020e54a8;
 
 typedef struct {
@@ -42,8 +42,8 @@ int func_ov142_0229a0f8(UnkStruct_0229a0f8 *self, int param1, int param2)
             if (flag > 0) {
                 if (func_ov142_02299668(self, 0x40) != 0) {
                     func_ov142_02299648(self, 0x40);
-                    func_ov004_0223d03c();
-                    func_ov004_0223d064();
+
+                    func_ov004_0223d064((void *) func_ov004_0223d03c());
                 }
             }
         }

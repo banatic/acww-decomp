@@ -2,4 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020b3750(void) {}
+typedef struct Choices_020b3750 {
+    unsigned char indices[4];
+} Choices_020b3750;
+
+unsigned char *func_020b3750(Choices_020b3750 *record)
+{
+    return record->indices;
+}

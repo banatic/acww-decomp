@@ -3,28 +3,12 @@
  */
 
 extern unsigned short data_020c80f8;
-extern int func_02019d0c(char *ptr, int a, int b, int c);
+extern int func_02019d0c(char *ptr, int kind, int value, int r3val, int argA, short argB, short argC, int argD, int argE,
+                         unsigned short argF, unsigned short argG);
 
 int func_ov083_02278e64(char *self)
 {
-    volatile struct {
-        int a;
-        int b;
-        int c;
-        int d;
-        int e;
-        unsigned int f;
-        int g;
-    } local;
 
-    local.a = 0;
-    local.b = 0;
-    local.c = 0;
-    local.d = 0;
-    local.e = 0;
-    local.f = data_020c80f8;
-    local.g = 0;
-
-    func_02019d0c(self + 0x564, 0, 1, 0);
+    func_02019d0c(self + 0x564, 0, 1, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
     return 1;
 }

@@ -6,14 +6,14 @@
 #include "cpp/ov128/Obj_ov128_0229cbc0.h"
 
 extern "C" {
-void func_ov128_0229c390(int);
+void func_ov128_0229c390(void *argument0);
 void func_ov128_0229c37c(int);
 }
 
 int Obj_ov128_0229cbc0::func_ov128_0229c5fc()
 {
     int param1 = (int) this;
-    func_ov128_0229c390(param1);
+    func_ov128_0229c390((void *) this);
     ((Obj_ov128_0229cbc0 *) param1)->func_ov128_0229c618();
     func_ov128_0229c37c(param1);
     return 1;

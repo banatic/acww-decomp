@@ -3,9 +3,9 @@
  */
 
 extern void *data_021fbe94;
-extern void func_02002c6c(void *data, void *ptr, int size, int v1, int v2, int v3);
-extern void func_02002d14(void *data, void *ptr, int size, int v1, int v2, int v3);
-extern void func_02064af4(void *data, void *ptr, int size);
+extern int func_02002c6c(void *data, void *ptr, int size, int v1, int v2, int v3);
+extern int func_02002d14(void *data, void *ptr, int size, int v1, int v2, int v3);
+extern int func_02064af4(void *data, void *ptr, int size);
 extern char data_ov119_0229cf00[];
 extern char data_ov119_0229cf18[];
 extern char data_ov119_0229cf30[];

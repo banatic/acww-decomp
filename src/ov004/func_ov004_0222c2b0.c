@@ -4,7 +4,7 @@
 
 extern int DWC_Alloc(int, int);
 
-int func_ov004_0222c2b0(char *self)
+int func_ov004_0222c2b0(void)
 {
     // DECLS
     // ENDDECLS

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02094840(int, int, int, int, int, int);
+extern int func_02094840(int, int, int, int, int, void (*)(void *));
 
 void func_02091610(int a, int b, int c, int d)
 {
-    int local = 0;
+    void (*local)(void *) = 0;
     func_02094840(1, a, b, c, d, local);
 }

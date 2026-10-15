@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020e9b84(void);
-extern void NNS_FndVisitAllocatedForExpHeap(void *, void (*)(void), int);
+extern void func_020e9b84(void *memBlock, void *heap, unsigned int userParam);
+extern void NNS_FndVisitAllocatedForExpHeap(void *, void (*)(void *, void *, unsigned int), int);
 
 typedef struct {
     unsigned char pad_00[0x14];

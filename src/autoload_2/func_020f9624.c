@@ -19,7 +19,7 @@ struct UnkStruct_020f9624_2 {
     struct UnkStruct_020f9624 sub;
 };
 
-extern void func_020f98e8(struct UnkStruct_020f9624_2 *self);
+extern void *func_020f98e8(struct UnkStruct_020f9624_2 *self);
 extern void func_020f9680(struct UnkStruct_020f9624 *p);
 extern int data_0213f250;
 extern struct UnkStruct_020f9624_2 *data_021fd1bc;

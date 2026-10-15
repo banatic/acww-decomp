@@ -23,125 +23,176 @@ extern int _s32_div_f(int a, int b);
 extern int func_020a7e44(void);
 extern int func_020a7ebc(void);
 extern int func_020a7e94(void);
-extern void RtcSendPxiCommand(int a, int _x);
+extern void RtcSendPxiCommand(int command);
 
-void func_020aa888(UnkStruct_020aa888 *self)
+// clang-format off
+asm void func_020aa888(UnkStruct_020aa888 *self)
 {
-    // DECLS
-    int hiV;
-    int lo;
-    int a;
-    int t;
-    int loV;
-    int d;
-    int v;
-    int b;
-    int m;
-    int up;
-    int hit;
-    int i;
-    int dn;
-    int gt;
-    int hi;
-    // ENDDECLS
-
-    if (self->unk_30 == 0) {
-        goto L950;
-    }
-    if (func_020abd98(self->unk_00) == 0) {
-        goto L950;
-    }
-    if (func_020a7e50() != 0) {
-        if (func_020a8028(&a, &b) != 0) {
-            lo = func_020abcfc(self->unk_00);
-            hi = func_020abd14(self->unk_00);
-            v = b - self->unk_10;
-            if (v < hi) {
-                v = hi;
-            } else if (v > lo) {
-                v = lo;
-            }
-            self->unk_08 = _s32_div_f((v - lo) << 12, hi - lo);
-        }
-        self->unk_04 = 0;
-        goto L950;
-    }
-    if (func_020a7e44() == 0) {
-        goto L950;
-    }
-    up = func_020a7ebc();
-    dn = func_020a7e94();
-    if (up == 0 && dn == 0) {
-        self->unk_04 = 0x28;
-    } else {
-        self->unk_04 = self->unk_04 + 0x51;
-        t = self->unk_04;
-        if (t < 0) {
-            t = 0;
-        } else if (t > 0x199) {
-            t = 0x199;
-        }
-        self->unk_04 = t;
-    }
-    if (up != 0) {
-        self->unk_08 = self->unk_08 + self->unk_04;
-    }
-    if (dn != 0) {
-        self->unk_08 = self->unk_08 - self->unk_04;
-    }
-    d = self->unk_08;
-    if (d < 0) {
-        d = 0;
-    } else if (d > 0x1000) {
-        d = 0x1000;
-    }
-    self->unk_08 = d;
-L950:
-    loV = self->unk_0C;
-    d = self->unk_08;
-    t = d - loV;
-    if (t < 0) {
-        t = -t;
-    }
-    if (t < 0x51) {
-        goto Lend;
-    }
-    if (d > loV) {
-        gt = 1;
-    } else {
-        gt = 0;
-    }
-    if (gt != 0) {
-        hiV = d;
-    } else {
-        hiV = loV;
-    }
-    if (gt == 0) {
-        loV = d;
-    }
-    hit = 0;
-    i = 0;
-    goto test;
-body:
-    m = 0x199 * i;
-    if (m >= loV) {
-        if (m < hiV) {
-            hit = 1;
-            goto after;
-        }
-    }
-    i++;
-test:
-    if (i < 0xa) {
-        goto body;
-    }
-after:
-    if (hiV == 0x1000) {
-        hit = 1;
-    }
-    if (hit != 0) {
-        RtcSendPxiCommand(0x19, hiV);
-    }
-Lend:
-    self->unk_0C = self->unk_08;
+    push {r4, r5, r6, lr}
+    sub sp, #8
+    add r4, r0, #0
+    add r0, #0x30
+    ldrb r0, [r0]
+    cmp r0, #0
+    beq check_interval
+    ldr r0, [r4]
+    bl func_020abd98
+    cmp r0, #0
+    beq check_interval
+    bl func_020a7e50
+    cmp r0, #0
+    beq check_keys
+    add r0, sp, #0
+    add r1, sp, #4
+    bl func_020a8028
+    cmp r0, #0
+    beq reset_speed
+    ldr r0, [r4]
+    bl func_020abcfc
+    add r5, r0, #0
+    ldr r0, [r4]
+    bl func_020abd14
+    add r2, r0, #0
+    ldr r1, [sp, #4]
+    ldr r0, [r4, #0x10]
+    sub r0, r1, r0
+    cmp r0, r2
+    bge check_upper
+    add r0, r2, #0
+    b scale_position
+check_upper:
+    cmp r0, r5
+    ble scale_position
+    add r0, r5, #0
+scale_position:
+    sub r0, r0, r5
+    lsl r0, r0, #12
+    sub r1, r2, r5
+    bl _s32_div_f
+    str r0, [r4, #8]
+reset_speed:
+    mov r0, #0
+    str r0, [r4, #4]
+    b check_interval
+check_keys:
+    bl func_020a7e44
+    cmp r0, #0
+    beq check_interval
+    bl func_020a7ebc
+    add r5, r0, #0
+    bl func_020a7e94
+    cmp r5, #0
+    bne accelerate
+    cmp r0, #0
+    bne accelerate
+    mov r1, #0x28
+    str r1, [r4, #4]
+    b apply_direction
+accelerate:
+    ldr r1, [r4, #4]
+    add r1, #0x51
+    str r1, [r4, #4]
+    ldr r2, [r4, #4]
+    cmp r2, #0
+    bge check_speed_limit
+    mov r2, #0
+    b store_speed
+check_speed_limit:
+    ldr r1, =0x199
+    cmp r2, r1
+    ble store_speed
+    add r2, r1, #0
+store_speed:
+    str r2, [r4, #4]
+apply_direction:
+    cmp r5, #0
+    beq apply_down
+    ldr r2, [r4, #8]
+    ldr r1, [r4, #4]
+    add r1, r2, r1
+    str r1, [r4, #8]
+apply_down:
+    cmp r0, #0
+    beq clamp_position
+    ldr r1, [r4, #8]
+    ldr r0, [r4, #4]
+    sub r0, r1, r0
+    str r0, [r4, #8]
+clamp_position:
+    ldr r1, [r4, #8]
+    cmp r1, #0
+    bge check_position_limit
+    mov r1, #0
+    b store_position
+check_position_limit:
+    ldr r0, =0x1000
+    cmp r1, r0
+    ble store_position
+    add r1, r0, #0
+store_position:
+    str r1, [r4, #8]
+check_interval:
+    ldr r2, [r4, #0xc]
+    ldr r0, [r4, #8]
+    sub r1, r0, r2
+    cmp r1, #0
+    bge check_distance
+    neg r1, r1
+check_distance:
+    cmp r1, #0x51
+    blt finish
+    cmp r0, r2
+    ble descending
+    mov r3, #1
+    b choose_upper
+descending:
+    mov r3, #0
+choose_upper:
+    cmp r3, #0
+    beq old_upper
+    add r1, r0, #0
+    b choose_lower
+old_upper:
+    add r1, r2, #0
+choose_lower:
+    cmp r3, #0
+    bne find_crossing
+    add r2, r0, #0
+find_crossing:
+    mov r0, #0
+    add r6, r0, #0
+    ldr r3, =0x199
+    b test_boundary
+next_boundary:
+    add r5, r6, #0
+    mul r5, r3
+    cmp r5, r2
+    blt increment_boundary
+    cmp r5, r1
+    bge increment_boundary
+    mov r0, #1
+    b check_end_boundary
+increment_boundary:
+    add r6, r6, #1
+test_boundary:
+    cmp r6, #0xa
+    blt next_boundary
+check_end_boundary:
+    ldr r2, =0x1000
+    cmp r1, r2
+    bne maybe_sound
+    mov r0, #1
+maybe_sound:
+    cmp r0, #0
+    beq finish
+    mov r0, #0x19
+    bl RtcSendPxiCommand
+finish:
+    ldr r0, [r4, #8]
+    str r0, [r4, #0xc]
+    add sp, #8
+    pop {r4, r5, r6}
+    pop {r3}
+    bx r3
 }
+// clang-format on

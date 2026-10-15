@@ -22,13 +22,13 @@ typedef struct UnkStruct_02278b64 {
     u16 result;
 } UnkStruct_02278b64;
 
-extern void func_020154b4(void *, void *, int, int, int);
-extern void func_0209a000(void *, int);
+extern int func_020154b4(void *, void *, int, int, int);
+extern int func_0209a000(void *, int);
 extern void func_0206844c(void *, void *, void *);
 extern int func_0202ea80(int, int);
-extern void func_020984e8(void);
-extern void func_02099670(void);
-extern void func_02088aac(void);
+extern int func_020984e8(void);
+extern int func_02099670(int argument0);
+extern void func_02088aac(void *argument0);
 extern int func_02099fe8(void);
 extern void func_020ad7c8(void *);
 extern void func_02015de4(void *, void *, int, int);
@@ -56,9 +56,8 @@ void func_ov083_02278b64(UnkStruct_02278b64 *self)
     } else {
         if (self->mode == 5 || self->mode == 6 || self->mode == 9) {
             if (func_0202ea80(0x1d, 1) == 0) {
-                func_020984e8();
-                func_02099670();
-                func_02088aac();
+
+                func_02088aac((void *) func_02099670(func_020984e8()));
                 if (func_02099fe8() >= 0) {
                     r4 = 7;
                     func_020ad7c8(&buf.unk_06);

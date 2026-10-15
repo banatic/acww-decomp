@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203cfc8(void);
+extern unsigned int func_0203cfc8(unsigned int *data);
 
-void func_0203cfa8(void)
+unsigned int func_0203cfa8(unsigned int *data)
 {
-    func_0203cfc8();
+    return func_0203cfc8(data);
 }

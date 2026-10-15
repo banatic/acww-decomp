@@ -11,13 +11,13 @@ extern void func_020109fc(void *self, int a, int b, int c);
 extern int func_020b22a0(void);
 extern int func_02073908(int a, int b);
 extern int func_020b5e10(void);
-extern void func_020b6098(int a, int b);
-extern void func_0200f328(void *self, int msg);
+extern int func_020b6098(int a, int b);
+extern int func_0200f328(void *self, int msg);
 extern void func_020b220c(void);
 extern void func_ov004_02226818(void *dst, struct UnkStruct_0222671c v, int a, int b, unsigned char c);
 extern void func_ov004_02226810(void *dst, int a, int c);
 extern int data_020ccf94;
-void func_ov004_0222671c(unsigned char *self, unsigned char *p)
+void func_ov004_0222671c(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_0222671c *q;
     struct UnkStruct_0222671c v;

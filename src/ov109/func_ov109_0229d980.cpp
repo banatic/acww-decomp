@@ -5,7 +5,7 @@
 extern "C" {
 extern void func_ov002_0220919c(void *);
 extern int func_ov109_0229c2ac(void *, int);
-extern int func_0206fe54(int);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *);
 extern void func_ov109_0229c8f8(void *);
 extern void func_ov002_0220ad18(void *, int);
@@ -27,7 +27,8 @@ extern "C" int func_ov109_0229d980(void *p)
     if (func_ov109_0229c2ac(p, 1) == 0) {
         return 1;
     }
-    if (func_0206fe54(((UnkStruct_0229d980 *) ((char *) p + 0x218c))->f2()) != 0) {
+    ((UnkStruct_0229d980 *) ((char *) p + 0x218c))->f2();
+    if (func_0206fe54() != 0) {
         func_ov002_02209eb8((char *) p + 0x2274);
     }
     func_ov109_0229c8f8(p);

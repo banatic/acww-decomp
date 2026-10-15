@@ -8,7 +8,7 @@ struct SParameter {
 };
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(struct SParameter *param, unsigned char val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov126_022a0978(struct SParameter *param);
 
 void func_ov126_022a0d00(struct SParameter *param)
@@ -16,6 +16,6 @@ void func_ov126_022a0d00(struct SParameter *param)
     if ((data_021fbe40 & 0x200) != 0) {
         return;
     }
-    func_ov002_02208098(param, param->unk_AE);
+    func_ov002_02208098((void *) (param), param->unk_AE);
     func_ov126_022a0978(param);
 }

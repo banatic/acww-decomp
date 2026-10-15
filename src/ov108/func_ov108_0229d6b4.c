@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int AOSS_FD_SET(void *);
-extern int func_ov108_0229c404(void *, unsigned char, int);
-extern int func_ov002_02208098(void *, int);
+extern int func_ov002_02207cc0(int object);
+extern void func_ov108_0229c404(void *, unsigned char, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 struct BigStruct {
     char pad_00[0x2ad];
@@ -17,12 +17,12 @@ struct BigStruct {
 
 void func_ov108_0229d6b4(struct BigStruct *self)
 {
-    if (AOSS_FD_SET(&self->obj_at_0x23b0)) {
+    if (func_ov002_02207cc0((int) (&self->obj_at_0x23b0))) {
         if (self->b_at_0x2b6 != 0) {
             self->b_at_0x2b6--;
         } else {
             func_ov108_0229c404(self, self->b_at_0x2ad, 1);
-            func_ov002_02208098(self, 2);
+            func_ov002_02208098((void *) (self), 2);
         }
     }
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0204fa5c(int *ptr);
+extern void func_0204fa5c(int *ptr, int);
 extern void func_0204fa54(int value);
 
 typedef struct Dest {
@@ -16,7 +16,7 @@ typedef struct Dest {
 void func_0204fa18(Dest *dest, int param2)
 {
     int buffer[11];
-    func_0204fa5c(buffer);
+    func_0204fa5c(buffer, param2);
     func_0204fa54(param2);
     dest->unk_00 = (unsigned char) param2;
     dest->unk_01 = 1;

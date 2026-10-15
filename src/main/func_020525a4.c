@@ -8,7 +8,7 @@ extern unsigned char data_020e54a8;
 extern int func_02073d90(unsigned int);
 extern int func_02073918(unsigned int, int);
 extern int func_020526b8(int, int, int, int, unsigned char, unsigned char, unsigned char);
-extern int func_ov004_0223cd50(int);
+extern int func_ov004_0223cd50(void);
 extern unsigned char *func_ov004_0223cc10(int, int, int, int);
 extern int func_02052794(int, int, int, int, unsigned char, unsigned char, unsigned char);
 
@@ -34,7 +34,7 @@ later:
         return 0;
     }
 
-    ret = func_ov004_0223cc10(func_ov004_0223cd50(cond), a, b, c);
+    ret = func_ov004_0223cc10(func_ov004_0223cd50(), a, b, c);
     if (ret == 0) {
         return 0;
     }

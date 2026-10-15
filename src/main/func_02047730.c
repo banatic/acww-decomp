@@ -9,10 +9,10 @@ typedef struct {
 extern void func_0209e474(void *);
 extern void MI_CpuCopy8(void *, const void *, unsigned int);
 extern int func_0203fc78(int, void *, void *);
-extern void func_020b2f18(void);
+extern int func_020b2f18(void);
 extern void func_020b2ef8(void);
 extern void func_020b2ed8(void);
-extern void func_020b2a90(void);
+extern int func_020b2a90(void);
 
 void func_02047730(int unused, void *b)
 {

@@ -14,7 +14,8 @@ struct Obj_ov004_02252824 : public RoomObject {
     void func_ov004_0221479c();
     void func_ov004_02214474();
     int func_ov004_022144e0();
-    void func_ov004_02214568();
+    int func_ov004_02214568();
+
     int func_ov004_02214598();
     void func_ov004_02214610();
     int func_ov004_02214680();

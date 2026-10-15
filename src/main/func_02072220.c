@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02002628(int, int, int, int, int);
+extern void func_02002628(int, int, int, int, int);
 
 int func_02072220(int a, int b, int c)
 {

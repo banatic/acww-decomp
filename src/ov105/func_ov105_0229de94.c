@@ -4,10 +4,10 @@
 
 extern int func_ov002_0220909c(unsigned char *);
 extern void func_ov002_022096d8(unsigned char *, int);
-extern void func_ov002_02207d24(unsigned char *, int);
+extern int func_ov002_02207d24(unsigned char *, int);
 extern int func_0208e4bc(unsigned char *);
 extern void func_ov105_0229cdbc(unsigned char *);
-extern void func_ov002_02208098(unsigned char *, int);
+extern unsigned char *func_ov002_02208098(unsigned char *, unsigned char value);
 
 void func_ov105_0229de94(unsigned char *p)
 {

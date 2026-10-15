@@ -18,8 +18,8 @@ extern int func_020f5e50(void *, int);
 extern int func_020f5e24(int);
 extern int func_020f5c64(void *, int);
 extern void func_020f6580(UnkStruct_020f660c *, int);
-extern void func_020f6564(UnkStruct_020f660c *, int);
-extern void func_020f7054(void *, u16, void *);
+extern int func_020f6564(UnkStruct_020f660c *, int);
+extern int func_020f7054(void *, u16, void *);
 
 void func_020f660c(UnkStruct_020f660c *self, void *p, unsigned int idx)
 {

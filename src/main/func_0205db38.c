@@ -3,9 +3,9 @@
  */
 
 extern unsigned char data_021c9df4;
-extern void func_0205db78(unsigned char *p, unsigned char b);
+extern unsigned long func_0205db78(unsigned char *p, unsigned char b);
 
-void func_0205db38(unsigned char *p)
+unsigned long func_0205db38(unsigned char *p)
 {
-    func_0205db78(&data_021c9df4, *p);
+    return func_0205db78(&data_021c9df4, *p);
 }

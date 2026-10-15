@@ -45,16 +45,16 @@ class UnkStruct_02210abc {
 };
 
 extern "C" int func_ov004_0220cdd8(void *, int);
-extern "C" void func_ov004_0220d290(void *, int);
+extern "C" void func_ov004_0220d290(unsigned char *self, int pending);
 extern "C" int func_ov004_0220d2a8(void *);
-extern "C" void func_ov004_0220d300(void *, void *);
+extern "C" int func_ov004_0220d300(void *, void *);
 extern "C" int func_ov004_0220e5c8(void *);
 extern "C" void func_ov004_0220ed40(void *);
 extern "C" void func_ov004_0220f7f0(void *);
 extern "C" void func_ov004_0220f8c0(void *);
 extern "C" void func_ov004_0220fb90(void *);
 extern "C" void func_ov004_0220fefc(void *, void *);
-extern "C" void func_ov004_0221081c(void *);
+extern "C" int func_ov004_0221081c(void *);
 extern "C" void func_ov004_0223cf80(void *);
 
 int RoomObject::func_ov004_02210abc()
@@ -82,7 +82,7 @@ int RoomObject::func_ov004_02210abc()
     } else {
         selfp->v33();
         if (func_ov004_0220d2a8(self + 0x740) != 0x0) {
-            func_ov004_0220d290(self + 0x740, 0x0);
+            func_ov004_0220d290((unsigned char *) self + 0x740, 0x0);
         }
     }
     if (func_ov004_0220e5c8(self) == 0x0) {

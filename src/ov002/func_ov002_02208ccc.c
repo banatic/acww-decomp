@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a8bb8(void *ptr, int param);
+extern void *func_020a8bb8(void *ptr, int param);
 
 int func_ov002_02208ccc(char *base, unsigned char *slots, int param, unsigned char val)
 {

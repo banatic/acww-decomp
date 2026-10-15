@@ -3,10 +3,10 @@
  */
 
 extern void func_02068cf0(int arg);
-extern int func_02068be4(int arg);
+extern void func_02068be4(int arg);
 
-int func_020690ec(int arg)
+void func_020690ec(int arg)
 {
     func_02068cf0(arg);
-    return func_02068be4(arg);
+    func_02068be4(arg);
 }

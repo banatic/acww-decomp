@@ -32,7 +32,7 @@ typedef struct UnkStruct_0201e334_3 {
     UnkStruct_0201e334 *unk_100;
 } UnkStruct_0201e334_3;
 
-void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
+int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, unsigned short i, int j);
 
 void func_0201e334(UnkStruct_0201e334_3 *obj)
 {

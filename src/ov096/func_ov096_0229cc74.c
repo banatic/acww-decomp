@@ -20,9 +20,9 @@ extern void func_ov096_0229ce4c(void *, int);
 extern void func_ov096_0229cdec(void *);
 extern void func_ov096_0229cd8c(void *);
 extern int func_ov002_02208d18(void *);
-extern void func_ov002_02208d4c(void *, int, int);
+extern int func_ov002_02208d4c(void *, int, int);
 extern void func_ov096_0229ddd8(void *);
-extern void func_ov002_02207d24(void *, int);
+extern int func_ov002_02207d24(void *, int);
 extern void func_ov096_0229d1d4(void *, int);
 extern void func_ov096_0229c414(void *);
 

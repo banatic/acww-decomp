@@ -22,8 +22,8 @@ typedef struct {
     u16 dst16[16];
 } UnkStruct_0229bfbc;
 
-extern void func_0206fc8c(void);
-extern Src *func_020b1530(void);
+extern unsigned char func_0206fc8c(void);
+extern Src *func_020b1530(int argument0);
 extern u8 *func_ov127_022996bc(int a);
 extern int func_ov127_022996d8(int a);
 extern int func_ov127_022996c8(int a);
@@ -39,8 +39,7 @@ void func_ov129_0229bfbc(UnkStruct_0229bfbc *self)
     int h;
     int w;
 
-    func_0206fc8c();
-    src = func_020b1530();
+    src = func_020b1530((int) func_0206fc8c());
     p = self->dst16;
     first = 0xffff;
     if (src != 0) {

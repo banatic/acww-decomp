@@ -3,9 +3,9 @@
  */
 
 extern void func_020157c8(void *p, int a, int b);
-extern void func_02015828(void *p, int a);
+extern int func_02015828(void *p, int a);
 extern int func_02098880(void *p);
-extern int func_020a12d4(int a);
+extern int func_020a12d4(void);
 extern void func_0206844c(void *a, unsigned char *b, void *c);
 struct B0Struct {
     unsigned char pad_00[0x808];
@@ -26,7 +26,7 @@ inline unsigned char inline_fn(struct MData *arg0)
     return arg0->unk_1E;
 }
 
-void func_ov054_02260e58(struct MData *self)
+void func_ov054_02260e58(struct MData *self, unsigned int callbackArgument1)
 {
     void *r6 = self->unk_40;
     unsigned int k = ((struct B0Struct *) self->unk_B0)->unk_808;
@@ -53,7 +53,7 @@ void func_ov054_02260e58(struct MData *self)
 
         case 19:
             r4 = func_02098880(&data_021dc7bc);
-            if (func_020a12d4(r4) != 0) {
+            if (func_020a12d4() != 0) {
                 r4 = 2;
             } else {
                 r4 = (unsigned char) (r4 + 0x22);

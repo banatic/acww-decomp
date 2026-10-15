@@ -5,15 +5,15 @@
 #include "types.h"
 
 extern void func_0208aa70(void *);
-extern void func_ov002_0220aa20(void *);
-extern void func_ov002_0220b04c(void *, int);
+extern int func_ov002_0220aa20(void *);
+extern void func_ov002_0220b04c(void *);
 extern void func_ov002_0220b06c(void *, int, int, int);
 
 int func_ov002_0220a8e8(char *self, int a1)
 {
     // DECLS
     // ENDDECLS
-    func_ov002_0220b04c(self + 0xfc, a1);
+    func_ov002_0220b04c(self + 0xfc);
     func_ov002_0220b06c(self + 0xfc, a1, 0x80, 0x12);
     func_0208aa70(self + 0xfc);
     func_ov002_0220aa20(self);

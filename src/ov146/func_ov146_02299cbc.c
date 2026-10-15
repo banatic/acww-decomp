@@ -15,12 +15,12 @@ typedef struct UnkStruct_02299cbc_2 {
     UnkStruct_02299cbc sub;
 } UnkStruct_02299cbc_2;
 
-extern int func_ov002_0220a58c(UnkStruct_02299cbc *);
+extern int func_ov002_0220a58c(UnkStruct_02299cbc *, int arg1, int arg2);
 extern void func_ov002_0220a574(UnkStruct_02299cbc *);
 
 int func_ov146_02299cbc(UnkStruct_02299cbc_2 *self, int unused, int value)
 {
-    if (func_ov002_0220a58c(&self->sub)) {
+    if (func_ov002_0220a58c(&self->sub, unused, value)) {
         self->unk_9C = self->unk_98 - value;
         func_ov002_0220a574(&self->sub);
         self->unk_A0 = self->unk_98;

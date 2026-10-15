@@ -7,7 +7,7 @@ extern int func_02073908(int a, int b);
 extern int func_02043d18(int a, int b, int c, unsigned short d);
 extern int func_020e8ed8(int a, int b);
 extern void func_ov003_02210c08(void *p, int h, unsigned char b, unsigned char c, int k);
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
 extern void func_0200f268(void *self, int a);
 
 extern int data_020ccf94;
@@ -46,7 +46,7 @@ typedef struct {
     int unk_8F0;
 } UnkStruct_02210b3c_4;
 
-void func_ov003_02210b3c(UnkStruct_02210b3c_4 *self, UnkStruct_02210b3c *a)
+void func_ov003_02210b3c(UnkStruct_02210b3c_4 *self, UnkStruct_02210b3c *a, int previous)
 {
     UnkStruct_02210b3c_3 *p;
     UnkStruct_02210b3c_2 *q;

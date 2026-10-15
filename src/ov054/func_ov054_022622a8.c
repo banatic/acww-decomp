@@ -10,7 +10,7 @@ struct UnkStruct_022622a8 {
 };
 
 extern unsigned char data_ov054_0226297c[];
-void func_ov054_02260474(struct UnkStruct_022622a8 *self);
+int func_ov054_02260474(void);
 int func_ov054_02262494(struct UnkStruct_022622a8 *self);
 void func_ov054_02262528(struct UnkStruct_022622a8 *self, int n);
 void func_0201af1c(void *ptr, unsigned char val);
@@ -19,7 +19,7 @@ int func_02019de8(void *ptr);
 
 int func_ov054_022622a8(struct UnkStruct_022622a8 *self)
 {
-    func_ov054_02260474(self);
+    func_ov054_02260474();
     if (func_ov054_02262494(self) != 0) {
         func_ov054_02262528(self, 3);
         func_0201af1c(&self->sub1, data_ov054_0226297c[self->unk_80C]);

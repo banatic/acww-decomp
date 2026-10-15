@@ -11,10 +11,10 @@ typedef struct {
 } UnkStruct_0226077c_2;
 
 extern int func_020e8b0c(int, int, int);
-extern void func_020b5630(UnkStruct_0226077c_2 *);
-extern void func_020b45d0(UnkStruct_0226077c_2 *, int, int, int, int, int);
+extern void *func_020b5630(UnkStruct_0226077c_2 *);
+extern int func_020b45d0(UnkStruct_0226077c_2 *, int, int, int, int, int);
 extern void func_02068404(int, int, UnkStruct_0226077c_2 *);
-extern void func_020b5618(UnkStruct_0226077c_2 *);
+extern void *func_020b5618(UnkStruct_0226077c_2 *);
 
 int func_ov048_0226077c(UnkStruct_0226077c *p, int id)
 {

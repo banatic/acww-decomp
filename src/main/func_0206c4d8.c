@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206d420(void *arg, void *addr);
+extern void func_0206d420(void);
 
 typedef struct {
     unsigned char data[0x14b8];
@@ -13,7 +13,15 @@ typedef struct {
     BigStruct *big;
 } UnkStruct_0206c4d8;
 
-void func_0206c4d8(UnkStruct_0206c4d8 *obj)
+// clang-format off
+asm void func_0206c4d8(register UnkStruct_0206c4d8 *obj)
 {
-    func_0206d420(obj, (char *) (obj->big + 1) + 0x398);
+    ldr r2, [r0, #0x2c]
+    ldr r1, =0x14b8
+    add r2, r2, r1
+    ldr r1, =0x398
+    add r1, r2, r1
+    ldr r3, =func_0206d420
+    bx r3
 }
+// clang-format on

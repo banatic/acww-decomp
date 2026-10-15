@@ -15,7 +15,7 @@ typedef struct Arg {
 } Arg;
 
 extern int FX_MulFunc(int, int);
-extern int FX_Sqrt(int, int);
+extern int FX_Sqrt(int);
 extern int func_020e8ed8(int, int);
 
 static __inline int is_flag(void)
@@ -32,7 +32,7 @@ int func_0203f768(Arg *arg)
         b = FX_MulFunc(arg->unk_04, arg->unk_04);
         c = FX_MulFunc(0x0001f576, 0x0001f576);
         sum = b + a;
-        prev = FX_Sqrt(sum - c, sum);
+        prev = FX_Sqrt(sum - c);
         d = func_020e8ed8(arg->unk_08, arg->unk_04);
         e = func_020e8ed8(prev, 0x0001f576);
         return (short) (d - e);

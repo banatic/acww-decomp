@@ -29,12 +29,12 @@ struct UnkStruct_02216780_2 {
 extern void func_0201107c(struct UnkStruct_02216780_2 *self, int *r);
 extern void func_020110c4(u16 *out, struct UnkStruct_02216780_2 *self);
 extern int func_0200fc90(struct UnkStruct_02216780_2 *self);
-extern void func_0200f328(struct UnkStruct_02216780_2 *self, int a);
-extern void func_0200f27c(struct UnkStruct_02216780_2 *self, int a);
+extern int func_0200f328(struct UnkStruct_02216780_2 *self, int a);
+extern unsigned int *func_0200f27c(struct UnkStruct_02216780_2 *self, int a);
 extern void func_0200f268(struct UnkStruct_02216780_2 *self, int a);
-extern void func_02095694(int a, unsigned int b);
+extern int func_02095694(int a, unsigned int b);
 extern void func_ov003_022241a4(int *p);
-extern void func_020912d4(int a, int *b, short *c, int d);
+extern int func_020912d4(int a, int *b, short *c, int d);
 extern int FX_MulFunc(int a, int b);
 extern int func_02073908(void *a, unsigned int b);
 extern int func_ov003_0221abf8(struct UnkStruct_02216780 *o, int a);

@@ -8,7 +8,7 @@ extern void *func_ov002_02207f60(void *);
 extern void func_ov095_0229b1c8(void *, int, void *, int);
 extern void func_ov095_0229b0d8(void *, int, void *);
 extern void func_ov095_0229b090(void *, int, void *, int, int);
-extern void func_ov095_0229af58(void *, int, void *, int);
+extern int func_ov095_0229af58(void *, int, void *, int);
 extern void func_ov095_0229aeec(void *, int, void *);
 
 struct UnkStruct_0229fe0c {

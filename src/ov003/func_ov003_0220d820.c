@@ -4,8 +4,8 @@
 
 extern int data_020ccf94;
 extern int func_02073908(int a, int b);
-extern void func_020984fc(int a);
-extern unsigned short *func_02099728(void);
+extern int func_020984fc(int a);
+extern unsigned short *func_02099728(unsigned int argument0);
 extern void func_0200f1a4(void *self, int a, unsigned short b);
 extern void func_0209129c(int a);
 
@@ -20,8 +20,8 @@ void func_ov003_0220d820(UnkStruct_0220d820 *self)
 {
     if (func_02073908(data_020ccf94, self->unk_800) != 0) {
         unsigned short *p;
-        func_020984fc(self->unk_800);
-        p = func_02099728();
+
+        p = func_02099728((unsigned int) func_020984fc(self->unk_800));
         if (p != 0) {
             func_0200f1a4(self, 3, *p);
         }

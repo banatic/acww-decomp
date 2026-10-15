@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207cf74(void);
+extern int func_0207cf74(unsigned int);
 extern int func_0208298c(int, int);
 extern int func_020826cc(void);
 extern int func_020826e0(int, int);
@@ -16,7 +16,7 @@ int func_02082664(int r0)
     if (r5 < 0) {
         goto end;
     }
-    if (func_0207cf74() != 0) {
+    if (func_0207cf74(r0) != 0) {
         r4 = func_0208298c((int) &data_021d1d4c, r5);
         goto end;
     }

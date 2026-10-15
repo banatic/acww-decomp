@@ -10,7 +10,7 @@ struct UnkStruct_022a176c {
 extern int func_ov002_02207f3c(struct UnkStruct_022a176c *p, int val);
 extern void func_ov002_02207eb4(struct UnkStruct_022a176c *p, int a, int b);
 extern int func_ov126_0229f7c8(struct UnkStruct_022a176c *p, int val);
-extern void func_ov002_0220a9e4(char *s, int val);
+extern int func_ov002_0220a9e4(char *s, int val);
 extern void func_ov002_02208090(struct UnkStruct_022a176c *p, int val);
 
 void func_ov126_022a176c(struct UnkStruct_022a176c *p)

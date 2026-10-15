@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov102_0229c318(void);
+extern void func_ov102_0229c318(void *arg0);
 
 typedef struct {
     unsigned char pad_00[0x25aa];
@@ -40,7 +40,7 @@ int func_ov102_0229c2c0(UnkStruct_0229c2c0 *p)
         }
 
         p->data = (unsigned char) flag;
-        func_ov102_0229c318();
+        func_ov102_0229c318((void *) p);
     }
 
     return 0;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov094_0229aee8(int);
+extern int func_ov094_0229aee8(int, int arg1, int arg2);
 extern int func_ov094_0229a69c(int, int);
 extern int func_ov101_0229ce0c(int, int);
 
@@ -10,7 +10,7 @@ int func_ov101_0229cdd0(int a, int b, int c, int d)
 {
     int v;
 
-    v = func_ov094_0229aee8(a + 0xf4);
+    v = func_ov094_0229aee8(a + 0xf4, b, c);
     if (v == 0x23) {
         goto ret10;
     }

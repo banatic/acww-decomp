@@ -6,9 +6,9 @@
 #include "cpp/ov116/Obj_ov116_0229e8b8.h"
 
 extern "C" int func_ov002_02209f64(void *);
-extern "C" void func_ov002_02208098(void *, unsigned char);
+extern "C" unsigned char *func_ov002_02208098(void *, unsigned char);
 
-int Obj_ov116_0229e8b8::func_ov116_0229e140()
+void Obj_ov116_0229e8b8::func_ov116_0229e140()
 {
     void *self = (void *) this;
     if (func_ov002_02209f64((char *) self + 0x94) == 0) {

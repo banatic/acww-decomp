@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02039128(int a, int b, int c);
+extern void *func_02039128(int a, int b, int c);
 
-void func_02077488(int a, int b)
+void func_02077488(int a, int b, int mode)
 {
     func_02039128(a, 0x16, b);
 }

@@ -9,14 +9,14 @@ typedef struct {
     int unk_7D4;
 } STR_0205A0;
 
-extern void func_020109a0(void *, int, long long);
+extern void func_020109a0(int, int b, int c, unsigned short d);
 extern void func_0205eae0(void *, int, int, int);
-extern void func_0200f328(void *, int);
+extern int func_0200f328(void *, int);
 
-void func_ov003_0220d880(STR_0205A0 *self)
+void func_ov003_0220d880(STR_0205A0 *self, void *message, int previous)
 {
     self->unk_7D4 = -1;
-    func_020109a0(self, 125, 3);
+    func_020109a0((int) (self), (int) (125), (int) (3), 0);
     func_0205eae0(&self->unk_5A0, 42, 0, 0);
     func_0200f328(self, 0x85d);
 }

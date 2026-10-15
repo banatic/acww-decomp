@@ -51,7 +51,7 @@ typedef struct UnkStruct_02012e58_3 {
 
 extern UnkStruct_02012e58_3 *data_021c80bc;
 
-extern int func_0204ed30(UnkStruct_02012e58_3 *c);
+extern int func_0204ed30(UnkStruct_02012e58_3 *c, int);
 extern int func_0201354c(UnkStruct_02012e58_2 *s, int *p, int a);
 extern void func_02013440(UnkStruct_02012e58_2 *s);
 extern int func_020131c0(UnkStruct_02012e58_2 *s, int a);
@@ -100,7 +100,7 @@ void func_02012e58(UnkStruct_02012e58_2 *self, int arg)
     if (ctx == 0) {
         return;
     }
-    v = func_0204ed30(ctx);
+    v = func_0204ed30(ctx, arg);
     if (v == 0) {
         self->unk_90 = func_0201354c(self, &self->unk_1C, arg);
         self->unk_04 = 0;

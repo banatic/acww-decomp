@@ -9,13 +9,13 @@ extern struct UnkStruct_0229b510 {
 
 extern void func_ov002_02208d30(void *addr, int val);
 extern int func_02073d90(void *arg);
-extern void func_02094fd4(void *buf);
+extern void *func_02094fd4(void *buf);
 extern int func_020984fc(int idx);
-extern int func_02099870(void);
-extern void func_02095074(int a, void *buf);
-extern void func_ov002_02208ccc(void *a, void *b, void *c, unsigned char d);
-extern void func_02094fbc(void *buf);
-extern void func_ov002_02208d4c(void *addr, int a, int b);
+extern int func_02099870(int object);
+extern void *func_02095074(int a, void *buf);
+extern int func_ov002_02208ccc(void *a, void *b, void *c, unsigned char d);
+extern void *func_02094fbc(void *buf);
+extern int func_ov002_02208d4c(void *addr, int a, int b);
 extern void func_ov119_0229a50c(void *p, int flag);
 
 void func_ov119_0229b510(void *p)
@@ -34,14 +34,15 @@ void func_ov119_0229b510(void *p)
         i = 0;
         func_02094fd4(sp);
         for (; i < 4; i++) {
+            int object;
             if (count == i) {
                 continue;
             }
-            if (func_020984fc(i) == 0) {
+            if ((object = func_020984fc(i)) == 0) {
                 continue;
             }
             {
-                int ret = func_02099870();
+                int ret = func_02099870(object);
                 func_02095074(ret, sp);
                 func_ov002_02208ccc((char *) p + 0xDC, (char *) p + 0x4c4, sp, (unsigned char) (i + 6));
             }

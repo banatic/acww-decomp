@@ -12,11 +12,11 @@ struct Other {
     struct UnkStruct_02218844 sub;
 };
 
-extern void func_020109a0(void *p, int, int, int);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
 extern void func_ov003_022188c8(void *dst, int, int, int);
 extern void func_ov003_022188ac(void *dst, int, int, int);
 
-void func_ov003_02218844(char *self, struct Other *other)
+void func_ov003_02218844(char *self, struct Other *other, int previous)
 {
     struct UnkStruct_02218844 *sub = &other->sub;
     int a, b;

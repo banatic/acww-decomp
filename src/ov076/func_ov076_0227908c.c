@@ -5,10 +5,10 @@
 extern int func_020164a0(void *, int);
 extern int func_020164cc(void *, void *);
 extern void func_ov076_02279370(void *, int);
-extern void func_020e8870(void *, int, int);
-extern void func_ov003_02228400(void *, unsigned int);
-extern void func_020912d4(int, void *, int, int);
-extern void func_0200442c(void *, int, int, int);
+extern int func_020e8870(void *, int, int);
+extern int func_ov003_02228400(void *, unsigned int);
+extern int func_020912d4(int, void *, int, int);
+extern int func_0200442c(void *, int, int, int);
 extern void func_0201aff4(void *, int);
 
 typedef struct {

@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec14(void);
+extern int func_0202ec14(void *);
 extern int data_021fbca0;
 
-int func_020c3814(void)
+int func_020c3814(void *argument0)
 {
-    if (func_0202ec14() == 0) {
+    if (func_0202ec14((void *) argument0) == 0) {
         return 0;
     } else {
         data_021fbca0 = 0;

@@ -6,7 +6,7 @@ typedef struct {
     void *vtbl;
 } UnkStruct_0206db30;
 
-extern void func_020a887c(UnkStruct_0206db30 *self);
+extern void *func_020a887c(UnkStruct_0206db30 *self);
 extern void func_020edb3c(UnkStruct_0206db30 *self);
 
 extern unsigned char data_020df270[];

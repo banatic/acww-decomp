@@ -6,7 +6,7 @@ extern int func_ov122_0229efe8(void *self, int arg);
 extern void func_ov002_0220a000(void *dest, int a, int b, int c, int d);
 extern int func_ov095_02299b7c(void *p);
 extern int func_ov095_02299b38(void *p);
-extern void func_ov002_02208098(void *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct {
     char pad_00[0x9c];
@@ -32,5 +32,5 @@ void func_ov122_0229f250(UnkStruct_0229f250 *self)
         func_ov002_0220a000(&self->unk_4058, a, b, 3, 2);
         self->unk_B4 = 6;
     }
-    func_ov002_02208098(self, 7);
+    func_ov002_02208098((void *) (self), 7);
 }

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_0206fe54(void *ptr);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(void *ptr);
 extern int func_ov141_02299f7c(void *self, int a);
 extern void func_ov002_0220ad18(void *ptr, int val);
@@ -33,7 +33,7 @@ int func_ov141_0229ad00(UnkStruct_0229ad00 *self)
     int r6, r7;
     int c, d;
 
-    if (func_0206fe54(self)) {
+    if (func_0206fe54()) {
         func_ov002_02209eb8(&self->suba38);
     }
     if (func_ov141_02299f7c(self, 1) == 0) {

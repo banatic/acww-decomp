@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02008300(void) {}
+void func_02008300(void *object, void *message, int previous) {}

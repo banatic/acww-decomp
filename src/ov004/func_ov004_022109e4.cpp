@@ -42,7 +42,7 @@ class UnkStruct_022109e4 {
 };
 
 extern "C" {
-int func_020033ec(void);
+int func_020033ec(void *arg0);
 int func_ov004_0220e5c8(void *self);
 void func_0205510c(void *p, void *q);
 void func_ov004_0220d7cc(void *p, void *self);
@@ -55,7 +55,7 @@ extern "C" int func_ov004_022109e4(UnkStruct_022109e4 *selfp)
     int save[4];
     unsigned int j;
 
-    if (func_020033ec() == 0) {
+    if (func_020033ec((void *) selfp) == 0) {
         return 0;
     }
     if (selfp->v34() == 0) {

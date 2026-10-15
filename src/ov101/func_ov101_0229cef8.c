@@ -14,7 +14,7 @@ typedef struct {
     char pad_BA[0x21B4 - 0xBA];
     char unk_21B4;
 } UnkStruct_0229cef8;
-extern void func_ov002_02208098(UnkStruct_0229cef8 *p, int flag);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229cef8 *p, unsigned char value);
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 extern int func_ov101_0229cd08(UnkStruct_0229cef8 *p, int b);

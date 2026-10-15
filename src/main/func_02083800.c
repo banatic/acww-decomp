@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int *func_0208385c(unsigned int, unsigned int);
+extern unsigned int *func_0208385c(void);
 
 typedef struct {
     int unk_00;
@@ -18,7 +18,7 @@ unsigned int *func_02083800(Header *h, unsigned int idx)
 {
     unsigned int *result = 0;
     if (idx < h->count) {
-        Entry *arr = (Entry *) ((char *) func_0208385c(h->count, 0) + 8);
+        Entry *arr = (Entry *) ((char *) func_0208385c() + 8);
         result = &arr[idx].unk_04;
     }
     return result;

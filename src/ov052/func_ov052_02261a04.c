@@ -3,9 +3,9 @@
  */
 
 extern int func_0202edc8(void *self);
-extern int func_0201c280(void *a, void *b);
-extern int func_ov052_022610d4(void *a, void *b);
-extern void *MI_CpuFill8(void *s, int c, unsigned int n);
+extern void func_0201c280(void *a, void *b);
+extern void func_ov052_022610d4(void *a, void *b);
+extern void MI_CpuFill8(void *s, int c, unsigned int n);
 extern void func_0201af28(void *a, int b, int c, int d, int e);
 extern unsigned short data_020c80f8;
 

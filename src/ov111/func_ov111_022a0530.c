@@ -14,7 +14,7 @@ extern void *func_ov095_02299a00(void *);
 extern int func_ov095_0229c448(void *, void *, int);
 extern int func_ov111_0229f730(void *, int);
 extern void func_ov095_0229bf3c(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov095_0229c8e4(void *, void *);
 extern void func_ov095_0229cce0(void *);
 extern void func_ov111_0229f0cc(void *);
@@ -39,7 +39,7 @@ void func_ov111_022a0530(UnkStruct_022a0530 *self)
     if (val == 1) {
         if (data_021fbe40 & 1) {
             func_ov095_0229bf3c(&self->unk_AC);
-            func_ov002_02208098(self, 6);
+            func_ov002_02208098((void *) (self), 6);
             self = (UnkStruct_022a0530 *) ((char *) self + 0xac);
             func_ov095_0229c8e4(self, ptr);
             return;

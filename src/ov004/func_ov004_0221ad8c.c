@@ -12,7 +12,7 @@ struct UnkOuter {
     struct UnkInner *unk_12C;
 };
 
-extern void func_ov004_0221ae7c(void *obj, int mode);
+extern int func_ov004_0221ae7c(void *obj, int mode);
 
 void func_ov004_0221ad8c(struct UnkOuter *obj)
 {

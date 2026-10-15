@@ -22,7 +22,7 @@ extern int func_02073fdc(int a);
 extern void func_02074078(void);
 extern int func_020a259c(struct UnkStruct_020a38e0_2 *o, int a);
 extern int func_020740b4(void);
-extern int func_020a02b4(struct UnkStruct_020a38e0_2 *o, unsigned char *p, int a);
+extern void func_020a02b4(struct UnkStruct_020a38e0_2 *o, unsigned char *p, int a);
 extern int func_020a2438(struct UnkStruct_020a38e0_2 *o, int a);
 extern void func_020a2480(struct UnkStruct_020a38e0_2 *o);
 extern int func_020a03e0(struct UnkStruct_020a38e0_2 *o, unsigned char *p, int a, int b, int c, int d, int e, int f);
@@ -30,11 +30,11 @@ extern int func_02073dd4(void *a, int b);
 extern int func_02073918(void *a, int b);
 extern int func_02073c90(void *a, int b);
 extern int func_02075918(void);
-extern int func_020a1038(struct UnkStruct_020a38e0_2 *o, unsigned char a, int b);
+extern void func_020a1038(struct UnkStruct_020a38e0_2 *o, unsigned char a, int b);
 extern void func_020a0174(void);
 extern void func_020ba37c(void);
 extern int func_020a0848(struct UnkStruct_020a38e0_2 *o, unsigned char *p, int a, int b, int c, int d);
-extern void func_020a25cc(struct UnkStruct_020a38e0_2 *o);
+extern void func_020a25cc(void);
 extern void func_020a4e94(struct UnkStruct_020a38e0_2 *o, int a);
 
 void func_020a38e0(struct UnkStruct_020a38e0_2 *self)
@@ -141,7 +141,8 @@ void func_020a38e0(struct UnkStruct_020a38e0_2 *self)
             return;
 
         default:
-            func_020a25cc(self);
+            asm { add r0, self, #0 }
+            func_020a25cc();
             func_020a4e94(self, 8);
             return;
     }

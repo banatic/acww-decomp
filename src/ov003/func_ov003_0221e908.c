@@ -15,9 +15,9 @@ typedef struct UnkStruct_0221e908 {
     char area_2d8;
 } UnkStruct_0221e908;
 
-extern void func_020b7f60(void *);
-extern void func_020565b0(void *);
-extern void func_ov009_0226539c(UnkStruct_0221e908 *);
+extern int func_020b7f60(void *);
+extern void *func_020565b0(void *);
+extern void *func_ov009_0226539c(UnkStruct_0221e908 *);
 
 UnkStruct_0221e908 *func_ov003_0221e908(UnkStruct_0221e908 *self)
 {

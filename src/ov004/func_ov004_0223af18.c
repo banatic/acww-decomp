@@ -7,7 +7,7 @@ extern int NNS_FndMountArchive(void *, void *, void *);
 extern void *NNS_FndGetArchiveFileByName(void *);
 extern void *NNS_G3dGetJntAnmSet(void *);
 extern void *func_02107b44(void *, int);
-extern void func_0210285c(void *);
+extern int func_0210285c(void *);
 extern char data_ov004_02256114, data_ov004_02256128, data_ov004_0225612c, data_ov004_02256148, data_ov004_02256164;
 
 int func_ov004_0223af18(char *self)

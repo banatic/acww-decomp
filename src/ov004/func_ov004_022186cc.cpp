@@ -36,7 +36,7 @@ struct UnkStruct_022186cc {
 extern "C" {
 extern int func_020b67ac(void);
 extern void func_ov004_0220cfec(void *, int);
-extern void func_ov004_0220d0a0(void *, int, int);
+extern int func_ov004_0220d0a0(void *, int, int);
 extern void func_ov004_0221041c(void *, int, int, int, int);
 }
 

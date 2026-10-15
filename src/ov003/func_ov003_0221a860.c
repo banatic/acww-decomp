@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov003_0221a8ac(int a);
+extern int func_ov003_0221a8ac(void *argument0);
 extern int func_ov003_0221a888(int a);
 
 int func_ov003_0221a860(int a)
 {
-    if (func_ov003_0221a8ac(a)) {
+    if (func_ov003_0221a8ac((void *) a)) {
         if (func_ov003_0221a888(a)) {
             return 0;
         } else {

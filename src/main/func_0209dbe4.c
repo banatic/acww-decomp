@@ -9,9 +9,9 @@ typedef struct {
     unsigned char b2;
 } UnkStruct_0209dbe4;
 
-extern void func_0209dc10(unsigned char *arr);
+extern int func_0209dc10(unsigned char *arr);
 
-void func_0209dbe4(UnkStruct_0209dbe4 *p)
+int func_0209dbe4(UnkStruct_0209dbe4 *p)
 {
     unsigned char arr[4];
     arr[0] = 1;
@@ -21,5 +21,5 @@ void func_0209dbe4(UnkStruct_0209dbe4 *p)
     arr[2] = p->b2;
     arr[1] = p->b1;
     arr[0] = p->b0;
-    func_0209dc10(arr);
+    return func_0209dc10(arr);
 }

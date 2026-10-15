@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(char *);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(char *);
 extern int func_ov002_02209044(char *, int, char *, int);
-extern void func_ov002_0220a1dc(char *, int);
-extern void func_ov002_02208098(char *, int);
+extern void func_ov002_0220a1dc(char *);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov107_0229cb78(char *);
 extern void func_ov107_0229cdcc(char *);
 extern void func_ov107_0229cd68(char *);
@@ -19,7 +19,7 @@ extern struct FlagsStruct data_021fbe40;
 
 void func_ov107_0229d7b0(char *param)
 {
-    if (func_ov002_02208014(param) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov107_0229cb78(param);
         return;
     } else {
@@ -30,8 +30,8 @@ void func_ov107_0229d7b0(char *param)
         } else {
             unsigned short f = data_021fbe40.flags;
             if (f & 1) {
-                func_ov002_0220a1dc(param + 0x22b4, f & 1);
-                func_ov002_02208098(param, 7);
+                func_ov002_0220a1dc(param + 0x22b4);
+                func_ov002_02208098((void *) (param), 7);
                 return;
             }
             if (f & 2) {

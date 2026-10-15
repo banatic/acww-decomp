@@ -15,7 +15,7 @@ typedef struct {
     unsigned char y;
 } UnkStruct_0220d444;
 
-void func_ov003_0220d444(void *p, UnkStruct_0220d444 *b)
+void func_ov003_0220d444(void *p, UnkStruct_0220d444 *b, int previous)
 {
     Pair *s = (Pair *) ((char *) b + 0xc);
     Pair *d = (Pair *) ((char *) p + 0x7d4);

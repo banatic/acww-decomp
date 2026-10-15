@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020165bc(int a, int b, int c, int d);
+extern int func_020165bc(int a);
 extern void func_02054240(int a, int b, int c, int d, int e, int f, int g, int h);
 extern int func_0205cebc(int a);
 extern int func_0205cf10(int a);
@@ -20,7 +20,7 @@ void func_02016530(int param1, int param2, int param3, int param4)
     int tmp;
     int tmp2;
 
-    result = func_020165bc(param1, param2, param3, param4);
+    result = func_020165bc(param1);
     if (result != 0) {
         func_02054240(param2 + 0xec, result, 0, 1, 0x1000, param3, param4, 0);
         r7 = func_0205cebc(0x143);

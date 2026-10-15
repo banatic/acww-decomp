@@ -7,7 +7,7 @@ typedef unsigned int u32;
 
 struct Manager;
 
-extern void func_02137550(void *, u32);
+extern char *func_02137550(void *, u32);
 typedef struct {
     u32 a, b;
 } Pair;
@@ -17,9 +17,9 @@ extern struct Manager *data_020ccf94;
 extern void func_020a6738(void *, u32 *, u32 *);
 extern void func_020a6890(void *, u32 *, u32 *);
 extern void func_020a7738(void *, u8 *, u8 *, u8 *);
-extern void func_020a7820(u8 *);
+extern void *func_020a7820(u8 *);
 extern void func_020a77f4(u8 *, int, u8, u8, u8, u32);
-extern void func_020a7810(u8 *);
+extern int func_020a7810(u8 *);
 extern void func_02073820(struct Manager *);
 extern void func_020737f0(struct Manager *, u8 *, int);
 extern void func_02073770(struct Manager *, int, int);

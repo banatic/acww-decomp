@@ -7,9 +7,9 @@
 typedef void (Base_02027460::*Pmf2)();
 extern int data_021c2b9c;
 extern "C" void func_0202da88(Base_02027460 *self, void *tbl);
-extern "C" void func_02068484(int a, void *b, int c);
+extern "C" int func_02068484(int a, void *b, int c);
 extern "C" int func_02081d20(int);
-extern "C" void func_02015094(Base_02027460 *);
+extern "C" int func_02015094(Base_02027460 *);
 extern "C" void func_0202dbf0(Base_02027460 *, Pmf2);
 extern "C" void func_02027460(Base_02027460 *self)
 {

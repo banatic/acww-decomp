@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *);
-extern void func_02099870(void *);
-extern int func_020951bc(void);
+extern void *func_020984e8(void);
+extern int func_02099870(void *);
+extern int func_020951bc(void *);
 extern int func_02099020(void *, int);
 extern int func_0203cc38(void);
 extern int func_0203cc1c(void);
@@ -21,12 +21,11 @@ void func_02086034(void *arg)
     char buf[8];
 
     a = arg;
-    p = func_020984e8(a);
+    p = func_020984e8();
     if (p == 0) {
         return;
     }
-    func_02099870(p);
-    if (func_020951bc() == 0) {
+    if (func_020951bc((void *) func_02099870(p)) == 0) {
         return;
     }
     if (func_02099020(p, 1) != 0) {

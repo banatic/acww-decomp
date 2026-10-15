@@ -25,9 +25,9 @@ extern void func_ov070_02279238(UnkStruct_02278e30_2 *);
 extern int func_020984e8(void);
 extern void func_020996d4(int, u16 *);
 extern void func_020996ec(int, u16 *);
-extern void func_02095b40(u16 *);
+extern int func_02095b40(u16 *);
 extern void func_02095b4c(u16 *);
-extern void func_02095b58(u16 *);
+extern int func_02095b58(u16 *);
 extern void func_02063ccc(void *, int, int);
 extern void func_020638d4(u16 *, void *, int, int, int, int, int);
 extern void func_02063cc8(void *);
@@ -35,7 +35,7 @@ extern int func_0204bcdc(u16 *);
 extern int func_0204bc64(u16 *);
 extern void func_02099704(int, u16 *);
 extern void func_02015de4(UnkStruct_02278e30_2 *, u16 *, int, int);
-extern void func_0209a000(u16 *, int);
+extern int func_0209a000(u16 *, int);
 
 int func_ov070_02278e30(UnkStruct_02278e30_2 *self)
 {

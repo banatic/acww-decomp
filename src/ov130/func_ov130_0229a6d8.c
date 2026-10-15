@@ -22,12 +22,13 @@ typedef struct {
 
 extern void func_ov130_022999e4(UnkStruct_0229a6d8 *self);
 extern int func_020984e8(void);
-extern void func_02099870(void);
-extern int func_020950c0(void);
+extern int func_02099870(int object);
+extern int func_020950c0(signed char *value);
 extern void func_0200458c(int);
 
 void func_ov130_0229a6d8(UnkStruct_0229a6d8 *self, unsigned char idx, unsigned char arg2, unsigned char arg3)
 {
+    int object;
     self->unk_00 = 0;
     self->unk_07 = idx;
 
@@ -78,7 +79,7 @@ void func_ov130_0229a6d8(UnkStruct_0229a6d8 *self, unsigned char idx, unsigned c
     self->unk_14 = 0;
     self->unk_18 = 0;
 
-    if (func_020984e8() != 0 && (func_02099870(), func_020950c0() == 0)) {
+    if ((object = func_020984e8()) != 0 && func_020950c0((signed char *) func_02099870(object)) == 0) {
         func_0200458c(0);
     } else {
         func_0200458c(1);

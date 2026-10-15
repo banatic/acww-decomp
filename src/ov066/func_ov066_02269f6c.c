@@ -2,18 +2,18 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern unsigned int func_ov066_0226a278(void);
+extern unsigned int func_ov066_0226a278(unsigned int argument0);
 extern unsigned int func_ov066_022699ec(void);
 extern unsigned char data_ov066_0226bdfc;
 extern unsigned short data_ov066_0226be00;
 extern unsigned char *data_ov066_0226bdf4;
 
-int func_ov066_02269f6c(void)
+int func_ov066_02269f6c(unsigned int argument0)
 {
     unsigned short bits;
     unsigned char rem, i;
 
-    if (func_ov066_0226a278() != 0) {
+    if (func_ov066_0226a278(argument0) != 0) {
         goto ret0;
     }
     if (data_ov066_0226bdfc == 0) {

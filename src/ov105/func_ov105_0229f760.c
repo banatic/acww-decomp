@@ -5,23 +5,27 @@
 #include "types.h"
 
 extern void *func_ov002_02207f80(int size);
-extern void func_ov002_0220830c(void *self);
+extern void *func_ov002_0220830c(void *self);
 extern void *data_ov105_0229fad0;
 extern void func_02066694(void *p);
-extern void func_020b9af4(void *p);
-extern void func_ov094_0229b000(void *p);
+extern void *func_020b9af4(void *p);
+extern void *func_ov094_0229b000(void *p);
 extern void func_ov094_0229bc3c(void *p);
-extern void func_ov094_0229a2ec(void *p);
-extern void func_ov002_02207e40(void *p);
+extern void *func_ov094_0229a2ec(void *p);
+extern void *func_ov002_02207e40(void *p);
 extern void func_ov002_02209e44(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_ov002_02209b14(void *p);
-extern void func_ov002_0220ba24(void *p);
-extern void func_0206e388(void *p);
-extern void func_ov002_0220b47c(void *p);
-extern void func_02066688(void);
-extern void __cxa_vec_ctor(void *p, int a, int b, void *fn1, void *fn2);
-extern void func_ov002_0220b008(void *p);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_ov002_02209b14(void *p);
+extern void *func_ov002_0220ba24(void *p);
+extern void *func_0206e388(void *p);
+extern void *func_ov002_0220b47c(void *p);
+extern void func_02066688(int *arg0);
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*callback3)(void *), void (*callback4)(void *));
+extern void *func_ov002_0220b008(void *p);
+
+#define DisposeElement_func_02066694 ((void (*)(void *)) func_02066694)
+
+#define DisposeElement_func_02066688 ((void (*)(void *)) func_02066688)
 
 void *func_ov105_0229f760(void)
 {
@@ -55,10 +59,13 @@ void *func_ov105_0229f760(void)
         func_0206e388(self + 0x2a18);
         func_ov002_0220b47c(self + 0x2d40);
 
-        __cxa_vec_ctor(self + 0x2db8, 0x32, 0x100, (void *) func_02066694, (void *) func_02066688);
+        __cxa_vec_ctor(self + 0x2db8, 0x32, 0x100, DisposeElement_func_02066694, DisposeElement_func_02066688);
 
         func_ov002_0220b008(self + 0x5fb8);
     }
 
     return self;
 }
+
+#undef DisposeElement_func_02066694
+#undef DisposeElement_func_02066688

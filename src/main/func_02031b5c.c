@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_01ffcb2c(void);
-int func_02031b5c(void)
+extern int func_01ffcb2c(int, int);
+int func_02031b5c(int argument0, int argument1)
 {
     int x;
-    x = func_01ffcb2c();
+    x = func_01ffcb2c((int) argument0, (int) argument1);
     if (x == 8) {
         return 1;
     }

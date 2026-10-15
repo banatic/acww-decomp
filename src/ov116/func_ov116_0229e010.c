@@ -5,7 +5,7 @@
 extern unsigned short data_021fbe40;
 extern void func_ov114_0229d244(void *);
 extern void func_ov114_0229d220(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_ov114_0229d52c(void *, int);
 extern void func_ov002_0220a0b4(void *, void *, void *);
 extern void *func_ov116_0229dedc(void *);

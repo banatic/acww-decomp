@@ -19,10 +19,10 @@ typedef struct UnkStruct_0229ce00_2 {
 extern void func_ov002_02209d68(UnkStruct_0229ce00 *sub, int v1, int v2);
 extern int func_ov108_0229cc20(UnkStruct_0229ce00_2 *obj, int value);
 extern int func_ov108_0229cbe4(UnkStruct_0229ce00_2 *obj, int value);
-extern void func_ov002_02209d38(UnkStruct_0229ce00 *sub, int v1, int v2, int v3);
-extern void func_ov002_02209d8c(UnkStruct_0229ce00 *sub);
-extern void func_ov108_0229c918(UnkStruct_0229ce00_2 *obj);
-extern void func_ov002_02208098(UnkStruct_0229ce00_2 *obj, int value);
+extern int func_ov002_02209d38(UnkStruct_0229ce00 *sub, int v1, int v2, int v3);
+extern int func_ov002_02209d8c(UnkStruct_0229ce00 *sub);
+extern int func_ov108_0229c918(UnkStruct_0229ce00_2 *obj);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov108_0229ce00(UnkStruct_0229ce00_2 *obj, int arg1, int arg2)
 {
@@ -35,5 +35,5 @@ void func_ov108_0229ce00(UnkStruct_0229ce00_2 *obj, int arg1, int arg2)
     func_ov002_02209d38(&obj->sub2480, retA, retB, arg2);
     func_ov002_02209d8c(&obj->sub2480);
     func_ov108_0229c918(obj);
-    func_ov002_02208098(obj, 18);
+    func_ov002_02208098((void *) (obj), 18);
 }

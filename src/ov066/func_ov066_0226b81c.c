@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *OS_DisableInterrupts(int a, int b, int c, int d);
-extern void OS_RestoreInterrupts(void *p);
+extern unsigned int OS_DisableInterrupts(void);
+extern unsigned int OS_RestoreInterrupts(unsigned int mask);
 extern int func_ov066_0226b8bc(void);
 
 typedef struct {
@@ -22,7 +22,7 @@ extern UnkStruct_0226b81c *data_ov066_0226be08;
 int func_ov066_0226b81c(int a, int b, int c, int d)
 {
     int flag = 0;
-    void *handle = OS_DisableInterrupts(a, b, c, d);
+    unsigned int handle = OS_DisableInterrupts();
     if (func_ov066_0226b8bc() != 0) {
         int zero = flag;
         flag = 1;

@@ -9,9 +9,9 @@ struct Vec {
 extern "C" void func_020ea6e0(struct Vec *, short);
 extern "C" int func_ov004_0220ebd4(void *, struct Vec *);
 extern "C" void func_01ffd070(struct Vec *, void *, struct Vec *);
-extern "C" void func_ov004_0220ccf8(void *, int);
-extern "C" int func_ov004_0220ec8c(void *);
-extern "C" void func_02095380(int);
+extern "C" int func_ov004_0220ccf8(void *, int);
+extern "C" int func_ov004_0220ec8c(void);
+extern "C" int func_02095380(int);
 
 struct UnkStruct_0220ce5c {
     char pad_00[0xc];
@@ -40,7 +40,10 @@ extern "C" int func_ov004_0220ce5c(struct UnkStruct_0220ce5c *o, unsigned short 
         func_ov004_0220ccf8(o, 4);
         int b = (o->unk_0C == 0x3d);
         if (!b) {
-            int id = func_ov004_0220ec8c(o);
+            asm {
+                mov r0, o
+            }
+            int id = func_ov004_0220ec8c();
             if (id != 0xffff) {
                 func_02095380(id);
             }

@@ -4,7 +4,7 @@
 
 // placeholder for the literal address
 
-void func_0200d548(unsigned int *base)
+void func_0200d548(unsigned int *base, void *message, int previous)
 {
     base[0x1fe] = 0;
 }

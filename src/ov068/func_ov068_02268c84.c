@@ -15,7 +15,7 @@ typedef struct {
 
 extern int func_02019e00(void *);
 extern int func_02019de8(void *);
-extern void func_02019d0c(void *, int, int, fx32, fx32, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, fx32, fx32, int, int, int, int, int, int);
 extern unsigned short data_020c80f8;
 
 typedef struct {

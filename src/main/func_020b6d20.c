@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b69c8(void);
+extern void func_020b69c8(void *);
 extern void func_02091300(void);
 extern void func_0208a0ac(void);
 extern void func_020b5e88(void *);
@@ -14,11 +14,11 @@ extern int data_021d3124;
 extern int data_021f69d0;
 extern int data_020dd828;
 
-int func_020b6d20(void)
+int func_020b6d20(void *argument0)
 {
     volatile unsigned short *reg = (volatile unsigned short *) 0x04000008;
 
-    func_020b69c8();
+    func_020b69c8((void *) argument0);
     func_02091300();
     *reg = (*reg & ~3) | 2;
     func_0208a0ac();

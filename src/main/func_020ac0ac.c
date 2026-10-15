@@ -3,9 +3,9 @@
  */
 
 extern void func_020ac9a4(void *);
-extern void func_020aca04(void *);
-extern void func_0208f518(void *, int, int);
-extern void func_020acb94(void *);
+extern void *func_020aca04(void *);
+extern void *func_0208f518(void *, int, int);
+extern void *func_020acb94(void *);
 extern unsigned char data_020e3fe4[];
 
 typedef struct {

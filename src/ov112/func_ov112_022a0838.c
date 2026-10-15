@@ -15,12 +15,12 @@ typedef struct UnkStruct_022a0838 {
     char unk_4448[0x10];
 } UnkStruct_022a0838;
 
-extern int func_ov002_02208014(void *);
-extern void func_ov112_0229fee4(void *);
+extern int func_ov002_02208014(void);
+extern int func_ov112_0229fee4(void *);
 extern void func_ov002_0220a1dc(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern int func_ov002_02208008(void *);
-extern int func_ov002_022088ac(void);
+extern int func_ov002_022088ac(int arg0);
 extern int func_ov002_0220889c(int);
 extern int func_ov002_0220a768(void *, int);
 extern int func_ov002_0220a72c(void *, int);
@@ -36,7 +36,7 @@ void func_ov112_022a0838(UnkStruct_022a0838 *self)
     unsigned short flags;
     int v1, v2;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov112_0229fee4(self);
         return;
     }
@@ -49,7 +49,7 @@ void func_ov112_022a0838(UnkStruct_022a0838 *self)
 
     original = self->unk_C2;
     val = func_ov002_02208008(self);
-    if (func_ov002_022088ac() != 0) {
+    if (func_ov002_022088ac(val) != 0) {
         if (self->unk_C2 != 0) {
             self->unk_C2--;
         }

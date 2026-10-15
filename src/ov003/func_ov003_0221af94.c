@@ -28,7 +28,7 @@ typedef struct {
 } UnkStruct_0221af94;
 
 extern int func_02089cc0(void *a, int b);
-extern void func_020044c0(void *a, int b, int c, int d);
+extern int func_020044c0(void *a, int b, int c, int d);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
 

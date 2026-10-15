@@ -6,7 +6,7 @@ extern "C" {
 int func_ov105_0229c340(void *self, int flag);
 void func_ov105_0229d1f0(void *self);
 void func_ov105_0229c55c(void *self);
-int func_0206fe54(int value);
+int func_0206fe54(void);
 void func_ov002_02209eb8(void *addr);
 void func_ov002_0220ad18(void *a, int b);
 void func_ov094_0229a850(void *a, int b, int c);
@@ -52,7 +52,8 @@ extern "C" int func_ov105_0229f604(UnkStruct_0229f604 *self)
         return 1;
     }
 
-    if (func_0206fe54(self->unk_23BC.func3()) != 0) {
+    self->unk_23BC.func3();
+    if (func_0206fe54() != 0) {
         func_ov002_02209eb8(&self->unk_24A4);
     }
 

@@ -39,7 +39,7 @@ class UnkStruct_02214d34 {
     unsigned short unk_860;
 };
 
-extern "C" void func_ov004_02215298(UnkStruct_02214d34 *self, char *p);
+extern "C" int func_ov004_02215298(UnkStruct_02214d34 *self, char *p);
 extern "C" void func_02054cdc(char *p);
 extern "C" int func_ov004_022151d8(UnkStruct_02214d34 *self);
 extern "C" int func_ov004_0220e220(char *p);

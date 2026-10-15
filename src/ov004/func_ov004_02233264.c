@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ee660();
-extern void func_02055210();
+extern void *func_020ee660(void *argument0);
+extern void *func_02055210(void *argument0);
 extern void __cxa_vec_ctor();
-extern void func_ov004_022329e0();
-extern void func_ov004_02232754();
-extern void func_ov004_0223248c();
-extern void func_020324fc();
-extern void func_ov004_022322fc();
-extern void func_ov004_022324d8();
-extern void func_ov004_022324f0();
+extern void *func_ov004_022329e0(char *argument0);
+extern void *func_ov004_02232754(char *argument0);
+extern void *func_ov004_0223248c(char *argument0);
+extern void *func_020324fc(void *argument0);
+extern void *func_ov004_022322fc(char *argument0);
+extern void *func_ov004_022324d8(void *arg0);
+extern void *func_ov004_022324f0(void *arg0);
 extern void *data_020da13c;
 extern void *data_ov004_02255ac8;
 extern void *data_0213efe8;

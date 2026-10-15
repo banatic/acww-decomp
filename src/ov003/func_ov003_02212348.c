@@ -4,7 +4,7 @@
 
 extern int func_02056f94(void *);
 extern int func_02008258(void *, int);
-extern void func_0200d4e8(void *, int, int, int);
+extern int func_0200d4e8(void *, int, int, int);
 
 struct UnkStruct_02212348 {
     char pad_00[0x2d0];

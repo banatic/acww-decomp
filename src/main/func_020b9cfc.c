@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ba1cc(void);
+extern void func_020ba1cc(unsigned int *);
 extern void func_020ba108(void *ptr);
 extern int data_020e5934;
 
@@ -14,7 +14,7 @@ typedef struct UnkStruct_020b9cfc {
 
 UnkStruct_020b9cfc *func_020b9cfc(UnkStruct_020b9cfc *self)
 {
-    func_020ba1cc();
+    func_020ba1cc((unsigned int *) self);
     self->vtable = &data_020e5934;
     func_020ba108(self->sub);
     return self;

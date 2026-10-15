@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short func_ov121_02299bd4(void *);
+extern unsigned short func_ov121_02299bd4(void *, int arg1);
 extern void *func_020984e8(void);
 extern void func_02099704(void *, volatile unsigned short *);
 extern void func_020996ec(void *, volatile unsigned short *);
@@ -15,7 +15,7 @@ unsigned short func_ov121_02299b20(void *obj, int mode, unsigned short arg)
     unsigned int hit;
     void *g;
 
-    id = func_ov121_02299bd4(obj);
+    id = func_ov121_02299bd4(obj, mode);
     g = func_020984e8();
     h = arg;
     switch (mode) {

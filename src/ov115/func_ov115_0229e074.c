@@ -3,7 +3,7 @@
  */
 
 extern int func_ov114_0229d2d8(void *p);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov114_0229d52c(void *p, int v);
 extern int func_ov115_0229dedc(void *p);
 extern int func_ov115_0229ded0(void *p);
@@ -23,7 +23,7 @@ void func_ov115_0229e074(UnkStruct_0229e074 *self)
     int a, b;
 
     if (func_ov114_0229d2d8(&self->unk_F8) != 0) {
-        func_ov002_02208098(self, 7);
+        func_ov002_02208098((void *) (self), 7);
     }
     func_ov114_0229d52c(&self->unk_F8, self->unk_1424);
     a = func_ov115_0229dedc(self);

@@ -4,8 +4,8 @@
 
 extern int func_02056f28(void *p, int a);
 extern int func_ov003_0220c934(void *p);
-extern void func_0200f27c(void *p, int a);
-extern void func_0200f328(void *p, int a);
+extern unsigned int *func_0200f27c(void *p, int a);
+extern int func_0200f328(void *p, int a);
 extern void func_0205eae0(void *p, int a, int b, int c);
 extern void func_0200fa1c(void *out, void *self, void *b, void *c, void *d);
 extern void func_0204f7e0(void *a, void *b);

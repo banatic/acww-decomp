@@ -14,7 +14,7 @@ struct UnkStruct_0201cb24 {
     struct Pair pair;
 };
 
-int func_0201cb24(struct UnkStruct_0201cb24 *param0)
+int func_0201cb24(struct UnkStruct_0201cb24 *param0, int event)
 {
     param0->unk_48 = 0;
     param0->pair = data_020d9340;

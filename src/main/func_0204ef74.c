@@ -20,8 +20,8 @@ extern int func_020b0650(u8 *base, unsigned int idx);
 extern int func_0204bc64(u16 *p);
 extern int func_0204ba94(u16 *p);
 extern int func_0204b5ac(u16 *p);
-extern void func_0204f538(void *w, u16 *st, int x, int y, int f);
-extern void func_0204f31c(void *w, int x, int y);
+extern int func_0204f538(void *w, u16 *st, int x, int y, int f);
+extern int func_0204f31c(void *w, int x, int y);
 
 extern void *data_020ccf94;
 extern u8 data_021f3b56[];

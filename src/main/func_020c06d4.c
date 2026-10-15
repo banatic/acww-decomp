@@ -44,12 +44,12 @@ extern void func_020bee60(void *, int);
 extern void func_020bf26c(UnkStruct_020c06d4 *, int);
 extern void func_020beb48(int *);
 extern void func_020bf248(UnkStruct_020c06d4 *, int);
-extern void func_020bf5b8(UnkStruct_020c06d4 *, int);
-extern int func_0208a160(void *, int);
+extern void func_020bf5b8(UnkStruct_020c06d4 *);
+extern int func_0208a160(void *);
 extern void func_02040ba0(int);
-extern void func_020952ec(void);
-extern int func_02095794(void);
-extern void func_020b2b8c(int, int);
+extern int func_020952ec(void);
+extern int func_02095794(int);
+extern int func_020b2b8c(int, int);
 extern void func_020beb3c(int *);
 extern void func_020beb00(int *, int, int, int, int);
 extern void VEC_Add(void *, void *, void *);
@@ -81,13 +81,13 @@ void func_020c06d4(UnkStruct_020c06d4 *s)
         }
     } else if (state == 1) {
         s->unk_0C = 0x17;
-        func_020bf5b8(s, 0x17);
+        func_020bf5b8(s);
         s->unk_40 = (s->unk_2E != 0) ? 0x2666 : -0x2666;
         s->unk_44 = -0x399A;
         s->unk_48 = 0;
         s->unk_60 = 2;
     } else if (state == 2) {
-        if (func_0208a160((char *) s + 0x10, state) != 0) {
+        if (func_0208a160((char *) s + 0x10) != 0) {
             func_020bee60(&data_021fa678[s->unk_24], 0x25);
             s->unk_08 = 0x25;
             s->unk_60 = 3;
@@ -95,14 +95,13 @@ void func_020c06d4(UnkStruct_020c06d4 *s)
         }
     } else if (state == 3) {
         s->unk_0C = 0x18;
-        func_020bf5b8(s, 0x18);
+        func_020bf5b8(s);
         s->unk_60 = 4;
         s->unk_68 = 0;
     } else if (state == 4) {
         if (s->unk_38 > 0xd0000) {
             func_02040ba0(0x44);
-            func_020952ec();
-            ret = func_02095794();
+            ret = func_02095794((int) func_020952ec());
             func_020b2b8c(ret, (s->unk_2E == 0) ? 1 : 0);
             func_020beb3c(&data_021fbaf0);
             s->unk_04 = 3;

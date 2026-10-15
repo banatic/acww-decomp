@@ -19,7 +19,8 @@ struct Obj_ov004_02253674 {
     int func_ov004_0221c0ec();
     void func_ov004_0221c0f0();
     int func_ov004_0221c224();
-    void func_ov004_0221c264();
+    int func_ov004_0221c264();
+
     int func_ov004_0221c270();
     void func_ov004_0221c274();
     int func_ov004_0221c294();

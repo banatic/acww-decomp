@@ -12,7 +12,7 @@ extern int func_ov096_0229c2fc(void *self, int flag);
 extern void func_020027f0(int n);
 extern void func_ov096_0229c2dc(void *self, int n);
 extern void func_ov002_02208090(void *self, int n);
-extern void func_ov002_022080a0(void *self, int n);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern void func_ov002_02207e80(void *self, int a, int b, int c);
 extern int func_ov002_02207f60(void *self);
 
@@ -24,7 +24,7 @@ void func_ov096_022a16e4(struct UnkStruct_022a16e4 *self)
         if (func_ov096_0229c2fc(self, 0x80) != 0) {
             func_ov002_02208090(self, 7);
         } else {
-            func_ov002_022080a0(self, 5);
+            func_ov002_022080a0((void *) (self), 5);
             func_ov096_0229c2dc(self, 1);
         }
     } else {

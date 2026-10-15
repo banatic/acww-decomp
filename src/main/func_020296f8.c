@@ -38,13 +38,13 @@ extern const int data_020d9f94;
 extern const Pair data_020d8e20;
 extern void data_020c8928(void);
 extern void data_020c8924(void);
-extern void func_02029e34(void);
+extern int func_02029e34(unsigned short *);
 
 extern void func_0201cfb4(UnkStruct_020296f8 *, Buf *);
 extern void func_0201cf90(UnkStruct_020296f8 *, Buf *, int, int, int, void *);
 extern void func_0201cf74(UnkStruct_020296f8 *, Buf *, int, void *, void *);
 extern void func_0201cec8(UnkStruct_020296f8 *, Buf *);
-extern void func_02015dd4(UnkStruct_020296f8 *, int, u8 *, const void *, u8 *);
+extern int func_02015dd4(UnkStruct_020296f8 *, int, u8 *, const void *, u8 *);
 extern void *func_0202d9c4(UnkStruct_020296f8 *);
 extern void func_0202da74(UnkStruct_020296f8 *, Pair);
 extern void func_02068388(int, int);

@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int func_020edc58(int a, int b);
+extern int func_020edc58(int a, int b, unsigned int argument2, unsigned char argument3);
 
-int func_020edbbc(int a, int b)
+int func_020edbbc(int a, int b, unsigned int argument2, unsigned char argument3)
 {
     if (b == 0) {
         return 0;
     }
-    return func_020edc58(a, b + 0x14);
+    return func_020edc58(a, b + 0x14, argument2, argument3);
 }

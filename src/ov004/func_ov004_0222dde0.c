@@ -2,13 +2,10 @@
  * mwccarm 1.2/base -O1,s
  */
 
-extern int func_ov004_0222c340(void *, void *);
-extern void func_ov004_0222c3d4(void *, int, void *);
-
-int func_ov004_0222dde0(char *self, int a1)
+extern void func_ov004_0222c340(void *object);
+extern void func_ov004_0222c3d4(void *object);
+void func_ov004_0222dde0(char *self, int index)
 {
-    // DECLS
-    // ENDDECLS
-    func_ov004_0222c3d4(self + 0x908 + (0xa4 * a1), (0xa4 * a1), self + 0x908);
-    return func_ov004_0222c340(self + 0xecc + (a1 << 2), self + 0xecc);
+    func_ov004_0222c3d4(self + 0x908 + 0xa4 * index);
+    func_ov004_0222c340(self + 0xecc + (index << 2));
 }

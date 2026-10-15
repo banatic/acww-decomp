@@ -14,11 +14,10 @@ typedef struct {
 extern UnkStruct_02046f14 data_021c7a08[];
 extern void func_0209def4(void *ptr);
 extern void *func_02047114(void *ptr);
-extern void func_02048cb8(void *a, void *b, int c, int d, void *e, void (*f)(void), int g);
+extern int func_02048cb8(void *a, void *b, int c, int d, void *e, int (*predicate)(int, int, int), int g);
+extern int func_02048e34(int, int, int);
 
 extern unsigned char data_021c779c[];
-
-extern void func_02048e34(void);
 
 void func_02046f14(void *param0, Param1 *param1)
 {
@@ -33,8 +32,7 @@ void func_02046f14(void *param0, Param1 *param1)
         used = *((unsigned char *) &data_021c7a08[i] + 0x88);
         j = 2 - used;
         while (j > 0) {
-            func_02048cb8(param0, param1, i + 1, 4, func_02047114(param0), (void (*)(void))(unsigned int) func_02048e34,
-                          local0);
+            func_02048cb8(param0, param1, i + 1, 4, func_02047114(param0), (((int (*)(int, int, int)) func_02048e34)), local0);
             j--;
         }
     }

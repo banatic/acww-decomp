@@ -3,12 +3,12 @@
  */
 
 extern void *func_02065f7c(void *);
-extern void func_0209527c(void *, void *);
+extern int func_0209527c(void *, void *);
 extern int func_020951bc(void *);
 extern int func_020807dc(void *, void *);
 extern int func_020807c0(void *, int);
-extern int func_02081cd8(void);
-extern void func_0209526c(void *);
+extern int func_02081cd8(void *object);
+extern int func_0209526c(void *);
 
 struct LocalObj {
     unsigned char pad_00[32];
@@ -16,8 +16,10 @@ struct LocalObj {
 
 int func_02080d0c(void *arg0)
 {
-    void *p;
+    int forwarded_value;
+
     int r;
+    void *p;
     struct LocalObj obj;
 
     p = func_02065f7c((char *) arg0 + 0x634);
@@ -29,10 +31,10 @@ int func_02080d0c(void *arg0)
         goto fail_cleanup;
     }
     r = func_020807dc(arg0, &obj);
-    if (func_020807c0(arg0, r) == 0) {
+    if ((forwarded_value = (int) func_020807c0(arg0, r)) == 0) {
         goto fail_cleanup;
     }
-    if (func_02081cd8() == 0) {
+    if (func_02081cd8((void *) forwarded_value) == 0) {
         goto fail_cleanup;
     }
     func_0209526c(&obj);

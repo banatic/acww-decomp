@@ -4,8 +4,8 @@
 
 struct UnkStruct_0229d004;
 
-extern void func_ov002_02207d24(char *ptr, int val);
-extern void func_ov002_02208098(struct UnkStruct_0229d004 *self, int val);
+extern int func_ov002_02207d24(char *ptr, int val);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229d004 *self, unsigned char value);
 extern void func_ov099_0229c880(struct UnkStruct_0229d004 *self, int val);
 extern void func_ov099_0229c95c(struct UnkStruct_0229d004 *self);
 

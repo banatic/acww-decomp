@@ -54,21 +54,21 @@ extern void func_0204f794(UnkStruct_020065a0 *, int, int);
 extern int func_0200f290(UnkStruct_020065a0_3 *, int);
 extern void func_0200e854(UnkStruct_020065a0_3 *);
 extern void func_0204f818(int *, int *, UnkStruct_020065a0 *);
-extern void func_ov003_0220fb30(UnkStruct_020065a0_3 *, int, int, int, int, int, int);
-extern void func_0200b83c(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int, int, int);
-extern void func_0200ad24(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int, int);
-extern void func_ov003_02218ca8(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int);
-extern void func_ov003_02216410(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0_2 *, int, int);
-extern void func_ov003_02216698(UnkStruct_020065a0_3 *, int, int, UnkStruct_020065a0_2 *, int, int);
-extern void func_ov003_02211d4c(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0 *, int, int);
-extern void func_ov003_02211980(UnkStruct_020065a0_3 *, UnkStruct_020065a0 *, int, int, int);
-extern void func_ov003_022109f8(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0_2 *, int, int, int);
-extern void func_ov003_022100c4(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int, int);
-extern void func_ov003_022122ac(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0_2 *, int, int);
-extern void func_ov003_02216ab8(UnkStruct_020065a0_3 *, int, int, UnkStruct_020065a0_2 *, int, int);
-extern void func_0200d4e8(UnkStruct_020065a0_3 *, int, int, int);
+extern int func_ov003_0220fb30(UnkStruct_020065a0_3 *, int, int, int, int, int, int);
+extern int func_0200b83c(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int, int, int);
+extern int func_0200ad24(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int, int);
+extern int func_ov003_02218ca8(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int);
+extern int func_ov003_02216410(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0_2 *, int, int);
+extern int func_ov003_02216698(UnkStruct_020065a0_3 *, int, int, UnkStruct_020065a0_2 *, int, int);
+extern int func_ov003_02211d4c(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0 *, int, int);
+extern int func_ov003_02211980(UnkStruct_020065a0_3 *, UnkStruct_020065a0 *, int, int, int);
+extern void *func_ov003_022109f8(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0_2 *, int, int, int);
+extern int func_ov003_022100c4(UnkStruct_020065a0_3 *, UnkStruct_020065a0_2 *, int, int, int);
+extern int func_ov003_022122ac(UnkStruct_020065a0_3 *, int, UnkStruct_020065a0_2 *, int, int);
+extern int func_ov003_02216ab8(UnkStruct_020065a0_3 *, int, int, UnkStruct_020065a0_2 *, int, int);
+extern int func_0200d4e8(UnkStruct_020065a0_3 *, int, int, int);
 extern void func_0200f268(UnkStruct_020065a0_3 *, int);
-extern void func_0200f27c(UnkStruct_020065a0_3 *, int);
+extern unsigned int *func_0200f27c(UnkStruct_020065a0_3 *, int);
 
 void func_020065a0(UnkStruct_020065a0_3 *self)
 {

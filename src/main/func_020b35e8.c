@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void NNS_G3dMdlSetMdlDiff(int a, signed char b, unsigned short c);
+extern unsigned int NNS_G3dMdlSetMdlDiff(int a, signed char b, unsigned short c);
 
 void func_020b35e8(signed char *p, int a, int y)
 {

@@ -4,12 +4,12 @@
 
 #include "cpp/ov009/Obj_ov009_022658dc.h"
 
-extern "C" void func_02055140(Obj_020dd05c *, void *);
+extern "C" int func_02055140(Obj_020dd05c *, void *);
 extern "C" void func_02055060(Obj_020dd05c *, int, int, int, int, int);
 extern "C" void func_02055050(Obj_020dd05c *);
 extern "C" int func_ov009_02264c90(Obj_ov009_022658dc *);
 extern "C" void *func_ov009_02262fcc(Obj_ov009_022658dc *);
-extern "C" int func_0204bcdc(void);
+extern "C" int func_0204bcdc(void *argument0);
 extern "C" void *func_0204bc64(void *);
 extern "C" int func_020b312c(unsigned short);
 extern void *data_021c9b1c;
@@ -28,7 +28,7 @@ extern "C" void func_ov009_02264e98(Obj_ov009_022658dc *self)
 
     unsigned short tmp;
     void *p = func_ov009_02262fcc(self);
-    int r = func_0204bcdc();
+    int r = func_0204bcdc((void *) p);
     int b;
 
     if (r != 0) {

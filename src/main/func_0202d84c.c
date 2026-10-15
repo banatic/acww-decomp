@@ -13,11 +13,11 @@ struct Task {
     TaskFuncs *funcs;
 };
 
-extern Task *func_02015d90(Task *task, int param);
+extern Task *func_02015d90(Task *task);
 
 void func_0202d84c(Task *task, int param)
 {
-    Task *t = func_02015d90(task, param);
+    Task *t = func_02015d90(task);
     if (t) {
         t->funcs->funcs[41](t, 4, param);
     }

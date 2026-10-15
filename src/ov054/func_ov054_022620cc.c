@@ -11,7 +11,7 @@ extern void func_020b22f4(void);
 extern int func_0204e414(void);
 extern int func_0204e188(int, void *, void *, void *);
 extern int func_020b5e10(void);
-extern void func_020b63f4(int, int, void *, int, int, int, int);
+extern int func_020b63f4(int, int, void *, int, int, int, int);
 extern void func_ov054_02262528(void *, int);
 
 int func_ov054_022620cc(void *obj)

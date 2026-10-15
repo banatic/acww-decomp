@@ -57,7 +57,7 @@ extern u8 data_ov049_02262dd0[][7];
 extern u8 data_021dc7a8[];
 
 extern int func_020984e8(void);
-extern int func_02099640(void);
+extern int func_02099640(int argument0);
 extern int func_0209a850(int a);
 extern int func_020a12e8(void);
 extern int func_ov049_02262084(UnkStruct_02261d4c *self);
@@ -67,20 +67,20 @@ extern int func_0204c878(u16 *p);
 extern void func_02015fb0(UnkStruct_02261d4c *self, int a, int b, int c, int d, int e);
 extern void func_02015de4(UnkStruct_02261d4c *self, u16 *p, int a, int b);
 extern int func_02072a48(u8 *p, int i);
-extern void func_02062fbc(UnkStruct_02261d4c_3 *o);
+extern void *func_02062fbc(UnkStruct_02261d4c_3 *o);
 extern int func_02072d4c(int a);
 extern void func_02072eb8(int a, UnkStruct_02261d4c_3 *o);
 extern void func_020683b4(int a, int b, UnkStruct_02261d4c_3 *o, int c);
-extern RecA *func_02072ee8(int a);
+extern RecA *func_02072ee8(void *record);
 extern RecA *func_02099870(int a);
 extern RecC *func_02095040(RecA *p);
 extern int memcmp(void *a, void *b, int n);
 extern int func_0209518c(RecA *a, RecA *b);
 extern void func_02015e40(UnkStruct_02261d4c *self, RecA *p, int a);
-extern void func_02015e70(UnkStruct_02261d4c *self, RecC *p, int a);
+extern void *func_02015e70(UnkStruct_02261d4c *self, RecC *p, int a);
 extern void func_020642f8(RecC *p);
-extern void func_0209526c(RecA *p);
-extern void func_02062f4c(UnkStruct_02261d4c_3 *o);
+extern int func_0209526c(RecA *p);
+extern void *func_02062f4c(UnkStruct_02261d4c_3 *o);
 
 void func_ov049_02261d4c(UnkStruct_02261d4c *self, UnkStruct_02261d4c_2 *out)
 {
@@ -102,7 +102,7 @@ void func_ov049_02261d4c(UnkStruct_02261d4c *self, UnkStruct_02261d4c_2 *out)
     u8 *base;
 
     t = func_020984e8();
-    g = func_0209a850(func_02099640());
+    g = func_0209a850(func_02099640(t));
 
     if (func_020a12e8() != 0 && func_ov049_02262084(self) == 2) {
         out->text = data_ov049_02263298[2];
@@ -153,7 +153,7 @@ void func_ov049_02261d4c(UnkStruct_02261d4c *self, UnkStruct_02261d4c_2 *out)
         func_02062fbc(&obj);
         func_02072eb8(func_02072d4c(h), &obj);
         func_020683b4(self->unk_40, 2, &obj, 7);
-        p = func_02072ee8(func_02072d4c(h));
+        p = func_02072ee8((void *) func_02072d4c(h));
         a.unk_00 = p->unk_00;
         a.unk_02 = p->unk_02;
         a.unk_0E = p->unk_0E;

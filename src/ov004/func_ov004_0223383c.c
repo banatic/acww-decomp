@@ -18,7 +18,7 @@ typedef struct UnkStruct_0223383c {
 } UnkStruct_0223383c;
 
 extern void VEC_Add(char *d, char *a, char *b);
-extern void func_020044c0(char *p, int a, int b, int c);
+extern int func_020044c0(char *p, int a, int b, int c);
 extern void func_ov004_022339e0(UnkStruct_0223383c *self);
 
 void func_ov004_0223383c(UnkStruct_0223383c *self)

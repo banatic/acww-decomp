@@ -3,7 +3,8 @@
  */
 
 extern unsigned short data_020c80f8;
-extern int func_02019d0c();
+extern int func_02019d0c(void *argument0, int argument1, int argument2, int argument3, int argument4, short argument5,
+                         short argument6, int argument7, int argument8, unsigned short argument9, unsigned short argument10);
 
 int func_ov087_02279078(char *param)
 {

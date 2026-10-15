@@ -4,9 +4,9 @@
 
 extern void *func_020409c8(void *a, int b);
 extern void func_020408d4(void *p);
-extern void func_020ae3b8(void *p);
-extern void func_020ae64c(void);
-extern void func_020ae67c(void);
+extern int func_020ae3b8(void *p);
+extern int func_020ae64c(void *);
+extern int func_020ae67c(void *);
 extern char data_021f3b30;
 
 void func_0204101c(void *arg)
@@ -20,8 +20,6 @@ void func_0204101c(void *arg)
         p += 6;
     }
     lock = &data_021f3b30;
-    func_020ae3b8(lock);
-    func_020ae64c();
-    func_020ae3b8(lock);
-    func_020ae67c();
+    func_020ae64c((void *) func_020ae3b8(lock));
+    func_020ae67c((void *) func_020ae3b8(lock));
 }

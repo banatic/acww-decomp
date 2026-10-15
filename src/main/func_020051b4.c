@@ -4,14 +4,14 @@
 
 #include "types.h"
 
-extern int func_0209129c(int a);
+extern void func_0209129c(int a);
 extern void func_020962b8(int a);
 extern int func_02073d90(void *p);
 extern int func_02073908(void *p, int a);
 extern void func_020771cc(void *p, int a, int b, int c);
 extern void func_020b9e2c(char *p);
 extern void func_0205682c(char *p);
-extern void func_02055454(char *p);
+extern int func_02055454(char *p);
 extern void func_0205502c(char *p);
 extern void func_0205ebb4(char *p);
 extern void func_0205defc(char *p);
@@ -22,7 +22,7 @@ extern void func_020961e0(char *p);
 extern int func_0200f290(char *p, int a);
 extern void func_02035638(int a);
 extern void func_0200f268(char *p, int a);
-extern void func_020044a0(char *p);
+extern int func_020044a0(char *p);
 extern void func_020b8db4(void);
 
 extern void *data_020ccf94;

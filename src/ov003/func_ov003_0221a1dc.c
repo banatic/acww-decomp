@@ -3,7 +3,7 @@
  */
 
 extern void *func_0208a020(void *arg);
-extern void func_ov003_0221abf8(void *s, int n);
+extern int func_ov003_0221abf8(void *object);
 
 void func_ov003_0221a1dc(void *s)
 {
@@ -13,7 +13,13 @@ void func_ov003_0221a1dc(void *s)
         ret = func_0208a020((char *) s + 0x2a4);
         if (ret != 0) {
             if (*(int *) ((char *) ret + 0x98) > 0x666) {
-                func_ov003_0221abf8(s, 1);
+                // clang-format off
+                asm {
+                    mov r0, s
+                    mov r1, #1
+                    bl func_ov003_0221abf8
+                }
+                // clang-format on
             }
         }
     }

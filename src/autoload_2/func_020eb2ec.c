@@ -6,7 +6,7 @@ extern unsigned short data_021fbefc; // 0x021fbefc
 extern int data_0213e6bc;            // 0x0213e6c0
 extern int data_021fbf1c;            // 0x021fbf44
 extern int data_021fbf2c;            // 0x021fbf0c
-void UTi_PutString(int arg);
+int UTi_PutString(int arg);
 
 int func_020eb2ec(void)
 {

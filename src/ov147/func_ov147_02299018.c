@@ -14,7 +14,7 @@ typedef struct {
 } Object;
 
 extern void func_ov147_02298f20(Object *self, UnkStruct_02299018 *e, int y, int x);
-extern void func_020b9c10(void *dst, void *src, int a, int b, int c, int d);
+extern int func_020b9c10(void *dst, void *src, int a, int b, int c, int d);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int len);
 
 extern UnkStruct_02299018 data_ov147_0229b0cc[];

@@ -11,13 +11,13 @@ typedef struct {
     int unk_08;
 } DataT;
 
-extern int func_020984e8(void *);
+extern int func_020984e8(void);
 extern int func_02099640(int);
 extern int func_02099020(int, int);
 extern InterData *func_02095794(int);
 extern DataT data_ov050_02265090;
 extern void func_ov050_02263640(void *, int);
-extern void func_0203e0a8(void *, int);
+extern int func_0203e0a8(void *, int);
 
 int func_ov050_022606b4(void *self)
 {
@@ -28,7 +28,7 @@ int func_ov050_022606b4(void *self)
         int a, b, c;
     } local;
 
-    id = func_020984e8(self);
+    id = func_020984e8();
     func_02099640(id);
 
     if (func_02099020(id, 1) == 0) {

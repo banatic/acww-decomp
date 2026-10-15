@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020896b8(int, int *, int, int, int, int, int);
+extern int func_020896b8(int, int *, int, int, int, int, int);
 extern int data_ov094_0229c11c[];
 
 typedef struct UnkStruct_0229b4f0 {

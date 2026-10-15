@@ -17,13 +17,13 @@ typedef struct Blk {
 
 extern int func_0206fc6c(void);
 extern int func_0206fc44(void);
-extern void func_ov045_0226050c(Blk *p);
-extern void func_ov045_022604b4(Blk *p);
+extern void *func_ov045_0226050c(Blk *p);
+extern void *func_ov045_022604b4(Blk *p);
 extern void func_020a8874(Blk *p, int a, int b);
-extern void func_020a8a70(Blk *p, Blk *q, int a, int b);
+extern int func_020a8a70(Blk *p, Blk *q, int a, int b);
 extern void func_02068404(int h, int a, Blk *p);
-extern void func_ov045_0226049c(Blk *p);
-extern void func_ov045_022604f4(Blk *p);
+extern void *func_ov045_0226049c(Blk *p);
+extern void *func_ov045_022604f4(Blk *p);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov045_02261380;
 

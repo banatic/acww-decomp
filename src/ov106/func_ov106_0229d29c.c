@@ -4,7 +4,7 @@
 
 extern int func_ov106_0229d090(unsigned char *a, int b);
 extern int func_ov106_0229d20c(unsigned char *a, int b);
-extern void func_02066830(unsigned char *dst, int val);
+extern int func_02066830(unsigned char *dst, int val);
 extern void func_ov106_0229d24c(unsigned char *p, unsigned char c, unsigned char *q);
 extern void func_ov106_0229cd60(unsigned char *a, int b);
 

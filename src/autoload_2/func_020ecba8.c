@@ -3,7 +3,7 @@
  */
 
 extern char data_021fbef8;
-extern int CTRDGi_WriteAgbFlashSectorAsync;
+extern void (*CTRDGi_WriteAgbFlashSectorAsync)(int, char *, unsigned int);
 extern int data_021fbf30;
 extern int data_021fbf40;
 extern char *data_021fbf3c;
@@ -21,14 +21,14 @@ extern int data_021fbf0c;
 extern int data_021fbf34;
 extern char data_021fbff8[0x40];
 void MI_CpuFill8(void *dst, unsigned char fill, unsigned int size);
-extern void func_020edab8(void);
-extern void func_020edaa8(void);
-extern void func_ov065_0227f1f4(void (*)(void), void (*)(void));
-void func_020ecba8(unsigned char a0, int a1, int a2, int a3, char *a4)
+extern int func_020edab8(int unused, int size, int align);
+extern void func_020edaa8(int unused, int pointer);
+extern void func_ov065_0227f1f4(unsigned int allocator, unsigned int deallocator);
+void func_020ecba8(int a0, void (*a1)(int, char *, unsigned int), int a2, int a3, char *a4)
 {
     unsigned int i;
     char *p;
-    data_021fbef8 = a0;
+    data_021fbef8 = (unsigned char) a0;
     CTRDGi_WriteAgbFlashSectorAsync = a1;
     data_021fbf40 = a3;
     data_021fbf3c = a4;
@@ -51,5 +51,5 @@ void func_020ecba8(unsigned char a0, int a1, int a2, int a3, char *a4)
         p[0x1a0] = 0;
     }
 
-    func_ov065_0227f1f4(func_020edab8, func_020edaa8);
+    func_ov065_0227f1f4((unsigned int) func_020edab8, (unsigned int) func_020edaa8);
 }

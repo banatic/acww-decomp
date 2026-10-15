@@ -3,16 +3,16 @@
  */
 
 extern void func_0204f794(void *dst, unsigned int a, unsigned int b);
-extern void func_0200f434(void *arg1, void *arg2);
+extern int func_0200f434(void *arg1, void *arg2);
 
 typedef struct {
     unsigned int unk_00;
     unsigned int unk_04;
 } Pair;
 
-void func_0200f530(void *arg1, Pair *arg2)
+int func_0200f530(void *arg1, Pair *arg2)
 {
     unsigned int buffer[4];
     func_0204f794(buffer, arg2->unk_00, arg2->unk_04);
-    func_0200f434(arg1, buffer);
+    return func_0200f434(arg1, buffer);
 }

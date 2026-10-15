@@ -15,14 +15,14 @@ extern void func_02074078(void);
 extern int func_020a238c(UnkStruct_020a05e8 *s);
 extern void func_0209fb54(void *p);
 extern void func_020a2468(UnkStruct_020a05e8 *s);
-extern void func_020a0b94(UnkStruct_020a05e8 *s);
+extern void func_020a0b94(void);
 extern void func_02088368(void);
 extern int func_020a2120(UnkStruct_020a05e8 *s, int n);
 extern int func_02073dd4(void *g, int i);
 extern int func_02073918(void *g, int i);
 extern void func_020a1224(UnkStruct_020a05e8 *s);
 extern int func_02073044(void);
-extern int func_020ebf70(int a);
+extern int func_020ebf70(void);
 extern unsigned short func_020740dc(void);
 extern int func_02075aa4(int a, unsigned short b);
 extern void func_0209fb4c(void *p);
@@ -54,7 +54,8 @@ int func_020a05e8(UnkStruct_020a05e8 *self, unsigned char *state, int p2, int ba
         func_0209fb54(data_021f3ba0);
         if (p7 != 0) {
             func_020a2468(self);
-            func_020a0b94(self);
+            asm { mov r0, self }
+            func_020a0b94();
             func_02088368();
         }
         *state = base + 1;
@@ -124,7 +125,7 @@ int func_020a05e8(UnkStruct_020a05e8 *self, unsigned char *state, int p2, int ba
             func_02074078();
             return 0x20;
         }
-        if (func_020ebf70(func_02073044()) == 0) {
+        if ((func_02073044(), func_020ebf70()) == 0) {
             goto end;
         }
         if (func_02075aa4(1, func_020740dc()) == 0) {

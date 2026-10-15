@@ -7,7 +7,7 @@ extern unsigned short data_020c80f8;
 extern char data_021fbee8;
 
 extern void func_0201ad18(char *p, int a, int b, int c, int d, int e, int f, int g);
-extern void func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 
 int func_ov053_02260f20(char *param)
 {

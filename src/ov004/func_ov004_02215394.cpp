@@ -35,13 +35,13 @@ class UnkStruct_02215394 {
     virtual void act(int a, int b);
 };
 
-extern "C" void func_ov004_0220fde0(UnkStruct_02215394 *self);
-extern "C" int func_ov004_0223a730(void);
-extern "C" void func_ov004_022152d0(UnkStruct_02215394 *self, int h);
+extern "C" int func_ov004_0220fde0(UnkStruct_02215394 *self);
+extern "C" int func_ov004_0223a730(void *);
+extern "C" int func_ov004_022152d0(UnkStruct_02215394 *self, int h);
 extern "C" void func_ov004_0221041c(UnkStruct_02215394 *self, int a, int b, int c, int d);
-extern "C" void func_ov004_0220ffa4(UnkStruct_02215394 *self);
-extern "C" int func_0209d324(void);
-extern "C" void func_02055478(char *p, int h);
+extern "C" int func_ov004_0220ffa4(UnkStruct_02215394 *self);
+extern "C" int func_0209d324(int *);
+extern "C" int func_02055478(char *p, int h);
 extern "C" void func_ov004_0220d280(char *p, int a, int b);
 extern "C" int func_020b65c4(void);
 extern "C" int func_ov004_0220fd8c(UnkStruct_02215394 *self);
@@ -53,11 +53,9 @@ extern "C" int func_ov004_02215394(UnkStruct_02215394 *self)
 {
     *(int *) ((char *) self + 0x85c) = 0;
     *((unsigned char *) self + 0x77c) = 0xff;
-    func_ov004_0220fde0(self);
-    func_ov004_022152d0(self, func_ov004_0223a730());
+    func_ov004_022152d0(self, func_ov004_0223a730((void *) func_ov004_0220fde0(self)));
     func_ov004_0221041c(self, 0, 1, 0x1000, 0);
-    func_ov004_0220ffa4(self);
-    func_02055478((char *) self + 0x538, func_0209d324());
+    func_02055478((char *) self + 0x538, func_0209d324((int *) func_ov004_0220ffa4(self)));
     if (*(int *) ((char *) self + 0x76c) == 1) {
         func_ov004_0220d280((char *) self + 0x740, 0, 0);
         func_02051f4c(func_020b65c4(), (char *) self + 0x5c, func_ov004_0220fd8c(self));

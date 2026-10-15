@@ -4,10 +4,10 @@
 
 extern "C" int func_02019e00(void *ptr);
 extern "C" int func_02019de8(void *ptr);
-extern "C" void func_0207f294(void);
-extern "C" int func_ov003_02220340(void);
-extern "C" void func_020800d0(void);
-extern "C" void func_02019c20(void *ptr, int a, int b, int c, int d, int e);
+extern "C" int func_0207f294(int obj);
+extern "C" int func_ov003_02220340(int index);
+extern "C" int func_020800d0(int obj);
+extern "C" int func_02019c20(void *ptr, int a, int b, int c, int d, int e);
 extern unsigned short data_020c80f8;
 
 class UnkStruct_0226b904 {
@@ -37,7 +37,7 @@ class UnkStruct_0226b904 {
     virtual void v22();
     virtual void v23();
     virtual void v24();
-    virtual void v25();
+    virtual void *v25();
 
     unsigned char pad_04[0x50D];
     unsigned char unk_511;
@@ -54,11 +54,8 @@ extern "C" void func_ov068_0226b904(StateStruct *param1, UnkStruct_0226b904 *par
 {
     if (func_02019e00(&param2->unk_564) == 3) {
         if (func_02019de8(&param2->unk_564) != 0) {
-            param2->v25();
-            func_0207f294();
-            if (func_ov003_02220340() != 0) {
-                param2->v25();
-                func_020800d0();
+            if (func_ov003_02220340(func_0207f294((int) param2->v25())) != 0) {
+                func_020800d0((int) param2->v25());
                 func_02019c20(&param2->unk_564, 2, 0x3b, 1, data_020c80f8, 0);
                 param2->unk_511 = 0;
                 param1->unk_1C = 2;

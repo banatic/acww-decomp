@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_022080a0(void *self, int flag);
-extern void func_ov002_02207d24(char *ptr, int flag);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
+extern int func_ov002_02207d24(char *ptr, int flag);
 extern void func_ov110_0229cbe0(void *self);
 
 void func_ov110_0229d8b0(volatile unsigned char *self)
@@ -12,7 +12,7 @@ void func_ov110_0229d8b0(volatile unsigned char *self)
         self[0xFC] = self[0xFC] - 1;
     } else {
         self[0x8C] = 4;
-        func_ov002_022080a0((void *) self, 1);
+        func_ov002_022080a0((void *) ((void *) self), 1);
         func_ov002_02207d24((char *) (self + 0x21F8), 0);
         func_ov110_0229cbe0((void *) self);
     }

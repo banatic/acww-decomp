@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020a8bb8(void *);
+extern "C" void *func_020a8bb8(void *, char *);
 extern "C" void func_02051648(void *);
 extern "C" void func_02051694(void *);
 
@@ -26,9 +26,9 @@ struct UnkStruct_0208f218_2 {
     UnkStruct_0208f218 sub;
 };
 
-extern "C" void func_0208f218(UnkStruct_0208f218_2 *self)
+extern "C" void func_0208f218(UnkStruct_0208f218_2 *self, char *argument1)
 {
-    func_020a8bb8(&self->sub);
+    func_020a8bb8(&self->sub, (char *) argument1);
     Field48 *p = self->unk_48;
     if (p) {
         p->unk_10 = self->sub.f3();

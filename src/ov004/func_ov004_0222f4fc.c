@@ -4,13 +4,13 @@
 
 #include "types.h"
 
-extern void func_0203e020(void *, int);
+extern int func_0203e020(void *);
 
 void func_ov004_0222f4fc(char *self)
 {
     // DECLS
     // ENDDECLS
     if (*(u8 *) (self + 0x24c) == 0x0) {
-        func_0203e020(self, *(u8 *) (self + 0x24c));
+        func_0203e020(self);
     }
 }

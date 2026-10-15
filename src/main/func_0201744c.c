@@ -6,10 +6,10 @@
 
 extern u16 data_020c80f8;
 
-extern void func_02057d0c(int a0, void *a1);
+extern int func_02057d0c(int a0, void *a1);
 extern void func_02016764(void *a0, void *a1, int a2, unsigned int a3, int a4, int a5, int a6, int a7);
 extern int func_020912d4(int a0, u32 *a1, s16 *a2, int a3);
-extern void func_0200442c(void *a0, int a1, int a2, int a3);
+extern int func_0200442c(void *a0, int a1, int a2, int a3);
 extern void func_02019af0(void *a0, int a1);
 
 struct In {

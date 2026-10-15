@@ -13,8 +13,8 @@ typedef struct {
     int unk_B0;
 } UnkStruct_02039c4c;
 
-extern int func_0209d368(int, int);
-extern void func_020e895c(void *, int, int);
+extern int func_0209d368(void);
+extern int func_020e895c(void *, int, int);
 extern void func_02039c0c(UnkStruct_02039c4c *);
 
 void func_02039c4c(UnkStruct_02039c4c *self)
@@ -22,9 +22,17 @@ void func_02039c4c(UnkStruct_02039c4c *self)
     int r2;
 
     if (self->unk_0C == 0) {
-        r2 = func_0209d368(0x137, 3) + 6;
+        asm {
+            ldr r0, =0x137
+            mov r1, #3
+        }
+        r2 = func_0209d368() + 6;
     } else {
-        r2 = func_0209d368(0x12d, 3) + 6;
+        asm {
+            ldr r0, =0x12d
+            mov r1, #3
+        }
+        r2 = func_0209d368() + 6;
     }
     func_020e895c((char *) self + 0x48, self->unk_44, r2);
     self->unk_A8--;

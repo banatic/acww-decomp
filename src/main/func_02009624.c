@@ -14,10 +14,10 @@ typedef struct {
 extern int func_0200f290(UnkStruct_02009624 *self, int a);
 extern void func_020109fc(UnkStruct_02009624 *self, int a, int b, int c);
 extern int func_02008258(UnkStruct_02009624 *self, int a);
-extern void func_0200d4e8(UnkStruct_02009624 *self, int a, int b, int c);
-extern void func_0203e3f8(void);
+extern int func_0200d4e8(UnkStruct_02009624 *self, int a, int b, int c);
+extern int func_0203e3f8(void);
 extern void func_0200f268(UnkStruct_02009624 *self, int a);
-extern void func_0200c3b0(UnkStruct_02009624 *self, int a, int b, int c);
+extern int func_0200c3b0(UnkStruct_02009624 *self, int a, int b, int c);
 
 void func_02009624(UnkStruct_02009624 *self, int flag)
 {

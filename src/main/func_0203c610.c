@@ -6,8 +6,8 @@
 
 extern void G3i_PerspectiveW_(int a, int b, int c, int d, int e, int f, int g, void *h);
 extern void G3i_LookAt_(void *a, void *b, void *c, int d, void *e);
-extern void MTX_Inverse43(void *a, void *b);
-extern void func_020b9464(void *self);
+extern int MTX_Inverse43(void *a, void *b);
+extern int func_020b9464(void *self);
 extern s16 FX_SinCosTable_[];
 extern struct {
     u8 pad_00[0x7c];

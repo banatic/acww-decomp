@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020ef498(int p);
+extern void func_020ef498(int p, void *argument1);
 
-int func_020f58cc(int p)
+void func_020f58cc(int p, void *argument1)
 {
     if (p) {
         p += 4;
     }
-    return func_020ef498(p);
+    func_020ef498(p, argument1);
 }

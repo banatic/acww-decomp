@@ -38,8 +38,8 @@ class UnkStruct_02212280 {
 extern "C" {
 void func_ov004_0221041c(void *self, int a, int b, int c, int d);
 int func_ov004_0220d2b8(void *p);
-void func_ov004_0220d0a0(void *p, int a, int b);
-void func_02052738(void *self, int a, int b, int c);
+int func_ov004_0220d0a0(void *p, int a, int b);
+int func_02052738(void *self, int a, int b, int c);
 int func_ov004_0223c10c(void);
 }
 

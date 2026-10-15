@@ -38,14 +38,16 @@ struct Param {
 
 extern "C" UnkStruct_0203ea04 *func_0203ef90(int);
 extern "C" int func_0203ef5c(UnkStruct_0203ea04 *);
-extern "C" int func_0203efbc(void);
+extern "C" int func_0203efbc(void *object);
 extern "C" int func_0203ee34(UnkStruct_0203ea04 *, UnkStruct_0203ea04 *);
 extern "C" int func_0203eb08(Param *);
 extern "C" int func_02095d84(void);
-extern "C" void func_02095904(void);
+extern "C" int func_02095904(void);
 
 extern "C" int func_0203ea04(Param *param)
 {
+    int forwarded_value;
+
     UnkStruct_0203ea04 *a, *b;
     a = func_0203ef90(param->unk_10);
     b = func_0203ef90(param->unk_0C);
@@ -54,10 +56,10 @@ extern "C" int func_0203ea04(Param *param)
     }
     param->unk_17 = 0;
     if (a == 0) {
-        if (func_0203ef5c(b) == 0) {
+        if ((forwarded_value = (int) func_0203ef5c(b)) == 0) {
             return 0;
         }
-        param->unk_10 = func_0203efbc();
+        param->unk_10 = func_0203efbc((void *) forwarded_value);
         goto L_common;
     } else {
         if (func_0203ee34(a, b) != 0) {

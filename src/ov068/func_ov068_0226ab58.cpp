@@ -39,7 +39,7 @@ typedef struct UnkStruct_0226ab58 {
 
 extern "C" {
 extern UnkStruct_0226ab58_2 *func_0201ce50(UnkStruct_0226ab58_2 *obj);
-extern void func_ov068_0226aca8(UnkStruct_0226ab58 *self, int *out0, int *out1, int v, int w);
+extern int func_ov068_0226aca8(UnkStruct_0226ab58 *self, int *out0, int *out1, int v, int w);
 extern void func_0207daf4(int a, int b);
 extern void func_020801c4(int a, int b, int c);
 extern void func_ov068_0226ada8(UnkStruct_0226ab58 *self, UnkStruct_0226ab58_2 *obj, char *data);

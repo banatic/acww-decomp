@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0207f1c8(int, void *);
-extern void func_0209b5ec(void);
-extern int func_0209c330(void);
-extern void func_0208150c(int, void *);
-extern int func_020036e8(void);
-extern void func_0202da38(void *, char *, char *, int, int, int, int, int, int);
+extern unsigned int func_0207f1c8(int);
+extern void *func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
+extern unsigned int func_0208150c(int);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *, char *, char *, int, int, int, int, int, int);
 
 struct Inner_02022bbc {
     char pad_00[0x830];
@@ -29,12 +29,9 @@ void func_02022bbc(struct Outer_02022bbc *a0, int arg1, struct Arg2_02022bbc *ar
     int flag;
     int ret;
 
-    func_0207f1c8(a0->inner->unk_830, a0->inner);
-    func_0209b5ec();
-    flag = (arg1 != func_0209c330()) ? 1 : 0;
+    flag = (arg1 != func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(a0->inner->unk_830)))) ? 1 : 0;
 
-    func_0208150c(a0->inner->unk_830, a0->inner);
-    ret = func_020036e8();
+    ret = func_020036e8((unsigned char *) func_0208150c(a0->inner->unk_830));
 
     func_0202da38(a0, (char *) a0 + 0x104, (char *) a0 + 0x122, 0x1e, ret, arg2->unk_00, arg2->unk_04, flag, 0);
 }

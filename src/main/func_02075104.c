@@ -7,8 +7,8 @@
 extern void *data_020ccf94;
 
 extern void func_020792a0(void);
-extern void func_0208602c(void);
-extern void func_02086130(void);
+extern int func_0208602c(void);
+extern void func_02086130(void *);
 extern void func_02053010(void);
 extern void func_0209d3e4(void);
 extern void func_020b316c(void);
@@ -35,8 +35,7 @@ void func_02075104(int mode)
 
     if (mode == 4) {
         func_020792a0();
-        func_0208602c();
-        func_02086130();
+        func_02086130((void *) func_0208602c());
     }
     func_02053010();
     func_0209d3e4();

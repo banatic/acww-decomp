@@ -12,7 +12,7 @@ extern int data_021f4320[];
 
 extern int func_02073dd4(struct UnkStruct_020a6ce4 *p, int field);
 extern int func_020a6284(int *p);
-extern void func_020a7064(void);
+extern void func_020a7064(int);
 extern void func_020a6280(int *p, int val);
 extern void func_020a6288(int *p, int val);
 
@@ -21,7 +21,7 @@ void func_020a6ce4(void)
     if (func_02073dd4(data_020ccf94, data_020ccf94->unk_64) != 0) {
         int idx = func_020a6284(data_021f4320);
         if (idx < 4) {
-            func_020a7064();
+            func_020a7064(idx);
             func_020a6280(data_021f4320, idx);
             func_020a6288(data_021f4320, 4);
         }

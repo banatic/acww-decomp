@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(unsigned int size);
-extern void func_020ee660(void);
+extern void *func_020ee660(void *);
 
 typedef struct {
     volatile void *func;
@@ -19,7 +19,7 @@ UnkStruct_020b72f4 *func_020b72f4(void)
 {
     UnkStruct_020b72f4 *obj = (UnkStruct_020b72f4 *) func_020edf70(0x50);
     if (obj) {
-        func_020ee660();
+        func_020ee660(obj);
         obj->func = (void *) data_020da13c;
         obj->func = (void *) data_020e3c94;
         obj->flags |= 1;

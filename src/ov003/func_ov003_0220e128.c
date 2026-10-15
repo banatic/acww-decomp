@@ -5,16 +5,16 @@
 #include "types.h"
 
 extern int func_0200fbe0(void *self);
-extern void func_020109a0(void *self, int, int, int);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
 extern void func_0205eae0(void *self, int, int, int);
-extern void func_02034270(void *out, const u32 *data, int, int);
-extern void func_02091254(int msg, const u32 *data, int, int);
-extern void func_0200f27c(void *self, int);
-extern void func_ov003_02220b44(u32 val, const u32 *data);
-extern void func_0200f328(void *self, u32 val);
+extern int func_02034270(void *out, const u32 *data, int, int);
+extern int func_02091254(int msg, const u32 *data, int, int);
+extern unsigned int *func_0200f27c(void *self, int);
+extern int func_ov003_02220b44(u32 val, const u32 *data);
+extern int func_0200f328(void *self, u32 val);
 extern void func_0203423c(void *out);
 
-void func_ov003_0220e128(void *self)
+void func_ov003_0220e128(void *self, void *message, int previous)
 {
     u32 data[3];
     struct UnkStruct_0220e128 {

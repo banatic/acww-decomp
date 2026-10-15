@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_02232450(void *);
+extern int func_ov004_02232450(void);
 extern int func_020321bc(void *, int, int, int, int *, int, int);
 
 int func_ov004_022323d4(char *self)
 {
     int a[3], b[3];
     int r1, r2;
-    if (func_ov004_02232450(self) != 0) {
+    if (func_ov004_02232450() != 0) {
         a[0] = 0xd000;
         a[1] = 0;
         a[2] = 0x1c000;

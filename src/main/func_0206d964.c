@@ -9,7 +9,7 @@ typedef struct {
     OpaqueType *vtable;
 } UnkStruct_0206d964;
 
-extern void func_020a88ec(UnkStruct_0206d964 *obj);
+extern void *func_020a88ec(UnkStruct_0206d964 *obj);
 
 UnkStruct_0206d964 *func_0206d964(UnkStruct_0206d964 *obj)
 {

@@ -13,7 +13,7 @@ typedef struct {
 
 extern void func_ov096_0229e898(void *self, unsigned char a, int b);
 extern int func_ov096_0229c2fc(void *self, int value);
-extern void func_ov096_0229f8cc(void *self, unsigned char b4, unsigned char b9, unsigned short ae, int zero);
+extern unsigned char *func_ov096_0229f8cc(void *self, unsigned char b4, unsigned char b9, unsigned short ae, int zero);
 extern void func_ov096_0229c2dc(void *self, int value);
 extern void func_ov094_022999d8(void);
 extern void func_ov096_0229fb9c(void *self);

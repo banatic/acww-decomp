@@ -22,11 +22,11 @@ typedef struct UnkStruct_02260894 {
 extern void *func_020984e8(void);
 extern void *func_02099870(void *);
 extern int func_020950c0(void *);
-extern void func_ov004_0222c1b0(int);
+extern int func_ov004_0222c1b0(int);
 extern void RtcSendPxiCommand(int);
-extern int func_ov053_0226075c(UnkStruct_02260894 *);
+extern int func_ov053_0226075c(void);
 extern void func_ov053_02261524(void *, int);
-extern void func_0202ea80(int, int);
+extern int func_0202ea80(int, int);
 extern void *func_0208602c(void);
 extern void func_020860d4(void *, int);
 extern void func_0206844c(void *, u8 *, const void *);
@@ -79,7 +79,12 @@ void func_ov053_02260894(UnkStruct_02260894 *obj)
         case 0x40:
             func_ov004_0222c1b0(0);
             RtcSendPxiCommand(0x43);
-            code = func_ov053_0226075c(obj);
+            // clang-format off
+            asm {
+                mov r0, obj
+            }
+            // clang-format on
+            code = func_ov053_0226075c();
             break;
         case 0x42:
             func_ov053_02261524(obj->unk_B4, 9);

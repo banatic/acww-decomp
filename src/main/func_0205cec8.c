@@ -8,10 +8,10 @@ typedef struct {
 } pair_t;
 
 extern pair_t *data_020dd414[];
-extern void func_0205cf10(int a, int b);
+extern unsigned char func_0205cf10(int a);
 
 unsigned char func_0205cec8(int a, int b)
 {
-    func_0205cf10(a, b);
+    func_0205cf10(a);
     return data_020dd414[a][b].hi;
 }

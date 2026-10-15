@@ -3,7 +3,7 @@
  */
 
 extern void G3X_SetFog(int a, int b, int c, int d);
-extern void G3X_SetFogTable(unsigned short *p0, unsigned int *p1, unsigned int p2);
+extern void G3X_SetFogTable(unsigned short *p0);
 
 extern unsigned char data_021f6a0c[];
 extern unsigned short data_021f69ec[];
@@ -24,5 +24,5 @@ void func_020b698c(void)
     b6 = data_021f6a0c[6];
     val = s24 | ((unsigned int) b6 << 16);
     g_04000358 = val;
-    G3X_SetFogTable(data_021f69ec, &g_04000358, val);
+    G3X_SetFogTable(data_021f69ec);
 }

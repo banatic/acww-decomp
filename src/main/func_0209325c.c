@@ -3,9 +3,9 @@
  */
 
 extern int data_020d17f8;
-extern int func_0209332c(int a, int *b, int c);
+extern void func_0209332c(int a, int *b, int c);
 
-int func_0209325c(int a)
+void func_0209325c(int a)
 {
-    return func_0209332c(a, &data_020d17f8, 0);
+    func_0209332c(a, &data_020d17f8, 0);
 }

@@ -5,13 +5,13 @@
 typedef struct {
     int x, y, z;
 } Vec3;
-extern void func_02032c64(void *);
-extern void func_02032c50(void *);
+extern void *func_02032c64(void *);
+extern void *func_02032c50(void *);
 extern int func_020082a0(void *, int);
 extern void func_02031288(void *, void *, void *, int, int, void *, int);
-extern int func_020310c8(int);
+extern int func_020310c8(void);
 extern int func_020ea990(Vec3 *, void *);
-extern int FX_Div(int);
+extern int FX_Div(int numerator, int denominator);
 
 void func_ov004_02227bf4(char *self)
 {
@@ -31,7 +31,10 @@ void func_ov004_02227bf4(char *self)
     }
     func_02031288(p, o, self + 0x68, a, 0xfd7, self, 0xf);
     func_02032c50(buf);
-    *(int *) (o + 4) = func_020310c8(0);
+    asm {
+        mov r0, #0
+    }
+    *(int *) (o + 4) = func_020310c8();
     {
         char *b = self + 0x7d4;
         st = *(int *) b;
@@ -43,7 +46,7 @@ void func_ov004_02227bf4(char *self)
             v.y = y;
             v.z = z;
             if (func_020ea990(&v, o) < 0x1000) {
-                int t = 6 * FX_Div(0x1000 - func_020ea990(&v, o));
+                int t = 6 * FX_Div(0x1000 - func_020ea990(&v, o), 0x1000);
                 if (st == 1) {
                     *(int *) (o + 4) = *(int *) (o + 4) + (t >> 5);
                 } else {

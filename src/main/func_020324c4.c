@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0202f2f0(void);
-extern void func_020012dc(void);
-extern void __cxa_vec_cleanup(void *data, int a, int b, void (*callback)(void));
+extern void func_0202f2f0(void *);
+extern void func_020012dc(void *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 
 typedef struct {
     unsigned int unk_00;
@@ -18,7 +18,7 @@ extern unsigned char data_020da1b4[];
 UnkStruct_020324c4 *func_020324c4(UnkStruct_020324c4 *param)
 {
     param->unk_00 = (unsigned int) data_020da1b4;
-    __cxa_vec_cleanup(&param->unk_60, 4, 8, func_0202f2f0);
-    __cxa_vec_cleanup(&param->unk_30, 4, 12, func_020012dc);
+    __cxa_vec_cleanup((void *) (&param->unk_60), 4, 8, (void (*)(void *)) func_0202f2f0);
+    __cxa_vec_cleanup((void *) (&param->unk_30), 4, 12, (void (*)(void *)) func_020012dc);
     return param;
 }

@@ -22,7 +22,7 @@ extern int data_021c24b4;
 extern int data_021c24cc;
 extern Pair data_020d9150;
 
-void func_02020600(void *self)
+void func_02020600(void *self, int event)
 {
     UnkStruct_02020600 local;
 

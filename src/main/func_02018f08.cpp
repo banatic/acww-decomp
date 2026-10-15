@@ -6,7 +6,7 @@ extern "C" {
 extern unsigned short data_020c80f8;
 extern char data_020c8290[];
 
-extern void *func_02019de4(void *a, void *b);
+extern void *func_02019de4(void *a);
 extern void func_0201a020(void *a);
 extern void func_02016764(void *a1, void *a2, void *a3, int a4, unsigned char a5, int a6, int a7, int a8);
 extern void func_02012444(void *a, int b, int c);
@@ -81,7 +81,7 @@ extern "C" int func_02018f08(ObjA *p, ObjB *q)
     unsigned char v;
     int r7;
 
-    v = *(unsigned char *) ((char *) func_02019de4(p, q) + 0x21);
+    v = *(unsigned char *) ((char *) func_02019de4(p) + 0x21);
     r7 = data_020c80f8;
     if (v >= 0x3c) {
         v = 0;

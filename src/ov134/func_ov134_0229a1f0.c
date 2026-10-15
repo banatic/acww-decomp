@@ -4,7 +4,7 @@
 
 extern int func_ov134_0229a44c(void *p, int x, int y);
 extern int func_ov134_02299b98(void *p, int x, int y);
-extern void func_ov002_0220a574(void *p, int v);
+extern void func_ov002_0220a574(void *p);
 
 typedef struct {
     char pad_00[0x60];
@@ -38,7 +38,7 @@ int func_ov134_0229a1f0(UnkStruct_0229a1f0 *self, int x, int y)
         if (x < v) {
             goto fail;
         }
-        func_ov002_0220a574((char *) self + 0x18, v);
+        func_ov002_0220a574((char *) self + 0x18);
         return 2;
     }
 

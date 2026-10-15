@@ -6,7 +6,7 @@ extern unsigned char data_020e54a8;
 extern char *data_020ccf94;
 extern void func_ov004_0223a6d8(void *p);
 extern void func_ov004_02228d14(void *self);
-extern void func_02010ca4(void *self);
+extern int func_02010ca4(void *self);
 extern int func_02073908(char *a, int b);
 extern void func_ov004_02228c84(void *self);
 extern int func_02008258(void *self, int a);

@@ -4,7 +4,7 @@
 
 extern void *data_020ccf94;
 extern void *func_020738bc(void *a, void *b);
-extern int func_020b65c4(void *a);
+extern int func_020b65c4(void);
 extern void MI_CpuCopy8(void *a, void *b, int c);
 
 extern unsigned char data_020ca154[];
@@ -19,7 +19,7 @@ int func_0203919c(char *p)
     result = (char *) func_020738bc(data_020ccf94, p + 0x14);
     c = *result;
     if (c) {
-        res = func_020b65c4(result);
+        res = func_020b65c4();
         if (res == 0x2e || res == 0x0c || res == 0x0d || res == 0x0e || res == 0x2f) {
             c = 0;
         } else {

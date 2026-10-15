@@ -6,8 +6,8 @@ extern void func_ov002_022097b8(void *);
 extern void func_ov125_022a0334(void *);
 extern void func_ov002_02207f20(void *, int, int, int, int);
 extern void func_02002708(int);
-extern void func_ov125_022a0564(void *);
-extern void func_ov002_0220ab84(void *, int);
+extern int func_ov125_022a0564(void *);
+extern int func_ov002_0220ab84(void *, int);
 extern void func_ov125_0229f75c(void *, int);
 extern void func_ov002_02208090(void *, int);
 

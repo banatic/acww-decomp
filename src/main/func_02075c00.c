@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02073044(void *arg);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 extern int func_02077a8c(void *arg);
 extern int func_02073d28(void *p, int param);
@@ -16,7 +16,7 @@ int func_02075c00(void *arg)
     int a;
     int b;
 
-    func_02073044(arg);
+    func_02073044();
     if (func_020ebf70() && func_02077a8c(arg)) {
         p = data_020ccf94;
         a = func_02073d28(p, 4);

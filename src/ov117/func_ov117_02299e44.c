@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204e414(void *p);
+extern int func_0204e414(void);
 extern int func_0204f3e4(int a, void *b, void *c, void *d, void *e, void *f, void *g, int h, int i);
 extern void func_0204f800(int *out1, int *out2, int in1, int in2, int in3, int in4);
 extern int func_020b3b50(void *p);
@@ -16,7 +16,7 @@ void func_ov117_02299e44(void *self)
     int v30, v34, v38, v3c;
     int ret1, ret2;
 
-    ret1 = func_0204e414(self);
+    ret1 = func_0204e414();
     if (ret1 == 0) {
         return;
     }

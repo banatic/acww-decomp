@@ -3,13 +3,13 @@
  */
 
 extern void func_02015de4(void *, void *, int, int);
-extern void func_02062fbc(void *);
-extern void func_02062e50(void *);
+extern void *func_02062fbc(void *);
+extern void *func_02062e50(void *);
 extern void func_020a8874(void *, void *, int);
-extern void func_020a8a70(void *, void *, int, int);
+extern int func_020a8a70(void *, void *, int, int);
 extern void func_020683b4(void *, int, void *, int);
-extern void func_02062e00(void *);
-extern void func_02062f4c(void *);
+extern void *func_02062e00(void *);
+extern void *func_02062f4c(void *);
 
 struct UnkStruct_0227440c {
     char b[0x28];

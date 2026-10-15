@@ -3,16 +3,16 @@
  */
 
 extern int func_02003cc0(int *);
-extern int func_020ec39c(int);
+extern int func_020ec39c(void);
 extern void func_02003c38(int *);
 extern void func_02003bc8(int *);
-extern void func_02003bc4(int *);
+extern void func_02003bc4(void);
 
 void func_02003d3c(int *arg0)
 {
     int x = func_02003cc0(arg0);
     if (x != 0) {
-        int s = func_020ec39c(x);
+        int s = func_020ec39c();
         if (s == 1) {
             *arg0 = 2;
         } else if (s == 2) {
@@ -25,5 +25,6 @@ void func_02003d3c(int *arg0)
     }
     func_02003c38(arg0);
     func_02003bc8(arg0);
-    func_02003bc4(arg0);
+    asm { add r0, arg0, #0 }
+    func_02003bc4();
 }

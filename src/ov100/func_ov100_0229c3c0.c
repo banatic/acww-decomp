@@ -12,7 +12,7 @@ typedef struct {
 
 extern void func_ov100_0229c2a0(UnkStruct_0229c3c0 *, int);
 extern void RtcSendPxiCommand(int);
-extern void func_ov002_02208098(UnkStruct_0229c3c0 *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov100_0229c56c(UnkStruct_0229c3c0 *, int);
 extern int func_ov100_0229c390(UnkStruct_0229c3c0 *, unsigned short *);
 extern int func_0206fca4(void);
@@ -32,7 +32,7 @@ void func_ov100_0229c3c0(UnkStruct_0229c3c0 *s)
     func_ov100_0229c2a0(s, 8);
     RtcSendPxiCommand(0x27);
     s->st = 5;
-    func_ov002_02208098(s, 0x15);
+    func_ov002_02208098((void *) (s), 0x15);
     func_ov100_0229c56c(s, 1);
     r = func_ov100_0229c390(s, s->a);
     switch (func_0206fca4()) {

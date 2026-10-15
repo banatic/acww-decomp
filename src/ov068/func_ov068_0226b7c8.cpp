@@ -8,11 +8,11 @@ extern "C" {
 extern int func_020164a0(void *, int);
 extern int func_02019de8(void *);
 extern void func_ov068_0226cce8(void *, void *, int);
-extern void *func_020800d0(void);
+extern void *func_020800d0(void *obj);
 extern void func_0204f794(void *, int, int);
 
 #pragma arm
-extern void func_020e895c(void *, u32, u32);
+extern int func_020e895c(void *, u32, u32);
 #pragma thumb
 
 extern void func_02013bb0(void *, void *);
@@ -45,7 +45,7 @@ class UnkStruct_0226b7c8 {
     virtual void v22() = 0;
     virtual void v23() = 0;
     virtual void v24() = 0;
-    virtual void v25() = 0;
+    virtual void *v25() = 0;
 };
 
 struct Sbits {
@@ -67,8 +67,7 @@ extern "C" void func_ov068_0226b7c8(void *a, UnkStruct_0226b7c8 *s)
         }
     }
 
-    s->v25();
-    p = (u8 *) func_020800d0();
+    p = (u8 *) func_020800d0(s->v25());
     func_0204f794(out, p[0], p[1] + 1);
     func_020e895c((char *) s + 0x5c, out[0], 0x400);
     func_020e895c((char *) s + 0x64, out[2], 0x400);

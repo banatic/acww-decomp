@@ -3,7 +3,7 @@
  */
 
 extern unsigned char data_021dc6cc[];
-int func_0209d3bc(unsigned int index, unsigned char value)
+int func_0209d3bc(unsigned int index, unsigned int value)
 {
     if (index < 3) {
         data_021dc6cc[index] = value;

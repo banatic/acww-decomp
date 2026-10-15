@@ -9,7 +9,7 @@ typedef struct {
 extern unsigned char data_021f3a50[];
 extern char data_021dc7a8[];
 
-extern int func_0203fae4(void *a);
+extern int func_0203fae4(void);
 extern int func_020984e8(void);
 extern void func_0209df38(Pair *p);
 extern void func_0209e100(Pair *p, int n);
@@ -23,7 +23,7 @@ void func_02047688(void *a0, void *a1, int a2, int a3, int a4, void *a5)
     Pair a;
     unsigned char *g;
 
-    if (func_0203fae4(a0) != 0) {
+    if (func_0203fae4() != 0) {
         if (a5 == 0) {
             return;
         }

@@ -18,7 +18,7 @@ typedef struct {
     u16 unk_02;
 } Glob;
 
-extern int func_ov002_02208014(UnkStruct_022a05d0 *self);
+extern int func_ov002_02208014(void);
 extern void func_ov122_022a0000(UnkStruct_022a05d0 *self);
 extern int func_ov002_02208008(UnkStruct_022a05d0 *self);
 extern void func_ov122_0229f348(UnkStruct_022a05d0 *self, int a);
@@ -40,7 +40,7 @@ void func_ov122_022a05d0(UnkStruct_022a05d0 *self)
     u8 nw;
     u16 t;
 
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov122_022a0000(self);
         return;
     }

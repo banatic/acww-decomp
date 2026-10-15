@@ -7,8 +7,8 @@ typedef struct {
     int y;
 } Point;
 
-extern int func_02049944(Point *a, Point *b, Point *c, void (*cb)(void));
-extern void func_02049fbc(void);
+extern int func_02049fbc(int context, void *point);
+extern int func_02049944(void *object, void *limits, void *origin, void *predicate);
 
 int func_02049878(int unused, Point *p1, Point *p2, Point *p3)
 {
@@ -18,7 +18,7 @@ int func_02049878(int unused, Point *p1, Point *p2, Point *p3)
     local2.y = p3->y;
     local1.x = p2->x;
     local1.y = p2->y;
-    if (func_02049944(p1, &local1, &local2, func_02049fbc) != 0) {
+    if (func_02049944(p1, &local1, &local2, (((void *) func_02049fbc))) != 0) {
         ret = 0;
     }
     return ret;

@@ -15,14 +15,15 @@ extern int func_0207f270(struct UnkStruct_0207acf8 *p);
 extern int func_020794d8(int v);
 extern int func_020807a8(struct UnkStruct_0207acf8 *p, int b);
 extern struct UnkStruct_0207acf8 *func_0207cc54(int mask, int count, int total);
-extern int func_0207cf74(void);
+extern int func_0207cf74(unsigned int);
 extern int func_0207f150(struct UnkStruct_0207acf8 *p);
 extern int func_0207b3dc(struct UnkStruct_0207acf8 *a);
 extern struct UnkStruct_0207acf8 *func_0207cec0(struct UnkStruct_0207acf8 *a, struct UnkStruct_0207acf8 *res);
-extern void func_02081888(void);
+extern void func_02081888(unsigned short *);
 
 void func_0207acf8(struct UnkStruct_0207acf8 *a, int b)
 {
+    unsigned short *condition_value0;
     u8 mask;
     int count;
     struct UnkStruct_0207acf8 *p;
@@ -45,7 +46,7 @@ void func_0207acf8(struct UnkStruct_0207acf8 *a, int b)
             p++;
         }
         res = func_0207cc54(mask, count, 8);
-        if (func_0207cf74() == 0) {
+        if (func_0207cf74((unsigned int) res) == 0) {
             mask = 0;
             count = 0;
             p = a;
@@ -67,8 +68,8 @@ void func_0207acf8(struct UnkStruct_0207acf8 *a, int b)
         res = func_0207cec0(a, res);
         if (res != 0) {
             if (func_02003704(func_0208150c(res)) != 0) {
-                if (func_020807a8(res, b) != 0) {
-                    func_02081888();
+                if ((condition_value0 = (unsigned short *) (func_020807a8(res, b))) != 0) {
+                    func_02081888(condition_value0);
                 }
             }
         }

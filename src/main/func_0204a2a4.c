@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b6674(int, int, int, int);
+extern int func_020b6674(int);
 extern int func_020b6654(int);
-extern int func_0204e414(int);
+extern int func_0204e414(void);
 extern int func_0204df08(int);
-extern void func_0204f538(int, volatile unsigned short *, int, int, int);
-extern void func_0204f31c(int, int, int);
+extern int func_0204f538(int, volatile unsigned short *, int, int, int);
+extern int func_0204f31c(int, int, int);
 extern void func_0204f380(int, int, int);
 
 void func_0204a2a4(int a, int b, int c, int d, int e)
@@ -16,7 +16,7 @@ void func_0204a2a4(int a, int b, int c, int d, int e)
     int x;
     int y;
 
-    x = func_020b6674(a, b, c, d);
+    x = func_020b6674(a);
     if (x == 0) {
         x = func_020b6654(a);
         if (x == 0) {
@@ -24,7 +24,7 @@ void func_0204a2a4(int a, int b, int c, int d, int e)
         }
     }
 
-    x = func_0204e414(x);
+    x = func_0204e414();
     if (x != 0) {
         arr[0] = (unsigned short) 0xfff1u;
         arr[0] = (unsigned short) d;

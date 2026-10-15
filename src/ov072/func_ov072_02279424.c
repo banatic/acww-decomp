@@ -15,8 +15,8 @@ typedef struct {
 } UnkStruct_02279424;
 
 extern int func_ov072_02279618(UnkStruct_02279424 *self, void *p);
-extern void func_02019c90(void *p, int a, int b, int c);
-extern void func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019c90(void *p, int a, int b, int c);
+extern int func_02019d0c(void *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern int func_020644cc(int a);
 extern unsigned short data_020c80f8;
 

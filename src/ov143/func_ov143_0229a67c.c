@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(void *);
 extern int func_ov143_02299c14(void *, int);
 extern void func_ov143_0229a31c(void *);
@@ -20,7 +20,7 @@ extern struct FlagsStruct data_021fbe40;
 
 void func_ov143_0229a67c(void *p)
 {
-    if (func_ov002_02208014(p)) {
+    if (func_ov002_02208014()) {
         func_ov143_0229a31c(p);
         return;
     }

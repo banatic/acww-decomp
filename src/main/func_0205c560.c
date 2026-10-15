@@ -3,8 +3,8 @@
  */
 
 extern int func_0205f644(void);
-extern void func_020b65c4(void);
-extern int func_020b5df8(void);
+extern unsigned char func_020b65c4(void);
+extern int func_020b5df8(unsigned int);
 extern int func_02085f08(void);
 extern int func_020ea0e0(int, int);
 extern int data_021c9ad8;
@@ -16,8 +16,7 @@ void func_0205c560(int arg)
     int a, b;
 
     acc += ((func_0205f644() + 3) & ~3);
-    func_020b65c4();
-    a = func_020b5df8();
+    a = func_020b5df8((unsigned int) func_020b65c4());
     b = func_02085f08();
     acc *= (a + b);
 

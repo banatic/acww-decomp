@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov094_02299c5c(void *self);
+extern int func_ov094_02299c5c(void);
 extern void func_ov094_02299c74(void *self, int);
 extern void func_02004644(int, int);
 extern void RtcSendPxiCommand(int);
@@ -21,7 +21,7 @@ typedef struct {
 
 void func_ov094_02299b74(UnkStruct_02299b74 *self)
 {
-    int ret = func_ov094_02299c5c(self);
+    int ret = func_ov094_02299c5c();
     if (self->unk_13 != 0) {
         self->unk_13--;
         if (self->unk_13 == 0) {

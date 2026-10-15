@@ -18,7 +18,7 @@ typedef struct UnkStruct_02299e18 {
 extern int func_0206fe60(void);
 extern u8 data_021f6c54;
 extern u8 func_ov143_022997d8(UnkStruct_02299e18 *self, u8 v);
-extern void func_ov002_02208098(UnkStruct_02299e18 *self, int a);
+extern unsigned char *func_ov002_02208098(UnkStruct_02299e18 *self, unsigned char value);
 extern void func_0206e9ac(u8 v);
 extern void func_ov143_02299ad4(UnkStruct_02299e18 *self);
 extern void RtcSendPxiCommand(int a);

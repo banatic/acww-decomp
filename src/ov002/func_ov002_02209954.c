@@ -11,7 +11,7 @@ struct UnkStruct_02209954 {
 
 extern int func_ov002_02209324(struct UnkStruct_02209954 *self);
 extern int func_ov002_02209318(struct UnkStruct_02209954 *self);
-extern void func_ov002_0220984c(struct UnkStruct_02209954 *self, int x, int y);
+extern int func_ov002_0220984c(struct UnkStruct_02209954 *self, int x, int y);
 
 void func_ov002_02209954(struct UnkStruct_02209954 *self, int x, int y)
 {

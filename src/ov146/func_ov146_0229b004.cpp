@@ -8,13 +8,19 @@
 extern "C" void func_ov146_0229aca0(void *);
 extern "C" void func_ov146_0229ac18(void *);
 
+typedef void (Obj_ov146_0229b680::*StateHandler)();
+
+#define DISCARD_HANDLER(Class, Method) (StateHandler) & Class::Method
+
 int Obj_ov146_0229b680::func_ov146_0229b004()
 {
-    static void (Obj_ov146_0229b680::*pmf[4])() = {
-        &Obj_ov146_0229b680::func_ov146_0229ae90, &Obj_ov146_0229b680::func_ov146_0229ae60,
-        &Obj_ov146_0229b680::func_ov146_0229ae28, &Obj_ov146_0229b680::func_ov146_0229adf8};
+    static StateHandler pmf[4] = {&Obj_ov146_0229b680::func_ov146_0229ae90, &Obj_ov146_0229b680::func_ov146_0229ae60,
+                                  &Obj_ov146_0229b680::func_ov146_0229ae28,
+                                  DISCARD_HANDLER(Obj_ov146_0229b680, func_ov146_0229adf8)};
     func_ov146_0229aca0(this);
     (this->*pmf[state])();
     func_ov146_0229ac18(this);
     return 1;
 }
+
+#undef DISCARD_HANDLER

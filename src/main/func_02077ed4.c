@@ -6,8 +6,8 @@ extern void *func_02078148(void *addr);
 extern void func_0209df64(int *p);
 extern void func_020782a0(void *handle, int *p);
 extern void func_02078224(void *handle);
-extern int func_020782cc(void *handle);
-extern void MI_CpuCopy8(void *a, int b, int c);
+extern unsigned short *func_020782cc(void *record);
+extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 
 extern unsigned char data_021eed68[];
 

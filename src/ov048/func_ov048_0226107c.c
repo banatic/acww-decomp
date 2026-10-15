@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a17ec(void *);
+extern int func_020a17ec(void);
 extern int func_020a1810(void);
 extern void func_ov048_02262378(void *);
 extern void func_ov048_022616b8(void *, int);
@@ -25,7 +25,7 @@ void func_ov048_0226107c(UnkStruct_0226107c *this)
 {
     char buf[2];
     void *r4 = this->ptr;
-    if (func_020a17ec(this) != 0) {
+    if (func_020a17ec() != 0) {
         func_ov048_02262378(this);
         buf[0] = 10;
         func_0206844c(r4, buf, (void *) data_ov048_02264704);

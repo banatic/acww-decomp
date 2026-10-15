@@ -3,7 +3,7 @@
  */
 
 extern int func_ov003_0220d69c(int, int, int);
-int func_ov003_0220d674(int a, int b)
+void func_ov003_0220d674(int a, int b)
 {
-    return func_ov003_0220d69c(a, 6, b);
+    func_ov003_0220d69c(a, 6, b);
 }

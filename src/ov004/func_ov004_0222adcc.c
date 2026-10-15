@@ -5,7 +5,7 @@
 extern char *data_020ccf94;
 extern int func_02073908(char *a, int b);
 extern void func_020114b0(void *p, int v, int a, int b, int c);
-extern void func_0200f554(void *self);
+extern int func_0200f554(void *self);
 
 void func_ov004_0222adcc(char *self)
 {

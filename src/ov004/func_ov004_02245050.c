@@ -15,8 +15,8 @@ typedef struct UnkStruct_02245050 {
     int posy;
 } UnkStruct_02245050;
 
-extern void func_02032c64(void *ctx);
-extern void func_02032c50(void *ctx);
+extern void *func_02032c64(void *ctx);
+extern void *func_02032c50(void *ctx);
 extern void func_02031288(void *ctx, Vec3 *a, Vec3 *b, int ang, int r, void *o, int k);
 
 int func_ov004_02245050(UnkStruct_02245050 *self)

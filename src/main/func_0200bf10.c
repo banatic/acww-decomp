@@ -11,7 +11,7 @@ typedef struct {
 } UnkStruct_0200bf10;
 
 extern unsigned char data_020c7600[];
-extern void func_0200c9a8(UnkStruct_0200bf10 *s, unsigned char val, int a, int b);
+extern int func_0200c9a8(UnkStruct_0200bf10 *s, unsigned char val, int a, int b);
 
 void func_0200bf10(UnkStruct_0200bf10 *s)
 {

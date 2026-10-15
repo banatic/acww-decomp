@@ -8,9 +8,9 @@ struct UnkStruct_0222a1ac {
 };
 extern int func_0200dc8c(void *self);
 extern void func_020109fc(void *self, int a, int b, int c);
-extern void func_ov004_0222a220(void *p, int v);
+extern void *func_ov004_0222a220(void *p, int v);
 extern void func_ov004_0222a218(void *p, int a, int b);
-void func_ov004_0222a1ac(unsigned char *self, unsigned char *p)
+void func_ov004_0222a1ac(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_0222a1ac *q;
     unsigned char *w;

@@ -5,11 +5,12 @@
 #include "types.h"
 
 extern int func_0204c878(volatile u16 *p);
-extern int func_0206f848(int a);
+extern void func_0206f848(int a);
 
-int func_ov096_0229e258(u8 *self)
+void func_ov096_0229e258(u8 *self)
 {
     volatile u16 id;
+    int value;
 
     id = *(u16 *) (self + 0xac);
     {
@@ -20,8 +21,11 @@ int func_ov096_0229e258(u8 *self)
             ok = 1;
         }
         if (ok > 0) {
-            return func_0206f848(func_0204c878(&id));
+            value = func_0204c878(&id);
+            func_0206f848(value);
+            return;
         }
     }
-    return func_0206f848(0);
+    func_0206f848(0);
+    return;
 }

@@ -10,7 +10,7 @@ struct UnkStruct_0221ee74 {
 
 extern char data_ov003_022398e8;
 extern char data_ov003_022399ac;
-extern void func_ov009_0226539c(struct UnkStruct_0221ee74 *);
+extern void *func_ov009_0226539c(struct UnkStruct_0221ee74 *);
 extern void func_020edf54(struct UnkStruct_0221ee74 *);
 
 struct UnkStruct_0221ee74 *func_ov003_0221ee74(struct UnkStruct_0221ee74 *this)

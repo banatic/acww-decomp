@@ -38,7 +38,7 @@ extern "C" {
 extern UnkStruct_0203e938 *func_0203ef90(int);
 extern int func_02095d84(void);
 extern int func_02095904(void);
-extern void func_02095944(void);
+extern void func_02095944(unsigned int);
 extern int func_02095bdc(void);
 extern int func_0203eda4(UnkStruct_0203e938 *);
 extern void func_0203ead0(UnkStruct_0203e938 *, unsigned char);
@@ -91,7 +91,7 @@ extern "C" int func_0203e938(UnkStruct_0203e938_2 *obj)
                 func_0203ead0(t, obj->unk_17);
                 obj->unk_16 = 5;
             } else {
-                func_02095944();
+                func_02095944(r);
                 obj->unk_16 = 4;
             }
             return 1;

@@ -9,12 +9,12 @@ typedef struct {
     char unk_294C;
 } UnkStruct_0229cf84;
 
-extern int func_0206fe54(UnkStruct_0229cf84 *self);
-extern void func_ov002_02208d4c(void *p, int a, int b);
+extern int func_0206fe54(void);
+extern int func_ov002_02208d4c(void *p, int a, int b);
 extern int func_ov096_0229f088(UnkStruct_0229cf84 *self, int a);
-extern int func_ov096_0229f0dc(UnkStruct_0229cf84 *self, int a);
-extern void func_0208b500(void);
-extern int func_0208d12c(void);
+extern unsigned short func_ov096_0229f0dc(UnkStruct_0229cf84 *self, int a);
+extern int func_0208b500(void);
+extern int func_0208d12c(void *argument0);
 extern int func_ov096_0229daec(UnkStruct_0229cf84 *self, int a);
 extern void func_ov098_022a30a4(UnkStruct_0229cf84 *self, int a);
 extern int func_020b67d4(void);
@@ -28,7 +28,7 @@ void func_ov096_0229cf84(UnkStruct_0229cf84 *self, int arg)
     int k;
     int id;
 
-    if (func_0206fe54(self) != 0) {
+    if (func_0206fe54() != 0) {
         func_ov002_02208d4c(&self->unk_294C, 0, 0);
     }
     k = func_ov096_0229f088(self, arg);
@@ -42,8 +42,8 @@ void func_ov096_0229cf84(UnkStruct_0229cf84 *self, int arg)
             ok = 1;
         }
         if (ok != 0) {
-            func_0208b500();
-            if (func_0208d12c() != 0) {
+
+            if (func_0208d12c((void *) func_0208b500()) != 0) {
                 func_ov002_02208d4c(&self->unk_294C, 0xdc, 0x1b);
             } else {
                 func_ov002_02208d4c(&self->unk_294C, 0xe1, 0x1c);

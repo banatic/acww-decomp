@@ -13,12 +13,12 @@ extern u16 data_021f4a50;
 extern u16 data_021f4a5c;
 extern u16 data_021f4a74;
 extern u16 data_021f4a8c;
-extern void func_020051b0(void);
-extern void __register_global_object(void *, void (*)(void), void *);
+extern void func_020051b0(void *);
+extern void __register_global_object(void *, void *, void *);
 extern int func_020af028(u8 *);
 extern u32 func_020aefec(u8 *);
 extern void func_020b00fc(void *, void *, int, int, u32, int, int);
-extern int func_0204bcdc(u16 *, u16 *);
+extern int func_0204bcdc(u16 *);
 extern u32 func_0204bc64(void *);
 extern int func_020644cc(int);
 inline static int EqA(u16 *p, u16 *q)
@@ -55,19 +55,19 @@ void func_020aed60(u8 *a, u32 *b)
     u16 *q;
     if ((data_021f4a00 & 1) == 0) {
         data_021f4abc[0] = 0x1369;
-        __register_global_object(&data_021f4abc[0], func_020051b0, &data_021f4a20);
+        __register_global_object((void *) (&data_021f4abc[0]), (((void *) func_020051b0)), (void *) (&data_021f4a20));
         data_021f4abc[1] = 0x1378;
-        __register_global_object(&data_021f4abc[1], func_020051b0, &data_021f4a2c);
+        __register_global_object((void *) (&data_021f4abc[1]), (((void *) func_020051b0)), (void *) (&data_021f4a2c));
         data_021f4abc[2] = 0x1376;
-        __register_global_object(&data_021f4abc[2], func_020051b0, &data_021f4a38);
+        __register_global_object((void *) (&data_021f4abc[2]), (((void *) func_020051b0)), (void *) (&data_021f4a38));
         data_021f4abc[3] = 0x1374;
-        __register_global_object(&data_021f4abc[3], func_020051b0, &data_021f4a50);
+        __register_global_object((void *) (&data_021f4abc[3]), (((void *) func_020051b0)), (void *) (&data_021f4a50));
         data_021f4abc[4] = 0x156c;
-        __register_global_object(&data_021f4abc[4], func_020051b0, &data_021f4a5c);
+        __register_global_object((void *) (&data_021f4abc[4]), (((void *) func_020051b0)), (void *) (&data_021f4a5c));
         data_021f4abc[5] = 0x136b;
-        __register_global_object(&data_021f4abc[5], func_020051b0, &data_021f4a74);
+        __register_global_object((void *) (&data_021f4abc[5]), (((void *) func_020051b0)), (void *) (&data_021f4a74));
         data_021f4abc[6] = 0x137a;
-        __register_global_object(&data_021f4abc[6], func_020051b0, &data_021f4a8c);
+        __register_global_object((void *) (&data_021f4abc[6]), (((void *) func_020051b0)), (void *) (&data_021f4a8c));
         data_021f4a00 |= 1;
     }
     if (func_020af028(a) == 0) {
@@ -85,7 +85,7 @@ void func_020aed60(u8 *a, u32 *b)
     base = (u16 *) (a + (start * 2));
     while (i < func_020aefec(a)) {
         p = (u16 *) ((a + 4) + ((start + i) * 2));
-        if (func_0204bcdc(p, (u16 *) (a + 4)) != 0) {
+        if (func_0204bcdc(p) != 0) {
             u16 tmp = 3;
             result = EqA(p, &tmp);
         } else {

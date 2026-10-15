@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(unsigned char *self);
+extern int func_020984e8(void);
 extern const int *func_02095794(int);
 extern void func_0204f818(int *a, int *b, const int *c);
 extern int func_02014868(void *ptr);
-extern void func_0203b144(void);
-extern void func_02095ab0(void *dst, int val, int size);
+extern int func_0203b144(void);
+extern int func_02095ab0(void *dst, int val, int size);
 extern void *DWCi_GsMalloc(unsigned int size);
-extern void func_0203e020(unsigned char *self);
+extern int func_0203e020(unsigned char *self);
 extern void func_ov053_02261524(unsigned char *self, int param);
 
 extern const int data_ov053_022617d4[3];
@@ -22,7 +22,7 @@ int func_ov053_02260c34(unsigned char *self)
     int tmp[3];
     int a, b, c;
 
-    func_020984e8(self);
+    func_020984e8();
     {
         const int *p = func_02095794(4);
         data[0] = p[0];

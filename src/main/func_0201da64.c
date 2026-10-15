@@ -15,9 +15,9 @@ struct UnkStruct_0201da64_2 {
     int unk_12C;
 };
 
-extern int func_0202d8f8(struct UnkStruct_0201da64_2 *a, void *b, void *c, void *d, int e);
+extern void func_0202d8f8(struct UnkStruct_0201da64_2 *a, void *b, void *c, void *d, int e);
 
-int func_0201da64(struct UnkStruct_0201da64_2 *a)
+void func_0201da64(struct UnkStruct_0201da64_2 *a, void *event)
 {
-    return func_0202d8f8(a, &a->unk_12C, &a->unk_128, a->sub->unk_830, 0);
+    func_0202d8f8(a, &a->unk_12C, &a->unk_128, a->sub->unk_830, 0);
 }

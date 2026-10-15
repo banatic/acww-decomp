@@ -7,9 +7,9 @@ extern void *data_020e3804;
 extern int data_020e3800;
 
 extern int func_0209f150(void *ptr, int size);
-extern void strcpy(void *dst, const void *src);
-extern void func_0212d914(void *dst, const void *src);
-extern void func_02073100(int *ptr);
+extern unsigned char *strcpy(void *dst, const void *src);
+extern char *func_0212d914(void *dst, const void *src);
+extern void func_02073100(void);
 extern int func_020eb108(void *dst, const void *src, int size, int arg);
 
 extern unsigned char data_021dc7a8[];
@@ -30,7 +30,7 @@ body:
     strcpy(buf, data_020e3808);
     func_0212d914(buf, data_020e3804);
     val = data_020e3800;
-    func_02073100(&data_020e3800);
+    func_02073100();
     if (func_020eb108(buf, (void *) data_021f3cbc, 0xd2, val) != 0) {
         return 1;
     } else {

@@ -6,7 +6,7 @@
 
 extern int func_0208150c(void *a);
 extern int func_0207f1c8(void *a);
-extern int func_0209b5ec(int x);
+extern int func_0209b5ec(void *);
 extern int func_0209c2c0(int h);
 extern int func_02003704(int t);
 extern int func_0209c370(int h);
@@ -27,7 +27,7 @@ int func_0207d788(void *a, s64 *b, s64 *c, s64 *d)
     // ENDDECLS
 
     t = func_0208150c(a);
-    h = func_0209b5ec(func_0207f1c8(a));
+    h = (func_0209b5ec((void *) func_0207f1c8(a)));
     ret = 0xc;
     e = func_0209c2c0(h);
     if (func_02003704(t)) {

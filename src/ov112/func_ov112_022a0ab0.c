@@ -13,11 +13,11 @@ struct UnkStruct_022a0ab0 {
 
 extern u16 data_021fbe40[2];
 
-extern int func_ov002_02208014(struct UnkStruct_022a0ab0 *self);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(struct UnkStruct_022a0ab0 *self);
-extern void func_ov002_02208098(struct UnkStruct_022a0ab0 *self, int arg);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_022a0ab0 *self, unsigned char value);
 extern int func_ov112_0229f56c(struct UnkStruct_022a0ab0 *self, int arg);
-extern void func_ov112_0229ff38(struct UnkStruct_022a0ab0 *self);
+extern unsigned char *func_ov112_0229ff38(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229f8e4(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229f668(struct UnkStruct_022a0ab0 *self);
 extern void func_ov112_0229f2bc(struct UnkStruct_022a0ab0 *self);
@@ -32,7 +32,7 @@ extern int func_ov112_022a051c(struct UnkStruct_022a0ab0 *self);
 
 void func_ov112_022a0ab0(struct UnkStruct_022a0ab0 *self)
 {
-    if (func_ov002_02208014(self) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov112_0229ff38(self);
         return;
     }

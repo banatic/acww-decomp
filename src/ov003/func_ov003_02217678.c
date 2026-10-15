@@ -8,10 +8,10 @@ struct UnkStruct_02217678;
 struct UnkStruct_02217678_2;
 
 extern void func_0205eae0(void *a, int b, int c, int d);
-extern void func_020109a0(void *a, int b, int c, int d);
+extern void func_020109a0(void *a, int b, int c, unsigned short d);
 extern void func_02056fcc(void *a, u32 b, int c, u32 d, u32 e);
 extern void *func_0205e8e4(void *a);
-extern void func_0200f328(void *a, int b);
+extern int func_0200f328(void *a, int b);
 extern void func_020110c4(void *a, void *b);
 extern u32 func_02011368(void *a);
 extern void func_0209971c(u32 a, void *b);
@@ -19,7 +19,7 @@ extern void func_0200f268(void *a, int b);
 extern void func_ov003_0221781c(struct UnkStruct_02217678_2 *a, int b, u8 c, u32 d, u32 e, s16 f);
 extern void func_ov003_022177f4(struct UnkStruct_02217678 *a, u8 b, u32 c, u32 d, s16 e);
 
-void func_ov003_02217678(char *self, u8 *p)
+void func_ov003_02217678(char *self, u8 *p, int previous)
 {
     u8 *p2;
     u8 flg;

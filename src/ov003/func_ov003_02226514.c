@@ -3,8 +3,8 @@
  */
 
 extern int data_ov003_0223a088;
-void func_ov003_022272c0(void *a, void *b, void *c, void *d, int e);
-void func_ov003_02226514(void *a, void *b, void *c)
+int func_ov003_022272c0(void *a, void *b, void *c, void *d, int e);
+int func_ov003_02226514(void *a, void *b, void *c)
 {
-    func_ov003_022272c0(a, b, c, &data_ov003_0223a088, 2);
+    return func_ov003_022272c0(a, b, c, &data_ov003_0223a088, 2);
 }

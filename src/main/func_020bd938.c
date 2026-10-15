@@ -10,9 +10,9 @@ extern struct GWork {
 
 extern int data_020d2404[];
 extern int func_020644cc(int);
-extern void func_020bdc50(void *, int, int, int, int);
+extern void *func_020bdc50(void *, int, int, int, int);
 extern void func_020bdac8(void *);
-extern void func_020e88dc(void *, int, int);
+extern int func_020e88dc(void *, int, int);
 
 struct UnkStruct_020bd938 {
     unsigned char pad_00[0x2f00];

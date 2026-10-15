@@ -13,8 +13,8 @@ typedef struct {
 extern int func_020644cc(int n);
 extern unsigned short *func_0204f5e0(UnkStruct_020486d8 *e, int a, int b, int c, int d, int f);
 extern void func_0204f800(int *o1, int *o2, int a, int b, int c, int d);
-extern void func_02049944(UnkStruct_020486d8 *e, Pair *p1, Pair *p2, void *cb);
-extern void func_02049bc4(void);
+extern int func_02049944(UnkStruct_020486d8 *e, Pair *p1, Pair *p2, void *cb);
+extern int func_02049bc4(void *, void *, void *, void *);
 void func_020486d8(int unused, UnkStruct_020486d8 *ent, int nx, int ny)
 {
     void *ptr;

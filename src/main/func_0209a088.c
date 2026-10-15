@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020984e8(unsigned short *, int, int);
+extern int func_020984e8(void);
 extern int func_02098f70(int);
 extern int func_020996ac(int);
 extern int func_02099734(int);
-extern void func_02098f0c(int, unsigned short *, int, int);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
+extern int func_02098f0c(int, unsigned short *, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int, void *, int, int);
 
 void func_0209a088(unsigned short *p, int flag, int arg2)
 {
@@ -16,7 +16,7 @@ void func_0209a088(unsigned short *p, int flag, int arg2)
     int ok;
     unsigned short local;
 
-    h = func_020984e8(p, flag, arg2);
+    h = func_020984e8();
     if (func_02098f70(arg2) == 0) {
         return;
     }

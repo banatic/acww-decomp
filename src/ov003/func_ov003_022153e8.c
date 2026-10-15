@@ -5,9 +5,9 @@
 extern void *data_020ccf94;
 extern int func_02056f94(void *p);
 extern int func_02073908(void *a, int b);
-extern void func_0203b144(void);
+extern int func_0203b144(void);
 extern int func_02008258(void *self, int b);
-extern void func_0200d4e8(void *a, int b, int c, int d);
+extern int func_0200d4e8(void *a, int b, int c, int d);
 extern void func_0205eae0(void *a, int b, int c, int d);
 
 void func_ov003_022153e8(char *self)

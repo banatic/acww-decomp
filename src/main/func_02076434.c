@@ -6,7 +6,7 @@ extern int func_020b65c4(void);
 extern int func_020a132c(void);
 extern void func_020a1264(int, int);
 
-void func_02076434(void)
+void func_02076434(int length, int sequence, unsigned char category, unsigned int player)
 {
     if (func_020b65c4() == 0x2e) {
         if (func_020a132c() != 0) {

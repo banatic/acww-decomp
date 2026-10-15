@@ -4,7 +4,7 @@
 
 extern int func_ov110_0229d3d8(char *self, unsigned char c);
 extern int func_ov110_0229d388(char *self, unsigned char c);
-extern int func_0206fe54(int val);
+extern int func_0206fe54(void);
 extern void func_0208aa80(char *addr);
 extern void func_0208aa78(char *addr);
 extern void func_0208aa60(char *addr, int a, int b);
@@ -21,7 +21,7 @@ void func_ov110_0229cea8(char *self)
 
     t = func_ov110_0229d388(self, ((unsigned char *) self)[0xf3]);
     v4 = t - 0x78;
-    if (func_0206fe54(t) != 0) {
+    if (func_0206fe54() != 0) {
         v4 -= 8;
     }
 

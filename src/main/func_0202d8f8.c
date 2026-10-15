@@ -3,11 +3,11 @@
  */
 
 extern int func_020984e8(void);
-extern int func_02099870(void);
+extern int func_02099870(int);
 extern int func_02080728(void *, int);
 extern int func_02080500(void *);
-extern int func_020807c0(void *);
-extern void func_02081e94(int, int, int, int);
+extern int func_020807c0(void *, int index);
+extern int func_02081e94(int, int, int, int);
 extern void func_02078974(void *, int);
 extern void func_02081e14(int, int, int, int);
 extern void func_020788f4(void *, int);
@@ -24,8 +24,7 @@ void func_0202d8f8(struct UnkStruct_0202d8f8 *obj, int *out2, int *out3, void *a
     }
     if (flag == 0) {
         if (func_020984e8() != 0) {
-            func_020984e8();
-            flag = func_02099870();
+            flag = func_02099870((int) func_020984e8());
         }
     }
     if (flag == 0) {
@@ -43,7 +42,7 @@ void func_0202d8f8(struct UnkStruct_0202d8f8 *obj, int *out2, int *out3, void *a
         if (*out3 == -1) {
             return;
         }
-        *out2 = func_020807c0(arg4);
+        *out2 = func_020807c0(arg4, *out3);
         func_02081e94(*out2, flag, 0, 0);
         func_02078974(arg4, *out3);
     } else {

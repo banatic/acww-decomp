@@ -11,8 +11,8 @@ typedef struct {
 extern void func_02079540(UnkStruct_020792dc *p, int a);
 extern void func_020794c0(UnkStruct_020792dc *p, int a);
 extern void func_020794a4(UnkStruct_020792dc *p, int a);
-extern void func_0207944c(UnkStruct_020792dc *p);
-extern void func_02079438(void);
+extern int func_0207944c(UnkStruct_020792dc *p);
+extern void func_02079438(void *);
 
 void func_020792dc(UnkStruct_020792dc *p)
 {
@@ -26,8 +26,7 @@ void func_020792dc(UnkStruct_020792dc *p)
         func_020794c0(p, b);
         func_020794a4(p, c);
         p->flags &= ~4;
-        func_0207944c(p);
-        func_02079438();
+        func_02079438((void *) func_0207944c(p));
         p++;
         i++;
     } while (i < 8);

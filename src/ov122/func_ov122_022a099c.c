@@ -7,7 +7,7 @@ extern void func_ov122_0229f170(void *);
 extern int func_ov095_0229bf0c(void *);
 extern int func_ov095_0229c548(void *);
 extern int func_ov095_0229c448(void *, int, int);
-extern void func_ov122_022a0be4(void *, int);
+extern int func_ov122_022a0be4(void *, int);
 extern void func_ov095_0229c8e4(void *, int);
 
 void func_ov122_022a099c(void *arg)

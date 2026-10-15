@@ -5,7 +5,7 @@
 typedef struct UnkStruct_02261ddc UnkStruct_02261ddc;
 
 extern void func_ov048_02261d08(UnkStruct_02261ddc *self);
-extern char func_ov048_022609fc(UnkStruct_02261ddc *self);
+extern char func_ov048_022609fc(void);
 extern void func_0206844c(void *a, char *b, void *d);
 extern void *data_ov048_02263d20;
 
@@ -23,7 +23,7 @@ void func_ov048_02261ddc(UnkStruct_02261ddc *self, int ev)
         func_ov048_02261d08(self);
     } else if (ev == 2) {
         char local;
-        local = func_ov048_022609fc(self);
+        local = func_ov048_022609fc();
         func_0206844c(self->unk_40, &local, data_ov048_02263d20);
     }
 }

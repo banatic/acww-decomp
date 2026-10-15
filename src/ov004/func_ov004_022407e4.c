@@ -4,13 +4,13 @@
 
 #include "types.h"
 
-extern void *func_ov004_02244f90(void *self);
-extern void func_ov004_02240f2c(void *, int, int, int, void *, int, int);
+extern void *func_ov004_02244f90(void);
+extern int func_ov004_02240f2c(void *, int, int, int, void *, int, int);
 extern int func_020644cc(int);
 
 void func_ov004_022407e4(char *self, int a, int b, int c, u8 d, u8 e, int f)
 {
-    void *h = func_ov004_02244f90(self);
+    void *h = func_ov004_02244f90();
     int q = 0x1000 / d;
     int *s;
     int *dst;

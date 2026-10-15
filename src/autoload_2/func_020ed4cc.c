@@ -5,7 +5,7 @@
 extern char *data_021fbf3c;
 extern int func_ov065_022798d0(char *, char *, char *, char *, char *);
 
-void func_020ed4cc(int x)
+void func_020ed4cc(int x, int status, void *profile, void *user_data)
 {
     char *base = data_021fbf3c;
     int off = x * 35;

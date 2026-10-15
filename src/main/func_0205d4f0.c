@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0205d4e4(int);
+extern void func_0205d4e4(int, int);
 extern void func_0205d3d4(int, unsigned short *, int, int, int);
 
-void func_0205d4f0(int arg)
+void func_0205d4f0(int arg, int argument1)
 {
     unsigned short s;
 
-    func_0205d4e4(arg);
+    func_0205d4e4(arg, (int) argument1);
     s = 0xFFF1;
     func_0205d3d4(arg, &s, 0, 0, 0);
 }

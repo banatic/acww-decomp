@@ -5,7 +5,7 @@
 #include "cpp/main/Obj_020e226c.h"
 
 extern "C" {
-void func_020b45d0(Obj_020e21e4 *, unsigned char, int, int, int, int);
+int func_020b45d0(Obj_020e21e4 *, unsigned char, int, int, int, int);
 void func_02051624(void *);
 void func_02051694(void *);
 }

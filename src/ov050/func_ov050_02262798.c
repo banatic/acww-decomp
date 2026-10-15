@@ -3,9 +3,9 @@
  */
 
 extern int func_0209a000(const unsigned short *p, int n);
-extern void func_020154b4(void *dst, const unsigned short *src, int a, int b, int c);
+extern int func_020154b4(void *dst, const unsigned short *src, int a, int b, int c);
 
-void func_ov050_02262798(void *param)
+void func_ov050_02262798(void *param, int event)
 {
     unsigned short local[2];
     local[0] = 0x1561;

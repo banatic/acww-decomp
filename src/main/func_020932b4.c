@@ -8,7 +8,7 @@ typedef struct {
     char tail[0xc];
 } UnkStruct_020932b4;
 
-extern void func_02034270(UnkStruct_020932b4 *obj, int a, int b, int c);
+extern int func_02034270(UnkStruct_020932b4 *obj, int a, int b, int c);
 extern void func_0203423c(UnkStruct_020932b4 *obj);
 extern int func_020b6598(void);
 extern int func_02094cf8(int a0, int a1, int a2, int a3, int a4, int a5);

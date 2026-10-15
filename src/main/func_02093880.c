@@ -3,13 +3,14 @@
  */
 
 extern unsigned char data_020e2854[];
+extern int func_02094b58(int a, int b, int c, int d, int e, int f);
 
-func_02093880(unsigned int param0, unsigned int param1, unsigned int param2, unsigned int param3)
+int func_02093880(int a, int b, int c, int d, int e)
 {
     unsigned int local0;
     unsigned int local1;
 
-    local0 = param3;
+    local0 = d;
     local1 = (unsigned int) data_020e2854;
-    func_02094b58(0x73, param0, param1, param2, local0, local1);
+    return func_02094b58(0x73, a, b, c, local0, local1);
 }

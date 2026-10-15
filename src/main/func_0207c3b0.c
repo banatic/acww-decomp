@@ -23,7 +23,7 @@ extern int func_0208150c(void *b);
 extern int func_02003648(int x);
 extern void func_0207ca74(char *p, int v);
 extern void MI_CpuCopy8(void *d, void *s, int n);
-extern void func_0207c498(UnkStruct_0207c3b0 *self, int c);
+extern unsigned char *func_0207c498(UnkStruct_0207c3b0 *self, int c);
 
 void func_0207c3b0(UnkStruct_0207c3b0 *self, void *b, int c, int d, unsigned char e, void *f)
 {

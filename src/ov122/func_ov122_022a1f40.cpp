@@ -6,6 +6,7 @@
 #include "cpp/ov122/Obj_ov122_022a2738.h"
 
 typedef void (Obj_ov122_022a2738::*PMF)(void);
+#define STATE_26 (PMF) & Obj_ov122_022a2738::func_ov122_022a02a0
 
 void Obj_ov122_022a2738::func_ov122_022a1f40()
 {
@@ -24,7 +25,8 @@ void Obj_ov122_022a2738::func_ov122_022a1f40()
               &Obj_ov122_022a2738::func_ov122_022a06e8, &Obj_ov122_022a2738::func_ov122_022a05d0,
               &Obj_ov122_022a2738::func_ov122_022a053c, &Obj_ov122_022a2738::func_ov122_022a04ec,
               &Obj_ov122_022a2738::func_ov122_022a04bc, &Obj_ov122_022a2738::func_ov122_022a0488,
-              &Obj_ov122_022a2738::func_ov122_022a03b0, &Obj_ov122_022a2738::func_ov122_022a02c8,
-              &Obj_ov122_022a2738::func_ov122_022a02a0}};
+              &Obj_ov122_022a2738::func_ov122_022a03b0, &Obj_ov122_022a2738::func_ov122_022a02c8, STATE_26}};
     (this->*tbl.a[subState])();
 }
+
+#undef STATE_26

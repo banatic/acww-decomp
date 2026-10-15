@@ -3,11 +3,11 @@
  */
 
 extern void func_0209d340(void *);
-extern void func_ov009_02262f74(void *);
-extern void func_020b33b8(void *);
-extern void func_020551e0(void *);
-extern void func_02066994(void *);
-extern void func_0203f080(void *);
+extern void *func_ov009_02262f74(void *);
+extern void *func_020b33b8(void *);
+extern void *func_020551e0(void *);
+extern void *func_02066994(void *);
+extern void *func_0203f080(void *);
 extern void func_020edf54(void *);
 
 struct UnkStruct_022653fc {

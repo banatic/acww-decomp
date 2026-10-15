@@ -3,12 +3,12 @@
  */
 
 extern int data_ov125_022a0ab8;
-extern void func_ov002_0220afdc(void *);
-extern void func_ov002_02209cb4(void *);
-extern void func_ov002_02207e28(void *);
-extern void func_ov002_02209ac8(void *);
-extern void func_ov124_0229f43c(void *);
-extern void func_ov002_0220826c(void *);
+extern void *func_ov002_0220afdc(void *);
+extern void *func_ov002_02209cb4(void *);
+extern void *func_ov002_02207e28(void *);
+extern void *func_ov002_02209ac8(void *);
+extern void *func_ov124_0229f43c(void *);
+extern void *func_ov002_0220826c(void *);
 
 void *func_ov125_0229f6a0(void *p)
 {

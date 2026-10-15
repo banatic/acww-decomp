@@ -14,7 +14,7 @@ struct Entry {
     unsigned char pad_02[14];
 };
 extern struct Entry data_021c7884[];
-extern void func_0204622c(void);
+extern void func_0204622c(void *);
 
 void func_02045db8(struct Header *h)
 {
@@ -31,5 +31,5 @@ void func_02045db8(struct Header *h)
         i++;
     } while (i < 20);
 
-    func_0204622c();
+    func_0204622c(h);
 }

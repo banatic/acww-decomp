@@ -11,7 +11,7 @@ extern int func_ov002_02208054(void *self, int arg);
 extern void func_ov100_0229c940(void *self);
 extern int func_ov002_02208b00(void *ptr, int a, int b);
 extern void func_ov002_02209114(void *ptr, int a, int b);
-extern void func_ov002_02208098(void *self, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov100_0229e098(unsigned char *self)
 {
@@ -24,7 +24,7 @@ void func_ov100_0229e098(unsigned char *self)
             if (ret >= 0) {
                 func_ov002_02209114(self + 0x22d8, ret, 1);
                 *(self + 0x2925) = *(self + ret + 0x26c5);
-                func_ov002_02208098(self, 0x12);
+                func_ov002_02208098((void *) (self), 0x12);
             }
         }
     }

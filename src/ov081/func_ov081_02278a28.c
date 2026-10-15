@@ -14,8 +14,8 @@ struct UnkStruct_02278a28_2 {
     struct UnkStruct_02278a28 sub;
 };
 
-extern void func_ov081_02279024(struct UnkStruct_02278a28 *);
-extern void func_0202ee5c(struct UnkStruct_02278a28_2 *);
+extern void *func_ov081_02279024(struct UnkStruct_02278a28 *);
+extern void *func_0202ee5c(struct UnkStruct_02278a28_2 *);
 extern void func_020edf54(struct UnkStruct_02278a28_2 *);
 
 struct UnkStruct_02278a28_2 *func_ov081_02278a28(struct UnkStruct_02278a28_2 *obj)

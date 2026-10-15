@@ -23,14 +23,14 @@ typedef struct Msg {
 } Msg;
 
 extern void *func_020984e8(void);
-extern void func_020154b4(UnkStruct_02260ae0 *, u16 *, int, int, int);
-extern void func_02015330(UnkStruct_02260ae0 *, u16 *, int, int, int);
-extern void func_0209a000(u16 *, int);
+extern int func_020154b4(UnkStruct_02260ae0 *, u16 *, int, int, int);
+extern int func_02015330(UnkStruct_02260ae0 *, u16 *, int, int, int);
+extern int func_0209a000(u16 *, int);
 extern int func_02099020(void *, int);
 extern void func_ov052_022610cc(UnkStruct_02260ae0 *, int);
 extern void func_0201b420(char *, int);
 extern void func_02098ff8(void *, int);
-extern void func_0202ea80(int, int);
+extern int func_0202ea80(int, int);
 extern void func_ov052_022608b4(UnkStruct_02260ae0 *);
 extern void func_0206844c(void *, u8 *, const void *);
 extern const int data_ov052_02261e50;

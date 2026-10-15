@@ -4,12 +4,12 @@
 
 extern int func_020b65c4(void);
 extern int func_020b6788(void);
-extern void func_02073dd4(void *a, int b);
+extern unsigned char func_02073dd4(void *a, int b);
 extern int func_020b0d08(void *a, unsigned int idx, int flag, int *b, int *c, int *d);
 extern void func_020952ac(int idx, int *a, int *b, int val);
 extern int func_020961c0(void);
 extern void func_020961f0(int a, int b);
-extern void func_0202f134(int a, int b, int c, int d);
+extern int func_0202f134(int a, int b, int c, int d);
 
 typedef struct {
     unsigned char pad_00[4];

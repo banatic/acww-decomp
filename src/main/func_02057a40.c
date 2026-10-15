@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02057a98(void *param);
+extern int func_02057a98(void *param, const char *name);
 
-void func_02057a40(void *ptr)
+int func_02057a40(void *ptr, const char *name)
 {
-    func_02057a98((char *) ptr + 0x3c);
+    return func_02057a98((char *) ptr + 0x3c, name);
 }

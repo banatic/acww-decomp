@@ -9,11 +9,12 @@ struct Grid {
 };
 
 extern int func_0204eda8(struct Grid *a1, int a2, int a3);
-extern int func_0204a034(void);
+extern int func_0204a034(unsigned short *tile);
 extern void *func_0204f5e0(struct Grid *grid, unsigned int x, unsigned int y, int p3, int p4, unsigned char p5);
 
 int func_02048e54(struct Grid *self, int p1, int p2)
 {
+    unsigned short *tile;
     int result = 0;
     int gate = func_0204eda8(self, p1, p2);
     if (gate == 0) {
@@ -28,11 +29,11 @@ proceed: {
     x = p1 >> 4;
     y = q >> 4;
     ymod = q - (y << 4);
-    if (func_0204f5e0(self, x, y, p1 - (x << 4), ymod, 0) == 0) {
+    if ((tile = func_0204f5e0(self, x, y, p1 - (x << 4), ymod, 0)) == 0) {
         goto done;
     }
 }
-    if (func_0204a034() != 0) {
+    if (func_0204a034(tile) != 0) {
         goto done;
     }
     {
@@ -41,11 +42,11 @@ proceed: {
         x = p1 >> 4;
         y = q >> 4;
         ymod = q - (y << 4);
-        if (func_0204f5e0(self, x, y, p1 - (x << 4), ymod, 0) == 0) {
+        if ((tile = func_0204f5e0(self, x, y, p1 - (x << 4), ymod, 0)) == 0) {
             goto done;
         }
     }
-    if (func_0204a034() != 0) {
+    if (func_0204a034(tile) != 0) {
         goto done;
     }
     result = 1;

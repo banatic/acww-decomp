@@ -7,8 +7,8 @@ struct UnkStruct_020b4afc {
     void *unk_2C;
 };
 
-extern void func_02137550(void *dest, unsigned int size);
-extern void func_020a89f8(void *ptr, void *data);
+extern char *func_02137550(void *dest, unsigned int size);
+extern int func_020a89f8(void *ptr, void *data);
 
 void func_020b4afc(struct UnkStruct_020b4afc *s, int value)
 {

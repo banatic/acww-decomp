@@ -3,7 +3,7 @@
  */
 
 extern char data_020e3b38;
-extern void func_02066994(void *ptr);
+extern void *func_02066994(void *ptr);
 
 void *func_020a256c(void *ptr)
 {

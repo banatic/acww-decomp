@@ -6,9 +6,9 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern void func_02034270(int *st, Vec3 *v, int a, int b);
+extern int func_02034270(int *st, Vec3 *v, int a, int b);
 extern void func_020042a0(void *p, int a);
-extern void func_020912d4(int a, Vec3 *v, int b, int c);
+extern int func_020912d4(int a, Vec3 *v, int b, int c);
 extern void func_0203423c(int *st);
 
 int func_ov003_02235454(char *self)

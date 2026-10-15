@@ -6,7 +6,7 @@ extern int data_ov003_0223c868;
 extern int data_ov003_02238aa4;
 extern int func_ov003_0221c570(void);
 extern int func_ov003_022203dc(void);
-extern void func_02064328(int *, int *, int, int);
+extern int func_02064328(int *, int *, int, int);
 
 int *func_ov003_0221c548(void)
 {

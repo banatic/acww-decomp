@@ -3,21 +3,24 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void);
-extern void func_020b9cfc(void *p);
-extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void), void (*cb2)(void));
-extern void func_0206e388(void *p);
-extern void func_ov002_0220a5fc(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_0206da98(void *p);
-extern void func_02065cb0(void *p);
-extern void func_ov002_02209b14(void *p);
-extern void func_ov002_0220b008(void *p);
-extern void func_ov002_0220ba24(void *p);
-extern void func_02070be8(void);
-extern void func_02070c08(void);
+extern void *func_ov002_0220830c(void *argument0);
+extern void *func_020b9cfc(void *p);
+extern void __cxa_vec_ctor(void *p, int a, int b, void (*cb1)(void *), void (*cb2)(void *));
+extern void *func_0206e388(void *p);
+extern void *func_ov002_0220a5fc(void *p);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_0206da98(void *p);
+extern void *func_02065cb0(void *p);
+extern void *func_ov002_02209b14(void *p);
+extern void *func_ov002_0220b008(void *p);
+extern void *func_ov002_0220ba24(void *p);
+extern int **func_02070be8(void *argument0);
+extern void *func_02070c08(void *argument0);
 
 extern unsigned char data_ov122_022a2738[];
+
+#define VisitElement_02070c08 (void (*)(void *)) func_02070c08
+#define VisitElement_02070be8 (void (*)(void *)) func_02070be8
 
 void *func_ov122_022a24bc(void)
 {
@@ -31,7 +34,7 @@ void *func_ov122_022a24bc(void)
         goto ret;
     }
 
-    func_ov002_0220830c();
+    func_ov002_0220830c(p);
     *(void **) p = (void *) data_ov122_022a2738;
 
     base = (char *) p + 0xc0;
@@ -42,7 +45,7 @@ void *func_ov122_022a24bc(void)
         q += 0x24;
     } while (q != end);
 
-    __cxa_vec_ctor(end, 2, 0x6c, func_02070c08, func_02070be8);
+    __cxa_vec_ctor(end, 2, 0x6c, VisitElement_02070c08, VisitElement_02070be8);
 
     func_0206e388((char *) p + 0x3ce8);
     func_ov002_0220a5fc((char *) p + 0x4010);
@@ -56,3 +59,6 @@ void *func_ov122_022a24bc(void)
 ret:
     return p;
 }
+
+#undef VisitElement_02070c08
+#undef VisitElement_02070be8

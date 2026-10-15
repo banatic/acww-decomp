@@ -44,19 +44,19 @@ class UnkStruct_022752e4_2 {
 
 extern "C" void func_020b23c8(void);
 extern "C" int func_0207f270(int);
-extern "C" void func_02079500(void);
+extern "C" void func_02079500(void *argument0);
 extern "C" void func_ov068_022763c8(UnkStruct_022752e4_2 *self);
 extern "C" int func_020b5e10(void);
-extern "C" void func_020b5ee4(int, int);
-extern "C" void func_020b6098(int, int);
+extern "C" int func_020b5ee4(int, int);
+extern "C" int func_020b6098(int, int);
 
 extern "C" void func_ov068_022752e4(UnkStruct_022752e4_2 *self)
 {
     if (self->unk_8DC && self->unk_8DC->unk_04 == 0) {
         func_020b23c8();
         if (self->m25()) {
-            func_0207f270(self->m25());
-            func_02079500();
+
+            func_02079500((void *) func_0207f270(self->m25()));
         }
         func_ov068_022763c8(self);
         if (self->unk_A58) {

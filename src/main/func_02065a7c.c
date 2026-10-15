@@ -52,7 +52,7 @@ extern u8 data_020e54a8;
 extern UnkStruct_02065a7c_3 *data_020de6f4[];
 extern UnkStruct_02065a7c_4 data_020ccc7c[];
 
-extern int func_020b65c4(UnkStruct_02065a7c_5 *self);
+extern int func_020b65c4(void);
 extern int func_020b67d4(void);
 extern void func_02064db8(int a, int b, int c);
 extern void func_02064da0(int a, int b);
@@ -71,10 +71,10 @@ void func_02065a7c(UnkStruct_02065a7c_5 *self)
     int ok;
     UnkStruct_02065a7c_3 *p;
     UnkStruct_02065a7c_4 *t2;
-    UnkStruct_02065a7c_2 *e;
 
+    UnkStruct_02065a7c_2 *e;
     ok = 0;
-    h = func_020b65c4(self);
+    h = func_020b65c4();
     cond = (data_020e54a8 == 1) ? 1 : 0;
     if (cond != 0 && func_020b67d4() == 0) {
         ok = 1;

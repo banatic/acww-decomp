@@ -5,15 +5,15 @@
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021f6c54;
 extern void func_ov146_02299c44(int a, int b, int c);
-extern void func_ov146_02299c34(void);
-extern void func_ov002_02208098(int a, int b);
+extern void func_ov146_02299c34(void *arg0);
+extern unsigned char *func_ov002_02208098(int a, unsigned char value);
 
 void func_ov146_0229a950(int param)
 {
     if (data_021fbdd8 != 0) {
         func_ov146_02299c44(param, data_021f6c54, 1);
     } else {
-        func_ov146_02299c34();
+        func_ov146_02299c34((void *) param);
         func_ov002_02208098(param, 0);
     }
 }

@@ -5,15 +5,15 @@
 typedef struct UnkStruct_022a053c UnkStruct_022a053c;
 
 extern int func_ov002_02209f9c(const char *p);
-extern void func_ov096_0229e79c(UnkStruct_022a053c *self);
+extern int func_ov096_0229e79c(UnkStruct_022a053c *self, int value);
 extern int func_ov096_0229c2fc(UnkStruct_022a053c *self, int a);
 extern void func_ov096_0229e9f8(UnkStruct_022a053c *self, unsigned short a, int b);
-extern void func_ov096_0229f90c(UnkStruct_022a053c *self, unsigned char a, int b);
+extern unsigned char *func_ov096_0229f90c(UnkStruct_022a053c *self, unsigned char a, int b);
 extern void func_ov096_0229c2dc(UnkStruct_022a053c *self, int a);
 extern void func_ov096_0229eb14(UnkStruct_022a053c *self);
-extern int func_ov002_02208098(UnkStruct_022a053c *self, int a);
-extern void func_ov094_022999d8(int x);
-extern void func_ov096_0229ea5c(UnkStruct_022a053c *self);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
+extern void func_ov094_022999d8(void);
+extern int func_ov096_0229ea5c(UnkStruct_022a053c *self);
 
 struct UnkStruct_022a053c {
     char pad_00[0x8d];
@@ -34,7 +34,7 @@ void func_ov096_022a053c(UnkStruct_022a053c *self)
 {
     if (func_ov002_02209f9c(&self->unk_2500) == 0) {
         if (self->unk_B5 == self->unk_B7) {
-            func_ov096_0229e79c(self);
+            func_ov096_0229e79c(self, self->unk_B7);
             if (func_ov096_0229c2fc(self, 0x2000) != 0) {
                 func_ov096_0229e9f8(self, self->unk_AE, 0);
                 func_ov096_0229f90c(self, self->unk_B9, 4);
@@ -45,7 +45,7 @@ void func_ov096_022a053c(UnkStruct_022a053c *self)
         }
         if (self->unk_8D == 0x14) {
             func_ov096_0229eb14(self);
-            func_ov094_022999d8(func_ov002_02208098(self, 0xa));
+            ((void) ((int) func_ov002_02208098((void *) (self), 0xa)), func_ov094_022999d8());
         }
     } else {
         func_ov096_0229ea5c(self);

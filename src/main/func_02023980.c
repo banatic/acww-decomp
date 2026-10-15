@@ -9,7 +9,7 @@ struct UnkStruct_02023980;
 struct UnkStruct_02023980_2;
 struct GlobalData;
 struct Global2;
-extern void func_0202da38(struct SomeOuter *, char *, unsigned char *, int, int, int, int, int, int);
+extern int func_0202da38(struct SomeOuter *, char *, unsigned char *, int, int, int, int, int, int);
 extern struct GlobalData data_020c8bf8;
 extern struct Global2 data_020d94d0;
 struct GlobalData {

@@ -12,7 +12,7 @@ typedef struct Caller {
     int (*func)(void *);
 } Caller;
 
-extern void func_0206786c(void *p);
+extern int func_0206786c(void *p);
 extern void func_020a9334(void *obj, int v);
 extern void func_020a7994(void *p, int v);
 

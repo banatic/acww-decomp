@@ -6,7 +6,7 @@
 #include "cpp/ov144/Obj_ov144_0229b3f8.h"
 
 extern "C" int func_ov002_02209f64(void *ptr);
-extern "C" void func_ov002_02208098(void *ptr, unsigned char byte);
+extern "C" unsigned char *func_ov002_02208098(void *ptr, unsigned char byte);
 
 void Obj_ov144_0229b3f8::func_ov144_0229aa08()
 {

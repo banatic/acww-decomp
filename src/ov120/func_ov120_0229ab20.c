@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov120_0229b14c(void *obj);
+extern int func_ov120_0229b14c(void *arg0);
 extern void func_ov120_0229a428(void *obj, int arg);
 extern int _s32_div_f(int a, int b);
 
@@ -16,7 +16,7 @@ struct UnkStruct_0229ab20 {
 
 void func_ov120_0229ab20(struct UnkStruct_0229ab20 *obj)
 {
-    int r4 = func_ov120_0229b14c(obj);
+    int r4 = func_ov120_0229b14c((void *) obj);
 
     if (r4 == 0) {
         func_ov120_0229a428(obj, 0x10);

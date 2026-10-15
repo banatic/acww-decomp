@@ -17,7 +17,7 @@ typedef struct {
     void (*unk_14)(void);
 } UnkStruct_0209d138;
 
-extern void func_0209d2d0(struct UnkStruct_0209d138_2 *p);
+extern int func_0209d2d0(struct UnkStruct_0209d138_2 *p);
 extern void func_020e9898(struct UnkStruct_0209d138_2 *p);
 
 int func_0209d138(UnkStruct_0209d138 *s)

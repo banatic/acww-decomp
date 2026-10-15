@@ -13,17 +13,17 @@ typedef struct {
 } List;
 
 extern "C" {
-extern int func_0203ee14(void *, void *);
+extern void func_0203ee14(void *, void *);
 extern void func_020a8164(void *, void *);
 extern int func_ov004_0220fde0(void *);
 extern u8 func_020b65c4(void);
-extern void func_ov004_0220db94(List *);
+extern char *func_ov004_0220db94(List *);
 extern void func_ov004_0220db90(List *);
 extern unsigned int func_ov004_0220db68(List *);
 extern E *func_ov004_0220db5c(List *, unsigned int);
 extern void func_ov004_0220f27c(void *, List *, int, int);
 extern void *func_0204f5e0(void *, int, int, int, int, u8);
-extern int func_0204bcdc(void);
+extern int func_0204bcdc(void *tile);
 extern int data_ov004_02253200;
 extern void *data_021c80bc;
 }
@@ -46,6 +46,7 @@ extern "C"
     int b;
     void *p;
     void *g;
+    void *tile;
     unsigned int i;
     // ENDDECLS
 
@@ -66,7 +67,7 @@ extern "C"
             b = func_ov004_0220db5c(&list, i)->b;
             ah = a >> 4;
             bh = b >> 4;
-            if (func_0204f5e0(g, ah, bh, a - (ah << 4), b - (bh << 4), 0) != 0 && func_0204bcdc() != 0) {
+            if ((tile = func_0204f5e0(g, ah, bh, a - (ah << 4), b - (bh << 4), 0)) != 0 && func_0204bcdc(tile) != 0) {
                 v = (v + (a + (b << 4))) & 0xf;
                 break;
             }

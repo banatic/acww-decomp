@@ -7,10 +7,17 @@ struct St {
     unsigned int unk_2C;
 };
 
-extern void func_0206d420(struct St *p, unsigned int a, unsigned int b);
+extern void func_0206d420(void);
 
-void func_0206c548(struct St *p)
+// clang-format off
+asm void func_0206c548(register struct St *p)
 {
-    unsigned int y = p->unk_2C + 0x14b8;
-    func_0206d420(p, y + 0x228, y);
+    ldr r2, [r0, #0x2c]
+    ldr r1, =0x14b8
+    add r2, r2, r1
+    ldr r1, =0x228
+    add r1, r2, r1
+    ldr r3, =func_0206d420
+    bx r3
 }
+// clang-format on

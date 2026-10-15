@@ -3,9 +3,9 @@
  */
 
 extern int data_021c9f5c;
-extern int func_0205e538(void *p, unsigned char ch, int x, int y);
+extern void func_0205e538(void *p, unsigned char ch, int x, int y);
 
-int func_0205e174(unsigned char *a, int b, int c)
+void func_0205e174(unsigned char *a, int b, int c)
 {
-    return func_0205e538(&data_021c9f5c, *a, b, c);
+    func_0205e538(&data_021c9f5c, *a, b, c);
 }

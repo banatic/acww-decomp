@@ -4,22 +4,22 @@
 
 #include "types.h"
 
-extern int func_02057a50(int, int);
+extern int func_02057a50(int, const char *name);
 extern int func_0204bcdc(void *);
 extern int func_0204bc64(void *);
 extern int func_020ba1f4(void *, u16 *);
 extern int func_020b6730(void);
-extern void func_020573f0(void *, int, void *, void *);
+extern int func_020573f0(void *, int, void *, void *);
 extern int func_020ba1ec(void *);
 extern int func_020b9d3c(void *, int, int, int, int, int);
 extern void func_ov004_02232934(void *, u16 *, int);
 extern int func_020b65c4(void);
-extern void func_02034a00(int, u16 *);
+extern int func_02034a00(int, u16 *);
 extern int func_0204c100(u16 *);
 extern int func_0204c090(u16 *);
 extern int func_02072614(void);
 extern int func_02072630(int, u8, u8);
-extern void func_020573b8(void *, int, int, int);
+extern int func_020573b8(void *, int, int, int);
 extern int data_ov004_02255a84;
 extern char data_ov004_02255b34;
 extern char data_ov004_02255b40;
@@ -29,7 +29,7 @@ int func_ov004_022327a0(char *self, u16 *item, int a2, int a3)
     int same;
     int ok;
     u16 v;
-    if (func_02057a50(a2, data_ov004_02255a84) == -1) {
+    if (func_02057a50(a2, (const char *) (data_ov004_02255a84)) == -1) {
         return 0;
     }
     if (func_0204bcdc(self + 2) != 0) {

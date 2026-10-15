@@ -7,13 +7,13 @@
 extern int func_ov095_0229ba44(void *p, int param, int six);
 extern void func_ov111_0229fd08(void *self);
 extern int func_ov095_0229bebc(void *p, int param);
-extern void func_ov111_0229fb8c(void *self, int ret);
+extern int func_ov111_0229fb8c(void *self, int ret);
 extern void func_ov111_0229facc(void *self);
 extern void func_ov111_0229fa50(void *self);
 extern void func_ov111_0229f9d4(void *self);
 extern void func_ov111_0229f92c(void *self);
 extern void func_ov111_0229f860(void *self);
-extern void func_ov111_022a09f8(void *self, int a, int b);
+extern int func_ov111_022a09f8(void *self, int a, int b);
 extern int func_ov095_0229af98(void *p, int param);
 extern void func_ov111_022a0198(void *self);
 extern void func_ov111_0229f0cc(void *self);

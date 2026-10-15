@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned char func_020808ec(void);
+extern unsigned char func_020808ec(unsigned int);
 extern unsigned char data_020cd4dc[];
 
-unsigned char func_020808d0(void)
+unsigned char func_020808d0(unsigned int object)
 {
     unsigned char result;
     unsigned int index;
 
-    index = func_020808ec();
+    index = func_020808ec(object);
     if (index >= 0x21) {
         index = 0;
     }

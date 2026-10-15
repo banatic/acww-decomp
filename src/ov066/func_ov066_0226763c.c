@@ -12,14 +12,14 @@ typedef struct {
     unsigned int field;
 } Target;
 
-extern int func_ov066_02266e08(Arg *arg);
+extern int func_ov066_02266e08(void);
 extern void func_ov066_02266bf4(void);
-extern void func_ov066_0226686c(void);
+extern void func_ov066_0226686c(int status);
 extern Target *data_ov066_0226bdec;
 
 void func_ov066_0226763c(Arg *arg)
 {
-    if (func_ov066_02266e08(arg) != 0) {
+    if (func_ov066_02266e08() != 0) {
         return;
     }
     if (arg->field == 0) {
@@ -27,7 +27,7 @@ void func_ov066_0226763c(Arg *arg)
         func_ov066_02266bf4();
         return;
     } else {
-        func_ov066_0226686c();
+        func_ov066_0226686c(arg->field);
         return;
     }
 }

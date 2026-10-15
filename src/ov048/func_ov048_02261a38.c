@@ -9,11 +9,11 @@ struct UnkStruct_02261a38 {
 
 extern int data_ov048_02263d20;
 extern void func_0206844c(int a, char *b, int c);
-extern void func_ov004_0222d4f4(void);
+extern int func_ov004_0222d4f4(void);
 extern void func_0207428c(void);
 extern int func_020ec1e8(void);
 extern void func_ov048_022616b8(struct UnkStruct_02261a38 *self, int arg);
-extern void func_ov048_02262658(struct UnkStruct_02261a38 *self);
+extern int func_ov048_02262658(void);
 
 void func_ov048_02261a38(struct UnkStruct_02261a38 *self, int flag)
 {
@@ -32,6 +32,9 @@ void func_ov048_02261a38(struct UnkStruct_02261a38 *self, int flag)
     if (func_020ec1e8() == 3 || func_020ec1e8() == 4) {
         func_ov048_022616b8(self, 0x14);
     } else {
-        func_ov048_02262658(self);
+        asm {
+            mov r0, self
+        }
+        func_ov048_02262658();
     }
 }

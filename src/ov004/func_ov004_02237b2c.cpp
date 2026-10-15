@@ -10,7 +10,7 @@ struct Vec {
 extern "C" {
 extern Action data_ov004_0225949c[];
 extern void func_ov004_02239b80(void *);
-extern int func_ov004_02239768(void *);
+extern void func_ov004_02239768(void *);
 extern void func_ov004_022395d0(void *, int, int);
 extern void func_ov004_0223592c(void *);
 extern void func_ov004_022358c0(void *, int);

@@ -13,10 +13,10 @@ typedef struct UnkStruct_0229dec0 {
 
 extern int func_ov002_0220909c(void *p);
 extern void func_ov002_022096d8(void *p, int a);
-extern void func_ov002_02207d24(void *p, int a);
+extern int func_ov002_02207d24(void *p, int a);
 extern int func_0208e4bc(void *p);
 extern void func_ov104_0229d1b8(UnkStruct_0229dec0 *self);
-extern void func_ov002_02208098(UnkStruct_0229dec0 *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov104_0229dec0(UnkStruct_0229dec0 *self)
 {
@@ -26,6 +26,6 @@ void func_ov104_0229dec0(UnkStruct_0229dec0 *self)
         if (func_0208e4bc(&self->unk_24A0[0]) != 0) {
             func_ov104_0229d1b8(self);
         }
-        func_ov002_02208098(self, 0x18);
+        func_ov002_02208098((void *) (self), 0x18);
     }
 }

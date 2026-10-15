@@ -9,8 +9,8 @@ typedef struct {
 
 extern int func_020644cc(int);
 extern int func_02048a54(void *, Point *, Point *, int);
-extern void func_02048cb8(void *, void *, int, int, unsigned short, void *, int);
-extern void func_02048ee4(void);
+extern int func_02048cb8(void *, void *, int, int, unsigned short, int (*predicate)(int, int, int), int);
+extern int func_02048ee4(void *, int, int);
 
 void func_020489c4(void *obj, void *p1)
 {
@@ -33,7 +33,8 @@ void func_020489c4(void *obj, void *p1)
             pt.x = v % 4;
             pt.y = v / 4;
         } while (func_02048a54(obj, &pt, arr, n) != 0);
-        func_02048cb8(obj, p1, pt.x + 1, pt.y + 1, (unsigned short) (func_020644cc(4) + 0x21), (void *) func_02048ee4, 0);
+        func_02048cb8(obj, p1, pt.x + 1, pt.y + 1, (unsigned short) (func_020644cc(4) + 0x21),
+                      (((int (*)(int, int, int)) func_02048ee4)), 0);
         arr[n].x = pt.x;
         arr[n].y = pt.y;
         n++;

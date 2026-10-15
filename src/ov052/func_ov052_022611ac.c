@@ -4,8 +4,8 @@
 
 extern int func_02019e00(int);
 extern int func_02019de8(int);
-extern void func_02019c6c(int, int, unsigned short);
-extern void func_0203e0a8(int, int);
+extern int func_02019c6c(int, int, unsigned short);
+extern int func_0203e0a8(int, int);
 
 int func_ov052_022611ac(int p)
 {

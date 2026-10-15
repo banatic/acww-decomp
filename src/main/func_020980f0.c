@@ -9,13 +9,13 @@ struct UnkStruct_020980f0 {
 };
 
 extern int func_020984e8(void);
-extern int func_020992fc(void);
+extern int func_020992fc(int);
 extern int func_02099020(int, int);
 extern int func_020983c4(int);
 extern void func_02066694(struct UnkStruct_020980f0 *);
 extern int func_02099870(int);
 extern void func_02066024(struct UnkStruct_020980f0 *, u8 *, void *, void *, void *, int);
-extern void func_02065ed0(struct UnkStruct_020980f0 *, int, int);
+extern unsigned short func_02065ed0(struct UnkStruct_020980f0 *, int, int);
 extern int func_02097a54(struct UnkStruct_020980f0 *);
 extern void func_02098fd0(int, int);
 extern void func_02066688(struct UnkStruct_020980f0 *);
@@ -31,7 +31,7 @@ void func_020980f0(int a)
     int p, q, v, msg;
 
     p = func_020984e8();
-    q = func_020992fc();
+    q = func_020992fc(p);
     if (a > 0 && func_02099020(p, 0x16)) {
         v = func_020983c4(q);
         func_02066694(&s);

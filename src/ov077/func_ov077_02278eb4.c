@@ -22,9 +22,9 @@ extern void func_0209129c(int h);
 extern int func_02016884(void *a, int b, void *c);
 extern int func_02019de8(void *a);
 extern void *func_0203e020(UnkStruct_02278eb4 *self);
-extern void *func_0208602c(void *p);
-extern void *func_020860c8(void *p);
-extern void func_02087e9c(void *p, int a);
+extern int func_0208602c(void);
+extern int func_020860c8(int object);
+extern void func_02087e9c(unsigned char *p, int a);
 extern void func_020ee470(UnkStruct_02278eb4 *self);
 
 int func_ov077_02278eb4(UnkStruct_02278eb4 *self)
@@ -48,7 +48,7 @@ int func_ov077_02278eb4(UnkStruct_02278eb4 *self)
         }
     }
     if (func_02016884((char *) self + 0x334, 0xfe, (char *) self + 0x2a0) != 0 && func_02019de8((char *) self + 0x564) != 0) {
-        func_02087e9c(func_020860c8(func_0208602c(func_0203e020(self))), 0);
+        func_02087e9c((unsigned char *) func_020860c8(((void) (func_0203e020(self)), func_0208602c())), 0);
         func_020ee470(self);
         if (self->unk_724 != -1) {
             func_0209129c(self->unk_724);

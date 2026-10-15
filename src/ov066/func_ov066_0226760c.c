@@ -8,7 +8,7 @@ typedef struct Node {
 } Node;
 
 extern int OS_DisableInterrupts(void);
-extern void OS_RestoreInterrupts(int state);
+extern unsigned int OS_RestoreInterrupts(int state);
 extern Node *data_ov066_0226bdec;
 
 int func_ov066_0226760c(void)

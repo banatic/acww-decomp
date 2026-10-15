@@ -18,7 +18,7 @@ typedef struct {
     unsigned short unk_D6;
 } Context;
 
-extern void func_020e895c(void *a, void *b, void *c);
+extern int func_020e895c(void *a, void *b, void *c);
 extern void func_02059674(void *this, int param);
 
 void func_020583b0(Context *this)

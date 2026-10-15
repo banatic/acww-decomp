@@ -9,7 +9,7 @@ typedef struct {
 extern unsigned char data_ov003_02260e4c[];
 extern int FX_MulFunc(int a, int b);
 extern void func_ov003_0222e358(void *p, int a);
-extern void func_0203f7d0(int *dst, int *src);
+extern int func_0203f7d0(int *dst, int *src);
 extern void func_02056fcc(void *a, int b, int c, int d, int e);
 extern void func_020550e4(void *a, int b);
 extern void func_0209129c(int h);

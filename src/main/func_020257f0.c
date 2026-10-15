@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202d9c4(void *, void *);
+extern int func_0202d9c4(void *);
 extern int func_0209bc40(int);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(char *, char *, char *, int, int, int, int, int, int);
+extern int func_0202da38(char *, char *, char *, int, int, int, int, int, int);
 extern char data_020c8b58;
 extern char data_020c8a58;
 typedef struct {
@@ -20,7 +20,7 @@ void func_020257f0(char *a, char *b)
     int local0;
     int val;
     p = &data_020c8b58;
-    if (func_0209bc40(func_0202d9c4(a, b)) == 1) {
+    if (func_0209bc40(func_0202d9c4(a)) == 1) {
         p = &data_020c8a58;
     }
     local0 = func_020036e8(func_0208150c(*((int *) ((*((char **) (a + 0x100))) + 0x830))));

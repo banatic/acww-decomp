@@ -4,7 +4,7 @@
 
 extern void NNS_FndFreeToExpHeap(void *heap, void *memBlock);
 
-void func_020e9b84(void *memBlock, void *heap)
+void func_020e9b84(void *memBlock, void *heap, unsigned int userParam)
 {
     NNS_FndFreeToExpHeap(heap, memBlock);
 }

@@ -4,20 +4,20 @@
 
 #include "types.h"
 
-extern void func_ov004_02241894(void *, int);
-extern void func_ov004_02243740(void *, int, int);
-extern void func_ov004_02244e38(void *, void *);
+extern void func_ov004_02241894(void *);
+extern void func_ov004_02243740(void *);
+extern int func_ov004_02244e38(void *, void *);
 
 void func_ov004_0224379c(char *self)
 {
     // DECLS
     // ENDDECLS
     if (*(u8 *) (self + 0x22) == 0x0) {
-        func_ov004_02241894(self, *(u8 *) (self + 0x22));
+        func_ov004_02241894(self);
         return;
     } else {
         if (*(short *) (self + 0x172) == 0x0) {
-            func_ov004_02243740(self, 0x172, *(short *) (self + 0x172));
+            func_ov004_02243740(self);
             func_ov004_02244e38(self, self + 0x2c8);
         } else {
             *(u8 *) (self + 0x9a) = 0x0;

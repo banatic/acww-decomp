@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int func_ov133_0229ae94(char *self);
-extern void func_ov002_02208098(char *self, int v);
+extern unsigned char *func_ov002_02208098(char *self, unsigned char value);
 extern int func_ov002_0220a620(char *p, int i);
 extern void func_ov133_0229b500(char *self);
 extern void func_ov133_0229b4b0(char *self);

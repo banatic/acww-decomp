@@ -29,7 +29,7 @@ extern void *func_0208150c(void *);
 extern int func_02003704(void *);
 extern void func_02015e10(void *, void *, int);
 extern int func_020036e8(void *);
-extern void func_0202da38(void *, char *, char *, int, int, int, int, int, int);
+extern int func_0202da38(void *, char *, char *, int, int, int, int, int, int);
 extern int memcmp(const void *, const void *, unsigned int);
 extern DataAtC8D60 data_020c8d60;
 

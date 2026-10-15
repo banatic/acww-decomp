@@ -15,7 +15,7 @@ typedef struct {
     char subobj;
 } UnkStruct_0229dc68;
 
-extern void func_ov002_02208098(UnkStruct_0229dc68 *p, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov104_0229d8a8(UnkStruct_0229dc68 *p, unsigned char b);
 extern int func_ov104_0229d858(UnkStruct_0229dc68 *p, unsigned char b);
 extern void func_ov002_02207cf8(void *p);
@@ -34,7 +34,7 @@ void func_ov104_0229dc68(UnkStruct_0229dc68 *p, int param1)
     unsigned char g2;
 
     p->unk_B5 = param1;
-    func_ov002_02208098(p, 1);
+    func_ov002_02208098((void *) (p), 1);
     g1 = data_021f6c58;
     g2 = data_021f6c54;
     p->unk_A0 = func_ov104_0229d8a8(p, p->unk_B5) - g1;

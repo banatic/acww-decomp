@@ -13,7 +13,7 @@ typedef struct UnkStruct_020551e0_2 {
 } UnkStruct_020551e0_2;
 
 extern void func_02057054(UnkStruct_020551e0 *sub);
-extern void func_0205572c(UnkStruct_020551e0_2 *self);
+extern void *func_0205572c(UnkStruct_020551e0_2 *self);
 
 extern unsigned char data_020dd05c[];
 extern unsigned char data_020dd06c[];

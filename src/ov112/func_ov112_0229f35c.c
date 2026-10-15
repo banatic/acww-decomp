@@ -6,7 +6,7 @@ extern int func_ov112_0229fe70(void *p, int a);
 extern int func_ov095_02299b7c(void *p);
 extern int func_ov095_02299b38(void *p);
 extern void func_ov002_0220a000(void *p, int a, int b, int c, int d);
-extern void func_ov002_02208098(void *p, int a);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 
 typedef struct {
     char pad_00[0x98];

@@ -16,20 +16,20 @@ typedef struct UnkStruct_022648e4 {
 } UnkStruct_022648e4;
 
 extern UnkStruct_022648e4 *func_ov009_02264884(void *self);
-extern int func_ov009_022655f8(void);
+extern int func_ov009_022655f8(void *argument0);
 extern void *func_020b3b50(void *p);
 extern void func_020b3c58(void *h, int *a, int *b, int *c, int *d);
 extern void *func_02064b2c(void *a, void *b, int c, int d);
 extern int NNS_FndMountArchive(void *arc, char *name, void *p);
 extern int NNS_FndGetArchiveFileByName(char *name);
-extern int func_ov009_02265598(void);
-extern void func_02064328(char *dst, char *fmt, int i);
+extern int func_ov009_02265598(int arg);
+extern int func_02064328(char *dst, char *fmt, int i);
 extern int NNS_G3dGetTexSRTAnmSet(int h);
 extern int func_02107bbc(int h, int k);
 extern int NNS_G3dGetTexPatAnmSet(int h);
 extern int func_02107bf8(int h, int k);
 extern int func_ov009_022655ac(int h);
-extern void func_0210285c(void *arc);
+extern int func_0210285c(void *arc);
 extern int func_02064858(void *p);
 extern int func_021077e8(void *p);
 extern int func_020560e0(int h, int k);
@@ -51,7 +51,7 @@ int func_ov009_022648e4(char *self, void *a, void *b, void *c)
 
     ret = 0;
     r = func_ov009_02264884(self);
-    if (func_ov009_022655f8() != 0) {
+    if (func_ov009_022655f8(r) != 0) {
         return 1;
     }
     h = func_020b3b50(self + 0x136);
@@ -62,14 +62,14 @@ int func_ov009_022648e4(char *self, void *a, void *b, void *c)
         p = func_02064b2c(a, data_021c9b1c, 4, 0);
         if (p != 0) {
             if (NNS_FndMountArchive(arc, data_ov009_02265a28, p) != 0) {
-                if (NNS_FndGetArchiveFileByName(data_ov009_02265a2c) != 0) {
-                    r->unk_08 = func_ov009_02265598();
+                if ((res = NNS_FndGetArchiveFileByName(data_ov009_02265a2c)) != 0) {
+                    r->unk_08 = func_ov009_02265598(res);
                 }
-                if (NNS_FndGetArchiveFileByName(data_ov009_02265a3c) != 0) {
-                    r->unk_0C = func_ov009_02265598();
+                if ((res = NNS_FndGetArchiveFileByName(data_ov009_02265a3c)) != 0) {
+                    r->unk_0C = func_ov009_02265598(res);
                 }
-                if (NNS_FndGetArchiveFileByName(data_ov009_02265a4c) != 0) {
-                    r->unk_10 = func_ov009_02265598();
+                if ((res = NNS_FndGetArchiveFileByName(data_ov009_02265a4c)) != 0) {
+                    r->unk_10 = func_ov009_02265598(res);
                 }
                 for (i = 0; i < 4; i++) {
                     func_02064328(buf1, data_ov009_02265a5c, i);

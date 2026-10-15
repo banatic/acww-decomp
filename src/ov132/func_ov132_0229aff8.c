@@ -3,17 +3,15 @@
  */
 
 extern int func_020984e8(void);
-extern int func_020992fc(void);
-extern int func_020983f0(void);
+extern int func_020992fc(int);
+extern int func_020983f0(int *);
 extern void func_ov132_0229af54(char *, int);
 extern void func_0206fdd4(char *, int, int, int, int, int);
 extern void func_ov132_0229b068(char *);
 
 void func_ov132_0229aff8(char *arg)
 {
-    func_020984e8();
-    func_020992fc();
-    if (func_020983f0() == 0x3b9ac9ff) {
+    if (func_020983f0((int *) func_020992fc((int) func_020984e8())) == 0x3b9ac9ff) {
         func_ov132_0229af54(arg, 14);
         return;
     }

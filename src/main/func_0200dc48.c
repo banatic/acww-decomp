@@ -8,7 +8,7 @@ typedef struct UnkStruct_0200dc48 {
 } UnkStruct_0200dc48;
 
 extern short func_0200dc80(UnkStruct_0200dc48 *arg);
-extern int func_0203c568(void);
+extern short func_0203c568(void *object);
 extern int data_021c67a4;
 
 short func_0200dc48(UnkStruct_0200dc48 *arg0)
@@ -16,7 +16,7 @@ short func_0200dc48(UnkStruct_0200dc48 *arg0)
     short r4;
     r4 = func_0200dc80(arg0);
     if (arg0->unk_170 != 2 && data_021c67a4 != 0) {
-        r4 = (short) (r4 + func_0203c568());
+        r4 = (short) (r4 + func_0203c568((void *) data_021c67a4));
     }
     return r4;
 }

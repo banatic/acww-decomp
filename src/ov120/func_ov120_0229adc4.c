@@ -15,7 +15,7 @@ extern unsigned char func_ov120_0229ac8c(UnkStruct_0229adc4 *self, unsigned int 
 extern void func_ov120_0229a428(UnkStruct_0229adc4 *self, unsigned int val);
 extern int func_ov120_0229a448(UnkStruct_0229adc4 *self, unsigned int val);
 extern void func_ov120_0229b22c(UnkStruct_0229adc4 *self);
-extern void func_ov120_0229ac60(UnkStruct_0229adc4 *self);
+extern int func_ov120_0229ac60(UnkStruct_0229adc4 *self);
 extern void func_ov120_0229b214(UnkStruct_0229adc4 *self);
 extern void func_ov120_0229a438(UnkStruct_0229adc4 *self, unsigned int val);
 extern void func_ov120_0229ac08(UnkStruct_0229adc4 *self);

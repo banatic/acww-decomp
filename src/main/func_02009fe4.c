@@ -6,8 +6,8 @@ extern int data_020ccf94;
 extern void func_0200a0c8(void *p);
 extern void func_0200a088(void *p);
 extern int func_02073908(int a, int b);
-extern void func_0201100c(void *p);
-extern void func_02010ff4(void *p);
+extern int func_0201100c(void *p);
+extern int func_02010ff4(void *p);
 extern void func_02010d64(void *p);
 extern void func_0200a02c(void *p);
 

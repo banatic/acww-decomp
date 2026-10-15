@@ -9,13 +9,13 @@ struct UnkStruct_022289b8 {
 };
 extern void func_0200fa1c(struct UnkStruct_022289b8 *out, void *self, struct UnkStruct_022289b8 *in, unsigned short *p,
                           int *q);
-extern void func_ov004_02228a2c(void *dst, struct UnkStruct_022289b8 *v, int b);
+extern void *func_ov004_02228a2c(void *dst, struct UnkStruct_022289b8 *v, int b);
 extern int func_02073908(int a, int b);
 extern void func_02051ea4(struct UnkStruct_022289b8 *out);
 extern short data_ov004_0224776c[];
 extern int data_ov004_02247780;
 extern int data_020ccf94;
-void func_ov004_022289b8(unsigned char *self, unsigned char *p)
+void func_ov004_022289b8(unsigned char *self, unsigned char *p, int previous)
 {
     short sh;
     struct UnkStruct_022289b8 out, v;

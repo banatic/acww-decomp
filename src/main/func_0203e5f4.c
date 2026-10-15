@@ -13,7 +13,7 @@ struct Node {
 extern struct Node *data_021c72c4;            // 0x021c72c4
 extern struct Node *data_021c72b8;            // 0x021c72b8
 extern int (*data_020daa28[])(struct Node *); // 0x020daa28
-extern void func_020e8ce0(struct Node **list_head, struct Node *node);
+extern int func_020e8ce0(struct Node **list_head, struct Node *node);
 
 void func_0203e5f4(void)
 {

@@ -3,12 +3,12 @@
  */
 
 extern int func_ov096_0229c4dc(void *);
-extern short func_ov096_0229f0dc(void *, unsigned char);
+extern unsigned short func_ov096_0229f0dc(void *, unsigned char);
 extern int func_0204bd5c(short *);
 extern void func_020665f0(int, unsigned char);
-extern void func_ov002_02208a24(void *, int, unsigned char);
+extern int func_ov002_02208a24(void *, int, unsigned char);
 extern void func_0206fcb0(int);
-extern void func_ov096_022a18dc(void *, int);
+extern int func_ov096_022a18dc(void *, int);
 extern void func_ov096_022a1540(void *);
 extern unsigned int func_0204bd40(short *);
 extern int func_0204bd20(int, int);

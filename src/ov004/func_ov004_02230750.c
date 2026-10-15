@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov004_02230750(void) {}
+void func_ov004_02230750(void *callbackObject) {}

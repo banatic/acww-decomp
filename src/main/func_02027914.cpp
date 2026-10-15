@@ -42,7 +42,7 @@ extern u8 *func_020808b0(void *);
 extern int func_0204c228(UnkStruct_02027914_3 *);
 extern void func_0209b40c(void *, int);
 extern void func_0202da88(UnkStruct_02027914_4 *, void *);
-extern void func_02068484(int, UnkStruct_02027914_2 *, int);
+extern int func_02068484(int, UnkStruct_02027914_2 *, int);
 
 void func_02027914(UnkStruct_02027914_4 *o)
 {

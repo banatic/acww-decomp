@@ -3,10 +3,10 @@
  */
 
 extern int func_02073044(void);
-extern int func_020ebf70(int);
+extern int func_020ebf70(void);
 extern int func_02077a8c(void *);
 extern void *data_020ccf94;
-extern void func_02073918(void *, int);
+extern int func_02073918(void *, int);
 extern int func_02073d28(void *, int);
 extern void func_02077b3c(int, int, int);
 extern int func_02073e30(void *, int, int, void *, int, int, int, int, int, int);
@@ -15,7 +15,7 @@ int func_020758ac(void *a0)
 {
     void *o;
 
-    if (func_020ebf70(func_02073044()) == 0) {
+    if ((func_02073044(), func_020ebf70()) == 0) {
         goto fail;
     }
     if (func_02077a8c(a0) == 0) {

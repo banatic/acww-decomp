@@ -6,7 +6,7 @@
 
 #pragma opt_loop_invariants off
 extern char *func_ov004_0222c3a0(void *);
-extern int func_02057a50(void *, void *);
+extern int func_02057a50(void *, const char *name);
 extern int data_ov004_022478a4;
 extern void *data_ov004_02254e28[];
 
@@ -21,7 +21,7 @@ void func_ov004_0222d624(char *self)
     i = 0;
     m = data_ov004_022478a4;
     for (; i < 7; i++) {
-        int idx = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), data_ov004_02254e28[i]);
+        int idx = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), (const char *) (data_ov004_02254e28[i]));
         char *p = base + 4;
         u16 n = *(u16 *) (base + 0xa);
         char *q = p + n;

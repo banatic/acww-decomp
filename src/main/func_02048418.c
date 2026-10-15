@@ -4,8 +4,8 @@
 
 extern unsigned char data_021c79e4[];
 extern int func_020644cc(int);
-extern void func_02048e54(void);
-extern void func_02048cb8(int, int, int, int, int, void (*)(void), int);
+extern int func_02048cb8(int, int, int, int, int, int (*predicate)(int, int, int), int);
+extern int func_02048e54(void *, int, int);
 
 void func_02048418(int a, int b, int c, int d)
 {
@@ -18,7 +18,7 @@ void func_02048418(int a, int b, int c, int d)
     while (i > 0) {
         v1 = (v1 + 1 + func_020644cc(c - 1)) % c;
         v2 = (v2 + 1 + func_020644cc(d - 1)) % d;
-        func_02048cb8(a, b, v1 + 1, v2 + 1, 0x1549, func_02048e54, 1);
+        func_02048cb8(a, b, v1 + 1, v2 + 1, 0x1549, (((int (*)(int, int, int)) func_02048e54)), 1);
         i--;
     }
 }

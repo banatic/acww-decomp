@@ -6,7 +6,7 @@ typedef struct UnkStruct_02279044 {
     void *unk_00;
 } UnkStruct_02279044;
 
-extern void func_0202eb20(UnkStruct_02279044 *);
+extern void *func_0202eb20(UnkStruct_02279044 *);
 extern void func_020edb3c(UnkStruct_02279044 *);
 extern char data_ov082_0227978c;
 

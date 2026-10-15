@@ -10,17 +10,17 @@ extern int data_020d1a10[4];
 extern void *data_ov003_022383ac;
 extern void *data_ov003_022383c8;
 
-extern void func_0205556c(void *p, unsigned int tag, void *data);
+extern int func_0205556c(void *p, unsigned int tag, void *data);
 extern int func_ov003_0221a8c4(void *self);
 extern UnkStruct_0221b414 *func_020b03f8(void);
 extern void func_0203efb0(void *self, unsigned short v);
-extern void func_ov003_0221a004(void *self, int a);
+extern int func_ov003_0221a004(void *self, int a);
 extern void func_ov003_0221a7a0(void *self);
 extern void func_02031288(void *a, void *b, void *c, int d, int e, void *f, int g);
 extern void func_ov003_0221b064(void *self, int a, int b);
 extern void func_0200451c(void *p);
 extern void func_0203edd0(void *self);
-extern void func_ov003_02236254(void *self);
+extern int func_ov003_02236254(void *self);
 
 void func_ov003_0221b414(char *self)
 {

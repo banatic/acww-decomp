@@ -12,7 +12,7 @@ struct UnkStruct_0220c054_2 {
     struct UnkStruct_0220c054 *unk_12C;
 };
 
-extern void func_ov004_0220c144(struct UnkStruct_0220c054_2 *obj, int arg);
+extern int func_ov004_0220c144(struct UnkStruct_0220c054_2 *obj, int arg);
 
 void func_ov004_0220c054(struct UnkStruct_0220c054_2 *obj)
 {

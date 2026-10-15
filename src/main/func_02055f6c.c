@@ -6,7 +6,7 @@
 
 extern void func_021054e4(void *, int);
 extern int func_020658c4(void);
-extern int NNSi_G3dModifyMatFlag(void *, int, int);
+extern void NNSi_G3dModifyMatFlag(void *, int, int);
 
 typedef struct {
     char pad_00[0x5c];

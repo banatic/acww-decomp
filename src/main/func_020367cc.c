@@ -7,12 +7,12 @@ struct UnkStruct_020367cc {
     unsigned char flag;
 };
 
-extern void func_0203668c(struct UnkStruct_020367cc *, int);
+extern void func_0203668c(struct UnkStruct_020367cc *);
 extern void func_02036584(struct UnkStruct_020367cc *);
 
 void func_020367cc(struct UnkStruct_020367cc *obj)
 {
     obj->flag = 1;
-    func_0203668c(obj, 1);
+    func_0203668c(obj);
     func_02036584(obj);
 }

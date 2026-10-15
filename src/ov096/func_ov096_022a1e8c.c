@@ -4,7 +4,7 @@
 
 extern void func_ov002_0220919c(char *p);
 extern int func_ov096_0229c2fc(char *p, int a);
-extern int func_0206fe54(int a);
+extern int func_0206fe54(void);
 extern void func_ov002_02209eb8(char *p);
 extern void func_ov096_0229eab4(char *p);
 extern void func_ov094_0229a850(char *p, int a, void *b);
@@ -30,8 +30,8 @@ int func_ov096_022a1e8c(char *self)
     if (func_ov096_0229c2fc(self, 1) == 0) {
         return 1;
     }
-    if (func_0206fe54(
-            ((struct UnkStruct_022a1e8c *) (self + 0x2418))->vt->method((struct UnkStruct_022a1e8c *) (self + 0x2418))) != 0) {
+    if (((void) (((struct UnkStruct_022a1e8c *) (self + 0x2418))->vt->method((struct UnkStruct_022a1e8c *) (self + 0x2418))),
+         func_0206fe54()) != 0) {
         func_ov002_02209eb8(self + 0x2500);
     }
     func_ov096_0229eab4(self);

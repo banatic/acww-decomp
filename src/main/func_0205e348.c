@@ -6,8 +6,8 @@
 
 extern int data_020dd72c;
 extern int data_020dd734;
-extern int func_0205e1a8(void *s, int p1, int p2, u16 *p3);
-extern int func_0205e700(int base);
+extern int func_0205e1a8(void *s);
+extern int func_0205e700(void);
 extern int func_0205e878(int p);
 extern int func_02064af4(int a, int base, int cap);
 extern void func_0205e174(void *s, int i, int base);
@@ -16,8 +16,8 @@ extern int func_0205d6fc(void);
 extern void func_0205d3d4(int x, u16 *p3, int a5, int z1, int z2);
 extern int func_0205d25c(int x);
 extern int func_021077e8(int a);
-extern void func_0206439c(int a, int b, int *c, int *d);
-extern void func_0206435c(int a, int b, int *c, int *d);
+extern int func_0206439c(int a, int b, int *c, int *d);
+extern int func_0206435c(int a, int b, int *c, int *d);
 
 int func_0205e348(void *s, int p1, int p2, u16 *p3, int a5)
 {
@@ -32,8 +32,8 @@ int func_0205e348(void *s, int p1, int p2, u16 *p3, int a5)
     unsigned int ok;
     u16 v;
 
-    base = func_0205e1a8(s, p1, p2, p3);
-    cap = func_0205e700(base);
+    base = func_0205e1a8(s);
+    cap = func_0205e700();
     n = func_02064af4(func_0205e878(p1), base, cap);
     w = 0;
     if (n != 0) {

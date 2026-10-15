@@ -7,8 +7,8 @@ typedef struct UnkStruct_022a1978 {
     unsigned char unk_8D;
 } UnkStruct_022a1978;
 
-extern int func_0206f58c(UnkStruct_022a1978 *p);
-extern int func_0206f56c(int p);
+extern void func_0206f58c(void);
+extern int func_0206f56c(void);
 extern void func_ov112_0229ff5c(UnkStruct_022a1978 *p);
 extern void func_ov112_022a12a4(UnkStruct_022a1978 *p);
 extern void func_ov112_022a19ec(UnkStruct_022a1978 *p);
@@ -16,7 +16,8 @@ extern void func_ov112_022a122c(UnkStruct_022a1978 *p);
 
 int func_ov112_022a1978(UnkStruct_022a1978 *p)
 {
-    if (func_0206f56c(func_0206f58c(p)) != 0) {
+    func_0206f58c();
+    if (func_0206f56c() != 0) {
         switch (p->unk_8D) {
             case 0:
             case 1:

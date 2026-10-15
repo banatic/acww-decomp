@@ -3,7 +3,7 @@
  */
 
 extern void func_0209e474(unsigned char *buf);
-extern void func_020c1608(unsigned char *dst, unsigned char *src);
+extern int func_020c1608(unsigned char *dst, unsigned char *src);
 extern int func_020bb6b0(int a, int b);
 extern int func_020bb75c(int a, int b);
 extern signed char data_021f3b28[];

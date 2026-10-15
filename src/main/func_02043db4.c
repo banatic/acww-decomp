@@ -9,7 +9,7 @@ typedef struct {
     int y;
 } Point;
 
-extern void *func_0204e414(void *self, Point *pos, int op, int q);
+extern void *func_0204e414(void);
 extern int func_0204f5e0(void *node, int x4, int y4, int x_rem, int y_rem, int arg5);
 extern int func_02044390(void *self, int t, Point *pt, int q);
 extern int func_02044168(void *self, int t, Point *pt, int q);
@@ -22,7 +22,7 @@ int func_02043db4(void *self, Point *pos, int op, int q, u16 extra)
     int result;
     int t;
 
-    node = func_0204e414(self, pos, op, q);
+    node = func_0204e414();
     result = -1;
     if (node != 0) {
         int x = pos->x;

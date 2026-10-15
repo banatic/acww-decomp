@@ -10,13 +10,13 @@ typedef struct {
     unsigned short unk_58;
 } UnkStruct_0203a958;
 
-extern int func_0203a89c(UnkStruct_0203a958 *self, int a4, unsigned short a2);
+extern void func_0203a89c(UnkStruct_0203a958 *self);
 
-int func_0203a958(UnkStruct_0203a958 *self, int a1, unsigned short a2, int a3, int a4)
+void func_0203a958(UnkStruct_0203a958 *self, int a1, unsigned short a2, int a3, int a4)
 {
     self->unk_4C = a1;
     self->unk_58 = a2;
     self->unk_50 = a3;
     self->unk_54 = a4;
-    return func_0203a89c(self, a4, a2);
+    func_0203a89c(self);
 }

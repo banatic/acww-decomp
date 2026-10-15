@@ -4,7 +4,7 @@
 
 extern int FX_Div(int, int);
 extern int FX_MulFunc(int, int);
-extern void func_ov003_0221a35c(void *, int);
+extern int func_ov003_0221a35c(void *, int);
 extern int data_ov068_022786b8;
 extern int data_ov068_022786bc;
 

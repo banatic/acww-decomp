@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern int func_020eec48(int);
+extern int func_020eec48(void);
 extern int NNS_SndArcLoadGroup(int, int);
 extern int NNS_SndHeapSaveState(int);
 extern void OS_Terminate(void);
@@ -10,7 +10,7 @@ extern int data_021fd048;
 
 int func_020eecb0(int arg)
 {
-    int ret = func_020eec48(arg);
+    int ret = func_020eec48();
     if (NNS_SndArcLoadGroup(arg, data_021fd048) == 0) {
         return -1;
     }

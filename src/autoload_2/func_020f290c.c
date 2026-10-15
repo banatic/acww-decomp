@@ -2,17 +2,31 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020f4220(int a, int b, int c);
-extern int func_020f41f4(int a);
-extern int func_020f4038(int a);
-extern int func_020eef70(int a);
-extern int NNS_SndHeapSaveState(int a);
-extern char data_021fd1bc[];
+extern void func_020f4220(void *receiver, void *resource, int count);
+extern int func_020f4038(void);
+extern void *func_020eef70(void);
+extern int NNS_SndHeapSaveState(void *heap);
+extern unsigned char data_021fd1bc[];
+extern void func_020f41f4(void);
 
-void func_020f290c(int arg0)
+// clang-format off
+asm void func_020f290c(register void *receiver)
 {
-    func_020f4220(arg0, 0x245c0, 26);
-    func_020f41f4(arg0);
-    NNS_SndHeapSaveState(func_020eef70(func_020f4038(arg0)));
-    data_021fd1bc[0x62] = 0;
+    stmfd sp!, {r4, lr}
+    ldr r1, =0x245c0
+    mov r4, r0
+    mov r2, #26
+    bl func_020f4220
+    mov r0, r4
+    bl func_020f41f4
+    mov r0, r4
+    bl func_020f4038
+    bl func_020eef70
+    bl NNS_SndHeapSaveState
+    ldr r0, =data_021fd1bc
+    mov r1, #0
+    strb r1, [r0, #0x62]
+    ldmfd sp!, {r4, lr}
+    bx lr
 }
+// clang-format on

@@ -10,7 +10,7 @@
 extern int FX_MulFunc(int a, int b);
 extern short FX_SinCosTable_[];
 
-void func_02003260(void *a, void *b)
+void func_02003260(void *a)
 {
     int target;
     int np;

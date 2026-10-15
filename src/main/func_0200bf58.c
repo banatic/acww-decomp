@@ -13,7 +13,7 @@ extern void func_02010f5c(unsigned char *);
 extern int func_02056f94(unsigned char *);
 extern void func_02010a24(unsigned char *, int, int, int, int, int, int, int);
 extern void func_0201a698(unsigned char *, void *, int);
-extern void func_0200c3b0(unsigned char *, int, int, int);
+extern int func_0200c3b0(unsigned char *, int, int, int);
 extern unsigned char data_020c7600[];
 
 void func_0200bf58(unsigned char *self)

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203b7d0(int, int);
+extern int func_0203b7d0(int);
 
 void func_0203b994(int p0)
 {
@@ -19,5 +19,5 @@ void func_0203b994(int p0)
     *(int *) ((char *) (p0) + (316)) = *(int *) ((char *) (p0) + (360));
     *(int *) ((char *) (p0) + (320)) = *(int *) ((char *) (p0) + (364));
     *(int *) ((char *) (p0) + (324)) = *(int *) ((char *) (p0) + (368));
-    func_0203b7d0(p0, 324);
+    func_0203b7d0(p0);
 }

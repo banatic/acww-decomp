@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_02235f2c(void);
-extern void __cxa_vec_cleanup(void *a, int b, int c, void (*d)(void));
+extern void func_ov003_02235f2c(void *element);
+extern void __cxa_vec_cleanup(void *a, int b, int c, void (*d)(void *));
 
 void *func_ov003_02235f10(void *self)
 {

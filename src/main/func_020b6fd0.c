@@ -18,8 +18,8 @@ extern void func_020a6ef0(int);
 extern void func_0203f070(void);
 extern int func_020b5e84(void *);
 extern void func_020b7228(void);
-extern void func_020b6590(void);
-extern void func_020b7e84(void);
+extern int func_020b6590(void);
+extern void func_020b7e84(void *);
 extern void func_020b7130(void);
 extern void func_020b71dc(int);
 
@@ -43,8 +43,7 @@ int func_020b6fd0(void)
     data_020e54ac = (unsigned char) func_020b5e84(&data_021f69d0);
     func_020b7228();
     data_021c8ca0 = &data_021f693c;
-    func_020b6590();
-    func_020b7e84();
+    func_020b7e84((void *) func_020b6590());
     data_021f692c = 0;
     data_021f6944 = data_020e54ac;
     func_020b7130();

@@ -4,10 +4,10 @@
 
 extern void *data_020ccf94;
 
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 extern int func_02077a8c(void *a);
-extern void func_02073918(void *g, int k);
+extern int func_02073918(void *g, int k);
 extern unsigned char *func_02073d28(void *g, int k);
 extern void func_02077b3c(void *p, int a, int b);
 extern int func_02073dd4(void *g, unsigned int i);

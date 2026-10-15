@@ -7,11 +7,12 @@
 extern void func_ov004_0222b9b4(void *, void *);
 extern int func_ov004_0222b9d4(void *, int, int, int, int);
 
-int func_ov004_0222b88c(char *self, int a1)
+void func_ov004_0222b88c(char *self, int a1)
 {
     // DECLS
     char frame[0x8];
     // ENDDECLS
     func_ov004_0222b9b4(self + 0x8f0, frame);
-    return func_ov004_0222b9d4(self, *(u8 *) (frame), 0x0, 0x6, a1);
+    func_ov004_0222b9d4(self, *(u8 *) (frame), 0x0, 0x6, a1);
+    return;
 }

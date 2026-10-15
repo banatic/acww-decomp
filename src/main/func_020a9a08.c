@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void strncpy(void *dest, const void *src, unsigned int size);
+extern char *strncpy(void *dest, const void *src, unsigned int size);
 extern int FS_OpenFile(const void *a, const void *b);
 
 typedef struct {

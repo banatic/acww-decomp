@@ -21,11 +21,11 @@ typedef struct {
     u8 pad_12[0xa];
 } Buf;
 
-extern void func_0200e92c(Buf *);
+extern unsigned int func_0200e92c(Buf *);
 extern void func_0200e90c(Buf *, int, unsigned int, short);
 extern void func_ov003_0220f57c(UnkStruct_0220f538 *, Vec);
 extern void *func_0200e894(void *, Buf *);
-extern void func_0200e91c(Buf *);
+extern int func_0200e91c(Buf *);
 
 void *func_ov003_0220f538(void *a0, Vec v, unsigned int a4, short a5)
 {

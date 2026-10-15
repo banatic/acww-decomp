@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern __arm void func_020ee62c(void *);
-extern __arm void func_020edf54(void *);
+extern void func_020ee62c(void *);
+extern void func_020edf54(void *);
 
 struct UnkStruct_020b943c {
     union {

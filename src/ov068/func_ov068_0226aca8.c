@@ -4,7 +4,7 @@
 
 extern int func_020984e8(void);
 extern int func_02099870(int);
-extern int func_020951bc(void);
+extern int func_020951bc(void *argument0);
 extern int func_020807a8(int, int);
 extern int func_02081d20(int);
 extern int func_020644cc(int);
@@ -22,7 +22,7 @@ int func_ov068_0226aca8(int unused, int *out1, int *out2, int val1, int val2)
     } else {
         sp0 = 0;
     }
-    if (sp0 == 0 || func_020951bc() == 0) {
+    if (sp0 == 0 || func_020951bc((void *) sp0) == 0) {
         goto fail;
     }
 

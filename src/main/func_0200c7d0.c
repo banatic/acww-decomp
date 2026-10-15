@@ -3,8 +3,8 @@
  */
 
 extern void func_0200c89c(void *param1, void *param2, void *param3, void *param4);
-extern void func_0200c904(void *param1, unsigned short param2, unsigned char param3, unsigned char param4, int param5,
-                          void *param6);
+extern int func_0200c904(void *param1, unsigned short param2, unsigned char param3, unsigned char param4, int param5,
+                         void *param6);
 
 void func_0200c7d0(void *param1, void *param2)
 {

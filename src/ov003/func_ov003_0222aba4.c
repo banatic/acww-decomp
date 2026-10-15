@@ -45,7 +45,7 @@ extern u8 data_020cb786[];
 extern u8 data_ov003_0223c016[];
 extern u8 data_ov003_0223c017[];
 
-extern void func_ov003_0222a784(UnkStruct_0222aba4_4 *s);
+extern int func_ov003_0222a784(UnkStruct_0222aba4_4 *s);
 extern void func_02095764(UnkStruct_0222aba4_3 *w, int n);
 extern void func_0206026c(UnkStruct_0222aba4_2 *h, int n);
 extern int func_ov003_0222793c(int a, int b);

@@ -14,7 +14,7 @@ extern void func_0204f794(void *out, int a, int b);
 extern unsigned short func_ov107_0229d0f0(struct UnkStruct_0229c378 *p, unsigned char byte);
 extern int func_ov003_02219b90(void *a, void *b);
 extern void func_ov107_0229caa8(struct UnkStruct_0229c378 *p);
-extern void func_ov002_02208098(struct UnkStruct_0229c378 *p, int val);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov107_0229c378(struct UnkStruct_0229c378 *p)
 {
@@ -24,6 +24,6 @@ void func_ov107_0229c378(struct UnkStruct_0229c378 *p)
     s = func_ov107_0229d0f0(p, p->b9);
     if (func_ov003_02219b90(arr, &s)) {
         func_ov107_0229caa8(p);
-        func_ov002_02208098(p, 0x14);
+        func_ov002_02208098((void *) (p), 0x14);
     }
 }

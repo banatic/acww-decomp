@@ -11,14 +11,14 @@ extern int func_02077b20(char *p);
 extern void func_02073cf0(UnkStruct_02075050 *g, int a, int t);
 extern int func_02077b28(char *p);
 extern int func_02077b14(char *p);
-extern void func_02075240(char *a, unsigned int b, int c, int d);
+extern void func_02075240(char *payload, unsigned int length, int player, int index);
 extern void func_020731a4(UnkStruct_02075050 *g, int a);
 extern int func_02073928(UnkStruct_02075050 *g, int a);
 extern void func_02073bac(UnkStruct_02075050 *g, int a, int b, unsigned int c);
 extern void func_0207399c(UnkStruct_02075050 *g, int a);
 extern int func_02073c04(UnkStruct_02075050 *g, int a, int b);
-extern void func_02073044(void);
-extern void func_020ec338(unsigned short a, int b, int c);
+extern unsigned int func_02073044(void);
+extern int func_020ec338(unsigned short a, int b, int c);
 
 void func_02075050(int a, char *p, unsigned int n)
 {

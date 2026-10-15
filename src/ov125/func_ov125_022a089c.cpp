@@ -39,7 +39,7 @@ extern void func_ov002_0220ad18(Blk *, int);
 extern void func_ov124_0229ef08(Blk *, int, int);
 extern int func_ov125_0229fe40(UnkStruct_022a089c_3 *, unsigned char);
 extern int func_ov125_0229fe4c(UnkStruct_022a089c_3 *, unsigned char);
-extern void func_020896b8(int, UnkStruct_022a089c *, int, int, int, int, int);
+extern int func_020896b8(int, UnkStruct_022a089c *, int, int, int, int, int);
 extern UnkStruct_022a089c data_ov125_022a0a28;
 }
 

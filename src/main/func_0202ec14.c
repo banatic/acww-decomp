@@ -2,15 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0201b744(void);
-extern int func_02083068(void *);
+extern int func_0201b744(unsigned char *);
+extern void func_02083068(void *);
 
 int func_0202ec14(void *arg0)
 {
     int result;
     void *ptr;
 
-    if (func_0201b744() == 0) {
+    if (func_0201b744(arg0) == 0) {
         return 0;
     }
     ptr = (char *) arg0 + 0x640;

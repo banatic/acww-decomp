@@ -14,8 +14,8 @@ struct E {
 
 extern "C" void func_0206844c(int, unsigned char *, void *);
 extern void *data_ov046_02261fe8;
-extern "C" int func_020ab504(void);
-extern "C" void func_020160b4(void);
+extern "C" int func_020ab504(void *);
+extern "C" int func_020160b4(void *arg0);
 
 void Obj_ov046_0226204c::func_ov046_02260abc()
 {
@@ -25,8 +25,7 @@ void Obj_ov046_0226204c::func_ov046_02260abc()
     int r;
     unsigned char c;
 
-    func_020160b4();
-    r = func_020ab504();
+    r = func_020ab504((void *) func_020160b4((void *) this));
     next = 0xff;
     {
         static E tbl[26] = {

@@ -6,7 +6,7 @@
 #include "cpp/ov118/Obj_ov118_0229cc08.h"
 
 extern "C" int func_ov002_02209f64(void *);
-extern "C" int func_ov002_02208098(void *, unsigned char);
+extern "C" unsigned char *func_ov002_02208098(void *, unsigned char);
 
 void Obj_ov118_0229cc08::func_ov118_0229bb48()
 {

@@ -52,7 +52,7 @@ void func_0201afd4(void *dst, void *src);
 void func_0201b350(void *dst, int value);
 void func_02016764(void *dst, UnkStruct_02018b60 *src, int vret, unsigned short g, int s1, int s2, int s3, int s4);
 void func_02012444(int data, unsigned short g, int c);
-void func_02019af0(unsigned char *p);
+void func_02019af0(void *, unsigned long);
 }
 
 extern volatile unsigned short data_020c80f8;
@@ -77,6 +77,6 @@ extern "C" int func_02018b60(unsigned char *p, UnkStruct_02018b60 *q)
         func_02012444(*(int *) ((char *) q + 0x628), r6, 0);
     }
     *((unsigned char *) p + 0x98) = 0;
-    func_02019af0(p);
+    func_02019af0(p, 0);
     return 0;
 }

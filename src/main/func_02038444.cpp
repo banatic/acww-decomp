@@ -30,10 +30,10 @@ struct UnkStruct_02038444_2 {
 extern "C" {
 extern void func_020a8c1c(Blk *);
 extern void *func_020a7bf4(void *, int);
-extern void func_020a8a34(Blk *, void *);
+extern int func_020a8a34(Blk *, void *);
 extern int func_020a8f74(Blk *);
-extern void func_020a89f8(Blk *, void *);
-extern void func_020a89dc(Blk *, Blk *);
+extern int func_020a89f8(Blk *, void *);
+extern int func_020a89dc(Blk *, Blk *);
 extern void *func_02038b80(void);
 extern UnkStruct_02038444 data_020da4d0;
 extern unsigned char data_021c5934;

@@ -3,7 +3,7 @@
  */
 
 extern void *func_02082c98(void *);
-extern void *func_0205e8e4(void *, int);
+extern void *func_0205e8e4(void *);
 extern void func_0205ea60(void *);
 
 void func_02012250(char *p, char *q)
@@ -14,7 +14,7 @@ void func_02012250(char *p, char *q)
 
     if (res) {
         value = *(int *) (q + 0x198);
-        sub = (int *) ((char *) func_0205e8e4(res, 0x198) + 0x9c);
+        sub = (int *) ((char *) func_0205e8e4(res) + 0x9c);
         sub[4] = value;
         func_0205ea60(res);
     }

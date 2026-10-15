@@ -30,8 +30,8 @@ extern u8 data_021f43e8;
 extern int func_020a12c0(void);
 extern int func_020a12d4(void);
 extern int func_020984e8(void);
-extern void func_02099870(void);
-extern int func_020950c0(void);
+extern int func_02099870(int argument0);
+extern int func_020950c0(void *argument0);
 extern void func_02099834(int t, int a);
 extern void func_020997e0(int t, int a);
 extern void func_02099808(int t, int a);
@@ -51,8 +51,8 @@ void func_ov051_02260b60(UnkStruct_02260b60_2 *self)
 
     if (func_020a12c0() != 0 || func_020a12d4() != 0) {
         t = func_020984e8();
-        func_02099870();
-        k = func_020950c0();
+
+        k = func_020950c0((void *) func_02099870(t));
         if (k == 0) {
             w = data_ov051_022614cc[*(int *) (self->unk_B0 + 0x714)].w[k];
             code = (u8) w;

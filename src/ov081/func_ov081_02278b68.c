@@ -41,13 +41,13 @@ typedef struct {
     int b;
 } UnkStruct_02278b68_2;
 
-extern void func_020154b4(void *, u16 *, int, int, int);
-extern void func_0209a000(u16 *, int);
+extern int func_020154b4(void *, u16 *, int, int, int);
+extern int func_0209a000(u16 *, int);
 extern void func_0206844c(int, u8 *, void *);
 extern int func_02015094(UnkStruct_02278b68_3 *);
 extern int func_020984e8(void);
 extern int func_02099670(int);
-extern int func_02088b38(int, int);
+extern void func_02088b38(int, int);
 extern int func_02086744(void *);
 extern int func_ov081_02278da8(UnkStruct_02278b68_3 *);
 extern void func_02086754(void *, void *);
@@ -62,9 +62,9 @@ extern void func_02063cc8(UnkStruct_02278b68_2 *);
 extern void func_02015de4(UnkStruct_02278b68_3 *, u16 *, int, int);
 extern int func_0202ea80(int, int);
 extern void func_020157d4(UnkStruct_02278b68_3 *, void *, int, int);
-extern void func_02015828(UnkStruct_02278b68_3 *, int);
+extern int func_02015828(UnkStruct_02278b68_3 *, int);
 extern void func_ov081_0227915c(UnkStruct_02278b68_3 *, int);
-extern void func_ov081_02279124(void);
+extern unsigned short func_ov081_02279124(void *argument0, int argument1);
 
 extern char data_ov081_02279868;
 extern char data_ov081_02279878;

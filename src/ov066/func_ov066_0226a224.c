@@ -3,7 +3,7 @@
  */
 
 extern int WM_GetAllowedChannel(void);
-extern int MATH_CountPopulation(void);
+extern int MATH_CountPopulation(unsigned int bits);
 extern void func_ov066_0226686c(int);
 
 typedef struct {
@@ -24,7 +24,7 @@ void func_ov066_0226a224(void)
         return;
     } else {
         data_ov066_0226bdf4->unk_90 = v;
-        data_ov066_0226bdf4->unk_92 = MATH_CountPopulation();
+        data_ov066_0226bdf4->unk_92 = MATH_CountPopulation((unsigned int) v);
         return;
     }
 }

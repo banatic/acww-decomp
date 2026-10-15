@@ -3,7 +3,7 @@
  */
 
 extern int func_02064cf8(void *buffer, int arg1);
-extern void FS_CloseFile(void *buffer);
+extern int FS_CloseFile(void *buffer);
 
 int func_02064858(int arg0)
 {

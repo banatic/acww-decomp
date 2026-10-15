@@ -3,7 +3,7 @@
  */
 
 extern void func_0209e474(void *);
-extern void func_020bb1d4(void *, void *);
+extern int func_020bb1d4(void *, void *);
 extern void func_0209e100(void *, int);
 extern int func_020bb214(void *, void *);
 extern void MI_CpuCopy8(void *, const void *, int);

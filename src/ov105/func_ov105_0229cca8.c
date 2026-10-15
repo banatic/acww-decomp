@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_02207d24(void *ptr, int val);
+extern int func_ov002_02207d24(void *ptr, int val);
 extern void func_ov002_0220a374(void *ptr, int val);
-extern void func_ov002_02208098(void *ptr, int val);
+extern unsigned char *func_ov002_02208098(void *ptr, unsigned char value);
 
 struct UnkStruct_0229cca8 {
     char pad_00[0x8d];

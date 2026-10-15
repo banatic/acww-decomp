@@ -48,7 +48,7 @@ struct St {
 };
 extern "C" {
 extern int func_ov068_022697cc(St *, UnkStruct_02269548 *, int);
-extern void func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
+extern int func_02019d0c(void *, int, int, int, int, int, int, int, int, int, int);
 extern void func_ov068_0226cce8(St *, UnkStruct_02269548 *, int);
 extern int func_ov068_0226c0e0(St *, UnkStruct_02269548 *);
 extern int func_ov068_02269814(St *, UnkStruct_02269548 *);

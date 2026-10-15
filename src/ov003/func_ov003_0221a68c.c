@@ -8,8 +8,8 @@ extern int data_021c80bc;
 
 extern void *func_020961a8(int a);
 extern void func_0204f818(int *x, int *y, void *pos);
-extern int func_0204f5e0(int g, int qx, int qy, int rx, int ry, int f);
-extern int func_0204c71c(void);
+extern void *func_0204f5e0(int g, int qx, int qy, int rx, int ry, int f);
+extern int func_0204c71c(unsigned short *entry);
 extern int func_02031078(int x, int y, int *u, int *v, int *w);
 extern int func_02031b38(int x, int y);
 extern int func_02031acc(int x, int y);
@@ -23,6 +23,7 @@ int func_ov003_0221a68c(void *pos)
     int bx, by;
     int qx, qy;
     int c0;
+    unsigned short *entry;
     int r;
     // DECLS
     int dy;
@@ -45,8 +46,8 @@ int func_ov003_0221a68c(void *pos)
         ly = by;
         qx = lx >> 4;
         qy = ly >> 4;
-        if (func_0204f5e0(g, qx, qy, bx - (qx << 4), by - (qy << 4), 0) != 0) {
-            if (func_0204c71c() != 0) {
+        if ((entry = func_0204f5e0(g, qx, qy, bx - (qx << 4), by - (qy << 4), 0)) != 0) {
+            if (func_0204c71c(entry) != 0) {
                 return 0;
             }
         }

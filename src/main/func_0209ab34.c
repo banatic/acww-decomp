@@ -5,7 +5,7 @@
 extern int func_0209ad9c(char *a, int b);
 extern int func_0207cb9c(int *a, int b, int c);
 extern int func_0208150c(int a);
-extern void func_0209b4d8(int a, int b, int c, int d);
+extern int func_0209b4d8(int a, int b, int c, int d);
 extern void func_02003728(char *a, int b);
 extern int data_021e5a2c[];
 

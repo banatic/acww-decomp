@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec14(void);
+extern int func_0202ec14(void *arg0);
 extern void func_0209129c(int);
 
 typedef struct {
@@ -12,7 +12,7 @@ typedef struct {
 
 int func_ov046_02261a6c(UnkStruct_02261a6c *self)
 {
-    if (func_0202ec14() == 0) {
+    if (func_0202ec14((void *) self) == 0) {
         return 0;
     }
     if (self->unk_740 != -1) {

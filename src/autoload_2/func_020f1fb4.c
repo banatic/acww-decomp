@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void func_020eedb8(int seq, int a, void *h);
-extern void func_020eede8(int seq, int a);
+extern int func_020eedb8(int seq, int a, void *h);
+extern int func_020eede8(int seq, int a);
 extern void func_020f12cc(void *p, int a);
 
 typedef struct {

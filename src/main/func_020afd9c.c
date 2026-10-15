@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203d7b0(int, void *);
-extern void func_0203d79c(int, void *);
+extern int func_0203d7b0(int, void *);
+extern int func_0203d79c(int, void *);
 extern void *func_020644cc(int);
-extern void func_02077f14(void *, const void *);
+extern void *func_02077f14(void *, const void *);
 extern char data_020e41c4[];
 
 void func_020afd9c(void *arg0, void *arg1)

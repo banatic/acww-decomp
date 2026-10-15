@@ -3,15 +3,15 @@
  */
 
 extern int func_02090638(void *, int);
-extern void func_02055478(void *, int);
-extern void func_02055140(void *, int);
+extern int func_02055478(void *, int);
+extern int func_02055140(void *, int);
 extern void func_02055060(void *, int, int, int, int, int);
 extern void func_02055050(void *);
-extern void func_0205650c(void *, int, int);
+extern int func_0205650c(void *, int, int);
 extern void func_02056478(void *, int, int, int, int);
 extern int func_02055e00(void *);
 extern void func_020563dc(void *, int);
-extern void func_020564d0(void *, int, int);
+extern int func_020564d0(void *, int, int);
 
 extern int NNS_G3dGetJntAnmSet(int);
 extern int func_02107b44(int, int);

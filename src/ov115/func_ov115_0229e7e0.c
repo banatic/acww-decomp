@@ -3,12 +3,12 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void *obj);
-extern void func_ov002_02209ccc(void *obj);
-extern void func_ov114_0229da18(void *obj);
-extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*cb)(void), void (*arg)(void));
-extern void func_02070be8(void);
-extern void func_02070c08(void);
+extern void *func_ov002_0220830c(void *obj);
+extern void *func_ov002_02209ccc(void *obj);
+extern void *func_ov114_0229da18(void *obj);
+extern void __cxa_vec_ctor(void *ptr, int a, int b, void (*cb)(void *), void (*arg)(void *));
+extern int **func_02070be8(void *argument0);
+extern void *func_02070c08(void *argument0);
 extern char data_ov115_0229e8b8;
 
 typedef struct {
@@ -21,6 +21,9 @@ typedef struct {
     char unk_13B8;
 } UnkStruct_0229e7e0;
 
+#define VisitElement_02070c08 (void (*)(void *)) func_02070c08
+#define VisitElement_02070be8 (void (*)(void *)) func_02070be8
+
 void *func_ov115_0229e7e0(void)
 {
     UnkStruct_0229e7e0 *obj = func_ov002_02207f80(0x1430);
@@ -29,7 +32,10 @@ void *func_ov115_0229e7e0(void)
         obj->vtable = &data_ov115_0229e8b8;
         func_ov002_02209ccc(&obj->unk_94);
         func_ov114_0229da18(&obj->unk_F8);
-        __cxa_vec_ctor(&obj->unk_13B8, 1, 0x6c, func_02070c08, func_02070be8);
+        __cxa_vec_ctor(&obj->unk_13B8, 1, 0x6c, VisitElement_02070c08, VisitElement_02070be8);
     }
     return obj;
 }
+
+#undef VisitElement_02070c08
+#undef VisitElement_02070be8

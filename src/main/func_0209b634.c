@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209c3e4(void *p);
-extern void func_0209bb48(void *p);
+extern void *func_0209c3e4(void *p);
+extern void *func_0209bb48(void *p);
 
 void *func_0209b634(void *p)
 {

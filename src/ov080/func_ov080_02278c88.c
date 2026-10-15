@@ -10,7 +10,7 @@ extern int func_02099e9c(unsigned short *ptr);
 extern int func_0203cc38(void);
 extern int func_02099fe8(void);
 extern void *func_02098844(void *table, int index);
-extern int func_02099a28(void);
+extern int func_02099a28(unsigned int object);
 extern int func_0203cc1c(void);
 
 extern char data_ov080_022793a8;
@@ -70,7 +70,7 @@ void func_ov080_02278c88(InputType *self, OutputType *out)
             } else {
                 for (i = 0; i < 4; i++) {
                     void *p = func_02098844(&data_021dc7bc, i);
-                    if (p != 0 && func_02099a28() != 0 && p != handle && func_02099020(p, 0x21) != 0) {
+                    if (p != 0 && func_02099a28((unsigned int) p) != 0 && p != handle && func_02099020(p, 0x21) != 0) {
                         out->status = 2;
                         return;
                     }
@@ -89,7 +89,7 @@ void func_ov080_02278c88(InputType *self, OutputType *out)
             } else {
                 for (i = 0; i < 4; i++) {
                     void *p = func_02098844(&data_021dc7bc, i);
-                    if (p != 0 && func_02099a28() != 0 && p != handle && func_02099020(p, 0x22) != 0) {
+                    if (p != 0 && func_02099a28((unsigned int) p) != 0 && p != handle && func_02099020(p, 0x22) != 0) {
                         out->status = 5;
                         return;
                     }

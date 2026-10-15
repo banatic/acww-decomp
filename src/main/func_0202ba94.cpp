@@ -44,7 +44,7 @@ void *func_0209bbf8(unsigned int);
 void *func_0209ad9c(void *, void *);
 void *func_0209b4d4(void *);
 int func_0209bba0(void *);
-void *func_0209bc20(void *);
+void *func_0209bc20(void *record);
 int func_0209e3ac(void *, void *, int);
 void func_0202da88(UnkStruct_0202ba94_2 *, void *);
 void func_0202d9d0(UnkStruct_0202ba94_2 *, void *);
@@ -59,7 +59,7 @@ int func_0209bd44(void *);
 void *func_0208150c(void *);
 int func_0209aebc(void *, void *);
 int func_0202d9c4(UnkStruct_0202ba94_2 *);
-void func_02068484(void *, SS *, int);
+int func_02068484(void *, SS *, int);
 void func_0202ba94(UnkStruct_0202ba94_2 *self);
 }
 

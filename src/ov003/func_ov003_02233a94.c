@@ -6,10 +6,10 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern void func_02034270(int *ctx, Vec3 *p, int a, int b);
+extern int func_02034270(int *ctx, Vec3 *p, int a, int b);
 extern int func_020341c8(int *ctx, int a);
 extern void func_0203423c(int *ctx);
-extern int func_020310c8(int a);
+extern int func_020310c8(void);
 extern int func_020644cc(int n);
 extern short func_0200322c(Vec3 *a, Vec3 *b);
 extern int func_020e908c(Vec3 *a, Vec3 *b, int c, int d, int e);
@@ -18,7 +18,7 @@ extern void func_020550e4(unsigned char *p, int a);
 extern void func_ov003_02234cc4(unsigned char *self);
 extern void func_ov003_022339f0(unsigned char *self);
 extern int func_ov003_02235b54(unsigned char *self, int a, int b);
-extern void func_ov003_02235454(unsigned char *self);
+extern int func_ov003_02235454(unsigned char *self);
 extern void func_ov003_02230f60(unsigned char *self);
 extern int func_ov003_02232598(unsigned char *self, int n);
 
@@ -72,9 +72,19 @@ void func_ov003_02233a94(unsigned char *self)
         } else {
             vy = func_020341c8(ctx, 1);
             if (vy > 0x4000) {
-                vy = func_020310c8(0);
+                // clang-format off
+                asm {
+                    mov r0, #0
+                }
+                // clang-format on
+                vy = func_020310c8();
             } else {
-                vy = vy + func_020310c8(0);
+                // clang-format off
+                asm {
+                    mov r0, #0
+                }
+                // clang-format on
+                vy = vy + func_020310c8();
             }
         }
         if (func_020e8bb0(&pos->y, vy, spd, 0x1000, 0x266) == 0 && hit != 0 && state != 0xb && state != 9) {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void OS_SendMessage(void *mq, int msg, int flags);
+extern int OS_SendMessage(void *mq, int msg, int flags);
 extern int data_021fbf98;
 struct Entry {
     unsigned int a;

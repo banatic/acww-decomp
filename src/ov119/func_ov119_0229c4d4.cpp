@@ -16,7 +16,7 @@ extern "C" int func_ov119_0229a420(struct UnkStruct_0229c4d4 *, int);
 extern "C" void func_ov119_0229a400(struct UnkStruct_0229c4d4 *, int);
 extern "C" void func_ov119_0229a968(struct UnkStruct_0229c4d4 *);
 extern "C" int func_ov002_02207f48(struct UnkStruct_0229c4d4 *, int);
-extern "C" void func_ov002_022080a0(struct UnkStruct_0229c4d4 *, int);
+extern "C" unsigned char *func_ov002_022080a0(struct UnkStruct_0229c4d4 *, unsigned char value);
 extern "C" void func_ov119_0229bbe4(struct UnkStruct_0229c4d4 *);
 extern "C" void func_ov002_02207e80(struct UnkStruct_0229c4d4 *, int, int, int);
 extern "C" int func_ov002_02207f60(struct UnkStruct_0229c4d4 *);

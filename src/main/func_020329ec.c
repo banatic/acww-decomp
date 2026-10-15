@@ -6,7 +6,7 @@ struct UnkStruct_020329ec;
 
 extern int func_02031c50(void);
 extern int func_02032eb8(void *q, unsigned int a, unsigned int *sub, unsigned int *out, unsigned int b, int c);
-extern void func_02032f0c(void *q, unsigned int a, unsigned int b, struct UnkStruct_020329ec *arg3, unsigned int c, int d);
+extern int func_02032f0c(void *q, unsigned int a, unsigned int b, struct UnkStruct_020329ec *arg3, unsigned int c, int d);
 
 struct UnkStruct_020329ec {
     unsigned int unk_00;

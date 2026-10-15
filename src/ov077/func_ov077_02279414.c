@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0202ec14(void);
-extern int func_0203e304(void);
+extern int func_0202ec14(void *parameter0);
+extern void func_0203e304(void);
 
-int func_ov077_02279414(void)
+int func_ov077_02279414(void *arg0)
 {
-    if (func_0202ec14() == 0) {
+    if (func_0202ec14((void *) arg0) == 0) {
         return 0;
     }
     func_0203e304();

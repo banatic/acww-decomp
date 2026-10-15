@@ -19,7 +19,7 @@ extern int data_021c249c;
 extern "C" void func_0202da88(UnkStruct_020206d0_2 *self, void *tbl);
 
 extern "C" void func_0206844c(int a, void *b, int c);
-extern "C" void func_020155cc(UnkStruct_020206d0_2 *self);
+extern "C" int func_020155cc(UnkStruct_020206d0_2 *self);
 extern "C" void func_020206d0(UnkStruct_020206d0_2 *self)
 {
     unsigned char arg;

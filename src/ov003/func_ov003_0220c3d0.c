@@ -17,19 +17,19 @@ extern int func_020ea990(Vec *, Vec *);
 extern void func_0200fa8c(Vec *, UnkStruct_0220c3d0 *);
 extern int func_0200ff28(UnkStruct_0220c3d0 *, Vec *, int, int);
 extern int func_0200ffec(UnkStruct_0220c3d0 *);
-extern void func_ov003_0220fb30(UnkStruct_0220c3d0 *, int, int, int, int, int, int);
-extern void func_ov003_02217234(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_02212c58(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_02214644(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_0220fb30(UnkStruct_0220c3d0 *, int, int, int, int, int, int);
+extern int func_ov003_02217234(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_02212c58(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_02214644(UnkStruct_0220c3d0 *, int, int);
 extern int func_ov003_0220ced4(UnkStruct_0220c3d0 *, Vec *, Vec *);
-extern void func_ov003_02215f00(UnkStruct_0220c3d0 *, Vec *, int, int);
-extern void func_ov003_02215ce4(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_0221066c(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_02210354(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_0220d8bc(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_0220ddb0(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_0220dbb4(UnkStruct_0220c3d0 *, int, int);
-extern void func_ov003_02217450(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_02215f00(UnkStruct_0220c3d0 *, Vec *, int, int);
+extern int func_ov003_02215ce4(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_0221066c(UnkStruct_0220c3d0 *, int, int);
+extern void *func_ov003_02210354(UnkStruct_0220c3d0 *, int, int);
+extern void *func_ov003_0220d8bc(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_0220ddb0(UnkStruct_0220c3d0 *, int, int);
+extern int func_ov003_0220dbb4(UnkStruct_0220c3d0 *, int, int);
+extern void *func_ov003_02217450(UnkStruct_0220c3d0 *, int, int);
 
 int func_ov003_0220c3d0(UnkStruct_0220c3d0 *self, int ev, Vec *arg)
 {

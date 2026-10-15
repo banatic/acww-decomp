@@ -7,7 +7,7 @@ typedef struct UnkStruct_020a9298 {
 } UnkStruct_020a9298;
 
 extern char data_020e3de4;
-extern void func_020a941c(UnkStruct_020a9298 *param);
+extern void *func_020a941c(UnkStruct_020a9298 *param);
 
 UnkStruct_020a9298 *func_020a9298(UnkStruct_020a9298 *param)
 {

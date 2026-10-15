@@ -12,7 +12,7 @@ struct UnkStruct_0229d300 {
 };
 
 extern int func_ov002_02209f64(char *arg);
-extern void func_ov002_02208098(struct UnkStruct_0229d300 *arg, unsigned char byte);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov108_0229caec(struct UnkStruct_0229d300 *arg, unsigned char byte);
 extern void func_ov108_0229db9c(struct UnkStruct_0229d300 *arg);
 extern void func_ov108_0229c940(struct UnkStruct_0229d300 *arg);
@@ -20,7 +20,7 @@ extern void func_ov108_0229c940(struct UnkStruct_0229d300 *arg);
 void func_ov108_0229d300(struct UnkStruct_0229d300 *s)
 {
     if (func_ov002_02209f64(&s->sub) == 0) {
-        func_ov002_02208098(s, s->unk_2B3);
+        func_ov002_02208098((void *) (s), s->unk_2B3);
         if (s->unk_2B3 == 6) {
             func_ov108_0229caec(s, s->unk_2B0);
         }

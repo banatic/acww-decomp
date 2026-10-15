@@ -2,6 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern void func_02066688(void *object);
+
 extern void *func_02098844(void *addr, int idx);
 extern int func_02099020(void *arg, int val);
 extern void func_02066694(void *obj);
@@ -11,7 +13,7 @@ extern void func_02066024(void *obj, void *sub, void *a, void *b, void *c, int d
 extern void func_02063ccc(void *buf, int a, int b);
 extern void func_020638d4(void *p, void *q, int a, int b, int c, int d, int e);
 extern void func_02063cc8(void *buf);
-extern void func_02065ed0(void *obj, unsigned short s, int flag);
+extern unsigned short func_02065ed0(void *obj, unsigned short s, int flag);
 extern int func_02097a54(void *obj);
 extern void func_02098fd0(void *arg, int val);
 

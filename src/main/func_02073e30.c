@@ -2,18 +2,18 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02073044(void *a);
+extern unsigned int func_02073044(void);
 extern int func_020ebeb8(int a, int b, int c, int d, int e, int f, unsigned short g, int h, int i, int j, unsigned short k,
                          int l);
 extern int func_02073d70(void *a);
-extern void func_02077b28(int a);
+extern int func_02077b28(int a);
 extern void func_02073180(void *a, int b);
-extern void func_02077a64(void);
+extern int func_02077a64(void);
 extern void func_02073168(void *a, int b);
 
 int func_02073e30(void *p1, int p2, int p3, int p4, int p5, int p6, unsigned short p7, int p8, int p9, unsigned short p10)
 {
-    func_02073044(p1);
+    func_02073044();
     if (func_020ebeb8(p2, p3, p4, 0, p5, p6, p7, 0, p8, p9, p10, 0) != 0) {
         if (func_02073d70(p1) != 2) {
             if (p2 != 0 || p5 != 0 || p8 != 0) {

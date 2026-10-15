@@ -36,7 +36,7 @@ class UnkStruct_02217af4 {
     virtual void s27();
     virtual void s28(int a, int b);
 };
-extern "C" int func_0206fbc0(UnkStruct_02217af4 *self);
+extern "C" int func_0206fbc0(void);
 extern "C" int func_0206fc6c(void);
 extern "C" int func_0206fc8c(void);
 extern "C" int func_0209a034(int h);
@@ -46,7 +46,7 @@ extern "C" int func_ov004_0220fde0(UnkStruct_02217af4 *self);
 extern "C" int func_0204bc50(int a, int b);
 extern "C" void func_0209a088(void *p, int a, int h);
 extern "C" void func_0203ee08(UnkStruct_02217af4 *self, void *q);
-extern "C" void func_0203e020(UnkStruct_02217af4 *self);
+extern "C" int func_0203e020(UnkStruct_02217af4 *self);
 
 extern "C" void func_ov004_02217af4(UnkStruct_02217af4 *self)
 {
@@ -54,7 +54,7 @@ extern "C" void func_ov004_02217af4(UnkStruct_02217af4 *self)
     int h;
     int v;
     u16 t;
-    if (func_0206fbc0(self) == 0) {
+    if (func_0206fbc0() == 0) {
         return;
     }
     if (func_0206fc6c() == 0) {

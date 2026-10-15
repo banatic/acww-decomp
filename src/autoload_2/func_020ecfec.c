@@ -4,7 +4,7 @@
 
 extern unsigned char data_021fbef8;
 extern int data_021fbf34;
-extern void DWC_SetMatchingOption(int, int *);
+extern int DWC_SetMatchingOption(int, const void *, int);
 
 void func_020ecfec(void)
 {
@@ -15,6 +15,6 @@ void func_020ecfec(void)
     }
     {
         int x = 1;
-        DWC_SetMatchingOption(1, &x);
+        DWC_SetMatchingOption(1, &x, 0);
     }
 }

@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov009_022655d4(void);
+extern void func_ov009_022655d4(void *state);
 
 typedef struct {
     char pad_00[0x24];
-    void (*handler)(void);
+    void (*handler)(void *);
     char pad_28[0x92 - 0x28];
     unsigned char byte;
 } UnkStruct_022655c4;

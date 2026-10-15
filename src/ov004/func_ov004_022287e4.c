@@ -7,14 +7,14 @@ struct UnkStruct_022287e4 {
     int b;
     int c;
 };
-extern void func_020109a0(void *self, int a, int b, int c);
+extern void func_020109a0(void *self, int a, int b, unsigned short d);
 extern void func_0200fa1c(struct UnkStruct_022287e4 *out, void *self, struct UnkStruct_022287e4 *in, unsigned short *p,
                           int *q);
-extern void func_ov004_02228840(void *dst, struct UnkStruct_022287e4 *out);
+extern void *func_ov004_02228840(void *dst, struct UnkStruct_022287e4 *out);
 extern void func_ov004_0223a6ac(void *p);
 extern int data_ov004_02247780;
 extern unsigned char data_020e54a8;
-void func_ov004_022287e4(unsigned char *self)
+void func_ov004_022287e4(unsigned char *self, void *message, int previous)
 {
     struct UnkStruct_022287e4 out;
     int t;

@@ -21,7 +21,7 @@ extern int func_ov002_0220889c(void *);
 extern int func_ov002_022088cc(void *);
 extern int func_ov002_022088bc(void *);
 extern int func_ov002_0220a4d4(void *);
-extern int func_ov134_02299980(UnkStruct_022997dc *, int);
+extern void func_ov134_02299980(UnkStruct_022997dc *, int);
 extern int func_ov134_02299774(UnkStruct_022997dc *);
 extern int func_ov134_02299734(UnkStruct_022997dc *);
 extern void func_ov134_0229a1d8(UnkStruct_022997dc *, int);

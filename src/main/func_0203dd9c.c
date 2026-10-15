@@ -28,11 +28,11 @@ struct UnkStruct_0203dd9c {
 extern char data_020da9ac[];
 extern char data_020e3e68[];
 extern void func_020a8754(void *p);
-extern void func_020a9484(struct UnkStruct_0203dd9c *self, int n);
+extern void *func_020a9484(struct UnkStruct_0203dd9c *self);
 
 struct UnkStruct_0203dd9c *func_0203dd9c(struct UnkStruct_0203dd9c *self, int n)
 {
-    func_020a9484(self, n);
+    func_020a9484(self);
     self->vtable = data_020e3e68;
     self->vtable = data_020da9ac;
     self->value = n;

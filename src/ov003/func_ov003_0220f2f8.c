@@ -10,10 +10,10 @@ typedef struct {
     unsigned int unk_704;
 } unk_struct_704;
 
-extern void func_020109a0(unk_struct_704 *p, int a, int b, int c);
+extern void func_020109a0(unk_struct_704 *p, int b, int c, unsigned short d);
 extern void func_02056fcc(unsigned int *p, unsigned int a, int b, int c, unsigned short d);
 
-void func_ov003_0220f2f8(unk_struct_704 *ptr)
+void func_ov003_0220f2f8(unk_struct_704 *ptr, void *message, int previous)
 {
     if (ptr->unk_704 != 0x7a) {
         func_020109a0(ptr, 0x7a, 3, 0);

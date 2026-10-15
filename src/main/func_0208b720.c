@@ -5,7 +5,7 @@
 extern int func_020984e8(void);
 extern int func_02099734(int);
 extern int func_02098cf8(int, int);
-extern int func_0206f854(int);
+extern int func_0206f854(void);
 
 int func_0208b720(void)
 {
@@ -14,7 +14,7 @@ int func_0208b720(void)
     if (a != 0) {
         int b = func_02099734(a);
         int c = func_02098cf8(b, 1);
-        int d = func_0206f854(c);
+        int d = func_0206f854();
         result = c + d;
     }
     return result;

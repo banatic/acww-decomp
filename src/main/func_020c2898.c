@@ -4,18 +4,18 @@
 
 extern void *data_021fbbe0;
 extern int func_0202ec58(void *p);
-extern void *func_020984e8(int a, int b);
+extern void *func_020984e8(void);
 extern int func_020b65c4(void);
 extern int func_020b65b8(void);
 extern void func_0204f7e0(void *a, void *b);
 extern int func_02078dd4(void *a, int b, int c, int d);
-extern void func_02078e98(void *a, int b);
+extern int func_02078e98(void *a, int b);
 extern int func_0208602c(void);
 extern int func_020860c4(int x);
 extern int func_02087f30(int x);
 extern void func_02087f40(int x, void *a);
 extern void *func_0204e414(void);
-extern void func_0204e08c(void *a, void *b, int c, int d);
+extern int func_0204e08c(void *a, void *b, int c, int d);
 extern int func_02099020(int a, int b);
 extern int func_0202ea80(int a, int b);
 extern void func_020c1b28(void *a, int b);
@@ -33,7 +33,7 @@ int func_020c2898(void *p)
 
     data_021fbbe0 = p;
     *(int *) ((char *) p + 0x724) = -1;
-    q = func_020984e8(0x724, -1);
+    q = func_020984e8();
 
     if (func_020b65c4() == 0) {
         func_0204f7e0((char *) p + 0x5c, (char *) p + 0x5c);

@@ -7,12 +7,12 @@
 extern void func_020110c4(void *out, void *self);
 extern int func_02011368(void *self);
 extern void func_0209971c(int val, void *ptr);
-extern void func_020109a0(void *self, int a, int b, int c);
-extern void func_0200f27c(void *self, int a);
+extern void func_020109a0(void *self, int b, int c, unsigned short d);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern void func_02056fcc(void *ptr, int a, int b, int c, int d);
 extern void func_ov003_02217c3c(void *out, int a, u8 b, int c, int d, s16 e, int f);
 extern void func_ov003_02217c14(void *out, u8 a, int b, int c, s16 d);
-extern void func_0200f328(void *self, int a);
+extern int func_0200f328(void *self, int a);
 
 typedef struct {
     u8 pad_00[0x2d0];
@@ -36,7 +36,7 @@ typedef struct {
     ArgSub sub;
 } Arg;
 
-void func_ov003_02217adc(UnkStruct_02217adc *self, Arg *arg)
+void func_ov003_02217adc(UnkStruct_02217adc *self, Arg *arg, int previous)
 {
     ArgSub *p = &arg->sub;
     void *p7d4 = (char *) self + 0x7d4;

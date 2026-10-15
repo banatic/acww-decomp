@@ -3,17 +3,20 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int size);
-extern void func_ov002_0220830c(void);
-extern void func_ov124_0229f460(void *p);
-extern void func_020b9cfc(void *p);
+extern void *func_ov002_0220830c(void *argument0);
+extern void *func_ov124_0229f460(void *p);
+extern void *func_020b9cfc(void *p);
 extern void __cxa_vec_ctor(void *p, int a, int b, void *cb1, void *cb2);
-extern void func_ov002_0220b008(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_02070c08(void *p);
-extern void func_020707d0(void *p);
-extern void func_ov002_0220ba24(void *p);
-extern void func_02070be8(void);
+extern void *func_ov002_0220b008(void *p);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_02070c08(void *p);
+extern void *func_020707d0(void *p);
+extern void *func_ov002_0220ba24(void *p);
+extern int **func_02070be8(void *argument0);
 extern unsigned char data_ov126_022a20c8[];
+
+#define VisitElement_02070c08 (void *) func_02070c08
+#define VisitElement_02070be8 (void *) (int **(*) (void *) ) func_02070be8
 
 void *func_ov126_022a1ef0(void)
 {
@@ -23,7 +26,7 @@ void *func_ov126_022a1ef0(void)
         char *p;
         char *end;
 
-        func_ov002_0220830c();
+        func_ov002_0220830c(obj);
         *(void **) obj = data_ov126_022a20c8;
         func_ov124_0229f460((char *) obj + 0xb0);
 
@@ -35,7 +38,7 @@ void *func_ov126_022a1ef0(void)
             p += 0x24;
         } while (p != end);
 
-        __cxa_vec_ctor(end, 2, 0x6c, (void *) func_02070c08, (void *) func_02070be8);
+        __cxa_vec_ctor(end, 2, 0x6c, VisitElement_02070c08, VisitElement_02070be8);
         func_ov002_0220b008((char *) obj + 0x3dc4);
         func_ov002_02209ccc((char *) obj + 0x3f90);
         func_02070c08((char *) obj + 0x3ff4);
@@ -45,3 +48,6 @@ void *func_ov126_022a1ef0(void)
     }
     return obj;
 }
+
+#undef VisitElement_02070c08
+#undef VisitElement_02070be8

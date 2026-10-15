@@ -12,11 +12,11 @@ typedef struct {
 
 extern void func_020be6ac(UnkStruct_020be784 *self, int a, int b);
 extern int func_02095794(int x);
-extern void func_0208602c(void);
-extern int func_020860c0(void);
-extern void func_02087b8c(int a, int b, unsigned char c);
-extern void func_ov003_02219774(void);
-extern void func_0203aeac(void);
+extern int func_0208602c(void);
+extern int func_020860c0(int);
+extern int func_02087b8c(int a, int b, unsigned char c);
+extern int func_ov003_02219774(void);
+extern int func_0203aeac(void);
 extern void func_020be758(UnkStruct_020be784 *self);
 
 void func_020be784(UnkStruct_020be784 *self)
@@ -29,8 +29,7 @@ void func_020be784(UnkStruct_020be784 *self)
     }
     r5 = func_02095794(self->unk_04);
     if (r5 != 0) {
-        func_0208602c();
-        func_02087b8c(func_020860c0(), r5, self->unk_18);
+        func_02087b8c(func_020860c0((int) func_0208602c()), r5, self->unk_18);
     }
     func_ov003_02219774();
     func_0203aeac();

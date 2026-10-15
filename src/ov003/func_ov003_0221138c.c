@@ -3,16 +3,16 @@
  */
 
 extern void func_02010f5c(void *self);
-extern void func_020912d4(int a, void *b, int c, int d);
-extern void func_0200f328(void *self, int a);
-extern void func_0200f27c(void *self, int a);
+extern int func_020912d4(int a, void *b, int c, int d);
+extern int func_0200f328(void *self, int a);
+extern unsigned int *func_0200f27c(void *self, int a);
 extern void func_0200f268(void *self, int a);
 extern void func_0204f818(int *a, int *b, void *v);
-extern void func_02030db8(int a, int b);
-extern void func_ov003_02221294(int a, void *b, unsigned char c);
+extern int func_02030db8(int a, int b);
+extern int func_ov003_02221294(int a, void *b, unsigned char c);
 extern void func_0200ee40(void *self);
 extern void func_0200f650(void *self, int a);
-extern void func_0203f7d0(void *a, void *b);
+extern int func_0203f7d0(void *a, void *b);
 
 typedef struct {
     int x, y, z;

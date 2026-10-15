@@ -5,7 +5,7 @@
 extern unsigned char data_021ef8ec[];
 extern unsigned char *func_02098090(unsigned char *p, int a);
 extern int func_02065ec0(unsigned char *p);
-extern void func_02066830(unsigned char *p, int a);
+extern int func_02066830(unsigned char *p, int a);
 extern void func_020664e0(unsigned char *p);
 
 int func_02097a74(int a0, int a1, int a2)

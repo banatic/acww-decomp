@@ -7,12 +7,12 @@ typedef struct {
 } Vec3;
 extern short FX_SinCosTable_[];
 extern int FX_MulFunc(int, int);
-extern void func_ov004_0222bbd4(void *, Vec3 *, int);
+extern void *func_ov004_0222bbd4(void *, Vec3 *, int);
 extern int func_02073908(void *, int);
 extern void func_02051e20(Vec3 *);
 extern void *data_020ccf94;
 
-void func_ov004_0222bb0c(char *self, char *e)
+void func_ov004_0222bb0c(char *self, char *e, int previous)
 {
     char *s;
     int cd[2];

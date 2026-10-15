@@ -20,18 +20,18 @@ typedef struct UnkStruct_0201edcc_3 {
 } UnkStruct_0201edcc_3;
 
 extern int func_020984e8(void);
-extern int func_02099734(void);
-extern int func_02098eb8(void);
+extern int func_02099734(int);
+extern int func_02098eb8(int);
 extern int func_0204bcdc(UnkStruct_0201edcc *h);
 extern int func_0204bc64(void *h);
 extern int func_020644cc(int n);
 extern void func_02063ccc(UnkStruct_0201edcc_2 *k, void *x, int z);
 extern void func_02063cc8(UnkStruct_0201edcc_2 *k);
 extern void func_020638d4(UnkStruct_0201edcc *h, UnkStruct_0201edcc_2 *k, int a, int b, int c, int d, int e);
-extern void func_02098f0c(int b, u16 *w, int c, int d);
+extern int func_02098f0c(int b, u16 *w, int c, int d);
 extern int func_020996ac(int a);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int r, u16 *w, int a, int b);
-extern void func_020154b4(UnkStruct_0201edcc_3 *p, u16 *w, int a, int b, int c);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int r, u16 *w, int a, int b);
+extern int func_020154b4(UnkStruct_0201edcc_3 *p, u16 *w, int a, int b, int c);
 extern void func_02015de4(UnkStruct_0201edcc_3 *p, u16 *w, int a, int b);
 extern void *data_020c8e98[];
 
@@ -46,8 +46,8 @@ void func_0201edcc(UnkStruct_0201edcc_3 *p)
     UnkStruct_0201edcc_2 obj;
 
     a = func_020984e8();
-    b = func_02099734();
-    c = func_02098eb8();
+    b = func_02099734(a);
+    c = func_02098eb8(b);
     if (c == -1) {
         c = 0;
     }

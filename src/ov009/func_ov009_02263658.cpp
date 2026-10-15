@@ -5,22 +5,22 @@
 
 #include "cpp/ov009/Obj_ov009_022658dc.h"
 
-extern "C" int func_02096168(void *);
+extern "C" int func_02096168(void);
 extern "C" int func_ov009_02264c90(void *);
-extern "C" void func_0203aec4(int);
+extern "C" void func_0203aec4(void);
 
 void Obj_ov009_022658dc::func_ov009_02263658()
 {
     void *arg = (void *) this;
-    if (func_02096168(arg)) {
+    if (func_02096168()) {
         int res = func_ov009_02264c90(arg);
         switch (res) {
             case 2:
-                func_0203aec4(res);
+                func_0203aec4();
                 ((Obj_ov009_022658dc *) arg)->func_ov009_022639a0(6);
                 break;
             case 3:
-                func_0203aec4(res);
+                func_0203aec4();
                 ((Obj_ov009_022658dc *) arg)->func_ov009_022639a0(6);
                 break;
         }

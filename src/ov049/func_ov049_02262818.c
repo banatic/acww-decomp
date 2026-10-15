@@ -12,7 +12,7 @@ extern int func_0201c378(void *p, int n);
 extern int func_0201c2c8(void *p, int n);
 extern int func_020e8b4c(int a, int b);
 extern void *data_021c80bc;
-extern void func_0204ed30(void *a, void *b);
+extern int func_0204ed30(void *a, void *b);
 extern int func_020eaa2c(void *a, void *b);
 extern void func_ov049_02262a94(void *p, int n);
 extern void func_0201aff4(void *a, int b);

@@ -4,7 +4,7 @@
 
 extern void func_ov106_0229ca5c(void *p);
 extern void func_ov002_022096d8(void *p, int v);
-extern void func_ov002_02208098(void *p, int v);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov106_0229c868(void *self)
 {
@@ -12,5 +12,5 @@ void func_ov106_0229c868(void *self)
     *p = 4;
     func_ov106_0229ca5c(self);
     func_ov002_022096d8((char *) self + 0x2304, 0);
-    func_ov002_02208098(self, 0x18);
+    func_ov002_02208098((void *) (self), 0x18);
 }

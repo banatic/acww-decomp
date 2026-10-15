@@ -15,11 +15,11 @@ extern int data_021fbf10;
 extern int data_0213e6f0;
 
 extern int func_020edaf0(int, int);
-extern void UTi_PutString(int);
-extern u64 func_020eb694(char *);
-extern void OS_SNPrintf(int, int, int, int, u64, int);
-extern void DWC_GetGHTTPData(int, int, int);
-extern void func_020ed194(void);
+extern int UTi_PutString(int);
+extern unsigned long long func_020eb694(char *);
+extern int OS_SNPrintf(char *buffer, unsigned int size, const char *format, ...);
+extern int DWC_GetGHTTPData(int, int, int);
+extern void func_020ed194(void *unused0, int unused1, int unused2, void *unused3);
 
 int func_020eb188(int a, int b, int c, int d)
 {
@@ -45,7 +45,8 @@ int func_020eb188(int a, int b, int c, int d)
         data_021fbf14 = c;
         data_021fbf10 = d;
 
-        OS_SNPrintf(data_021fbf44, 0x100, (int) &data_0213e6f0, data_021fbf4c, func_020eb694(data_021fbf40 + 0x20), d);
+        OS_SNPrintf((char *) data_021fbf44, 0x100, (const char *) &data_0213e6f0, data_021fbf4c,
+                    func_020eb694(data_021fbf40 + 0x20), d);
         DWC_GetGHTTPData(data_021fbf44, (int) func_020ed194, b);
         return 1;
     }

@@ -11,17 +11,18 @@ struct UnkStruct_0229b64c {
 
 extern u8 data_021fbdd8;
 
-extern int func_ov121_02299a3c(struct UnkStruct_0229b64c *self, int val);
-extern int func_0206f56c(int a);
+extern void func_ov121_02299a3c(struct UnkStruct_0229b64c *self, unsigned short mask);
+extern int func_0206f56c(void);
 extern void func_ov121_0229aec4(struct UnkStruct_0229b64c *self, int val);
 extern int func_ov121_0229ac00(struct UnkStruct_0229b64c *self);
 extern int func_ov121_0229add4(struct UnkStruct_0229b64c *self);
 extern void func_ov121_02299a4c(struct UnkStruct_0229b64c *self, int val);
-extern void func_ov002_02208098(struct UnkStruct_0229b64c *self, int val);
+extern unsigned char *func_ov002_02208098(struct UnkStruct_0229b64c *self, unsigned char value);
 
 void func_ov121_0229b64c(struct UnkStruct_0229b64c *self)
 {
-    if (func_0206f56c(func_ov121_02299a3c(self, 8)) != 0) {
+    func_ov121_02299a3c(self, 8);
+    if (func_0206f56c() != 0) {
         func_ov121_02299a3c(self, 4);
         func_ov121_0229aec4(self, 0x18);
         func_ov002_02208098(self, 0);

@@ -5,14 +5,14 @@
 #include "types.h"
 
 extern int func_02056f94(void *);
-extern void func_ov004_0223080c(void *, int);
-extern int func_ov045_02260618();
+extern int func_ov004_0223080c(void *, int);
+extern int func_ov045_02260618(void);
 
 void func_ov004_02230538(char *self)
 {
     // DECLS
     // ENDDECLS
-    if (func_ov045_02260618(self) == 0x7) {
+    if (func_ov045_02260618() == 0x7) {
         *(u8 *) (self + 0x6b0) = 0x0;
     }
     if (func_ov045_02260618() == 0x12) {

@@ -3,14 +3,13 @@
  */
 
 extern int func_01ffcc10(int p1, int p2);
-extern int func_02054d14(int p1, int p2);
+extern void func_02054d14(int p1, int p2);
 
-int func_02054cf4(int p1, int p2)
+void func_02054cf4(int p1, int p2)
 {
     int ret;
     ret = func_01ffcc10(p1, p2);
     if (ret == 0) {
-        return func_02054d14(p1, p2);
+        func_02054d14(p1, p2);
     }
-    return ret;
 }

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02051c08(const void *src, void *dst, int size);
+extern int func_02051c08(const void *src, void *dst, int size);
 extern void func_02051bf8(void *dst, int size);
-extern void func_02065f58(void *self, void *buf);
+extern int func_02065f58(void *self, void *buf);
 extern void func_02065d0c(void *a, void *b, void *c, void *d);
 
 void func_02065e10(void *obj, const unsigned short *p)

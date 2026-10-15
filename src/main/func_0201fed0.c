@@ -12,6 +12,8 @@ typedef struct {
     int b;
 } Pair;
 
+extern void func_0202da74(void *object, Pair value);
+
 extern Pair data_020d9390;
 extern char data_021c234c;
 extern char data_021c231c;

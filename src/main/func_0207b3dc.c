@@ -2,17 +2,35 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_0207b410(void *);
-extern void *func_0209a778(void *);
+extern unsigned int func_0207b410(unsigned int address);
+extern void func_0209a778(void);
 extern int func_0209bd44(void *);
-extern void *func_0209a774(void *);
+extern int func_0209a774(int address);
 extern int func_0207cf14(void *, void *);
 
-int func_0207b3dc(void *a)
+// clang-format off
+asm int func_0207b3dc(void *base)
 {
-    if (func_0209bd44(func_0209a778(func_0207b410(a))) != 0) {
-        return func_0207cf14(a, func_0209a774(func_0207b410(a)));
-    } else {
-        return -1;
-    }
+    push {r4, lr}
+    add r4, r0, #0
+    bl func_0207b410
+    bl func_0209a778
+    bl func_0209bd44
+    cmp r0, #0
+    beq no_record
+    add r0, r4, #0
+    bl func_0207b410
+    bl func_0209a774
+    add r1, r0, #0
+    add r0, r4, #0
+    bl func_0207cf14
+    b finish
+no_record:
+    mov r0, #0
+    mvn r0, r0
+finish:
+    pop {r4}
+    pop {r3}
+    bx r3
 }
+// clang-format on

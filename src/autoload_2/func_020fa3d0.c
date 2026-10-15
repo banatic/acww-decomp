@@ -4,7 +4,7 @@
 
 extern int func_020fa498(int a, int b);
 
-extern void func_020faba4(void);
+extern int func_020faba4(int argument0, int argument1);
 
 int func_020fa3d0(int a)
 {

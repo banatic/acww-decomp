@@ -6,7 +6,11 @@ typedef struct {
     unsigned char pad_00[141];
     unsigned char unk_8D;
 } UnkStruct_02208098;
-void func_ov002_02208098(UnkStruct_02208098 *p, unsigned char v)
+// clang-format off
+asm unsigned char *func_ov002_02208098(register UnkStruct_02208098 *p, register unsigned char v)
 {
-    p->unk_8D = v;
+    add r0, #0x8d
+    strb r1, [r0]
+    bx lr
 }
+// clang-format on

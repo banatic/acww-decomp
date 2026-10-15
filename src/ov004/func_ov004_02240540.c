@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov004_02240f2c(void *self, int a, int b, int c, int d, int e, int f);
+extern int func_ov004_02240f2c(void *self, int a, int b, int c, int d, int e, int f);
 extern int func_0209d088(void *p);
 extern void NNS_G3dMdlSetMdlAlpha(int x, int a, int b);
 extern void func_ov004_02241008(void *self, int *u, int *v);

@@ -38,7 +38,7 @@ typedef struct {
 
 typedef void (*FN)(void *, int);
 
-void func_ov047_022608f8(UnkStruct_022608f8 *p)
+void func_ov047_022608f8(UnkStruct_022608f8 *p, int event)
 {
     u8 m;
     int r;

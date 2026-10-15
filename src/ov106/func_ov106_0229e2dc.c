@@ -9,10 +9,10 @@ typedef struct {
     void *unk_21B8;
 } UnkStruct_0229e2dc;
 
-extern int func_ov002_02208014(UnkStruct_0229e2dc *s);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(UnkStruct_0229e2dc *s);
 extern int func_ov106_0229c4a0(UnkStruct_0229e2dc *s, int a, int b);
-extern void func_ov002_02207d24(void *p, int v);
+extern int func_ov002_02207d24(void *p, int v);
 extern void func_ov002_02207d00(void *p);
 extern void func_ov106_0229d790(UnkStruct_0229e2dc *s);
 extern void func_ov106_0229cea8(UnkStruct_0229e2dc *s);
@@ -38,7 +38,7 @@ void func_ov106_0229e2dc(UnkStruct_0229e2dc *s)
 {
     unsigned short val;
     int r;
-    if (func_ov002_02208014(s) != 0) {
+    if (func_ov002_02208014() != 0) {
         func_ov106_0229d790(s);
         func_ov002_02207d24((char *) s + 0x21B8, 1);
         return;

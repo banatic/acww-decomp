@@ -2,13 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov004_0221df58(void);
-extern int func_020819bc(void);
+extern int func_ov004_0221df58(void *parameter0);
+extern int func_020819bc(void *object);
 
-int func_ov004_0221df34(void)
+int func_ov004_0221df34(void *arg0)
 {
-    if (func_ov004_0221df58() != 0) {
-        if (func_020819bc() == 0) {
+    int object;
+    if ((object = func_ov004_0221df58((void *) arg0)) != 0) {
+        if (func_020819bc((void *) object) == 0) {
             return 1;
         }
         return 0;

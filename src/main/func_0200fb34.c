@@ -6,7 +6,7 @@ typedef struct {
     unsigned char pad_00[0x8e];
     short unk_8E;
 } UnkStruct_0200fb34;
-extern void func_020113e0(short *t, int b);
+extern int func_020113e0(short *t, int b);
 extern void func_020110a0(UnkStruct_0200fb34 *p, short *t);
 void func_0200fb34(UnkStruct_0200fb34 *p, int b)
 {

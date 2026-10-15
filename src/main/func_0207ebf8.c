@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned short *func_02099728(void);
+extern unsigned short *func_02099728(unsigned int);
 
-int func_0207ebf8(void)
+int func_0207ebf8(unsigned int argument0)
 {
-    unsigned short *p = func_02099728();
+    unsigned short *p = func_02099728((unsigned int) argument0);
     int flag = 1;
     int cond = 0;
     unsigned short v = *p;

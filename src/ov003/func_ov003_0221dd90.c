@@ -10,7 +10,7 @@ typedef struct UnkStruct_0221dd90 {
 
 extern char data_ov003_02239254;
 extern char data_ov003_02239318;
-extern void func_ov009_0226539c(UnkStruct_0221dd90 *self);
+extern void *func_ov009_0226539c(UnkStruct_0221dd90 *self);
 extern void func_020edf54(UnkStruct_0221dd90 *self);
 
 UnkStruct_0221dd90 *func_ov003_0221dd90(UnkStruct_0221dd90 *self)

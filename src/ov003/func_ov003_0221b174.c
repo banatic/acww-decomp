@@ -28,16 +28,16 @@ struct UnkStruct_0221b174 {
 };
 extern void *data_021c80bc;
 extern void func_0204f818(int *out1, int *out2, void *p);
-extern int func_0204f5e0(void *p, int h1, int h2, int l1, int l2, int zero);
-extern int func_0204bb54(void);
-extern void func_0204f538(void *p, u16 *s, int out1, int out2, int zero);
+extern void *func_0204f5e0(void *p, int h1, int h2, int l1, int l2, int zero);
+extern int func_0204bb54(int entry);
+extern int func_0204f538(void *p, u16 *s, int out1, int out2, int zero);
 extern int func_ov003_0221a608(int a, void *b, void *c);
 extern int func_ov003_0221a538(int a, void *b, void *c);
 extern void func_020b0540(void *a, int b);
-extern void func_ov003_0221a484(void *a);
+extern int func_ov003_0221a484(void *a);
 extern char *func_020b03f8(void);
-extern void func_020044a0(void *a);
-extern void func_ov003_02236230(void *self);
+extern int func_020044a0(void *a);
+extern int func_ov003_02236230(void *self);
 extern unsigned char data_021f3b56[];
 
 void func_ov003_0221b174(struct UnkStruct_0221b174 *self)
@@ -56,6 +56,7 @@ void func_ov003_0221b174(struct UnkStruct_0221b174 *self)
         int high2;
         int low2;
         int low1;
+        void *entry;
         func_0204f818((int *) (&out1), (int *) (&out2), ((char *) self) + 0x5c);
         o1 = out1;
         o2 = out2;
@@ -64,8 +65,8 @@ void func_ov003_0221b174(struct UnkStruct_0221b174 *self)
         high1 = lx >> 4;
         high2 = ly >> 4;
 
-        if (func_0204f5e0(p, high1, high2, o1 - (high1 << 4), o2 - (high2 << 4), 0) != 0) {
-            if (func_0204bb54() != 0) {
+        if ((entry = func_0204f5e0(p, high1, high2, o1 - (high1 << 4), o2 - (high2 << 4), 0)) != 0) {
+            if (func_0204bb54((int) entry) != 0) {
                 s = 0xfff1;
                 func_0204f538(p, &s, out1, out2, 0);
             }

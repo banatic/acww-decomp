@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-// setjmp entry: saves all registers into the jmp_buf, then jumps to the Thumb body.
-// Hand-written assembly in the original.
+// OS_Terminate's entry: pushes r0-r15 and cpsr, with the caller's sp and a pc of -1, and hands
+// that frame to the Thumb body, which never returns. Hand-written assembly in the original.
 
-extern void func_0206e3f4(void);
+extern void func_0206e3f4(int);
 
 // clang-format off
 asm void func_0206e3c0(void) {

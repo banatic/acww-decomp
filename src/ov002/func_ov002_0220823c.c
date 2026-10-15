@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020ee61c(void *);
+extern int func_020ee61c(void);
 extern void func_ov002_02208880(void *, int, int, int);
 
 typedef struct UnkStruct_0220823c {
@@ -16,7 +16,7 @@ typedef struct UnkStruct_0220823c {
 
 int func_ov002_0220823c(UnkStruct_0220823c *self)
 {
-    if (!func_020ee61c(self)) {
+    if (!func_020ee61c()) {
         return 0;
     }
     self->unk_90 = self->unk_08;

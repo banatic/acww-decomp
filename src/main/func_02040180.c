@@ -8,8 +8,12 @@ typedef struct {
 
 extern int func_020401b8(int a, int b, UnkStruct_02040180 cc, int d);
 
-void func_02040180(int a, int b, UnkStruct_02040180 cc, int d)
+int func_02040180(int a, int b, UnkStruct_02040180 cc, int d)
 {
+    int value;
+
     volatile int result[2];
-    result[0] = func_020401b8(a, b, cc, d);
+    value = func_020401b8(a, b, cc, d);
+    result[0] = value;
+    return value;
 }

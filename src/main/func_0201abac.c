@@ -7,7 +7,7 @@ typedef struct {
     short unk_28;
 } UnkStruct_0201abac;
 
-short func_0201abac(UnkStruct_0201abac *p, short a)
+int func_0201abac(UnkStruct_0201abac *p, int a)
 {
     int abs_a = a < 0 ? -a : a;
     short limit = p->unk_28;
@@ -15,7 +15,7 @@ short func_0201abac(UnkStruct_0201abac *p, short a)
         if (a > 0) {
             a = limit;
         } else {
-            a = -limit;
+            a = (short) -limit;
         }
     }
     return a;

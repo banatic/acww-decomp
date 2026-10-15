@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fc6c(void *);
+extern int func_0206fc6c(void);
 extern int func_020984e8(void);
 extern int func_0206fc8c(void);
 extern int func_020996b8(int);
 extern int func_02072ba4(int);
 extern int func_02072b64(int, int);
-extern void func_02071d8c(int, int, int, int, int);
+extern int func_02071d8c(int, int, int, int, int);
 extern void func_0206844c(int, char *, int);
 extern int data_ov049_02263298;
 
@@ -22,7 +22,7 @@ typedef struct {
 void func_ov049_02260fe4(UnkStruct_02260fe4 *self)
 {
     char buf[2];
-    if (func_0206fc6c(self)) {
+    if (func_0206fc6c()) {
         int a = func_020984e8();
         int b = func_0206fc8c();
         int c = func_02072b64(func_02072ba4(func_020996b8(a)), b);

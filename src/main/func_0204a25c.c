@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0204f538(unsigned int, unsigned short *, unsigned int, unsigned int, int);
+extern int func_0204f538(unsigned int, unsigned short *, unsigned int, unsigned int, int);
 extern void func_0204f380(unsigned int, unsigned int, unsigned int);
-extern void func_0204f31c(unsigned int, unsigned int, unsigned int);
+extern int func_0204f31c(unsigned int, unsigned int, unsigned int);
 
 void func_0204a25c(unsigned int a, unsigned int b, unsigned int c, unsigned short d, unsigned int e)
 {

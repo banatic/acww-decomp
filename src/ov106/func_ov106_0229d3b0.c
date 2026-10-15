@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b9ccc(void *p);
-int func_ov106_0229d3b0(void *p)
+extern void func_020b9ccc(void *p);
+void func_ov106_0229d3b0(void *p)
 {
-    return func_020b9ccc((char *) p + 0xc0);
+    func_020b9ccc((char *) p + 0xc0);
 }

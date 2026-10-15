@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov066_0226763c(void);
-extern void WM_EndScan(void (*func)(void));
+extern void func_ov066_0226763c(void *argument0);
+extern int WM_EndScan(void (*func)(void *));
 
 void func_ov066_0226768c(void)
 {
-    WM_EndScan(func_ov066_0226763c);
+    WM_EndScan((void (*)(void *)) func_ov066_0226763c);
 }

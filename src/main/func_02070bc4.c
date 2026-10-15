@@ -4,7 +4,7 @@
 
 extern int data_020e179c;
 extern void func_02070b84(int **ptr);
-extern void func_020a8c38(int **ptr);
+extern void *func_020a8c38(int **ptr);
 extern void func_020edb3c(int **ptr);
 
 int **func_02070bc4(int **ptr)

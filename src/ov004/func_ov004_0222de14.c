@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov004_0222c3f4(void *, void *);
-extern void func_ov004_0222c348(void *, void *);
+extern int func_ov004_0222c3f4(void *, void *);
+extern int func_ov004_0222c348(void *, void *);
 extern void *func_ov004_0222c3a0(void *);
 extern void *func_ov004_0222c33c(void *);
-extern void func_02055f2c(void *, void *, int);
-extern void NNS_G3dBindMdlTex(void *, void *);
-extern void NNS_G3dBindMdlPltt(void *, void *);
+extern int func_02055f2c(void *, void *, int);
+extern int NNS_G3dBindMdlTex(void *, void *);
+extern int NNS_G3dBindMdlPltt(void *, void *);
 
 void func_ov004_0222de14(char *self, int i, void *p2, void *p3)
 {

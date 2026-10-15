@@ -7,7 +7,7 @@ extern struct UnkStruct_0229c354 {
     unsigned short flags;
 } data_021fbe40;
 
-extern void func_ov105_0229c3ec(void);
+extern void func_ov105_0229c3ec(void *arg0);
 
 int func_ov105_0229c354(unsigned char *self)
 {
@@ -28,7 +28,7 @@ int func_ov105_0229c354(unsigned char *self)
             x = 0;
         }
         self[0x2c0] = (unsigned char) x;
-        func_ov105_0229c3ec();
+        func_ov105_0229c3ec((void *) self);
     }
 
     return 0;

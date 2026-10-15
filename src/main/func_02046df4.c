@@ -16,7 +16,7 @@ typedef struct {
 } UnkStruct_02046df4;
 
 extern u16 *func_0204f5e0(UnkStruct_02046df4 *ctx, int cx, int cz, int dx, int dz, int layer);
-extern void func_0204f538(UnkStruct_02046df4 *ctx, u16 *w, int x, int z, int layer);
+extern int func_0204f538(UnkStruct_02046df4 *ctx, u16 *w, int x, int z, int layer);
 
 void func_02046df4(int p0, UnkStruct_02046df4 *o)
 {

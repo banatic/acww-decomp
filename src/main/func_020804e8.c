@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02080500(void);
+extern int func_02080500(int);
 extern int func_020807c0(int a, int b);
 
 int func_020804e8(int a)
@@ -11,6 +11,6 @@ int func_020804e8(int a)
     int c;
 
     b = a;
-    c = func_02080500();
+    c = func_02080500(a);
     return func_020807c0(b, c);
 }

@@ -3,17 +3,17 @@
  */
 
 extern void *func_ov002_02207f80(unsigned int);
-extern void func_ov002_0220830c(void);
-extern void func_020b9af4(void *);
-extern void func_ov094_0229b000(void *);
+extern void *func_ov002_0220830c(void *arg0);
+extern void *func_020b9af4(void *);
+extern void *func_ov094_0229b000(void *);
 extern void func_ov094_0229bc3c(void *);
-extern void func_ov094_0229a2ec(void *);
-extern void func_ov002_02207e40(void *);
+extern void *func_ov094_0229a2ec(void *);
+extern void *func_ov002_02207e40(void *);
 extern void func_ov002_02209e44(void *);
-extern void func_ov002_02209ccc(void *);
-extern void func_ov002_02209b14(void *);
-extern void func_ov002_0220ba24(void *);
-extern void func_ov002_0220b008(void *);
+extern void *func_ov002_02209ccc(void *);
+extern void *func_ov002_02209b14(void *);
+extern void *func_ov002_0220ba24(void *);
+extern void *func_ov002_0220b008(void *);
 extern char data_ov101_0229e078;
 
 void *func_ov101_0229ded0(void)
@@ -24,7 +24,7 @@ void *func_ov101_0229ded0(void)
 
     self = func_ov002_02207f80(0x29dc);
     if (self != 0) {
-        func_ov002_0220830c();
+        func_ov002_0220830c((void *) self);
         *(void **) self = (void *) &data_ov101_0229e078;
 
         p = (char *) self + 0xbc;

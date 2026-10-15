@@ -10,13 +10,13 @@ typedef struct {
     unsigned char unk_18;
 } UnkStruct_02208458;
 
-extern void func_ov002_0220882c(UnkStruct_02208458 *self, int arg1);
+extern void func_ov002_0220882c(UnkStruct_02208458 *self, unsigned int denominator);
 
 void func_ov002_02208458(UnkStruct_02208458 *self, int arg1, unsigned char byte, unsigned int word)
 {
     self->unk_18 = byte;
     self->unk_14 = word;
-    func_ov002_0220882c(self, arg1);
+    func_ov002_0220882c(self, (unsigned int) arg1);
     {
         unsigned char val = self->unk_18;
         switch (val) {

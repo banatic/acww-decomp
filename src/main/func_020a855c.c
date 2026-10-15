@@ -12,8 +12,8 @@ typedef struct Hdr {
     int unk_0C;
 } Hdr;
 
-extern void func_020a86e4(Hdr *h, unsigned char *p0, unsigned char *p1, unsigned char *p2);
-extern void func_020a8a34(UnkStruct_020a855c *e, int off);
+extern int func_020a86e4(Hdr *h, unsigned char *p0, unsigned char *p1, unsigned char *p2);
+extern int func_020a8a34(UnkStruct_020a855c *e, int off);
 
 int func_020a855c(Hdr *h, unsigned char *o0, UnkStruct_020a855c *e0, unsigned char *o1, UnkStruct_020a855c *e1,
                   unsigned char *o2, UnkStruct_020a855c *e2)

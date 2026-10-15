@@ -9,9 +9,9 @@ typedef struct {
 
 extern void func_020bca80(void *arg, int a, int b, int c);
 extern void func_020bc9c4(void *arg, int a);
-extern int func_020bcab0(void *arg);
+extern void func_020bcab0(void *arg);
 
-int func_020bc720(void *arg)
+void func_020bc720(void *arg)
 {
     int val;
 
@@ -21,5 +21,5 @@ int func_020bc720(void *arg)
     } else if (val == 0) {
         func_020bc9c4(arg, 0x14);
     }
-    return func_020bcab0(arg);
+    func_020bcab0(arg);
 }

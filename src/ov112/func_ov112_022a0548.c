@@ -4,9 +4,9 @@
 
 extern unsigned short data_021fbe40[];
 extern int func_ov095_0229cf64(unsigned char *p, int a);
-extern void func_ov112_022a03ac(unsigned char *p, int a);
+extern int func_ov112_022a03ac(unsigned char *p, int a);
 extern void func_ov095_0229c8e4(unsigned char *p, int a);
-extern void func_ov002_02208098(unsigned char *p, int a);
+extern unsigned char *func_ov002_02208098(unsigned char *p, unsigned char value);
 
 int func_ov112_022a0548(unsigned char *self)
 {

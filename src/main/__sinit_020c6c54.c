@@ -2,14 +2,15 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ab960(void *);
+extern void *func_020ab960(void *);
 extern void __register_global_object(void *, void *, void *);
 extern int data_021f4670;
-extern int func_020ab948;
+extern void *func_020ab948(void *);
 extern int data_021f45b4;
 
 void __sinit_020c6c54(void)
 {
     func_020ab960((void *) &data_021f4670);
-    __register_global_object((void *) &data_021f4670, (void *) &func_020ab948, (void *) &data_021f45b4);
+    __register_global_object((void *) ((void *) &data_021f4670), (((void *) func_020ab948)),
+                             (void *) ((void *) &data_021f45b4));
 }

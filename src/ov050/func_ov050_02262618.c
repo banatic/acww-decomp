@@ -7,9 +7,9 @@ typedef struct {
     void *unk_B4;
 } FuncOvlStruct;
 
-void *func_ov050_02264834(void *arg0, int arg1);
+void func_ov050_02264834(void *arg0, int arg1);
 
-void *func_ov050_02262618(FuncOvlStruct *self)
+void func_ov050_02262618(FuncOvlStruct *self, int event)
 {
-    return func_ov050_02264834(self->unk_B4, 0x11);
+    func_ov050_02264834(self->unk_B4, 0x11);
 }

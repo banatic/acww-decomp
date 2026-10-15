@@ -18,12 +18,12 @@ typedef struct {
 extern void func_0204f794(Vec3 *out, unsigned char a, unsigned char b);
 extern void func_0204f818(int *a, int *b, Vec3 *in);
 extern int func_ov003_0220cf68(UnkStruct_02212574 *self, Vec3 *in, unsigned char *flag);
-extern void func_ov003_0221248c(UnkStruct_02212574 *self, int a, int b);
-extern void func_ov003_022122ac(UnkStruct_02212574 *self, int a, int *vec, int b, int c);
-extern void func_ov003_02211d4c(UnkStruct_02212574 *self, int a, int *vec, int b, int c);
-extern void func_ov003_02211980(UnkStruct_02212574 *self, int *vec, int a, int b, int c);
-extern void func_ov003_022109f8(UnkStruct_02212574 *self, int a, int *vec, int b, int c, int d);
-extern void func_ov003_022123a8(UnkStruct_02212574 *self, int a, int b);
+extern int func_ov003_0221248c(UnkStruct_02212574 *self, int a, int b);
+extern int func_ov003_022122ac(UnkStruct_02212574 *self, int a, int *vec, int b, int c);
+extern int func_ov003_02211d4c(UnkStruct_02212574 *self, int a, int *vec, int b, int c);
+extern int func_ov003_02211980(UnkStruct_02212574 *self, int *vec, int a, int b, int c);
+extern void *func_ov003_022109f8(UnkStruct_02212574 *self, int a, int *vec, int b, int c, int d);
+extern int func_ov003_022123a8(UnkStruct_02212574 *self, int a, int b);
 
 int func_ov003_02212574(UnkStruct_02212574 *self, Vec3 *src, unsigned char flag)
 {

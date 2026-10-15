@@ -12,11 +12,11 @@ extern void func_02073100(void);
 extern int func_020ec49c(void);
 extern void func_ov048_02262378(UnkStruct_02261120 *p);
 extern int func_020984e8(void);
-extern int func_0209985c(void);
+extern int func_0209985c(int object);
 extern void func_0209fd54(void);
 extern void func_0209fcd8(void);
 extern void func_0209fc60(void);
-extern void func_ov048_02262658(UnkStruct_02261120 *p);
+extern int func_ov048_02262658(void);
 extern void func_020a01f8(void);
 extern int func_020a1518(void);
 extern void func_0206844c(void *ptr, char *byte, int value);
@@ -40,17 +40,21 @@ void func_ov048_02261120(UnkStruct_02261120 *p)
     if (ptr40) {
         func_ov048_02262378(p);
     }
-    if (func_020984e8() == 0) {
+    ret = func_020984e8();
+    if (ret == 0) {
         goto common_exit;
     }
-    ret = func_0209985c();
+    ret = func_0209985c(ret);
     if (ret < 0 || ret >= 4) {
         goto common_exit;
     }
     func_0209fd54();
     func_0209fcd8();
     func_0209fc60();
-    func_ov048_02262658(p);
+    asm {
+        mov r0, p
+    }
+    func_ov048_02262658();
     func_020a01f8();
     if (func_020a1518() == 0) {
         goto common_exit;

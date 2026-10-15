@@ -34,7 +34,7 @@ typedef struct Elem {
 } Elem;
 
 extern Elem data_021d52d8[];
-extern void func_020914dc(void);
+extern void func_020914dc(void *);
 
 int func_0209184c(Param *p)
 {
@@ -58,7 +58,7 @@ int func_0209184c(Param *p)
         result = 1;
     }
     if (result == 0) {
-        func_020914dc();
+        func_020914dc(e);
     }
     return result;
 }

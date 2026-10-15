@@ -53,8 +53,8 @@ typedef struct UnkStruct_0226b3d0 {
 extern UnkStruct_0226b3d0 *data_ov066_0226be08;
 
 extern int func_ov066_0226b5c4(Attr *a);
-extern void func_ov066_0226ae50(int a, Attr *b, int c, int d, void (*cb)(void));
-extern void func_ov066_0226b738(void);
+extern int func_ov066_0226ae50(int a, Attr *b, int c, int d, void (*cb)(void *));
+extern void func_ov066_0226b738(void *packet);
 
 void func_ov066_0226b3d0(void)
 {

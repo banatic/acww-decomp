@@ -2,9 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_02235c94(unsigned int, unsigned int, unsigned int);
+extern void func_ov003_02235c94(void *buffer, int index);
 
 void func_02077470(unsigned int a, unsigned int b)
 {
-    func_ov003_02235c94(a, 0x18, b);
+    asm { add r2, b, #0 }
+    func_ov003_02235c94((void *) a, 0x18);
 }

@@ -8,13 +8,13 @@ typedef struct {
     int x, y, z;
 } UnkStruct_02018090;
 
-extern int func_020164cc(void *a);
+extern int func_020164cc(void *a, int);
 extern int func_02057cf4(void);
 extern void func_02057cb8(void *b);
 extern int func_02057d0c(int a, void *b);
 extern void func_02016764(void *a, void *b, int c, unsigned short d, int e, int f, int g, int h);
-extern void func_02091230(int a, void *b, int c, int d);
-extern void func_0200442c(void *a, int b, int c, int d);
+extern int func_02091230(int a, void *b, int c, int d);
+extern int func_0200442c(void *a, int b, int c, int d);
 extern void func_02054188(void *a, int b, int c);
 extern void func_02019af0(void *a, int b);
 extern int func_020912d4(int a, UnkStruct_02018090 *b, short *c, int d);
@@ -25,7 +25,7 @@ void func_02018090(void *param1, void *param2)
     short aa;
     UnkStruct_02018090 v;
 
-    if (func_020164cc((void *) (((char *) param2) + 0x334)) == 0) {
+    if (func_020164cc((void *) (((char *) param2) + 0x334), (int) param2) == 0) {
         return;
     }
 

@@ -18,8 +18,8 @@ extern int func_0204bb54(int it);
 extern int func_0204bb2c(int it);
 extern int func_020b0594(char *base, unsigned int index, int *o1, int *o2, int *o3, unsigned char *o4, unsigned char *o5,
                          unsigned char *o6);
-extern int func_0204f7ac(void *out, unsigned int ax, unsigned int ay, int x, int z);
-extern void func_02003348(int chan, int slot, void *arg, int d, void *self);
+extern void func_0204f7ac(void *out, unsigned int ax, unsigned int ay, int x, int z);
+extern int func_02003348(int chan, int slot, void *arg, int d, void *self);
 
 extern unsigned char data_021c80bc[];
 extern unsigned char data_021f3b56[];

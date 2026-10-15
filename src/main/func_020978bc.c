@@ -3,7 +3,7 @@
  */
 
 extern int func_02065ec0(unsigned char *p);
-extern void func_02066830(unsigned char *dst, unsigned char *src);
+extern int func_02066830(unsigned char *dst, unsigned char *src);
 extern void func_02066650(unsigned char *p);
 
 int func_020978bc(unsigned char *base, int n)

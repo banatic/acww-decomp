@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_ov004_022116f8(void)
+int func_ov004_022116f8(void *callbackObject)
 {
     return 1;
 }

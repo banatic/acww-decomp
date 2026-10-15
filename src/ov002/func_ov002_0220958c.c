@@ -32,7 +32,7 @@ static inline void MI_CpuCopy16(const void *src, void *dest, u32 size)
 extern void func_020029e8(int a, int b);
 extern void func_020028bc(int a, int b, int c, int d);
 extern void *func_02064b2c(void *a, void *g, int c, int d);
-extern void func_02002b40(void *n, int a, int b, int c);
+extern int func_02002b40(void *n, int a, int b, int c);
 extern void func_020e993c(void *g, void *n);
 extern void *data_021fbe94;
 

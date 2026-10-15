@@ -19,11 +19,11 @@ extern void func_02074078(void);
 extern int func_020ec260(void);
 extern int func_02075aa4(int firstBase, int secondBase);
 extern int func_02073044(void);
-extern int func_020ebf70(int firstBase);
+extern int func_020ebf70(void);
 extern void func_020750fc(void);
 extern void func_020750f4(void);
 extern void func_0207428c(void);
-extern void func_0209ffb0(UnkStruct_020a0848 *s);
+extern int func_0209ffb0(UnkStruct_020a0848 *s);
 extern int func_02075848(void);
 // Its own body ignores self, but the ROM caller preserves this input in r0.
 extern void func_020a261c(UnkStruct_020a0848 *self);
@@ -60,7 +60,7 @@ int func_020a0848(UnkStruct_020a0848 *self, unsigned char *state, int firstBase,
             func_02074078();
             return 0x20;
         }
-        if (func_020ebf70(func_02073044()) != 0) {
+        if ((func_02073044(), func_020ebf70()) != 0) {
             *state = firstBase + 2;
         }
     } else if (currentState == firstBase + 2) {
@@ -110,7 +110,7 @@ int func_020a0848(UnkStruct_020a0848 *self, unsigned char *state, int firstBase,
                 func_02074078();
                 return 0x20;
             }
-            if (func_020ebf70(func_02073044()) != 0) {
+            if ((func_02073044(), func_020ebf70()) != 0) {
                 func_0207428c();
                 func_0209ffb0(self);
                 *state = firstBase + 4;
@@ -148,7 +148,7 @@ int func_020a0848(UnkStruct_020a0848 *self, unsigned char *state, int firstBase,
             func_02074078();
             return 0x20;
         }
-        if (func_020ebf70(func_02073044()) == 0) {
+        if ((func_02073044(), func_020ebf70()) == 0) {
             goto end;
         }
         *state = secondBase + 2;

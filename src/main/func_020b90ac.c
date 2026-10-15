@@ -9,11 +9,11 @@ typedef struct {
 } UnkStruct_020b90ac;
 
 extern void func_0208aaa0(UnkStruct_020b90ac *param);
-extern int func_020b8f20(UnkStruct_020b90ac *param);
+extern void func_020b8f20(UnkStruct_020b90ac *param);
 
-int func_020b90ac(UnkStruct_020b90ac *param)
+void func_020b90ac(UnkStruct_020b90ac *param)
 {
     param->unk_E7 = param->unk_E6;
     func_0208aaa0(param);
-    return func_020b8f20(param);
+    func_020b8f20(param);
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned long long OS_GetTick(void *);
+extern unsigned long long OS_GetTick(void);
 extern void func_02001ba4(int);
 extern void func_0208f858(void *);
 
@@ -16,7 +16,7 @@ typedef struct {
 
 void func_0208f748(UnkStruct_0208f748 *self)
 {
-    unsigned long long t = OS_GetTick(self);
+    unsigned long long t = OS_GetTick();
     if (t < self->threshold) {
         goto skip_switch;
     }

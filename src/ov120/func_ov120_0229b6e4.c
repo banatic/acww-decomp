@@ -3,9 +3,9 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov120_0229aa30(void *p, int n);
+extern void func_ov120_0229aa30(void *p);
 extern void func_0208e95c(void *p, int n);
-extern void func_ov002_02208098(void *p, int n);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 
 void func_ov120_0229b6e4(void *param)
 {
@@ -13,6 +13,6 @@ void func_ov120_0229b6e4(void *param)
         func_0208e95c((char *) param + 0x674, 3);
         func_ov002_02208098(param, 8);
     } else {
-        func_ov120_0229aa30(param, 1);
+        func_ov120_0229aa30(param);
     }
 }

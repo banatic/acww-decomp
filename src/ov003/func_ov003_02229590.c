@@ -46,7 +46,7 @@ extern void *data_020ccf94;
 extern UnkStruct_02229590_2 data_ov003_0223bf00[];
 
 extern int func_020912d4(int a, Vec3 *v, int c, int d);
-extern void func_020044c0(UnkStruct_02229590_3 *self, int a, int b, int c);
+extern int func_020044c0(UnkStruct_02229590_3 *self, int a, int b, int c);
 extern int func_02073d90(void *a);
 extern int func_02073918(void *a, int b);
 extern int func_ov003_02228400(Vec3 *v, int lim);

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02035fec(void *p);
+extern void func_02035fec(void *p, int value);
 typedef struct {
     int a;
     int b;
@@ -32,7 +32,7 @@ void func_02034fec(UnkStruct_02034fec *self)
         return;
     }
     if (self->unk_04 != 0xffff) {
-        func_02035fec(&self->unk_2B4);
+        func_02035fec(&self->unk_2B4, self->unk_04);
         self->unk_14 = 1;
     }
     func_02034e28(self, data_020da26c);

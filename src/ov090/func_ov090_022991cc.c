@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_022080a0(void *obj, int a2, int a3);
+extern unsigned char *func_ov002_022080a0(void *obj, unsigned char value);
 
 struct UnkStruct_022991cc {
     char pad_00[0x94];
@@ -12,5 +12,5 @@ struct UnkStruct_022991cc {
 void func_ov090_022991cc(struct UnkStruct_022991cc *obj)
 {
     obj->flag = 1;
-    func_ov002_022080a0(obj, 2, 1);
+    func_ov002_022080a0(obj, 2);
 }

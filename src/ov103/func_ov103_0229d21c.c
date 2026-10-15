@@ -3,8 +3,8 @@
  */
 
 extern int func_ov002_02209f9c(unsigned char *p);
-extern void func_ov002_02208098(unsigned char *self, int value);
-extern void func_ov103_0229cd4c(unsigned char *self);
+extern unsigned char *func_ov002_02208098(unsigned char *self, unsigned char value);
+extern int func_ov103_0229cd4c(unsigned char *self, int arg1);
 extern void func_ov103_0229ca48(unsigned char *self);
 extern void func_ov103_0229c994(unsigned char *self);
 extern void func_ov103_0229ce18(unsigned char *self, int a, int b);
@@ -15,7 +15,7 @@ void func_ov103_0229d21c(unsigned char *self)
         unsigned char b = self[0x2da6];
         unsigned char a = self[0x2da4];
         if (a == b) {
-            func_ov103_0229cd4c(self);
+            func_ov103_0229cd4c(self, b);
             func_ov103_0229ca48(self);
             func_ov002_02208098(self, 5);
         } else {

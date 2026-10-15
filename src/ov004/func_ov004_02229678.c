@@ -23,7 +23,7 @@ extern void func_020109fc(void *self, int a, int b, int c);
 extern short data_ov004_0224776c[];
 extern int data_ov004_02254af8;
 extern int data_020ccf94;
-void func_ov004_02229678(unsigned char *self, unsigned char *p)
+void func_ov004_02229678(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_02229678 *q;
     short sh;

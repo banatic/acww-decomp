@@ -16,7 +16,7 @@ extern int func_0204bcdc(unsigned short *);
 extern int func_0204bc64(unsigned short *);
 extern void func_0204bc28(unsigned short *, int);
 extern int func_02053bc0(unsigned short *);
-extern void func_0204f538(void *, unsigned short *, int, int, int);
+extern int func_0204f538(void *, unsigned short *, int, int, int);
 }
 static inline bool is_empty(unsigned short *p)
 {

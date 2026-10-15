@@ -7,7 +7,7 @@
 extern fx32 FX_Div(fx32 a, fx32 b);
 extern void *func_02095794(int);
 extern void func_020c14bc(int *a, void *b);
-extern void func_02095518(int a, int b, int c);
+extern int func_02095518(int a, int b, int c);
 
 typedef struct {
     int unk_00, unk_04, unk_08, unk_0C, unk_10, unk_14;

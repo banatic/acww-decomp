@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02031a08(void);
+extern int func_02031a08(int, int);
 extern int func_020319ac(int, int);
 
 int func_020319e4(int param1, int param2)
@@ -11,7 +11,7 @@ int func_020319e4(int param1, int param2)
     int r5 = param1;
     int r4 = param2;
 
-    if (func_02031a08() != 0) {
+    if (func_02031a08(param1, param2) != 0) {
         result = 0;
     } else {
         result = func_020319ac(r5, r4);

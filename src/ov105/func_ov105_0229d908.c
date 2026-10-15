@@ -18,7 +18,7 @@ struct UnkStruct_0229d908 {
     unsigned char unk_23BC;
 };
 
-extern void func_ov002_02207d24(void *p, int a);
+extern int func_ov002_02207d24(void *p, int a);
 extern void func_ov105_0229d0f8(UnkStruct_0229d908 *self, unsigned char v);
 extern void func_ov105_0229d17c(UnkStruct_0229d908 *self);
 extern void func_ov094_022999c0(void);

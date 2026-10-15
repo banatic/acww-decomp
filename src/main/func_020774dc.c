@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02085310(int a, int b, int c);
+extern void func_02085310(int a, int b);
 
-void func_020774dc(int a, int b, int c)
+void func_020774dc(int a, void *object, int mode)
 {
-    func_02085310(a, 15, c);
+    func_02085310(a, 15);
 }

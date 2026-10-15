@@ -3,7 +3,7 @@
  */
 
 extern char data_020dd174;
-extern void *MI_CpuFill8(void *s, int c, unsigned int n);
+extern void MI_CpuFill8(void *s, int c, unsigned int n);
 
 typedef struct {
     void *data;        // 0x00

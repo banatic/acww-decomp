@@ -13,7 +13,7 @@ extern u8 data_021f6c54;
 extern int func_ov002_0220a784(void *p, int a);
 extern void func_ov136_0229c92c(void *self);
 extern int func_ov134_0229b168(void *p, int a, int b);
-extern void func_ov002_02208098(void *self, int a);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov134_0229aad8(void *p, int a, int b);
 extern void func_ov136_0229c900(void *self, int n);
 
@@ -42,7 +42,7 @@ void func_ov136_0229ce7c(char *self)
     a = data_021f6c58;
     b = data_021f6c54;
     if (func_ov134_0229b168(self + 0x2c4, a, b) != 0) {
-        func_ov002_02208098(self, 1);
+        func_ov002_02208098((void *) (self), 1);
     }
     n = func_ov134_0229aad8(self + 0x2c4, a, b);
     if (n != 6) {

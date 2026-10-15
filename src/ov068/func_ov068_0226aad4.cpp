@@ -38,7 +38,7 @@ typedef struct UnkStruct_0226aad4_2 {
 } UnkStruct_0226aad4_2;
 
 extern "C" UnkStruct_0226aad4 *func_0201ce50(UnkStruct_0226aad4 *);
-extern "C" void func_ov068_0226aca8(void *, int *, int *, int, int);
+extern "C" int func_ov068_0226aca8(void *, int *, int *, int, int);
 extern "C" void func_0207daf4(int, int);
 extern "C" void func_020801c4(int, int, int);
 extern "C" void func_ov068_0226ada8(void *, UnkStruct_0226aad4 *, int *);

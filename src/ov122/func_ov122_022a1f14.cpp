@@ -7,7 +7,7 @@
 
 extern "C" int func_ov122_022a1e90(void *);
 extern "C" int func_ov122_022a1898(void *);
-extern "C" int func_ov122_022a1864(void *);
+extern "C" void func_ov122_022a1864(void *);
 
 int Obj_ov122_022a2738::func_ov122_022a1f14()
 {

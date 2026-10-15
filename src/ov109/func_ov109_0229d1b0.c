@@ -8,7 +8,7 @@ extern void func_ov109_0229c534(const void *);
 extern int func_ov002_02208054(const void *, int);
 extern int func_ov002_02208b00(const void *, unsigned char, unsigned char);
 extern void func_ov002_02209114(const void *, int, int);
-extern void func_ov002_02208098(const void *, int);
+extern unsigned char *func_ov002_02208098(const void *, unsigned char value);
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;

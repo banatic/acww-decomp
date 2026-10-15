@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02057a50(void *a, int b);
+extern int func_02057a50(void *object, const char *name);
 extern int data_ov003_02239a24[2];
 
 typedef struct {
@@ -18,7 +18,7 @@ void func_ov003_0221f668(UnkStruct_0221f668 *self, int flag)
     int zero = 0;
 
     for (i = 0; i < 2; i++) {
-        int idx = func_02057a50(self->unk_5C, data_ov003_02239a24[i]);
+        int idx = func_02057a50((void *) (self->unk_5C), (const char *) (data_ov003_02239a24[i]));
         if (idx != ~zero) {
             unsigned char *recBase = block + 4;
             unsigned short countVal = *(unsigned short *) (block + 0xa);

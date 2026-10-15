@@ -10,7 +10,7 @@ struct UnkStruct_020ac198 {
 };
 
 extern uint16_t data_020d1de8[];
-extern void func_020ac358(struct UnkStruct_020ac198 *, int, uint16_t, int);
+extern void func_020ac358(struct UnkStruct_020ac198 *, int, uint16_t);
 
 int func_020ac198(struct UnkStruct_020ac198 *s, int arg1)
 {
@@ -24,6 +24,6 @@ int func_020ac198(struct UnkStruct_020ac198 *s, int arg1)
     } else {
         result = 0;
     }
-    func_020ac358(s, arg1, v, s->unk_70);
+    func_020ac358(s, arg1, v);
     return result;
 }

@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020777f0(void);
+void func_020777f0(void *source);
 extern void *data_020ccf94;
 extern void *func_0207b9d0(int);
-extern unsigned char func_020794d8(void);
+extern unsigned char func_020794d8(void *);
 extern void *func_020794d0(void *p);
 extern void func_020732f0(void *, const void *, unsigned int);
 typedef struct {
@@ -18,7 +18,7 @@ typedef struct {
     unsigned short b;
     unsigned int c;
 } UnkStruct_020777f0;
-void func_020777f0(void)
+void func_020777f0(void *source)
 {
     PStruct *p;
     int i;
@@ -30,7 +30,7 @@ void func_020777f0(void)
     for (; i < 8; i++) {
         p = (PStruct *) func_0207b9d0(i);
         if (p != 0) {
-            local.a = func_020794d8();
+            local.a = func_020794d8(p);
         } else {
             local.a = 3;
         }

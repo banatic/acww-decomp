@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *p);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(void *p);
 extern int func_ov114_0229c410(void *p, int x);
 extern int func_ov090_02299078(int x);
@@ -11,7 +11,7 @@ extern int func_ov090_02299098(int x);
 extern void func_ov116_0229dfa8(void *p);
 extern void func_ov116_0229de60(void *p);
 extern void func_ov116_0229ddf8(void *p);
-extern void func_ov116_0229e4cc(void *p, int x);
+extern int func_ov116_0229e4cc(void *p, int x);
 
 extern struct {
     unsigned short field0;
@@ -22,7 +22,7 @@ void func_ov116_0229e168(void *param)
 {
     unsigned short flags;
 
-    if (func_ov002_02208014(param)) {
+    if (func_ov002_02208014()) {
         func_ov116_0229dfa8(param);
         return;
     }

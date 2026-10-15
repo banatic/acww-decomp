@@ -15,8 +15,8 @@ struct UnkStruct_02209398 {
 
 extern void func_ov002_0220958c(struct UnkStruct_02209398 *self);
 extern void func_02001a7c(void);
-extern void func_02002d50(int v);
-extern void func_02001a30(void);
+extern unsigned char func_02002d50(unsigned int v);
+extern unsigned char func_02001a30(unsigned char mask);
 extern void func_02001a1c(int v);
 extern int func_02002d8c(int v);
 extern void func_ov002_02208558(char *p, int a, int b, int c, int d);
@@ -34,8 +34,7 @@ void func_ov002_02209398(struct UnkStruct_02209398 *self)
     if (self->unk_18 == 0) {
         func_ov002_0220958c(self);
         func_02001a7c();
-        func_02002d50(self->unk_1A);
-        func_02001a30();
+        func_02001a30(func_02002d50(self->unk_1A));
         func_02001a1c(-6);
         t = func_02002d8c(self->unk_1A);
         func_ov002_02208558((char *) self + 0x3b0, t, 5, 0, 0x30);

@@ -12,7 +12,7 @@ typedef struct {
     UnkStruct_0203002c unk_0C;
 } UnkStruct_0203002c_2;
 extern void func_020eaca0(UnkStruct_0203002c *out, UnkStruct_0203002c *in, UnkStruct_0203002c_2 *a);
-extern void func_020ea838(UnkStruct_0203002c *v);
+extern int func_020ea838(UnkStruct_0203002c *v);
 void func_0203002c(UnkStruct_0203002c_2 *a, UnkStruct_0203002c *out)
 {
     UnkStruct_0203002c t;

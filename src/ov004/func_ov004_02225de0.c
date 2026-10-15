@@ -12,8 +12,8 @@ extern int func_020ea990(void *a, void *b);
 extern int func_02011398(int a, int b);
 extern int func_020113b0(int a, int b);
 extern int func_020e8ed8(int dx, int dz);
-extern void func_020113e0(short *a, int b);
-extern void func_020110a0(void *self, short *b);
+extern int func_020113e0(short *a, int b);
+extern void func_020110a0(void *object, short *values);
 extern int FX_MulFunc(int a, int b);
 extern void func_0201107c(void *self, int *a);
 
@@ -65,7 +65,7 @@ void func_ov004_02225de0(char *self, UnkStruct_02225de0 *p1, int *out, int *p3)
     prevAngle = *(short *) (self + 0x8e);
     if (*out != 0) {
         func_020113e0(&prevAngle, ang);
-        func_020110a0(self, &prevAngle);
+        func_020110a0(self, (short *) (&prevAngle));
     }
     diffS = prevAngle - ang;
     idx = (unsigned short) diffS >> 4;

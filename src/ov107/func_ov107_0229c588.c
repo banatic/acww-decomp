@@ -3,7 +3,7 @@
  */
 
 extern void func_ov107_0229c2c8(void *, int);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov107_0229c4f0(void *);
 
 typedef struct {
@@ -15,6 +15,6 @@ void func_ov107_0229c588(void *p)
 {
     func_ov107_0229c2c8(p, 1);
     ((Struct_ov107_0229c588 *) p)->unk_BE = 5;
-    func_ov002_02208098(p, 0x11);
+    func_ov002_02208098((void *) (p), 0x11);
     func_ov107_0229c4f0(p);
 }

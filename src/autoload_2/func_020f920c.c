@@ -3,7 +3,7 @@
  */
 
 extern int data_021fd1f8;
-extern void NNS_SndPlayerReadVariable(void *player, int var, short *out);
+extern int NNS_SndPlayerReadVariable(void *player, int var, short *out);
 
 typedef struct {
     char pad_00[0x16];

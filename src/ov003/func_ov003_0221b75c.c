@@ -9,7 +9,7 @@ typedef struct {
 } Object;
 
 extern char data_ov003_02238280;
-extern void func_02089c58(Object *this);
+extern void *func_02089c58(Object *this);
 
 Object *func_ov003_0221b75c(Object *this)
 {

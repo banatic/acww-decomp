@@ -7,13 +7,13 @@ typedef struct {
     unsigned char unk_98;
 } UnkStruct_02018c10;
 
-extern int func_020164cc(int);
+extern int func_020164cc(int, int);
 extern void func_02019af0(UnkStruct_02018c10 *, int);
 
 void func_02018c10(UnkStruct_02018c10 *obj, int arg1)
 {
     if (obj->unk_98 >= 1) {
-        if (func_020164cc(arg1 + 0x334)) {
+        if (func_020164cc(arg1 + 0x334, arg1)) {
             func_02019af0(obj, 1);
         }
     }

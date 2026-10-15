@@ -6,7 +6,7 @@ extern const unsigned char data_020d84b8[];
 extern const unsigned char data_020d84d8[];
 extern const unsigned char data_020d84f8[];
 extern const unsigned char data_020d8518[];
-extern int func_02011ed4(const unsigned char *p, int n);
+extern int func_02011ed4(void);
 
 const unsigned char *func_02011cd8(const unsigned char *p, int n)
 {
@@ -17,7 +17,7 @@ const unsigned char *func_02011cd8(const unsigned char *p, int n)
     const unsigned char *result;
 
     if (n >= 4) {
-        n = func_02011ed4(p, n);
+        n = func_02011ed4();
     }
 
     a = data_020d84b8;

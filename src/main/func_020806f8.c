@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02081edc(char *);
+extern int func_02081edc(void *object);
 extern int func_02081d20(char *);
 
 int func_020806f8(char *p)

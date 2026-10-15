@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int OS_DisableInterrupts(int);
-extern void OS_RestoreInterrupts(int);
+extern unsigned int OS_DisableInterrupts(void);
+extern unsigned int OS_RestoreInterrupts(int);
 extern int data_021fbe94;
 
 int func_020e9a08(int param)
 {
-    int result = OS_DisableInterrupts(param);
+    int result = OS_DisableInterrupts();
     int old = data_021fbe94;
     data_021fbe94 = param;
     OS_RestoreInterrupts(result);

@@ -21,13 +21,12 @@ typedef struct {
 } Vec3;
 
 typedef struct {
-    unsigned int v;
     Vec3 unk_04;
     Vec3 unk_10;
 } UnkStruct_020194fc_2;
 
-extern void *func_02019de4(void *, void *);
-extern void func_0201b1a4(char *, char *, int, short);
+extern void *func_02019de4(void *);
+extern void func_0201b1a4(char *, char *, int, int, unsigned short);
 extern void func_0201b044(char *, void *);
 extern void func_0201afd4(char *, void *);
 extern void func_0201aff4(char *, short);
@@ -38,7 +37,7 @@ extern unsigned short data_020c80f8;
 
 int func_020194fc(void *a, char *b)
 {
-    UnkStruct_020194fc *p = (UnkStruct_020194fc *) func_02019de4(a, b);
+    UnkStruct_020194fc *p = (UnkStruct_020194fc *) func_02019de4(a);
     UnkStruct_020194fc_2 local;
     int z1, x1, z2, x2;
 
@@ -54,9 +53,7 @@ int func_020194fc(void *a, char *b)
     local.unk_10.y = 0;
     local.unk_10.z = z2;
 
-    local.v = p->unk_1C;
-
-    func_0201b1a4(b + 0x350, b, 3, p->unk_1A);
+    func_0201b1a4(b + 0x350, b, 3, p->unk_1A, p->unk_1C);
     func_0201b044(b + 0x350, &local.unk_04);
     func_0201afd4(b + 0x350, &local.unk_10);
     func_0201aff4(b + 0x350, p->unk_18);

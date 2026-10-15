@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0203564c(int);
+extern void func_0203564c(int, int);
 
 struct UnkStruct_02036ba4 {
     unsigned char pad_00[8];
@@ -11,6 +11,6 @@ struct UnkStruct_02036ba4 {
 
 void func_02036ba4(struct UnkStruct_02036ba4 *self, unsigned short value)
 {
-    func_0203564c(0x1f);
+    func_0203564c(0x1f, value);
     self->unk_08 = value;
 }

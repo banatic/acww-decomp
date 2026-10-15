@@ -24,7 +24,7 @@ extern int func_ov094_0229acb0(UnkStruct_0229ad64 *, u16 *, int);
 extern UnkStruct_0229ad64_2 *func_ov094_0229a524(UnkStruct_0229ad64 *, int);
 extern int func_ov094_0229b088(u8 *, int);
 extern int func_ov094_0229b03c(u8 *, int);
-extern void func_02002a88(int, int, int, int, int);
+extern int func_02002a88(int, int, int, int, int);
 
 void func_ov094_0229ad64(UnkStruct_0229ad64 *self, int a, u16 *p2, int c)
 {

@@ -3,7 +3,7 @@
  */
 
 extern void func_ov004_0222b694(unsigned char *addr, unsigned char *out);
-extern void func_ov004_0222b6a8(unsigned char *addr, unsigned char v, int n, int arg2);
+extern int func_ov004_0222b6a8(unsigned char *addr, unsigned char v, int n, int arg2);
 
 void func_ov004_0222b5b4(unsigned char *base, int arg2)
 {

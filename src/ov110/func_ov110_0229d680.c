@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov110_0229d5d4(int, int, int);
-extern int func_ov110_0229d5e4(int, int, int);
-extern int func_ov110_0229d628(int);
+extern int func_ov110_0229d5d4(int, int);
+extern int func_ov110_0229d5e4(int, int);
+extern int func_ov110_0229d628(void);
 extern int func_ov110_0229d600(int);
 extern int func_ov110_0229d6c4(int, int, int);
 
@@ -14,11 +14,16 @@ int func_ov110_0229d680(int a, int b, int c)
 
     res = 0x1f;
     if (c >= 0x6c) {
-        if (func_ov110_0229d5d4(a, b, c)) {
-            res = func_ov110_0229d628(a);
+        if (func_ov110_0229d5d4(a, b)) {
+            // clang-format off
+            asm {
+                mov r0, a
+            }
+            // clang-format on
+            res = func_ov110_0229d628();
         }
     } else {
-        if (func_ov110_0229d5e4(a, b, c)) {
+        if (func_ov110_0229d5e4(a, b)) {
             res = func_ov110_0229d600(a);
         }
     }

@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fe60(int arg);
+extern int func_0206fe60(void);
 extern void func_ov115_0229dfa8(int arg);
 extern void func_ov115_0229df8c(int arg);
 
 void func_ov115_0229df6c(int arg)
 {
-    if (func_0206fe60(arg)) {
+    if (func_0206fe60()) {
         func_ov115_0229dfa8(arg);
     } else {
         func_ov115_0229df8c(arg);

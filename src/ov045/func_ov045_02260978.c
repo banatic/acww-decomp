@@ -29,14 +29,14 @@ extern int data_ov045_02261380;
 
 extern int func_020984e8(void);
 extern void func_020157c8(UnkStruct_02260978_2 *self, int a, int b);
-extern void func_02015828(UnkStruct_02260978_2 *self, int a);
+extern int func_02015828(UnkStruct_02260978_2 *self, int a);
 extern void func_ov045_022607ac(UnkStruct_02260978_2 *self, int a);
 extern void func_ov045_022605a4(UnkStruct_02260978 *h);
 extern int func_0201b43c(UnkStruct_02260978 *h, int a);
 extern void func_0201b420(UnkStruct_02260978 *h, int a);
 extern void func_ov045_02260e50(UnkStruct_02260978 *h, int a);
 extern void func_02099768(int a, int b);
-extern void func_0202ea80(int a, int b);
+extern int func_0202ea80(int a, int b);
 extern int func_ov045_02260524(UnkStruct_02260978 *h);
 extern int func_02099870(int a);
 extern void func_0207acbc(char *p, int a);
@@ -44,15 +44,15 @@ extern void func_0207adf4(char *p);
 extern void *func_0207cd84(char *p, int a, int b, int c);
 extern void *func_020807dc(void *p, int a);
 extern void *func_020807c0(void *p, void *q);
-extern void func_0208150c(void *p);
-extern int func_02003704(void);
+extern unsigned int func_0208150c(void *p);
+extern int func_02003704(void *argument0);
 extern void *func_0207f270(void *p);
 extern int func_02073dd4(void *g, void *h);
 extern int func_020794c4(void *p);
 extern void func_020794a8(void *p, int a);
 extern void func_020794a4(void *p, int a);
 extern void func_020794c0(void *p, int a);
-extern void func_02081cec(void *p, int a);
+extern signed char func_02081cec(void *p, int a);
 extern int func_02081d20(void *p);
 extern void func_020787d4(void *p, void *q, int x);
 extern void func_0206844c(void *a, u8 *p, int c);
@@ -127,8 +127,8 @@ void func_ov045_02260978(UnkStruct_02260978_2 *self)
                     if (a != 0) {
                         b = func_020807dc(a, gid);
                         c = func_020807c0(a, b);
-                        func_0208150c(a);
-                        if (func_02003704() != 0) {
+
+                        if (func_02003704((void *) func_0208150c(a)) != 0) {
                             obj = func_0207f270(a);
                         } else {
                             obj = 0;

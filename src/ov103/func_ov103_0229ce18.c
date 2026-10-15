@@ -19,10 +19,10 @@ typedef struct {
 extern void func_ov002_02209d68(void *sub, int a, int b);
 extern int func_ov103_0229ccb4(void *obj, int arg);
 extern int func_ov103_0229cc80(void *obj, int arg);
-extern void func_ov002_02209d38(void *sub, int a, int b, int c);
-extern void func_ov002_02209d8c(void *sub);
+extern int func_ov002_02209d38(void *sub, int a, int b, int c);
+extern int func_ov002_02209d8c(void *sub);
 extern void func_ov103_0229c964(void *obj);
-extern void func_ov002_02208098(void *obj, int arg);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char value);
 
 void func_ov103_0229ce18(void *obj, int arg1, int arg2)
 {

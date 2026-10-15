@@ -3,18 +3,15 @@
  */
 
 extern int func_0204e414(void);
-extern void func_0204e4bc(void);
-extern void func_0204e42c(void);
-extern void func_0204d0ac(void);
+extern void func_0204e4bc(void *);
+extern void func_0204e42c(void *);
+extern void func_0204d0ac(void *);
 
 void func_0209e7fc(void)
 {
     if (func_0204e414()) {
-        func_0204e414();
-        func_0204e4bc();
-        func_0204e414();
-        func_0204e42c();
-        func_0204e414();
-        func_0204d0ac();
+        func_0204e4bc((void *) func_0204e414());
+        func_0204e42c((void *) func_0204e414());
+        func_0204d0ac((void *) func_0204e414());
     }
 }

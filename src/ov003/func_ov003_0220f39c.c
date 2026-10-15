@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0(void *p, int a, int b, int c);
+extern void func_020109a0(void *p, int b, int c, unsigned short d);
 
-void func_ov003_0220f39c(void *p)
+void func_ov003_0220f39c(void *p, void *message, int previous)
 {
     unsigned int val;
     if (*(unsigned int *) ((char *) p + 0x704) != 0x7a) {

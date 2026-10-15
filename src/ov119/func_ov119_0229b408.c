@@ -6,7 +6,7 @@ extern int func_ov119_0229ae28(void *self);
 extern void func_02077c40(int x);
 extern void func_ov119_0229a410(void *self, int x);
 extern void func_ov119_0229a714(void *self);
-extern void func_ov002_02208098(void *self, int x);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern int func_ov119_0229ae10(void *self);
 
 void func_ov119_0229b408(void *self)

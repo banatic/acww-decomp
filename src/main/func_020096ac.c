@@ -13,7 +13,7 @@ typedef struct {
 } UnkStruct_020096ac;
 
 extern int func_0200f290(UnkStruct_020096ac *self, int a);
-extern void func_0201100c(UnkStruct_020096ac *self);
+extern int func_0201100c(UnkStruct_020096ac *self);
 extern void *func_0209d5e8(void);
 extern int func_0209d848(void *p);
 extern int func_020310c8(int a);

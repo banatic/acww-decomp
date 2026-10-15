@@ -21,7 +21,7 @@ extern void func_ov002_0220a0b4(void *p, int a, int b);
 extern void func_ov002_0220a05c(void *p, int a, int b, int c, int d);
 extern void func_ov002_0220a314(void *p);
 extern void func_ov002_0220a2b4(void *p);
-extern void func_ov002_02208098(void *self, int n);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 
 void func_ov123_02299c04(struct UnkStruct_02299c04 *self)
 {

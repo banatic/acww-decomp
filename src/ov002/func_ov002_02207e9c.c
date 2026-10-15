@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208418(char *a, int b, int c, int d);
+extern void func_ov002_02208418(char *a, int b, int c, int d);
 
-int func_ov002_02207e9c(char *a, int b, int c)
+void func_ov002_02207e9c(char *a, int b, int c)
 {
     if (b == 0) {
         b = 3;
     }
-    return func_ov002_02208418(a + 0x70, b, c, 0x30);
+    func_ov002_02208418(a + 0x70, b, c, 0x30);
 }

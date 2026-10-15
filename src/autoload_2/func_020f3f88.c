@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f45c4(void *p);
+extern void *func_020f45c4(void *p);
 extern void func_020f65bc(int a, int b);
-extern void func_020f5a3c(void);
+extern void func_020f5a3c(char value);
 
 extern int data_0213ef80;
 
@@ -30,7 +30,7 @@ struct UnkStruct_020f3f88 *func_020f3f88(struct UnkStruct_020f3f88 *obj)
         func_020f65bc(data_021fd1bc.unk_30, 0xd1);
     }
     obj->flag = 1;
-    func_020f5a3c();
+    func_020f5a3c(1);
     data_021fd1bc.unk_73 = 0;
     return obj;
 }

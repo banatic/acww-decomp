@@ -3,10 +3,10 @@
  */
 
 extern void func_ov132_0229ae90(void *p);
-extern int func_ov002_02208098(void *p, int x);
+extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 
 int func_ov132_0229b140(void *p)
 {
     func_ov132_0229ae90(p);
-    return func_ov002_02208098(p, 0);
+    return (int) func_ov002_02208098(p, 0);
 }

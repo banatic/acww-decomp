@@ -36,7 +36,7 @@ class UnkStruct_0226d14c {
 
 extern "C" {
 extern int func_0207f1c8(int a);
-extern int func_0209b5ec(int a);
+extern int func_0209b5ec(void *object);
 extern int func_0209c330(int a);
 extern int func_0202d6e4(const void *tbl, int n);
 extern int func_0202d0ec(volatile u16 *a, int lo, int hi, u8 d, u8 e, u8 f);
@@ -62,7 +62,7 @@ extern "C" void func_ov068_0226d14c(UnkStruct_0226d14c *self, u8 *p)
 
     tbl = &data_ov068_0227675c;
     g = &data_021f3aa4;
-    if (func_0209c330(func_0209b5ec(func_0207f1c8(self->vf25()))) == 0) {
+    if (func_0209c330(func_0209b5ec((void *) (func_0207f1c8(self->vf25())))) == 0) {
         tbl = &data_ov068_02276774;
     }
     i = func_0202d6e4(tbl, 5);

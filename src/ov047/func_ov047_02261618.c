@@ -8,7 +8,7 @@ extern int func_020984e8(void);
 extern void func_02071110(const void *a, const void *b);
 extern void func_0209f128(const void *a, unsigned int b);
 extern void func_02098ff8(int a, int b);
-extern void func_0209a050(void);
+extern void func_0209a050(void *object);
 
 struct UnkStruct_02261618 {
     unsigned char pad_00[0xc8];
@@ -42,7 +42,7 @@ void func_ov047_02261618(struct UnkStruct_02261618 *p)
         func_02098ff8(ret, 8);
 
         if (p->unk_C8 >= 0) {
-            func_0209a050();
+            func_0209a050((void *) (p->unk_C8));
             p->unk_C8 = -1;
         }
         p->unk_CE = 0xfff1;

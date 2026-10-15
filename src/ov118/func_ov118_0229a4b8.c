@@ -15,7 +15,7 @@ typedef struct {
 extern int func_ov118_0229a460(Ov118Obj *p, unsigned short mask);
 extern void func_ov118_0229afd4(Ov118Obj *p, unsigned char a1);
 extern void func_ov118_0229a474(Ov118Obj *p, int a1);
-extern void func_ov002_02208098(Ov118Obj *p, int a1);
+extern unsigned char *func_ov002_02208098(Ov118Obj *p, unsigned char value);
 extern void func_ov002_0220a574(void *sub);
 extern void func_ov118_0229a450(Ov118Obj *p, unsigned short mask);
 extern void func_ov002_0220a4bc(void *sub);

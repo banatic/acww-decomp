@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02074308(unsigned char *);
+extern int func_02074308(void);
 extern int func_020ec148(void);
 extern void func_020730c8(void);
 extern int *func_020eb92c(void);
@@ -27,7 +27,7 @@ void func_ov141_0229a174(unsigned char *self)
     int item;
     unsigned char *ptr;
 
-    func_02074308(self);
+    func_02074308();
     a = func_020ec148();
 
     for (i = 0; i < 6; i++) {

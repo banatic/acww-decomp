@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0207f1c8(void *);
-extern void func_0209b5ec(void);
-extern void func_0209c330(void);
+extern unsigned int func_0207f1c8(void *);
+extern void *func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern int func_02099fe8(void);
 extern void func_0207de14(void *, void *);
 extern void func_0202d694(unsigned short *);
@@ -12,12 +12,12 @@ extern int func_020644b4(int);
 extern int func_0204c878(unsigned short *);
 extern int func_0205be38(void);
 extern int func_0202b510(int);
-extern void func_020984e8(void);
-extern int func_02099734(void);
+extern int func_020984e8(void);
+extern int func_02099734(int);
 extern int func_02098cf8(int, int);
-extern void func_0208150c(void *);
-extern int func_020036e8(void);
-extern void func_0202da38(void *, void *, void *, int, int, int, unsigned char, int, int);
+extern unsigned int func_0208150c(void *);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *, void *, void *, int, int, int, int scale, int, int);
 extern void func_02015fb0(void *, int, int, int, int, int);
 extern unsigned char data_020c8be8[];
 
@@ -45,9 +45,7 @@ int func_0202b220(UnkStruct_0202b220 *p)
     void *r6;
 
     r6 = *(void **) ((char *) p->unk_100 + 0x830);
-    func_0207f1c8(r6);
-    func_0209b5ec();
-    func_0209c330();
+    func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(r6)));
     if (func_02099fe8() == -1) {
         goto fail;
     }
@@ -76,13 +74,11 @@ int func_0202b220(UnkStruct_0202b220 *p)
         p->unk_1A0 = 0xbb8;
     }
 
-    func_020984e8();
-    if (p->unk_1A0 > func_02098cf8(func_02099734(), 1)) {
+    if (p->unk_1A0 > func_02098cf8(func_02099734((int) func_020984e8()), 1)) {
         goto fail;
     }
 
-    func_0208150c(r6);
-    arg5 = func_020036e8();
+    arg5 = func_020036e8((unsigned char *) func_0208150c(r6));
     arg6 = *(int *) data_020c8be8;
     arg7 = data_020c8be8[4];
     func_0202da38(p, p->unk_104, p->unk_122, 30, arg5, arg6, arg7, 0, 0);

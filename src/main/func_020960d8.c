@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02096718(void);
+extern int func_02096718(int);
 
-int func_020960d8(void)
+int func_020960d8(int object)
 {
     int result;
     int *ptr;
 
-    result = func_02096718();
+    result = func_02096718(object);
     if (result != 0) {
         result = *(int *) ((char *) result + 0x7f0);
     } else {

@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_02099734(void);
+extern int func_02099734(int);
 extern int func_02098cf8(int, int);
 
-int func_0207e4fc(void)
+int func_0207e4fc(int object)
 {
     int value;
 
-    value = func_02098cf8(func_02099734(), 1);
+    value = func_02098cf8(func_02099734(object), 1);
     if (value >= 0x9c40 && value < 0xea60) {
         return 1;
     } else {

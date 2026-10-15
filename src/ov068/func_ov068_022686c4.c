@@ -4,11 +4,11 @@
 
 extern int func_020164a0(void *p, int n);
 extern int func_02019de8(void *p);
-extern void func_02012508(void *a, void *b, void *c, int d, int e);
+extern int func_02012508(void *a, void *b, void *c, int d, int e);
 extern int func_ov068_0226ccb0(void *a, void *b);
 extern void func_ov068_0226cce8(void *a, void *b, int c);
 extern int func_020121f8(void *p);
-extern void func_020121e0(void *p, int n);
+extern char *func_020121e0(void *p, int n);
 
 void func_ov068_022686c4(unsigned char *self, void *work)
 {

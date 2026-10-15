@@ -6,7 +6,7 @@
 #include "cpp/ov125/Obj_ov125_022a0ab8.h"
 
 extern "C" int func_ov002_02209f64(void *);
-extern "C" int func_ov002_02208098(void *, unsigned char);
+extern "C" unsigned char *func_ov002_02208098(void *, unsigned char);
 
 void Obj_ov125_022a0ab8::func_ov125_022a0030()
 {

@@ -3,6 +3,7 @@
  */
 
 #include "cpp/main/Base_020c3b98.h"
+
 typedef void (Base_020c3b98::*Pmf)(void *);
 extern "C" void func_020c3b98(Base_020c3b98 *self, void *arg)
 {

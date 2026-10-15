@@ -3,7 +3,7 @@
  */
 
 extern char data_020e1b70;
-extern void func_020edb3c(void *obj, void *ptr);
+extern void func_020edb3c(void *obj);
 
 struct UnkStruct_02083c84 {
     char *unk_00;
@@ -12,6 +12,6 @@ struct UnkStruct_02083c84 {
 void *func_02083c84(struct UnkStruct_02083c84 *obj)
 {
     obj->unk_00 = &data_020e1b70;
-    func_020edb3c(obj, &data_020e1b70);
+    func_020edb3c(obj);
     return obj;
 }

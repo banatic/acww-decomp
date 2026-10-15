@@ -7,7 +7,7 @@ extern int func_ov004_0222c3c4(void *, int);
 extern int func_02056f94(void *);
 extern void func_ov004_0222db14(void *, int, void *, void *, unsigned char, int, unsigned short, unsigned short);
 extern void func_0203ab64(void);
-extern int func_0203ae98(void);
+extern void func_0203ae98(void);
 void func_ov004_0222df4c(char *self)
 {
     int current;

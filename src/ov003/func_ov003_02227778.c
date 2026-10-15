@@ -3,9 +3,9 @@
  */
 
 extern void *data_ov003_0223bdb8;
-extern void func_0205556c(void *r, int tag, void *h);
-extern void func_0209d238(void *arg, void *p);
-extern void *func_0209d324(void);
+extern int func_0205556c(void *r, int tag, void *h);
+extern void *func_0209d238(void *arg, void *p);
+extern void *func_0209d324(void *argument0);
 extern void *NNS_G3dGetJntAnmSet(void *m);
 extern void *func_02107b44(void *a, int b);
 extern int func_02055140(void *r, void *p);
@@ -22,8 +22,8 @@ int func_ov003_02227778(char *self, void *m, void *arg)
     if (m == 0) {
         return ok;
     }
-    func_0209d238(arg, self + 0x7c);
-    p = func_0209d324();
+
+    p = func_0209d324((void *) func_0209d238(arg, self + 0x7c));
     q = func_02107b44(NNS_G3dGetJntAnmSet(m), 0);
     if (func_02055140(r, p)) {
         func_02055060(r, q, 0, 0x1000, 1, 0);

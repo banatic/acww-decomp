@@ -49,12 +49,12 @@ extern int func_02099fe8(void);
 extern int func_020b67d4(void);
 extern void func_020109fc(UnkStruct_0200bc38_3 *s, int a, int b, int c);
 extern unsigned int func_020b2300(void);
-extern void func_ov004_0223bb20(int a, u16 *b, u16 *c);
-extern void func_020109a0(UnkStruct_0200bc38_3 *s, int a, int b, int c);
+extern int func_ov004_0223bb20(int a, u16 *b, u16 *c);
+extern void func_020109a0(UnkStruct_0200bc38_3 *s, int a, int b, unsigned short c);
 extern int func_0200fbe0(UnkStruct_0200bc38_3 *s);
 extern void func_0205eae0(void *p, int a, int b, int c);
 
-void func_0200bc38(UnkStruct_0200bc38_3 *self, Arg *arg)
+void func_0200bc38(UnkStruct_0200bc38_3 *self, Arg *arg, int previous)
 {
     unsigned int pair[2];
     UnkStruct_0200bc38_2 *s;

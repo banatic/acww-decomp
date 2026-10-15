@@ -9,7 +9,7 @@ extern int func_020951bc(const char *str);
 extern void func_0209525c(struct UnkStruct_02081e14 *self, const char *str);
 extern void func_0209e474(void *buf);
 extern int func_02081d88(struct UnkStruct_02081e14 *self, char *buf);
-extern void func_02081d68(struct UnkStruct_02081e14 *self);
+extern int func_02081d68(struct UnkStruct_02081e14 *self);
 extern void *func_02081d64(struct UnkStruct_02081e14 *self);
 extern void func_020642d0(void *a, const char *b);
 extern void *func_02081e10(struct UnkStruct_02081e14 *self);

@@ -45,9 +45,9 @@ class UnknownClass {
 };
 
 extern "C" void func_020eaca0(void *, void *, void *);
-extern "C" void func_ov004_0220d594(void *, void *);
-extern "C" int func_ov004_0220ee90(void *, void *, int);
-extern "C" int func_ov004_0223b22c(int);
+extern "C" int func_ov004_0220d594(void *, void *);
+extern "C" void func_ov004_0220ee90(void *, void *, int);
+extern "C" int func_ov004_0223b22c(void);
 extern "C" int func_ov004_0223b058(int, void *, void *, short);
 extern "C" void func_ov004_0220e674(void *, int);
 
@@ -58,7 +58,8 @@ extern "C" int func_ov004_0220c6fc(UnknownClass *obj)
 
     func_020eaca0(&local, (char *) obj + 0x170, (char *) obj + 0x5c);
     func_ov004_0220d594((char *) obj + 0x18c, obj);
-    cond = func_ov004_0223b22c(func_ov004_0220ee90(obj, &local, 0));
+    func_ov004_0220ee90(obj, &local, 0);
+    cond = func_ov004_0223b22c();
     if (cond != 0) {
         if (func_ov004_0223b058(cond, (char *) obj + 0x250, (char *) obj + 0x5c, *(short *) ((char *) obj + 0x16c))) {
             obj->m37(0);

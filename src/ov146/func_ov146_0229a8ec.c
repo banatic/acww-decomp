@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *obj);
+extern int func_ov002_02208014(void);
 extern int func_ov002_02208008(void *obj);
 extern int func_ov146_0229985c(void *obj, int arg);
 extern void func_ov146_0229a760(void *obj);
@@ -17,7 +17,7 @@ extern struct {
 
 void func_ov146_0229a8ec(void *obj)
 {
-    if (func_ov002_02208014(obj)) {
+    if (func_ov002_02208014()) {
         func_ov146_0229a760(obj);
         return;
     }

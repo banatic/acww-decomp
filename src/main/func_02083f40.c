@@ -3,16 +3,16 @@
  */
 
 extern int func_020984e8(void);
-extern int func_0209967c(void);
+extern int func_0209967c(int object);
 extern int func_020887c0(int a, int b);
 
 int func_02083f40(void)
 {
-    int result = 0;
-    if (func_020984e8() != 0) {
-        if (func_020887c0(func_0209967c(), 0x18) == 0) {
-            result = 1;
+    int object;
+    if ((object = func_020984e8()) != 0) {
+        if (func_020887c0(func_0209967c(object), 0x18) == 0) {
+            return 1;
         }
     }
-    return result;
+    return 0;
 }

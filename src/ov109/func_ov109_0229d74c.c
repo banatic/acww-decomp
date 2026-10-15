@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020ee470(void);
+extern void func_020ee470(void *parameter0);
 
-int func_ov109_0229d74c(void)
+int func_ov109_0229d74c(void *arg0)
 {
-    func_020ee470();
+    func_020ee470((void *) arg0);
     return 1;
 }

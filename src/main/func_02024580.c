@@ -8,7 +8,7 @@
 #define P16(o) (*(u16 *) (p + (o)))
 
 extern int func_020984e8(void);
-extern int func_02099734(void);
+extern int func_02099734(int);
 extern int func_0209b91c(int);
 extern int func_020644cc(int);
 extern int func_0209b914(int);
@@ -17,15 +17,15 @@ extern int func_0205be38(void);
 extern int func_0202b510(int);
 extern void func_02027170(u16 *, int);
 extern void func_0207ddd0(u16 *, int);
-extern void func_0207de70(int, u16 *);
+extern int func_0207de70(int, u16 *);
 extern void func_0207de14(u16 *, int);
 extern void func_0202d5e4(u16 *, int);
 extern void func_0202d5cc(u16 *, int);
 extern void func_02098a24(int, int, int);
 extern int func_02098eb8(int);
-extern void func_02098f0c(int, u16 *, int, int);
+extern int func_02098f0c(int, u16 *, int, int);
 extern int func_020996ac(int);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int, u16 *, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int, u16 *, int, int);
 extern void func_02015f38(char *, int, int, int, int, int, int);
 extern void func_02015de4(char *, u16 *, int, int);
 
@@ -46,7 +46,7 @@ void func_02024580(char *p)
         return;
     }
     a = func_020984e8();
-    b = func_02099734();
+    b = func_02099734(a);
     r6 = *(int *) ((char *) P32(0x100) + 0x830);
     c = func_0209b91c(P32(0x164));
     r7 = func_020644cc(0x64);

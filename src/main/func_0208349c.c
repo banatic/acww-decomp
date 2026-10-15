@@ -9,14 +9,14 @@ typedef struct {
 } UnkStruct_0208349c;
 
 extern char data_020e1a90[];
-extern void __cxa_vec_cleanup(void *, int, int, void (*)(void));
-extern void func_02083514(void);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern int func_02083514(void *);
 extern void func_02083c78(UnkStruct_0208349c *);
 
 UnkStruct_0208349c *func_0208349c(UnkStruct_0208349c *obj)
 {
     obj->unk_00 = data_020e1a90;
-    __cxa_vec_cleanup(&obj->unk_08, 5, 2, func_02083514);
+    __cxa_vec_cleanup((void *) (&obj->unk_08), 5, 2, (((void (*)(void *)) func_02083514)));
     func_02083c78(obj);
     return obj;
 }

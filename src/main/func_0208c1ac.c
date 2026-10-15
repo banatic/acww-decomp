@@ -13,7 +13,7 @@ struct UnkStruct_0208c1ac {
 };
 
 extern void func_0208c008(UnkStruct_0208c1ac *self);
-extern void func_0208c804(void *obj);
+extern void *func_0208c804(void *obj);
 extern void func_0208a1f4(void *obj);
 extern void func_0208af00(UnkStruct_0208c1ac *self);
 

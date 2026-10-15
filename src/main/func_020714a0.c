@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02071aa8(unsigned int a, unsigned char b, unsigned int c, unsigned char d, int x);
-extern void func_02071d8c(unsigned int a, unsigned char b, unsigned int c, unsigned char d, int x);
+extern int func_02071aa8(unsigned int a, unsigned char b, unsigned int c, unsigned char d, int x);
+extern int func_02071d8c(unsigned int a, unsigned char b, unsigned int c, unsigned char d, int x);
 
 typedef struct {
     unsigned int a : 4;
@@ -13,7 +13,7 @@ typedef struct {
     unsigned int e : 1;
 } Flags;
 
-void func_020714a0(Flags *p)
+int func_020714a0(Flags *p)
 {
     unsigned int a = p->a;
     unsigned char b = p->b;
@@ -21,8 +21,8 @@ void func_020714a0(Flags *p)
     unsigned char d = p->d;
     unsigned int e = p->e;
     if (e != 0) {
-        func_02071aa8(a, b, c, d, 0);
+        return func_02071aa8(a, b, c, d, 0);
     } else {
-        func_02071d8c(a, b, c, d, 0);
+        return func_02071d8c(a, b, c, d, 0);
     }
 }

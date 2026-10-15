@@ -3,7 +3,7 @@
  */
 
 extern int func_02096718(int);
-extern void func_0200f27c(int, int);
+extern unsigned int *func_0200f27c(int, int);
 
 int func_02095ea4(int a, int b)
 {

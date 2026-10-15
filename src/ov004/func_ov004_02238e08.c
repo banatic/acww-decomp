@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_020e88dc();
+extern int func_020e88dc(int *argument0, int argument1, int argument2);
 
 void func_ov004_02238e08(char *self)
 {
@@ -13,8 +13,8 @@ void func_ov004_02238e08(char *self)
     *(u8 *) (self + 0x264) = 0x1;
     *(void **) (self + 0x268) = 0x0;
     if (*(u8 *) (self + 0x280) != 0x0) {
-        func_020e88dc(self + 0x278, 0x14, 0x29);
-        func_020e88dc(self + 0x27c, 0xccd, 0xcd);
+        func_020e88dc((int *) (self + 0x278), (int) (0x14), (int) (0x29));
+        func_020e88dc((int *) (self + 0x27c), (int) (0xccd), (int) (0xcd));
         *(u8 *) (self + 0x280) = (*(u8 *) (self + 0x280) - 0x1);
     } else {
         *(int *) (self + 0x278) = 0x14;

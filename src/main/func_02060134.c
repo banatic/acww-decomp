@@ -28,12 +28,12 @@ struct UnkStruct_02060134 {
 };
 
 extern int func_020606d4(u32 addr, u8 byte1);
-extern void func_0203f7d0(void *ptr, struct Vec *vec);
+extern int func_0203f7d0(void *ptr, struct Vec *vec);
 extern void *func_020604f8(struct UnkStruct_02060134_2 *self);
 extern void VEC_Subtract(struct UnkStruct_02060134 *a, struct Vec *b, struct UnkStruct_02060134 *c);
 extern void func_020eaaa8(struct UnkStruct_02060134 *a, int b);
 extern void VEC_Add(struct Vec *a, struct UnkStruct_02060134 *b, struct Vec *c);
-extern void func_0203f8d0(struct Vec *a, struct Vec *b);
+extern int func_0203f8d0(struct Vec *a, struct Vec *b);
 extern void func_020e96c8(struct UnkStruct_02060134_3 *out, u32 x, u32 y, u32 z);
 extern void func_02055e7c(void *a, void *b);
 

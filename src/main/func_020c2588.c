@@ -7,9 +7,9 @@ extern unsigned short data_020c80f8;
 
 extern void func_0201ad18(void *dst, unsigned int a, unsigned int b, unsigned int c, const void *p, unsigned int v1,
                           unsigned int v2, unsigned int v3);
-extern void func_02019c20(void *dst, unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
+extern int func_02019c20(void *dst, unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e);
 extern unsigned int func_0204e414(void);
-extern void func_0204e08c(unsigned int id, void *dst, unsigned int a, unsigned int b);
+extern int func_0204e08c(unsigned int id, void *dst, unsigned int a, unsigned int b);
 extern void func_0204f7e0(void *dst, const void *src);
 
 struct Out1 {

@@ -16,7 +16,7 @@ struct UnkStruct_0220f7f0_2 {
     int unk_04;
 };
 
-extern void func_ov004_0220db94(struct UnkStruct_0220f7f0 *l);
+extern char *func_ov004_0220db94(struct UnkStruct_0220f7f0 *l);
 extern void func_ov004_0220f27c(void *self, struct UnkStruct_0220f7f0 *l, int a, int b);
 extern struct UnkStruct_0220f7f0_2 *func_ov004_0220db5c(struct UnkStruct_0220f7f0 *l, unsigned int i);
 extern unsigned int func_ov004_0220db68(struct UnkStruct_0220f7f0 *l);
@@ -26,7 +26,7 @@ extern int func_0204bd08(u16 *p);
 extern void func_0204f794(Vec3 *v, int a, int b);
 extern int func_ov004_0223c5b8(int a, int b);
 extern int func_020b6590(void);
-extern void func_020b7d3c(int h, void *o, Vec3 *v, int a, int b, int c, int d);
+extern void *func_020b7d3c(int h, void *o, Vec3 *v, int a, int b, int c, int d);
 extern void *data_021c80bc;
 
 void func_ov004_0220f7f0(char *self)

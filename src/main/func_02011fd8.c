@@ -4,7 +4,7 @@
 
 typedef unsigned int uint32_t;
 
-extern void *MI_CpuFill8(void *, int, unsigned int);
+extern void MI_CpuFill8(void *, int, unsigned int);
 
 struct UnkStruct_02011fd8 {
     char pad_00[0x48];

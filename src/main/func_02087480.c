@@ -7,7 +7,7 @@ typedef struct {
     int y;
 } Pair;
 
-extern int func_0206f798(void *arg);
+extern int func_0206f798(void);
 extern int func_0206f7a4(void);
 extern void func_0209e474(Pair *p);
 extern void func_02087500(void *arg, int n);
@@ -17,7 +17,7 @@ extern void func_02087274(void *arg, Pair *p);
 void func_02087480(void *arg)
 {
     Pair pos;
-    if (func_0206f798(arg) || func_0206f7a4()) {
+    if (func_0206f798() || func_0206f7a4()) {
         pos.x = 0;
         pos.y = 0;
         func_0209e474(&pos);

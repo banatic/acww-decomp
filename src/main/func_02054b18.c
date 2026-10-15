@@ -8,7 +8,7 @@ extern int data_020dd0cc;
 
 extern void func_02056ed4(void *);
 extern void func_02057078(void *);
-extern void func_02054d9c(void *);
+extern void *func_02054d9c(void *);
 extern void func_020edb3c(void *);
 
 void *func_02054b18(void *arg)

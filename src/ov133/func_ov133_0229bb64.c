@@ -4,12 +4,12 @@
 
 #include "types.h"
 
-extern int func_02070b84(void *);
+extern void func_02070b84(void *);
 
-int func_ov133_0229bb64(char *self)
+void func_ov133_0229bb64(char *self)
 {
     // DECLS
     // ENDDECLS
     *(u8 *) (self + 0x9a) = 0x0;
-    return func_02070b84(self + 0xb0);
+    func_02070b84(self + 0xb0);
 }

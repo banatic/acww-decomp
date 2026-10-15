@@ -6,10 +6,10 @@ extern unsigned int data_020ccf94;
 extern void func_0200b374(void *p);
 extern int func_02073908(unsigned int a, unsigned int b);
 extern void func_02010d64(void *p);
-extern void func_02010ca4(void *p);
+extern int func_02010ca4(void *p);
 extern void func_0200b218(void *p);
 extern void func_0200ae7c(void *p, unsigned char *ptr, unsigned char byte);
-extern void func_0200f530(void *p, unsigned int *arr);
+extern int func_0200f530(void *p, unsigned int *arr);
 extern void func_0200ae04(void *p);
 
 typedef struct {

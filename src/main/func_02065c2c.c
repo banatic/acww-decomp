@@ -14,7 +14,7 @@ typedef struct List {
     Node *tail;
 } List;
 
-extern void func_020e8d50(List *list, Node *new_node, Node *prev);
+extern int func_020e8d50(List *list, Node *new_node, Node *prev);
 
 int func_02065c2c(List *list, Node *new_node)
 {

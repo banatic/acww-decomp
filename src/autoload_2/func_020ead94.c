@@ -3,11 +3,11 @@
  */
 
 extern int func_020edaf0(int, int);
-extern void func_020ed17c(void);
+extern void func_020ed17c(int state, void *user_data);
 extern void func_020ed168(void);
-extern void func_ov067_02268990(int, void (*)(void), int);
-extern void WXC_SetParentParameter(int, int, int);
-extern void func_ov067_02268688(void *, void (*)(void), int, int, int, int);
+extern void func_ov067_02268990(int, void (*)(int, void *), int);
+extern int WXC_SetParentParameter(int, int, int);
+extern int func_ov067_02268688(void *, void (*)(void), int, int, int, int);
 
 extern unsigned char data_021fbef8;
 extern unsigned int data_021fbf48;

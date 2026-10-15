@@ -5,7 +5,7 @@
 extern int func_020961d0(int);
 extern void func_0205df14(char *ptr, unsigned char val);
 extern void func_02011138(void *dst, void *src);
-extern void func_020103c0(void *a, void *b);
+extern int func_020103c0(void *a, void *b);
 extern void func_02010424(void *a);
 extern unsigned char data_020c75c8[];
 

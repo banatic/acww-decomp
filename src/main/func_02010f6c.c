@@ -5,8 +5,8 @@
 extern int func_0200e9a8(void *a, unsigned char *b, unsigned int *c, unsigned int *d, short *e);
 extern int func_020b65c4(void);
 extern int func_020113bc(short *a, short b);
-extern int func_020110a0(void *a, short *b);
-extern int func_02011490(unsigned int *a, unsigned int b);
+extern void func_020110a0(void *a, short *b);
+extern void func_02011490(unsigned int *a, unsigned int b);
 
 struct UnkStruct_02010f6c {
     char pad_00[0x5c];

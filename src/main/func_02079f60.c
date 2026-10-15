@@ -5,7 +5,7 @@
 extern int func_0207a2d8(void *, int, signed char);
 extern void func_020794d4(char *, int);
 extern void func_02079540(char *, int);
-extern void func_0207a244(void *, int, signed char);
+extern int func_0207a244(void *, int, signed char);
 
 void func_02079f60(void *ptr, char *str, int *count, char *table, int n)
 {

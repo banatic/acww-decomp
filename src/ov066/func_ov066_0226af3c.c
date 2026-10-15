@@ -37,7 +37,7 @@ typedef struct Ctl {
 extern Ctl *data_ov066_0226be08;
 extern void func_ov066_0226b594(Node *n);
 extern int func_ov066_0226b088(UnkStruct_0226af3c *e, Node *n);
-extern void func_ov066_0226ae50(int a, void *p, int b, int c, void *fn);
+extern int func_ov066_0226ae50(int a, void *p, int b, int c, void *fn);
 extern void func_ov066_0226b71c(void);
 
 void func_ov066_0226af3c(void)

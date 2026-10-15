@@ -3,9 +3,9 @@
  */
 
 extern void func_0200f6bc(int *dst, int src, int *args);
-extern void func_020e8bb0(void *dst, int src, int size, int flags, int control);
+extern int func_020e8bb0(void *dst, int src, int size, int flags, int control);
 
-void func_0200f650(int a0, int a1, int a2, int a3)
+void func_0200f650(int a0, int a1)
 {
     int buf[3];
     func_0200f6bc(buf, a0, &a1);

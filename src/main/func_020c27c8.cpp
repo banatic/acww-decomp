@@ -4,12 +4,12 @@
 
 extern "C" {
 int func_020b65c4(void);
-void func_0208602c(void);
-int func_020860c4(void);
+int func_0208602c(void);
+int func_020860c4(int);
 void func_02087f4c(int, void *);
-void func_020984e8(void);
-void func_02099688(void);
-int func_0208829c(void);
+int func_020984e8(void);
+unsigned int func_02099688(unsigned int);
+int func_0208829c(void *);
 }
 
 class UnkStruct_020c27c8 {
@@ -41,16 +41,12 @@ extern "C" int func_020c27c8(UnkStruct_020c27c8 *self)
     }
 
     if (func_020b65c4() == 0) {
-        func_0208602c();
-        func_02087f4c(func_020860c4(), &self->unk_5C);
+        func_02087f4c(func_020860c4((int) func_0208602c()), &self->unk_5C);
     }
 
     if (func_020b65c4() == 0xb) {
-        func_020984e8();
-        func_02099688();
-        if (func_0208829c() != 0) {
-            func_0208602c();
-            func_02087f4c(func_020860c4(), &self->unk_5C);
+        if (func_0208829c((void *) func_02099688((unsigned int) func_020984e8())) != 0) {
+            func_02087f4c(func_020860c4((int) func_0208602c()), &self->unk_5C);
         }
     }
 

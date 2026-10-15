@@ -14,7 +14,7 @@ extern void func_ov105_0229d0f8(void *obj, unsigned char b);
 extern int func_ov105_0229d530(void *obj, unsigned char b);
 extern int func_ov105_0229d4c4(void *obj, unsigned char b);
 extern int func_0206fe54(void);
-extern void func_ov002_02208098(void *obj, int param);
+extern unsigned char *func_ov002_02208098(void *obj, unsigned char value);
 extern void func_ov094_0229b1d8(void *ptr);
 
 void func_ov105_0229c6a0(UnkStruct_0229c6a0 *obj)

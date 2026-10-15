@@ -7,7 +7,7 @@
 extern u8 data_021f3b28[];
 extern int func_ov004_0223a8f0(void);
 
-int func_ov004_0223a87c(void *self)
+int func_ov004_0223a87c(void)
 {
     int h = data_021f3b28[3] & 0x1f;
     if (h <= 6) {

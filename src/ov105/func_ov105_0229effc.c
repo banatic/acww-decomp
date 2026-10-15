@@ -8,7 +8,7 @@ extern void func_ov105_0229c320(unsigned int a, int b);
 extern void func_ov002_02207f04(unsigned int a, int b, int c, int d, int e);
 extern void func_ov002_02208090(unsigned int a, int b);
 extern void func_ov105_0229ef90(unsigned int a);
-extern void func_ov002_0220ad0c(unsigned int a);
+extern void *func_ov002_0220ad0c(unsigned int a);
 extern void func_ov105_0229ed78(unsigned int a);
 extern int func_ov002_02207f54(unsigned int a);
 

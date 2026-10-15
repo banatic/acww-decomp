@@ -10,7 +10,7 @@ struct UnkStruct_022623c8 {
     unsigned char unk_814;
 };
 
-extern void func_02019c6c(char *p, int n, unsigned short v);
+extern int func_02019c6c(char *p, int n, unsigned short v);
 extern int func_0202ea40(void *self, void *local, int flag);
 extern int func_020644cc(int v);
 extern unsigned short data_020c80f8;

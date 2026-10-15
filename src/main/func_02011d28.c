@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void FS_InitFile(void);
+extern void FS_InitFile(void *file);
 
-void func_02011d28(void)
+void func_02011d28(void *file)
 {
-    FS_InitFile();
+    FS_InitFile(file);
 }

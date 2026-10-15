@@ -25,16 +25,18 @@ struct UnkStruct_0201e21c_2 {
 
 extern "C" int func_02019e00(void *);
 extern "C" int func_02019de8(void *);
-extern "C" void func_0203af80(Ls *);
+extern "C" int func_0203af80(Ls *);
 extern "C" void func_0202da88(void *, void *);
 extern "C" void func_0206844c(u32, UnkStruct_0201e21c_2 *, u32);
-extern "C" void func_020155cc(void *);
+extern "C" int func_020155cc(void *);
 
 extern char data_021c222c;
-extern struct {
+struct Ptmf {
     u32 a;
     u32 b;
-} __ptmf_null;
+};
+
+extern Ptmf __ptmf_null;
 
 class UnkStruct_0201e21c_3 {
   public:

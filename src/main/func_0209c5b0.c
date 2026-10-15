@@ -5,7 +5,7 @@
 extern int func_020644cc(int n);
 extern unsigned char *func_0206e7bc(void *p, int n);
 extern int func_0209cc30(void *p, unsigned int a, unsigned int b);
-extern void func_0209d01c(int v, int n);
+extern int func_0209d01c(int v, int n);
 extern int data_021dc580;
 
 void func_0209c5b0(void *self, int n)

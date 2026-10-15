@@ -16,7 +16,7 @@ struct UnkStruct_0206a3cc_2 {
     int unk_5C;
 };
 
-extern "C" void func_02067a3c(char *p);
+extern "C" int func_02067a3c(char *p);
 extern "C" int func_020a82f8(int arg);
 extern "C" void func_020a9334(UnkStruct_0206a3cc_2 *obj, int value);
 extern "C" void func_020a7994(char *p, int value);

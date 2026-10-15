@@ -4,7 +4,7 @@
 
 extern void func_0208af30(void *self);
 extern void func_0208a1f8(char *sub);
-extern void func_0208e024(char *sub);
+extern void *func_0208e024(char *sub);
 extern char data_020e226c;
 
 struct UnkStruct_0208df44 {

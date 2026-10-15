@@ -10,7 +10,7 @@ extern void func_ov119_0229a400(void *self, int mode);
 extern void func_ov119_0229a410(void *self, int mode);
 extern void func_0206fdd4(void *dst, int a, int b, int c, int d, int e);
 extern int func_020b9bbc(void *dst, u32 v, int a, int b, int c);
-extern void func_020b9b6c(void *dst, void *src, int a, int c);
+extern int func_020b9b6c(void *dst, void *src, int a, int c);
 
 void func_ov119_0229b00c(unsigned char *self)
 {

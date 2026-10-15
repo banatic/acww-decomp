@@ -49,26 +49,31 @@ class Actor {
 };
 extern "C" {
 extern int func_ov004_0220e5c8(void *);
-extern void func_ov004_0220db94(List *), func_ov004_0220db90(List *);
+extern char *func_ov004_0220db94(List *);
+extern void func_ov004_0220db90(List *);
 extern void func_ov004_0220f27c(void *, List *, Vec *, int);
-extern void func_ov004_0220f218(u16 *, void *, int);
-extern int func_020b65c4(void), func_ov004_0223d348(int), func_ov004_0220e5a8(void *);
+extern int func_ov004_0220f218(u16 *, void *, int);
+extern int func_020b65c4(void);
+extern unsigned char func_ov004_0223d348(void);
+extern int func_ov004_0220e5a8(void *);
 extern int func_ov004_0220d2b8(void *);
 extern Entry *func_ov004_0220db5c(List *, int);
 extern u32 func_ov004_0220db68(List *);
 extern void func_020523e4(int, int, int, int, int, int, int, u16 *, int);
 extern void *func_ov004_0223cd50(void);
-extern void func_ov004_0223ccc4(void *, void *, int, int, int);
+extern int func_ov004_0223ccc4(void *, void *, int, int, int);
 extern u16 func_ov004_0220e808(void *, Vec *, int);
 extern int func_0203efbc(void *);
 extern void func_0203efb0(void *, int);
-extern void __register_global_object(void *, void (*)(void *), void *), func_020012dc(void *);
+extern void __register_global_object(void *, void *destructor, void *);
+extern void func_020012dc(void *);
 extern void MTX_MultVec43(Vec *, void *, Vec *);
 extern short func_020e8ed8(int, int);
 extern u32 data_ov004_02256c50, data_ov004_02256c88;
 extern Vec data_ov004_02256cb4, data_ov004_02256cd8;
 extern u8 data_ov004_02256ca8[], data_ov004_02256ccc[], data_021fbe48[];
 }
+
 extern "C" void func_ov004_0220ef14(Actor *actor, int unused, Vec *param, int turn, u8 update)
 {
     u8 *self = (u8 *) actor;
@@ -88,14 +93,14 @@ extern "C" void func_ov004_0220ef14(Actor *actor, int unused, Vec *param, int tu
             data_ov004_02256cb4.x = 0;
             data_ov004_02256cb4.y = 0;
             data_ov004_02256cb4.z = 0;
-            __register_global_object(&data_ov004_02256cb4, func_020012dc, data_ov004_02256ca8);
+            __register_global_object(&data_ov004_02256cb4, ((void *) &func_020012dc), data_ov004_02256ca8);
             data_ov004_02256c50 |= 1;
         }
         if (!(data_ov004_02256c88 & 1)) {
             data_ov004_02256cd8.x = 0;
             data_ov004_02256cd8.y = 0;
             data_ov004_02256cd8.z = 0x1000;
-            __register_global_object(&data_ov004_02256cd8, func_020012dc, data_ov004_02256ccc);
+            __register_global_object(&data_ov004_02256cd8, ((void *) &func_020012dc), data_ov004_02256ccc);
             data_ov004_02256c88 |= 1;
         }
         MTX_MultVec43(&data_ov004_02256cb4, data_021fbe48, &origin);
@@ -106,7 +111,8 @@ extern "C" void func_ov004_0220ef14(Actor *actor, int unused, Vec *param, int tu
         func_ov004_0220f218(&items[2], self, (short) (*(short *) (self + 0x8e) + turn));
         items[0] = items[2];
     }
-    func_ov004_0223d348(func_020b65c4());
+    func_020b65c4();
+    func_ov004_0223d348();
     option = self[0x289] == 0 ? 0 : func_ov004_0220e5a8(self);
     kind = actor->query();
     for (i = 0; i < func_ov004_0220db68(&list); i++) {

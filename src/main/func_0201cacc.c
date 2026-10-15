@@ -9,7 +9,7 @@ typedef struct {
 
 extern int func_0201cb68(UnkStruct_0201cacc *obj, int arg);
 extern void func_0201cb54(UnkStruct_0201cacc *obj, int arg);
-extern void func_0201cb40(UnkStruct_0201cacc *obj, int arg);
+extern int func_0201cb40(UnkStruct_0201cacc *obj, int arg);
 
 void func_0201cacc(UnkStruct_0201cacc *obj, int arg)
 {

@@ -25,12 +25,12 @@ struct UnkStruct_02215fd8 {
 
 extern void func_0203ee08(void *a, void *b);
 extern void func_0200f268(void *a, int b);
-extern void func_0203e19c(void);
+extern int func_0203e19c(void);
 extern u32 func_02008258(void *a, u32 b);
-extern void func_02095694(int a, u32 b);
-extern void func_0200f27c(void *a, int b);
-extern void func_0200d4e8(void *a, int b, int c, int d);
-extern void func_0203b144(void);
+extern int func_02095694(int a, u32 b);
+extern unsigned int *func_0200f27c(void *a, int b);
+extern int func_0200d4e8(void *a, int b, int c, int d);
+extern int func_0203b144(void);
 
 void func_ov003_02215fd8(struct UnkStruct_02215fd8 *self)
 {

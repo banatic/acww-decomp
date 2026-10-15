@@ -2,16 +2,16 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void __cxa_vec_ctor(void *, int, int, void (*)(void), void (*)(void));
-extern void func_02081710(void);
-extern void func_020817a8(void);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
+extern void *func_02081710(void *);
+extern void *func_020817a8(void *);
 extern void func_02079cc0(void *);
 extern void func_0207a338(void *);
-extern void func_0209a814(void *);
+extern void *func_0209a814(void *);
 
 void *func_0207d080(void *self)
 {
-    __cxa_vec_ctor(self, 8, 0x7ec, func_020817a8, func_02081710);
+    __cxa_vec_ctor((void *) (self), 8, 0x7ec, (((void (*)(void *)) func_020817a8)), (((void (*)(void *)) func_02081710)));
     func_02079cc0((char *) self + 0x3f60);
     func_0207a338((char *) self + 0x3f7c);
     func_0209a814((char *) self + 0x3f90);

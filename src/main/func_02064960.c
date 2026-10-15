@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02064980(int a, int b, int c, int d, int *e);
+extern void *func_02064980(int a, int b, int c, int d, int *e);
 
-void func_02064960(int a, int b, int c, int d)
+void *func_02064960(int a, int b, int c, ...)
 {
     int *p = (int *) (((unsigned int) &c & ~3U) + 4);
-    func_02064980(a, b, 0, c, p);
+    return func_02064980(a, b, 0, c, p);
 }

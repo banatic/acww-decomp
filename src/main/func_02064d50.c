@@ -4,8 +4,8 @@
 
 extern char data_020de710[];
 extern char data_020da13c[];
-extern void func_02064d8c();
-extern void __cxa_vec_cleanup(void *obj, int a, int b, void (*func)());
+extern void *func_02064d8c(void *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 extern void func_020ee62c(void *self);
 extern void func_020edf54(void *self);
 
@@ -23,7 +23,7 @@ void *func_02064d50(void *arg)
 {
     struct Main *self = (struct Main *) arg;
     self->vtable = (void *) data_020de710;
-    __cxa_vec_cleanup(&self->sub, 3, 0x44, func_02064d8c);
+    __cxa_vec_cleanup((void *) (&self->sub), 3, 0x44, (((void (*)(void *)) func_02064d8c)));
     self->vtable = (void *) data_020da13c;
     func_020ee62c(self);
     func_020edf54(self);

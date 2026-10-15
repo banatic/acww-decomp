@@ -27,9 +27,9 @@ typedef struct Blk {
 extern Other *data_021c526c;
 
 extern void func_0206844c(int h, u8 *p, int k);
-extern void func_02062f90(Blk *out, u16 *src);
+extern void *func_02062f90(Blk *out, u16 *src);
 extern void func_020683b4(int h, int k, Blk *b, int n);
-extern void func_02062f4c(Blk *b);
+extern void *func_02062f4c(Blk *b);
 
 void func_0200ec4c(UnkStruct_0200ec4c *self)
 {

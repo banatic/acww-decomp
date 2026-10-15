@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a17a8(void *);
+extern int func_020a17a8(void);
 extern int func_020a17d0(void);
 extern void func_02068358(void *);
 extern void func_02068434(void *);
@@ -26,7 +26,7 @@ extern struct UnkStruct_02261428_2 data_ov054_02262fac[];
 void func_ov054_02261428(struct UnkStruct_02261428 *p)
 {
     void *r4 = p->unk_40;
-    if (func_020a17a8(p)) {
+    if (func_020a17a8()) {
         func_ov054_02261cc4(p, 0);
         return;
     }

@@ -11,7 +11,7 @@ typedef struct UnkStruct_0204e77c {
 } UnkStruct_0204e77c;
 
 extern int func_0204ea00(u8 *a, int *pi);
-extern void func_0204d7f8(int r, int z, int v, int b);
+extern int func_0204d7f8(int r, int z, int v, int b);
 
 void func_0204e77c(u8 *a, int b)
 {

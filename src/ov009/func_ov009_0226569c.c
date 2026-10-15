@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov009_02265630(void);
+extern void func_ov009_02265630(void *element);
 extern unsigned char data_ov009_02265cb4[];
-extern void __cxa_vec_cleanup(const void *ptr, int a, int b, void (*cb)(void));
+extern void __cxa_vec_cleanup(const void *ptr, int a, int b, void (*cb)(void *));
 
 void func_ov009_0226569c(void)
 {

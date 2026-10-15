@@ -11,7 +11,7 @@ class UnkStruct_0229f2fc {
 
 extern "C" int func_ov106_0229c364(void *self, int kind);
 extern "C" void func_ov106_0229ce64(void *self);
-extern "C" int func_0206fe54(int x);
+extern "C" int func_0206fe54(void);
 extern "C" void func_ov002_02209eb8(void *p);
 extern "C" void func_ov002_0220ad18(void *a, void *b);
 extern "C" void func_ov094_0229a850(void *a, int b, int c);
@@ -28,7 +28,7 @@ extern "C" int func_ov106_0229f2fc(void *self)
     }
 
     UnkStruct_0229f2fc *obj1 = (UnkStruct_0229f2fc *) ((char *) self + 0x21b8);
-    if (func_0206fe54(obj1->f2()) != 0) {
+    if (((void) (obj1->f2()), func_0206fe54()) != 0) {
         func_ov002_02209eb8((char *) self + 0x22a0);
     }
 

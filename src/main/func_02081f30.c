@@ -10,7 +10,7 @@ typedef struct {
     unsigned short unk_6A;
 } UnkStruct_02081f30;
 
-extern void func_0209529c(void *);
+extern void *func_0209529c(void *);
 extern void func_020642fc(void *);
 extern void func_02081ef0(void *);
 

@@ -4,8 +4,8 @@
 
 extern int func_020ae3b8(void *);
 extern int func_020ae614(int, void *);
-extern void func_020ae774(void *);
-extern void func_020ae75c(void *);
+extern void *func_020ae774(void *);
+extern void *func_020ae75c(void *);
 extern void func_02068404(int, int, void *);
 extern int data_021f3b30;
 

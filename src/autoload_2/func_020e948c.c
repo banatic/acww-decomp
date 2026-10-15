@@ -3,7 +3,7 @@
  */
 
 extern void TP_Init(void);
-extern void TP_GetUserInfo(unsigned char *);
+extern int TP_GetUserInfo(unsigned char *);
 extern void TP_SetCalibrateParam(unsigned char *);
 extern void TP_RequestSetStabilityAsync(int, int);
 extern void TP_WaitBusy(int);

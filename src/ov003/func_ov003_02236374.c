@@ -41,7 +41,7 @@ extern int func_020b0594(char *base, unsigned int index, int *o1, int *o2, int *
                          unsigned char *o6);
 extern int func_020b6660(void);
 extern int func_020b0568(char *base);
-extern void func_ov003_02235d88(void *self, void *dst, void *ref, int f);
+extern int func_ov003_02235d88(void *self, void *dst, void *ref, int f);
 extern int func_02003348(int chan, int slot, void *arg, int d, void *self);
 
 extern unsigned char data_021f3b56[];

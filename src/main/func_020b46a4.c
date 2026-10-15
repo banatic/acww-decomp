@@ -13,8 +13,8 @@ extern const u8 data_020d2094[];
 extern const u8 data_020d20a0[];
 extern int data_020e5300;
 
-extern void func_020a8228(Big *s);
-extern void func_020a8210(Big *s);
+extern void *func_020a8228(Big *s);
+extern void *func_020a8210(Big *s);
 extern int func_020b4a20(Big *s, u8 *v, void *p);
 extern int func_020a89dc(void *ctx, Big *s);
 

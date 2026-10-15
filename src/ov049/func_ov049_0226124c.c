@@ -4,12 +4,12 @@
 
 #include "types.h"
 
-extern void func_02095b58(u16 *);
-extern void func_02095b40(u16 *);
+extern int func_02095b58(u16 *);
+extern int func_02095b40(u16 *);
 extern void func_02095b4c(u16 *);
 extern void func_02095eec(int, int);
 extern void func_ov049_022610c4(void *, int);
-extern void func_0203aeac(void);
+extern int func_0203aeac(void);
 extern int func_02099fe8(void);
 extern int func_0201b43c(void *, int);
 extern void func_ov049_02260ac4(void *);

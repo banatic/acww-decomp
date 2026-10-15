@@ -15,9 +15,9 @@ struct Node {
 
 extern struct Node *func_020342c0(int, int, int);
 extern void func_0202f8fc(int *, int, int);
-extern void __register_global_object(void *, void (*)(void), void *);
-extern void func_0202f2f0(void);
-extern void func_02033614(void *, int *, int *, int *, int, int, int, int);
+extern void __register_global_object(void *, void *, void *);
+extern void func_0202f2f0(void *);
+extern void *func_02033614(void *, int *, int *, int *, int, int, int, int);
 
 extern int data_021c30cc;
 extern int data_021c30d4;
@@ -88,12 +88,12 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
             if (sp_24 != (void *) 0 && r5->unk_0C != sp_24->unk_04) {
                 if ((data_021c30e8 & r4) == 0) {
                     func_0202f8fc(data_021c3128, (int) 0x00001000, 0);
-                    __register_global_object(data_021c3128, func_0202f2f0, data_021c31c4);
+                    __register_global_object((void *) (data_021c3128), (((void *) func_0202f2f0)), (void *) (data_021c31c4));
                     data_021c30e8 |= r4;
                 }
                 if ((data_021c30d8 & r4) == 0) {
                     func_0202f8fc(data_021c3138, (int) 0xfffff000, 0);
-                    __register_global_object(data_021c3138, func_0202f2f0, data_021c31dc);
+                    __register_global_object((void *) (data_021c3138), (((void *) func_0202f2f0)), (void *) (data_021c31dc));
                     data_021c30d8 |= r4;
                 }
                 func_0202f8fc(sp_30, sp_70 + 0x1000u, sp_78 - 0x1000u);
@@ -116,12 +116,12 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
             if (sp_28 != (void *) 0 && r5->unk_08 != sp_28->unk_00) {
                 if ((data_021c30d4 & r4) == 0) {
                     func_0202f8fc(data_021c3100, 0, (int) 0x00001000);
-                    __register_global_object(data_021c3100, func_0202f2f0, data_021c3140);
+                    __register_global_object((void *) (data_021c3100), (((void *) func_0202f2f0)), (void *) (data_021c3140));
                     data_021c30d4 |= r4;
                 }
                 if ((data_021c30cc & r4) == 0) {
                     func_0202f8fc(data_021c3110, 0, (int) 0xfffff000);
-                    __register_global_object(data_021c3110, func_0202f2f0, data_021c3164);
+                    __register_global_object((void *) (data_021c3110), (((void *) func_0202f2f0)), (void *) (data_021c3164));
                     data_021c30cc |= r4;
                 }
                 func_0202f8fc(sp_40, sp_70 - 0x1000u, sp_78 + 0x1000u);
@@ -145,13 +145,13 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
                 // Block 3
                 if ((data_021c30f0 & r4) == 0) {
                     func_0202f8fc(data_021c3120, (int) 0xfffff4b0, (int) 0x00000b50);
-                    __register_global_object(data_021c3120, func_0202f2f0, data_021c3188);
+                    __register_global_object((void *) (data_021c3120), (((void *) func_0202f2f0)), (void *) (data_021c3188));
                     data_021c30f0 |= r4;
                 }
                 if ((data_021c30ec & r4) == 0) {
                     int *ptr = data_021c3120;
                     func_0202f8fc(data_021c3118, -ptr[0], -ptr[1]);
-                    __register_global_object(data_021c3118, func_0202f2f0, data_021c31ac);
+                    __register_global_object((void *) (data_021c3118), (((void *) func_0202f2f0)), (void *) (data_021c31ac));
                     data_021c30ec |= r4;
                 }
                 func_0202f8fc(sp_50, sp_70 - 0x1000u, sp_78 - 0x1000u);
@@ -172,13 +172,13 @@ void func_02033118(void *a0, int a1, int a2, int a3, int a4, int a5, int a6)
                 // Block 4
                 if ((data_021c30fc & r4) == 0) {
                     func_0202f8fc(data_021c3130, (int) 0x00000b50, (int) 0x00000b50);
-                    __register_global_object(data_021c3130, func_0202f2f0, data_021c31d0);
+                    __register_global_object((void *) (data_021c3130), (((void *) func_0202f2f0)), (void *) (data_021c31d0));
                     data_021c30fc |= r4;
                 }
                 if ((data_021c30f4 & r4) == 0) {
                     int *ptr = data_021c3130;
                     func_0202f8fc(data_021c3108, -ptr[0], -ptr[1]);
-                    __register_global_object(data_021c3108, func_0202f2f0, data_021c314c);
+                    __register_global_object((void *) (data_021c3108), (((void *) func_0202f2f0)), (void *) (data_021c314c));
                     data_021c30f4 |= r4;
                 }
                 func_0202f8fc(sp_60, sp_70 - 0x1000u, sp_78 + 0x1000u);

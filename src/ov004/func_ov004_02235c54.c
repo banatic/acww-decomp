@@ -8,8 +8,10 @@
 #define S(p, o) (*(short *) ((p) + (o)))
 extern u8 *data_ov004_022594d4[];
 extern u8 data_ov004_02247927[], data_ov004_02247924[];
-extern void func_ov004_02235ac4(void *), func_ov004_0223635c(void *, void *), func_ov004_02235b28(void *),
-    func_020e89dc(short *, int, int);
+extern void func_ov004_02235ac4(void *);
+extern void func_ov004_0223635c(void *, void *);
+extern void func_ov004_02235b28(void *);
+extern int func_020e89dc(short *, int, int);
 void func_ov004_02235c54(u8 *self)
 {
     if (self[0x1ee] == 1) {

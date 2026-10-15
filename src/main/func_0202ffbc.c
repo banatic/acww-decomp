@@ -8,15 +8,15 @@ typedef struct {
     int z;
 } Vec3;
 
-extern void func_0202ff68(int, Vec3 *);
-extern void func_020ea9e4(Vec3 *, int);
+extern void func_0202ff68(int, Vec3 *, void *);
+extern int func_020ea9e4(Vec3 *, int);
 
-void func_0202ffbc(int a, Vec3 *out, int b)
+int func_0202ffbc(int a, Vec3 *out, int b)
 {
     Vec3 local;
-    func_0202ff68(a, &local);
+    func_0202ff68(a, &local, (void *) b);
     out->x = local.x;
     out->y = local.y;
     out->z = local.z;
-    func_020ea9e4(&local, b);
+    return func_020ea9e4(&local, b);
 }

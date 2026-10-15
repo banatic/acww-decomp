@@ -10,8 +10,8 @@ struct Struct_ov082_02278a28 {
     char unk_658;
 };
 
-extern void func_ov082_02279064(char *p);
-extern void func_0202ee5c(struct Struct_ov082_02278a28 *self);
+extern void *func_ov082_02279064(char *p);
+extern void *func_0202ee5c(struct Struct_ov082_02278a28 *self);
 extern void func_020edf54(struct Struct_ov082_02278a28 *self);
 
 struct Struct_ov082_02278a28 *func_ov082_02278a28(struct Struct_ov082_02278a28 *self)

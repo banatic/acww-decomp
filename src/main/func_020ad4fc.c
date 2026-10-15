@@ -63,8 +63,8 @@ extern void func_020e9898(void *a);
 extern int func_02064328(void *w, void *a, ...);
 extern int func_02057a40(UnkStruct_020ad4fc *o, void *b);
 extern int func_020579b8(UnkStruct_020ad4fc *o, void *w);
-extern void func_020012dc(void *p);
-extern void __register_global_object(void *a, void *b, void *c);
+extern void func_020012dc(void *);
+extern void __register_global_object(void *, void *, void *);
 extern int func_020ad0c0(void *a, void *b, int c, int d, int e, int f, int g, void *h);
 
 void func_020ad4fc(int arg)
@@ -145,7 +145,7 @@ void func_020ad4fc(int arg)
         data_021f47e8[0] = 0;
         data_021f47e8[1] = 0;
         data_021f47e8[2] = 0x1000;
-        __register_global_object(&data_021f47e8, (void *) func_020012dc, &data_021f4800);
+        __register_global_object((void *) (&data_021f47e8), (((void *) func_020012dc)), (void *) (&data_021f4800));
         data_021f47d8 = data_021f47d8 | 1;
     }
     func_020ad0c0(&data_021f4904, &data_021f47e8, 0x119a, 0x119a, 2, 0x2000, 0, g1);

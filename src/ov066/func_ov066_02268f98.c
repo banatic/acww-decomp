@@ -23,7 +23,7 @@ struct GWork {
     u8 pad_8D[11];
     u16 flags;
     u8 pad_9A[2];
-    void (*fn_ptr)(void);
+    unsigned int (*fn_ptr)(void);
     u8 pad_A0[0x20];
     union {
         u32 word;

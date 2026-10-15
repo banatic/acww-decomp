@@ -6,8 +6,8 @@ extern unsigned char data_ov050_022650b4[];
 extern unsigned char data_ov050_02265e9c[];
 extern unsigned char data_021ebcd4[];
 
-void func_020683e4(void *a, int b, unsigned char *c, unsigned char *d);
-void func_02060c80(unsigned char *a, unsigned char b);
+int func_020683e4(void *a, int b, unsigned char *c, unsigned char *d);
+int func_02060c80(unsigned char *a, unsigned char b);
 
 struct FuncOv050Obj {
     unsigned char pad_00[0x40];

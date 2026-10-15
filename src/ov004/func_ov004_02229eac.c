@@ -20,13 +20,13 @@ extern int func_ov004_0223c964(int h);
 extern int func_ov004_0223c984(int h);
 extern void func_ov004_0223c954(int h);
 extern void func_ov004_0223c974(int h);
-extern void func_0200e92c(struct Msg *m);
+extern unsigned int func_0200e92c(struct Msg *m);
 extern void func_0200e90c(struct Msg *m, int kind, int arg, short v);
 extern void func_ov004_02229f5c(struct Pair *p, int k);
 extern int func_0200e894(void *self, struct Msg *m);
-extern void func_0200e91c(struct Msg *m);
+extern int func_0200e91c(struct Msg *m);
 extern int func_020b67d4(void);
-extern void func_0200f328(void *self, int a);
+extern int func_0200f328(void *self, int a);
 
 int func_ov004_02229eac(char *self, int k, int a, short b)
 {

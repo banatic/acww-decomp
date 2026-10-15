@@ -7,9 +7,9 @@ typedef struct {
     unsigned char byte_at_0xa;
 } UnkStruct_0209bc44;
 
-extern int func_0209bc54(int, unsigned char, UnkStruct_0209bc44 *);
+extern int func_0209bc54(int, unsigned char);
 
 int func_0209bc44(UnkStruct_0209bc44 *a, int b)
 {
-    return func_0209bc54(b, a->byte_at_0xa, a);
+    return func_0209bc54(b, a->byte_at_0xa);
 }

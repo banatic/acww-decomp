@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a0284(int, int);
-extern int func_020984e8(int);
-extern int func_02098ff8(int, int);
+extern void func_020a0284(int, int);
+extern int func_020984e8(void);
+extern void func_02098ff8(int, int);
 extern void func_020a6ec0(void *);
 
 typedef struct {
@@ -18,8 +18,8 @@ void func_020a3a94(int arg0)
 {
     int a;
     int b;
-    a = func_020a0284(arg0, 0);
-    b = func_020984e8(a);
+    a = ((int) (func_020a0284(arg0, 0), arg0));
+    b = func_020984e8();
     func_02098ff8(b, 2);
     func_020a6ec0(data_020ccf94->unk_64);
 }

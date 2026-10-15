@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020677d0(void *p);
+extern "C" int func_020677d0(void *p);
 extern "C" void func_020a9334(void *self, int val);
 extern "C" void func_020a7994(void *obj, int val);
 

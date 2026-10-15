@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02066830(void *dst, const void *src);
+extern int func_02066830(void *dst, const void *src);
 
 extern unsigned char data_021cfd68[];
 

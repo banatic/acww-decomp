@@ -8,11 +8,11 @@ struct Struct020b7e3c {
     int unk_20;
     int unk_24;
 };
-extern void func_020b75b4(struct Struct020b7e3c *p);
+extern void func_020b75b4(void);
 extern void func_020b7e9c(struct Struct020b7e3c *p, int flag);
 struct Struct020b7e3c *func_020b7e3c(struct Struct020b7e3c *p)
 {
-    func_020b75b4(p);
+    func_020b75b4();
     func_020b7e9c(p, 0);
     p->unk_1C = 0;
     p->unk_20 = 0;

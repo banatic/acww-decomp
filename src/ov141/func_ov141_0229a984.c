@@ -4,11 +4,11 @@
 
 extern void func_ov002_0220af74(void *);
 extern void func_ov139_02299adc(void *);
-extern int func_020b9ccc(void *);
+extern void func_020b9ccc(void *);
 
-int func_ov141_0229a984(char *self)
+void func_ov141_0229a984(char *self)
 {
     func_ov002_0220af74(self + 0xa9c);
     func_ov139_02299adc(self + 0x94);
-    return func_020b9ccc(self + 0xc68);
+    func_020b9ccc(self + 0xc68);
 }

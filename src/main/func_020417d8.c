@@ -5,7 +5,7 @@
 extern int func_020412a0(void);
 extern int func_0203e340(void);
 extern void func_0203e328(void);
-extern void func_020417ac(int);
+extern void func_020417ac(void);
 extern int func_02073d90(void *p);
 
 extern int data_021c7590;
@@ -28,7 +28,7 @@ int func_020417d8(void)
     switch (data_021c75a0[0]) {
         case 0:
             if (data_020db6e0 == 0x63) {
-                func_020417ac(data_020db6e0);
+                func_020417ac();
             }
             break;
         case 1:

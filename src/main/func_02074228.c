@@ -4,8 +4,8 @@
 
 extern int data_020ccf94;
 extern int func_02073bf4(int, int, int);
-extern void func_02073044(int);
-extern void func_020ec338(unsigned short, int, int);
+extern unsigned int func_02073044(void);
+extern int func_020ec338(unsigned short, int, int);
 
 void func_02074228(unsigned int arg1)
 {
@@ -14,11 +14,11 @@ void func_02074228(unsigned int arg1)
     do {
         if (i < arg1) {
             int t = func_02073bf4(a, i, 0);
-            func_02073044(t);
+            func_02073044();
             func_020ec338((unsigned short) i, t, 0x1000);
         } else if (i > arg1) {
             int t = func_02073bf4(a, i - 1, 0);
-            func_02073044(t);
+            func_02073044();
             func_020ec338((unsigned short) i, t, 0x1000);
         }
         i--;

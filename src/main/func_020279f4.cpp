@@ -14,15 +14,15 @@ extern unsigned char data_021e5a2c[];
 
 extern int func_0202d9c4(void *);
 extern int func_0209bc40(int);
-extern void func_02014e2c(void *);
+extern int func_02014e2c(void *);
 extern void func_0202dbf0(void *, D_020d94d8_t);
-extern int func_020984e8(int);
+extern int func_020984e8(void);
 extern int func_02099734(int);
 extern void *func_0202d754(int);
 extern int func_02065ec0(void *);
 extern void func_02066650(void *);
 extern void func_0202da88(void *, void *);
-extern void func_02068484(void *, void *, int);
+extern int func_02068484(void *, void *, int);
 extern int func_0209b4cc(void *, int);
 extern int func_0208150c(void *);
 extern void func_0207bae8(void *, int, int, int);
@@ -51,7 +51,7 @@ extern "C" void func_020279f4(UnkStruct_020279f4 *self)
             func_0202dbf0(self, data_020d94d8);
             break;
         case 19: {
-            void *x = func_0202d754(func_02099734(func_020984e8(v)));
+            void *x = func_0202d754(func_02099734(func_020984e8()));
             if (x != 0) {
                 if (func_02065ec0(x) == 7) {
                     func_0202da88(self, data_021c2b84);

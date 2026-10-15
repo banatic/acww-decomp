@@ -4,8 +4,8 @@
 
 extern int func_02056f94(void *);
 extern unsigned int func_02008258(void *, unsigned int);
-extern void func_0200d4e8(void *, int, int, int);
-extern void func_ov003_0220d268(void *);
+extern int func_0200d4e8(void *, int, int, int);
+extern int func_ov003_0220d268(void *);
 
 typedef struct UnkStruct_0220fc34 {
     char pad_first[0x2d0];

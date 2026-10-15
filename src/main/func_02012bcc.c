@@ -12,13 +12,13 @@ extern int func_02013518(UnkStruct_02012bcc *, void *);
 extern void func_02013440(UnkStruct_02012bcc *);
 extern void func_02012e58(UnkStruct_02012bcc *, void *);
 
-extern void func_02012c20(UnkStruct_02012bcc *, void *);
+extern int func_02012c20(UnkStruct_02012bcc *, void *, void *);
 int func_02012bcc(UnkStruct_02012bcc *a, void *b)
 {
     if (data_021c80bc == 0) {
         goto zero;
     }
-    func_02012c20(a, b);
+    func_02012c20(a, b, data_021c80bc);
     if (func_02013518(a, b) != 0) {
         goto one;
     }

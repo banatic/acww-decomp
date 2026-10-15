@@ -46,7 +46,7 @@ extern "C" void MI_CpuCopy8(const void *, void *, int);
 extern "C" void func_0202d8f8(UnkStruct_0202afdc *, void *, void *, int, int);
 extern "C" int func_0202114c(UnkStruct_0202afdc *, unsigned char *, int);
 extern "C" int func_020644cc(int);
-extern "C" void func_0202bd7c(UnkStruct_0202afdc *, int, int);
+extern "C" int func_0202bd7c(UnkStruct_0202afdc *, int, int);
 extern "C" void func_02015de4(UnkStruct_0202afdc *, void *, int, int);
 
 extern "C" void func_0202afdc(UnkStruct_0202afdc *s, UnkStruct_0202afdc_2 *out);

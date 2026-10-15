@@ -5,14 +5,14 @@
 extern int func_02056f94(void *);
 extern void func_020109fc(void *, int, int, int);
 extern int func_ov003_0222c364(unsigned int);
-extern void func_02095518(int, int, int);
+extern int func_02095518(int, int, int);
 extern unsigned int func_02008258(void *, unsigned int);
-extern void func_0200c9a8(void *, int, int, int);
+extern int func_0200c9a8(void *, int, int, int);
 extern unsigned int *func_ov003_0222c1f4(unsigned int);
 extern int func_020e8ed8(int, int);
 extern int func_020ea990(unsigned int *, unsigned int *);
-extern void func_020113e0(short *, int);
-extern void func_020110a0(void *, short *);
+extern int func_020113e0(short *, int);
+extern void func_020110a0(void *object, short *values);
 
 typedef struct {
     unsigned char pad_00[0x5c];
@@ -72,7 +72,7 @@ void func_ov003_0220d4f8(TestStruct *p)
         func_02095518(e, 0, 4);
         s = p->unk_8E;
         func_020113e0(&s, c);
-        func_020110a0(p, &s);
+        func_020110a0((void *) (p), (short *) (&s));
         return;
     }
 }

@@ -4,8 +4,8 @@
 
 extern void func_ov003_02218664(void *a, void *b, void *c, void *d, void *e);
 extern int func_02096614(unsigned char *a, int *b, int *c, int d, int e);
-extern void func_ov003_022186cc(void *obj, unsigned char b, unsigned int v18, unsigned int v20, int shortval, int six,
-                                int arg1);
+extern int func_ov003_022186cc(void *obj, unsigned char b, unsigned int v18, unsigned int v20, int shortval, int six,
+                               int arg1);
 
 typedef struct {
     char pad_00[0x5c];

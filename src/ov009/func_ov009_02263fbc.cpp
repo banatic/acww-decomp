@@ -10,7 +10,7 @@ int DWC_Alloc(int, int);
 int func_0203e31c(void);
 int func_ov009_02264c90(int);
 void func_0203edd0(int);
-void func_0203e0a8(int, int);
+int func_0203e0a8(int, int);
 int func_020b6590(void);
 int func_020b74f0(int, int, int);
 int func_020961a8(int);

@@ -16,11 +16,11 @@ typedef struct {
 
 void func_02010f5c(UnkStruct_02216bfc *self);
 int func_02073908(int, int);
-void func_0201100c(UnkStruct_02216bfc *self);
+int func_0201100c(UnkStruct_02216bfc *self);
 void func_02010d64(UnkStruct_02216bfc *self);
 int func_02011398(int, int);
 void func_0201107c(UnkStruct_02216bfc *self, int *out);
-void func_ov003_02216c9c(UnkStruct_02216bfc *self, int);
+int func_ov003_02216c9c(UnkStruct_02216bfc *self, int);
 int func_0200f554(UnkStruct_02216bfc *self);
 int func_02008258(UnkStruct_02216bfc *self, int);
 void func_ov003_02216e5c(UnkStruct_02216bfc *self);

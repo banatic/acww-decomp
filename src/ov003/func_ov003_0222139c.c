@@ -4,9 +4,9 @@
 
 extern int data_020ccf94;
 extern int func_02073d90(int);
-extern void func_ov003_022213f8(int *a, int b, int *c, int *d, int e, unsigned short f, short g, int h);
+extern int func_ov003_022213f8(int *a, int b, int *c, int *d, int e, unsigned short f, short g, int h);
 
-void func_ov003_0222139c(int *a, int b, int *c, int *d, int e, unsigned short f, short g, int h)
+int func_ov003_0222139c(int *a, int b, int *c, int *d, int e, unsigned short f, short g, int h)
 {
     int v2[2];
     int v3[3];
@@ -22,5 +22,5 @@ void func_ov003_0222139c(int *a, int b, int *c, int *d, int e, unsigned short f,
     v2[0] = c[0];
     v2[1] = c[1];
 
-    func_ov003_022213f8(a, b, v2, v3, e, f, g, h);
+    return func_ov003_022213f8(a, b, v2, v3, e, f, g, h);
 }

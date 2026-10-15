@@ -10,14 +10,14 @@ typedef struct {
     int d;
 } UnkStruct_020343f4;
 
-extern void func_020343f0(void);
-extern void func_02031608(void);
-extern void __cxa_vec_ctor(void *param, int p1, int p2, void (*f)(void), void (*g)(void));
+extern void func_020343f0(void *);
+extern void func_02031608(void *);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
 
 void *func_020343f4(void *param)
 {
     UnkStruct_020343f4 *obj = (UnkStruct_020343f4 *) param;
-    __cxa_vec_ctor(param, 0x31, 0x18, func_020343f0, func_02031608);
+    __cxa_vec_ctor((void *) (param), 0x31, 0x18, (void (*)(void *)) func_020343f0, (void (*)(void *)) func_02031608);
     obj->d = 0;
     obj->c = obj->d;
     obj->b = obj->c;

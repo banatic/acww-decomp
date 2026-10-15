@@ -7,7 +7,7 @@ extern int func_ov002_02208014(void *p);
 extern void func_ov140_0229a7e8(void *p);
 extern int func_ov002_02208008(void *p);
 extern int func_ov140_0229a4a0(void *p, int arg);
-extern void func_ov140_0229a614(void *p);
+extern int func_ov140_0229a614(void *p);
 extern void func_ov140_0229a570(void *p);
 extern void func_ov140_0229a73c(void *p);
 extern void func_ov140_0229a638(void *p);

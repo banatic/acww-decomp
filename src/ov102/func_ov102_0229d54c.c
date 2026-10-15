@@ -14,15 +14,15 @@ typedef struct {
 } UnkStruct_0229d54c;
 
 extern void func_ov002_02209d68(void *, u32, u32);
-extern void func_ov002_02209d38(void *, u32, u32, u32);
-extern void func_ov002_02209d8c(void *);
+extern int func_ov002_02209d38(void *, u32, u32, u32);
+extern int func_ov002_02209d8c(void *);
 extern int func_ov102_0229d178(UnkStruct_0229d54c *, int);
 extern int func_ov102_0229d444(UnkStruct_0229d54c *, int);
 extern int func_ov102_0229d1e8(UnkStruct_0229d54c *, int);
 extern void func_ov102_0229cd08(UnkStruct_0229d54c *);
 extern void func_ov102_0229c298(UnkStruct_0229d54c *, u32);
 extern void func_ov102_0229c288(UnkStruct_0229d54c *, u32);
-extern void func_ov002_02208098(UnkStruct_0229d54c *, int);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229d54c *, unsigned char value);
 
 void func_ov102_0229d54c(UnkStruct_0229d54c *self, int a1, int a2)
 {

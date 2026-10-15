@@ -12,8 +12,8 @@ typedef struct {
 } Entry;
 
 extern int OS_ReadMessage(void *q, int *msg, int flags);
-extern void func_020ed950(void);
-extern int func_ov066_022698ec(int, int, unsigned short, void (*)(void));
+extern void func_020ed950(void *arg);
+extern int func_ov066_022698ec(int, int, unsigned short, void (*)(void *));
 
 #pragma thumb
 extern int func_ov065_0227ee74(unsigned char, int, int);

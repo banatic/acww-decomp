@@ -28,18 +28,18 @@ typedef struct {
 
 extern char data_ov046_02262420[]; // data_02262420
 
-extern void func_020b1954(char *b);
-extern void func_020b1394(char *b, int a);
+extern void *func_020b1954(char *b);
+extern int func_020b1394(char *b, int a);
 extern void func_02068404(void *h, int a, char *b);
 extern void func_020b12e0(int *d, int a);
 extern void func_02015ed0(Obj_ov046_0226204c *self, int a, int b);
 extern void func_02015ea0(Obj_ov046_0226204c *self, int a, int b);
 extern void func_02015fb0(Obj_ov046_0226204c *self, int a, int b, int c, int d, int e);
-extern void func_020683e4(void *h, int a, u8 *m, char *t);
+extern int func_020683e4(void *h, int a, u8 *m, char *t);
 extern void func_020157b0(Obj_ov046_0226204c *self, int a, int b, int c);
-extern void func_02015828(Obj_ov046_0226204c *self, int a);
+extern int func_02015828(Obj_ov046_0226204c *self, int a);
 extern void func_ov046_02261508(Obj_ov046_0226204c *self, int a); // func_02261508
-extern void func_020b193c(char *b);
+extern void *func_020b193c(char *b);
 extern int func_ov046_022610fc(Obj_ov046_0226204c *self); // func_022610fc
 extern int func_020b1558(void);
 

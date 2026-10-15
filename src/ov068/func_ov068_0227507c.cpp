@@ -5,7 +5,7 @@
 
 #include "cpp/ov068/Obj_ov068_02277f3c.h"
 
-extern "C" void func_020e895c(int *addr, int val, int mode);
+extern "C" int func_020e895c(int *addr, int val, int mode);
 extern "C" void NNS_G3dMdlSetMdlAlpha(void *ptr, unsigned int idx, unsigned char byte);
 
 typedef struct InnerStruct {

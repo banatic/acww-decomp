@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_022a0774;
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(UnkStruct_022a0774 *obj, unsigned char b);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov122_022a14c0(UnkStruct_022a0774 *obj);
 
 void func_ov122_022a0774(UnkStruct_022a0774 *obj)
@@ -17,6 +17,6 @@ void func_ov122_022a0774(UnkStruct_022a0774 *obj)
     if (masked != 0) {
         return;
     }
-    func_ov002_02208098(obj, obj->b4);
+    func_ov002_02208098((void *) (obj), obj->b4);
     func_ov122_022a14c0(obj);
 }

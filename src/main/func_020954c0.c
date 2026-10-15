@@ -15,7 +15,7 @@ struct Big {
 };
 
 extern struct Big *func_02096718(void *arg);
-extern void func_0203f7d0(void *a, void *b);
+extern int func_0203f7d0(void *a, void *b);
 
 int func_020954c0(struct Vec3 *out, void *arg)
 {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov068_0226c8b0(void);
+extern int func_ov068_0226c8b0(void *obj, const void *ptr);
 extern void func_0202e118(void *, const void *);
 extern void func_ov068_0226cce8(void *, const void *, int);
 extern void func_ov068_0226cce4(void *, int);
@@ -29,7 +29,7 @@ int func_ov068_0226befc(void *obj, const void *ptr)
     int flag = 0;
     char buffer[8];
 
-    if (func_ov068_0226c8b0()) {
+    if (func_ov068_0226c8b0(obj, ptr)) {
         func_0202e118(buffer, ptr);
         if (*(unsigned short *) buffer != 0xFFF1) {
             func_ov068_0226cce8(obj, ptr, 0x10);

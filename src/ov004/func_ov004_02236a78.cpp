@@ -6,7 +6,7 @@ class Actor;
 typedef void (Actor::*Method)();
 extern "C" Method data_ov004_0225949c[];
 extern "C" int func_02056f28(void *, int);
-extern "C" int func_ov004_02239820(void *, int);
+extern "C" void func_ov004_02239820(void *, int);
 extern "C" void func_ov004_022368bc(void *);
 extern "C" void func_ov004_02239700(void *);
 extern "C" void func_ov004_02239524(void *, int);

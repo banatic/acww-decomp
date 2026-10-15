@@ -13,7 +13,7 @@ typedef struct {
     u8 unk_13;
 } UnkStruct_02036d24;
 
-extern int func_02036648(UnkStruct_02036d24 *self);
+extern int func_02036648(void);
 extern int func_0203736c(int a, int b, int c, int d, int e, int f, int g);
 extern void func_02036b14(UnkStruct_02036d24 *self);
 extern void func_02036af4(UnkStruct_02036d24 *self);
@@ -26,7 +26,7 @@ void func_02036d24(UnkStruct_02036d24 *self, int flag)
 {
     int a, b;
     if (flag != 0) {
-        a = func_02036648(self);
+        a = func_02036648();
         b = func_0203736c(a, 0, 0, 0, 2, 0, 0);
         a = func_0203736c(a, 2, 0, 0, 0, 0, 0);
         if (b != 0) {

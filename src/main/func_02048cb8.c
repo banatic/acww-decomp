@@ -7,10 +7,10 @@ typedef struct {
     int b;
 } Pair;
 
-extern int func_02048db8(void *, void *, void *, void *, int, int);
+extern int func_02048db8(void *, void *, void *, void *, int, int (*)(int, int, int));
 extern int func_02048d2c(void *, void *, int, Pair *, unsigned short, int);
 
-int func_02048cb8(void *a0, void *a1, void *a2, int a3, unsigned short a4, int a5, int a6)
+int func_02048cb8(void *a0, void *a1, void *a2, int a3, unsigned short a4, int (*a5)(int, int, int), int a6)
 {
     Pair arr[0x100];
     Pair *p = arr;

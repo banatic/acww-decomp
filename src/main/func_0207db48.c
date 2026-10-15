@@ -6,7 +6,7 @@
 
 extern void *func_0208150c(void *self);
 extern void *func_0207f1c8(void *self);
-extern void *func_0209b5ec(void *x);
+extern void *func_0209b5ec(void *);
 extern int func_02003704(void *p);
 extern int func_0209c370(void *p);
 extern void *func_020036e8(void *p);
@@ -30,7 +30,7 @@ int func_0207db48(void *self, void *list)
     int result;
 
     b = func_0208150c(self);
-    a = func_0209b5ec(func_0207f1c8(self));
+    a = (func_0209b5ec((void *) func_0207f1c8(self)));
 
     if (func_02003704(b) == 0) {
         goto fail;

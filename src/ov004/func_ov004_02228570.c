@@ -10,7 +10,7 @@ struct UnkStruct_02228570 {
 };
 extern void func_ov004_02228610(void *p, int k, int a, int b, int s);
 extern void func_ov004_022285e8(void *p, int k, int a, int b, int s);
-void func_ov004_02228570(unsigned char *self, unsigned char *p)
+void func_ov004_02228570(unsigned char *self, unsigned char *p, int previous)
 {
     struct UnkStruct_02228570 *q;
     int k, a, b, s;

@@ -3,19 +3,19 @@
  */
 
 extern void *func_ov002_02207f80(int size);
-extern void func_ov002_0220830c(void);
-extern void func_ov002_0220b3c4(void *p);
-extern void func_ov002_02209ccc(void *p);
-extern void func_020b18ac(void *p);
-extern void func_ov127_0229a0ec(void *p);
-extern void func_02070c08(void *p);
+extern void *func_ov002_0220830c(void *argument0);
+extern void *func_ov002_0220b3c4(void *p);
+extern void *func_ov002_02209ccc(void *p);
+extern void *func_020b18ac(void *p);
+extern int func_ov127_0229a0ec(void *p);
+extern void *func_02070c08(void *p);
 extern int data_ov128_0229cbc0;
 
 void *func_ov128_0229c830(void)
 {
     void *p = func_ov002_02207f80(0x2d74);
     if (p != 0) {
-        func_ov002_0220830c();
+        func_ov002_0220830c(p);
         *(void **) p = &data_ov128_0229cbc0;
         func_ov002_0220b3c4((char *) p + 0x94);
         func_ov002_02209ccc((char *) p + 0x110);

@@ -8,7 +8,7 @@ typedef struct UnkStruct_02070c08 {
     int unk_68;
 } UnkStruct_02070c08;
 
-extern void func_020a8cac(UnkStruct_02070c08 *self);
+extern void *func_020a8cac(UnkStruct_02070c08 *self);
 extern void func_020a8c1c(UnkStruct_02070c08 *self);
 extern char data_020e179c;
 

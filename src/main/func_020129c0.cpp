@@ -33,21 +33,23 @@ class UnkStruct_020129c0 {
 };
 
 extern int data_021e5a2c;
-extern "C" void func_02137550(int *, int);
+extern "C" char *func_02137550(int *, int);
 extern "C" int func_0208150c(int);
 extern "C" int func_0207cc94(int *, int *, int);
-extern "C" unsigned char *func_020800d0(void);
+extern "C" unsigned char *func_020800d0(int object);
 
 extern "C" void func_020129c0(int *out, int unused1, int unused2, UnkStruct_020129c0 *obj)
 {
+    int forwarded_value;
+
     int local;
     out[0] = 0;
     out[1] = 0;
     if (obj->vfunc() != 0) {
         func_02137550(&local, 4);
         local = func_0208150c(obj->vfunc());
-        if (func_0207cc94(&data_021e5a2c, &local, 1) != 0) {
-            unsigned char *p = func_020800d0();
+        if ((forwarded_value = (int) func_0207cc94(&data_021e5a2c, &local, 1)) != 0) {
+            unsigned char *p = func_020800d0((int) forwarded_value);
             int b = p[1] + 1;
             int a = p[0];
             out[0] = a;

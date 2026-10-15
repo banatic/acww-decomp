@@ -18,7 +18,7 @@ extern Vec3 data_ov003_02236b4c[];
 extern int func_0204b7a0(void *b);
 extern int func_0204b910(void *b);
 extern void func_ov003_02225a90(void *g, void *b, Vec3 *t);
-extern void func_ov003_02225da0(void *g, int id, Vec3 *pos, int k, Vec3 *sc, int p, int q, int r);
+extern int func_ov003_02225da0(void *g, int id, Vec3 *pos, int k, Vec3 *sc, int p, int q, int r);
 extern void func_ov003_022259e8(void *g, Vec3 *t, int c, int d);
 extern void func_ov003_022251a4(void *g, char *p, Mtx m);
 char *func_ov003_02225768(char *g, char *b, int c, int dd, Vec3 *v, Mtx m)

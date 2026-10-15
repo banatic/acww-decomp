@@ -9,13 +9,13 @@ struct UnkStruct_0220ff14 {
     short unk_7E0;
 };
 
-extern void func_020113e0(short *p, short val);
-extern void func_020110a0(struct UnkStruct_0220ff14 *self, short *p);
+extern int func_020113e0(short *p, short val);
+extern void func_020110a0(void *object, short *values);
 
 void func_ov003_0220ff14(struct UnkStruct_0220ff14 *self)
 {
     short local;
     local = self->unk_8E;
     func_020113e0(&local, self->unk_7E0);
-    func_020110a0(self, &local);
+    func_020110a0((void *) (self), (short *) (&local));
 }

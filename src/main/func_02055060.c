@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-unsigned short func_020550b8(int a);
+unsigned short func_020550b8(int a, void *);
 void func_02056fcc(void *p, unsigned short a, int b, int c, unsigned short d);
 void NNS_G3dAnmObjInit(void *p, int a, void *b, int c);
 
 void func_02055060(void *obj, int a1, int a2, int a3, unsigned short a4, unsigned short a5)
 {
     if (a5 == 0) {
-        a5 = func_020550b8(a2);
+        a5 = func_020550b8(a2, (void *) a1);
     }
 
     func_02056fcc((void *) ((char *) obj + 0x9c), a5, a2, a3, a4);

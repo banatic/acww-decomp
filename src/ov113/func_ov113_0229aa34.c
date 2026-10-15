@@ -17,7 +17,7 @@ struct Elem {
 };
 
 extern struct Elem data_ov113_0229ac60[];
-extern void func_020896b8(int, void *, int, int, int, int, int);
+extern int func_020896b8(int, void *, int, int, int, int, int);
 
 void func_ov113_0229aa34(struct Context *self, int arg1, int arg2)
 {

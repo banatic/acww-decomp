@@ -10,8 +10,8 @@ extern void func_020b2a68(void *obj, void *table);
 extern int func_020b2a60(void *obj);
 extern int func_02003348(int a, unsigned short b, int *c, int d, int e);
 extern void func_020b2a64(void *obj);
-extern void func_0204eb1c(void *a, unsigned short *b, void *c, void *d, int e);
-extern void func_ov003_0222040c(void *a, unsigned short *b, void *c, void *d);
+extern int func_0204eb1c(void *a, unsigned short *b, void *c, void *d, int e);
+extern int func_ov003_0222040c(void *a, unsigned short *b, void *c, void *d);
 
 int func_ov003_02220460(void *a, unsigned short *b, void *c, void *d, unsigned char e)
 {

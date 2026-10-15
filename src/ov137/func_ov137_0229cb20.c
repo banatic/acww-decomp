@@ -3,7 +3,7 @@
  */
 
 extern int func_ov002_02209f64(void *);
-extern void func_ov002_02208098(void *, unsigned char);
+extern unsigned char *func_ov002_02208098(void *, unsigned char);
 extern void func_ov137_0229d0e0(void *);
 
 struct UnkStruct_0229cb20 {

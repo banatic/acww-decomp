@@ -5,12 +5,12 @@
 extern int func_0208150c(int);
 extern int func_02003704(int);
 extern int func_0207f1c8(int);
-extern int func_0209b5ec(int);
+extern int func_0209b5ec(void *);
 extern int func_0209c330(int);
 
 int func_0207f0f0(int param)
 {
-    if (func_02003704(func_0208150c(param)) != 0 && func_0209c330(func_0209b5ec(func_0207f1c8(param))) == 10) {
+    if (func_02003704(func_0208150c(param)) != 0 && func_0209c330((func_0209b5ec((void *) func_0207f1c8(param)))) == 10) {
         return 1;
     } else {
         return 0;

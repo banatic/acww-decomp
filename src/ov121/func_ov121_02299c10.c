@@ -9,7 +9,7 @@ typedef struct UnkStruct_02299c10 {
 } UnkStruct_02299c10;
 
 extern int func_ov121_02299a5c(UnkStruct_02299c10 *, int);
-extern int func_ov121_02299a3c(UnkStruct_02299c10 *, int);
+extern void func_ov121_02299a3c(UnkStruct_02299c10 *, int);
 extern void func_ov121_0229af00(UnkStruct_02299c10 *, unsigned char, int);
 
 void func_ov121_02299c10(UnkStruct_02299c10 *p)

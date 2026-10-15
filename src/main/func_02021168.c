@@ -6,7 +6,7 @@ extern int func_020644cc(int);
 extern int func_0201cddc(int);
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *a0, void *a1, void *a2, int a3, int a4, int a5, int a6, int a7, int a8);
+extern int func_0202da38(void *a0, void *a1, void *a2, int a3, int a4, int a5, int a6, int a7, int a8);
 
 struct UnkStruct_02021168 {
     char pad_00[0x830];

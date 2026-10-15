@@ -6,7 +6,7 @@ extern void func_0209e474(void *);
 extern int func_0209ded0(void);
 extern void func_02040a10(void *obj);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int len);
-extern void func_0203fea0(void *dst, void *src);
+extern int func_0203fea0(void *dst, void *src);
 extern unsigned char *func_020409c8(void *obj, int n);
 extern int func_0203fd38(int a, void *b, void *c);
 extern void func_020408a8(void *p);

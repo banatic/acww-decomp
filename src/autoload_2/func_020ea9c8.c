@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020eacf8(long long value);
+extern int func_020eacf8(long long value);
 
 typedef struct {
     int x;
@@ -10,10 +10,10 @@ typedef struct {
     int z;
 } Vec3;
 
-void func_020ea9c8(Vec3 *v)
+int func_020ea9c8(Vec3 *v)
 {
     int x = v->x;
     int z = v->z;
 
-    func_020eacf8((long long) x * x + (long long) z * z);
+    return func_020eacf8((long long) x * x + (long long) z * z);
 }

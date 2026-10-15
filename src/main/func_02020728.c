@@ -7,7 +7,7 @@ typedef struct {
     int b;
 } UnkStruct_02020728;
 typedef struct UnkStruct_02020728_2 UnkStruct_02020728_2;
-extern void func_02014ba0(UnkStruct_02020728_2 *p);
+extern int func_02014ba0(UnkStruct_02020728_2 *p);
 extern void func_0202dbdc(UnkStruct_02020728_2 *p, UnkStruct_02020728 v);
 extern UnkStruct_02020728 data_020d8f60;
 void func_02020728(UnkStruct_02020728_2 *p)

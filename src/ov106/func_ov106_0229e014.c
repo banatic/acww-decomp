@@ -5,7 +5,7 @@
 extern int func_0208e484(void *ptr);
 extern void RtcSendPxiCommand(int cmd);
 extern void func_ov002_02209114(void *ptr, int idx, int flag);
-extern void func_ov002_02208098(void *ptr, int arg);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 typedef struct {
     unsigned char pad_00[0xbc];
@@ -33,5 +33,5 @@ void func_ov106_0229e014(UnkStruct_0229e014 *self)
         }
         func_ov002_02209114(&self->unk_2304, self->unk_BD, flag);
     }
-    func_ov002_02208098(self, 0x17);
+    func_ov002_02208098((void *) (self), 0x17);
 }

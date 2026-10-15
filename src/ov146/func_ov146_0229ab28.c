@@ -8,11 +8,11 @@ extern unsigned char data_ov146_0229b72c[];
 extern unsigned char data_ov146_0229b73c[];
 extern unsigned char data_ov146_0229b750[];
 extern unsigned char data_ov146_0229b764[];
-extern void func_02002c6c(void *, void *, int, int, int, int);
-extern void func_02002d14(void *, void *, int, int, int, int);
-extern void func_02064af4(void *, void *, int);
+extern int func_02002c6c(void *, void *, int, int, int, int);
+extern int func_02002d14(void *, void *, int, int, int, int);
+extern int func_02064af4(void *, void *, int);
 extern void MIi_CpuCopy16(void *, void *, int);
-extern void func_02002ca4(void *, void *, int);
+extern int func_02002ca4(void *, void *, int);
 extern void func_0206fdd4(void *, int, int, int, int, int);
 
 void func_ov146_0229ab28(unsigned char *base)

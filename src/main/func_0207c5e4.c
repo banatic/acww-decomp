@@ -8,7 +8,7 @@ typedef struct {
     long long b;
 } UnkStruct_0207c5e4;
 
-extern int func_0207cad4(void);
+extern int func_0207cad4(void *);
 extern int func_0209dffc(long long *v);
 extern int func_0209e3ac(void *p1, long long *v, int k);
 extern int func_0209e380(long long *v, void *p1);
@@ -19,7 +19,7 @@ int func_0207c5e4(UnkStruct_0207c5e4 *s, void *p1)
     int n;
     int ok;
 
-    if (func_0207cad4() < 8) {
+    if (func_0207cad4(s) < 8) {
         if (s->b == 0) {
             if (s->a == 0 || func_0209dffc(&s->a) != 0) {
                 return 1;

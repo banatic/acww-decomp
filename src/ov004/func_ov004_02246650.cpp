@@ -4,7 +4,7 @@
 
 #pragma opt_loop_invariants off
 extern "C" {
-extern int *func_ov004_022468b0(void *);
+extern int *func_ov004_022468b0(void);
 extern void *data_021c80bc;
 extern unsigned short *func_0204f5e0(void *, int, int, int, int, int);
 extern int func_0204bcdc(unsigned short *);
@@ -34,7 +34,7 @@ static inline int place(void *g, unsigned short *p, int x, int y)
 
 extern "C" int func_ov004_02246650(void *self, unsigned short *item, int key)
 {
-    int *base = func_ov004_022468b0(self);
+    int *base = func_ov004_022468b0();
     void *glob = data_021c80bc;
     if (glob) {
         for (int y = 0; y < 16; ++y) {

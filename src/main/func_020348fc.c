@@ -13,13 +13,13 @@ typedef struct {
 extern char data_021ebcd4[];
 
 extern int func_020b65c4(void);
-extern void func_02034a48(unsigned short *p, int a, int b, int c, int d);
+extern int func_02034a48(unsigned short *p, int a, int b, int c, int d);
 extern int func_020b67e8(int id);
 extern void *func_02060f04(char *g, int id);
 extern void func_020611bc(void *p, unsigned short *q, int a);
-extern void func_02034a00(int id, unsigned short *q);
+extern int func_02034a00(int id, unsigned short *q);
 extern void func_02061194(void *p, unsigned short *q, int a);
-extern void func_020349d0(int id, unsigned short *q);
+extern int func_020349d0(int id, unsigned short *q);
 
 void func_020348fc(UnkStruct_020348fc *self)
 {

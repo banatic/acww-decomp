@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int data_021d52cc;
-extern void NNS_FndAllocFromFrmHeapEx(int a, int b, int c);
+extern void *data_021d52cc;
+extern void *NNS_FndAllocFromFrmHeapEx(void *heap, unsigned int size, int align);
 
-void func_02091140(int param)
+void *func_02091140(unsigned int param)
 {
-    NNS_FndAllocFromFrmHeapEx(data_021d52cc, param, 4);
+    return NNS_FndAllocFromFrmHeapEx(data_021d52cc, param, 4);
 }

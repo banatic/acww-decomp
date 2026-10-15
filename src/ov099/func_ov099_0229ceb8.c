@@ -7,14 +7,14 @@ typedef struct {
     int unk_CC;
 } UnkStruct_0229ceb8;
 
-extern int func_ov094_0229aee8(void *ptr);
+extern int func_ov094_0229aee8(void *ptr, int arg1, int arg2);
 extern int func_ov094_0229a69c(void *ptr, int v);
 extern int func_ov099_0229cef4(UnkStruct_0229ceb8 *p, int v);
 
 int func_ov099_0229ceb8(UnkStruct_0229ceb8 *p1, int a, int b, int c)
 {
     int v;
-    v = func_ov094_0229aee8(&p1->unk_CC);
+    v = func_ov094_0229aee8(&p1->unk_CC, a, b);
     if (v == 0x23) {
         goto ret1;
     }

@@ -3,8 +3,8 @@
  */
 
 extern int SND_RecvCommandReply(int);
-extern void func_0210aa44(void);
-extern void SND_FlushCommand(int);
+extern int func_0210aa44(void);
+extern int SND_FlushCommand(int);
 extern int func_0210b4cc(void *, void *);
 extern int FX_Div(int, int);
 

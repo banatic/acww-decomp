@@ -8,7 +8,7 @@ typedef struct {
 typedef struct {
     int a, b;
 } UnkStruct_02222cac;
-extern void func_0204e414(void *);
+extern unsigned int func_0204e414(void);
 extern void func_02055060(void *, int, int, int, int, int);
 extern void func_02055050(void *);
 extern void func_0204f794(Vec *, int, int);
@@ -19,7 +19,7 @@ void func_ov003_02222cac(char *self, int b, UnkStruct_02222cac *c, int d, int e,
     Vec v;
     char *t;
     int flag;
-    func_0204e414(self);
+    func_0204e414();
     flag = 1;
     t = data_ov003_0223cf70 + 0x696c;
     if (d == 2) {

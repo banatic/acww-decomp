@@ -8,10 +8,12 @@ extern int func_0207cad4(void *);
 extern int func_0208150c(void *);
 extern int func_02003704(int);
 extern int func_0207b810(void *, void *, int);
-extern int func_0209bd10(void);
+extern int func_0209bd10(unsigned int object);
 
 int func_0207b78c(void *param)
 {
+    int forwarded_value;
+
     int result;
     int count5;
     int count4;
@@ -32,9 +34,9 @@ int func_0207b78c(void *param)
 
     do {
         if (func_02003704(func_0208150c(p)) != 0) {
-            if (func_0207b810(param, p, v8) == 0x16) {
+            if ((forwarded_value = (int) func_0207b810(param, p, v8)) == 0x16) {
                 count5++;
-            } else if (func_0209bd10() != 1) {
+            } else if (func_0209bd10((unsigned int) forwarded_value) != 1) {
                 count4++;
             }
         }

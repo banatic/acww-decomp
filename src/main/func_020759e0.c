@@ -5,16 +5,16 @@
 #include "types.h"
 
 extern void *data_020ccf94;
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ebf70(void);
 extern int func_02077a8c(int mask);
 extern u8 *func_02073d28(void *h, int n);
 extern void func_02077b3c(u8 *p, int a, int b);
 extern void func_020a6e4c(int i, u8 *a, u8 *b, u8 *c);
-extern void func_020a7880(u8 *o);
+extern int func_020a7880(u8 *o);
 extern void func_020a7850(u8 *o, int a, int b, int c, int d);
 extern void MI_CpuCopy8(const void *s, void *d, int n);
-extern void func_020a7870(u8 *o);
+extern int func_020a7870(u8 *o);
 extern int func_02073e30(void *h, u8 *p, int n, int mask, int a5, int a6, int a7, int a8, int a9, int a10);
 
 int func_020759e0(int bit)

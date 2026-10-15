@@ -4,7 +4,7 @@
 
 extern int func_02039128(int a, int b, int c);
 
-int func_020774a0(int a, int b)
+void func_020774a0(int a, int b, int mode)
 {
-    return func_02039128(a, 0x14, b);
+    func_02039128(a, 0x14, b);
 }

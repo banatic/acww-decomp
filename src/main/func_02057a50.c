@@ -8,9 +8,9 @@ typedef struct {
     int unk_08;
 } UnkStruct_02057a50;
 
-extern void func_02057a98(void *, int);
+extern int func_02057a98(void *, const char *name);
 
-void func_02057a50(UnkStruct_02057a50 *p, int arg)
+int func_02057a50(UnkStruct_02057a50 *p, const char *name)
 {
-    func_02057a98((char *) p + p->unk_08 + 4, arg);
+    return func_02057a98((char *) p + p->unk_08 + 4, name);
 }

@@ -9,26 +9,28 @@
 extern u8 data_020e54a8;
 
 extern int func_020984fc(int);
-extern int func_0209985c(void);
-extern void func_02071568(u8, int);
+extern int func_0209985c(int);
+extern int func_02071568(u8, int);
 extern int func_020b65c4(void);
-extern void func_020714e0(int);
+extern int func_020714e0(int);
 extern int func_02072614(void);
 extern void func_020727a4(int, int);
 extern int func_020b6660(void);
 extern int func_ov003_02220174(int);
-extern void func_ov003_0221c4bc(void);
+extern int func_ov003_0221c4bc(void *);
 
 int func_020720ac(int mode, int b)
 {
+    int tested_value0;
+    void *condition_value0;
     int v;
     int t;
 
     switch (mode) {
         case 0:
         case 9:
-            if (func_020984fc(0)) {
-                v = func_0209985c();
+            if ((tested_value0 = (int) (func_020984fc(0)))) {
+                v = func_0209985c(tested_value0);
                 if (v != -1) {
                     func_02071568((u8) (v & 3), b);
                 }
@@ -47,8 +49,8 @@ int func_020720ac(int mode, int b)
             t = (data_020e54a8 == 0);
             if (t) {
                 if (func_020b6660()) {
-                    if (func_ov003_02220174(0x500b)) {
-                        func_ov003_0221c4bc();
+                    if ((condition_value0 = (void *) (func_ov003_02220174(0x500b)))) {
+                        func_ov003_0221c4bc(condition_value0);
                     }
                 }
             }

@@ -24,15 +24,15 @@ struct UnkStruct_022106e4 {
 };
 
 extern int func_02056f94(void *);
-extern void func_020109a0(UnkStruct_022106e4 *, int, int, int);
+extern void func_020109a0(UnkStruct_022106e4 *, int b, int c, unsigned short d);
 extern int func_02008258(UnkStruct_022106e4 *, u32);
-extern void func_0200c9a8(UnkStruct_022106e4 *, int, int, int);
+extern int func_0200c9a8(UnkStruct_022106e4 *, int, int, int);
 extern int func_02073908(u32, u32);
 extern int func_0200f290(UnkStruct_022106e4 *, int);
 extern void func_0200f268(UnkStruct_022106e4 *, int);
 extern void func_0203ee08(UnkStruct_022106e4 *, void *);
-extern void func_02008380(UnkStruct_022106e4 *, int, int, int);
-extern void func_0200d4e8(UnkStruct_022106e4 *, int, int, int);
+extern int func_02008380(UnkStruct_022106e4 *, int, int, int);
+extern int func_0200d4e8(UnkStruct_022106e4 *, int, int, int);
 extern u32 data_020ccf94;
 
 void func_ov003_022106e4(UnkStruct_022106e4 *self)

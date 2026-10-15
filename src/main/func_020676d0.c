@@ -3,8 +3,8 @@
  */
 
 extern void func_020a8c1c(void *);
-extern void func_020984e8(void);
-extern int func_02099870(void);
+extern int func_020984e8(void);
+extern int func_02099870(int);
 extern int func_0208012c(int, void *, int);
 
 int func_020676d0(char *self)
@@ -19,8 +19,7 @@ int func_020676d0(char *self)
     res = 0;
     func_020a8c1c(self + 0x1e4c);
     if (result != 0) {
-        func_020984e8();
-        tmp = func_02099870();
+        tmp = func_02099870((int) func_020984e8());
         if (func_0208012c(result, self + 0x1e4c, tmp) != 0) {
             res = 1;
         }

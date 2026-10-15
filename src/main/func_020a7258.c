@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020a72d0(void);
+extern int func_020a72d0(int index);
 
 typedef struct {
     char pad_00[0x64];
@@ -14,7 +14,7 @@ extern Struct020ccf94 *data_020ccf94;
 int func_020a7258(void)
 {
     if (data_020ccf94->unk_64 < 4) {
-        return func_020a72d0();
+        return func_020a72d0(data_020ccf94->unk_64);
     } else {
         return 1;
     }

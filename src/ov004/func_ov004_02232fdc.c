@@ -13,7 +13,7 @@ extern void func_02056ffc(void *);
 extern int func_ov004_0223c1e0(void);
 extern void func_020042a0(void *, int);
 extern void func_020042c0(void *, Vec *);
-extern void func_ov004_02232270(void *);
+extern int func_ov004_02232270(void *);
 extern int data_021d3124;
 
 int func_ov004_02232fdc(char *self)

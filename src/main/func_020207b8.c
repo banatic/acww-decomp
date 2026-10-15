@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0208150c(void *p);
-extern int func_020036e8(void);
-extern void func_0202da38(void *a1, void *a2, void *a3, int a4, int a5, int a6, int a7, int a8, int a9);
+extern unsigned int func_0208150c(void *p);
+extern int func_020036e8(unsigned char *);
+extern int func_0202da38(void *a1, void *a2, void *a3, int a4, int a5, int a6, int a7, int a8, int a9);
 
 typedef struct {
     int word;
@@ -32,8 +32,7 @@ void func_020207b8(UnkStruct_020207b8_2 *s, UnkStruct_020207b8_3 *out)
     int g_word;
     unsigned char g_byte;
 
-    func_0208150c(*(void **) ((char *) s->unk_100 + 0x830));
-    result = func_020036e8();
+    result = func_020036e8((unsigned char *) func_0208150c(*(void **) ((char *) s->unk_100 + 0x830)));
     g_word = data_020c8ab0.word;
     g_byte = data_020c8ab0.byte;
 

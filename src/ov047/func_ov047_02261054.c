@@ -2,10 +2,10 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02014f60(void);
+extern int func_02014f60(int argument0);
 
 void func_ov047_02261054(void *p)
 {
-    func_02014f60();
+    func_02014f60((int) p);
     *(unsigned int *) ((char *) p + 0xd0) = 0x6b;
 }

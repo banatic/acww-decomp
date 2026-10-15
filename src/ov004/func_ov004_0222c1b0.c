@@ -11,11 +11,11 @@ extern int func_0200f290(void *p, int a);
 extern void func_020112f8(unsigned short *q, void *p);
 extern void func_02011138(unsigned short *q, void *p);
 extern void func_0200f268(void *p, int a);
-extern void func_0200f27c(void *p, int a);
+extern unsigned int *func_0200f27c(void *p, int a);
 extern int func_020112e4(void *p);
 extern int func_020112d0(void *p);
 extern int func_020100e8(void *p, struct UnkStruct_0222c1b0 *t, int a, int b, int c);
-extern void func_020103c0(void *p, unsigned short *q);
+extern int func_020103c0(void *p, unsigned short *q);
 
 int func_ov004_0222c1b0(int flag)
 {

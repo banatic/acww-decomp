@@ -18,7 +18,7 @@ extern int func_02049ec4(void *p0);
 extern void func_0204f794(Vec *v, int a, int b);
 extern int func_02049d78(void *p0);
 extern void func_02044df8(void *g, int p3, int kind, int k, int flag, Vec *v, void *p2);
-extern void func_02090c2c(int id, Vec *v, int z, void *t);
+extern int func_02090c2c(int id, Vec *v, int z, void *t);
 
 void func_02044a30(u16 *p0, int *p1, void *p2, int p3)
 {

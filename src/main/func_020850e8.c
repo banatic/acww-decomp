@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02085174(void *p);
+extern int func_02085174(void *p, int, int);
 extern int func_02073dd4(void *p, int field);
 extern void func_020771cc(int a, void *b, int c, int d);
 
@@ -14,7 +14,7 @@ extern struct UnkStruct_020850e8 *data_020ccf94;
 
 void func_020850e8(int x, int y, int z, unsigned short *p)
 {
-    func_02085174(p);
+    func_02085174(p, y, z);
     if (func_02073dd4(data_020ccf94, data_020ccf94->unk_64)) {
         unsigned short val = *p;
         int high = (val & 0xf000) >> 12;

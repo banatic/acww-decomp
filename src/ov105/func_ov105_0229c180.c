@@ -4,25 +4,27 @@
 
 extern int data_ov105_0229fad0;
 extern int func_ov002_0220afdc(void *);
-extern int __cxa_vec_cleanup(void *, int, int, void *);
+extern int __cxa_vec_cleanup(void *, int, int, void (*callback3)(void *));
 extern int func_ov002_0220b464(void *);
 extern int func_0206e35c(void *);
 extern int func_ov002_0220ba0c(void *);
 extern int func_ov002_02209ac8(void *);
 extern int func_ov002_02209cb4(void *);
-extern int func_ov002_02209e38(void *);
+extern void func_ov002_02209e38(void *);
 extern int func_ov002_02207e28(void *);
 extern int func_ov094_0229a2d0(void *);
-extern int func_ov094_0229bc30(void *);
+extern void func_ov094_0229bc30(void *);
 extern int func_ov094_0229afe0(void *);
-extern int func_02066688(void *);
+extern void func_02066688(void *);
 extern int func_ov002_0220826c(void *);
+
+#define DisposeElement_func_02066688 ((void (*)(void *)) func_02066688)
 
 void *func_ov105_0229c180(void *self)
 {
     *(int *) self = (int) &data_ov105_0229fad0;
     func_ov002_0220afdc((char *) self + 0x5fb8);
-    __cxa_vec_cleanup((char *) self + 0x2db8, 0x32, 0x100, (void *) func_02066688);
+    __cxa_vec_cleanup((char *) self + 0x2db8, 0x32, 0x100, DisposeElement_func_02066688);
     func_ov002_0220b464((char *) self + 0x2d40);
     func_0206e35c((char *) self + 0x2a18);
     func_ov002_0220ba0c((char *) self + 0x28fc);
@@ -38,3 +40,5 @@ void *func_ov105_0229c180(void *self)
     func_ov002_0220826c(self);
     return self;
 }
+
+#undef DisposeElement_func_02066688

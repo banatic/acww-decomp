@@ -4,11 +4,11 @@
 
 extern void *data_020ccf94;
 extern void func_020736bc(void *, void *, void *);
-extern int func_02052b90(void *);
+extern void func_02052b90(void *);
 
-int func_020770c0(void *param)
+void func_020770c0(void *param, int sequence, unsigned char category, unsigned int player)
 {
     void *local;
     func_020736bc(data_020ccf94, &local, param);
-    return func_02052b90(&local);
+    func_02052b90(&local);
 }

@@ -14,7 +14,7 @@ typedef struct {
 
 extern int func_02008258(void *self, int value);
 extern int func_02056f94(void *ptr);
-extern void func_ov003_0220f768(void *self, u32 a, u32 b, u8 c, int d, int e, int f);
+extern int func_ov003_0220f768(void *self, u32 a, u32 b, u8 c, int d, int e, int f);
 
 void func_ov003_0220f884(void *self)
 {

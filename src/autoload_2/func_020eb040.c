@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void DWC_IsBuddyFriendData(void);
+extern int DWC_IsBuddyFriendData(int data);
 
-void func_020eb040(void)
+int func_020eb040(int data)
 {
-    DWC_IsBuddyFriendData();
+    return DWC_IsBuddyFriendData(data);
 }

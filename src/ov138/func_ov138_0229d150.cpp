@@ -5,7 +5,7 @@
 
 #include "cpp/ov138/Obj_ov138_0229d4e0.h"
 
-extern "C" void func_ov138_0229cfbc(void *);
+extern "C" int func_ov138_0229cfbc(void *);
 extern "C" void func_ov138_0229cfb4(void *);
 
 int Obj_ov138_0229d4e0::func_ov138_0229d150()

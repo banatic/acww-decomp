@@ -28,7 +28,7 @@ typedef struct UnkStruct_0203be6c {
     fx32 unk_1E8; // 0x1e8
 } UnkStruct_0203be6c;
 
-extern int func_0203ad88(UnkStruct_0203be6c *self);
+extern int func_0203ad88(void);
 extern int func_0203c528(UnkStruct_0203be6c *self);
 extern int func_0203c4e4(UnkStruct_0203be6c *self);
 extern int func_0203c4d0(UnkStruct_0203be6c *self);
@@ -48,7 +48,7 @@ void func_0203be6c(UnkStruct_0203be6c *self)
     VecFx32 res1;
     fx32 t;
 
-    if (func_0203ad88(self)) {
+    if (func_0203ad88()) {
         int a = func_0203c528(self);
         int b = func_0203c4e4(self);
         int c = func_0203c4d0(self);

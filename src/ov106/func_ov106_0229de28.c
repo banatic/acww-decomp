@@ -11,20 +11,20 @@ typedef struct {
 
 extern int func_0208e484(void *ptr);
 extern int func_ov002_02209f9c(void *ptr);
-extern void func_ov002_02208098(UnkStruct_0229de28 *self, unsigned char c);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov106_0229c364(UnkStruct_0229de28 *self, int a);
-extern int func_ov106_0229c344(UnkStruct_0229de28 *self, int a);
-extern void func_ov094_022999c0(int a);
+extern void func_ov106_0229c344(UnkStruct_0229de28 *self, int a);
+extern void func_ov094_022999c0(void);
 extern void func_ov106_0229ce0c(UnkStruct_0229de28 *self);
 
 void func_ov106_0229de28(UnkStruct_0229de28 *self)
 {
     if (func_0208e484(&self->unk_22A0) != 0) {
-        func_ov002_02208098(self, self->flag);
+        func_ov002_02208098((void *) (self), self->flag);
     }
     if (func_ov002_02209f9c(&self->unk_22A0) != 0) {
         if (func_ov106_0229c364(self, 0x40) != 0) {
-            func_ov094_022999c0(func_ov106_0229c344(self, 0x40));
+            ((void) (func_ov106_0229c344(self, 0x40)), func_ov094_022999c0());
         }
         func_ov106_0229ce0c(self);
     }

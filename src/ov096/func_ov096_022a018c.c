@@ -6,7 +6,7 @@ extern int func_0208e4bc(int);
 extern void func_ov096_0229dc48(int);
 extern int func_ov002_0220909c(int);
 extern void func_ov002_022096d8(int, int);
-extern void func_ov002_02207d24(int, int);
+extern int func_ov002_02207d24(int, int);
 
 int func_ov096_022a018c(int r0)
 {

@@ -10,8 +10,8 @@ typedef struct {
 } UnkStruct_0221b60c;
 
 extern int func_ov004_0221b98c(char *self);
-extern void func_0206837c(int a);
-extern int func_020ab504(void);
+extern unsigned int func_0206837c(int a);
+extern int func_020ab504(void *);
 extern unsigned int func_ov004_0221b9f4(char *self);
 extern int func_020712b0(void *a, u16 *b);
 extern void func_0206844c(void *a, char *b, int c);
@@ -28,8 +28,7 @@ void func_ov004_0221b60c(char *self)
     if (func_ov004_0221b98c(self) != 0) {
         return;
     }
-    func_0206837c(*(int *) (self + 0x12c));
-    if (func_020ab504() == 0) {
+    if (func_020ab504((void *) func_0206837c(*(int *) (self + 0x12c))) == 0) {
         s.unk_04 = (*(u16 **) (self + 0x164))[(u8) self[0x155]];
         if (*(unsigned int *) (self + 0x15c) <= 1) {
             k = func_ov004_0221b9f4(self);

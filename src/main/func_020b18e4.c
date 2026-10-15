@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a887c(void *obj);
+extern void *func_020a887c(void *obj);
 extern unsigned char data_020e4278;
 
 struct Object {

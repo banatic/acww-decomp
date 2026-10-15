@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void func_020896b8(int a, void *b, int c, void *d, int e, int f, int g);
+extern int func_020896b8(int a, void *b, int c, void *d, int e, int f, int g);
 extern void func_02088df8(int a, void *b, int c, void *d, int e, int f, int g, int h, int i, int j, int k, int l);
 
 extern int data_ov114_0229dac8[];

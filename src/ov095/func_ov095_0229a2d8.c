@@ -14,7 +14,7 @@ typedef struct UnkStruct_0229a2d8 {
 extern int data_ov095_0229cfa0[6];
 extern int data_ov095_0229cfb4[6];
 
-extern int func_ov095_02299bb4(void);
+extern int func_ov095_02299bb4(void *unused0, void *unused1);
 extern int func_ov002_022088cc(void *evt);
 extern void func_ov095_0229a1d4(UnkStruct_0229a2d8 *self);
 extern int func_ov002_0220889c(void *evt);
@@ -30,7 +30,7 @@ void func_ov095_0229a2d8(UnkStruct_0229a2d8 *self, void *evt)
     int kind;
     int diff;
 
-    if (func_ov095_02299bb4()) {
+    if (func_ov095_02299bb4(self, evt)) {
         return;
     }
 

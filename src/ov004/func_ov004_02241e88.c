@@ -18,7 +18,7 @@ extern short func_0200322c(void *a, void *b);
 extern int func_020644cc(int);
 extern int func_ov004_02244c20(void *self);
 extern int func_020ea990(void *a, void *b);
-extern void func_ov004_0221b1cc(void);
+extern int func_ov004_0221b1cc(void);
 
 void func_ov004_02241e88(char *self)
 {

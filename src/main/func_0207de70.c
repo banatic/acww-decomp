@@ -7,15 +7,15 @@ typedef struct {
     unsigned short arr[1];
 } UnkStruct_0207de70;
 
-extern int func_0207deb4(UnkStruct_0207de70 *p);
+extern int func_0207deb4(UnkStruct_0207de70 *p, unsigned short *);
 extern void func_0207df88(UnkStruct_0207de70 *p);
 extern int func_0207dfd4(UnkStruct_0207de70 *p, int a);
 extern void func_020782d8(UnkStruct_0207de70 *p, int a);
 
-int func_0207de70(UnkStruct_0207de70 *p)
+int func_0207de70(UnkStruct_0207de70 *p, unsigned short *argument1)
 {
     int idx;
-    idx = func_0207deb4(p);
+    idx = func_0207deb4(p, (unsigned short *) argument1);
     if (idx == -1) {
         goto error;
     }

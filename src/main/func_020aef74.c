@@ -3,14 +3,14 @@
  */
 
 extern unsigned char data_020d1e10[];
-extern unsigned char func_020af028(void);
+extern unsigned char func_020af028(unsigned short *);
 
-unsigned char func_020aef74(void)
+unsigned char func_020aef74(unsigned short *argument0)
 {
     unsigned char result;
     unsigned char index;
 
-    index = func_020af028();
+    index = func_020af028((unsigned short *) argument0);
     result = data_020d1e10[index];
     return result;
 }

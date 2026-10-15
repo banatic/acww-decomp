@@ -12,7 +12,7 @@ extern int func_02099870(void *);
 extern void func_02066024(void *, void *, void *, void *, void *, int);
 extern void func_02063ccc(void *, int, int);
 extern void func_020638d4(void *, void *, int, int, int, int, int);
-extern void func_02065ed0(void *, int, int);
+extern unsigned short func_02065ed0(void *, int, int);
 extern void func_02063cc8(void *);
 extern int func_020979f0(void *, int);
 extern void func_02098fd0(void *, int);

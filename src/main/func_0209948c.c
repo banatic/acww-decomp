@@ -3,9 +3,9 @@
  */
 
 extern int func_02099a28(void *);
-extern void func_02099640(void *);
-extern void func_0209a850(void);
-extern void func_0209b23c(void);
+extern int func_02099640(void *);
+extern int func_0209a850(int);
+extern void func_0209b23c(void *);
 extern int func_02099734(void *);
 extern unsigned short *func_02098f48(int, int);
 extern int func_02098e8c(int, int);
@@ -15,9 +15,9 @@ extern void func_02063414(unsigned short *, int, int, int, int, void *, int, int
 extern void func_02063ccc(void *, int, int);
 extern void func_020638d4(unsigned short *, void *, int, int, int, int, int);
 extern void func_02063cc8(void *);
-extern void func_02098f0c(int, unsigned short *, int, int);
+extern int func_02098f0c(int, unsigned short *, int, int);
 extern int func_020996ac(void *);
-extern void OSi_DoUnlockByWord__main_0203cd2c(int, unsigned short *, int, int);
+extern int OSi_DoUnlockByWord__main_0203cd2c(int, unsigned short *, int, int);
 
 void func_0209948c(void *self)
 {
@@ -33,9 +33,7 @@ void func_0209948c(void *self)
         return;
     }
     w[0] = 0xfff1;
-    func_02099640(self);
-    func_0209a850();
-    func_0209b23c();
+    func_0209b23c((void *) func_0209a850((int) func_02099640(self)));
     a = func_02099734(self);
     p = func_02098f48(a, 0);
 

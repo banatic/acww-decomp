@@ -4,12 +4,12 @@
 
 extern int func_0208e484(int);
 extern void func_ov107_0229ccc8(int);
-extern void func_ov002_02208098(int, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void func_ov107_0229d6c0(int r0)
 {
     if (func_0208e484(r0 + 0x22b4)) {
         func_ov107_0229ccc8(r0);
-        func_ov002_02208098(r0, 5);
+        func_ov002_02208098((void *) (r0), 5);
     }
 }

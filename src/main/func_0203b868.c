@@ -40,11 +40,11 @@ typedef struct {
     int unk_218;
 } UnkStruct_0203b868;
 
-extern void func_0203b7d0(void *);
+extern int func_0203b7d0(void *);
 extern void func_0203ad58(void);
-extern int func_0203c99c(void *, int);
+extern void func_0203c99c(void *, int);
 
-int func_0203b868(UnkStruct_0203b868 *p)
+void func_0203b868(UnkStruct_0203b868 *p)
 {
     int *q110;
     int *q114;
@@ -80,5 +80,5 @@ int func_0203b868(UnkStruct_0203b868 *p)
     p->unk_214 = *q16c;
     p->unk_218 = *q170;
     func_0203ad58();
-    return func_0203c99c(p, 2);
+    func_0203c99c(p, 2);
 }

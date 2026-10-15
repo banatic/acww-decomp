@@ -5,7 +5,7 @@
 #include "types.h"
 
 extern int func_020984e8(void);
-extern int func_02099640(void);
+extern int func_02099640(int);
 extern int func_02099e9c(u16 *);
 extern void func_0209df64(void *);
 extern void func_0209e474(void *);
@@ -40,8 +40,7 @@ void func_ov086_02278cf0(UnkStruct_02278cf0 *self, UnkStruct_02278cf0_2 *out)
     Locals loc;
     unsigned int flag;
 
-    func_020984e8();
-    func_02099640();
+    func_02099640((int) func_020984e8());
 
     out->ptr = data_ov086_02279448;
     if (self->unk_B4 == -1) {

@@ -3,7 +3,7 @@
  */
 
 extern int func_ov134_02299a60(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov138_0229c630(void *);
 extern int func_ov138_0229c7a8(void *);
 extern int func_ov138_0229c754(void *);
@@ -14,7 +14,7 @@ void func_ov138_0229cba4(void *self)
     int a;
     int b;
     if (func_ov134_02299a60((char *) self + 0x2c8)) {
-        func_ov002_02208098(self, 5);
+        func_ov002_02208098((void *) (self), 5);
         func_ov138_0229c630(self);
     }
     a = func_ov138_0229c7a8(self);

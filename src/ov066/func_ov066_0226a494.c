@@ -35,7 +35,7 @@ typedef struct Mgr {
 extern int func_ov066_022683b4(const u8 *a, const u8 *b);
 extern void OS_CancelAlarm(OSAlarm *a);
 extern u32 OS_DisableInterrupts(void);
-extern void OS_RestoreInterrupts(u32 s);
+extern unsigned int OS_RestoreInterrupts(u32 s);
 extern void MIi_CpuCopyFast(const void *src, void *dst, u32 n);
 extern void DC_StoreRange(void *p, u32 n);
 extern void OS_SetAlarm(OSAlarm *a, s64 tick, OSAlarmHandler h, void *arg);

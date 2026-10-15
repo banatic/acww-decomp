@@ -3,8 +3,8 @@
  */
 
 extern int data_021fbe94; // 0x021fbe94
-extern void func_02002ca4(const void *a, int b, int c);
-extern void func_02002c6c(const void *a, int b, int c, int d, int e, int f);
+extern int func_02002ca4(const void *a, int b, int c);
+extern int func_02002c6c(const void *a, int b, int c, int d, int e, int f);
 extern void func_ov102_0229c4c0(int a, int b);
 
 extern unsigned char data_ov102_0229eb6c[];

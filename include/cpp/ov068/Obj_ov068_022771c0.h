@@ -7,7 +7,7 @@
 // through its own sub-scenes indexed by the byte at 0x1c.
 class Obj_ov068_022771c0 {
   public:
-    virtual void vfunc_00();
+    virtual int vfunc_00();
 
     // sub-scenes
     void func_ov068_02267400(int arg);

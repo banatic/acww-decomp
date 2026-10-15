@@ -3,9 +3,9 @@
  */
 
 extern "C" {
-extern void func_02067964(void *);
+extern int func_02067964(void *);
 extern void func_020a9334(void *, int);
-extern void func_020a7994(void *, int, void *);
+extern void func_020a7994(void *, int);
 }
 
 class VirtualClass {
@@ -27,6 +27,6 @@ extern "C" void func_0206c8a0(SelfType *self)
     int res1 = ((VirtualClass *) (self->ptr + 0x1cec))->m3();
     func_020a9334(self, res1);
     int res2 = ((VirtualClass *) (self->ptr + 0x1cec))->m3();
-    func_020a7994(self->ptr + 0x1a58, res2, self->ptr);
+    func_020a7994(self->ptr + 0x1a58, res2);
     *(int *) (self->ptr + 0x1a60) = 0;
 }

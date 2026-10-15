@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,p
  */
 
-extern void OS_Terminate(int);
-extern void NNS_SndArcPlayerStartSeqArc(int, int, int);
+extern void OS_Terminate(void);
+extern int NNS_SndArcPlayerStartSeqArc(int, int, int);
 
-void func_020f7bc4(int a1, int a2, int a3)
+int func_020f7bc4(int a1, int a2, int a3)
 {
     if (a3 == 0) {
-        OS_Terminate(a1);
+        OS_Terminate();
     }
-    NNS_SndArcPlayerStartSeqArc(a3, 1, a2 % 1000);
+    return NNS_SndArcPlayerStartSeqArc(a3, 1, a2 % 1000);
 }

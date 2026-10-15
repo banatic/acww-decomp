@@ -11,9 +11,9 @@ extern const unsigned char data_ov142_0229c57c[];
 extern const unsigned char data_ov142_0229c594[];
 extern const unsigned char data_ov142_0229c5ac[];
 
-void func_02002c6c(const void *src, void *dst, int size, int a, int b, int c);
-void func_02002d14(const void *src, void *dst, int size, int a, int b, int c);
-void func_02064af4(const void *src, void *dst, unsigned int size);
+int func_02002c6c(const void *src, void *dst, int size, int a, int b, int c);
+int func_02002d14(const void *src, void *dst, int size, int a, int b, int c);
+int func_02064af4(const void *src, void *dst, unsigned int size);
 
 void func_ov142_0229b874(unsigned char *self)
 {

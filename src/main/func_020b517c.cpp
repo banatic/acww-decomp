@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_020a8764(void *);
+extern "C" void func_020a8764(void *, int);
 extern "C" int func_020a835c(void *);
 
 class UnkStruct_020b517c {
@@ -29,9 +29,9 @@ extern PMF data_020e515c;
 extern PMF data_020e5164;
 extern PMF data_020e5154;
 
-extern "C" void func_020b517c(UnkStruct_020b517c *self)
+extern "C" void func_020b517c(UnkStruct_020b517c *self, int argument1)
 {
-    func_020a8764((char *) self + 0x28);
+    func_020a8764((char *) self + 0x28, (int) argument1);
     unsigned int a = self->unk_28;
     unsigned int b = self->unk_2C;
     PMF pmf = __ptmf_null;

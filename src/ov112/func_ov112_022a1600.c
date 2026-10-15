@@ -15,7 +15,7 @@ extern void func_ov002_02207e80(struct UnkStruct_022a1600 *p, int a, int b, int 
 extern void func_ov002_02208090(struct UnkStruct_022a1600 *p, int a);
 extern int func_ov002_02207f60(struct UnkStruct_022a1600 *p);
 extern void func_ov112_0229fe60(struct UnkStruct_022a1600 *p, int a);
-extern void func_ov002_0220acc4(void *p);
+extern int func_ov002_0220acc4(void *p);
 
 void func_ov112_022a1600(struct UnkStruct_022a1600 *param)
 {

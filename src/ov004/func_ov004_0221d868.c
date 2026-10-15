@@ -7,7 +7,7 @@
 extern u16 func_020e8ed8(int dx, int dy);
 extern char *func_ov004_0221d4e8(void);
 extern int func_ov004_0221c844(char *g, int mode);
-extern void func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
+extern int func_02019d0c(char *p, int a, int b, int c, int d, int e, int f, int g, int h, int i, int j);
 extern void func_0201ad18(char *p, int a, int b, char *c, int d, int e, int f, int g);
 extern char *data_ov004_02257a18;
 extern u16 data_020c80f8;

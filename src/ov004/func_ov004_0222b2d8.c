@@ -5,7 +5,7 @@
 typedef struct {
     int a, b, c;
 } UnkStruct_0222b2d8;
-void func_ov004_0222b2d8(char *self)
+void func_ov004_0222b2d8(char *self, int stateId)
 {
     int *p = (int *) (self + 0x7d4);
     UnkStruct_0222b2d8 *q = (UnkStruct_0222b2d8 *) (self + 0x5c);

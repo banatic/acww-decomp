@@ -19,16 +19,16 @@ typedef struct {
     unsigned char pad_698[0x7d4 - (0x668 + 0x30)];
     Header header;
 } UnkStruct_022161cc;
-extern void func_02010f5c(void);
+extern void func_02010f5c(int argument0);
 extern int func_02056f28(void *p, int a);
 extern void func_0200f268(UnkStruct_022161cc *obj, int a);
-extern void func_0200f328(UnkStruct_022161cc *obj, int a);
-extern void func_0200f27c(UnkStruct_022161cc *obj, int a);
+extern int func_0200f328(UnkStruct_022161cc *obj, int a);
+extern unsigned int *func_0200f27c(UnkStruct_022161cc *obj, int a);
 extern void func_02045f08(int *p, int a);
-extern void func_0203f7d0(int *a, int *b);
-extern void func_02091254(int a, int *b, int c, int d);
+extern int func_0203f7d0(int *a, int *b);
+extern int func_02091254(int a, int *b, int c, int d);
 extern void MTX_MultVec43(int *a, int *b, int *c);
-extern void func_0200faf0(UnkStruct_022161cc *obj, int a);
+extern int func_0200faf0(UnkStruct_022161cc *obj, int a);
 void func_ov003_022161cc(UnkStruct_022161cc *obj)
 {
     int header_tmp[2];
@@ -43,7 +43,7 @@ void func_ov003_022161cc(UnkStruct_022161cc *obj)
     int v2;
     unsigned char t0;
     unsigned char t1;
-    func_02010f5c();
+    func_02010f5c((int) obj);
     if (((obj->unk_2D8 << 4) >> 16) < 8) {
         return;
     }

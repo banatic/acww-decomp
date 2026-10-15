@@ -14,13 +14,13 @@ struct UnkStruct_0202d8cc {
     struct Vtbl *vtable;
 };
 
-extern UnkStruct_0202d8cc *func_02015d90(void);
+extern UnkStruct_0202d8cc *func_02015d90(void *);
 
-void func_0202d8cc(void)
+void func_0202d8cc(void *object)
 {
     UnkStruct_0202d8cc *obj;
 
-    obj = func_02015d90();
+    obj = func_02015d90(object);
     if (obj != 0) {
         obj->vtable->method(obj, 0);
     }

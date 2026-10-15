@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void OS_EnableInterrupts(void);
+extern unsigned int OS_EnableInterrupts(void);
 
 void func_020750f4(void)
 {

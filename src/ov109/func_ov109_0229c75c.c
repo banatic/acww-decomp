@@ -4,8 +4,8 @@
 
 extern int func_ov002_02208ae4(const unsigned char *p);
 extern int func_ov002_02208ad8(const unsigned char *p, int b);
-extern void func_ov002_0220a08c(const unsigned char *p, int a, int b, int c);
-extern void func_ov002_02208098(const unsigned char *p, int n);
+extern int func_ov002_0220a08c(const unsigned char *p, int a, int b, int c);
+extern unsigned char *func_ov002_02208098(const unsigned char *p, unsigned char value);
 
 void func_ov109_0229c75c(unsigned char *self)
 {

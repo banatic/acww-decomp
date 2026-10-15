@@ -39,7 +39,7 @@ extern "C" {
 extern void func_ov004_0220d280(void *, int, int);
 extern int func_ov004_0220e5c8(void *);
 extern int func_ov004_0220ffbc(void *);
-extern void func_ov004_0223cf18(void *, int);
+extern void func_ov004_0223cf18(void *, short);
 extern void func_ov004_0223cf40(void *, int, void *);
 }
 

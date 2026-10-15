@@ -3,13 +3,13 @@
  */
 
 extern void func_0209e474(void *);
-extern void func_020afa14(void *, void *);
+extern int func_020afa14(void *, void *);
 
-void func_020af9f0(void *param)
+int func_020af9f0(void *param)
 {
     int local[2];
     local[0] = 0;
     local[1] = 0;
     func_0209e474(local);
-    func_020afa14(param, local);
+    return func_020afa14(param, local);
 }

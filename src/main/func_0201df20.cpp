@@ -17,9 +17,9 @@ class UnkStruct_0201df20_2 {
 };
 extern int data_021c228c;
 extern "C" void *func_0209a000(unsigned short *, int);
-extern "C" void *func_020984e8(void *);
-extern "C" int func_0209dee8(void *);
-extern "C" void func_020992b8(void *, unsigned char);
+extern "C" void *func_020984e8(void);
+extern "C" int func_0209dee8(void);
+extern "C" unsigned char *func_020992b8(void *, unsigned char);
 extern "C" void func_0202da88(UnkStruct_0201df20_2 *self, void *tbl);
 extern "C" void func_0206844c(int a, void *b, int c);
 extern "C" void func_0201df20(UnkStruct_0201df20_2 *self)
@@ -28,8 +28,8 @@ extern "C" void func_0201df20(UnkStruct_0201df20_2 *self)
     unsigned short h;
     UnkStruct_0201df20 out;
     h = 0x3818;
-    void *p = func_020984e8(func_0209a000(&h, 0));
-    func_020992b8(p, (unsigned char) func_0209dee8(p));
+    void *p = (func_0209a000(&h, 0), func_020984e8());
+    func_020992b8(p, (unsigned char) func_0209dee8());
     func_0202da88(self, &data_021c228c);
     if (self->pmf) {
         (self->*(self->pmf))(&out);

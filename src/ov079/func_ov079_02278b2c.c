@@ -15,17 +15,17 @@ typedef struct {
 
 extern char data_ov079_0227a1b0;
 
-extern void func_02015094(UnkStruct_02278b2c *p);
+extern int func_02015094(UnkStruct_02278b2c *p);
 extern int func_020644cc(int a);
 extern void func_02015de4(UnkStruct_02278b2c *p, u16 *q, int a, int b);
 extern void func_0204093c(int a);
 extern void func_020157c8(UnkStruct_02278b2c *p, int a, int b);
-extern void func_02015828(UnkStruct_02278b2c *p, int a);
+extern int func_02015828(UnkStruct_02278b2c *p, int a);
 extern void func_ov079_02279518(UnkStruct_02278b2c *p, int a);
 extern int func_0209a000(u16 *p, int a);
-extern void func_020154b4(UnkStruct_02278b2c *p, u16 *q, int a, int b, int c);
-extern void func_02014f60(UnkStruct_02278b2c *p);
-extern void func_0202ea80(int a, int b);
+extern int func_020154b4(UnkStruct_02278b2c *p, u16 *q, int a, int b, int c);
+extern int func_02014f60(UnkStruct_02278b2c *p);
+extern int func_0202ea80(int a, int b);
 extern void func_0206844c(void *a, char *b, void *c);
 
 void func_ov079_02278b2c(UnkStruct_02278b2c *arg)

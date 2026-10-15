@@ -9,11 +9,11 @@ typedef struct {
     int *unk_B0;
 } UnkStruct_02260608;
 
-extern int func_020a12d4(UnkStruct_02260608 *self, int idx);
+extern int func_020a12d4(void);
 extern int func_ov051_022605e8(UnkStruct_02260608 *self, unsigned char val);
-extern void func_020984e8(void);
-extern void func_02099870(void);
-extern int func_020950c0(void);
+extern int func_020984e8(void);
+extern int func_02099870(int argument0);
+extern int func_020950c0(void *argument0);
 extern void func_0206844c(int a, char *b, int c);
 extern unsigned char data_ov051_022614bc[];
 extern int data_ov051_022615c0;
@@ -23,12 +23,11 @@ void func_ov051_02260608(UnkStruct_02260608 *self, int idx)
     char local;
     int result;
 
-    if (func_020a12d4(self, idx)) {
+    if (func_020a12d4()) {
         result = func_ov051_022605e8(self, data_ov051_022614bc[idx]);
     } else if (idx == 0) {
-        func_020984e8();
-        func_02099870();
-        if (func_020950c0() == 0) {
+
+        if (func_020950c0((void *) func_02099870(func_020984e8())) == 0) {
             result = 0x21;
         } else {
             result = 0x2f;

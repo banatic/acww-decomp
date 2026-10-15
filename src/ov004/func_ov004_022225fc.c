@@ -8,8 +8,8 @@ extern void *func_0206fc8c(void);
 extern void func_0209a050(void *h);
 extern int func_020644cc(int k);
 extern void func_0206844c(void *a, void *b, int c);
-extern void func_ov004_02222178(void *p, int k);
-extern void func_02015330(void *self, void *obj, int a, int b, int c);
+extern int func_ov004_02222178(void *p, int k);
+extern int func_02015330(void *self, void *obj, int a, int b, int c);
 
 void func_ov004_022225fc(void *self)
 {

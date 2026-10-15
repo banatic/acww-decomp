@@ -7,7 +7,7 @@
 extern volatile u8 data_020e54a8;
 extern int func_02030890(void *self);
 extern int func_ov004_0223c5a4(void *self);
-extern void func_02034270(void *buf, void *self, int a, int b);
+extern int func_02034270(void *buf, void *self, int a, int b);
 extern int func_020341c8(void *buf, int a);
 extern int func_0203104c(void *self);
 extern void func_0203423c(void *buf);

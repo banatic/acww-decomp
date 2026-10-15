@@ -3,7 +3,7 @@
  */
 
 extern "C" void func_ov002_0220a05c(void *a, int b, int c, int d, int e);
-extern "C" void func_ov002_02208098(void *a, int b);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern "C" int func_ov110_0229cc14(void *obj);
 extern "C" int func_ov110_0229cc04(void *obj);
 extern "C" int func_ov110_0229c2c8(void *obj, int n);
@@ -32,7 +32,7 @@ extern "C" void func_ov110_0229cb78(MainObject *obj)
     int v2 = func_ov110_0229cc04(obj);
     func_ov002_0220a05c(&obj->subObj, v1, v2, 3, 1);
     obj->unk_F8 = obj->unk_8D;
-    func_ov002_02208098(obj, 8);
+    func_ov002_02208098((void *) (obj), 8);
     if (func_ov110_0229c2c8(obj, 0x100) != 0) {
         obj->subObj.f3();
         func_ov110_0229c2a8(obj, 0x100);

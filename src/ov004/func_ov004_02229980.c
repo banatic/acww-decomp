@@ -16,8 +16,8 @@ struct UnkStruct_02229980 {
 
 extern int func_02056f94(void *p);
 extern int func_02008258(struct UnkStruct_02229980 *self, int a);
-extern void func_0200d4e8(struct UnkStruct_02229980 *self, int a, int b, int c);
-extern void func_ov004_0222a23c(struct UnkStruct_02229980 *self, int a, int b, int c, int d);
+extern int func_0200d4e8(struct UnkStruct_02229980 *self, int a, int b, int c);
+extern int func_ov004_0222a23c(struct UnkStruct_02229980 *self, int a, int b, int c, int d);
 
 void func_ov004_02229980(struct UnkStruct_02229980 *self)
 {

@@ -10,9 +10,9 @@ typedef struct {
     int unk_1C;
 } UnkStruct_0204dd84;
 extern void *data_021c9b34;
-extern void func_02030ddc(unsigned int a, unsigned int b, int c, int d);
+extern int func_02030ddc(unsigned int a, unsigned int b, int c, int d);
 extern int func_02037e84(void *x);
-extern void func_0203750c(void);
+extern int func_0203750c(void);
 extern int func_020377d8(int a, void *g);
 extern void func_02037ecc(void *x, int a, int b, int c);
 void func_0204dd84(UnkStruct_0204dd84 *p)

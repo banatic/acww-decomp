@@ -4,12 +4,12 @@
 
 extern void func_ov003_02216404(char *p, int byte, int *arr);
 extern void func_ov003_02216400(char *p, int byte);
-extern void func_020109a0(void *obj, int a, int b, int c);
+extern void func_020109a0(void *obj, int b, int c, unsigned short d);
 extern int func_02073908(int a, int b);
 extern void func_02035684(int a, int b, int c);
 extern int data_020ccf94;
 
-void func_ov003_02216390(void *obj, unsigned char *pData)
+void func_ov003_02216390(void *obj, unsigned char *pData, int previous)
 {
     unsigned char *p = &pData[0xc];
     int local[3];

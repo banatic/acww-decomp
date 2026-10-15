@@ -13,9 +13,9 @@ struct Vec3 {
 extern void func_0204f818(int *px, int *pz, struct Vec3 *p);
 extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, int layer);
 extern unsigned short func_0204bb14(int k);
-extern void func_0204f538(void *ctx, unsigned short *h, int x, int z, int m);
-extern void func_ov003_0221a484(unsigned short *p);
-extern void func_ov003_0221a35c(void *self, int k);
+extern int func_0204f538(void *ctx, unsigned short *h, int x, int z, int m);
+extern int func_ov003_0221a484(unsigned short *p);
+extern int func_ov003_0221a35c(void *self, int k);
 
 struct UnkStruct_0226effc {
     char pad_00[0x5c];

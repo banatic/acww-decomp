@@ -6,7 +6,7 @@
 
 // Built at -O1,s. The last read-modify-write goes through a named pointer.
 
-extern int func_ov095_0229c930(void *);
+extern int func_ov095_0229c930(void *, int unused1, int unused2);
 extern char *func_ov095_0229b16c(void *);
 
 void func_ov095_0229ca64(void *o, int id, int val)
@@ -14,7 +14,7 @@ void func_ov095_0229ca64(void *o, int id, int val)
     char *base;
     u32 *q;
 
-    if (func_ov095_0229c930(o) != 0) {
+    if (func_ov095_0229c930(o, id, val) != 0) {
         return;
     }
     if (id < 0x70) {

@@ -13,9 +13,11 @@ class Obj_ov121_0229c3a8 : public Obj_ov002_0220bb24 {
 
     // sub-states (subState)
     void func_ov121_0229b020();
-    void func_ov121_0229b078();
+    int func_ov121_0229b078();
+
     void func_ov121_0229b09c();
-    void func_ov121_0229b0bc();
+    int func_ov121_0229b0bc();
+
     void func_ov121_0229b0e4();
     void func_ov121_0229b104();
     void func_ov121_0229b148();

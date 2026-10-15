@@ -4,9 +4,9 @@
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021f6c54;
-extern void func_ov144_0229a4b8(int a);
+extern int func_ov144_0229a4b8(int a);
 extern void func_ov144_0229a4c8(int a, int b, int c);
-extern void func_ov002_02208098(int a, int b);
+extern unsigned char *func_ov002_02208098(int a, unsigned char value);
 
 void func_ov144_0229ab20(int p)
 {

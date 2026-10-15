@@ -7,13 +7,13 @@ typedef struct {
 } Vec3;
 extern Vec3 data_ov004_02247774;
 extern void func_020109fc(int a, int b, int c, int d);
-extern int func_0203ab78(Vec3 *v);
-int func_ov004_0222acc4(int a)
+extern void func_0203ab78(Vec3 *v);
+void func_ov004_0222acc4(int a, void *message, int previous)
 {
     Vec3 v;
     func_020109fc(a, 0x9b, 3, 0);
     v.x = data_ov004_02247774.x;
     v.y = data_ov004_02247774.y;
     v.z = data_ov004_02247774.z;
-    return func_0203ab78(&v);
+    func_0203ab78(&v);
 }

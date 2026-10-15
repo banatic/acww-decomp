@@ -11,7 +11,7 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 n, fx32 d);
 extern int func_0200322c(void *a, void *b);
 extern int func_020ea990(void *a, void *b);
-extern void func_020e8870(void *buf, int val, int k);
+extern int func_020e8870(void *buf, int val, int k);
 extern void func_ov068_02270a64(void *a, void *b, int c);
 
 void func_ov068_02270b00(u8 *self)

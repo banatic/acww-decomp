@@ -11,7 +11,7 @@ struct UnkStruct_0229d980 {
 };
 
 extern int func_0208e484(void *ptr);
-extern void func_ov002_02208098(UnkStruct_0229d980 *self, unsigned char value);
+extern unsigned char *func_ov002_02208098(UnkStruct_0229d980 *self, unsigned char value);
 extern void func_ov102_0229cd38(UnkStruct_0229d980 *self);
 
 void func_ov102_0229d980(UnkStruct_0229d980 *self)

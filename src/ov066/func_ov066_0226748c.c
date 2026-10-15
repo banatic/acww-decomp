@@ -3,19 +3,19 @@
  */
 
 extern int data_ov066_0226bdec;
-extern int data_ov066_0226bde8;
-extern int data_ov066_0226bde4;
+extern int (*data_ov066_0226bde8)(int, int);
+extern int (*data_ov066_0226bde4)(int);
 extern int data_ov066_0226bde0;
 
 extern int func_ov066_02266908(int, int);
-extern int func_ov066_02267530(int);
+extern void func_ov066_02267530(int);
 extern void func_ov066_0226686c(int);
 extern void func_ov066_022668c4(int);
 extern void OS_InitTick(void);
 extern void OS_InitAlarm(void);
 extern int WM_IsExistAllowedChannel(void);
 
-int func_ov066_0226748c(int r0, int r1, int r2, int r3)
+int func_ov066_0226748c(int r0, int (*r1)(int, int), int (*r2)(int), int r3)
 {
     int r4 = r0;
     int result;

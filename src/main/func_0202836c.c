@@ -28,11 +28,11 @@ extern UnkStruct_0202836c_3 data_020d8f00;
 extern int data_021e5a2c;
 
 extern void *func_020984e8(void);
-extern void func_02099640(void);
+extern int func_02099640(int);
 extern void *func_0202d9c4(UnkStruct_0202836c_2 *);
 extern int func_0209bc40(void *);
 extern int func_0208150c(void *);
-extern void func_0209b4d8(void *, int, int, void *);
+extern int func_0209b4d8(void *, int, int, void *);
 extern void func_0209bd5c(void *);
 extern void func_0207b57c(int *);
 extern int func_0209b4d4(void *);
@@ -40,10 +40,10 @@ extern void func_0202d9d0(UnkStruct_0202836c_2 *, int);
 extern u16 *func_0209bb70(void *);
 extern void *func_02099734(void *);
 extern int func_02098eb8(void *);
-extern void func_02098f0c(void *, u16 *, int, int);
+extern int func_02098f0c(void *, u16 *, int, int);
 extern int func_0209a1d0(void);
 extern void func_0209b2a8(void *, int);
-extern void func_020154b4(UnkStruct_0202836c_2 *, u16 *, int, int, int);
+extern int func_020154b4(UnkStruct_0202836c_2 *, u16 *, int, int, int);
 extern void func_0202dbf0(UnkStruct_0202836c_2 *, UnkStruct_0202836c_3);
 extern void func_0202db48(UnkStruct_0202836c_2 *, UnkStruct_0202836c_3);
 
@@ -56,7 +56,7 @@ void func_0202836c(UnkStruct_0202836c_2 *p)
     int t2;
 
     a1 = func_020984e8();
-    func_02099640();
+    func_02099640((int) a1);
     q = p->unk_100->unk_830;
     v = 2;
     if (p->unk_160 != 0) {

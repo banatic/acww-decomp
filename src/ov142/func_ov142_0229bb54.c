@@ -9,14 +9,14 @@ typedef struct {
 
 extern int func_ov002_02207f48(UnkStruct_0229bb54 *p, int a);
 extern void func_ov142_0229b214(UnkStruct_0229bb54 *p);
-extern void func_ov002_022080a0(UnkStruct_0229bb54 *p, int b);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern int func_ov002_02207f60(UnkStruct_0229bb54 *p);
 
 void func_ov142_0229bb54(UnkStruct_0229bb54 *p)
 {
     if (func_ov002_02207f48(p, -1)) {
         func_ov142_0229b214(p);
-        func_ov002_022080a0(p, 2);
+        func_ov002_022080a0((void *) (p), 2);
     }
     p->unk_98 = func_ov002_02207f60(p);
 }

@@ -11,7 +11,7 @@ extern int func_ov002_0220a768(u8 *p, int);
 extern int func_ov002_0220a72c(u8 *p, int);
 extern void func_ov002_0220a0b4(u8 *p, int, int);
 extern void func_ov112_0229f3e0(u8 *p);
-extern void func_ov002_022080a0(u8 *p, int);
+extern unsigned char *func_ov002_022080a0(u8 *p, unsigned char value);
 
 void func_ov112_022a0798(u8 *self)
 {

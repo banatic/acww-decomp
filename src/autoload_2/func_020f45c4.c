@@ -25,7 +25,7 @@ extern UnkStruct_020f45c4_2 data_021fd1bc;
 extern void func_020f65bc(UnkStruct_020f45c4 *ptr, int param);
 extern void func_020f11d0(UnkStruct_020f45c4_2 *global, int a, int b);
 extern void NNS_SndPlayerSetPlayerVolume(int a, int b);
-extern void func_020f5a3c(void);
+extern void func_020f5a3c(char value);
 extern unsigned char data_0213efb4[];
 
 UnkStruct_020f45c4_3 *func_020f45c4(UnkStruct_020f45c4_3 *this)
@@ -43,6 +43,6 @@ UnkStruct_020f45c4_3 *func_020f45c4(UnkStruct_020f45c4_3 *this)
     this->unk_04 = -1;
     this->unk_05 = 0;
     this->unk_06 = 0;
-    func_020f5a3c();
+    func_020f5a3c(0);
     return this;
 }

@@ -10,13 +10,13 @@ extern int data_021cfc24;
 
 extern int func_0206eae4(int);
 extern void func_020029e8(int, int);
-extern void func_0206efd4(int);
+extern int func_0206efd4(int);
 extern void func_0206fcec(void);
 extern void func_02001b34(int);
 extern void func_02002708(int);
 extern void func_020027f0(int);
 extern void func_02011f88(void);
-extern void func_020ba540(int);
+extern int func_020ba540(int);
 extern void func_0206febc(void);
 extern void func_0203de68(int);
 extern int FX_MulFunc(int, int);

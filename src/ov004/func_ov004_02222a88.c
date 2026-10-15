@@ -3,8 +3,8 @@
  */
 
 extern void *func_020edf70(int size);
-extern void func_0202e8e4(void *p);
-extern void func_0202decc(void *p);
+extern void *func_0202e8e4(void *p);
+extern void *func_0202decc(void *p);
 extern void func_02084f88(void *p);
 extern int data_ov004_022541d8;
 extern int data_ov004_02254148;

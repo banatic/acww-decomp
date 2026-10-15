@@ -6,12 +6,12 @@
 
 extern int func_02073d90(int);
 extern void func_0204162c(void);
-extern void func_02041604(void *);
-extern void func_020415e8(void *);
-extern void func_020415d0(void *);
-extern void func_020414e0(void *);
+extern void func_02041604(void);
+extern void func_020415e8(void);
+extern void func_020415d0(void);
+extern void func_020414e0(void);
 extern void func_02041470(void *);
-extern void func_0204141c(void *);
+extern void func_0204141c(void);
 
 extern int data_020ccf94;
 extern u8 data_021c75a0;
@@ -22,25 +22,31 @@ int func_02041850(void *a)
         func_0204162c();
         switch (data_021c75a0) {
             case 0:
-                func_02041604(a);
+                asm { add r0, a, #0 }
+                func_02041604();
                 break;
             case 1:
-                func_020415e8(a);
+                asm { add r0, a, #0 }
+                func_020415e8();
                 break;
             case 2:
-                func_020415d0(a);
+                asm { add r0, a, #0 }
+                func_020415d0();
                 break;
             case 3:
-                func_020414e0(a);
+                asm { add r0, a, #0 }
+                func_020414e0();
                 break;
             case 4:
-                func_02041604(a);
+                asm { add r0, a, #0 }
+                func_02041604();
                 break;
             case 5:
                 func_02041470(a);
                 break;
             case 6:
-                func_0204141c(a);
+                asm { add r0, a, #0 }
+                func_0204141c();
                 break;
         }
     }

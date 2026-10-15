@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void DWCi_Acc_IsAuthentic(void);
+extern int DWCi_Acc_IsAuthentic(int data);
 
-void func_020eb6ac(void)
+int func_020eb6ac(int data)
 {
-    DWCi_Acc_IsAuthentic();
+    return DWCi_Acc_IsAuthentic(data);
 }

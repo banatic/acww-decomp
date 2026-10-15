@@ -34,7 +34,7 @@ typedef struct {
 extern int data_021c9358;
 extern Vec data_021c93b4;
 extern int data_021c93a8;
-extern void func_020012dc(void);
+extern void func_020012dc(void *);
 extern void __register_global_object(void *, void *, void *);
 extern int func_020b65c4(void);
 extern void func_020ea6e0(Vec *, int);
@@ -52,7 +52,7 @@ void func_02058528(UnkStruct_02058528_2 *p)
         data_021c93b4.x = 0x10000;
         data_021c93b4.y = 0;
         data_021c93b4.z = 0x17000;
-        __register_global_object(&data_021c93b4, (void *) &func_020012dc, &data_021c93a8);
+        __register_global_object((void *) (&data_021c93b4), (((void *) func_020012dc)), (void *) (&data_021c93a8));
         data_021c9358 |= 1;
     }
     v.x = 0;

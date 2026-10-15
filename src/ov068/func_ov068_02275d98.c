@@ -4,19 +4,19 @@
 
 #include "types.h"
 
-extern void func_0201cfe4(u8 *self, s16 *buf);
-extern void func_ov068_02275c78(u8 *obj, int a);
+extern void func_0201cfe4(u8 *self, int event);
+extern int func_ov068_02275c78(u8 *obj, int a);
 extern void *func_0208150c(void *p);
-extern void func_0200366c(void *a, void *b, int c, void *d);
+extern int func_0200366c(void *a, void *b, int c, void *d);
 extern int func_020644cc(int a);
-extern void func_02068484(void *a, u8 *b, void *c);
+extern int func_02068484(void *a, u8 *b, void *c);
 extern void func_0206844c(void *a, u8 *b, int c);
 extern void RtcSendPxiCommand(int a);
 extern u8 data_021f43e8;
 extern u8 data_ov068_022788f8[];
 extern u8 data_ov068_02278200[];
 
-void func_ov068_02275d98(u8 *self, s16 *buf)
+void func_ov068_02275d98(u8 *self, int event)
 {
     u8 a;
     u8 b;
@@ -25,7 +25,7 @@ void func_ov068_02275d98(u8 *self, s16 *buf)
     obj = *(u8 **) (self + 0x1a4);
     st = obj[0xa5a];
     if (st == 0) {
-        func_0201cfe4(self, buf);
+        func_0201cfe4(self, event);
         return;
     }
     if (obj == 0) {

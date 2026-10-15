@@ -51,8 +51,8 @@ struct UnkStruct_0204510c_3 {
 extern struct UnkStruct_0204510c_3 data_021c7c48[];
 extern void *data_020ccf94;
 
-extern void func_02046024(int a, int *pair, u16 w, int b, int bits, int e, int f, int four, int g, int minus1);
-extern void func_ov003_02221118(int a, u16 w, int *pair);
+extern int func_02046024(int a, int *pair, u16 w, int b, int bits, int e, int f, int four, int g, int minus1);
+extern int func_ov003_02221118(int a, u16 w, int *pair);
 extern int func_0204482c(int a);
 extern int func_02045380(union UnkStruct_0204510c_2 *packet, struct UnkStruct_0204510c *p, int a);
 extern void func_02042a9c(union UnkStruct_0204510c_2 *packet);

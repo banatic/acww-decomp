@@ -11,7 +11,7 @@ extern int func_ov003_02227394(void *s, int *p1, int *p2, int *p3, int x, int y)
 extern unsigned short *func_0204f5e0(void *g, int a, int b, int c, int d, int e);
 extern int func_0204bb54(unsigned short *e);
 extern int func_0204bb2c(unsigned short *e);
-extern void func_020b0594(void *s, int v, int *o1, int *o2, int a, int b, int c, int d);
+extern int func_020b0594(void *s, int v, int *o1, int *o2, int a, int b, int c, int d);
 extern int func_020b65c4(void);
 
 int func_020b39bc(int unused, int *p1, int *p2, int *p3, volatile int x, volatile int y)

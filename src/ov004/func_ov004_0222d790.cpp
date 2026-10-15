@@ -38,22 +38,22 @@ struct Vec {
 extern "C" {
 extern void *func_0208602c(void);
 extern void *func_020860cc(void *);
-extern void func_ov004_0222c3f4(char *, void *);
-extern void func_ov004_0222c348(char *, void *);
+extern int func_ov004_0222c3f4(char *, void *);
+extern int func_ov004_0222c348(char *, void *);
 extern void *func_ov004_0222c3a0(char *);
-extern void func_02055f2c(char *, void *, int);
-extern int func_02057a50(void *, void *);
+extern int func_02055f2c(char *, void *, int);
+extern int func_02057a50(void *, const char *name);
 extern void func_02055dc8(char *, void (*)(void *), char *);
 extern void func_ov004_0222da90(void *);
-extern void func_ov004_0222d69c(char *);
+extern int func_ov004_0222d69c(char *);
 extern void func_ov004_0222d624(char *);
-extern void func_ov004_0222d5c0(char *);
-extern void func_ov004_0222d548(char *);
+extern int func_ov004_0222d5c0(char *);
+extern int func_ov004_0222d548(char *);
 extern int func_020b65c4(void);
 extern int func_02073dd4(char *, int);
 extern int func_02087e84(void *);
 extern void func_ov004_0222d53c(char *);
-extern void __register_global_object(void *, void (*)(void *), void *);
+extern void __register_global_object(void *, void *destructor, void *);
 extern void func_020012dc(void *);
 extern int func_020321bc(char *, int, int, int, Vec *, short, Vec *);
 extern char data_ov004_02254eb4[], data_ov004_02254ed0[], data_ov004_02254eec[], data_ov004_02254ef4[], data_ov004_02254f00[];
@@ -62,6 +62,7 @@ extern u32 data_ov004_02258298, data_ov004_02258294;
 extern Vec data_ov004_022582a8, data_ov004_022582c0;
 extern char data_ov004_0225829c[], data_ov004_022582b4[];
 }
+
 extern "C" int func_ov004_0222d790(Actor *actor)
 {
     char *self = (char *) actor;
@@ -69,9 +70,9 @@ extern "C" int func_ov004_0222d790(Actor *actor)
     func_ov004_0222c3f4(self + 0x1a4, data_ov004_02254eb4);
     func_ov004_0222c348(self + 0x248, data_ov004_02254ed0);
     func_02055f2c(self + 0xec, func_ov004_0222c3a0(self + 0x1a4), 0);
-    *(int *) (self + 0x2b0) = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), data_ov004_02254eec);
-    *(int *) (self + 0x2b4) = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), data_ov004_02254ef4);
-    *(int *) (self + 0x2b8) = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), data_ov004_02254f00);
+    *(int *) (self + 0x2b0) = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), (const char *) (data_ov004_02254eec));
+    *(int *) (self + 0x2b4) = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), (const char *) (data_ov004_02254ef4));
+    *(int *) (self + 0x2b8) = func_02057a50(func_ov004_0222c3a0(self + 0x1a4), (const char *) (data_ov004_02254f00));
     func_02055dc8(self + 0xec, func_ov004_0222da90, self);
     func_ov004_0222d69c(self);
     func_ov004_0222d624(self);
@@ -104,14 +105,14 @@ extern "C" int func_ov004_0222d790(Actor *actor)
         data_ov004_022582a8.x = 0xb000;
         data_ov004_022582a8.y = 0;
         data_ov004_022582a8.z = 0x10800;
-        __register_global_object(&data_ov004_022582a8, func_020012dc, data_ov004_0225829c);
+        __register_global_object(&data_ov004_022582a8, ((void *) &func_020012dc), data_ov004_0225829c);
         data_ov004_02258298 |= 1;
     }
     if (!(data_ov004_02258294 & 1)) {
         data_ov004_022582c0.x = 0x15000;
         data_ov004_022582c0.y = 0;
         data_ov004_022582c0.z = 0x10800;
-        __register_global_object(&data_ov004_022582c0, func_020012dc, data_ov004_022582b4);
+        __register_global_object(&data_ov004_022582c0, ((void *) &func_020012dc), data_ov004_022582b4);
         data_ov004_02258294 |= 1;
     }
     func_020321bc(self + 0x358, 0x2000, 0x1c00, 0x2000, &data_ov004_022582a8, 0, 0);

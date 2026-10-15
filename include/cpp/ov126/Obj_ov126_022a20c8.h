@@ -12,7 +12,7 @@ class Obj_ov126_022a20c8 : public Obj_ov002_0220bb24 {
     virtual int func_ov126_022a1c8c();
 
     // runs the handler for `subState`
-    int func_ov126_022a1b4c();
+    void func_ov126_022a1b4c();
 
     // states (state)
     void func_ov126_022a16d8();
@@ -29,23 +29,23 @@ class Obj_ov126_022a20c8 : public Obj_ov002_0220bb24 {
     void func_ov126_022a1a38();
 
     // sub-states (subState)
-    int func_ov126_022a0c34();
-    int func_ov126_022a0c64();
-    int func_ov126_022a0cd0();
-    int func_ov126_022a0d00();
-    int func_ov126_022a0d30();
-    int func_ov126_022a0d8c();
-    int func_ov126_022a0db4();
-    int func_ov126_022a0e10();
-    int func_ov126_022a0e98();
-    int func_ov126_022a0ec4();
-    int func_ov126_022a0f40();
-    int func_ov126_022a1020();
-    int func_ov126_022a1038();
-    int func_ov126_022a1108();
-    int func_ov126_022a117c();
-    int func_ov126_022a11d8();
-    int func_ov126_022a1228();
+    void func_ov126_022a0c34();
+    void func_ov126_022a0c64();
+    void func_ov126_022a0cd0();
+    void func_ov126_022a0d00();
+    void func_ov126_022a0d30();
+    void func_ov126_022a0d8c();
+    void func_ov126_022a0db4();
+    void func_ov126_022a0e10();
+    void func_ov126_022a0e98();
+    void func_ov126_022a0ec4();
+    void func_ov126_022a0f40();
+    void func_ov126_022a1020();
+    void func_ov126_022a1038();
+    void func_ov126_022a1108();
+    void func_ov126_022a117c();
+    void func_ov126_022a11d8();
+    void func_ov126_022a1228();
     // update: runs the handlers between the two frame helpers
     int func_ov126_022a1a6c();
 };

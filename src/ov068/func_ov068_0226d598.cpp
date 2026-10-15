@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void *func_020984e8(void *);
+extern "C" void *func_020984e8(void);
 extern "C" int func_02099870(void *);
 extern "C" int func_020951bc(int);
 extern "C" void *func_0208150c(void *);
@@ -45,9 +45,9 @@ extern "C" int func_ov068_0226d598(UnkStruct_0226d598 *param)
     void *x;
     void *result;
 
-    x = func_020984e8(param);
+    x = func_020984e8();
     if (x != 0) {
-        r4 = func_02099870(func_020984e8(x));
+        r4 = func_02099870(func_020984e8());
     } else {
         r4 = 0;
     }

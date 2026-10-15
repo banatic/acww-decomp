@@ -10,9 +10,9 @@ extern void func_020736bc(int, int *, int);
 extern void func_020789f4(int *, int *, int *);
 extern int func_0207cec0(int *, int);
 extern int func_020807c0(int, int);
-extern void func_020984fc(int);
-extern int func_02099870(void);
-extern void func_02081e94(int, int, char *, int);
+extern int func_020984fc(int);
+extern int func_02099870(int);
+extern int func_02081e94(int, int, char *, int);
 
 void func_02076a18(int a, int b, int c, int d)
 {
@@ -29,8 +29,7 @@ void func_02076a18(int a, int b, int c, int d)
         r5 = func_020807c0(x, s2);
         if (r5 != 0) {
             int ret;
-            func_020984fc(d);
-            ret = func_02099870();
+            ret = func_02099870((int) func_020984fc(d));
             func_02081e94(r5, ret, data_021dc7aa, 0);
         }
     }

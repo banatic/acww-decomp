@@ -3,7 +3,7 @@
  */
 
 extern int func_020b65c4(void);
-extern int func_020b6744(int a);
+extern int func_020b6744(unsigned int code);
 extern int func_020af83c(void *a, void *b);
 extern int func_020adf8c(void *a, void *b);
 extern int func_020ae8cc(void *a, void *b);
@@ -17,7 +17,7 @@ int func_ov004_022464f0(unsigned short *p)
     int k, f;
 
     k = func_020b65c4();
-    if (func_020b6744(k) != 0) {
+    if (func_020b6744((unsigned int) k) != 0) {
         return func_020af83c((void *) data_021f395c, p) == -1 ? 0 : 1;
     }
     if (k == 0xa) {

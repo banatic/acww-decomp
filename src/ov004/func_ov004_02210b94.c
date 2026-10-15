@@ -3,14 +3,14 @@
  */
 
 extern void func_0203f004(void *, int);
-extern void func_ov004_0220ede0(void *, int);
+extern void func_ov004_0220ede0(void *);
 
 void func_ov004_02210b94(char *self, int a1)
 {
     // DECLS
     // ENDDECLS
     if (a1 == 0x2) {
-        func_ov004_0220ede0(self, a1);
+        func_ov004_0220ede0(self);
     }
     func_0203f004(self, a1);
 }

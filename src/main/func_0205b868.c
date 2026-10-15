@@ -10,8 +10,8 @@ struct UnkStruct_0205b868 {
     int x;
     int y;
 };
-extern void func_0205bb48(struct UnkStruct_0205b868 *p);
-extern void func_0205bb30(struct UnkStruct_0205b868 *p);
+extern void *func_0205bb48(struct UnkStruct_0205b868 *p);
+extern void *func_0205bb30(struct UnkStruct_0205b868 *p);
 extern void *func_0205b270(void *a, void *c, void *d, void *e, void *f, struct UnkStruct_0205b868 *p, int one, int b2,
                            int zero);
 

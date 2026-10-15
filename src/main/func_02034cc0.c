@@ -3,10 +3,10 @@
  */
 
 extern char data_021c519c[];
-extern void func_020051b0(void);
-extern void __cxa_vec_cleanup(void *a, int b, int c, void (*d)(void));
+extern void func_020051b0(void *);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
 
 void func_02034cc0(void)
 {
-    __cxa_vec_cleanup(data_021c519c, 0x33, 2, func_020051b0);
+    __cxa_vec_cleanup((void *) (data_021c519c), 0x33, 2, (void (*)(void *)) func_020051b0);
 }

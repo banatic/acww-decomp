@@ -22,7 +22,7 @@ extern int func_ov002_02208e18(void *);
 extern int func_ov002_02208a24(void *, void *, unsigned char);
 extern void func_0206e1d8(void *, void *);
 extern void func_ov122_022a15b8(UnkStruct_022a03b0 *, int, int);
-extern void func_ov002_022080a0(UnkStruct_022a03b0 *, int);
+extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern unsigned int func_ov002_02208ad0(void *);
 extern void func_ov122_0229f0dc(UnkStruct_022a03b0 *, int);
 extern int func_ov122_0229efe8(UnkStruct_022a03b0 *, int);
@@ -43,7 +43,7 @@ void func_ov122_022a03b0(UnkStruct_022a03b0 *self)
             func_0206e1d8(&self->unk_3CE8, self->unk_BC);
             func_ov122_022a15b8(self, 1, 0);
             self->unk_8C = 0xa;
-            func_ov002_022080a0(self, 1);
+            func_ov002_022080a0((void *) (self), 1);
             break;
 
         case 2:
@@ -59,13 +59,13 @@ void func_ov122_022a03b0(UnkStruct_022a03b0 *self)
                 func_ov122_022a1e00(self);
             } else {
                 self->unk_8C = 0xa;
-                func_ov002_022080a0(self, 1);
+                func_ov002_022080a0((void *) (self), 1);
             }
             break;
 
         default:
             self->unk_8C = 0xa;
-            func_ov002_022080a0(self, 1);
+            func_ov002_022080a0((void *) (self), 1);
             break;
     }
 }

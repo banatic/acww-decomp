@@ -3,7 +3,7 @@
  */
 
 extern int data_020e3fcc;
-extern void func_020a9a90(void *obj, int param);
+extern void *func_020a9a90(void *obj, int param);
 
 typedef struct {
     int *unk_00;

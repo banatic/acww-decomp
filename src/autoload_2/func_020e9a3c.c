@@ -6,17 +6,17 @@ struct UnkStruct_020e9a3c {
     char pad_00[0x10];
     int unk_10;
 };
-extern int OS_DisableInterrupts(struct UnkStruct_020e9a3c *self, int value);
-extern void OS_RestoreInterrupts(int ret, int flag);
+extern unsigned int OS_DisableInterrupts(void);
+extern unsigned int OS_RestoreInterrupts(unsigned int ret);
 
 int func_020e9a3c(struct UnkStruct_020e9a3c *self, int value)
 {
-    int ret = OS_DisableInterrupts(self, value);
+    int ret = OS_DisableInterrupts();
     int old = self->unk_10;
     int flag = value & 0x8000;
     if (flag == 0) {
         self->unk_10 = value;
     }
-    OS_RestoreInterrupts(ret, flag);
+    OS_RestoreInterrupts(ret);
     return old;
 }

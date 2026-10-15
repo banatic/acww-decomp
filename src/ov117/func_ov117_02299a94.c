@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int MI_CpuCopy8(int a, int b, int c);
+extern void MI_CpuCopy8(const void *src, void *dst, unsigned int size);
 
-int func_ov117_02299a94(int a, int b)
+void func_ov117_02299a94(int a, int b)
 {
-    return MI_CpuCopy8(a, b, 0x2000);
+    MI_CpuCopy8((const void *) a, (void *) b, 0x2000);
 }

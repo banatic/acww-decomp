@@ -41,15 +41,15 @@ struct St {
 };
 
 extern int func_02056f94(void *p);
-extern void func_0203f7d0(Vec *a, Vec *b);
+extern int func_0203f7d0(Vec *a, Vec *b);
 extern void func_ov003_02214200(struct UnkStruct_02214384 *self, Vec *a, Vec *b, Vec *c);
 extern void func_020110c4(volatile unsigned short *p, struct UnkStruct_02214384 *self);
 extern int func_020899a8(Vec *a, Vec *b, int d, u8 *out, int e);
-extern void func_ov003_0222f458(Vec *v, u8 k);
+extern int func_ov003_0222f458(Vec *v, u8 k);
 extern u8 func_ov003_0222f490(u8 k);
 extern unsigned int func_ov003_022140a8(struct UnkStruct_02214384 *self, struct St *st, Vec *v, u8 *p);
 extern int func_ov003_0222e3a4(u8 k);
-extern void func_0200f328(struct UnkStruct_02214384 *self, int id);
+extern int func_0200f328(struct UnkStruct_02214384 *self, int id);
 extern int func_ov003_02213da0(struct UnkStruct_02214384 *p, Vec *a, Vec *src, Vec *dst);
 extern int func_020e8ed8(int a, int b);
 extern int func_020e8b4c(int a, int b);

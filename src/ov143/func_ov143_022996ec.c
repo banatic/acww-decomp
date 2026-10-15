@@ -4,7 +4,7 @@
 
 extern void func_ov143_02299768(int a0, int a1, int a2);
 extern int func_ov143_02299a64(int a0);
-extern void func_0207094c(int a0, int a1);
+extern int func_0207094c(int a0, int a1);
 extern void func_02070adc(int a0, int a1, int a2, int a3, int a4, int a5, int a6);
 extern void func_02070a04(int a0, int a1, int a2);
 struct UnkStruct_022996ec {

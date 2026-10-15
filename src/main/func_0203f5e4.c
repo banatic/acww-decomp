@@ -8,13 +8,13 @@ typedef struct {
 } UnkStruct_0203f5e4;
 
 extern int func_020984e8(void);
-extern int func_0209895c(void);
-extern void func_02066830(char *, UnkStruct_0203f5e4 *);
+extern int func_0209895c(int);
+extern int func_02066830(char *, UnkStruct_0203f5e4 *);
 extern int func_0209985c(int);
 extern void func_02066560(char *, int);
 extern void func_02066478(char *);
 extern int func_02097a74(char *, int, int);
-extern void func_02098930(int, unsigned short);
+extern void func_02098930(int, int);
 extern void func_02066688(char *);
 extern void func_02066694(char *);
 
@@ -26,7 +26,7 @@ int func_0203f5e4(UnkStruct_0203f5e4 *arg)
 
     func_02066694(buf);
     r4 = func_020984e8();
-    if (arg->marker != func_0209895c()) {
+    if (arg->marker != func_0209895c((int) r4)) {
         func_02066830(buf, arg);
         r6 = func_0209985c(r4);
         func_02066560(buf, r6);

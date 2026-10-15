@@ -32,8 +32,8 @@ extern void *func_020b6590(void);
 extern void *func_020b74f0(void *, int, int);
 extern void *func_020961a8(int);
 extern void *func_02096190(int);
-extern void func_0203e0a8(void *, int);
-extern void func_020b7e04(void *, void *);
+extern int func_0203e0a8(void *, int);
+extern int func_020b7e04(void *, void *);
 }
 extern "C" void func_ov004_022311bc(char *self)
 {

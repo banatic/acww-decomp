@@ -189,14 +189,15 @@ extern struct {
 extern struct {
     UnkStruct_020c5f70 f0;
 } data_020e1bf8;
-extern void func_02085f04(void);
+extern void func_02085f04(void *);
 extern unsigned char data_021d2130;
 
 void __sinit_020c5f70(void)
 {
     volatile unsigned char _frame[12];
     (void) &_frame;
-    __register_global_object((void *) &data_020e1ca8, (void *) &func_02085f04, (void *) &data_021d2130);
+    __register_global_object((void *) ((void *) &data_020e1ca8), (((void *) func_02085f04)),
+                             (void *) ((void *) &data_021d2130));
     data_020e1ca8.f0 = 0;
     data_020e1ca8.f4 = 0;
     data_020e1ca8.f8 = 0;

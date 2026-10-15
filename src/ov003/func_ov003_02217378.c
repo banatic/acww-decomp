@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02010f5c(void);
-extern void func_0203f7d0(int *, int *);
+extern void func_02010f5c(int argument0);
+extern int func_0203f7d0(int *, int *);
 extern int func_020912d4(int, int *, void *, int);
 extern void func_02091278(int, int *, void *, int);
 
@@ -19,7 +19,7 @@ void func_ov003_02217378(UnkStruct_02217378 *self)
     int loc[3];
     int *q;
     int a, b, c;
-    func_02010f5c();
+    func_02010f5c((int) self);
     q = &self->unk_7D8;
     c = self->unk_634;
     b = self->unk_630;

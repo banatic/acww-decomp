@@ -4,7 +4,7 @@
 
 extern char data_021f450c[];
 extern void func_020a8d20(void *g, int a, int b, int c, int d);
-extern void func_020a922c(void *g, int a);
+extern int func_020a922c(void *g, int a);
 extern int func_020a8d08(void *g);
 extern void func_020a8d10(void *g);
 

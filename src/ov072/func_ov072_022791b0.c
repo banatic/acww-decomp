@@ -15,7 +15,7 @@ extern int func_020644cc(int);
 extern unsigned short *func_02037e0c(Cell *, int, int, int);
 extern int func_0204ee48(Work *, int, int, int, int);
 extern int func_ov072_022792e4(int *, int *, Work *);
-extern void func_02037e44(Cell *, unsigned short *, int, int, int);
+extern int func_02037e44(Cell *, unsigned short *, int, int, int);
 
 inline Cell *getcell(Work *work, int x, int y)
 {

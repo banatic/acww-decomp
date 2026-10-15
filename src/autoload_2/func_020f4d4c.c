@@ -35,8 +35,8 @@ extern void func_020f5178(struct Node *);
 extern void func_020efc38(struct UnkStruct_020f4d4c_5 *, struct Node *);
 extern struct Node *func_020efc2c(struct UnkStruct_020f4d4c_5 *, struct Node *);
 extern int func_020efc10(struct UnkStruct_020f4d4c_5 *);
-extern void func_020f51c4(void);
-extern void func_020efc20(struct UnkStruct_020f4d4c_5 *, int);
+extern void func_020f51c4(void *node);
+extern void *func_020efc20(struct UnkStruct_020f4d4c_5 *, int);
 extern void NNS_SndPlayerStopSeqBySeqArcIdx(int, int, int);
 
 extern unsigned char data_021fd1f8[];
@@ -63,13 +63,11 @@ void func_020f4d4c(struct UnkStruct_020f4d4c_5 *self)
     }
     n = self->unk_08;
     if (n == 1) {
-        func_020efc10(self);
-        func_020f51c4();
+        func_020f51c4((void *) func_020efc10(self));
     } else if (n == 2) {
         t = func_020efc10(self);
-        func_020f51c4();
-        func_020efc20(self, t);
-        func_020f51c4();
+        func_020f51c4((void *) t);
+        func_020f51c4(func_020efc20(self, t));
     } else if (n > 2) {
         e2 = MIi_ReadWordStreamFromMemory(self);
         n = n - 2;
@@ -82,9 +80,8 @@ void func_020f4d4c(struct UnkStruct_020f4d4c_5 *self)
             } while (j < n);
         }
         t = func_020efc10(self);
-        func_020f51c4();
-        func_020efc20(self, t);
-        func_020f51c4();
+        func_020f51c4((void *) t);
+        func_020f51c4(func_020efc20(self, t));
     }
     p = MIi_ReadWordStreamFromMemory(self);
     while (p != 0) {

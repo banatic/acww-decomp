@@ -4,12 +4,12 @@
 
 extern void *func_020984e8(void);
 extern void *func_02099734(void *);
-extern void func_02098cf8(void *, int);
+extern int func_02098cf8(void *, int);
 
-void func_ov096_0229e158(void)
+int func_ov096_0229e158(void)
 {
     void *p;
     p = func_020984e8();
     p = func_02099734(p);
-    func_02098cf8(p, 0);
+    return func_02098cf8(p, 0);
 }

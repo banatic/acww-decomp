@@ -19,7 +19,7 @@ typedef struct GlobalData {
 
 extern int func_0208150c(int);
 extern int func_020036e8(int);
-extern void func_0202da38(void *, char *, char *, int, int, int, int, int, int);
+extern int func_0202da38(void *, char *, char *, int, int, int, int, int, int);
 extern GlobalData data_020c8980;
 
 void func_02027c64(OuterStruct *p1, char *p2)

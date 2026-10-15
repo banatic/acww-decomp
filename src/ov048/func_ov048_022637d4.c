@@ -3,11 +3,11 @@
  */
 
 extern int func_0202edc8(void *ptr);
-extern int func_0201c280(void *a, void *b);
-extern int func_ov048_02262680(void *a, void *b);
-extern int func_0201c3f4(void *a, int b);
-extern int func_0201b388(void *a, int b);
-extern int func_0201b38c(void *a, int b);
+extern void func_0201c280(void *a, void *b);
+extern void func_ov048_02262680(void *a, void *b);
+extern void func_0201c3f4(void *a, int b);
+extern void func_0201b388(void *a, int b);
+extern void func_0201b38c(void *a, int b);
 extern int func_020b65c4(void);
 
 int func_ov048_022637d4(void *arg)

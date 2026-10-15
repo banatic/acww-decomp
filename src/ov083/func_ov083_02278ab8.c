@@ -21,8 +21,8 @@ typedef struct Msg {
 
 extern int func_020160b4(UnkStruct_02278ab8 *self);
 extern int func_020ab504(int a);
-extern int func_0209a050(int a);
-extern void func_02015330(UnkStruct_02278ab8 *self, u16 *p, int a, int b, int c);
+extern void func_0209a050(int a);
+extern int func_02015330(UnkStruct_02278ab8 *self, u16 *p, int a, int b, int c);
 extern int func_020644cc(int a);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov083_02279338;

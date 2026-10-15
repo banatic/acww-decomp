@@ -28,14 +28,14 @@ typedef struct {
 
 extern int func_02071d60(void *a);
 extern UnkStruct_02071aa8_2 *func_02071604(int k, int a);
-extern void func_02072dbc(UnkStruct_02071aa8_2 *p);
-extern void __register_global_object(UnkStruct_02071aa8_2 *p, void *fn, void *node);
-extern void func_020720ac(int k, int a);
+extern char *func_02072dbc(UnkStruct_02071aa8_2 *p);
+extern void __register_global_object(void *, void *, void *);
+extern int func_020720ac(int k, int a);
 extern int func_02073d90(void *p);
 extern void func_02073820(void *h);
 extern void func_020737f0(void *h, unsigned int *u, int n);
 extern void func_02073770(void *h, int a, int b);
-extern void func_02072da4(void);
+extern void *func_02072da4(void *);
 
 extern int data_021d0474;
 extern UnkStruct_02071aa8_2 data_021d05cc;
@@ -60,7 +60,7 @@ int func_02071aa8(void *a0, int a1, void *a2, int a3, u8 a5)
     p2 = func_02071604(k2, a3);
     if ((data_021d0474 & 1) == 0) {
         func_02072dbc(&data_021d05cc);
-        __register_global_object(&data_021d05cc, (void *) func_02072da4, &data_021d0498);
+        __register_global_object((void *) (&data_021d05cc), (((void *) func_02072da4)), (void *) (&data_021d0498));
         data_021d0474 |= 1;
     }
 

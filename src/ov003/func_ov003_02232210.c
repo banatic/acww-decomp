@@ -6,7 +6,7 @@ typedef struct {
     int x, y, z;
 } Vec3;
 
-extern void func_02034270(int *ctx, Vec3 *p, int a, int b);
+extern int func_02034270(int *ctx, Vec3 *p, int a, int b);
 extern int func_02034184(int *ctx, int y);
 extern void func_0203423c(int *ctx);
 extern int func_020a7278(void);
@@ -15,7 +15,7 @@ extern int func_020e908c(Vec3 *a, Vec3 *b, int c, int d, int e);
 extern int FX_Div(int a, int b);
 extern void func_ov003_0223597c(Vec3 *d, int ang);
 extern void func_ov003_02230f60(unsigned char *self);
-extern void func_ov003_02235454(unsigned char *self);
+extern int func_ov003_02235454(unsigned char *self);
 extern int func_ov003_02232dd4(unsigned char *self);
 extern int func_ov003_02235834(unsigned char *self, int ang, int a);
 extern short FX_SinCosTable_[];

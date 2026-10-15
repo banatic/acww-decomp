@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov003_02215bc0(void *obj, int arg, unsigned short val);
+extern int func_ov003_02215bc0(void *obj, int arg, unsigned short val);
 
 void func_ov003_02215ac4(void *obj, unsigned short val)
 {

@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void __cxa_vec_cleanup(void *, int, int, void *);
-extern void func_020012dc(void);
+extern void __cxa_vec_cleanup(void *, int, int, void (*)(void *));
+extern void func_020012dc(void *);
 
 void *func_020962dc(void *p)
 {
-    __cxa_vec_cleanup((char *) p + 0x34, 4, 12, func_020012dc);
+    __cxa_vec_cleanup((void *) ((char *) p + 0x34), 4, 12, (void (*)(void *)) func_020012dc);
     return p;
 }

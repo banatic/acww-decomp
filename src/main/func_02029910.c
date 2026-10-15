@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *p);
+extern void *func_020984e8(void);
 extern void *func_02099734(void *p);
 extern unsigned short *func_02098f48(void *p, int a);
 extern int func_0209b878(void *p, unsigned char a);
@@ -42,7 +42,7 @@ unsigned short func_02029910(void *param)
     int i;
     int j;
 
-    data = func_02099734(func_020984e8(param));
+    data = func_02099734(func_020984e8());
     ptr = func_02098f48(data, 0);
     arr[1] = 0xfff1;
     arr[2] = 0xfff1;

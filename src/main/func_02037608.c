@@ -3,19 +3,19 @@
  */
 
 extern unsigned int data_021c9b24;
-extern void func_02064328(char *dst, const char *fmt, int a, int b);
+extern int func_02064328(char *dst, const char *fmt, int a, int b);
 extern int func_02037af8(const char *src, unsigned int *out);
 extern int NNS_FndMountArchive(char *dst, const char *fmt, unsigned int val);
 extern void *NNS_FndGetArchiveFileByName(const char *name);
 extern void *func_02107828(void *p);
-extern void *NNS_G3dGetJntAnmSet(void);
+extern void *NNS_G3dGetJntAnmSet(void *resource);
 extern void *func_02107b44(void *p, int a);
-extern void *NNS_G3dGetMatCAnmSet(void);
+extern void *NNS_G3dGetMatCAnmSet(void *resource);
 extern void *func_02107b80(void *p, int a);
-extern void *NNS_G3dGetTexSRTAnmSet(void);
+extern void *NNS_G3dGetTexSRTAnmSet(void *resource);
 extern void *func_02107bbc(void *p, int a);
-extern void func_0210285c(void *buf);
-extern int func_021077e8(void);
+extern int func_0210285c(void *buf);
+extern int func_021077e8(unsigned int *resource);
 extern int func_02064b2c(void *buf, void *ptr, unsigned int mask, int param);
 extern int func_02056064(int a, int b);
 extern int func_020561cc(int a, unsigned int b);
@@ -64,7 +64,7 @@ UnkStruct_02037608 *func_02037608(UnkStruct_02037608 *arr, int key)
             func_02064328(buf1, (const char *) data_020da37c, shift, key);
             arr->unk_04 = func_02037af8(buf1, &arr->unk_24);
             if (NNS_FndMountArchive(buf2, (const char *) data_020da390, arr->unk_04) != 0) {
-                void *p, *q;
+                void *p, *q, *animation;
                 unsigned short off;
                 unsigned int val;
 
@@ -77,16 +77,16 @@ UnkStruct_02037608 *func_02037608(UnkStruct_02037608 *arr, int key)
                 arr->unk_0C = (unsigned int) NNS_FndGetArchiveFileByName((const char *) data_020da3a4);
                 arr->unk_10 = (unsigned int) NNS_FndGetArchiveFileByName((const char *) data_020da3b4);
 
-                if (NNS_FndGetArchiveFileByName((const char *) data_020da3c4) != 0) {
-                    void *r = NNS_G3dGetJntAnmSet();
+                if ((animation = NNS_FndGetArchiveFileByName((const char *) data_020da3c4)) != 0) {
+                    void *r = NNS_G3dGetJntAnmSet(animation);
                     arr->unk_14 = (unsigned int) func_02107b44(r, 0);
                 }
-                if (NNS_FndGetArchiveFileByName((const char *) data_020da3d4) != 0) {
-                    void *r = NNS_G3dGetMatCAnmSet();
+                if ((animation = NNS_FndGetArchiveFileByName((const char *) data_020da3d4)) != 0) {
+                    void *r = NNS_G3dGetMatCAnmSet(animation);
                     arr->unk_18 = (unsigned int) func_02107b80(r, 0);
                 }
-                if (NNS_FndGetArchiveFileByName((const char *) data_020da3e4) != 0) {
-                    void *r = NNS_G3dGetTexSRTAnmSet();
+                if ((animation = NNS_FndGetArchiveFileByName((const char *) data_020da3e4)) != 0) {
+                    void *r = NNS_G3dGetTexSRTAnmSet(animation);
                     arr->unk_1C = (unsigned int) func_02107bbc(r, 0);
                 }
                 {
@@ -102,7 +102,7 @@ UnkStruct_02037608 *func_02037608(UnkStruct_02037608 *arr, int key)
                 func_02064328(buf1, (const char *) data_020da404, shift, key);
                 shift = func_02064b2c(buf1, *(void **) data_021fbe94, ~3, 0);
                 if (shift != 0) {
-                    temp = func_021077e8();
+                    temp = func_021077e8((unsigned int *) shift);
                     func_02056064(temp, 0);
                     arr->unk_20 = func_020561cc(temp, global);
                     if (shift != 0) {

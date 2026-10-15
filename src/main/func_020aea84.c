@@ -19,7 +19,7 @@ extern void *func_0204f694(void *, int);
 extern void *func_02037e0c(void *, int, int, int);
 extern int func_0204bba8(void *);
 extern u16 func_0204bb68(void *);
-extern void func_02037e44(void *, u16 *, int, int, int);
+extern int func_02037e44(void *, u16 *, int, int, int);
 extern void func_020af004(void *, void *);
 extern int func_020afc84(u32 *);
 extern void func_0209e474(u32 *);

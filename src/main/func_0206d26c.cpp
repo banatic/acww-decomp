@@ -3,6 +3,7 @@
  */
 
 #include "cpp/main/Base_0206d26c.h"
+
 typedef void (Base_0206d26c::*Pmf)();
 
 // 0x0213dd98: an 8-byte member-pointer object in BSS.

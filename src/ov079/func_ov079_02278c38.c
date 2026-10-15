@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02014d04(void *);
+extern int func_02014d04(void *);
 
 struct UnkStruct_02278c38 {
     unsigned char pad_00[0x1e];

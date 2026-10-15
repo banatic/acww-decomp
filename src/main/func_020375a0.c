@@ -34,7 +34,7 @@ typedef struct UnkStruct_020375a0_3 {
     int unk_630;
 } UnkStruct_020375a0_3;
 
-extern void func_0205cab0(UnkStruct_020375a0_3 *s);
+extern void func_0205cab0(void);
 
 int func_020375a0(UnkStruct_020375a0_3 *s)
 {
@@ -68,6 +68,6 @@ int func_020375a0(UnkStruct_020375a0_3 *s)
     s->unk_630 = 0;
     s->unk_618 = 0;
     s->unk_61C = 0;
-    func_0205cab0(s);
+    func_0205cab0();
     return 1;
 }

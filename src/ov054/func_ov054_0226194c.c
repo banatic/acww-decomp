@@ -19,9 +19,9 @@ extern void func_02015fb0(void *a, int b, int c, int d, int e, int f);
 extern int func_0208602c(void);
 extern void func_020860f0(int a, int b);
 extern void func_0209f100(void *a, int b);
-extern void func_02015330(void *a, void *b, int c, int d, int e);
+extern int func_02015330(void *a, void *b, int c, int d, int e);
 extern void func_ov054_02261cc4(void *a, int b);
-extern void func_020155cc(void *a);
+extern int func_020155cc(void *a);
 extern void func_0206844c(void *a, void *b, int c);
 
 typedef struct UnkStruct_0226194c UnkStruct_0226194c;

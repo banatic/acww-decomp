@@ -6,13 +6,13 @@
 #include "cpp/ov122/Obj_ov122_022a2738.h"
 
 extern "C" int func_ov002_02209f64(void *);
-extern "C" int func_ov002_02208098(void *, unsigned char);
+extern "C" unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 void Obj_ov122_022a2738::func_ov122_022a0ad0()
 {
     void *self = (void *) this;
     if (func_ov002_02209f64((char *) self + 0x4058) == 0) {
-        func_ov002_02208098(self, *(unsigned char *) ((char *) self + 0xb4));
+        func_ov002_02208098((void *) (self), *(unsigned char *) ((char *) self + 0xb4));
         ((Obj_ov122_022a2738 *) self)->func_ov122_022a1f40();
     }
 }

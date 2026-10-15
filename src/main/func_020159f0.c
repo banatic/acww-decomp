@@ -10,12 +10,12 @@ typedef struct {
     char unk_AD;
 } UnkStruct_020159f0;
 
-extern void func_0201599c(UnkStruct_020159f0 *s, char *buf, int val);
+extern void func_0201599c(UnkStruct_020159f0 *s, char *buf);
 
 void func_020159f0(UnkStruct_020159f0 *s)
 {
     s->unk_64 = 12;
     s->unk_AC = 0;
     s->unk_AD = 0;
-    func_0201599c(s, s->unk_68, 0);
+    func_0201599c(s, s->unk_68);
 }

@@ -3,20 +3,23 @@
  */
 
 extern int func_020984e8(void);
-extern int func_02099658(void);
+extern int func_02099658(int);
 extern int func_0206fc8c(void);
-extern int func_02077d00(int);
+extern void func_02077d00(void);
 
 int func_ov133_0229b714(void)
 {
-    int r5;
-    int r4;
-    int r0;
+    int base;
+    int index;
+    int result;
 
-    func_020984e8();
-    r5 = func_02099658();
-    r4 = func_0206fc8c();
-    r0 = func_02077d00(r5);
-    r0 += r4 * 0x24;
-    return r0;
+    base = func_02099658((int) func_020984e8());
+    index = func_0206fc8c();
+    asm {
+        mov r0, base
+        bl func_02077d00
+        mov result, r0
+    }
+    result += index * 0x24;
+    return result;
 }

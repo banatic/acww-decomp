@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a9484(void);
+extern void *func_020a9484(void *);
 extern void func_020a8754(void *);
-extern void func_0206bffc(void *, int, int);
+extern void *func_0206bffc(void *, int, int);
 
 struct UnkStruct_0206bde0 {
     int unk_00;
@@ -38,7 +38,7 @@ extern unsigned char data_020e3e68[];
 
 struct UnkStruct_0206bde0 *func_0206bde0(struct UnkStruct_0206bde0 *self, int a, int b)
 {
-    func_020a9484();
+    func_020a9484(self);
     self->unk_00 = (int) (unsigned int) data_020e3e68;
     self->unk_00 = (int) (unsigned int) data_020defe4;
     self->unk_24 = a;

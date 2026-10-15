@@ -15,7 +15,7 @@ struct UnkStruct_02036788 {
     u8 unk_10;
 };
 
-extern int func_02035ae8(int);
+extern int func_02035ae8(void);
 extern int func_02035bdc(int);
 extern void func_020366c0(UnkStruct_02036788 *);
 extern void func_0203665c(UnkStruct_02036788 *);
@@ -27,7 +27,7 @@ void func_02036788(UnkStruct_02036788 *s)
     if (s->unk_10 != 0) {
         goto end;
     }
-    if (s->unk_0D != 0 && func_02035bdc(func_02035ae8(s->unk_0D)) != 0) {
+    if (s->unk_0D != 0 && func_02035bdc(func_02035ae8()) != 0) {
         flag = 1;
     } else {
         flag = 0;

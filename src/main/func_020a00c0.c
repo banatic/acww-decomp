@@ -2,25 +2,23 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020a1350(void);
-extern void func_020a0140(void);
-extern void func_020a0100(void);
+extern int func_020a1350(void);
+extern void func_020a0140(void *);
+extern void func_020a0100(void *);
 extern void *func_020a1338(void);
-extern void OS_ExitThread(void *);
+extern void OS_ExitThread(void);
 
 void func_020a00c0(int flag)
 {
     unsigned int b = (flag != 0);
     if (b > 0) {
-        func_020a1350();
-        func_020a0140();
+        func_020a0140((void *) func_020a1350());
     } else {
-        func_020a1350();
-        func_020a0100();
+        func_020a0100((void *) func_020a1350());
     }
     {
         unsigned char *p = (unsigned char *) func_020a1338();
         p[0x10c8] = 1;
-        OS_ExitThread(p);
+        OS_ExitThread();
     }
 }

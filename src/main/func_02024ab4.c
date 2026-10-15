@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0206fc8c(void *self);
+extern int func_0206fc8c(void);
 extern void func_0209a088(unsigned short *p, int flag, int extra);
-extern void func_0202d9c4(void *self);
-extern int func_0209bc40(void);
-extern void func_020151c0(void *self);
-extern void func_02015094(void *self);
+extern unsigned int func_0202d9c4(void *self);
+extern int func_0209bc40(unsigned char *);
+extern int func_020151c0(void *self);
+extern int func_02015094(void *self);
 extern unsigned short *func_02080ce4(void *);
 
 struct UnkStruct_02024ab4 {
@@ -34,13 +34,11 @@ void func_02024ab4(void *self)
     int extra;
     unsigned int flagset;
 
-    extra = func_0206fc8c(self);
+    extra = func_0206fc8c();
     local = 0xfff1;
     func_0209a088(&local, 0, extra);
 
-    func_0202d9c4(self);
-
-    if (func_0209bc40() == 3) {
+    if (func_0209bc40((unsigned char *) func_0202d9c4(self)) == 3) {
         void *b;
         unsigned short *hp;
         unsigned short hval;

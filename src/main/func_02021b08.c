@@ -12,16 +12,17 @@ struct UnkStruct_02021b08_2 {
     struct UnkStruct_02021b08 *inner;
 };
 
-extern int func_02021ea8(int a, int b, int c, void (*cb)(void));
-extern void func_02021b48(void);
+extern int func_02021b48(void);
+
+extern int func_02021ea8(void *self, int *arr, int count, void *predicate);
 extern int func_02081d64(int v);
-extern void func_02015e70(struct UnkStruct_02021b08_2 *self, int a, int b);
+extern void *func_02015e70(struct UnkStruct_02021b08_2 *self, int a, int b);
 
 int func_02021b08(struct UnkStruct_02021b08_2 *self, int a1, int a2)
 {
     int ret;
 
-    ret = func_02021ea8(self->inner->value, a1, a2, func_02021b48);
+    ret = func_02021ea8((void *) (self->inner->value), (int *) (a1), (int) (a2), (((void *) func_02021b48)));
     if (ret != 0) {
         int x = func_02081d64(ret);
         func_02015e70(self, x, 9);

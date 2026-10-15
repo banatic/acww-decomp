@@ -3,7 +3,7 @@
  */
 
 extern int func_02014868(void *ptr);
-extern void func_0203e020(void *ptr);
+extern int func_0203e020(void *ptr);
 extern void func_ov083_02278e98(void *ptr, int x);
 
 struct ov083_02278da4_struct {

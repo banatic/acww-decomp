@@ -4,7 +4,7 @@
 
 struct UnkStruct_0206cb38;
 
-extern "C" void func_02067a3c(char *ptr);
+extern "C" int func_02067a3c(char *ptr);
 extern "C" void func_020a9334(UnkStruct_0206cb38 *self, int a);
 extern "C" void func_020a7994(char *ptr, int b);
 

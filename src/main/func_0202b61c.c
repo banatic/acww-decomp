@@ -7,9 +7,9 @@
 extern int func_02099fe8(void);
 extern void func_0207de14(void *dst, void *src);
 extern void func_0202d694(void *p);
-extern void func_0208150c(void *p);
-extern u32 func_020036e8(void);
-extern void func_0202da38(void *a, void *b, void *c, int n, u32 v5, u32 v6, u8 v7, u32 v8, u32 v9);
+extern unsigned int func_0208150c(void *p);
+extern u32 func_020036e8(unsigned char *);
+extern int func_0202da38(void *a, void *b, void *c, int n, int base, int offset, int scale, int multiplier, int selected);
 
 extern struct {
     u32 w;
@@ -49,8 +49,8 @@ int func_0202b61c(struct UnkStruct_0202b61c *self)
             self->unk_19E = 0;
         }
 
-        func_0208150c(field);
-        func_0202da38(self, self->unk_104, self->unk_122, 0x1e, func_020036e8(), data_020c89e8.w, data_020c89e8.b, 0, 0);
+        func_0202da38(self, self->unk_104, self->unk_122, 0x1e, func_020036e8((unsigned char *) func_0208150c(field)),
+                      data_020c89e8.w, data_020c89e8.b, 0, 0);
         return 1;
     }
     return 0;

@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void __cxa_vec_ctor(void *arg1, unsigned int arg2, unsigned int arg3, void *arg4, void *arg5);
-extern void func_020330e8(void);
-extern void func_02033100(void);
+extern void __cxa_vec_ctor(void *, int, int, void (*)(void *), void (*)(void *));
+extern void *func_020330e8(void *);
+extern void *func_02033100(void *);
 
 typedef struct {
     int unk_00;
@@ -13,7 +13,8 @@ typedef struct {
 
 UnkStruct_02032f94 *func_02032f94(UnkStruct_02032f94 *obj)
 {
-    __cxa_vec_ctor(&obj->unk_04, 0x10, 0x24, (void *) func_02033100, (void *) func_020330e8);
+    __cxa_vec_ctor((void *) (&obj->unk_04), 0x10, 0x24, (((void (*)(void *)) func_02033100)),
+                   (((void (*)(void *)) func_020330e8)));
     obj->unk_00 = 0;
     return obj;
 }

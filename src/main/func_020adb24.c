@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020984e8(void);
-extern void func_02099870(void);
-extern int func_02094ffc(void);
+extern int func_020984e8(void);
+extern int func_02099870(int);
+extern int func_02094ffc(void *);
 extern int func_020b65c4(void);
 extern void func_020adb70(int, int, int, int, int, int, int);
 
@@ -12,9 +12,7 @@ void func_020adb24(int p)
 {
     int flag;
 
-    func_020984e8();
-    func_02099870();
-    if (func_02094ffc()) {
+    if (func_02094ffc((void *) func_02099870((int) func_020984e8()))) {
         flag = 0;
     } else {
         flag = 1;

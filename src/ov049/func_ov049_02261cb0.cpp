@@ -9,7 +9,7 @@ class UnkStruct_02261cb0 {
 
 typedef void (UnkStruct_02261cb0::*PMF)(void *);
 
-extern "C" int func_ov049_02262084(void);
+extern "C" int func_ov049_02262084(void *unused0);
 extern "C" int func_020a12e8(void);
 extern "C" int strlen(void *);
 extern "C" int strncmp(void *, void *, int);
@@ -20,7 +20,7 @@ extern PMF data_ov049_02263128;   // 0x02263128
 
 extern "C" void func_ov049_02261cb0(UnkStruct_02261cb0 *self, void *arg)
 {
-    if (func_ov049_02262084() == 2) {
+    if (func_ov049_02262084(self) == 2) {
         if (func_020a12e8() != 0) {
             return;
         }

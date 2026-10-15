@@ -4,8 +4,8 @@
 
 extern unsigned char data_ov003_02238b10;
 extern unsigned char data_ov003_02238bd4;
-extern void func_020565b0(void *);
-extern void func_ov009_0226539c(void *);
+extern void *func_020565b0(void *);
+extern void *func_ov009_0226539c(void *);
 extern void func_ov003_0221ca98(void *);
 
 struct UnkStruct_0221cac4 {

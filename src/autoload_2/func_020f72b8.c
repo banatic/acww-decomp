@@ -8,8 +8,8 @@ typedef struct {
     unsigned int unk_08;
 } Snd;
 
-extern void func_020f7bc4(Snd *p, int id, unsigned int *addr);
-extern void NNS_SndPlayerWriteVariable(unsigned int *addr, int var, int value);
+extern int func_020f7bc4(Snd *p, int id, unsigned int *addr);
+extern int NNS_SndPlayerWriteVariable(unsigned int *addr, int var, int value);
 extern void ciAddUNQUIETFilter(Snd *p, int arg);
 
 void func_020f72b8(Snd *p, int cmd, int arg)

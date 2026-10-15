@@ -20,10 +20,10 @@ typedef struct {
     int unk_D4;
 } UnkStruct_0222378c_2;
 
-extern int func_0204e414(void *a);
-extern void func_ov003_02222af0(UnkStruct_0222378c *b);
+extern int func_0204e414(void);
+extern int func_ov003_02222af0(UnkStruct_0222378c *b);
 extern void *func_0204f5e0(int h, int a, int c, int d, int e, int f);
-extern int func_0204b7a0(void *h, int a);
+extern int func_0204b7a0(void *h);
 extern UnkStruct_0222378c_2 *func_ov003_02223870(void *a, void *h, int n, int w);
 extern void func_ov003_02222cac(UnkStruct_0222378c_2 *q, int a, int *pair, int c, int d, int e);
 
@@ -40,7 +40,7 @@ void func_ov003_0222378c(void *a, UnkStruct_0222378c *b)
     int r;
     XY *p;
 
-    r = func_0204e414(a);
+    r = func_0204e414();
     if (r == 0) {
         func_ov003_02222af0(b);
         return;
@@ -59,7 +59,7 @@ void func_ov003_0222378c(void *a, UnkStruct_0222378c *b)
     x2 = p->x;
     y2 = p->y;
     f10 = b->unk_10;
-    n = func_0204b7a0(h, f10);
+    n = func_0204b7a0(h);
     if (n <= 0 || n > 4) {
         func_ov003_02222af0(b);
         return;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209de88(unsigned char, unsigned char, unsigned char);
+extern int func_0209de88(int year, int month, int day);
 extern void func_0209e140(unsigned char *, unsigned int);
 extern void MI_CpuCopy8(const void *, void *, unsigned int);
 

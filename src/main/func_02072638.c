@@ -9,7 +9,7 @@ extern void *data_021d0470;
 extern void *data_021d0480;
 
 extern void func_02072594(void *p);
-extern void func_020723a0(void *p);
+extern void func_020723a0(void);
 extern void func_020e993c(void *heap, void *p);
 
 void func_02072638(void *p)
@@ -17,7 +17,8 @@ void func_02072638(void *p)
     void *heap;
 
     func_02072594((char *) p + 4);
-    func_020723a0(p);
+    asm { add r0, p, #0 }
+    func_020723a0();
     heap = data_021fbe94;
     if (data_021d0484 != 0) {
         func_020e993c(heap, data_021d0484);

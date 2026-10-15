@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_02208098(void *p, unsigned char b);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov122_022a14c0(void *p);
 
 void func_ov122_022a07a4(void *p)
@@ -11,6 +11,6 @@ void func_ov122_022a07a4(void *p)
     if ((data_021fbe40 & 0x200) != 0) {
         return;
     }
-    func_ov002_02208098(p, ((unsigned char *) p)[0xb4]);
+    func_ov002_02208098((void *) (p), ((unsigned char *) p)[0xb4]);
     func_ov122_022a14c0(p);
 }

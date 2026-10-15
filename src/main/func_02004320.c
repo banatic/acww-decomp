@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020f503c(void);
+extern void func_020f503c(void *receiver, short value);
 
-void func_02004320(void)
+void func_02004320(void *receiver, short value)
 {
-    func_020f503c();
+    func_020f503c(receiver, value);
 }

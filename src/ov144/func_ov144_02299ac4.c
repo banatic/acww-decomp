@@ -2,14 +2,14 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov144_0229a798(void *self);
+extern void func_ov144_0229a798(void *self);
 extern int func_ov144_0229a71c(void *self);
 extern int func_ov144_0229a5f4(void *self);
-extern int func_ov144_0229a5bc(void *self);
+extern void func_ov144_0229a5bc(void *self);
 extern int func_ov144_02299b48(void *self, unsigned int x);
 extern void func_ov002_0220a574(void *p);
-extern void func_ov002_0220a4bc(void *p);
-extern void func_ov002_02208098(void *self, int a);
+extern void func_ov002_0220a4bc(void);
+extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void RtcSendPxiCommand(unsigned int cmd);
 
 int func_ov144_02299ac4(unsigned char *self, unsigned int cmd)
@@ -34,7 +34,11 @@ int func_ov144_02299ac4(unsigned char *self, unsigned int cmd)
                 return 1;
             case 1:
                 func_ov002_0220a574(self + 0x128);
-                func_ov002_0220a4bc(self + 0x128);
+                asm {
+                    ldr r0, =0x128
+                    add r0, self, r0
+                }
+                func_ov002_0220a4bc();
                 func_ov002_02208098(self, 4);
                 return 1;
         }

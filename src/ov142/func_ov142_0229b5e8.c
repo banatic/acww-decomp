@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void *p);
+extern int func_ov002_02208014(void);
 extern void *func_ov002_02208008(void *p);
 extern int func_ov142_02299c64(void *p, void *a);
 extern void func_ov142_0229af4c(void *p);
@@ -16,7 +16,7 @@ extern unsigned short data_021fbe40[2];
 
 void func_ov142_0229b5e8(void *p)
 {
-    if (func_ov002_02208014(p)) {
+    if (func_ov002_02208014()) {
         func_ov142_0229b278(p);
         return;
     }

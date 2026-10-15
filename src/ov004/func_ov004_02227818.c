@@ -15,7 +15,7 @@ struct UnkStruct_02227818 {
 
 extern u8 data_021c75b8;
 extern int func_020b5e10(void);
-extern void func_020b6098(int a, int b);
+extern int func_020b6098(int a, int b);
 
 void func_ov004_02227818(struct UnkStruct_02227818 *self)
 {

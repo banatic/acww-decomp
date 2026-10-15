@@ -16,13 +16,13 @@ typedef struct Pair {
     int b;
 } Pair;
 
-extern void func_020984e8(void);
-extern int func_02099734(void);
+extern int func_020984e8(void);
+extern int func_02099734(int);
 extern int func_02099e9c(unsigned short *p);
-extern void func_02098f0c(int a, unsigned short *b, int c, int d);
+extern int func_02098f0c(int a, unsigned short *b, int c, int d);
 extern void func_02098a24(int a, int b, int c);
 extern void func_02027170(unsigned short *p, int v);
-extern void func_020154b4(UnkStruct_0201d71c *s, unsigned short *p, int a, int b, int c);
+extern int func_020154b4(UnkStruct_0201d71c *s, unsigned short *p, int a, int b, int c);
 extern void func_0202dbf0(UnkStruct_0201d71c *s, Pair p);
 extern Pair data_020d9060;
 
@@ -39,8 +39,7 @@ int func_0201d71c(UnkStruct_0201d71c *s)
         goto fail;
     }
 
-    func_020984e8();
-    ret = func_02099734();
+    ret = func_02099734((int) func_020984e8());
     status = func_02099e9c(&s->unk_124);
     if (status < 0) {
         goto fail;

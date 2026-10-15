@@ -9,10 +9,10 @@ extern int func_02056f28(void *p, int n);
 extern int func_020984fc(unsigned int val);
 extern void func_0209971c(int a, unsigned short *b);
 extern void func_0205eb8c(void *p, unsigned short *q, int r);
-extern void func_0200f328(void *p, int n);
-extern void func_0203f7d0(void *a, void *b);
-extern void func_020912d4(int a, void *b, void *c, int d);
-extern void func_0200f27c(void *p, int n);
+extern int func_0200f328(void *p, int n);
+extern int func_0203f7d0(void *a, void *b);
+extern int func_020912d4(int a, void *b, void *c, int d);
+extern unsigned int *func_0200f27c(void *p, int n);
 
 void func_ov003_0220dcb0(char *self)
 {

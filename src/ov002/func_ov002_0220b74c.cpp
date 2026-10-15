@@ -9,7 +9,7 @@ class UnkStruct_0220b74c {
     virtual void f2();
 };
 
-extern "C" void func_ov002_02207d5c(void *);
+extern "C" int func_ov002_02207d5c(void *);
 
 extern "C" void func_ov002_0220b74c(UnkStruct_0220b74c *self)
 {

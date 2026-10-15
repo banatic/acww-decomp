@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020109a0(int, int, int, int);
+extern void func_020109a0(int, int, int, unsigned short);
 extern int func_02073908(int, int);
 extern void func_02035684(int, int, int);
-extern void func_0200f328(int, int);
+extern int func_0200f328(int, int);
 extern int data_020ccf94;
 
-void func_02008bf4(int param)
+void func_02008bf4(int param, void *message, int previous)
 {
     int local;
     int *ptr;

@@ -3,7 +3,7 @@
  */
 
 extern int func_ov002_0220a768(char *ptr, int param);
-extern int func_ov002_0220a4f8(char *ptr, int param);
+extern int func_ov002_0220a4f8(char *ptr);
 
 int func_ov145_02299f30(char *arg)
 {
@@ -17,7 +17,7 @@ int func_ov145_02299f30(char *arg)
         case 4:
             return func_ov002_0220a768(arg + 0x174, 6);
         case 5:
-            return func_ov002_0220a4f8(arg + 0x12c, 0x12c);
+            return func_ov002_0220a4f8(arg + 0x12c);
         default:
             return 0x80;
     }

@@ -11,11 +11,11 @@ typedef struct UnkStruct_0229c318 {
     unsigned char unk_25AA;
 } UnkStruct_0229c318;
 
-extern void func_ov002_02207d24(void *, int);
+extern int func_ov002_02207d24(void *, int);
 extern void func_ov102_0229cb50(UnkStruct_0229c318 *);
-extern void func_ov002_022080a0(void *, int);
+extern unsigned char *func_ov002_022080a0(void *, unsigned char value);
 extern unsigned short data_ov102_0229e95c[];
-extern int RtcSendPxiCommand(unsigned short);
+extern void RtcSendPxiCommand(int command);
 extern void func_ov102_0229c298(UnkStruct_0229c318 *, int);
 
 void func_ov102_0229c318(UnkStruct_0229c318 *obj)

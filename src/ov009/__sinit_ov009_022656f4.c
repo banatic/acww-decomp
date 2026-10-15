@@ -3,7 +3,7 @@
  */
 
 extern void __cxa_vec_ctor(void *, int, int, void *, void *);
-extern void __register_global_object(int, void *, void *);
+extern void __register_global_object(void *object, void *destructor, void *node);
 extern struct {
     unsigned char f0;
     unsigned char f1;
@@ -41,10 +41,12 @@ extern struct {
     unsigned char f3;
 } data_ov009_02265b38;
 extern unsigned char data_ov009_02265cb4;
-extern void func_ov009_02265634(void);
-extern void func_ov009_02265630(void);
+extern void func_ov009_02265634(void *element);
+extern void func_ov009_02265630(void *element);
 extern void func_ov009_0226569c(void);
 extern unsigned char data_ov009_02265b48;
+
+#define DestroyGlobal_ov009_0226569c ((void *) &func_ov009_0226569c)
 
 void __sinit_ov009_022656f4(void)
 {
@@ -73,5 +75,7 @@ void __sinit_ov009_022656f4(void)
     data_ov009_02265b38.f2 = 24;
     data_ov009_02265b38.f3 = 31;
     __cxa_vec_ctor((void *) &data_ov009_02265cb4, 34, 80, (void *) &func_ov009_02265634, (void *) &func_ov009_02265630);
-    __register_global_object(0, (void *) &func_ov009_0226569c, (void *) &data_ov009_02265b48);
+    __register_global_object(0, DestroyGlobal_ov009_0226569c, (void *) &data_ov009_02265b48);
 }
+
+#undef DestroyGlobal_ov009_0226569c

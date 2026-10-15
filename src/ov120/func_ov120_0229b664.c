@@ -4,7 +4,7 @@
 
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
-extern void func_ov120_0229bfe8(void *obj);
+extern int func_ov120_0229bfe8(void *obj);
 
 extern struct {
     unsigned short unk0;

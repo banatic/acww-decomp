@@ -10,7 +10,7 @@ class UnkStruct_02051a94 {
     virtual int m1();
 };
 
-extern "C" void memcpy(int a, int b, int c);
+extern "C" void *memcpy(int a, int b, int c);
 
 extern "C" int func_02051a94(UnkStruct_02051a94 *obj, int param2)
 {

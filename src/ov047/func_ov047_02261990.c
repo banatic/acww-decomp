@@ -8,7 +8,7 @@ typedef struct {
     unsigned short unk_CE;
 } UnkStruct_02261990;
 
-void func_0202eb70(void *self);
+void *func_0202eb70(void *self);
 extern int data_ov047_02262c14;
 
 UnkStruct_02261990 *func_ov047_02261990(UnkStruct_02261990 *self)

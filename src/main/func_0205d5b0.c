@@ -3,11 +3,12 @@
  */
 
 extern void func_0205d4e8(void *self);
-extern void func_020e9b9c(void);
+extern void func_020e9b9c(void *);
 extern int data_021c9af4;
 
 void func_0205d5b0(void *self)
 {
+    void *condition_value0;
     volatile unsigned char scratch[8];
     int i;
 
@@ -17,7 +18,7 @@ void func_0205d5b0(void *self)
         ((int *) self)[i] = 0;
         *(unsigned short *) ((char *) self + i * 2 + 0x28) = 0xfff1;
     }
-    if (data_021c9af4 != 0) {
-        func_020e9b9c();
+    if ((condition_value0 = (void *) (data_021c9af4)) != 0) {
+        func_020e9b9c(condition_value0);
     }
 }

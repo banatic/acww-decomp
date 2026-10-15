@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int OS_IsThreadTerminated(void);
+extern int OS_IsThreadTerminated(void *thread);
 extern void OS_KillThread(int, int);
 
 void func_020a0070(int r0)
 {
     int r4 = r0;
-    if (OS_IsThreadTerminated() == 0) {
+    if (OS_IsThreadTerminated((void *) r4) == 0) {
         OS_KillThread(r4, 0);
     }
 }

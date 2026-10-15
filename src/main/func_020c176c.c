@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209e474(void *);
-extern int func_020b65c4(int);
+extern void func_0209e474(void *);
+extern int func_020b65c4(void);
 extern int func_020c1608(void *, void *);
 
 extern int data_021fbbdc;
@@ -26,7 +26,7 @@ void func_020c176c(Param *p)
     local.a = 0;
     local.b = 0;
 
-    if (func_020b65c4(func_0209e474(&local)) == 0x3f) {
+    if ((((int) (func_0209e474(&local), &local)), func_020b65c4()) == 0x3f) {
         data_021fbbdc = func_020c1608(p, &local);
         if (data_021fbbdc == 0) {
             data_021fbbd8 = p->unk_07;

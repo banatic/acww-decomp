@@ -33,7 +33,7 @@ extern void MTX_Concat33(MtxFx33 *a, MtxFx33 *b, MtxFx33 *d);
 extern int func_0203f844(Vec *a, Vec *b);
 extern int func_0203f758(void);
 extern void func_02054394(void *p, UnkStruct_0201c49c *s);
-extern void func_0201c48c(void);
+extern void func_0201c48c(void *);
 extern s16 FX_SinCosTable_[];
 extern int data_020c8150;
 

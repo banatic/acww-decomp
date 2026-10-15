@@ -24,8 +24,8 @@ struct UnkStruct_02218d44 {
 extern unsigned int data_020ccf94;
 extern int func_02073908(unsigned int, unsigned int);
 extern unsigned int func_02008258(UnkStruct_02218d44 *, unsigned int);
-extern void func_ov003_02218ca8(UnkStruct_02218d44 *, void *, int, int);
-extern void func_0200d4e8(UnkStruct_02218d44 *, int, int, int);
+extern int func_ov003_02218ca8(UnkStruct_02218d44 *, void *, int, int);
+extern int func_0200d4e8(UnkStruct_02218d44 *, int, int, int);
 
 void func_ov003_02218d44(UnkStruct_02218d44 *s)
 {

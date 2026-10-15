@@ -13,7 +13,7 @@ typedef struct {
     u8 unk_B2;    // 0xb2
 } UnkStruct_0229b910;
 
-extern int func_ov129_0229bbd8(UnkStruct_0229b910 *self);
+extern unsigned short func_ov129_0229bbd8(UnkStruct_0229b910 *self, int previous, unsigned char current);
 extern int func_ov129_0229b9d8(UnkStruct_0229b910 *self);
 extern void func_ov129_0229b9a0(UnkStruct_0229b910 *self);
 extern void func_ov002_0220a63c(void *p, int arg);
@@ -28,7 +28,7 @@ int func_ov129_0229b910(UnkStruct_0229b910 *self)
     t0 = self->unk_B0;
     t1 = self->unk_B2;
     if (t1 != t0) {
-        idx = func_ov129_0229bbd8(self);
+        idx = func_ov129_0229bbd8(self, t1, t0);
         if (idx != 0xffff && ((u8 *) self + idx)[0x2f98] == 3) {
             self->unk_AA = (u16) idx;
         } else {

@@ -9,7 +9,7 @@ struct UnkStruct_0204141c {
 extern struct UnkStruct_0204141c *func_020682e0(int);
 extern void func_02068320(struct UnkStruct_0204141c *);
 extern int func_020b5e10(void);
-extern void func_020b6098(int, int);
+extern int func_020b6098(int, int);
 extern void func_02035c1c(int, int, unsigned char);
 extern int data_021c526c;
 extern int data_021c758c;

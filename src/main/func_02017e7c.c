@@ -4,14 +4,14 @@
 
 extern volatile unsigned short data_020c80f8;
 
-extern int func_020164cc(void *);
+extern int func_020164cc(void *, int);
 extern int func_02095a28(void);
-extern int func_02016764(void *, void *, int, int, int, int, int, int);
-extern int func_02012444(int, int, int);
+extern void func_02016764(void *, void *, int, int, int, int, int, int);
+extern void func_02012444(int, int, int);
 
 void func_02017e7c(void *a0, void *a1)
 {
-    if (func_020164cc((char *) a1 + 0x334)) {
+    if (func_020164cc((char *) a1 + 0x334, (int) a1)) {
         if (func_02095a28()) {
             unsigned short g = data_020c80f8;
             int f;

@@ -3,7 +3,7 @@
  */
 
 extern void *func_020edf70(int);
-extern void func_020ee660(void);
+extern void *func_020ee660(void *);
 extern int data_020da13c;
 extern int data_020e3c94;
 extern int data_020e5460;
@@ -15,7 +15,7 @@ void *func_020b5c68(void)
 
     r4 = func_020edf70(0x50);
     if (r4 != 0) {
-        func_020ee660();
+        func_020ee660(r4);
         *(int *) r4 = (int) &data_020da13c;
         *(int *) r4 = (int) &data_020e3c94;
         r1 = *(unsigned char *) ((char *) r4 + 0x13);

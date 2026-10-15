@@ -6,7 +6,7 @@ extern int func_020431c8(int);
 extern void func_020431b8(int);
 extern void func_ov107_0229c2c8(void *, int);
 extern void func_ov107_0229caa8(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov107_0229d480(void *);
 extern void func_ov107_0229d3a0(void *, int, int);
 
@@ -26,7 +26,7 @@ void func_ov107_0229c740(UnkStruct_0229c740 *p)
             func_ov107_0229caa8(p);
             func_020431b8(p->unk_AC);
             p->unk_BE = 0xa;
-            func_ov002_02208098(p, 0x13);
+            func_ov002_02208098((void *) (p), 0x13);
             p->unk_AC = -1;
             break;
         case 2:

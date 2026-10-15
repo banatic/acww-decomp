@@ -21,7 +21,7 @@ extern void func_ov112_0229fab4(void *);
 extern int func_ov095_0229cda4(void *, int);
 extern void func_ov002_0220a2b4(void *);
 extern void func_ov002_0220a314(void *);
-extern void func_ov002_02208098(void *, int);
+extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_ov112_0229f35c(void *);
 
 int func_ov112_022a0620(struct UnkStruct_022a0620 *self)

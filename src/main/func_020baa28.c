@@ -15,7 +15,7 @@ int func_020ba540(int x);
 void func_020bc4f8(void *p);
 int func_0205c024(void *a, int b, void *c, void *d);
 int func_020bb89c(int x);
-void func_020bbee0(void *p);
+int func_020bbee0(void *p);
 
 void func_020bad44(void);
 void func_020bab04(void);

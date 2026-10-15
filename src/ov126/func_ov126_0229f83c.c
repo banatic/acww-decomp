@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int func_0206fca4(int);
+extern unsigned int func_0206fca4(void);
 extern void func_ov126_0229f7dc(int);
 extern void func_ov126_0229fb58(int);
 extern void func_ov126_0229fb10(int);
@@ -10,14 +10,14 @@ extern void func_ov126_0229fa80(int);
 extern void func_ov126_0229fa38(int);
 extern void func_ov126_0229f9b8(int);
 extern void func_ov126_0229f9a0(int);
-extern void func_ov126_0229f968(int);
+extern void *func_ov126_0229f968(int);
 extern void func_ov126_0229f930(int);
 extern void func_ov126_0229f90c(int);
 extern void func_ov126_0229f8e8(int);
 
 void func_ov126_0229f83c(int arg)
 {
-    unsigned int result = func_0206fca4(arg);
+    unsigned int result = func_0206fca4();
 
     if (result != 0xc && result != 0xd && result != 0xe) {
         func_ov126_0229f7dc(arg);

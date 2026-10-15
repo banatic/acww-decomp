@@ -31,13 +31,13 @@ extern int data_021e5a2c;
 extern int func_020644cc(int x);
 extern int func_02073d90(int x);
 extern int func_0207f1c8(int x);
-extern int func_0209b5ec(int x);
+extern int func_0209b5ec(void *);
 extern int func_0207f0c0(int x);
 extern void func_0209c214(int x);
 extern int func_0208150c(int x);
 extern void func_0207c460(int *g, int x);
 extern int func_020036e8(int x);
-extern void func_0202da38(UnkStruct_02020ce0_2 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
+extern int func_0202da38(UnkStruct_02020ce0_2 *self, char *a, unsigned char *b, int n, int e, int f, int g, int h, int i);
 
 void func_02020ce0(UnkStruct_02020ce0_2 *self, UnkStruct_02020ce0_3 *out)
 {
@@ -48,7 +48,7 @@ void func_02020ce0(UnkStruct_02020ce0_2 *self, UnkStruct_02020ce0_3 *out)
 
     if (func_020644cc(3) == 0 && func_02073d90(data_020ccf94) == 0) {
         int inner = self->unk_100->unk_830;
-        h = func_0209b5ec(func_0207f1c8(inner));
+        h = (func_0209b5ec((void *) func_0207f1c8(inner)));
         if (func_0207f0c0(inner) == 0) {
             func_0209c214(h);
             func_0207c460(&data_021e5a2c, func_0208150c(inner));

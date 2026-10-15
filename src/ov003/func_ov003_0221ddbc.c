@@ -4,7 +4,7 @@
 
 extern char data_ov003_02239254[];
 extern char data_ov003_02239318[];
-extern void func_ov009_0226539c(void *obj);
+extern void *func_ov009_0226539c(void *obj);
 
 struct UnkStruct_0221ddbc {
     void *unk_00;

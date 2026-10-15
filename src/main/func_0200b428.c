@@ -62,18 +62,18 @@ extern int func_02073908(void *, int);
 extern void *func_020984e8(void);
 extern int func_02099020(void *, int);
 extern void func_02098ff8(void *, int);
-extern void func_0200ad24(UnkStruct_0200b428_2 *, Pair *, int, int, int);
-extern void func_0200f328(UnkStruct_0200b428_2 *, int);
-extern void func_0200f27c(UnkStruct_0200b428_2 *, int);
+extern int func_0200ad24(UnkStruct_0200b428_2 *, Pair *, int, int, int);
+extern int func_0200f328(UnkStruct_0200b428_2 *, int);
+extern unsigned int *func_0200f27c(UnkStruct_0200b428_2 *, int);
 extern void func_02079664(void *);
 extern void func_02045df8(Pair *, int);
 extern void func_02045f08(Pair *, int);
 extern void func_0200b7c0(void *, Pair *, int, int, int);
-extern void func_020109a0(UnkStruct_0200b428_2 *, int, int, int);
+extern void func_020109a0(UnkStruct_0200b428_2 *, int, int, unsigned short);
 extern int func_0200fbe0(UnkStruct_0200b428_2 *);
 extern void func_0205eae0(void *, int, int, int);
 
-void func_0200b428(UnkStruct_0200b428_2 *self, Arg *arg)
+void func_0200b428(UnkStruct_0200b428_2 *self, Arg *arg, int previous)
 {
     int b4;
     void *p8;

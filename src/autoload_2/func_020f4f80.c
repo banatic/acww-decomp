@@ -3,8 +3,8 @@
  */
 
 extern int data_021fd234;
-extern void func_020f4d00(int, void *);
-extern void func_020eed18(void *, int);
+extern unsigned int func_020f4d00(int, void *);
+extern int func_020eed18(void *, int);
 extern void NNS_SndHandleReleaseSeq(void *);
 
 void func_020f4f80(char *arg)

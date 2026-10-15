@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b0038(int, int, int, int, int);
-void func_020adfa4(int a, int b, int c)
+extern void *func_020b0038(int, int, int, int, int);
+void *func_020adfa4(int a, int b, int c)
 {
-    func_020b0038(b, a, a + 16, 3, c);
+    return func_020b0038(b, a, a + 16, 3, c);
 }

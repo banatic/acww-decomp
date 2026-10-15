@@ -19,7 +19,7 @@ class UnkStruct_020288bc_2 {
 };
 extern "C" void func_0202da88(UnkStruct_020288bc_2 *self, void *tbl);
 extern "C" void func_0202dac0(UnkStruct_020288bc_2 *self);
-extern "C" void func_02068484(int a, void *b, int c);
+extern "C" int func_02068484(int a, void *b, int c);
 extern "C" void func_020288bc(UnkStruct_020288bc_2 *self, int unused, int i)
 {
     unsigned char arg;

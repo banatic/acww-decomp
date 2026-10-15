@@ -61,7 +61,7 @@ int func_0202a4d8(UnkStruct_0202a4d8_4 *p, UnkStruct_0202a4d8 *b, int c)
     UnkStruct_0202a4d8_2 s;
 
     h = func_0209ad9c(c, 0);
-    t = func_0209b4d4(h);
+    t = func_0209b4d4((void *) h);
     ret = 0;
     if (func_0209bd44(t)) {
         if (func_0209bba8(t) == 1) {

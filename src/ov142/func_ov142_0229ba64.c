@@ -17,7 +17,7 @@ typedef struct {
     unsigned short a3[9];
 } UnkStruct_0229ba64;
 
-extern void func_ov142_0229a0f8(UnkStruct_0229ba64 *, int, int);
+extern int func_ov142_0229a0f8(UnkStruct_0229ba64 *, int, int);
 extern void func_ov142_0229a9bc(UnkStruct_0229ba64 *);
 extern void func_ov142_0229a988(UnkStruct_0229ba64 *);
 extern void func_ov142_0229a954(UnkStruct_0229ba64 *);

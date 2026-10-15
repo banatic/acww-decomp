@@ -31,13 +31,13 @@ extern void func_020fa564(UnkStruct_02090fd0 *q, void *r);
 extern void func_020e9898(void *h);
 extern void NNS_FndDestroyFrmHeap(void *h);
 extern void MI_CpuFill8(void *dst, int c, int n);
-extern void *func_02091130(UnkStruct_02090fd0_2 *p);
+extern void *func_02091130(void);
 extern int func_0209110c(UnkStruct_02090fd0_2 *p);
 extern void *func_020910e4(UnkStruct_02090fd0_2 *p, void *h);
 extern void func_02090968(void *x);
 extern void func_02090858(void *x);
 extern void func_0209033c(void *x);
-extern void func_02091140(void);
+extern void *func_02091140(int);
 
 int func_02090fd0(UnkStruct_02090fd0_2 *p)
 {
@@ -57,7 +57,8 @@ int func_02090fd0(UnkStruct_02090fd0_2 *p)
         p->unk_50 = func_020fa9f4((void *) func_02091140, 0x20, 0x64, 0x14, 0x15, 0x32);
         p->unk_50->unk_30 = 0x8800;
         if (p->unk_50 != 0) {
-            h = func_02091130(p);
+            asm { add r0, p, #0 }
+            h = func_02091130();
             if (h != 0) {
                 func_020fa820(p->unk_50, h);
                 if (func_0209110c(p)) {

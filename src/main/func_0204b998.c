@@ -2,12 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0204b42c(void);
+extern int func_0204b42c(unsigned short *);
 
-int func_0204b998(void)
+int func_0204b998(unsigned short *argument0)
 {
     int result = 0;
-    switch (func_0204b42c()) {
+    switch (func_0204b42c((unsigned short *) argument0)) {
         case 41:
         case 50:
         case 58:

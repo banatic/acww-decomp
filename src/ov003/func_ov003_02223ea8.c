@@ -15,7 +15,7 @@ typedef struct {
     int unk_0C;
 } UnkStruct_02223ea8_2;
 extern UnkStruct_02223ea8 data_ov003_0223cfa0[];
-void func_02090d50(UnkStruct_02223ea8_2 *o);
+int func_02090d50(UnkStruct_02223ea8_2 *o);
 void func_ov003_02223f6c(UnkStruct_02223ea8 *e, int k);
 
 int func_ov003_02223ea8(UnkStruct_02223ea8_2 *o)

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_020984e8(void *, void *);
+extern void *func_020984e8(void);
 extern void func_02099fe0(void *);
 extern void *func_02099734(void *);
 extern void *func_02098f48(void *, int);
@@ -19,7 +19,7 @@ unsigned char func_02099f1c(FlagStruct *flags, int (*cb)(unsigned short *))
     unsigned short *arr;
     int i;
 
-    v8 = func_020984e8(flags, (void *) cb);
+    v8 = func_020984e8();
     func_02099fe0(flags);
     arr = (unsigned short *) func_02098f48(func_02099734(v8), 0);
     for (i = 0; i < 15; i++) {

@@ -3,9 +3,9 @@
  */
 
 extern void func_ov003_0221ef78(void *);
-extern void func_02057694(void *);
-extern void func_ov003_0221f1f4(void *);
-extern void func_ov003_0221f5f4(void *);
+extern void *func_02057694(void *);
+extern int func_ov003_0221f1f4(void *);
+extern void *func_ov003_0221f5f4(void *);
 extern void func_020ee62c(void *);
 extern void func_020edf54(void *);
 extern int data_ov003_02239a58;

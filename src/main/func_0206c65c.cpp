@@ -10,7 +10,7 @@ struct UnkStruct_0206c65c_2 {
     char *unk_2C;
 };
 
-extern "C" void func_02067728(char *p);
+extern "C" int func_02067728(char *p);
 extern "C" void func_020a9334(UnkStruct_0206c65c_2 *self, int val);
 extern "C" void func_020a7994(char *p, int val);
 

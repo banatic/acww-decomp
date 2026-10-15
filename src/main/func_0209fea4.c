@@ -3,8 +3,8 @@
  */
 
 extern int func_0209f150(void *, int);
-extern void strcpy(void *, void *);
-extern void func_0212d914(void *, void *);
+extern unsigned char *strcpy(void *, void *);
+extern char *func_0212d914(void *, void *);
 extern void func_02073100(void);
 extern int func_020eb108(void *, const void *, unsigned int, unsigned int);
 

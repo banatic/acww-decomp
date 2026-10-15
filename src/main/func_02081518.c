@@ -3,18 +3,18 @@
  */
 
 extern void *func_02082500(void *b);
-extern void func_02082164(void *local);
-extern void func_0205195c(void *local);
+extern unsigned int *func_02082164(void *local);
+extern void *func_0205195c(void *local);
 extern int func_02082308(void *local, void *b);
 extern void func_02082114(void *local, void *ptr, int n);
-extern void func_0208214c(void *local);
+extern void *func_0208214c(void *local);
 extern void func_020036ec(void *a, void *b, int r7, int d);
 extern void func_0207f2f4(void *a, unsigned char v);
 extern void func_0207f2e8(void *a, unsigned char v);
 extern void *func_0207f1c8(void *a);
 extern void func_0209b5f0(void *a, unsigned char *ptr, unsigned char w);
-extern void func_0209b5ec(void);
-extern int func_0209c330(void);
+extern void *func_0209b5ec(void *);
+extern int func_0209c330(unsigned char *);
 extern void func_0207f414(void *a, int r, int zero);
 extern void func_0207d634(void *a);
 extern void func_0207ef3c(void *a, int c);
@@ -60,14 +60,10 @@ void func_02081518(void *a, void *b, int c, int d, unsigned char e)
         func_0207f2f4(a, ((unsigned char *) r4)[0x30]);
         func_0207f2e8(a, ((unsigned char *) r4)[0x31]);
         func_0209b5f0(func_0207f1c8(a), (unsigned char *) r4 + 0x32, e);
-        func_0207f1c8(a);
-        func_0209b5ec();
-        res = func_0209c330();
+        res = func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(a)));
         func_0207f414(a, res, 0);
         ((unsigned char *) a)[0x7d8] = ((unsigned char *) r4)[0x2f];
-        func_0207f1c8(a);
-        func_0209b5ec();
-        res2 = func_0209c330();
+        res2 = func_0209c330((unsigned char *) func_0209b5ec((void *) func_0207f1c8(a)));
         if (res2 == 2) {
             v = ((unsigned char *) a)[0x7d8];
             v2 = v % 10;

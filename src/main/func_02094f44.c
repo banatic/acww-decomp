@@ -8,8 +8,8 @@ struct UnkStruct_02094f44 {
 };
 
 extern char data_020e2f54[];
-extern void func_020a887c(void *p);
-extern __arm void func_020edb3c(void *p);
+extern void *func_020a887c(void *p);
+extern void func_020edb3c(void *p);
 
 UnkStruct_02094f44 *func_02094f44(UnkStruct_02094f44 *p)
 {

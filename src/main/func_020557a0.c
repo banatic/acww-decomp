@@ -4,7 +4,7 @@
 
 typedef struct UnkStruct_020557a0 UnkStruct_020557a0;
 
-extern void func_02056044(UnkStruct_020557a0 *);
+extern void *func_02056044(UnkStruct_020557a0 *);
 extern int data_020dd03c;
 
 struct UnkStruct_020557a0 {

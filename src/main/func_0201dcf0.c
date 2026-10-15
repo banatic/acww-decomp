@@ -28,8 +28,7 @@ extern Global data_020c8d18;
 
 extern int func_0208150c(int x);
 extern int func_020036e8(int x);
-extern void func_0202da38(UnkStruct_0201dcf0_2 *a, void *p1, void *p2, int n, int arg5, int arg6, int arg7, int arg8,
-                          int arg9);
+extern int func_0202da38(UnkStruct_0201dcf0_2 *a, void *p1, void *p2, int n, int arg5, int arg6, int arg7, int arg8, int arg9);
 
 void func_0201dcf0(UnkStruct_0201dcf0_2 *a, UnkStruct_0201dcf0_3 *out)
 {

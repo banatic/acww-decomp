@@ -4,13 +4,13 @@
 
 extern void func_ov004_022266c4(void *self);
 extern void func_ov004_02226920(void *self);
-extern void func_02010ff4(void *self);
+extern int func_02010ff4(void *self);
 extern void func_02010d64(void *self);
 extern char *data_020ccf94;
 extern int func_02073908(char *g, int a);
-extern void func_0200f328(void *self, int a);
+extern int func_0200f328(void *self, int a);
 extern int func_020b5e10(void);
-extern void func_020b6098(int a, int b);
+extern int func_020b6098(int a, int b);
 
 void func_ov004_02226630(char *self)
 {

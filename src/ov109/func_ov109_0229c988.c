@@ -13,7 +13,7 @@ typedef struct UnkStruct_0229c988 {
 
 extern int func_ov109_0229cbd4(UnkStruct_0229c988 *p, unsigned char c);
 extern int func_ov109_0229cb9c(UnkStruct_0229c988 *p, unsigned char c);
-extern int func_0206fe54(int b);
+extern int func_0206fe54(void);
 extern void func_0208aa60(void *dst, int a, int b);
 extern int func_ov109_0229ccb4(UnkStruct_0229c988 *p, unsigned char c);
 extern int func_ov109_0229cc98(UnkStruct_0229c988 *p, unsigned char c);
@@ -29,7 +29,7 @@ void func_ov109_0229c988(UnkStruct_0229c988 *p)
     x = func_ov109_0229cbd4(p, p->unk_29D1) - 0x6d;
     b = func_ov109_0229cb9c(p, p->unk_29D1);
     y = b - 0x78;
-    if (func_0206fe54(b)) {
+    if (func_0206fe54()) {
         y -= 8;
     }
     func_0208aa60(&p->unk_218C, x, y);

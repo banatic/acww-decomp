@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020b9df4(void *, void *, int, void *);
+extern void func_020b9df4(void *);
 extern int func_02057a50(void *, int);
 extern int func_020579f0(void *, int);
 extern int func_02057988(void *, int);
@@ -14,7 +14,7 @@ extern void func_020ba1a8(void *, int, int, int);
 extern int func_020ba12c(void *);
 extern int func_020ba128(void *);
 extern int func_020b9978(void *);
-extern int func_020b9e40(void *);
+extern void func_020b9e40(void *);
 int func_020b9d3c(void *self, void *other, int arg2, void *arg3, int arg4, int arg5)
 {
     unsigned char *s = (unsigned char *) self;
@@ -33,7 +33,7 @@ int func_020b9d3c(void *self, void *other, int arg2, void *arg3, int arg4, int a
     unsigned short off;
     unsigned short val;
     ptr3 = arg3;
-    func_020b9df4(self, other, arg2, ptr3);
+    func_020b9df4(self);
     ptr2 = ((unsigned char *) other) + 8;
     node = ((unsigned char *) other) + (*((unsigned int *) ptr2));
     val2 = (long) arg5;

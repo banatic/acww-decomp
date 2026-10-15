@@ -6,7 +6,7 @@ extern unsigned short *func_0204f5e0(void *ctx, int cx, int cz, int dx, int dz, 
 extern void func_02061ac4(unsigned short *dst, unsigned short *o);
 extern int func_0204bcdc(unsigned short *o);
 extern int func_0204bc64(unsigned short *o);
-extern void func_0204f538(void *ctx, unsigned short *h, int x, int z, int m);
+extern int func_0204f538(void *ctx, unsigned short *h, int x, int z, int m);
 
 struct UnkStruct_02061a14 {
     char pad_00[0xc];

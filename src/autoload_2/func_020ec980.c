@@ -17,21 +17,21 @@ extern int data_0213e750;
 extern int data_021fbf3c;
 extern int data_021fbf40;
 extern int data_021fc220;
-extern int func_020ed3d4;
+extern void func_020ed3d4(int result, int index, int user_data);
 extern unsigned char data_021fbef8;
-extern int func_020ed144;
+extern void func_020ed144(unsigned short value, int index);
 extern S1f8 data_021fbff8;
 
-extern void func_ov065_0227f46c(void *p);
+extern int func_ov065_0227f46c(void *p);
 extern void DWC_SetAuthServer(int n);
 extern void DWC_ConnectInetAsync(void);
 extern int func_ov065_0227f380(void);
 extern int DWC_GetInetStatus(void);
-extern void func_ov065_0227f720(void *p);
+extern int func_ov065_0227f720(void *p);
 extern void func_ov065_022782d4(void *a, int b, int c, void *d, void *e, int f, int g, int h, int i);
-extern void func_ov065_02277f98(int a, int b, void *c, int d);
+extern void func_ov065_02277f98(int a, int b, void (*callback)(int, int, int), int d);
 extern void DWC_SetSendSplitMax(int n);
-extern void func_ov065_0227ecf0(void *p);
+extern void *func_ov065_0227ecf0(void (*callback)(unsigned short, int));
 extern void func_020ecfec(void);
 extern int func_020ec1f8(void);
 

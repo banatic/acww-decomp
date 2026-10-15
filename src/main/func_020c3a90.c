@@ -3,8 +3,8 @@
  */
 
 extern int data_020e877c;
-extern void func_020c3c64(void *p);
-extern void func_0202ee5c(void *p);
+extern void *func_020c3c64(void *p);
+extern void *func_0202ee5c(void *p);
 extern void func_020edf54(void *p);
 
 struct UnkStruct_020c3a90 {

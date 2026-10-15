@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02002d14(void *addr, void *ptr, int n, int a, int b, int c);
-extern void func_02002c6c(void *addr, void *ptr, int n, int a, int b, int c);
+extern int func_02002d14(void *addr, void *ptr, int n, int a, int b, int c);
+extern int func_02002c6c(void *addr, void *ptr, int n, int a, int b, int c);
 extern void *data_021fbe94;
 
 extern unsigned char data_ov118_0229cc68[];

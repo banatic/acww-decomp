@@ -4,7 +4,7 @@
 
 extern int func_02050974(void *p);
 extern void func_02050948(void *p);
-extern void func_020509a8(void *p, int a, int b, int c);
+extern int func_020509a8(void *p, int a, int b, int c);
 extern void MI_CpuFill8(int a, int b, int c);
 
 extern char data_021c8188;

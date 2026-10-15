@@ -11,7 +11,7 @@ extern int func_02073de4(u16 *);
 extern void func_02073180(u16 *, u16);
 extern void func_02073168(u16 *, u16);
 extern u16 func_02073174(u16 *);
-extern void func_02073044(void);
+extern unsigned int func_02073044(void);
 extern int func_020ec260(void);
 extern int func_020ec920(void);
 extern u16 func_020ec1f8(void);

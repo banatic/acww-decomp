@@ -3,7 +3,7 @@
  */
 
 extern void *func_02015da0(void *self, int param);
-extern void func_02015c3c(void *self, void *a);
+extern int func_02015c3c(void *self, void *a);
 extern void func_0201ad18(void *p, int a, int b, void *c, int d, int e, int f, int g);
 
 extern unsigned char data_021fbee8[];
