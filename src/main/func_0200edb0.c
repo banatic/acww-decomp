@@ -7,7 +7,7 @@ extern int func_02073dd4(unsigned int, int);
 extern int func_0209658c(void *, int, int);
 extern unsigned int data_020ccf94;
 
-int func_0200edb0(void)
+int func_0200edb0(void *self)
 {
     int status;
     int i;

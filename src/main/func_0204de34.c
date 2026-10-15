@@ -3,14 +3,14 @@
  */
 
 extern int data_021c80e0[5];
-extern int func_0204de14(int element, int index);
+extern void func_0204de14(int *object, int index);
 
 void func_0204de34(void)
 {
     int i;
     for (i = 0; i < 5; i++) {
         if (data_021c80e0[i] != 0) {
-            func_0204de14(data_021c80e0[i], i);
+            func_0204de14((int *) data_021c80e0[i], i);
         }
     }
 }

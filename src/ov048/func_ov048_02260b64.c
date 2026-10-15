@@ -29,13 +29,13 @@ extern void func_020732b4(int arg1, int arg2);
 extern void func_020a6f10(int arg);
 extern void func_020a6ef0(int arg);
 extern int func_020ec260(void);
-extern void func_020a13c4(unsigned char value);
+extern void func_020a13c4(unsigned long value);
 extern void func_ov048_02262378(ObjStruct *obj);
 extern void func_ov048_022616b8(ObjStruct *obj, int arg2);
 extern void func_ov048_022635f4(void *ptr, int arg2);
 extern int func_020eba18(void);
-extern int func_ov048_022609a4(void);
-extern void func_ov048_02260e28(ObjStruct *obj, int arg2, int arg3);
+extern unsigned char func_ov048_022609a4(void *receiver);
+extern void func_ov048_02260e28(void *receiver, int code, int flag);
 
 void func_ov048_02260b64(ObjStruct *obj)
 {
@@ -65,10 +65,7 @@ void func_ov048_02260b64(ObjStruct *obj)
             func_020732b4(data_020ccf94, 0);
             func_020a6f10(0);
             func_020a6ef0(0);
-            asm {
-                bl func_020ec260
-                bl func_020a13c4
-            }
+            func_020a13c4((unsigned long) func_020ec260());
             func_02074120();
             *(int *) ((char *) obj->unk_40 + 0x14) = 0;
             func_ov048_02262378(obj);
@@ -87,10 +84,7 @@ void func_ov048_02260b64(ObjStruct *obj)
     if (func_020eba18() == 0x800c) {
         func_ov048_02260e28(obj, 0x79, 1);
     } else {
-        asm {
-            mov r0, obj
-        }
-        r2 = func_ov048_022609a4();
+        r2 = func_ov048_022609a4(obj);
         func_ov048_02260e28(obj, r2, 0);
     }
 }

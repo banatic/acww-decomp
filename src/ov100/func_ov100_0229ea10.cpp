@@ -11,7 +11,7 @@ extern "C" void func_ov100_0229ce90(void *self);
 extern "C" void func_ov094_0229a7cc(void *ptr, int a, int b);
 extern "C" void func_ov094_0229a850(void *ptr, int a, int b);
 extern "C" void func_ov094_0229b738(void *ptr, int a, int b);
-extern "C" void func_ov094_02299d84(void *ptr, int b);
+extern "C" void func_ov094_02299d84(void *receiver, int value);
 
 class VtblClass {
   public:

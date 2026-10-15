@@ -5,7 +5,7 @@
 extern int func_ov111_0229fa78(void *argument0);
 extern void func_ov111_0229f524(int);
 extern void func_ov111_0229fd08(int);
-extern void func_ov111_0229f854(void);
+extern void func_ov111_0229f854(void *receiver);
 
 void func_ov111_0229fa50(int param)
 {
@@ -13,11 +13,6 @@ void func_ov111_0229fa50(int param)
         func_ov111_0229f524(param);
         func_ov111_0229fd08(param);
     } else {
-        // clang-format off
-        asm {
-            mov r0, param
-        }
-        // clang-format on
-        func_ov111_0229f854();
+        func_ov111_0229f854((void *) param);
     }
 }

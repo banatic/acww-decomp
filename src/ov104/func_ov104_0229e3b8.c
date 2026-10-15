@@ -9,7 +9,7 @@ typedef struct {
     void *unk_23B8;
 } UnkStruct_0229e3b8;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(UnkStruct_0229e3b8 *s);
 extern int func_ov104_0229cc30(UnkStruct_0229e3b8 *s, int a, int b);
 extern int func_ov002_02207d24(void *p, int v);
@@ -25,7 +25,7 @@ extern void func_ov104_0229cf14(UnkStruct_0229e3b8 *s, unsigned char b, int z);
 extern int func_ov104_0229da5c(UnkStruct_0229e3b8 *s, unsigned char b);
 extern void func_ov104_0229d178(UnkStruct_0229e3b8 *s);
 extern int func_ov104_0229daa0(UnkStruct_0229e3b8 *s);
-extern int func_ov104_0229dad8(void);
+extern int func_ov104_0229dad8(void *receiver);
 extern void func_ov104_0229daf8(UnkStruct_0229e3b8 *s, unsigned char b, int v);
 extern void func_ov104_0229d378(UnkStruct_0229e3b8 *s);
 extern void func_ov104_0229c9fc(UnkStruct_0229e3b8 *s);
@@ -40,7 +40,7 @@ void func_ov104_0229e3b8(UnkStruct_0229e3b8 *s)
 {
     unsigned short val;
     int r;
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(s) != 0) {
         func_ov104_0229dd54(s);
         func_ov002_02207d24((char *) s + 0x23B8, 1);
         return;
@@ -69,12 +69,7 @@ void func_ov104_0229e3b8(UnkStruct_0229e3b8 *s)
                     if (func_ov104_0229da80(s, s->unk_B8) != 0) {
                         r = func_ov104_0229daa0(s);
                     } else {
-                        // clang-format off
-                        asm {
-                            mov r0, s
-                        }
-                        // clang-format on
-                        r = func_ov104_0229dad8();
+                        r = func_ov104_0229dad8(s);
                     }
                     if (r != 0x21) {
                         func_ov104_0229daf8(s, s->unk_B8, r);

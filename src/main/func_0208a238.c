@@ -10,7 +10,7 @@ extern u64 data_020d6fcc[];
 
 extern void func_0208a1f0(void *obj, void *data);
 extern void func_0208a1ec(void *obj, int flag);
-extern void func_0208a144(void *obj);
+extern void *func_0208a144(void *obj);
 
 typedef struct {
     char pad_00[0xc];

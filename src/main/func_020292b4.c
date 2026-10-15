@@ -74,7 +74,7 @@ extern unsigned char data_021c1d6c[];
 extern unsigned char data_021c1e14[];
 extern unsigned char data_021c2c8c[];
 
-int func_020292b4(UnkStruct_020292b4 *p, void *arg)
+int func_020292b4(UnkStruct_020292b4 *p, void *arg, int value, unsigned int index)
 {
     Buf b;
     UnkStruct_020292b4_2 z;

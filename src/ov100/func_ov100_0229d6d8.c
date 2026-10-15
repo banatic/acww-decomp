@@ -3,7 +3,7 @@
  */
 
 extern int func_ov100_0229d620(int unused0, unsigned int unused1);
-extern int func_ov100_0229d67c(void);
+extern int func_ov100_0229d67c(void *receiver);
 extern int func_ov100_0229d630(int unused0, unsigned int unused1);
 extern int func_ov100_0229d648(int);
 extern void func_ov100_0229d71c(int, int, int);
@@ -16,12 +16,7 @@ void func_ov100_0229d6d8(int a, int b, int c)
 
     if (c >= 0x6c) {
         if (func_ov100_0229d620(a, b)) {
-            // clang-format off
-            asm {
-                mov r0, value_r5
-            }
-            // clang-format on
-            value_r4 = func_ov100_0229d67c();
+            value_r4 = func_ov100_0229d67c((void *) value_r5);
         }
     } else {
         if (func_ov100_0229d630(a, b)) {

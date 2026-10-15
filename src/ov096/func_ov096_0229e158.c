@@ -6,7 +6,7 @@ extern void *func_020984e8(void);
 extern void *func_02099734(void *);
 extern int func_02098cf8(void *, int);
 
-int func_ov096_0229e158(void)
+int func_ov096_0229e158(void *receiver)
 {
     void *p;
     p = func_020984e8();

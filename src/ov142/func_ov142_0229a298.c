@@ -8,7 +8,7 @@ extern void func_ov142_0229b10c(void *self);
 extern int func_ov142_02299668(void *self, int a);
 extern void func_ov142_0229b138(void *self);
 extern void func_ov002_0220a574(void *p);
-extern void func_ov002_0220a4bc(void);
+extern void func_ov002_0220a4bc(void *receiver);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov142_0229b350(void *self);
 extern void func_ov142_0229b2f8(void *self);
@@ -34,13 +34,7 @@ int func_ov142_0229a298(char *self, int param)
 
         case 0x14:
             func_ov002_0220a574(self + 0x14c);
-            // clang-format off
-            asm {
-                ldr r0, =0x14c
-                add r0, self, r0
-            }
-            // clang-format on
-            func_ov002_0220a4bc();
+            func_ov002_0220a4bc((void *) ((char *) self + 0x14c));
             func_ov002_02208098((void *) (self), 5);
             return 1;
 

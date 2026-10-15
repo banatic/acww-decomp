@@ -12,7 +12,7 @@ struct UnkStruct_02299ba4 {
 };
 
 extern int func_020e895c(void *addr, int val, int size);
-extern void func_ov002_0220a4c8(void *addr);
+extern void func_ov002_0220a4c8(void *receiver);
 extern void func_ov142_02299a80(struct UnkStruct_02299ba4 *obj);
 extern void func_ov142_02299ab8(struct UnkStruct_02299ba4 *obj);
 

@@ -3,7 +3,7 @@
  */
 
 extern unsigned short func_ov111_0229f504(void *s);
-extern int func_ov095_0229bb9c(void *p, int v);
+extern int func_ov095_0229bb9c(void *receiver, int value);
 extern int func_ov095_0229bba0(void *a, unsigned short *b, int c, int d);
 
 int func_ov111_0229faf4(void *s)

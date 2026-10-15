@@ -15,7 +15,7 @@ extern void *func_020ee45c(struct UnkStruct_0229bc70 *self);
 extern void func_ov090_022993cc(void *ptr, unsigned char b);
 extern unsigned char *func_ov002_022080a0(struct UnkStruct_0229bc70 *self, unsigned char value);
 extern int func_ov002_02207d24(void *p, int x);
-extern int func_ov121_0229a50c(void);
+extern int func_ov121_0229a50c(void *receiver);
 
 int func_ov121_0229bc70(struct UnkStruct_0229bc70 *self, int mode)
 {
@@ -26,10 +26,7 @@ int func_ov121_0229bc70(struct UnkStruct_0229bc70 *self, int mode)
         func_ov002_022080a0(self, 1);
         func_ov002_02207d24(&self->unk_2D8, 1);
         if (mode != 7) {
-            asm {
-                mov r0, self
-            }
-            func_ov121_0229a50c();
+            func_ov121_0229a50c(self);
         }
         return 1;
     }

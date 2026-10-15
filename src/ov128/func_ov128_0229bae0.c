@@ -6,7 +6,7 @@
 
 extern unsigned short data_021fbe40;
 
-int func_ov128_0229bae0(void)
+int func_ov128_0229bae0(void *receiver)
 {
     int r = 4;
     unsigned short flags = data_021fbe40;

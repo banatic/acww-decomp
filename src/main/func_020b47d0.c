@@ -4,7 +4,7 @@
 
 extern int func_020b4950_unk(const signed char *str);
 
-void func_020b47d0(signed char *str)
+void func_020b47d0(signed char *str, unsigned int size)
 {
     int len;
     unsigned int half;

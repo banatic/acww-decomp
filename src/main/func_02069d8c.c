@@ -29,7 +29,7 @@ struct UnkStruct_02069d8c_2 {
 
 extern unsigned char data_020df154;
 extern int func_02067728(struct Big *);
-extern void func_0206bb9c(void);
+extern void func_0206bb9c(void *object, int code, const void *message);
 extern int func_020a82f8(int);
 extern void func_020a9334(struct UnkStruct_02069d8c_2 *, int);
 extern void func_020a7994(void *, int);
@@ -37,12 +37,7 @@ extern void func_020a7994(void *, int);
 void func_02069d8c(struct UnkStruct_02069d8c_2 *self)
 {
     if (func_02067728(self->unk_24) == 0) {
-        asm {
-            mov r0, self
-            ldr r1, =0xdd0
-            ldr r2, =data_020df154
-            bl func_0206bb9c
-        }
+        func_0206bb9c(self, 0xdd0, &data_020df154);
     }
     func_020a9334(self, func_020a82f8(self->unk_5C));
     func_020a9334(self, ((struct UnkStruct_02069d8c *) ((char *) self->unk_24 + 0x1e24))

@@ -10,7 +10,7 @@ void func_ov002_02209eb8(char *p);
 void func_ov002_0220ad18(char *p, unsigned int v);
 void func_ov094_0229a850(char *p, int a, int b);
 void func_ov094_0229b738(char *p, int a, int b);
-void func_ov094_02299d84(char *p, int a);
+void func_ov094_02299d84(void *receiver, int value);
 void func_ov094_0229b690(char *p, unsigned int v, int mask);
 int func_ov002_02207f60(char *self);
 void func_0208f210(char *p, int a, int b);

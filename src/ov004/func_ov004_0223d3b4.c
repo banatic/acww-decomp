@@ -11,8 +11,8 @@ extern int func_020b6788(void);
 extern void func_ov004_0223a9e0(void *);
 extern void func_ov004_0223bdac(void *);
 extern void func_ov004_0223a9b8(void *);
-extern void func_ov004_0223bf40(void);
-extern void func_ov004_0223bfe0(void);
+extern void func_ov004_0223bf40(void *receiver);
+extern void func_ov004_0223bfe0(void *receiver);
 extern void *func_ov004_0223cb10(void);
 extern void func_ov004_0223c7b8(void *);
 extern unsigned short data_ov004_022595bc;
@@ -28,14 +28,8 @@ int func_ov004_0223d3b4(char *self)
         func_ov004_0223bdac(self);
         func_ov004_0223a9b8(self + 0x64);
     }
-    asm {
-        mov r0, self
-    }
-    func_ov004_0223bf40();
-    asm {
-        mov r0, self
-    }
-    func_ov004_0223bfe0();
+    func_ov004_0223bf40(self);
+    func_ov004_0223bfe0(self);
     func_ov004_0223c7b8(func_ov004_0223cb10());
     return 1;
 }

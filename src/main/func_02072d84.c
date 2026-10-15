@@ -3,9 +3,9 @@
  */
 
 extern int func_02072da0(void *);
-extern int MI_CpuCopy8(int, int, int);
+extern void MI_CpuCopy8(int, int, int);
 
-int func_02072d84(int a, int b)
+void func_02072d84(int a, int b)
 {
-    return MI_CpuCopy8(b, func_02072da0((void *) a), 0x200);
+    MI_CpuCopy8(b, func_02072da0((void *) a), 0x200);
 }

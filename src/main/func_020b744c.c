@@ -3,11 +3,11 @@
  */
 
 extern unsigned char data_020e54a8;
-extern int func_ov003_0220bf00(int a, int flag);
+extern int func_ov003_0220bf00(int a);
 
 int func_020b744c(int a)
 {
-    int flag;
+    unsigned int flag;
     int result;
 
     if (data_020e54a8 == 0) {
@@ -16,8 +16,8 @@ int func_020b744c(int a)
         flag = 0;
     }
 
-    if (flag != 0) {
-        result = func_ov003_0220bf00(a, flag);
+    if (flag > 0) {
+        result = func_ov003_0220bf00(a);
     } else {
         result = 0;
     }

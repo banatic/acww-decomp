@@ -3,7 +3,7 @@
  */
 
 extern void *func_020eb844(void);
-extern void *func_ov119_0229ae50(void *);
+extern void *func_ov119_0229ae50(void *receiver);
 extern void *func_02077c3c(void *);
 extern void *func_02077d68(void *);
 extern int func_020eb04c(void *);
@@ -22,7 +22,7 @@ int func_ov119_0229acb4(void *param)
     int i;
 
     dst = func_020eb844();
-    base = func_ov119_0229ae50(param);
+    base = func_ov119_0229ae50((void *) param);
 
     flag = 0;
     for (i = 0; i < 32; i++) {

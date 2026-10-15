@@ -4,7 +4,7 @@
 
 extern int func_020644cc(int);
 
-unsigned short func_02047db8(void)
+unsigned short func_02047db8(int object)
 {
     unsigned int x = 0x1542;
     x += func_020644cc(5);

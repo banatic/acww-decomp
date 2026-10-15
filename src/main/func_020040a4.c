@@ -4,7 +4,7 @@
 
 extern unsigned char func_020f9f98(void);
 
-unsigned char func_020040a4(void)
+unsigned char func_020040a4(char *receiver)
 {
     return func_020f9f98();
 }

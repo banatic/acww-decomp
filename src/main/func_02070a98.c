@@ -18,7 +18,7 @@ typedef struct {
 
 extern unsigned char data_021c828c[];
 
-void func_02070a98(UnkStruct_02070a98 *p1, int p2, int p3, int p4, unsigned char p5, unsigned char p6)
+void func_02070a98(UnkStruct_02070a98 *p1, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag)
 {
     if (p1->unk_68 != 0) {
         func_02070b84(p1);

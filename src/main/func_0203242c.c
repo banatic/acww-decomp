@@ -4,7 +4,7 @@
 
 extern int data_021c30e4;
 
-void func_0203242c(void)
+void func_0203242c(void *object)
 {
     data_021c30e4 = 0;
 }

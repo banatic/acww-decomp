@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_ov095_0229bb94(void)
+int func_ov095_0229bb94(void *receiver, int value)
 {
     return 0;
 }

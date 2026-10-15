@@ -8,7 +8,7 @@ extern void *func_020a8bb8(char *, const char *);
 extern const char *func_020ab790(void *);
 extern char *strncpy(char *, const char *, int);
 extern void *func_020ab78c(void *);
-extern void *func_020a82ac(void);
+extern void *func_020a82ac(void *object);
 extern void func_020a82bc(char *, const void *);
 
 typedef struct {
@@ -42,6 +42,6 @@ void func_020ab42c(LargeStruct *obj, int index)
     name = func_020ab790(elem);
     obj->unk_2F6 = 0;
     strncpy((char *) obj + 0x2dd, name, 0x19);
-    temp = (func_020ab78c(elem), func_020a82ac());
+    temp = func_020a82ac(func_020ab78c(elem));
     func_020a82bc((char *) obj + 0x354, temp);
 }

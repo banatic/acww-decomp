@@ -3,11 +3,11 @@
  */
 
 extern void func_02077b9c(void *);
-extern void func_02077b70(void *, void *);
+extern int func_02077b70(void *, void *);
 extern unsigned int data_021d11c4;
 extern unsigned int SDK_OVERLAY_ov068_ID;
 
-void func_ov055_022604d4(void)
+void func_ov055_022604d4(void *receiver)
 {
     func_02077b9c(&data_021d11c4);
     func_02077b70(&data_021d11c4, &SDK_OVERLAY_ov068_ID);

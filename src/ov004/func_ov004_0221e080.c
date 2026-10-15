@@ -14,7 +14,7 @@ extern int func_02037e0c(void *, int, int, int);
 extern int func_0204bc90(int tile);
 extern void func_020308e0(int, int);
 
-void func_ov004_0221e080(void)
+void func_ov004_0221e080(void *receiver)
 {
     struct UnkStruct_0221e080 *q;
     void *base;

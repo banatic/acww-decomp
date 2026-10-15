@@ -3,10 +3,10 @@
  */
 
 extern void func_02051bf8(void *, int);
-extern int func_02051c08(int, void *, int);
+extern void func_02051c08(int, void *, int);
 extern int func_ov122_0229f634(void *);
 extern void func_ov122_0229efd8(void *, int);
-extern void func_ov095_022999f4(void);
+extern void func_ov095_022999f4(void *receiver);
 extern void func_ov122_022a14c0(void *);
 extern int func_ov122_0229f958(void *);
 
@@ -32,12 +32,6 @@ void func_ov122_022a0d84(char *self)
     result = func_ov122_0229f634(self);
     func_02051c08(result + 2 * min, self + 0x4230, diff);
     func_ov122_0229efd8(self, 0x400);
-    // clang-format off
-    asm {
-        mov r0, self
-        add r0, #0xc0
-    }
-    // clang-format on
-    func_ov095_022999f4();
+    func_ov095_022999f4(self + 0xc0);
     func_ov122_022a14c0(self);
 }

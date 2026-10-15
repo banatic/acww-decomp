@@ -6,7 +6,7 @@
 #include "cpp/ov110/Obj_ov110_0229ecb8.h"
 
 extern "C" void func_0206f58c(void);
-extern "C" int func_ov110_0229e7ac(void *);
+extern "C" int func_ov110_0229e7ac(void *receiver);
 extern "C" void func_ov110_0229cbe0(void *);
 extern "C" int func_ov002_02207d24(void *, int);
 extern "C" void func_ov110_0229c3b8(void *, int);

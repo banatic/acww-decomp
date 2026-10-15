@@ -18,7 +18,7 @@ typedef struct {
 
 extern void *func_020b1530(int a);
 extern void func_02051bf8(u16 *buf, int n);
-extern int func_02051c08(void *p, u16 *buf, int n);
+extern void func_02051c08(void *p, u16 *buf, int n);
 extern int func_02051ca8(void *p, int n);
 extern void func_020708e4(void *p, u16 *buf, int n);
 extern int func_0207096c(void *p);

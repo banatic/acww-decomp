@@ -4,7 +4,7 @@
 
 extern int func_0206f56c(void);
 extern void func_ov109_0229c534(const void *);
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(const void *);
 extern int func_ov002_02209044(const void *, int, const void *, int);
 extern void func_ov109_0229c75c(const void *);
@@ -22,11 +22,7 @@ void func_ov109_0229d048(void *arg)
         func_ov109_0229c534(arg);
         return;
     }
-    asm {
-        mov r0, arg
-    }
-    if (func_ov002_02208014() != 0)
-    {
+    if (func_ov002_02208014(arg) != 0) {
         func_ov109_0229c534(arg);
         return;
     }

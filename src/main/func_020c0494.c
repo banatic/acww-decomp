@@ -38,7 +38,7 @@ extern void func_020bf5b8(UnkStruct_020c0494 *p);
 extern void func_0208a158(void *p);
 extern void func_020c0688(Vec *a, int b, int c);
 extern int FX_MulFunc(int a, int b);
-extern void func_0208a144(void *p);
+extern void *func_0208a144(void *p);
 extern void func_020eabc8(Vec *a, int b);
 extern void VEC_Add(Vec *a, Vec *b, Vec *c);
 extern void func_020beb14(int *g);

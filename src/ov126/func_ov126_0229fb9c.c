@@ -4,9 +4,9 @@
 
 extern int func_0206fca4(void);
 extern int func_0206fc44(void);
-extern int func_02051c08(int, unsigned char *, unsigned char);
+extern void func_02051c08(int, unsigned char *, unsigned char);
 extern void func_ov126_0229fc98(unsigned char *);
-extern int func_ov126_0229fc7c(unsigned char *);
+extern void func_ov126_0229fc7c(unsigned char *);
 extern void func_ov126_0229fc34(unsigned char *);
 extern void func_ov126_0229fc14(unsigned char *);
 

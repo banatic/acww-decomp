@@ -5,9 +5,9 @@
 extern int data_020d5c64;
 extern void func_0208a1f0(char *ptr, void *arg2);
 extern void func_0208a1ec(char *ptr, int val);
-extern void func_0208a1e0(char *ptr, int val1, int val2);
+extern void *func_0208a1e0(char *ptr, int val1, int val2);
 extern void func_0208a158(char *ptr);
-extern void func_0208a144(char *ptr);
+extern void *func_0208a144(char *ptr);
 
 struct UnkStruct_0200396c {
     char pad_00[0xc];

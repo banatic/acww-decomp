@@ -6,7 +6,7 @@ extern void *data_020d1b90[];
 
 extern void *func_020984e8(void);
 extern int func_020b65c4(void);
-extern void func_0209e7fc(void);
+extern void func_0209e7fc(void *receiver);
 extern void func_0204de34(void);
 extern void func_0204dde0(void);
 extern void func_0209dfc0(void);
@@ -48,8 +48,7 @@ void func_0209ec74(char *p)
 
     ret = func_020984e8();
     if (func_020b65c4() != 6) {
-        asm { add r0, p, #0 }
-        func_0209e7fc();
+        func_0209e7fc(p);
         func_0204de34();
         func_0204dde0();
         func_0209dfc0();

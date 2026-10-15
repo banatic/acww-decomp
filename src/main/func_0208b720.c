@@ -7,7 +7,7 @@ extern int func_02099734(int);
 extern int func_02098cf8(int, int);
 extern int func_0206f854(void);
 
-int func_0208b720(void)
+int func_0208b720(void *receiver)
 {
     int a = func_020984e8();
     int result = 0;

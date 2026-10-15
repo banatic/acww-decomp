@@ -3,7 +3,7 @@
  */
 
 extern "C" {
-extern void func_ov121_0229b9d4(struct UnkStruct_0229bf38 *);
+extern void func_ov121_0229b9d4(void *receiver);
 extern void func_ov121_0229b968(struct UnkStruct_0229bf38 *);
 }
 

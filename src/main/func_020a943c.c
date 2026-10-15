@@ -11,7 +11,7 @@ struct UnkStruct_020a943c {
 };
 
 extern void func_020a94a4(struct UnkStruct_020a943c *obj);
-extern void func_020a9c98(char *addr);
+extern void func_020a9c98(void *self);
 extern void func_020edb3c(struct UnkStruct_020a943c *obj);
 
 struct UnkStruct_020a943c *func_020a943c(struct UnkStruct_020a943c *obj)

@@ -97,7 +97,7 @@ extern void func_020790a8(void *p, Rec *r);
 extern int func_0209de88(int a, int b, int c);
 extern void func_02046c2c(void *self);
 extern void func_0205ba60(Obj54 *o);
-extern void func_02042c40(void);
+extern void func_02042c40(void *receiver);
 extern void func_020481a0(void *self);
 
 void func_0204714c(void *self, Rec *a1, Rec *a2, int a3, u8 a5, int a6)
@@ -246,7 +246,6 @@ void func_0204714c(void *self, Rec *a1, Rec *a2, int a3, u8 a5, int a6)
         }
         func_0205ba60(&obj);
     }
-    asm { ldr r0, =data_021c7c48 }
-    func_02042c40();
+    func_02042c40(&data_021c7c48);
     func_020481a0(self);
 }

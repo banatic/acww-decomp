@@ -48,7 +48,7 @@ extern "C" int func_020984e8(void);
 extern "C" int func_02099870(int);
 extern "C" int func_020807a8(UnkStruct_02069af0 *, int);
 extern "C" int func_02081d20(void *object);
-extern "C" void func_0206bb9c(void);
+extern "C" void func_0206bb9c(void *object, int code, const void *message);
 extern "C" void func_0206b964(UnkStruct_02069af0_3 *, unsigned char *);
 extern "C" void *data_020df140;
 
@@ -71,12 +71,7 @@ extern "C" void func_02069af0(UnkStruct_02069af0_3 *self)
             }
         }
     } else {
-        asm {
-            mov r0, self
-            ldr r1, =0xe9a
-            ldr r2, =data_020df140
-            bl func_0206bb9c
-        }
+        func_0206bb9c(self, 0xe9a, &data_020df140);
     }
     b = arr[idx];
     func_0206b964(self, &b);

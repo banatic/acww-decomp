@@ -7,7 +7,7 @@ extern int func_02073918(int, int);
 extern int func_02073d90(int);
 extern int func_020ec1e8(void);
 
-int func_ov048_02260a24(void)
+int func_ov048_02260a24(void *receiver)
 {
     int r4;
 

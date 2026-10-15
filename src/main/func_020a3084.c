@@ -42,7 +42,7 @@ extern int func_020758ac(int a);
 extern void func_020750fc(void);
 extern void func_020750f4(void);
 extern void func_020a1038(struct UnkStruct_020a3084 *o, int a, int b);
-extern void func_020a0174(void);
+extern int func_020a0174(void);
 extern int func_020a0848(struct UnkStruct_020a3084 *o, unsigned char *p, int a, int b, int c, int d);
 extern void func_020a25cc(struct UnkStruct_020a3084 *o);
 extern int func_020682e0(int a);

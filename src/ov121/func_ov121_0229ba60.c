@@ -28,7 +28,7 @@ typedef struct {
 extern u8 data_020e54a8;
 extern PtrStruct *data_020ccf94;
 extern void func_ov121_0229adc0(UnkStruct_0229ba60 *self, int val);
-extern int func_ov121_0229ba2c(UnkStruct_0229ba60 *self);
+extern int func_ov121_0229ba2c(void *receiver);
 extern int func_02073d90(PtrStruct *p);
 extern void func_ov002_02209984(void *addr, int a, int b, int c);
 

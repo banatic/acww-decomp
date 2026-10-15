@@ -22,7 +22,7 @@ extern unsigned int func_ov004_0223c130(void);
 extern void *func_ov004_022168d8(UnkStruct_0223bfe0 *);
 extern int data_ov004_022595d8;
 
-void func_ov004_0223bfe0(void)
+void func_ov004_0223bfe0(void *receiver)
 {
     Player *pl = func_020961a8(4);
     if (pl != 0) {

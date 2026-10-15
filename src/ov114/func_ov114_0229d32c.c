@@ -3,7 +3,7 @@
  */
 
 extern void func_ov114_0229d4c0(void *self);
-extern void func_ov002_0220a4c8(void *ptr);
+extern void func_ov002_0220a4c8(void *receiver);
 extern int func_020e895c(int *ptr, int value, int arg2);
 
 struct UnkStruct_0229d32c {

@@ -10,7 +10,7 @@ extern unsigned char data_ov146_0229b6e0[];
 extern unsigned char data_ov146_0229b6f4[];
 extern unsigned char data_ov146_0229b708[];
 
-void func_ov146_0229aac8(void)
+void func_ov146_0229aac8(void *receiver)
 {
     void *obj = data_021fbe94;
     func_02002c6c((void *) data_ov146_0229b6e0, obj, 8, 0x80, 0x80, 0xff);

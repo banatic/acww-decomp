@@ -67,7 +67,7 @@ extern int func_02031acc(int, int);
 extern int func_ov068_0226fd28(int);
 extern int func_020b060c(u8 *, int, int, int);
 extern void func_020b0400(void);
-extern int func_ov003_0221abf8(UnkStruct_0226f854_2 *, int);
+extern int func_ov003_0221abf8(void *object, int flag);
 extern int func_ov003_0221a35c(UnkStruct_0226f854_2 *, int);
 extern void func_ov068_0226fd80(UnkStruct_0226f854_2 *);
 extern int func_02034270(UnkStruct_0226f854 *, Vec *, int, int);

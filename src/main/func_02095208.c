@@ -3,7 +3,7 @@
  */
 
 extern void MI_CpuCopy8(void *dst, const void *src, unsigned int size);
-extern int func_020642bc(void *a, void *b);
+extern void func_020642bc(void *a, void *b);
 
 void func_02095208(char *a, char *b)
 {

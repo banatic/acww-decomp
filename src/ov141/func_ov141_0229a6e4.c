@@ -13,7 +13,7 @@ struct GlobalType {
 };
 
 extern struct GlobalType data_021fbe40;
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(struct UnkStruct_0229a6e4 *p);
 extern void func_ov141_0229a59c(struct UnkStruct_0229a6e4 *p);
 extern int func_ov141_0229a2c4(struct UnkStruct_0229a6e4 *p, int arg);
@@ -26,7 +26,7 @@ extern void func_ov141_0229a174(struct UnkStruct_0229a6e4 *p);
 
 void func_ov141_0229a6e4(struct UnkStruct_0229a6e4 *p)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(p) != 0) {
         func_ov141_0229a59c(p);
         return;
     }

@@ -3,7 +3,7 @@
  */
 
 extern "C" int func_0206781c(void *);
-extern "C" void func_0206bb9c(void);
+extern "C" void func_0206bb9c(void *object, int code, const void *message);
 extern "C" void func_020a9334(void *, int);
 extern "C" void func_020a7994(void *, int);
 extern "C" char data_020df14c;
@@ -26,12 +26,7 @@ extern "C" void func_02069d24(UnkStruct_02069d24 *obj)
     int res1, res2;
 
     if (func_0206781c(obj->base) == 0) {
-        asm {
-            mov r0, obj
-            ldr r1, =0xde6
-            ldr r2, =data_020df14c
-            bl func_0206bb9c
-        }
+        func_0206bb9c(obj, 0xde6, &data_020df14c);
     }
 
     res1 = ((MyVirt *) ((char *) obj->base + 0x1d4c))->f3();

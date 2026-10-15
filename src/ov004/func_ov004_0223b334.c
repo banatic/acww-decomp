@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_ov004_0223b334(void)
+int func_ov004_0223b334(void *position, short angle)
 {
     return 1;
 }

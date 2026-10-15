@@ -4,7 +4,7 @@
 
 extern void func_020976a4(void);
 
-void func_02097c38(void)
+void func_02097c38(int receiver)
 {
     func_020976a4();
 }

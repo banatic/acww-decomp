@@ -8,7 +8,7 @@ extern int func_ov121_02299bd4(void *obj, u8 mode);
 extern int func_02099fe8(void);
 extern void func_ov121_0229af7c(void *obj, int a, int b);
 extern int func_0209a000(volatile u16 *p, int a);
-extern void func_ov121_0229a524(void);
+extern void func_ov121_0229a524(void *receiver);
 extern unsigned int func_ov121_0229abac(void *obj, u8 a);
 extern unsigned short func_ov121_02299b20(void *obj, u8 mode, u16 w);
 extern unsigned char *func_ov002_02208098(void *obj, unsigned char value);
@@ -70,10 +70,7 @@ void func_ov121_0229a7c8(void *obj, u8 mode)
         h2 = v;
         func_0209a000(&h2, 0);
     }
-    asm {
-        mov r0, obj
-    }
-    func_ov121_0229a524();
+    func_ov121_0229a524(obj);
     switch (*(u8 *) ((char *) obj + 0xb7)) {
         case 0:
             t = func_ov121_0229abac(obj, *(u8 *) ((char *) obj + 0xae));

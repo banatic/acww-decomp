@@ -3,32 +3,18 @@
  */
 
 extern void func_ov147_0229a01c(void *);
-extern void func_ov147_0229a6a8(void);
+extern void func_ov147_0229a6a8(void *receiver);
 extern void func_020b9ccc(void *);
 extern void func_0203e328(void);
 extern void func_020a13e8(void);
-
-// clang-format off
-asm int func_ov147_0229a0e0(void *self)
+int func_ov147_0229a0e0(void *self)
 {
-    push {r4, lr}
-    mov r4, r0
-    bl func_ov147_0229a01c
-    mov r0, r4
-    add r0, #0xb0
-    bl func_ov147_0229a6a8
-    mov r0, r4
-    add r0, #0xd0
-    bl func_020b9ccc
-    bl func_0203e328
-    ldr r0, [r4, #0x50]
-    cmp r0, #7
-    bne complete
-    bl func_020a13e8
-complete:
-    mov r0, #1
-    pop {r4}
-    pop {r3}
-    bx r3
+    func_ov147_0229a01c(self);
+    func_ov147_0229a6a8((char *) self + 0xb0);
+    func_020b9ccc((char *) self + 0xd0);
+    func_0203e328();
+    if (*(int *) ((char *) self + 0x50) == 7) {
+        func_020a13e8();
+    }
+    return 1;
 }
-// clang-format on

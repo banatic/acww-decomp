@@ -2,15 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206d420(void);
-
-// clang-format off
-asm int func_0206c5e0(register unsigned int *p)
+#pragma opt_propagation off
+extern void func_0206d420(void *self, void *part);
+void func_0206c5e0(char *self)
 {
-    ldr r2, [r0, #0x2c]
-    ldr r1, =0x14b8
-    add r1, r2, r1
-    ldr r3, =func_0206d420
-    bx r3
+    func_0206d420(self, *(char **) (self + 0x2c) + 0x14b8);
 }
-// clang-format on

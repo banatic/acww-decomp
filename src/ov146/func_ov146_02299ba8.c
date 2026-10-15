@@ -5,7 +5,7 @@
 extern unsigned short data_021fbe40;
 extern void func_ov146_02299b1c(void *p);
 extern void func_ov146_02299b58(void *p);
-extern void func_ov002_0220a4c8(void);
+extern void func_ov002_0220a4c8(void *receiver);
 
 struct UnkStruct_02299ba8 {
     char pad_00[0x98];
@@ -32,10 +32,6 @@ void func_ov146_02299ba8(struct UnkStruct_02299ba8 *self)
     if (old != self->unk_98) {
         func_ov146_02299b1c(self);
         func_ov146_02299b58(self);
-        asm {
-            ldr r0, =0x1fb4
-            add r0, self, r0
-        }
-        func_ov002_0220a4c8();
+        func_ov002_0220a4c8((char *) self + 0x1fb4);
     }
 }

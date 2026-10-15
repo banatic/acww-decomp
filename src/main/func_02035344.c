@@ -9,7 +9,7 @@ extern void func_02036940(void *);
 extern void func_0203680c(void *);
 extern void func_02035104(void *);
 extern void func_02034dcc(void *);
-extern void func_02034dc8(void);
+extern void func_02034dc8(void *receiver);
 
 void func_02035344(void *p)
 {
@@ -20,6 +20,5 @@ void func_02035344(void *p)
     func_0203680c((char *) p + 0x2a0);
     func_02035104(p);
     func_02034dcc(p);
-    asm { add r0, p, #0 }
-    func_02034dc8();
+    func_02034dc8(p);
 }

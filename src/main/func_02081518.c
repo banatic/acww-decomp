@@ -4,7 +4,7 @@
 
 extern void *func_02082500(void *b);
 extern unsigned int *func_02082164(void *local);
-extern void *func_0205195c(void *local);
+extern void func_0205195c(void *local);
 extern int func_02082308(void *local, void *b);
 extern void func_02082114(void *local, void *ptr, int n);
 extern void *func_0208214c(void *local);

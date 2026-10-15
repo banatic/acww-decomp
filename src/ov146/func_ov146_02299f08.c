@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern u8 *func_ov146_0229a174(void);
+extern unsigned int func_ov146_0229a174(void *receiver);
 extern int func_ov146_02299ee8(u8 *, u8 *);
 
 int func_ov146_02299f08(u8 *self)
@@ -16,7 +16,7 @@ int func_ov146_02299f08(u8 *self)
 
     n = 0;
     changed = 0;
-    p = func_ov146_0229a174();
+    p = (u8 *) func_ov146_0229a174(self);
     for (i = 0; i < 0x20; i++) {
         if (*(self + i * 0x23 + 0x14a) != 6) {
             continue;

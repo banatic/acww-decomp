@@ -6,7 +6,7 @@
 
 extern void MI_CpuFill8(u8 *dst, int val, int len);
 extern void MI_CpuCopy8(u8 *src, u8 *dst, int len);
-extern u8 *func_ov146_0229a174(void);
+extern unsigned int func_ov146_0229a174(void *receiver);
 extern int func_ov146_02299ee8(u8 *self, u8 *p);
 
 void func_ov146_0229a0f8(u8 *self)
@@ -16,10 +16,7 @@ void func_ov146_0229a0f8(u8 *self)
     u8 *src;
 
     MI_CpuFill8(self + 0x12a, 0, 0x460);
-    asm {
-        mov r0, self
-    }
-    base = func_ov146_0229a174();
+    base = (u8 *) func_ov146_0229a174(self);
     i = 0;
     do {
         src = (base + 0x180) + 0x23 * i;

@@ -5,7 +5,7 @@
 extern void func_ov123_0229bf04(void);
 extern void func_ov123_0229be60(void *);
 extern void func_ov123_0229a278(void *, int);
-extern void func_ov123_0229bdfc(void);
+extern void func_ov123_0229bdfc(void *receiver);
 extern int func_0206fca4(void);
 extern void func_ov123_0229b508(void *);
 extern void func_ov123_0229b3c4(void *);
@@ -36,10 +36,7 @@ void func_ov123_0229c470(UnkStruct_0229c470 *self)
     func_ov123_0229be60(self);
     self->unk_A4 = 0x22;
     func_ov123_0229a278(self, 0);
-    asm {
-        mov r0, self
-    }
-    func_ov123_0229bdfc();
+    func_ov123_0229bdfc(self);
 
     r = func_0206fca4();
     switch (r) {

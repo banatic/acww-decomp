@@ -6,7 +6,7 @@
 
 extern u16 data_021fbe40[];
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov118_0229b8b0(u8 *self);
 extern void func_ov118_0229a894(u8 *self);
 extern int func_ov090_02299078(int a);
@@ -29,7 +29,7 @@ void func_ov118_0229b8c8(u8 *self)
     int oy;
     // ENDDECLS
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov118_0229b8b0(self);
         return;
     }

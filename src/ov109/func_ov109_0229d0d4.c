@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(unsigned char *self);
 extern int func_ov002_02207d24(unsigned char *addr, int val);
 extern void func_ov002_02207d00(unsigned char *addr);
@@ -23,7 +23,7 @@ extern unsigned short data_021fbe40[];
 
 void func_ov109_0229d0d4(unsigned char *self)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov109_0229cdf8(self);
         func_ov002_02207d24(self + 0x218c, 1);
         return;

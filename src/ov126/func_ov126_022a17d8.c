@@ -9,7 +9,7 @@ extern unsigned char *func_ov002_022080a0(void *object, unsigned char value);
 extern int func_ov126_0229f7c8(void *, int);
 extern void func_0206fc4c(int);
 extern void func_ov126_0229f83c(void *);
-extern int func_0206fc1c(void *, unsigned char);
+extern void func_0206fc1c(void *, unsigned char);
 extern int func_0206fca4(void);
 extern int func_020ee45c(void *);
 extern void func_ov090_02298fa4(int argument0);

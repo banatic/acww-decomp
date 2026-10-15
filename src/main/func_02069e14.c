@@ -11,7 +11,7 @@ typedef struct {
 
 extern int data_020df160;
 extern int func_0206777c(void *);
-extern void func_0206bb9c(void);
+extern void func_0206bb9c(void *object, int code, const void *message);
 extern int func_020a82f8(int);
 extern void func_020a9334(void *, int);
 extern void func_020a7994(void *, int);
@@ -20,12 +20,7 @@ typedef int (*Callback)(void *);
 void func_02069e14(UnkStruct_02069e14 *self)
 {
     if (func_0206777c(self->unk_24) == 0) {
-        asm {
-            mov r0, self
-            ldr r1, =0xdb2
-            ldr r2, =data_020df160
-            bl func_0206bb9c
-        }
+        func_0206bb9c(self, 0xdb2, &data_020df160);
     }
     func_020a9334(self, func_020a82f8(self->unk_5C));
 

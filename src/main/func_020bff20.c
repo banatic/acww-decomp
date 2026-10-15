@@ -3,7 +3,7 @@
  */
 
 extern unsigned int func_020644cc(unsigned int size);
-extern void func_020c0324(void *param, unsigned int a, unsigned int b, int flag);
+extern void func_020c0324(void *param, int a, int b, int flag);
 extern void func_020bf220(void *param, unsigned int value, unsigned int cmd);
 
 typedef struct {

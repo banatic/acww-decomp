@@ -2,14 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov094_0229a098(void);
+extern int func_ov094_0229a098(void *receiver);
 int func_ov100_0229e208(int arg)
 {
-    // clang-format off
-    asm {
-        ldr r1, =0xb54
-        add r0, arg, r1
-    }
-    // clang-format on
-    return func_ov094_0229a098();
+    return func_ov094_0229a098((void *) (arg + 0xb54));
 }

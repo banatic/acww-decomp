@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *, const void *);
 extern void func_0208a1ec(void *, int);
-extern void func_0208a144(void *);
+extern void *func_0208a144(void *);
 
 typedef struct {
     unsigned char pad_00[0xC];

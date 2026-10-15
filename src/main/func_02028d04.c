@@ -44,7 +44,7 @@ extern void func_0201cec8(UnkStruct_02028d04 *, UnkStruct_02028d04_2 *);
 extern void func_0202da74(UnkStruct_02028d04 *, Pair8);
 extern void func_02068388(int, int);
 
-int func_02028d04(UnkStruct_02028d04 *p, void *arg)
+int func_02028d04(UnkStruct_02028d04 *p, void *arg, int value)
 {
     unsigned short q[8];
     UnkStruct_02028d04_2 z;

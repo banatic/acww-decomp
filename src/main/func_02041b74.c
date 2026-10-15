@@ -4,12 +4,11 @@
 
 extern void func_02001b34(int);
 extern void func_02001afc(int);
-extern void func_0203de68(void);
+extern void func_0203de68(int screen);
 
 void func_02041b74(void)
 {
     func_02001b34(4);
     func_02001afc(4);
-    asm { mov r0, #0 }
-    func_0203de68();
+    func_0203de68(0);
 }

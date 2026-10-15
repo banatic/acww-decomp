@@ -10,7 +10,7 @@ extern void func_ov126_0229fa80(int);
 extern void func_ov126_0229fa38(int);
 extern void func_ov126_0229f9b8(int);
 extern void func_ov126_0229f9a0(int);
-extern void *func_ov126_0229f968(int);
+extern void func_ov126_0229f968(int);
 extern void func_ov126_0229f930(int);
 extern void func_ov126_0229f90c(int);
 extern void func_ov126_0229f8e8(int);

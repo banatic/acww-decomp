@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02077ebc(void);
+extern void func_02077ebc(void *buffer);
 int func_02077c7c(int a)
 {
-    func_02077ebc();
+    func_02077ebc((void *) a);
     return a;
 }

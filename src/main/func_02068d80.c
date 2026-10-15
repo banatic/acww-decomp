@@ -5,7 +5,7 @@
 extern void func_02001b34(int);
 extern void func_02001ba4(int);
 
-void func_02068d80(void)
+void func_02068d80(void *object)
 {
     func_02001b34(4);
     func_02001ba4(1);

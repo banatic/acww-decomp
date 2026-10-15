@@ -12,7 +12,7 @@ typedef struct UnkStruct_0229ba2c {
 
 extern UnkStruct_0229ba2c *data_020ccf94;
 
-int func_ov121_0229ba2c(void)
+int func_ov121_0229ba2c(void *receiver)
 {
     if (func_020b67d4() != 0) {
         UnkStruct_0229ba2c *p = data_020ccf94;

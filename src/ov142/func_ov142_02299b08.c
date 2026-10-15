@@ -11,7 +11,7 @@ struct UnkStruct_02299b08 {
 
 extern void func_ov142_02299a80(struct UnkStruct_02299b08 *s);
 extern void func_ov142_02299ab8(struct UnkStruct_02299b08 *s);
-extern void func_ov002_0220a4c8(void *p);
+extern void func_ov002_0220a4c8(void *receiver);
 
 void func_ov142_02299b08(struct UnkStruct_02299b08 *self)
 {

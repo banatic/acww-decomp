@@ -4,7 +4,7 @@
 
 extern int func_020a7e50(void);
 
-int func_020ab270(void)
+int func_020ab270(void *object)
 {
     return func_020a7e50();
 }

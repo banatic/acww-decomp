@@ -4,7 +4,7 @@
 
 extern unsigned short data_021fbe40;
 extern int func_ov118_0229b374(void *self);
-extern void func_ov002_0220a4c8(void);
+extern void func_ov002_0220a4c8(void *receiver);
 extern void func_ov118_0229adf0(void *self, int v);
 
 typedef struct {
@@ -36,11 +36,7 @@ void func_ov118_0229abe0(void *self)
     }
 
     if (v != ((UnkStruct_0229abe0 *) self)->unk_9A) {
-        asm {
-            ldr r0, =0x678
-            add r0, self, r0
-        }
-        func_ov002_0220a4c8();
+        func_ov002_0220a4c8((char *) self + 0x678);
     }
 
     func_ov118_0229adf0(self, v);

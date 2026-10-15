@@ -5,7 +5,7 @@
 extern void *func_02064170(void *);
 extern void *func_020641c8(void *);
 extern void __register_global_object(void *, void *destructor, void *);
-extern unsigned int func_ov146_0229a174(void *);
+extern unsigned int func_ov146_0229a174(void *receiver);
 extern void *func_ov146_0229a42c(void *);
 extern void func_020a8c1c(void *);
 extern void func_020a8874(void *, void *, int);

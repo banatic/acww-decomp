@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern void *func_ov133_0229b714(void);
+extern int func_ov133_0229b714(void *receiver);
 extern int func_0206fc8c(void);
 extern int func_02077c3c(void *a);
 extern int func_02077d68(int t);
@@ -13,7 +13,7 @@ extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 
 void func_ov133_0229bc08(void *self)
 {
-    void *a = func_ov133_0229b714();
+    void *a = (void *) func_ov133_0229b714(self);
     int b = func_0206fc8c();
     int c = func_02077d68(func_02077c3c(a));
 

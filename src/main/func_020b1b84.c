@@ -15,7 +15,7 @@ extern int GX_VBlankIntr(int);
 extern int GX_HBlankIntr(int);
 extern void func_02050b78(void);
 extern void func_02037f74(void);
-extern void func_02077b70(void *, int);
+extern int func_02077b70(void *, int);
 extern void func_02077b9c(void *);
 extern char data_021d11c4[];
 extern char data_020e3134[];

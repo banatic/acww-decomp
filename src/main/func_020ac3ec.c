@@ -4,7 +4,7 @@
 
 extern void func_02001b44(int);
 
-void func_020ac3ec(void)
+void func_020ac3ec(void *receiver)
 {
     func_02001b44(2);
 }

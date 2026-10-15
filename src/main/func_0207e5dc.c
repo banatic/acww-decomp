@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0207e5d4(void);
+extern int func_0207e5d4(int a, int b, int c);
 extern unsigned int func_0203cc18(void);
 extern int func_0203cc04(void);
 
-int func_0207e5dc(void)
+int func_0207e5dc(int a, int b, int c)
 {
-    if (func_0207e5d4() == 0) {
+    if (func_0207e5d4(a, b, c) == 0) {
         int tmp = (unsigned int) func_0203cc18() >> 1;
         if (func_0203cc04() < tmp) {
             return 0;

@@ -11,7 +11,7 @@ typedef struct UnkStruct_0206a0cc {
 
 extern "C" {
 extern int func_02067964(const void *p);
-extern void func_0206bb9c(void);
+extern void func_0206bb9c(void *object, int code, const void *message);
 extern int func_020a82f8(int value);
 extern void func_020a9334(UnkStruct_0206a0cc *self, int value);
 extern void func_020a7994(void *addr, int value);
@@ -29,12 +29,7 @@ class UnkStruct_0206a0cc_2 {
 extern "C" void func_0206a0cc(UnkStruct_0206a0cc *self)
 {
     if (func_02067964(self->unk_24) == 0) {
-        asm {
-            mov r0, self
-            ldr r1, =0xce0
-            ldr r2, =data_020df198
-            bl func_0206bb9c
-        }
+        func_0206bb9c(self, 0xce0, &data_020df198);
     }
     func_020a9334(self, func_020a82f8(self->unk_5C));
     func_020a9334(self, ((UnkStruct_0206a0cc_2 *) (self->unk_24 + 0x1cec))->m3());

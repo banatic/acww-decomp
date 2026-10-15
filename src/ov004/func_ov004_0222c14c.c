@@ -9,7 +9,7 @@ extern int func_0200e828(void *arg0);
 extern int func_02064594(short v);
 extern int func_ov004_0222b214(void *p, int a, int b, int c, int e, int f, short g);
 
-int func_ov004_0222c14c(int *a, int *b, short *c, int d)
+int func_ov004_0222c14c(int *a, int *b, short *c, short d, int mode)
 {
     void *p = func_02096718(4);
     int n;

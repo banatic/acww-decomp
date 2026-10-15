@@ -4,7 +4,7 @@
 
 extern unsigned int func_020eb844(void);
 
-unsigned int func_ov140_0229a15c(void)
+unsigned int func_ov140_0229a15c(void *receiver)
 {
     return func_020eb844();
 }

@@ -3,7 +3,7 @@
  */
 
 extern int func_0206fca4(void);
-extern int func_ov107_0229c354(void);
+extern int func_ov107_0229c354(void *receiver);
 extern void func_02045d98(int key);
 extern int func_02073d90(void *ptr);
 extern void func_02073820(void *ptr);
@@ -22,12 +22,7 @@ void func_ov107_0229c2c8(int a, int b)
     void *ptr;
 
     r4 = func_0206fca4();
-    // clang-format off
-    asm {
-        mov r0, a
-    }
-    // clang-format on
-    r6 = func_ov107_0229c354();
+    r6 = func_ov107_0229c354((void *) a);
     switch (r4 - 0x29) {
         case 0:
         case 1:

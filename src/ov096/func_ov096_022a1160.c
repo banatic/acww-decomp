@@ -5,7 +5,7 @@
 extern int func_0206f56c(void);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov096_0229c2fc(void *arg, int val);
-extern int func_ov096_0229ec4c(void);
+extern int func_ov096_0229ec4c(void *receiver);
 extern void func_ov096_0229f9dc(void *arg, unsigned char byte);
 extern void func_ov002_022096d8(void *ptr, int val);
 extern int func_ov002_02207d24(void *ptr, int val);
@@ -24,13 +24,7 @@ void func_ov096_022a1160(unsigned char *arg)
     if (func_ov096_0229c2fc(arg, 4) == 0) {
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, arg
-    }
-    // clang-format on
-    if (func_ov096_0229ec4c() == 0)
-    {
+    if (func_ov096_0229ec4c(arg) == 0) {
         return;
     }
     func_ov096_0229f9dc(arg, arg[0xb2]);

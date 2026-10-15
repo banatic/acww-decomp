@@ -3,7 +3,7 @@
  */
 
 extern void *func_0207cec0(void *, int);
-extern int func_0207f1d4(void);
+extern int func_0207f1d4(void *handle);
 extern int func_0207f1d8(void *);
 
 extern unsigned char data_021e5a2c[];
@@ -25,7 +25,7 @@ int func_ov003_0221d3a4(void *p)
     }
     h = func_0207cec0((void *) data_021e5a2c, idx);
     if (h != 0) {
-        if (func_0207f1d4() == 0) {
+        if (func_0207f1d4(h) == 0) {
             return 0;
         }
         if (func_0207f1d8(h) == 0 || func_0207f1d8(h) == 3 || func_0207f1d8(h) == 4 || func_0207f1d8(h) == 5 ||

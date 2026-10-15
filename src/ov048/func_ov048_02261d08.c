@@ -17,9 +17,9 @@ extern void func_0206844c(void *a, char *b, void *c);
 extern int func_ov048_0226254c(struct UnkStruct_02261d08 *self);
 extern int func_020984e8(void);
 extern int func_02099664(int);
-extern void func_02077bcc(void);
+extern void *func_02077bcc(void *record);
 extern void func_020a0194(void);
-extern void func_020a0174(void);
+extern int func_020a0174(void);
 extern int func_020eb6ac(u32 p);
 extern int func_020eb064(u32 p);
 extern const u8 data_ov048_02263964[];
@@ -41,11 +41,7 @@ void func_ov048_02261d08(struct UnkStruct_02261d08 *self)
         return;
     }
 
-    func_02099664((int) func_020984e8());
-    func_02077bcc();
-    asm {
-        mov p, r0
-    }
+    p = (u32) func_02077bcc((void *) func_02099664((int) func_020984e8()));
     func_020a0194();
     if (func_020eb6ac(p) != 0) {
         if (func_020eb064(p) != 0) {

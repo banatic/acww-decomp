@@ -20,7 +20,7 @@ typedef struct UnkStruct_0200f888 {
 
 extern int func_0200f290(void *self, int cmd);
 extern int func_020b1cb0(const int *p);
-extern void func_0200443c(int receiver, unsigned short value);
+extern void func_0200443c(int receiver, unsigned int value, unsigned int flag);
 
 void func_0200f888(UnkStruct_0200f888 *self)
 {
@@ -49,21 +49,9 @@ void func_0200f888(UnkStruct_0200f888 *self)
 
     if (func_0200f290(self, 0x19) != 0) {
         int value = func_020b1cb0(local);
-        asm {
-            add r1, value, #0
-            ldr r0, =0x83c
-            add r0, self, r0
-            add r2, flag, #0
-            bl func_0200443c
-        }
+        func_0200443c((int) ((char *) self + 0x83c), value, flag);
     } else {
         int value = func_020b1cb0(local);
-        asm {
-            add r1, value, #0
-            ldr r0, =0x880
-            add r0, self, r0
-            add r2, flag, #0
-            bl func_0200443c
-        }
+        func_0200443c((int) ((char *) self + 0x880), value, flag);
     }
 }

@@ -6,7 +6,7 @@ extern const char data_020d20b8[];
 extern const char data_020d2078[];
 extern const char data_020d207c[];
 
-void func_020b4758(char *dst, int n, const char *src)
+void func_020b4758(char *dst, unsigned int n, const char *src, unsigned int source_size)
 {
     int i;
     const char *nul;

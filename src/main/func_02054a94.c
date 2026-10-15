@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02054a94(void) {}
+void func_02054a94(unsigned int index, unsigned int item) {}

@@ -5,7 +5,7 @@
 extern int func_020644cc(int);
 extern int data_020cac9c[];
 
-int func_02047114(void)
+int func_02047114(void *object)
 {
     unsigned short r4 = 0x1554;
     int r0 = func_020644cc(100);

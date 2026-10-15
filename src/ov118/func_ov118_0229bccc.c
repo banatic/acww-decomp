@@ -4,7 +4,7 @@
 
 extern unsigned char data_021fbdd8; // 0x021fbdd8
 extern unsigned char data_021f6c54; // 0x021f6c54
-extern void func_0208e95c(unsigned char *p, int n);
+extern void *func_0208e95c(unsigned char *p, int n);
 extern void func_ov118_0229b8b0(unsigned char *p);
 extern void func_ov118_0229ac44(unsigned char *p, int n);
 

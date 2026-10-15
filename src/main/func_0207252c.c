@@ -5,7 +5,7 @@
 extern int data_021d054c[4][8];
 extern int data_021d04e4[8];
 
-void func_0207252c(void)
+void func_0207252c(void *receiver)
 {
     unsigned char i, j, k;
     k = 0;

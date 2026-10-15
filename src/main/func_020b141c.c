@@ -3,10 +3,10 @@
  */
 
 extern int func_020b15b0(void);
-extern int func_02051c08(int a, int b, int c);
+extern void func_02051c08(int a, int b, int c);
 
-int func_020b141c(int a, int b)
+void func_020b141c(int a, int b)
 {
     int t = func_020b15b0();
-    return func_02051c08(a, t + b * 74 + 30, 6);
+    func_02051c08(a, t + b * 74 + 30, 6);
 }

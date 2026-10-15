@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_0209d368(void)
+int func_0209d368(int id, int index)
 {
     return 0;
 }

@@ -4,7 +4,7 @@
 
 extern int func_ov134_02299a14(void *obj);
 extern void func_ov134_02299a00(void *obj);
-extern void func_ov002_0220a4c8(void);
+extern void func_ov002_0220a4c8(void *receiver);
 
 struct UnkStruct_02299b3c {
     char data[0x4c];
@@ -24,13 +24,7 @@ void func_ov134_02299b3c(struct UnkStruct_02299b3c_2 *obj)
     func_ov134_02299a00(obj);
     diff = obj->unk_6C - obj->unk_64;
     if (diff >= 4 || diff <= -4) {
-        // clang-format off
-        asm {
-            mov r0, obj
-            add r0, #0x18
-        }
-        // clang-format on
-        func_ov002_0220a4c8();
+        func_ov002_0220a4c8((char *) obj + 0x18);
         obj->unk_6C = obj->unk_64;
     }
 }

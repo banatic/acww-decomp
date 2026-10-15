@@ -7,7 +7,7 @@ extern int func_ov095_0229bebc(void *p, int v);
 extern void func_ov126_022a0168(void *p);
 extern int func_ov126_022a027c(void *p, int v);
 extern int func_ov126_022a032c(void *p, int v);
-extern void func_ov126_022a0110(void *p);
+extern void func_ov126_022a0110(void *receiver);
 extern void func_ov126_022a0614(void *p);
 extern void func_ov126_022a054c(void *p);
 extern void func_ov126_022a0ae0(void *p, int v);

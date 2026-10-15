@@ -4,16 +4,8 @@
 
 extern void MIi_CpuClearFast(unsigned int data, void *dest, unsigned int size);
 
-// clang-format off
-asm int func_020015fc(register int data, register void *dest, register unsigned int size)
+void func_020015fc(unsigned int data, void *dest, unsigned int size)
 {
-    push {lr}
-    sub sp, #4
-    str r0, [sp]
-    ldr r0, [sp]
-    bl MIi_CpuClearFast
-    add sp, #4
-    pop {r3}
-    bx r3
+    volatile unsigned int fill = data;
+    MIi_CpuClearFast(fill, dest, size);
 }
-// clang-format on

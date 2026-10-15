@@ -13,14 +13,14 @@ extern void *func_020984e8(void);
 extern void func_02077ec0(void *buf);
 extern void func_02077e68(void *buf);
 extern void *func_02099664(void *a);
-extern void *func_02077bcc(void *b);
+extern void *func_02077bcc(void *record);
 extern int func_02077dd4(void *p, char *q, void *r);
 extern void func_ov133_0229bb78(char *self, int a, int b);
 extern void RtcSendPxiCommand(int cmd);
 extern void func_02077ebc(void *buf);
 extern int func_ov133_0229b660(char *self);
 extern int func_ov133_0229b6b8(char *self, void *buf);
-extern void *func_ov133_0229b714(char *self);
+extern int func_ov133_0229b714(void *receiver);
 extern void *func_02077c3c(void *e);
 extern void func_0206fc4c(int v);
 extern void *func_ov002_0220a720(char *p, int v);
@@ -69,7 +69,7 @@ void func_ov133_0229b500(char *self)
         func_02077ebc(buf);
         return;
     }
-    e = func_ov133_0229b714(self);
+    e = (void *) func_ov133_0229b714(self);
     t = func_02077c3c(e);
     func_02077dd4(t, self + 0xa4, func_02077bcc(func_02099664(a)));
     func_0206fc4c(1);

@@ -10,7 +10,7 @@ extern void func_ov096_0229eab4(char *p);
 extern void func_ov094_0229a850(char *p, int a, void *b);
 extern void func_ov094_0229a768(char *p, int a, void *b);
 extern void func_ov094_0229b738(char *p, int a, void *b);
-extern void func_ov094_02299d84(char *p, void *b);
+extern void func_ov094_02299d84(void *receiver, int value);
 extern int func_ov002_02207f60(char *p);
 extern void func_0208f210(char *p, int a, int b);
 
@@ -39,7 +39,7 @@ int func_ov096_022a1e8c(char *self)
         func_ov094_0229a850(self + 0x358, 0, *(void **) (self + 0x98));
         func_ov094_0229a768(self + 0x358, 0, *(void **) (self + 0x98));
         func_ov094_0229b738(self + 0xdb8, 0, *(void **) (self + 0x98));
-        func_ov094_02299d84(self + 0xde0, *(void **) (self + 0x98));
+        func_ov094_02299d84(self + 0xde0, (int) *(void **) (self + 0x98));
     }
     if (func_ov096_0229c2fc(self, 0x100) != 0) {
         func_0208f210(self + 0x2d9c, 0, func_ov002_02207f60(self));

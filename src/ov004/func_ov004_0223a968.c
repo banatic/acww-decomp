@@ -11,7 +11,7 @@ extern UnkStruct_0223a968 data_ov004_02247cf4[];
 extern int func_0209ded0(void);
 extern void func_0209def4(void *buf);
 
-int func_ov004_0223a968(void)
+int func_ov004_0223a968(void *receiver)
 {
     unsigned char buf[4];
     unsigned char *rec;

@@ -42,7 +42,7 @@ int func_02098880(char *t);
 int func_0209f180(char *t);
 void func_0206844c(void *a, u8 *p, int c);
 void func_ov147_02299fc8(void *p, int n);
-void func_ov147_02299374(UnkStruct_0229942c_2 *self);
+void func_ov147_02299374(void *receiver);
 void func_ov147_0229942c(UnkStruct_0229942c_2 *self);
 }
 

@@ -10,7 +10,7 @@ typedef union {
 } Color;
 extern unsigned char *func_020ba4a0(void);
 extern short func_020bbf00(int);
-short func_ov004_02231b98(void)
+short func_ov004_02231b98(void *receiver)
 {
     unsigned char *owner = func_020ba4a0();
     // Keep the observed halfword store/reload before the color copy.

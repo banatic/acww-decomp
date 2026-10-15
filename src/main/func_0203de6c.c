@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_0203de6c(void) {}
+void func_0203de6c(int screen) {}

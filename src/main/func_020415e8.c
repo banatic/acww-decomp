@@ -6,7 +6,7 @@ extern int func_0206e980(void);
 
 extern unsigned char data_021c75a0[];
 
-void func_020415e8(void)
+void func_020415e8(void *receiver)
 {
     if (func_0206e980() != 0) {
         *((volatile unsigned char *) data_021c75a0) = 2;

@@ -50,7 +50,7 @@ extern void func_0208b520(void);
 extern void func_020157c8(UnkStruct_02278b64 *, int, int);
 extern int func_02015828(UnkStruct_02278b64 *, int);
 extern void func_ov070_02279820(UnkStruct_02278b64 *, int);
-extern void func_0208b514(void);
+extern void func_0208b514(unsigned int context);
 extern int func_ov070_02278e30(UnkStruct_02278b64 *);
 extern int func_0202ea80(int, int);
 extern void func_0204093c(int);
@@ -127,7 +127,8 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
         }
     }
 
-    switch ((int) self->state) {
+    st = self->state;
+    switch ((int) st) {
         case 0:
             if (func_0206300c(func_02099710(ent), 0) == 0x22) {
                 if (func_020950c0(func_02099870(ent)) == 0) {
@@ -167,7 +168,7 @@ void func_ov070_02278b64(UnkStruct_02278b64 *self)
             }
             break;
         case 0x36:
-            func_0208b514();
+            func_0208b514(st);
             if (func_ov070_02278e30(self) == 0) {
                 v = 0x37;
             } else {

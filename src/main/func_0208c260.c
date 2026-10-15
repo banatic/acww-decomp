@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *elem, void *data);
 extern void func_0208a1ec(void *elem, int flag);
-extern void func_0208a144(void *elem);
+extern void *func_0208a144(void *elem);
 extern unsigned char data_020d5b3c[];
 
 void func_0208c260(void *arg0)

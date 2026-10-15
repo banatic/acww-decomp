@@ -8,7 +8,7 @@ extern unsigned int func_02088bc0(int);
 extern int func_02099870(int);
 extern int func_020950c0(int);
 
-int func_ov053_0226075c(void)
+int func_ov053_0226075c(void *receiver)
 {
     int first = func_020984e8();
 

@@ -6,7 +6,7 @@ extern int func_ov121_02299a70(void);
 extern void func_ov121_0229af7c(void *, int, int);
 extern int func_02099fe8(void);
 extern unsigned short *func_ov004_02232080(void);
-extern int func_ov121_0229a50c(void *);
+extern int func_ov121_0229a50c(void *receiver);
 extern void *func_ov121_0229abac(void *, unsigned char);
 extern void func_02034b58(void *, void *, int, int);
 extern int func_0209a000(volatile unsigned short *, int);

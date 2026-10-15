@@ -3,12 +3,11 @@
  */
 
 extern void func_02078ae4(void *);
-extern void func_02083cb4(void);
+extern void func_02083cb4(void *receiver);
 
 void *func_02083654(void *arg)
 {
     func_02078ae4((char *) arg + 4);
-    asm { add r0, arg, #0 }
-    func_02083cb4();
+    func_02083cb4(arg);
     return arg;
 }

@@ -4,7 +4,7 @@
 
 extern int func_020ec1e8(void);
 
-unsigned char func_ov048_022609a4(void)
+unsigned char func_ov048_022609a4(void *receiver)
 {
     int flag = 1;
     if (func_020ec1e8() != 3 && func_020ec1e8() != 4) {

@@ -5,7 +5,7 @@
 extern void func_020479f0(int a, int b, int c);
 extern void func_020b2eb8(void);
 
-int func_02047854(int a, int b, int c, int d)
+int func_02047854(int a, unsigned short b, int c, int d, int extra)
 {
     int result = 0;
     switch (b) {

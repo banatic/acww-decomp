@@ -10,7 +10,7 @@ typedef struct {
 extern UnkStruct_02260484 *data_020ccf94;
 extern unsigned char func_02073dd4(UnkStruct_02260484 *p, int val);
 
-unsigned char func_ov054_02260484(void)
+unsigned char func_ov054_02260484(void *receiver)
 {
     return func_02073dd4(data_020ccf94, data_020ccf94->unk_64);
 }

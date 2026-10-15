@@ -6,10 +6,10 @@ extern void *func_02073144(void *);
 extern void func_020a0194(void);
 extern void *func_020984e8(void);
 extern void *func_02099664(void *);
-extern int func_02077bcc(void *);
+extern void *func_02077bcc(void *record);
 extern long long func_020eb694(int);
 extern void func_ov048_02262588(void *p, unsigned long long value);
-extern void func_020a0174(void);
+extern int func_020a0174(void);
 extern void *data_020ccf94;
 
 int func_ov048_02260a60(void *obj)
@@ -30,7 +30,7 @@ int func_ov048_02260a60(void *obj)
         case 0:
             func_020a0194();
             ret = 0x26;
-            v = func_020eb694(func_02077bcc(func_02099664(func_020984e8())));
+            v = func_020eb694((int) func_02077bcc(func_02099664(func_020984e8())));
             func_ov048_02262588(obj, (unsigned long long) v);
             func_020a0174();
             break;

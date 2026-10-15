@@ -5,7 +5,7 @@
 extern int func_ov111_0229f9fc(void *argument0);
 extern void func_ov111_0229f524(int);
 extern void func_ov111_0229fd08(int);
-extern void func_ov111_0229f854(void);
+extern void func_ov111_0229f854(void *receiver);
 
 void func_ov111_0229f9d4(int value_r0)
 {
@@ -14,11 +14,6 @@ void func_ov111_0229f9d4(int value_r0)
         func_ov111_0229f524(value_r4);
         func_ov111_0229fd08(value_r4);
     } else {
-        // clang-format off
-        asm {
-            mov r0, value_r4
-        }
-        // clang-format on
-        func_ov111_0229f854();
+        func_ov111_0229f854((void *) value_r4);
     }
 }

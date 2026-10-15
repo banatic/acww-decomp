@@ -16,7 +16,7 @@ extern int func_0207094c(void *, int);
 extern void *func_020707d0(void *);
 extern int func_020a87e0(void *, void *);
 extern int func_02051c8c_unk(void *, int);
-extern int func_02051c08(void *, void *, int);
+extern void func_02051c08(void *, void *, int);
 extern void func_ov002_0220a580(void *);
 extern void MI_CpuFill8(void *, int, int);
 extern void *func_020707b8(void *);

@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern u8 *func_ov140_0229a15c(u8 *self);
+extern unsigned int func_ov140_0229a15c(void *receiver);
 extern int func_ov140_0229a1a4(u8 *self, u8 *p);
 
 int func_ov140_0229a384(u8 *self)
@@ -17,7 +17,7 @@ int func_ov140_0229a384(u8 *self)
     u8 *base;
 
     changed = 0;
-    base = func_ov140_0229a15c(self);
+    base = (u8 *) func_ov140_0229a15c(self);
     idx = self[0x8dd] * 6;
     for (i = 0; i < 6; i++) {
         off = idx;

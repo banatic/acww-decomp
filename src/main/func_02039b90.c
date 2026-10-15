@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d368(void);
+extern int func_0209d368(int id, int index);
 extern void func_020399c8(void *);
 extern void func_0203990c(void *);
 extern void func_02039e34(void *);
@@ -22,17 +22,9 @@ void func_02039b90(struct UnkStruct_02039b90 *p)
     int r;
 
     if (p->c == 0) {
-        asm {
-            ldr r0, =0x138
-            mov r1, #3
-        }
-        r = func_0209d368() + 0xb;
+        r = func_0209d368(0x138, 3) + 0xb;
     } else {
-        asm {
-            ldr r0, =0x12e
-            mov r1, #3
-        }
-        r = func_0209d368() - 0xb;
+        r = func_0209d368(0x12e, 3) - 0xb;
     }
     p->unk_4C += r;
 
@@ -46,17 +38,9 @@ void func_02039b90(struct UnkStruct_02039b90 *p)
     func_02039e34(p);
 
     if (p->c == 0) {
-        asm {
-            ldr r0, =0x138
-            mov r1, #4
-        }
-        r = func_0209d368();
+        r = func_0209d368(0x138, 4);
     } else {
-        asm {
-            ldr r0, =0x12e
-            mov r1, #4
-        }
-        r = func_0209d368() + 0xa;
+        r = func_0209d368(0x12e, 4) + 0xa;
     }
     p->ac = r;
 

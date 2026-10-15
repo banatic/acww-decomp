@@ -6,7 +6,7 @@ extern int func_0209f150(void *ptr, int value);
 
 extern unsigned char data_021dc7a8[];
 
-int func_020af648(void)
+int func_020af648(void *object)
 {
     return func_0209f150((void *) data_021dc7a8, 7);
 }

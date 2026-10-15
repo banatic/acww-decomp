@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(void *);
 extern int func_ov095_02299a54(void *, int);
 extern void func_ov002_0220a2b4(void *);
@@ -23,7 +23,7 @@ void func_ov111_022a05dc(void *p)
 {
     int res2;
     int r;
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(p) != 0) {
         func_ov111_022a0204(p);
         return;
     }

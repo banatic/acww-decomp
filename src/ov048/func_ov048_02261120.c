@@ -16,7 +16,7 @@ extern int func_0209985c(int object);
 extern void func_0209fd54(void);
 extern void func_0209fcd8(void);
 extern void func_0209fc60(void);
-extern int func_ov048_02262658(void);
+extern int func_ov048_02262658(void *receiver);
 extern void func_020a01f8(void);
 extern int func_020a1518(void);
 extern void func_0206844c(void *ptr, char *byte, int value);
@@ -51,10 +51,7 @@ void func_ov048_02261120(UnkStruct_02261120 *p)
     func_0209fd54();
     func_0209fcd8();
     func_0209fc60();
-    asm {
-        mov r0, p
-    }
-    func_ov048_02262658();
+    func_ov048_02262658(p);
     func_020a01f8();
     if (func_020a1518() == 0) {
         goto common_exit;

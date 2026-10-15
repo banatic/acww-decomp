@@ -3,7 +3,7 @@
  */
 
 extern void func_ov111_022a09d8(void);
-extern int func_ov095_0229b324(void);
+extern int func_ov095_0229b324(void *receiver);
 extern void func_ov002_02208090(void *, int);
 extern int func_ov111_0229efd8(void *, int);
 extern void func_ov111_022a0910(void *);
@@ -12,13 +12,7 @@ void func_ov111_022a0940(void *arg0)
 {
     void *receiver = arg0;
     func_ov111_022a09d8();
-    // clang-format off
-    asm {
-        mov r0, receiver
-        add r0, #0xac
-    }
-    // clang-format on
-    func_ov095_0229b324();
+    func_ov095_0229b324((void *) ((char *) receiver + 0xac));
     func_ov002_02208090(receiver, 1);
     if (func_ov111_0229efd8(receiver, 0x20) == 0) {
         func_ov111_022a0910(receiver);

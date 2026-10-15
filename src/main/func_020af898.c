@@ -4,7 +4,7 @@
 
 extern unsigned int func_020af028(void *);
 extern unsigned int func_020af8e0(void *, unsigned int);
-extern int func_020af648(void);
+extern int func_020af648(void *object);
 extern int data_021f395c;
 
 int func_020af898(void *param)
@@ -20,8 +20,8 @@ int func_020af898(void *param)
         }
         {
             int z;
-            asm { ldr r0, =data_021f395c }
-            z = func_020af648();
+
+            z = func_020af648(&data_021f395c);
             if (x == 2) {
                 if (z == 0) {
                     goto label;

@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_ov141_02299fcc(void) {}
+void func_ov141_02299fcc(void *receiver) {}

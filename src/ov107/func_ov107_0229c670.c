@@ -11,7 +11,7 @@ typedef struct {
     short unk_8E;
 } UnkStruct_0229c670;
 
-extern int func_ov107_0229c354(void);
+extern int func_ov107_0229c354(void *receiver);
 extern int func_ov003_0222ea84(int);
 extern unsigned short func_ov107_0229d0f0(UnkStruct_0229c670_2 *, int);
 extern int func_020644cc(int);
@@ -30,7 +30,7 @@ void func_ov107_0229c670(UnkStruct_0229c670_2 *o)
     unsigned short t1, t2;
     int h, y, r, d;
 
-    h = func_ov107_0229c354();
+    h = func_ov107_0229c354(o);
     if (func_ov003_0222ea84(h) != 0) {
         return;
     }

@@ -5,7 +5,7 @@
 extern void func_02001a1c(int);
 extern void func_02001a7c(void);
 
-void func_ov002_0220b6b8(void)
+void func_ov002_0220b6b8(void *receiver)
 {
     // DECLS
     // ENDDECLS

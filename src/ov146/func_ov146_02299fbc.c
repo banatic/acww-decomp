@@ -17,12 +17,12 @@ typedef struct UnkStruct_02299fbc {
     u8 cnt[0x20];
     Rec rec[0x20];
 } UnkStruct_02299fbc;
-extern void *func_ov146_0229a174(void);
+extern unsigned int func_ov146_0229a174(void *receiver);
 extern int func_ov146_02299ee8(UnkStruct_02299fbc *s, u8 *p);
 extern void MI_CpuCopy8(void *dst, void *src, int n); // func_021175fc
 extern int func_ov146_0229a42c(UnkStruct_02299fbc *s);
 extern void func_020708e4(int a, short *s, int n);
-extern void func_02070a98(int a, int b, int c, int d, int e, int f, int g);
+extern void func_02070a98(void *receiver, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag);
 extern void func_02070a04(int a, int b, int c);
 void func_ov146_02299fbc(UnkStruct_02299fbc *self)
 {
@@ -34,7 +34,7 @@ void func_ov146_02299fbc(UnkStruct_02299fbc *self)
     int off;
     u16 digits[3];
 
-    buf = (u8 *) func_ov146_0229a174();
+    buf = (u8 *) func_ov146_0229a174(self);
     count = 0;
     for (i = 0; i < 0x20; i++) {
         off = i * 0x23;
@@ -70,7 +70,7 @@ void func_ov146_02299fbc(UnkStruct_02299fbc *self)
             digits[2] = 0;
         }
         func_020708e4(disp, (short *) digits, 3);
-        func_02070a98(disp, 8, 0x1f4, 2, 9, 0, 1);
+        func_02070a98((void *) disp, 8, 0x1f4, 2, 9, 0, 1);
         func_02070a04(disp, 0, 0);
     }
 }

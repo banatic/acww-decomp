@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020ac444(void)
+void func_020ac444(void *receiver)
 {
     volatile unsigned short *reg = (volatile unsigned short *) 0x0400000A;
 

@@ -17,7 +17,7 @@ extern void func_0206844c(void *, unsigned char *, int);
 extern int data_021dc7bc;
 extern int data_ov147_0229a8b0;
 
-void func_ov147_02299374(void)
+void func_ov147_02299374(void *receiver)
 {
     void *h;
     int sel;

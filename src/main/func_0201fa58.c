@@ -55,7 +55,7 @@ extern void func_02015e10(UnkStruct_0201fa58 *s, unsigned char *p, int k);
 extern int func_020951bc(int p);
 extern void func_02015e40(UnkStruct_0201fa58 *s, int p, int k);
 extern int func_02086744(UnkStruct_0201fa58_2 *t);
-extern void func_02015f00(UnkStruct_0201fa58 *s, int a, int b, int c, int d);
+extern void func_02015f00(void *s, int a, int b, int c, int d);
 extern void func_02015de4(UnkStruct_0201fa58 *s, Blk *b, int c, int d);
 extern int func_020036e8(unsigned char *p);
 extern int func_0202da38(UnkStruct_0201fa58 *s, int *a, unsigned char *b, int c, int d, int e, int f, int g, int h);

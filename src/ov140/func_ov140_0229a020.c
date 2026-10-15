@@ -4,7 +4,7 @@
 
 extern void *func_ov140_0229a12c(void *);
 extern void func_020708e4(void *, void *, int);
-extern void func_02070a98(void *, int, int, int, int, int, int);
+extern void func_02070a98(void *receiver, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag);
 extern void func_02070a04(void *, int, int);
 
 struct self_0229a020 {

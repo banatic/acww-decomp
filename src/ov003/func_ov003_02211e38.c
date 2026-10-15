@@ -32,7 +32,7 @@ extern unsigned int *func_0200f27c(void *self, int k);
 extern int func_0200f328(void *self, int k);
 extern void func_020110c4(short *p, void *self);
 extern int func_02073908(void *a, int b);
-extern int func_ov003_0221abf8(int h, int k);
+extern int func_ov003_0221abf8(void *object, int flag);
 extern int FX_MulFunc(int a, int b);
 extern int func_020912d4(int a, int *v, short *p, int q);
 
@@ -206,7 +206,7 @@ void func_ov003_02211e38(char *self)
             break;
         case 3:
             if (func_02073908(data_020ccf94, *(int *) (self + 0x800)) != 0) {
-                if (func_ov003_0221abf8(*(int *) (self + 0x168), 1) != 0) {
+                if (func_ov003_0221abf8(*(void **) (self + 0x168), 1) != 0) {
                     break;
                 }
                 func_0200f328(self, 0x7df);

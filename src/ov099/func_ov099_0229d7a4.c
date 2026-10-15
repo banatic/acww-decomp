@@ -7,7 +7,7 @@ extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern void func_ov002_02207ce4(void *, int);
 extern void func_ov002_02207d00(void *);
 extern int func_ov099_0229c2ac(void *, int);
-extern int func_ov099_0229cadc(void);
+extern int func_ov099_0229cadc(void *receiver);
 extern int func_ov099_0229cac8(void *, int);
 extern void func_ov099_0229d004(void *, unsigned char);
 extern void func_ov099_0229c3e0(void *, unsigned char);
@@ -19,11 +19,7 @@ void func_ov099_0229d7a4(unsigned char *self)
         func_ov002_02207ce4(self + 0x218c, 0x3c);
     } else {
         if (func_ov099_0229c2ac(self, 4) != 0) {
-            asm {
-                mov r0, self
-            }
-            if (func_ov099_0229cadc() != 0)
-            {
+            if (func_ov099_0229cadc((void *) self) != 0) {
                 func_ov099_0229d004(self, self[0x2904]);
                 return;
             }

@@ -9,7 +9,7 @@ struct UnkStruct_0229fc9c {
 };
 extern struct UnkStruct_0229fc9c *data_020ccf94;
 
-void func_ov111_0229fc9c(void)
+void func_ov111_0229fc9c(void *receiver)
 {
     func_020398d4(data_020ccf94->unk_64);
 }

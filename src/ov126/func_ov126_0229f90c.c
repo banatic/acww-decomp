@@ -4,7 +4,7 @@
 
 extern int func_ov126_0229fc54(void);
 extern int func_02077c34(int argument0);
-extern int func_02051c08(int, int, int);
+extern void func_02051c08(int, int, int);
 
 void func_ov126_0229f90c(int *param)
 {

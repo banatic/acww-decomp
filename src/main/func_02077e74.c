@@ -7,7 +7,7 @@ typedef struct {
 } Triple;
 
 extern unsigned int func_020eb058(void *p1, Triple *p2);
-extern void func_02077ebc(Triple *p);
+extern void func_02077ebc(void *buffer);
 
 unsigned int func_02077e74(void *p1, Triple *p2)
 {

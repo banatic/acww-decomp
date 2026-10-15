@@ -5,12 +5,12 @@
 extern int data_021dc7a8[];
 extern int func_0209ded0(void);
 extern void func_0209e474(void *ptr);
-extern int func_020409c8(const void *ptr, int count);
+extern void *func_020409c8(void *ptr, int count);
 
-int func_02040980(void)
+void *func_02040980(void *context)
 {
     char *base = (char *) data_021dc7a8;
-    int result = 0;
+    void *result = 0;
     int status = func_0209ded0();
 
     if (status != 0) {

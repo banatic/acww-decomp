@@ -15,7 +15,7 @@ extern void func_02087500(void *p, int v);
 extern void func_02087358(void *p, void *q);
 extern void func_02087274(void *p, void *q);
 
-void func_020873b4(void *param)
+void func_020873b4(void *param, int days)
 {
     u8 data[16];
     int r;

@@ -31,7 +31,7 @@ extern int data_021c526c;
 extern int data_021c758c;
 extern int data_021c7590;
 
-void func_020414e0(void)
+void func_020414e0(void *receiver)
 {
     unsigned int local[4];
     int r0;

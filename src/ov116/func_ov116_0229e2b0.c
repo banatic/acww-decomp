@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov114_0229d688(void *);
+extern void func_ov114_0229d688(void *receiver);
 extern void func_ov114_0229cadc(void *);
 
 void func_ov116_0229e2b0(void *param)

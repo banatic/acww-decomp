@@ -4,7 +4,7 @@
 
 extern void func_020b9ed8(void *a);
 extern void func_020ba1a8(void *a, int b, int c, int d);
-extern unsigned char func_020ba128(void *a);
+extern int func_020ba128(void *object);
 extern int func_020b9978(void *a);
 extern void func_020ba004(void *a);
 

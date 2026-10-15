@@ -18,7 +18,7 @@ extern int _s32_div_f(int a, int b);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
 
-void func_020c0324(int *out, int px, int py)
+void func_020c0324(int *out, int px, int py, int flag)
 {
     UnkStruct_020c0324_2 p;
     int d;

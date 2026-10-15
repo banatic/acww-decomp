@@ -12,7 +12,7 @@ extern struct UnkStruct_020bf5b8 {
 
 extern void func_0208a1f0(void *dst, struct UnkStruct_020bf5b8 *e);
 extern void func_0208a1ec(void *dst, int c);
-extern void func_0208a144(void *dst);
+extern void *func_0208a144(void *dst);
 
 struct UnkStruct_020bf5b8_2 {
     char pad_00[0xC];

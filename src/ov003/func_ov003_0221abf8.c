@@ -9,8 +9,9 @@ struct UnkStruct_0221abf8 {
     int unk_39C;
 };
 
-int func_ov003_0221abf8(struct UnkStruct_0221abf8 *obj)
+int func_ov003_0221abf8(void *object, int flag)
 {
+    struct UnkStruct_0221abf8 *obj = object;
     if (obj->unk_39C < 7) {
         return func_ov003_0221a35c(obj, 3);
     }

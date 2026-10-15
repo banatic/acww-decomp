@@ -13,7 +13,7 @@ extern Tri *func_02095794(int);
 extern void func_0204f818(volatile int *, volatile int *, Tri *);
 extern int func_020960f8(int, int);
 extern int func_0203e070(void *, int);
-extern int func_ov053_02260488(void);
+extern int func_ov053_02260488(void *receiver);
 extern void func_ov053_02260bb0(void *, int);
 
 int func_ov053_02260558(void *obj)
@@ -48,17 +48,9 @@ int func_ov053_02260558(void *obj)
                 hit = 1;
             }
             if (hit != 0 || (v0 == 5 && b == 0xb)) {
-                // clang-format off
-                asm {
-                    mov r0, obj
-                }
-                // clang-format on
-                if (func_ov053_02260488() != 0)
-                {
+                if (func_ov053_02260488(obj) != 0) {
                     func_ov053_02260bb0((char *) obj + 0x658, 3);
-                }
-                else
-                {
+                } else {
                     func_ov053_02260bb0((char *) obj + 0x658, 4);
                 }
             } else {

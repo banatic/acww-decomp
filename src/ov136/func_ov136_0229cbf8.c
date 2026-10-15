@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(void *);
 extern int func_ov134_022997dc(void *, int);
 extern void func_ov136_0229c890(void *);
@@ -17,7 +17,7 @@ extern unsigned short data_021fbe40[];
 
 void func_ov136_0229cbf8(void *arg)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(arg) != 0) {
         func_ov136_0229c890(arg);
         return;
     }

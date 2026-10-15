@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov108_0229c468(void *self);
 extern int func_ov002_02208008(void *self);
 extern int func_ov002_02209044(void *a, int b, void *c, int d);
@@ -17,7 +17,7 @@ void func_ov108_0229d39c(void *self)
     int tmp;
     unsigned short flags;
 
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(self)) {
         func_ov108_0229c468(self);
         return;
     }

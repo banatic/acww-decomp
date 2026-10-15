@@ -17,7 +17,7 @@ extern void func_ov121_0229af7c(UnkStruct_0229a6b4 *, int, int);
 extern void RtcSendPxiCommand(int);
 extern int func_ov121_0229abac(UnkStruct_0229a6b4 *, u8);
 extern unsigned char *func_ov121_0229afb8(UnkStruct_0229a6b4 *);
-extern int func_ov121_0229a50c(void);
+extern int func_ov121_0229a50c(void *receiver);
 extern void func_ov121_02299c88(UnkStruct_0229a6b4 *, u8);
 extern int func_ov004_0223c660(void *);
 extern int func_ov004_0223b3f8(void **, u8, int);
@@ -65,10 +65,7 @@ void func_ov121_0229a6b4(UnkStruct_0229a6b4 *o)
             RtcSendPxiCommand(0x73);
             break;
         default:
-            asm {
-                mov r0, o
-            }
-            func_ov121_0229a50c();
+            func_ov121_0229a50c(o);
             func_ov004_0223c660(h);
             func_ov121_0229afb8(o);
             func_ov121_02299c88(o, o->unk_AF);

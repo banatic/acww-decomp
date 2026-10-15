@@ -9,7 +9,7 @@ extern int func_02077b58(int idx);
 extern unsigned int func_02073220(void *p, int idx);
 extern int func_02077a64(void);
 
-int func_020731c4(void)
+int func_020731c4(void *object)
 {
     int idx = 3;
     void *p = data_020ccf94;

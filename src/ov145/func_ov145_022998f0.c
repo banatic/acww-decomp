@@ -17,7 +17,7 @@ extern void RtcSendPxiCommand(int cmd);
 extern void func_ov145_02299954(UnkStruct_022998f0 *self, unsigned char param);
 extern void func_ov145_0229a2e0(UnkStruct_022998f0 *self);
 extern void func_ov002_0220a574(UnkSub *sub);
-extern void func_ov002_0220a4bc(UnkSub *sub);
+extern void func_ov002_0220a4bc(void *receiver);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 
 int func_ov145_022998f0(UnkStruct_022998f0 *self, unsigned int param)

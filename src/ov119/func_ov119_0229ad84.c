@@ -2,13 +2,13 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern char *func_ov119_0229ae50(void);
+extern void *func_ov119_0229ae50(void *receiver);
 extern int func_02077c3c(void *ptr);
 extern int func_02077e50(int arg);
 
-int func_ov119_0229ad84(void)
+int func_ov119_0229ad84(void *receiver)
 {
-    char *ptr = func_ov119_0229ae50();
+    char *ptr = func_ov119_0229ae50((void *) receiver);
     int found_zero = 0;
     int i;
     for (i = 0; i < 32; i++) {

@@ -22,7 +22,7 @@ typedef struct UnkStruct_020ab3a8 {
 extern u8 *func_020ab788(UnkStruct_020ab3a8_2 *elem);
 extern u8 *func_020ab794(UnkStruct_020ab3a8_2 *elem);
 extern void *func_020ab78c(UnkStruct_020ab3a8_2 *elem);
-extern int func_020a82ac(void);
+extern void *func_020a82ac(void *object);
 extern void func_020a82bc(void *dst, int value);
 
 void func_020ab3a8(UnkStruct_020ab3a8 *self, int param)
@@ -55,6 +55,6 @@ void func_020ab3a8(UnkStruct_020ab3a8 *self, int param)
     elem = &self->elems[index];
     self->unk_2D8 = index;
     self->unk_2DC = func_020ab794(elem)[0];
-    func_020a82bc(&self->unk_354, (func_020ab78c(elem), func_020a82ac()));
+    func_020a82bc(&self->unk_354, (int) func_020a82ac(func_020ab78c(elem)));
     self->unk_360 = threshold;
 }

@@ -4,8 +4,10 @@
 
 extern void func_0205d4e8(void *);
 
-void func_020837a8(void *arg0)
+int func_020837a8(void *arg0)
 {
+    int result = 0;
     func_0205d4e8((char *) arg0 + 1);
-    *(unsigned char *) arg0 = 0;
+    *(unsigned char *) arg0 = result;
+    return result;
 }

@@ -4,7 +4,7 @@
 
 extern void func_02001b34(int);
 
-void func_020ac3e0(void)
+void func_020ac3e0(void *object)
 {
     func_02001b34(2);
 }

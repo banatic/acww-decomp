@@ -4,7 +4,7 @@
 
 extern int func_0209a1e8(void);
 
-int func_ov104_0229dad8(void)
+int func_ov104_0229dad8(void *receiver)
 {
     int x;
     x = func_0209a1e8();

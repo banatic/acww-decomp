@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov133_0229bbf0(char *self);
 extern void *func_ov002_02208008(char *self);
 extern int func_ov133_0229b790(char *self, void *pad);
@@ -27,7 +27,7 @@ void func_ov133_0229be4c(char *self)
     int a;
     int b;
 
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(self)) {
         func_ov133_0229bbf0(self);
         return;
     }

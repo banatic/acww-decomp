@@ -25,8 +25,8 @@ extern int data_020d0b84[];
 extern Pair8 data_020d6fcc[];
 extern void func_0208a1f0(void *sub, Pair8 *p);
 extern void func_0208a1ec(void *sub, int v);
-extern void func_0208a144(void *sub);
-extern void func_0208a1e8(void *sub, int v);
+extern void *func_0208a144(void *sub);
+extern void *func_0208a1e8(void *sub, int v);
 extern void func_0208effc(UnkStruct_0208f0c4 *s);
 extern void func_0208f014(UnkStruct_0208f0c4 *s);
 

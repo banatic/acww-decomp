@@ -3,7 +3,7 @@
  */
 
 extern "C" void *func_0208a1c8(void *);
-extern "C" void func_0208a1e0(void *, int, int);
+extern "C" void *func_0208a1e0(void *, int, int);
 
 class UnkStruct_02039a94 {
   public:

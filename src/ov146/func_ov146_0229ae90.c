@@ -6,7 +6,7 @@ extern void func_ov146_0229abe0(void);
 extern void func_ov146_0229ab28(void *);
 extern int func_ov146_02299f08(void *);
 extern void func_ov146_02299dec(void *, int);
-extern void func_ov146_0229aac8(void *);
+extern void func_ov146_0229aac8(void *receiver);
 extern void func_ov002_02207f20(void *, int, int, int, int);
 extern void func_02002708(int);
 extern void func_ov146_0229adb8(void *);

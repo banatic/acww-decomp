@@ -5,7 +5,7 @@
 extern int func_ov142_02299668(void *self, int arg);
 extern void func_ov142_0229a4d4(void *self, int _x);
 extern void func_ov142_02299a54(void *self);
-extern void func_ov002_0220a4c8(void *addr);
+extern void func_ov002_0220a4c8(void *receiver);
 
 struct UnkStruct_02299830 {
     char pad_00[0x9c];

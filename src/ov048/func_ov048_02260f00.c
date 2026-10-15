@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov048_02260e28(void *this, int, int);
+extern void func_ov048_02260e28(void *receiver, int code, int flag);
 extern int func_020e8840(int);
 
 int func_ov048_02260f00(void *this)

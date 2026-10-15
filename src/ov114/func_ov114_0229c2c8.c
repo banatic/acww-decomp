@@ -18,7 +18,7 @@ extern void func_ov114_0229c6f8(UnkStruct_0229c2c8 *self, u8 a);
 extern int func_ov114_0229cee0(UnkStruct_0229c2c8 *self);
 extern int func_ov114_0229cf18(UnkStruct_0229c2c8 *self);
 extern void func_ov002_0220a574(void *p);
-extern void func_ov002_0220a4bc(void *p);
+extern void func_ov002_0220a4bc(void *receiver);
 
 int func_ov114_0229c2c8(UnkStruct_0229c2c8 *self)
 {

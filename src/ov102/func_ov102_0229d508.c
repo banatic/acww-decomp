@@ -4,7 +4,7 @@
 
 extern int func_ov102_0229d454(int arg0, unsigned int arg1);
 extern int func_ov102_0229d464(int arg0, unsigned int arg1);
-extern int func_ov102_0229d4ac(void);
+extern int func_ov102_0229d4ac(void *receiver);
 extern int func_ov102_0229d47c(int);
 extern void func_ov102_0229d54c(int, int, int);
 
@@ -13,10 +13,7 @@ void func_ov102_0229d508(int p1, int p2, int p3)
     int x = 0x25;
     if (p3 >= 108) {
         if (func_ov102_0229d454(p1, p2)) {
-            asm {
-                mov r0, p1
-            }
-            x = func_ov102_0229d4ac();
+            x = func_ov102_0229d4ac((void *) p1);
         }
     } else {
         if (func_ov102_0229d464(p1, p2)) {

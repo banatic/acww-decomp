@@ -7,7 +7,7 @@ extern int func_ov095_0229bc00(unsigned char *p1, unsigned char *p2, int v1, uns
 extern void func_ov095_0229ce84(unsigned char *base, int code);
 extern void func_ov095_0229cef4(unsigned char *base, int code);
 extern void func_ov095_0229bee4(unsigned char *base);
-extern void func_ov095_0229bed8(unsigned char *base, int value);
+extern void func_ov095_0229bed8(void *receiver, int value);
 extern int func_ov112_0229f900(unsigned char *self);
 extern int func_ov112_0229fe70(unsigned char *self, int param);
 extern int func_ov112_0229f6b8(unsigned char *self);

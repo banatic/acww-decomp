@@ -19,8 +19,8 @@ typedef struct {
 
 extern void func_ov140_0229a41c(UnkStruct_0229a280 *self);
 extern void func_02051bf8(u16 *buf, int n);
-extern int func_02051c08(void *p, u16 *buf, int n);
-extern void *func_ov140_0229a15c(UnkStruct_0229a280 *self);
+extern void func_02051c08(void *p, u16 *buf, int n);
+extern unsigned int func_ov140_0229a15c(void *receiver);
 extern int func_ov140_0229a1a4(UnkStruct_0229a280 *self, void *ent);
 extern void func_ov139_02299798(void *p, int i);
 extern void func_ov139_022997c0(void *p, int i, u16 *buf);
@@ -40,7 +40,7 @@ void func_ov140_0229a280(UnkStruct_0229a280 *self)
     func_02051bf8(buf1, 6);
     func_02051bf8(buf2, 6);
     j = self->unk_8DD * 6;
-    h = func_ov140_0229a15c(self);
+    h = (void *) func_ov140_0229a15c(self);
     for (i = 0; i < 6; i++) {
         if (j < 0x20) {
             v = self->tbl[j];

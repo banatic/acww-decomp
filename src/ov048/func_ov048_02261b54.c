@@ -20,7 +20,7 @@ extern int func_02099020(int t, int a);
 extern int func_02073d90(UnkStruct_02261b54 *g);
 extern int func_02073918(UnkStruct_02261b54 *g, int a);
 extern int func_02073dd4(UnkStruct_02261b54 *g, int a);
-extern int func_ov048_02260a24(void);
+extern int func_ov048_02260a24(void *receiver);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov048_02263d20;
 
@@ -54,10 +54,7 @@ void func_ov048_02261b54(UnkStruct_02261b54_2 *self, int mode)
             if (func_02099020(t, 1) != 0) {
                 code = 0xe;
             } else {
-                asm {
-                    mov r0, self
-                }
-                code = func_ov048_02260a24();
+                code = func_ov048_02260a24(self);
             }
             break;
     }

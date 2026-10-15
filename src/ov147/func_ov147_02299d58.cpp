@@ -10,7 +10,7 @@ extern int func_ov147_0229a614(void *);
 extern void *func_020682e0(int);
 extern void func_020a8164(void *, const void *);
 extern int func_0209f150(const void *, int);
-extern int func_ov147_02299320(void *);
+extern unsigned char func_ov147_02299320(void *receiver);
 extern void func_02068340(void *, void *);
 extern void *data_ov147_0229a8b0;
 extern const char data_ov147_0229abe0[];

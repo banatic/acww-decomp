@@ -18,7 +18,7 @@ extern int func_ov095_0229af98(void *p, int param);
 extern void func_ov111_022a0198(void *self);
 extern void func_ov111_0229f0cc(void *self);
 extern int func_ov111_0229fc38(void *self, u16 param);
-extern void func_ov111_0229f854(void *self);
+extern void func_ov111_0229f854(void *receiver);
 
 struct UnkStruct_0229f730 {
     char pad_00[0xa2];

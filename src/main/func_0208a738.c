@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *p, const void *q);
 extern void func_0208a1ec(void *p, int q);
-extern void func_0208a1e8(void *p, int q);
+extern void *func_0208a1e8(void *p, int q);
 extern const char data_020d71a4[];
 extern const char data_020d71ac[];
 

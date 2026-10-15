@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_020379ac(void *p);
+extern unsigned int func_020379ac(void *p);
 extern int func_02064328(char *buf, const char *fmt, int a, int b, int c);
 extern int func_02064b2c(char *buf, void *p, int a, int b);
 extern void *func_021077e8(int c);

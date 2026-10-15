@@ -2,6 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
+#pragma opt_propagation off
+
 typedef struct UnkStruct_020a6d24 {
     char pad_00[0x64];
     int unk_64;
@@ -13,7 +15,7 @@ extern unsigned char data_021c75b8;
 
 int func_02073dd4(UnkStruct_020a6d24 *p, int f);
 int func_020a6684(int *p);
-unsigned char func_020b65c4(int arg);
+unsigned char func_020b65c4(void);
 int func_020a6c98(int);
 int func_020a6364(int *p);
 void func_020a70a8(int arg);
@@ -29,7 +31,7 @@ void func_020a6d24(void)
         if (func_020a6684(&data_021f4320) == 3) {
             cond = (data_021c75b8 == 0) ? 1 : 0;
             if (cond != 0) {
-                if (func_020a6c98((int) func_020b65c4(cond)) == 0) {
+                if (func_020a6c98((int) func_020b65c4()) == 0) {
                     func_020a70a8(func_020a6364(&data_021f4320));
                 }
                 func_020a6688(&data_021f4320, 5);

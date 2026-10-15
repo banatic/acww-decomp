@@ -7,7 +7,7 @@ extern void *func_020996b8(void *object);
 extern int func_0206fc8c(void);
 extern int func_02072bb0(int, int);
 extern int func_ov123_02299d9c(unsigned char *);
-extern int func_02072d84(int, int);
+extern void func_02072d84(int, int);
 extern int func_02072d4c(int);
 extern void func_02072f38(int);
 extern void func_02072f54(int, int);

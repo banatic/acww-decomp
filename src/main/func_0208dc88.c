@@ -22,7 +22,7 @@ typedef struct UnkStruct_0208dc88_2 {
 extern void func_0208d400(UnkStruct_0208dc88_2 *self);
 extern void func_0208a1f0(UnkStruct_0208dc88 *sub, const SomeElement *elem);
 extern void func_0208a1ec(UnkStruct_0208dc88 *sub, int val);
-extern void func_0208a144(UnkStruct_0208dc88 *sub);
+extern void *func_0208a144(UnkStruct_0208dc88 *sub);
 extern void func_0208db08(UnkStruct_0208dc88_2 *self);
 extern SomeElement data_020d5b3c[];
 

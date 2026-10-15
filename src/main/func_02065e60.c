@@ -5,7 +5,7 @@
 extern int func_020984e8(void);
 extern int func_02099734(int);
 extern unsigned char *func_02098ddc(unsigned int);
-extern int func_02051c08(void *dest, const void *src, int size);
+extern void func_02051c08(void *dest, const void *src, int size);
 
 struct UnkStruct_02065e60 {
     unsigned char pad_00[0x22];

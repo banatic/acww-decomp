@@ -2,8 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov119_0229ae68(void);
-extern int func_ov119_0229ad84(void);
+extern int func_ov119_0229ae68(void *receiver);
+extern int func_ov119_0229ad84(void *receiver);
 extern void func_ov119_0229ad5c(void *self);
 extern int func_ov119_0229acb4(void *self);
 extern int func_020ee45c(void *self);
@@ -15,12 +15,8 @@ extern const char data_ov119_0229cfe0[];
 
 void func_ov119_0229c388(char *self)
 {
-    if (func_ov119_0229ae68() == 0) {
-        asm {
-            mov r0, self
-        }
-        if (func_ov119_0229ad84() != 0)
-        {
+    if (func_ov119_0229ae68(self) == 0) {
+        if (func_ov119_0229ad84(self) != 0) {
             func_ov119_0229ad5c(self);
             func_ov090_02298fa4((int) func_020ee45c(self));
         }

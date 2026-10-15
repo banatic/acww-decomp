@@ -9,7 +9,7 @@ extern unsigned char data_021f6a0c[];
 extern unsigned short data_021f69ec[];
 #define g_04000358 (*(unsigned int *) 0x04000358)
 
-void func_020b698c(void)
+void func_020b698c(void *object)
 {
     unsigned int val;
     unsigned char b0, b1, b6;

@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0206a438;
 
 extern "C" int func_02067a74(void *);
-extern "C" void func_0206bb9c(void);
+extern "C" void func_0206bb9c(void *object, int code, const void *message);
 extern "C" void func_020a9334(UnkStruct_0206a438 *, int);
 extern "C" void func_020a7994(void *, int);
 
@@ -25,12 +25,7 @@ extern unsigned char data_020df1b8[];
 extern "C" void func_0206a438(UnkStruct_0206a438 *obj)
 {
     if (func_02067a74(obj->unk_24) == 0) {
-        asm {
-            mov r0, obj
-            ldr r1, =0xc39
-            ldr r2, =data_020df1b8
-            bl func_0206bb9c
-        }
+        func_0206bb9c(obj, 0xc39, &data_020df1b8);
     }
 
     int result1 = ((UnkStruct_0206a438_2 *) (obj->unk_24 + 0x1c70))->f3();

@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *sub, void *data);
 extern void func_0208a1ec(void *sub, int value);
-extern void func_0208a144(void *sub);
+extern void *func_0208a144(void *sub);
 extern void func_0208b800(void *obj);
 extern void func_0208b83c(void *obj);
 extern int data_020d5c54;

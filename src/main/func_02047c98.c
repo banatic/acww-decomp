@@ -17,7 +17,7 @@ extern Entry *func_0204f5e0(int param1, int a, int b, int c, int d, int e);
 extern int func_0204b910(Entry *e);
 extern void func_0204f800(int *out0, int *out1, int a, int b, int c, int d);
 extern int func_020644cc(int n);
-extern int func_02047db8(int param0);
+extern unsigned short func_02047db8(int param0);
 extern void func_0204a25c(int param1, int x, int y, int z, int zero);
 
 extern const u8 data_020ca57c[];

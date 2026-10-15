@@ -18,7 +18,7 @@ extern int func_ov095_0229bc00(void *a, void *b, int c, void *d, int e, int f, i
 extern void func_ov095_0229ce84(void *a, int b);
 extern void func_ov095_0229cef4(void *a, int b);
 extern void func_ov095_0229bee4(void *a);
-extern void func_ov095_0229bed8(void *a, int b);
+extern void func_ov095_0229bed8(void *receiver, int value);
 extern int func_ov122_0229f958(struct UnkStruct_022a14c0 *p);
 extern int func_ov122_0229efe8(struct UnkStruct_022a14c0 *p, int n);
 extern int func_ov122_0229f980(struct UnkStruct_022a14c0 *p);

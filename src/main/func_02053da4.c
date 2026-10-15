@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_02053da4(void)
+int func_02053da4(int value)
 {
     return -1;
 }

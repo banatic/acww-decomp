@@ -15,7 +15,7 @@ typedef struct {
 
 extern int func_02034ee4(Container *param, unsigned short);
 
-void func_02035148(Container *param, unsigned short argument1)
+void func_02035148(Container *param, unsigned short argument1, int flag)
 {
     int ret = func_02034ee4(param, (unsigned short) argument1);
     if (ret >= 0 && ret < param->count) {

@@ -21,7 +21,7 @@ extern void func_02002708(int);
 extern void *data_021fbe94;
 extern const u8 data_020e5368[], data_020e537c[], data_020e5390[], data_020e53a4[], data_020e53b8[], data_020e53cc[];
 
-void func_020b5794(void)
+void func_020b5794(void *receiver)
 {
     volatile u32 *p;
     void *v;

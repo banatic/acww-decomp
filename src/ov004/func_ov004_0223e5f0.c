@@ -7,7 +7,7 @@
 extern char data_021ebcd4[];
 extern u8 data_ov004_02259a0c;
 extern int func_02060d70(char *p);
-int func_ov004_0223e5f0(void)
+int func_ov004_0223e5f0(void *receiver)
 {
     int r;
     data_ov004_02259a0c = func_02060d70(data_021ebcd4);

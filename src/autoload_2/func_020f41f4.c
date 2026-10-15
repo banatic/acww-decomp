@@ -5,7 +5,7 @@
 extern int func_020eef70(void);
 extern int NNS_SndPlayerCreateHeap(int, int, int);
 
-void func_020f41f4(void)
+void func_020f41f4(void *receiver)
 {
     NNS_SndPlayerCreateHeap(4, func_020eef70(), 0x206c);
 }

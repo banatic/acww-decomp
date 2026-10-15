@@ -4,7 +4,7 @@
 
 extern void RtcSendPxiCommand(int);
 
-void func_ov002_0220a4bc(void)
+void func_ov002_0220a4bc(void *receiver)
 {
     // DECLS
     // ENDDECLS

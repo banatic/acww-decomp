@@ -19,7 +19,7 @@ extern void func_020779b8(void *buf, int a, int b);
 extern int func_0207762c(int id);
 extern void MI_CpuCopy8(const void *src, void *dst, unsigned int n);
 
-void func_ov003_02235c94(void *dst, int id)
+void func_ov003_02235c94(void *dst, int id, void *context)
 {
     u8 buf[8];
     int i;

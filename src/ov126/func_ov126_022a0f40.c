@@ -11,7 +11,7 @@ typedef struct UnkStruct_022a0f40 {
     unsigned char unk_3F90[1];
 } UnkStruct_022a0f40;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(UnkStruct_022a0f40 *self);
 extern int func_ov126_022a0768(UnkStruct_022a0f40 *self, int val);
 extern void func_ov095_0229b3ec(unsigned char *ptr);
@@ -42,7 +42,7 @@ void func_ov126_022a0f40(UnkStruct_022a0f40 *self)
     int val;
     unsigned char prev;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov126_022a0c1c(self);
         return;
     }

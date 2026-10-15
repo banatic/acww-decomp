@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_020b698c(void);
+extern void func_020b698c(void *object);
 extern void NNS_G3dGeFlushBuffer(void);
 extern int func_020b6590(void);
 extern void func_020b75b8(int, unsigned char, unsigned char, int);
@@ -12,7 +12,7 @@ extern unsigned char data_021fbdd8;
 extern unsigned short data_021fbde0;
 extern unsigned short data_021fbde4;
 
-int func_020b6a2c(void)
+int func_020b6a2c(void *object)
 {
     int first_arg;
     int flag;
@@ -24,7 +24,7 @@ int func_020b6a2c(void)
     u1 = 0;
     u2 = 0;
 
-    func_020b698c();
+    func_020b698c(object);
     NNS_G3dGeFlushBuffer();
     first_arg = func_020b6590();
     flag = (data_021fbdd8 != 0);

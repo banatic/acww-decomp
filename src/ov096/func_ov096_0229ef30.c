@@ -17,7 +17,7 @@ extern int func_02065f18(int h);
 extern int func_02065ec0(int h);
 extern int func_ov094_02299a54(int b);
 extern int func_ov094_02299b04(int b);
-extern int func_ov096_0229e158(UnkStruct_0229ef30 *self);
+extern int func_ov096_0229e158(void *receiver);
 extern int func_0204c878(volatile u16 *p);
 
 int func_ov096_0229ef30(UnkStruct_0229ef30 *self, int a, int b, int c)

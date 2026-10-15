@@ -10,7 +10,7 @@ typedef struct {
     unsigned char flags;
 } S020f5484;
 
-unsigned short func_020f5484(S020f5484 *p, unsigned short val)
+unsigned int func_020f5484(S020f5484 *p, unsigned int val)
 {
     int s = func_020f1d3c(&data_021fd1bc, 4);
     unsigned char f = p->flags;

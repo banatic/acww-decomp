@@ -32,7 +32,7 @@ struct UnkStruct_0208e0dc_4 {
 };
 
 extern struct UnkStruct_0208e0dc_2 *func_0208a1c8(struct UnkStruct_0208e0dc *);
-extern void func_0208a1e0(struct UnkStruct_0208e0dc *, int, int);
+extern void *func_0208a1e0(struct UnkStruct_0208e0dc *, int, int);
 
 void func_0208e0dc(struct UnkStruct_0208e0dc_4 *self)
 {

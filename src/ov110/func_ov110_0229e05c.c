@@ -7,7 +7,7 @@ extern unsigned char data_021fbddc;
 extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c54;
 
-extern int func_ov110_0229e7ac(void);
+extern int func_ov110_0229e7ac(void *receiver);
 extern void func_ov110_0229c8f4(void *p);
 extern int func_ov002_02208054(void *p, int a);
 extern int func_ov002_02208b00(void *p, int b1, int b2);
@@ -19,7 +19,7 @@ void func_ov110_0229e05c(unsigned char *self)
     int ret;
     unsigned int flag;
 
-    if (func_ov110_0229e7ac()) {
+    if (func_ov110_0229e7ac(self)) {
         func_ov110_0229c8f4(self);
         return;
     }

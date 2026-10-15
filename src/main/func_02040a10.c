@@ -3,8 +3,8 @@
  */
 
 extern unsigned char func_0209ded0(void);
-extern unsigned char *func_02040980(void);
-extern void func_020409e8(void);
+extern void *func_02040980(void *context);
+extern void func_020409e8(void *context);
 
 void func_02040a10(unsigned char *param)
 {
@@ -14,8 +14,7 @@ void func_02040a10(unsigned char *param)
     unsigned char b13;
 
     val = func_0209ded0();
-    asm { add r0, param, #0 }
-    p = func_02040980();
+    p = func_02040980(param);
     if (p != 0) {
         b2 = p[2];
         b13 = param[0x13];
@@ -23,7 +22,6 @@ void func_02040a10(unsigned char *param)
             param[0x12] = b2;
             param[0x13] = val;
         }
-        asm { add r0, param, #0 }
-        func_020409e8();
+        func_020409e8(param);
     }
 }

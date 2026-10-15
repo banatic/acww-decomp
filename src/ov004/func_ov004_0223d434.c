@@ -13,13 +13,13 @@ extern void *func_ov004_0223cb10(void);
 extern void func_ov004_0223c7b8(void *);
 extern int func_020b66d8(void);
 extern int func_0209d180(void *object, unsigned int count, int a, int b, int c, int (*allocate)(int, int),
-                         void (*cleanup)(void));
-extern void func_ov004_0223c108(void);
+                         void (*cleanup)(void), void *context);
+extern void func_ov004_0223c108(void *receiver);
 extern void func_ov004_0223aad4(void *);
 extern void func_ov004_0223b158(void *);
 extern void *func_ov004_0223d03c(void);
 extern void func_ov004_0223d248(void *);
-extern void func_ov004_0223c080(void);
+extern void func_ov004_0223c080(void *receiver);
 extern int func_0205ca98(int size, int heapword);
 extern void func_0205ca7c(void);
 extern char data_ov004_022595b8;
@@ -32,7 +32,6 @@ extern char data_ov004_02259698;
 int func_ov004_0223d434(char *self)
 {
     int sz;
-    volatile unsigned int outgoing[4];
     register unsigned int count;
     if (func_020b67d4() != 0 || func_020b6680() != 0) {
         data_ov004_022595b8 = 1;
@@ -51,27 +50,13 @@ int func_ov004_0223d434(char *self)
         sz = 0x1c00;
     }
     count = func_ov004_0223c130();
-    outgoing[0] = sz;
-    outgoing[1] = (unsigned int) func_0205ca98;
-    outgoing[2] = (unsigned int) func_0205ca7c;
-    outgoing[3] = (unsigned int) &data_ov004_02256188;
-    asm {
-        ldr r0, =data_ov004_02259698
-        mov r1, count
-        ldr r2, =0x2000
-        mov r3, #0x80
-        bl func_0209d180
-        mov r0, self
-    }
-    func_ov004_0223c108();
+    func_0209d180(&data_ov004_02259698, count, 0x2000, 0x80, sz, func_0205ca98, func_0205ca7c, &data_ov004_02256188);
+    func_ov004_0223c108(self);
     if (func_ov004_0223c130() > 1) {
         func_ov004_0223aad4(self + 0x64);
     }
     func_ov004_0223b158(self + 0x1c4);
     func_ov004_0223d248(func_ov004_0223d03c());
-    asm {
-        mov r0, self
-    }
-    func_ov004_0223c080();
+    func_ov004_0223c080(self);
     return 1;
 }

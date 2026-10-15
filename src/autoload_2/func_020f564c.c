@@ -4,7 +4,7 @@
 
 extern void NNS_SndPlayerStopSeqBySeqArcIdx(int, int, int);
 
-void func_020f564c(void)
+void func_020f564c(void *receiver)
 {
     int r4 = 0;
     int r5 = 2;

@@ -6,7 +6,7 @@ extern char data_021ee418[];
 extern char data_021dc7aa[];
 extern char data_021d1554[];
 extern int func_020900d8(int address);
-extern void func_02079900(void);
+extern int func_02079900(int address);
 extern int func_0207c0f0(int a, int b);
 extern int func_0207cec0(int a, int b);
 extern unsigned int func_0208150c(int a);
@@ -26,18 +26,13 @@ extern void func_02080d70(int a);
 extern int memcmp(const char *a, const char *b, int c);
 void func_0207c190(int self, int param2)
 {
-    register int preserved_result;
-
     char *ptr;
     int r4;
     int r7;
     int T;
     char *p;
     ptr = (char *) data_021dc7aa;
-    func_020900d8((int) data_021ee418);
-    func_02079900();
-    asm { mov preserved_result, r0 }
-    r7 = preserved_result;
+    r7 = func_02079900(func_020900d8((int) data_021ee418));
     T = func_0207c0f0(self, param2);
     r4 = func_0207cec0(self, T);
     if (func_02003704((void *) func_0208150c(r7)) == 0) {

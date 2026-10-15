@@ -27,7 +27,7 @@ extern u16 data_021fbe40[];
 extern UnkStruct_02038eec *data_020ccf94;
 extern int data_021c6730;
 
-void func_02038eec(void)
+void func_02038eec(int argument)
 {
     int f0;
     int res5;

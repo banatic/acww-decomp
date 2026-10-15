@@ -16,7 +16,7 @@ extern int func_ov111_0229f504(struct Context *ctx);
 extern void func_ov095_0229cef4(void *p, int v);
 extern void func_ov095_0229ce84(void *p, int v);
 extern void func_ov095_0229bee4(void *p);
-extern void func_ov095_0229bed8(void *p, int v);
+extern void func_ov095_0229bed8(void *receiver, int value);
 
 void func_ov111_0229efec(struct Context *ctx)
 {

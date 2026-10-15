@@ -29,7 +29,7 @@ extern struct UnkStruct_02028a40 data_020d8e78;
 extern int func_0207b3dc(void *a);
 extern int func_0207f294(int a);
 extern unsigned int func_0207b410(unsigned int address);
-extern void func_0209a778(void);
+extern void *func_0209a778(void *record);
 extern int func_0209bd44(void *);
 extern int func_0209a610(void *a, int b);
 extern void *func_0209a4b8(void *a);
@@ -55,8 +55,6 @@ extern unsigned char data_021c2fbc[];
 
 int func_02028a40(struct UnkStruct_02028a40_2 *param0, int param1)
 {
-    register int preserved_result;
-
     void *r7;
     int res;
     void *local1;
@@ -75,9 +73,7 @@ int func_02028a40(struct UnkStruct_02028a40_2 *param0, int param1)
     }
 
     r7 = (void *) func_0207b410((unsigned int) r7);
-    func_0209a778();
-    asm { mov preserved_result, r0 }
-    local1 = (void *) preserved_result;
+    local1 = func_0209a778(r7);
     if (func_0209bd44(local1) == 0) {
         goto fail;
     }

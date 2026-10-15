@@ -3,17 +3,16 @@
  */
 
 extern int func_020b65c4(void);
-extern int func_0202eb88(void);
+extern unsigned int *func_0202eb88(void *object);
 extern int data_020c8120;
 
-int func_020c38ac(int param1)
+int func_020c38ac(void *param1)
 {
     int result;
-    int temp;
 
     if (func_020b65c4() != 0) {
-        asm { add r0, param1, #0 }
-        result = func_0202eb88();
+
+        result = (int) func_0202eb88(param1);
     } else {
         result = data_020c8120;
     }

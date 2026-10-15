@@ -47,7 +47,7 @@ extern "C" void func_ov133_0229c420(UnkStruct_0229c420 *self)
                 func_ov002_02208090(self, 3);
                 func_ov133_0229c3d4(self, 7);
                 if (func_0206fca4() == 0xe) {
-                    func_02077c40(func_ov133_0229b714(self));
+                    func_02077c40((void *) func_ov133_0229b714(self));
                 }
                 func_ov002_022080a0(self, 1);
                 break;

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov123_0229b644(void *self);
 extern char *func_ov002_02208008(void *self);
 extern int func_ov002_02207fe4(void *self);
@@ -15,7 +15,7 @@ extern unsigned short data_021fbe40[2];
 
 void func_ov123_0229b7e4(void *self)
 {
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(self)) {
         func_ov123_0229b644(self);
         return;
     } else {

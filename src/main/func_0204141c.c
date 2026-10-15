@@ -15,7 +15,7 @@ extern int data_021c526c;
 extern int data_021c758c;
 extern unsigned char data_021c75a0[];
 
-void func_0204141c(void)
+void func_0204141c(void *receiver)
 {
     struct UnkStruct_0204141c *p = func_020682e0(0);
     if (p->unk_04 != 0) {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-int func_0207f1d4(void)
+int func_0207f1d4(void *handle)
 {
     return 1;
 }

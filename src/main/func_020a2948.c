@@ -36,10 +36,10 @@ extern void func_0209fb4c(void *);
 extern void func_020732b4(void *, int);
 extern int func_02075aa4(int, u16);
 extern int func_020ec1f8(void);
-extern int func_0209ffb0(void);
-extern void func_020a0174(void);
+extern int func_0209ffb0(void *receiver);
+extern int func_020a0174(void);
 extern int func_020a0848(UnkStruct_020a2948 *, u8 *, int, int, u16, int);
-extern void func_020a25cc(void);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(UnkStruct_020a2948 *, int);
 
 void func_020a2948(UnkStruct_020a2948 *self)
@@ -153,9 +153,7 @@ void func_020a2948(UnkStruct_020a2948 *self)
         case 9:
             mask = func_020ec1f8();
             if ((mask & (1 << func_020a11c4())) == 0) {
-                asm { add r0, self, #0 }
-                if (func_0209ffb0() != 0)
-                {
+                if (func_0209ffb0(self) != 0) {
                     func_020a0174();
                 }
                 self->state = 0x16;
@@ -186,8 +184,7 @@ void func_020a2948(UnkStruct_020a2948 *self)
             func_020a0848(self, &self->state, 0xb, 0x11, (u16) (1 << func_020a11c4()), 1);
             break;
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             func_020a4e94(self, 0xe);
             break;
     }

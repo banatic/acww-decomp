@@ -7,7 +7,7 @@ extern void *func_020867e0(void *);
 extern void *func_020867a0(void *);
 extern void func_02015de4(void *, volatile unsigned short *, int, int);
 extern void *func_02086744(void *);
-extern void func_02015f00(void *, void *, int, int, int);
+extern void func_02015f00(void *, int, int, int, int);
 extern int func_020951bc(void *);
 extern void func_02015e40(void *, void *, int);
 extern void *func_020984e8(void);
@@ -45,7 +45,7 @@ int func_ov081_02278da8(void *obj)
         b = func_020867a0(g);
         func_0208674c(&buf[1], g);
         func_02015de4(obj, &buf[1], 1, 7);
-        func_02015f00(obj, func_02086744(g), 0, 1, 3);
+        func_02015f00(obj, (int) func_02086744(g), 0, 1, 3);
         if (func_020951bc(a) != 0) {
             func_02015e40(obj, func_020867e0(g), 1);
             q = func_02099870(func_020984e8());

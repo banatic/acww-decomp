@@ -5,7 +5,7 @@
 extern int CARD_IsEnabled(void);
 extern int func_0203ac2c(void);
 
-int func_ov121_0229a50c(void)
+int func_ov121_0229a50c(void *receiver)
 {
     int result = CARD_IsEnabled();
     if (result) {

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern "C" void func_ov121_0229b9d4(void);
+extern "C" void func_ov121_0229b9d4(void *receiver);
 
 class UnkStruct_0229b9e0 {
   public:
@@ -19,6 +19,6 @@ struct UnkStruct_0229b9e0_2 {
 
 extern "C" void func_ov121_0229b9e0(UnkStruct_0229b9e0_2 *obj)
 {
-    func_ov121_0229b9d4();
+    func_ov121_0229b9d4(obj);
     obj->sub.v3();
 }

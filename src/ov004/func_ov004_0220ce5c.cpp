@@ -10,7 +10,7 @@ extern "C" void func_020ea6e0(struct Vec *, short);
 extern "C" int func_ov004_0220ebd4(void *, struct Vec *);
 extern "C" void func_01ffd070(struct Vec *, void *, struct Vec *);
 extern "C" int func_ov004_0220ccf8(void *, int);
-extern "C" int func_ov004_0220ec8c(void);
+extern "C" int func_ov004_0220ec8c(void *receiver);
 extern "C" int func_02095380(int);
 
 struct UnkStruct_0220ce5c {
@@ -40,10 +40,7 @@ extern "C" int func_ov004_0220ce5c(struct UnkStruct_0220ce5c *o, unsigned short 
         func_ov004_0220ccf8(o, 4);
         int b = (o->unk_0C == 0x3d);
         if (!b) {
-            asm {
-                mov r0, o
-            }
-            int id = func_ov004_0220ec8c();
+            int id = func_ov004_0220ec8c(o);
             if (id != 0xffff) {
                 func_02095380(id);
             }

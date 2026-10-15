@@ -13,7 +13,7 @@ extern int *data_020ccf94;
 extern int func_02073dd4(int *p, int n);
 extern int func_020a2450(int p, int n);
 extern int func_02090040(int);
-extern int func_02090158(void);
+extern int func_02090158(void *object);
 extern int func_02075e00(int, int, int, int, int, int);
 
 int func_020a0af8(int param)
@@ -29,8 +29,7 @@ int func_020a0af8(int param)
         if (func_02073dd4(g, j) != 0) {
             int res = func_020a2450(param, j);
             if (res < 4) {
-                func_02090040(res);
-                if (func_02090158() != 0) {
+                if (func_02090158((void *) func_02090040(res)) != 0) {
                     a.v[i] = val;
                     b.v[i] = res;
                 } else {

@@ -4,18 +4,9 @@
 
 extern int func_020984e8(void);
 extern int func_02099658(int);
-extern void func_02077d00(void);
+extern void *func_02077d00(void *entries);
 
-// clang-format off
-asm void *func_ov119_0229ae50(void)
+void *func_ov119_0229ae50(void *receiver)
 {
-    push {lr}
-    sub sp, #4
-    bl func_020984e8
-    bl func_02099658
-    bl func_02077d00
-    add sp, #4
-    pop {r3}
-    bx r3
+    return func_02077d00((void *) func_02099658(func_020984e8()));
 }
-// clang-format on

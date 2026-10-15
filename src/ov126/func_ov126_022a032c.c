@@ -3,9 +3,9 @@
  */
 
 extern int func_ov126_022a0904(unsigned char *p);
-extern int func_ov095_0229bb9c(unsigned char *p, int val);
-extern int func_ov095_0229bb98(unsigned char *p, int val);
-extern int func_ov095_0229bb94(unsigned char *p, int val);
+extern int func_ov095_0229bb9c(void *receiver, int value);
+extern int func_ov095_0229bb98(void *receiver, int value);
+extern int func_ov095_0229bb94(void *receiver, int value);
 extern int func_ov095_0229bba0(unsigned char *p1, unsigned char *p2, int val, int a4);
 extern void func_ov126_022a0168(unsigned char *p);
 extern void func_ov126_022a08c4(unsigned char *p);

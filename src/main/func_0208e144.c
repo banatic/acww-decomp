@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *a, void *b);
 extern void func_0208a1ec(void *a, int b);
-extern void func_0208a1e8(void *a, int b);
+extern void *func_0208a1e8(void *a, int b);
 
 typedef struct {
     char data[8];

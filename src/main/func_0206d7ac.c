@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-extern int func_02051c08(const void *src, void *dst, int size);
+extern void func_02051c08(const void *src, void *dst, int size);
 extern int func_02051c8c_unk(const void *ptr, int size);
 extern int func_0206d780(u16 value);
 extern int func_0206d714(u16 *ptr, int size);

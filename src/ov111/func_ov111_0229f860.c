@@ -22,10 +22,10 @@ extern void func_ov111_0229efb8(UnkStruct_0229f860 *s, int v);
 extern void func_ov095_0229b3ec(void *p);
 extern int func_02051c8c_unk(u16 *arr, int size);
 extern int func_ov095_0229bcec(void *a, void *b, u16 c, void *d, int e, int f, int g, int h);
-extern void func_ov111_0229f854(void);
+extern void func_ov111_0229f854(void *receiver);
 extern void func_ov111_0229f524(UnkStruct_0229f860 *s);
 extern void func_ov111_0229fd08(UnkStruct_0229f860 *s);
-extern void func_ov095_022999e8(void);
+extern void func_ov095_022999e8(void *receiver);
 extern void func_ov095_0229b388(void *p);
 
 void func_ov111_0229f860(UnkStruct_0229f860 *s)
@@ -54,12 +54,7 @@ void func_ov111_0229f860(UnkStruct_0229f860 *s)
     while (i < n) {
         if (func_ov095_0229bcec((char *) s + 0xac, (char *) s + 0x3d16, s->arr_3eb8[i], &s->unk_9E, 0x10, 0xa0, z, z) == 0) {
             if (i == 0) {
-                // clang-format off
-                asm {
-                    mov r0, s
-                }
-                // clang-format on
-                func_ov111_0229f854();
+                func_ov111_0229f854((void *) s);
             }
             i = n;
         }
@@ -68,13 +63,7 @@ void func_ov111_0229f860(UnkStruct_0229f860 *s)
 
     func_ov111_0229f524(s);
     func_ov111_0229fd08(s);
-    // clang-format off
-    asm {
-        mov r0, s
-        add r0, #0xac
-    }
-    // clang-format on
-    func_ov095_022999e8();
+    func_ov095_022999e8((char *) s + 0xac);
     s = (UnkStruct_0229f860 *) ((char *) s + 0xac);
     func_ov095_0229b388(s);
 }

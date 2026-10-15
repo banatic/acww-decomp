@@ -10,7 +10,7 @@ typedef struct {
 } UnkStruct_02261e1c;
 
 extern void func_ov048_02261d08(UnkStruct_02261e1c *p);
-extern char func_ov048_022609fc(void);
+extern unsigned char func_ov048_022609fc(void *receiver);
 extern void func_0206844c(int a, char *b, int c);
 extern int data_ov048_02263d20;
 
@@ -20,7 +20,7 @@ void func_ov048_02261e1c(UnkStruct_02261e1c *p, int mode)
         p->unk_813 = 2;
         func_ov048_02261d08(p);
     } else if (mode == 2) {
-        char c = func_ov048_022609fc();
+        char c = func_ov048_022609fc(p);
         func_0206844c(p->unk_40, &c, data_ov048_02263d20);
     }
 }

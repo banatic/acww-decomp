@@ -19,8 +19,8 @@ extern int func_02042324(void);
 extern int func_020422f8(void);
 extern int func_020a238c(void *);
 extern int func_020a2120(Func_020a49bc_Struct *self, int nibble);
-extern void func_020a261c(void);
-extern void func_020a25cc(void);
+extern void func_020a261c(void *object);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(Func_020a49bc_Struct *self, int val);
 
 void func_020a49bc(Func_020a49bc_Struct *self)
@@ -69,14 +69,13 @@ void func_020a49bc(Func_020a49bc_Struct *self)
             break;
         }
         case 6:
-            func_020a261c();
+            func_020a261c(self);
             self->state = 7;
             break;
         case 7:
             break;
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             func_020a4e94(self, 0x10);
             break;
     }

@@ -5,7 +5,7 @@
 extern unsigned char data_021d0478[4];
 extern unsigned char data_021d0468;
 
-void func_020727b8(void)
+void func_020727b8(void *receiver)
 {
     unsigned int i = 0;
     unsigned int v = i;

@@ -11,7 +11,7 @@ extern int func_ov095_02299a00(void *p);
 extern int func_ov095_0229c448(void *p, int a, int b);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
 extern void func_ov002_0220a574(void *p);
-extern void func_ov002_0220a4bc(void);
+extern void func_ov002_0220a4bc(void *receiver);
 extern int func_ov112_0229f900(void *self);
 extern void func_ov112_0229fd20(void *self);
 extern void func_ov112_0229f8e4(void *self);
@@ -34,11 +34,7 @@ void func_ov112_022a0c6c(char *self)
         if (n == 0x112) {
             func_ov002_02208098(self, 0x10);
             func_ov002_0220a574(self + 0x4234);
-            asm {
-                ldr r0, =0x4234
-                add r0, self, r0
-            }
-            func_ov002_0220a4bc();
+            func_ov002_0220a4bc((void *) ((char *) self + 0x4234));
             if (func_ov112_0229f900(self) != 0) {
                 func_ov112_0229fd20(self);
             }

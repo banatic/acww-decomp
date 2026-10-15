@@ -5,7 +5,7 @@
 extern int func_0206f56c(void);
 extern void func_ov122_0229efd8(void *, int);
 extern void func_ov122_0229f0a8(void *);
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov122_0229ff94(void *);
 extern int func_ov002_02208008(void *);
 extern int func_ov002_02209044(void *, int, void *, int);
@@ -24,13 +24,7 @@ void func_ov122_022a053c(void *param)
         func_ov122_0229f0a8(param);
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, param
-    }
-    // clang-format on
-    if (func_ov002_02208014())
-    {
+    if (func_ov002_02208014(param)) {
         func_ov122_0229ff94(param);
         return;
     }

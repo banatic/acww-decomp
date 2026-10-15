@@ -20,7 +20,7 @@ struct UnkStruct_020b5898 {
 
 extern int func_020a1a40(int, int);
 extern unsigned long long OS_GetTick(void);
-extern void func_020b5794(void);
+extern void func_020b5794(void *receiver);
 extern void func_02001aac(int);
 #define gGlobalConst (*(int *) 0x0000088c)
 extern void RtcSendPxiCommand(void *);
@@ -60,8 +60,7 @@ int func_020b5898(struct UnkStruct_020b5898 *this)
 
     switch (this->state) {
         case 0:
-            asm { add r0, this, #0 }
-            func_020b5794();
+            func_020b5794(this);
             func_02001aac(-16);
             this->state = 1;
             this->timer = 0x10;

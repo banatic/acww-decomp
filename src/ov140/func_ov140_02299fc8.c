@@ -4,8 +4,7 @@
 
 extern void *func_ov140_0229a12c(void *self);
 extern void func_020708e4(void *dst, const void *src, unsigned int size);
-extern void func_02070a98(void *obj, unsigned int a, unsigned int b, unsigned int c, unsigned int d, unsigned int e,
-                          unsigned int f);
+extern void func_02070a98(void *receiver, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag);
 extern void func_02070a04(void *obj, unsigned int a, unsigned int b);
 
 struct UnkStruct_02299fc8 {

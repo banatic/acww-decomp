@@ -15,10 +15,10 @@ typedef struct {
 extern int func_020e8858(void *p);
 extern void func_02035624(int a);
 extern int func_02014868(void *p);
-extern void func_0208b514(void);
+extern void func_0208b514(unsigned int context);
 extern int func_ov053_02260ba8(void *p);
 extern void func_ov053_02261524(UnkStruct_022612a4 *self, int a);
-extern int func_ov053_02260488(UnkStruct_022612a4 *self);
+extern int func_ov053_02260488(void *receiver);
 extern void func_ov053_02260bb0(void *p, int a);
 extern int func_020960f8(int a, int b);
 extern int func_ov004_0222c070(int a);
@@ -36,7 +36,7 @@ int func_ov053_022612a4(UnkStruct_022612a4 *self)
     }
     if (func_02014868(&self->unk_618) == 0) {
         old = self->unk_654;
-        func_0208b514();
+        func_0208b514(0x654);
         if (func_ov053_02260ba8(&self->unk_658) == 4 || func_ov053_02260ba8(&self->unk_658) == 3) {
             func_ov053_02261524(self, 7);
         } else if (func_ov053_02260ba8(&self->unk_658) == 5 && func_ov053_02260488(self) != 0) {

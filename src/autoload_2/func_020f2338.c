@@ -4,7 +4,7 @@
 
 extern void NNS_SndCaptureStopEffect(void);
 
-void func_020f2338(void)
+void func_020f2338(void *receiver)
 {
     NNS_SndCaptureStopEffect();
 }

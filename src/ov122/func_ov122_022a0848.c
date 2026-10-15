@@ -19,7 +19,7 @@ extern struct {
     u16 flags;
 } data_021fbe40;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(struct UnkStruct_022a0848 *self);
 extern int func_ov122_0229f684(struct UnkStruct_022a0848 *self, int a, int b);
 extern void func_ov122_0229f940(struct UnkStruct_022a0848 *self);
@@ -42,7 +42,7 @@ void func_ov122_022a0848(struct UnkStruct_022a0848 *self)
     u32 r4;
     u32 r6;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov122_022a0054(self);
         return;
     }

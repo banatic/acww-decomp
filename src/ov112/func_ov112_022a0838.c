@@ -15,7 +15,7 @@ typedef struct UnkStruct_022a0838 {
     char unk_4448[0x10];
 } UnkStruct_022a0838;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov112_0229fee4(void *);
 extern void func_ov002_0220a1dc(void *);
 extern unsigned char *func_ov002_02208098(void *, unsigned char value);
@@ -36,7 +36,7 @@ void func_ov112_022a0838(UnkStruct_022a0838 *self)
     unsigned short flags;
     int v1, v2;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov112_0229fee4(self);
         return;
     }

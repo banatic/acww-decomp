@@ -4,7 +4,7 @@
 
 extern unsigned char data_020e54a8;
 extern int func_ov003_0222d77c(void);
-int func_0202c3f0(void)
+int func_0202c3f0(void *self)
 {
     unsigned int ok;
     if (data_020e54a8 == 0) {

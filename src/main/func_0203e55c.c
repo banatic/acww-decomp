@@ -12,7 +12,7 @@ extern struct UnkStruct_0203e55c *data_021c72b8;
 extern int (*data_020daaa0[])(struct UnkStruct_0203e55c *);
 extern void func_0203df6c(void);
 
-void func_0203e55c(void)
+void func_0203e55c(int receiver)
 {
     if (data_021c72b8->unk_14 == 4) {
         if (data_020daaa0[data_021c72b8->unk_15](data_021c72b8) != 0) {

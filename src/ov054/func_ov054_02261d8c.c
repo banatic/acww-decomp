@@ -4,7 +4,7 @@
 
 extern int func_0206f860(void);
 
-int func_ov054_02261d8c(void)
+int func_ov054_02261d8c(void *receiver)
 {
     int result;
     if (func_0206f860() != 0) {

@@ -12,7 +12,7 @@ struct UnkStruct_0229a184 {
 extern unsigned short data_021fbe40;
 extern void func_ov145_0229a0fc(struct UnkStruct_0229a184 *);
 extern void func_ov145_0229a134(struct UnkStruct_0229a184 *);
-extern void func_ov002_0220a4c8(char *);
+extern void func_ov002_0220a4c8(void *receiver);
 
 void func_ov145_0229a184(struct UnkStruct_0229a184 *self)
 {

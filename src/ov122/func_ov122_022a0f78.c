@@ -3,9 +3,9 @@
  */
 
 extern void *func_ov122_0229f980(void *self);
-extern void *func_ov095_0229bb9c(void *obj, void *value);
-extern void *func_ov095_0229bb98(void *obj, void *value);
-extern void *func_ov095_0229bb94(void *obj, void *value);
+extern int func_ov095_0229bb9c(void *receiver, int value);
+extern int func_ov095_0229bb98(void *receiver, int value);
+extern int func_ov095_0229bb94(void *receiver, int value);
 extern void *func_ov122_0229f5a0(void *self);
 extern void *func_ov122_0229f5f8(void *self);
 extern int func_ov122_0229f5c8(void *self);
@@ -28,13 +28,13 @@ int func_ov122_022a0f78(void *self, int cmd)
 
     switch (cmd) {
         case 0x103:
-            r6 = func_ov095_0229bb9c((void *) ((char *) self + 0xc0), r6);
+            r6 = (void *) func_ov095_0229bb9c((char *) self + 0xc0, (int) r6);
             break;
         case 0x104:
-            r6 = func_ov095_0229bb98((void *) ((char *) self + 0xc0), r6);
+            r6 = (void *) func_ov095_0229bb98((char *) self + 0xc0, (int) r6);
             break;
         case 0x105:
-            r6 = func_ov095_0229bb94((void *) ((char *) self + 0xc0), r6);
+            r6 = (void *) func_ov095_0229bb94((char *) self + 0xc0, (int) r6);
             break;
         default:
             break;

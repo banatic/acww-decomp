@@ -2,4 +2,4 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02060a90(void) {}
+void func_02060a90(int value) {}

@@ -57,7 +57,7 @@ extern int func_020b6804(void);
 extern void func_020856fc(void *);
 extern int func_02084c60(void *);
 extern UnkStruct_02085558_2 *func_02084b74(void *, int *, void *);
-extern void func_02084210(void);
+extern void func_02084210(void *receiver);
 extern void func_0207be8c(int *);
 
 int func_02085558(void *self)
@@ -141,8 +141,7 @@ int func_02085558(void *self)
         func_02087df4(func_020860c0(func_0208602c()));
     }
 skip:
-    asm { add r0, self, #0 }
-    func_02084210();
+    func_02084210(self);
     if (func_020b6660() != 0) {
         func_0207be8c(w);
     }

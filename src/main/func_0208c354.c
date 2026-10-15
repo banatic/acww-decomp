@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *dst, void *src);
 extern void func_0208a1ec(void *dst, void *src);
-extern void func_0208a144(void *dst);
+extern void *func_0208a144(void *dst);
 extern char data_020d5b3c[];
 
 void func_0208c354(void *self)

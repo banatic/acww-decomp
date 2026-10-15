@@ -5,7 +5,7 @@
 extern void *data_ov002_0220ba58;
 extern void GXS_LoadOBJPltt(void *a, int b, int c); // GXS_LoadOBJPltt
 
-void func_ov002_0220af94(void)
+void func_ov002_0220af94(void *receiver)
 {
     GXS_LoadOBJPltt(&data_ov002_0220ba58, 0x1c, 4);
 }

@@ -35,7 +35,7 @@ static inline void copyvec(Vec *out, const Vec *in)
     out->y = in->y;
     out->z = in->z;
 }
-int func_ov004_02225fb8(char *self, int action)
+int func_ov004_02225fb8(char *self, int action, int mode)
 {
     int x = 0, z = 0, cx, cz;
     Pair p0, p1, p2, p3, p4, p5;

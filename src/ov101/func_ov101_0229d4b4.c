@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov101_0229cfd4(void *self);
 extern int func_ov002_02208008(void *self);
 extern int func_ov101_0229c2c0(void *self, int arg);
@@ -32,7 +32,7 @@ struct UnkStruct_0229d4b4 {
 
 void func_ov101_0229d4b4(struct UnkStruct_0229d4b4 *self)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov101_0229cfd4(self);
         func_ov002_02207d24(&self->unk_21B4, 1);
         return;

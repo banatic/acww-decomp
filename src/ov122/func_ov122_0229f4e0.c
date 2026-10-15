@@ -4,7 +4,7 @@
 
 extern unsigned char data_021f6c54;
 extern void func_ov122_0229f468(void *p, int v);
-extern void func_ov002_0220a4c8(void *p);
+extern void func_ov002_0220a4c8(void *receiver);
 
 void func_ov122_0229f4e0(char *p)
 {

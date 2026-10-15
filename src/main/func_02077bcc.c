@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02077bcc(void) {}
+void *func_02077bcc(void *record)
+{
+    return record;
+}

@@ -4,7 +4,7 @@
 
 extern int func_0203cc38(void);
 
-int func_0207e5d4(void)
+int func_0207e5d4(int a, int b, int c)
 {
     return func_0203cc38();
 }

@@ -17,7 +17,7 @@ typedef struct GlobalReg {
 
 extern volatile GlobalReg data_021fbe40; // placed at 0x021fbe40
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(UnkStruct_022a012c *self);
 extern int func_ov125_0229f784(UnkStruct_022a012c *self, int arg);
 extern void func_ov125_0229fee4(UnkStruct_022a012c *self);
@@ -36,7 +36,7 @@ void func_ov125_022a012c(UnkStruct_022a012c *self)
 {
     u16 reg;
 
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(self)) {
         func_ov125_0229fee4(self);
         func_ov002_02207d24((char *) self + 0x574, 1);
         return;

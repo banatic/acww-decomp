@@ -4,7 +4,7 @@
 
 extern int func_020e9948(void *p, int k);
 
-int func_ov004_0223ce98(void **self)
+int func_ov004_0223ce98(void **self, int actor)
 {
     return func_020e9948(*self, 0x8da);
 }

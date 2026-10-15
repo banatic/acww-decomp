@@ -11,7 +11,7 @@ extern unsigned short data_021fbe40;
 
 extern int func_ov134_02299a14(struct UnkStruct_02299a90 *self);
 extern void func_ov134_02299a00(struct UnkStruct_02299a90 *self);
-extern void func_ov002_0220a4c8(void);
+extern void func_ov002_0220a4c8(void *receiver);
 
 void func_ov134_02299a90(struct UnkStruct_02299a90 *self)
 {
@@ -33,11 +33,6 @@ void func_ov134_02299a90(struct UnkStruct_02299a90 *self)
         func_ov134_02299a14(self);
         func_ov134_02299a00(self);
         self = (struct UnkStruct_02299a90 *) ((char *) self + 0x18);
-        // clang-format off
-        asm {
-            mov r0, self
-        }
-        // clang-format on
-        func_ov002_0220a4c8();
+        func_ov002_0220a4c8(self);
     }
 }

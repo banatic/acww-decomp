@@ -4,7 +4,7 @@
 
 extern char data_021d3598[];
 
-void func_0208b514(void)
+void func_0208b514(unsigned int value)
 {
     data_021d3598[8] = 0;
 }

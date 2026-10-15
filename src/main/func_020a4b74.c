@@ -7,12 +7,12 @@
 extern int func_020a259c(void *, int);
 extern int func_02073dd4(void *, unsigned int);
 extern void func_0207428c(void);
-extern int func_0209ffb0(void);
-extern void func_020a0174(void);
+extern int func_0209ffb0(void *receiver);
+extern int func_020a0174(void);
 extern int func_020a238c(void *);
 extern int func_020a2120(void *, int);
-extern void func_020a261c(void);
-extern void func_020a25cc(void);
+extern void func_020a261c(void *object);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(void *, int);
 typedef struct SomeObj {
     u8 pad_00[0x64];
@@ -37,9 +37,7 @@ void func_020a4b74(UnkStruct_020a4b74 *self)
                 p = data_020ccf94;
                 if (func_02073dd4(p, p->unk_64) != 0) {
                     func_0207428c();
-                    asm { add r0, self, #0 }
-                    if (func_0209ffb0() != 0)
-                    {
+                    if (func_0209ffb0(self) != 0) {
                         func_020a0174();
                     }
                 }
@@ -83,7 +81,7 @@ void func_020a4b74(UnkStruct_020a4b74 *self)
         }
 
         case 4:
-            func_020a261c();
+            func_020a261c(self);
             self->mode = 5;
             break;
 
@@ -91,8 +89,7 @@ void func_020a4b74(UnkStruct_020a4b74 *self)
             break;
 
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             func_020a4e94(self, 0xd);
             break;
     }

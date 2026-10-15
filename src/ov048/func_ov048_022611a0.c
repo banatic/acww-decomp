@@ -4,7 +4,7 @@
 
 extern int func_0206fc6c(void);
 extern void func_0206844c(void *a, char *b, int c);
-extern int func_ov048_02262658(void);
+extern int func_ov048_02262658(void *receiver);
 extern void func_ov048_022616b8(void *p, int q);
 extern int data_ov048_02263d20;
 
@@ -22,10 +22,7 @@ void func_ov048_022611a0(struct UnkStruct_022611a0 *self)
     } else {
         buf[1] = 0x58;
         func_0206844c(self->unk_40, buf + 1, data_ov048_02263d20);
-        asm {
-            mov r0, self
-        }
-        func_ov048_02262658();
+        func_ov048_02262658(self);
     }
     func_ov048_022616b8(self, 0);
 }

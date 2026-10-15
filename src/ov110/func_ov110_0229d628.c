@@ -4,7 +4,7 @@
 
 extern int func_02099fe8(void);
 
-unsigned char func_ov110_0229d628(void)
+unsigned char func_ov110_0229d628(void *receiver)
 {
     int result = func_02099fe8();
     if (result == -1) {

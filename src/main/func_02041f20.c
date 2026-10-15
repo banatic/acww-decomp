@@ -9,7 +9,7 @@ extern void func_02001b6c(int);
 extern int func_0205bfdc(int *);
 extern void func_02001b34(int);
 extern void func_02001afc(int);
-extern void func_0203de68(void);
+extern void func_0203de68(int screen);
 
 void func_02041f20(void)
 {
@@ -21,6 +21,5 @@ void func_02041f20(void)
     }
     func_02001b34(4);
     func_02001afc(4);
-    asm { mov r0, #0 }
-    func_0203de68();
+    func_0203de68(0);
 }

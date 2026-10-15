@@ -14,7 +14,7 @@ struct UnkStruct_0229c8ec_2 {
 
 extern struct UnkStruct_0229c8ec_2 data_021fbe40;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern unsigned char *func_ov129_0229d3e0(struct UnkStruct_0229c8ec *self);
 extern void func_ov002_0220a1dc(void *ptr);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
@@ -30,7 +30,7 @@ extern void func_ov129_0229c368(struct UnkStruct_0229c8ec *self, int a, int b);
 
 void func_ov129_0229c8ec(struct UnkStruct_0229c8ec *self)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov129_0229d3e0(self);
         return;
     }

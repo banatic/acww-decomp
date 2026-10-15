@@ -5,7 +5,7 @@
 #pragma opt_common_subs off
 extern void func_020ad408(void);
 extern void func_020ace24(void);
-extern int func_ov004_02231b98(void *self);
+extern short func_ov004_02231b98(void *self);
 extern unsigned int NNS_G3dMdlSetMdlDiff(int a, int b, int c);
 extern void func_0205510c(void *p, int k);
 

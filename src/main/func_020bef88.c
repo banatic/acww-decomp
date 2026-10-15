@@ -2,9 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int DC_FlushRange(int a, int b);
+extern void DC_FlushRange(void *startAddr, unsigned int nBytes);
 
-int func_020bef88(int a)
+void func_020bef88(void *object)
 {
-    return DC_FlushRange(a + 0x448, 0xc00);
+    DC_FlushRange((unsigned char *) object + 0x448, 0xc00);
 }

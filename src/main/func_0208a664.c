@@ -15,7 +15,7 @@ typedef struct RetStruct {
     int unk_04;
 } RetStruct;
 extern RetStruct *func_0208a1c8(void *p);
-extern void func_0208a1e0(void *p, int v, int z);
+extern void *func_0208a1e0(void *p, int v, int z);
 void func_0208a664(void *self)
 {
     u32 r6;

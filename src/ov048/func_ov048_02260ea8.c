@@ -6,7 +6,7 @@ extern int func_020e8840(int);
 extern int func_020eba18(void);
 extern int func_020eba08(void);
 extern int func_ov048_0226077c(void *, int);
-extern void func_ov048_02260e28(void *, int, int);
+extern void func_ov048_02260e28(void *receiver, int code, int flag);
 
 int func_ov048_02260ea8(void *self)
 {

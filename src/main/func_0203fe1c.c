@@ -3,7 +3,7 @@
  */
 
 extern void func_0209e474(void *);
-extern int func_0203fe58(int);
+extern void func_0203fe58(int);
 typedef struct {
     unsigned char zero;
     unsigned char a;
@@ -24,7 +24,7 @@ typedef union {
         unsigned char pad1[6];
     } bytes;
 } LocalUnion;
-int func_0203fe1c(void)
+void func_0203fe1c(void)
 {
     LocalUnion local;
     int ok;
@@ -33,7 +33,7 @@ int func_0203fe1c(void)
     func_0209e474(&local);
     ok = local.bytes.c == data_021c74d0.b && local.bytes.b == data_021c74d0.a && local.bytes.a == data_021c74d0.zero;
     if (ok) {
-        return data_021c74d0.zero;
+        return;
     }
-    return func_0203fe58(0);
+    func_0203fe58(0);
 }

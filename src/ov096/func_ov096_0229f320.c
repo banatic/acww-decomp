@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov096_0229e158(void);
+extern int func_ov096_0229e158(void *receiver);
 extern int func_0204c120(int a, int b, int c);
 
 int func_ov096_0229f320(char *p, int a, int b)
@@ -28,13 +28,7 @@ int func_ov096_0229f320(char *p, int a, int b)
     } else {
         return 0;
     }
-    // clang-format off
-    asm {
-        mov r0, p
-    }
-    // clang-format on
-    if (threshold > func_ov096_0229e158())
-    {
+    if (threshold > func_ov096_0229e158(p)) {
         return 1;
     }
     *(short *) (p + 0xae) = func_0204c120(threshold, 0, 0);

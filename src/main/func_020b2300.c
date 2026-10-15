@@ -2,15 +2,17 @@
  * mwccarm 1.2/base -O4,s
  */
 
+#pragma opt_propagation off
+
 extern unsigned char data_020e54a8;
-extern unsigned char func_020b65c4(int flag);
+extern unsigned char func_020b65c4(void);
 extern int func_020b232c(int param);
 
 int func_020b2300(void)
 {
     int flag = (data_020e54a8 == 1);
     if (flag) {
-        return func_020b232c(func_020b65c4(flag));
+        return func_020b232c(func_020b65c4());
     }
     return 0;
 }

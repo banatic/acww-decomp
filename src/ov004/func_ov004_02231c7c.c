@@ -7,7 +7,7 @@
 extern char *data_021c80bc;
 extern void func_ov004_0221ad0c(int *, int, int, int);
 
-void func_ov004_02231c7c(void)
+void func_ov004_02231c7c(void *receiver)
 {
     int v[3];
     char *o, *e;

@@ -5,7 +5,7 @@
 extern int func_0206f56c(void);
 extern int func_0206fca4(void);
 
-int func_ov110_0229e7ac(void)
+int func_ov110_0229e7ac(void *receiver)
 {
     if (func_0206f56c() != 0) {
         if (func_0206fca4() == 0x20) {

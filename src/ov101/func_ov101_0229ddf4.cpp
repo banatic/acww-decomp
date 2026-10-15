@@ -9,7 +9,7 @@ extern "C" int func_ov101_0229c2ac(void *, int);
 extern "C" void func_ov002_0220ad18(void *, void *);
 extern "C" void func_ov094_0229a850(void *, int, int);
 extern "C" void func_ov094_0229b738(void *, int, int);
-extern "C" void func_ov094_02299d84(void);
+extern "C" void func_ov094_02299d84(void *receiver, int value);
 
 extern "C" int func_ov101_0229ddf4(unsigned char *self)
 {
@@ -31,11 +31,7 @@ extern "C" int func_ov101_0229ddf4(unsigned char *self)
         {
             void *hook_object = (void *) (self + 0xb7c);
             int hook_value = (int) (n);
-            asm {
-                mov r0, hook_object
-                mov r1, hook_value
-            }
-            func_ov094_02299d84();
+            func_ov094_02299d84(hook_object, hook_value);
         }
     }
     return 1;

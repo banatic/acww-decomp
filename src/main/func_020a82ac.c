@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_020a82ac(void) {}
+void *func_020a82ac(void *object)
+{
+    return object;
+}

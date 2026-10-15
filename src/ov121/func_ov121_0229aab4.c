@@ -13,7 +13,7 @@ extern int func_020984e8(void);
 extern int func_02099fe8(void);
 extern u16 *func_020993a8(int a);
 extern void func_ov121_0229af7c(UnkStruct_0229aab4 *self, int a, int b);
-extern int func_ov121_0229a50c(UnkStruct_0229aab4 *self);
+extern int func_ov121_0229a50c(void *receiver);
 extern unsigned int func_ov121_0229abac(UnkStruct_0229aab4 *self, u8 a);
 extern void func_0206f190(volatile u16 *out, void *a, void *b, void *c);
 extern int func_0209a000(volatile u16 *p, int a);

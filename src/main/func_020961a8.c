@@ -3,9 +3,9 @@
  */
 
 extern int func_02096718(int a);
-extern int func_020961bc(void);
+extern void *func_020961bc(void *object);
 
 int func_020961a8(int a)
 {
-    return (func_02096718(a), func_020961bc());
+    return (int) func_020961bc((void *) func_02096718(a));
 }

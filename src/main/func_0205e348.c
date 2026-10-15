@@ -16,8 +16,8 @@ extern int func_0205d6fc(void);
 extern void func_0205d3d4(int x, u16 *p3, int a5, int z1, int z2);
 extern int func_0205d25c(int x);
 extern int func_021077e8(int a);
-extern int func_0206439c(int a, int b, int *c, int *d);
-extern int func_0206435c(int a, int b, int *c, int *d);
+extern void func_0206439c(int a, int b, int *c, int *d);
+extern void func_0206435c(int a, int b, int *c, int *d);
 
 int func_0205e348(void *s, int p1, int p2, u16 *p3, int a5)
 {

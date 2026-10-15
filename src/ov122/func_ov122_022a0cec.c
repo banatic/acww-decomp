@@ -9,7 +9,7 @@ extern void func_ov095_0229b3ec(void *p);
 extern void func_ov095_0229b394(void *p);
 extern int func_02051c8c_unk(void *p, int n);
 extern int func_ov122_022a0e90(void *self, unsigned short val, int zero);
-extern void func_ov122_0229f388(void *self);
+extern void func_ov122_0229f388(void *receiver);
 extern void func_ov095_022999e8(void *p);
 extern void func_ov122_022a15b8(void *self, int a, int b);
 extern void func_ov122_0229f9a8(void *self);

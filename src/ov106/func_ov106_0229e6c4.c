@@ -4,7 +4,7 @@
 
 extern int func_0206f56c(void);
 extern int func_ov106_0229c364(void *, int);
-extern int func_ov106_0229cf8c(void);
+extern int func_ov106_0229cf8c(void *receiver);
 extern void func_ov106_0229d5c4(void *, unsigned char);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_022096d8(void *, int);
@@ -24,13 +24,7 @@ void func_ov106_0229e6c4(void *param)
     if (func_ov106_0229c364(param, 4) == 0) {
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, param
-    }
-    // clang-format on
-    if (func_ov106_0229cf8c() == 0)
-    {
+    if (func_ov106_0229cf8c(param) == 0) {
         return;
     }
     func_ov106_0229d5c4(param, *((unsigned char *) param + 0xB5));

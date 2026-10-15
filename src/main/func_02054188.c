@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_02054a94(int, unsigned int);
+extern void func_02054a94(unsigned int, unsigned int);
 extern void func_02054a64(int, unsigned int);
 extern void func_02054580(int, unsigned int);
 

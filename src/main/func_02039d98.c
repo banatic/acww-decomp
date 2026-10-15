@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d368(void);
+extern int func_0209d368(int id, int index);
 extern void RtcSendPxiCommand(int);
 
 void func_02039d98(void *self)
@@ -20,33 +20,17 @@ void func_02039d98(void *self)
     pb = (unsigned char *) ((char *) self + 0xb4);
     *pb = 1;
     if (*(int *) ((char *) self + 0xc) == 0) {
-        asm {
-            ldr r0, =0x136
-            mov r1, #2
-        }
-        r0 = func_0209d368();
+        r0 = func_0209d368(0x136, 2);
         r4 = r0 + 3;
     } else {
-        asm {
-            ldr r0, =0x12c
-            mov r1, #2
-        }
-        r0 = func_0209d368();
+        r0 = func_0209d368(0x12c, 2);
         r4 = r0 + 3;
     }
     if (*(int *) ((char *) self + 0xc) == 0) {
-        asm {
-            ldr r0, =0x136
-            mov r1, #3
-        }
-        r0 = func_0209d368();
+        r0 = func_0209d368(0x136, 3);
         r1 = r0 + 5;
     } else {
-        asm {
-            ldr r0, =0x12c
-            mov r1, #3
-        }
-        r0 = func_0209d368();
+        r0 = func_0209d368(0x12c, 3);
         r1 = r0 - 5;
     }
     p = (int *) ((char *) self + 0xa8);

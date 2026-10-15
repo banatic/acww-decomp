@@ -24,7 +24,7 @@ extern void func_020eaca0(int *outvec, Src *src, Node *p);
 extern int func_020e8ed8(int a, int b);
 extern int func_02032cac(int *outp, int val, int type, int b14);
 
-int func_02032f0c(Header *h, Src *src, int extra, int *out)
+int func_02032f0c(Header *h, Src *src, int extra, int *out, unsigned int mode, int value)
 {
     Node *start;
     Node *p;

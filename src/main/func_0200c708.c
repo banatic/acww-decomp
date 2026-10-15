@@ -18,7 +18,7 @@ extern int func_0205dc94(void *p, void *v);
 extern void func_02010934(void *p);
 extern void func_02079280(void);
 extern int func_02073908(void *p, u32 v);
-extern void func_0200f164(void);
+extern void func_0200f164(void *receiver);
 extern void func_0200f1a4(void *p, int n, u16 h);
 
 void func_0200c708(u8 *self)
@@ -63,8 +63,7 @@ void func_0200c708(u8 *self)
             v = 2;
             break;
         case 3:
-            asm { add r0, self, #0 }
-            func_0200f164();
+            func_0200f164(self);
             return;
         default:
             return;

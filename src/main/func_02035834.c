@@ -5,7 +5,7 @@
 extern int func_020b65c4(void);
 extern void func_0200422c(int);
 
-void func_02035834(void)
+void func_02035834(void *receiver)
 {
     if (func_020b65c4() == 0x22) {
         func_0200422c(5);

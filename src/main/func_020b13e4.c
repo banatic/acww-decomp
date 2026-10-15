@@ -5,9 +5,9 @@
 extern void *func_020b15b0(void);
 extern void func_02051bf8(void *, int);
 extern int func_020b1974(void *, int);
-extern int func_02051c08(void *, const void *, int);
+extern void func_02051c08(void *, const void *, int);
 
-int func_020b13e4(void *arg0, int arg1)
+void func_020b13e4(void *arg0, int arg1)
 {
     char *base;
     int result;
@@ -15,7 +15,7 @@ int func_020b13e4(void *arg0, int arg1)
     func_02051bf8(arg0, 6);
     result = func_020b1974((void *) base, arg1);
     if (result != 0) {
-        result = func_02051c08(base + arg1 * 74 + 30, arg0, 6);
+        func_02051c08(base + arg1 * 74 + 30, arg0, 6);
     }
-    return result;
+    return;
 }

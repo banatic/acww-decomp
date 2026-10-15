@@ -7,7 +7,7 @@ extern void OS_SetUserExceptionHandler(int param1, int param2);
 
 extern int data_0213fde0;
 
-void func_0206e6c4(int param1)
+void func_0206e6c4(int param1, void *launcher)
 {
     OS_SetUserExceptionHandler(0, 0);
     data_0213fde0 = param1;

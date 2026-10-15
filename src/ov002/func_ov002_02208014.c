@@ -8,7 +8,7 @@ extern void RtcSendPxiCommand(int cmd);
 extern unsigned char data_021fbdd8;
 extern unsigned char data_021fbddc;
 
-int func_ov002_02208014(void)
+int func_ov002_02208014(void *receiver)
 {
     unsigned int cond = (data_021fbdd8 != 0) && (data_021fbddc != 0);
     if (cond > 0) {

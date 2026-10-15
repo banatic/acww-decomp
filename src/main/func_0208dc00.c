@@ -17,7 +17,7 @@ typedef struct {
 extern Entry8 data_020d5b3c[];
 extern void func_0208a1f0(void *dst, const Entry8 *src);
 extern void func_0208a1ec(void *dst, int value);
-extern void func_0208a144(void *obj);
+extern void *func_0208a144(void *obj);
 
 void func_0208dc00(UnkStruct_0208dc00 *obj)
 {

@@ -6,7 +6,7 @@ extern unsigned short data_020e3c80;
 extern unsigned char data_021f42ec;
 extern unsigned char data_021f42e8;
 
-void func_020a53ec(unsigned short param0, unsigned char param1, unsigned char param2)
+void func_020a53ec(int param0, int param1, int param2, int flags)
 {
     data_020e3c80 = param0;
     data_021f42ec = param1;

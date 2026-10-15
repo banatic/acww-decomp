@@ -9,8 +9,8 @@ extern void *func_020b5630(void *);
 extern void *func_020b5618(void *);
 extern int func_020b45d0(void *, int, int, int, int, int);
 extern void func_02068404(void *, int, void *);
-extern int func_ov048_022609d0(void *);
-extern void func_ov048_02260e28(void *, int, int);
+extern unsigned char func_ov048_022609d0(void *receiver);
+extern void func_ov048_02260e28(void *receiver, int code, int flag);
 
 int func_ov048_02260f64(void *self, int flag)
 {

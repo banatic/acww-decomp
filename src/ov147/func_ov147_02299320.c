@@ -5,7 +5,7 @@
 extern int func_0209dcac(void);
 extern unsigned char data_ov147_0229a6fc[];
 
-unsigned char func_ov147_02299320(void)
+unsigned char func_ov147_02299320(void *receiver)
 {
     return data_ov147_0229a6fc[func_0209dcac()];
 }

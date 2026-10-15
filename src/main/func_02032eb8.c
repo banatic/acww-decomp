@@ -21,7 +21,7 @@ typedef struct Header {
 
 extern int func_02030580(Node *p, Src *src, int extra);
 
-int func_02032eb8(Header *h, Src *src, int extra, int *out)
+int func_02032eb8(Header *h, Src *src, int extra, int *out, unsigned int mode, int value)
 {
     Node *start = h->arr;
     Node *p;

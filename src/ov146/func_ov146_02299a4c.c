@@ -18,7 +18,7 @@ extern int func_ov146_02299e9c(UnkStruct_02299a4c *self, u8 v);
 extern void RtcSendPxiCommand(int a);
 extern void func_ov146_02299660(UnkStruct_02299a4c *self, int a);
 extern void func_ov002_0220a574(void *p);
-extern void func_ov002_0220a4bc(void);
+extern void func_ov002_0220a4bc(void *receiver);
 extern unsigned char *func_ov002_02208098(UnkStruct_02299a4c *self, unsigned char value);
 extern void func_ov146_0229a6dc(UnkStruct_02299a4c *self);
 extern void func_ov146_0229a6a4(UnkStruct_02299a4c *self);
@@ -46,11 +46,7 @@ int func_ov146_02299a4c(UnkStruct_02299a4c *self, unsigned int p)
     switch (p) {
         case 2:
             func_ov002_0220a574((char *) self + 0x1fb4);
-            asm {
-                ldr r0, =0x1fb4
-                add r0, self, r0
-            }
-            func_ov002_0220a4bc();
+            func_ov002_0220a4bc((void *) ((char *) self + 0x1fb4));
             func_ov002_02208098(self, 4);
             return 1;
         case 1:

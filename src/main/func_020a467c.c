@@ -5,8 +5,8 @@
 extern int func_020a259c(void *s, int a);
 extern int func_020a238c(void *s);
 extern int func_020a2120(void *s, int a);
-extern void func_020a261c(void);
-extern void func_020a25cc(void);
+extern void func_020a261c(void *object);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(void *s, int a);
 
 struct UnkStruct_020a467c {
@@ -53,14 +53,13 @@ void func_020a467c(struct UnkStruct_020a467c *self)
             break;
         }
         case 4:
-            func_020a261c();
+            func_020a261c(self);
             self->state = 5;
             break;
         case 5:
             break;
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             func_020a4e94(self, 0xf);
             break;
     }

@@ -5,7 +5,7 @@
 extern int OS_DisableInterrupts(void);
 extern unsigned int OS_DisableIrqMask(int);
 extern unsigned int OS_ResetRequestIrqMask(int);
-extern void func_02077b70(int *, int);
+extern int func_02077b70(int *, int);
 extern void func_ov065_0227f1f4(void *(*alloc)(int, unsigned int, int), void (*free)(int, void *, unsigned int));
 extern void func_0204f934(int);
 extern int func_020e98f4(int, int);

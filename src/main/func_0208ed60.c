@@ -5,7 +5,7 @@
 extern int func_0208ecd0(void);
 extern void func_0208a1f0(void *dest, void *src);
 extern void func_0208a1ec(void *dest, int value);
-extern void func_0208a144(void *p);
+extern void *func_0208a144(void *p);
 extern int data_020d5b54;
 
 typedef struct UnkStruct_0208ed60 {

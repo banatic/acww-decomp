@@ -21,7 +21,7 @@ extern void *func_020e98b4(int size);
 extern Elem *func_0209d328(Elem *e);
 extern int func_0209d2dc(Elem *e, int a, int b, int c, int d);
 
-int func_0209d180(UnkStruct_0209d180 *self, u32 n, int a, int b, int c, int (*fn)(int, int), void (*f14)(void))
+int func_0209d180(UnkStruct_0209d180 *self, u32 n, int a, int b, int c, int (*fn)(int, int), void (*f14)(void), void *context)
 {
     Elem *p;
     u32 i;

@@ -4,7 +4,7 @@
 
 extern int func_0206f8b4(void);
 
-unsigned char func_ov054_02261da4(void)
+unsigned char func_ov054_02261da4(void *receiver)
 {
     int x;
     x = func_0206f8b4();

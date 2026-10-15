@@ -3,7 +3,7 @@
  */
 
 extern void *func_02088220(void *record);
-extern int func_02051c08(const void *src, void *dst, unsigned int size);
+extern void func_02051c08(const void *src, void *dst, unsigned int size);
 extern void *func_02072d4c(void *ptr);
 extern void func_02072e3c(void *a, void *b);
 

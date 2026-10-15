@@ -11,7 +11,7 @@ struct UnkStruct_02062e18 {
 };
 
 extern void *func_020a88ec(struct UnkStruct_02062e18 *self);
-extern void *func_0205195c(struct UnkStruct_02062e18 *self);
+extern void func_0205195c(struct UnkStruct_02062e18 *self);
 extern int data_020de614;
 
 struct Blk {

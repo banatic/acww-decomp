@@ -16,7 +16,7 @@ extern "C" void func_ov002_02209eb8(void *);
 extern "C" void func_ov099_0229c994(void *);
 extern "C" void func_ov094_0229a850(void *, int, int);
 extern "C" void func_ov094_0229b738(void *, int, int);
-extern "C" void func_ov094_02299d84(void *, int);
+extern "C" void func_ov094_02299d84(void *receiver, int value);
 
 extern "C" int func_ov099_0229ddec(void *p)
 {

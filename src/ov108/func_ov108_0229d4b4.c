@@ -15,7 +15,7 @@ struct UnkStruct_0229d4b4 {
 };
 
 extern volatile struct GlobalHW data_021fbe40;
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(struct UnkStruct_0229d4b4 *self);
 extern int func_ov002_02207d24(void *obj, int val);
 extern void func_ov002_02207d00(void *obj);
@@ -33,7 +33,7 @@ extern void func_ov108_0229cd90(struct UnkStruct_0229d4b4 *self);
 
 void func_ov108_0229d4b4(struct UnkStruct_0229d4b4 *self)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov108_0229cfa8(self);
         func_ov002_02207d24(self->obj, 1);
         return;

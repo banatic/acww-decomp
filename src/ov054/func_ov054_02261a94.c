@@ -19,7 +19,7 @@ typedef struct Elem {
 
 extern Elem data_ov054_02262fac[];
 
-extern int func_ov054_02260484(void *p);
+extern unsigned char func_ov054_02260484(void *receiver);
 extern int func_0206fc6c(void);
 extern void func_ov054_02261cc4(UnkStruct_02261a94 *self, int a);
 extern void func_0206844c(int h, u8 *p, int k);

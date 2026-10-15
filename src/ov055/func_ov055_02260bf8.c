@@ -3,7 +3,7 @@
  */
 
 extern int func_0202ec58(void *p);
-extern void func_ov055_022604f4(void);
+extern void func_ov055_022604f4(void *receiver);
 extern void func_ov055_02260b24(void *p, int x);
 extern int func_ov004_02246ecc(void *p);
 extern void func_0203e334(void);
@@ -17,12 +17,7 @@ int func_ov055_02260bf8(void *arg)
     }
 
     data_ov055_02261080 = arg;
-    // clang-format off
-    asm {
-        mov r0, arg
-    }
-    // clang-format on
-    func_ov055_022604f4();
+    func_ov055_022604f4((void *) arg);
     func_ov055_02260b24(arg, 0);
     func_ov004_02246ecc((char *) arg + 0x5c);
     func_0203e334();

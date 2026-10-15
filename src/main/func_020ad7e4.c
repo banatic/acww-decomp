@@ -5,7 +5,7 @@
 extern int func_020b01dc(void *ptr);
 extern unsigned char data_021f49ec[];
 
-int func_020ad7e4(void)
+int func_020ad7e4(int value)
 {
     return func_020b01dc((void *) data_021f49ec);
 }

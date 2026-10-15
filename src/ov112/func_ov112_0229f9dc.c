@@ -3,7 +3,7 @@
  */
 
 extern void func_ov112_0229fb8c(int, int);
-extern void func_ov002_0220a4c8(int);
+extern void func_ov002_0220a4c8(void *receiver);
 
 void func_ov112_0229f9dc(int r0, int r1)
 {
@@ -28,7 +28,7 @@ void func_ov112_0229f9dc(int r0, int r1)
     r0_2 = *(unsigned char *) r0_2;
     r1_2 = r0_2 - r4;
     if (r1_2 >= 4 || r1_2 <= -4) {
-        func_ov002_0220a4c8(r5 + 0x4234);
+        func_ov002_0220a4c8((void *) (r5 + 0x4234));
         *(unsigned char *) (r5 + 0xbb) = r4;
     }
 }

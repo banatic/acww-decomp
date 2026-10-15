@@ -15,7 +15,7 @@ typedef struct {
 
 extern void func_0208a1f0(UnkStruct_0208bc30 *dst, void *src);
 extern void func_0208a1ec(UnkStruct_0208bc30 *dst, int val);
-extern void func_0208a144(UnkStruct_0208bc30 *dst);
+extern void *func_0208a144(UnkStruct_0208bc30 *dst);
 extern char data_020d5c44[];
 
 void func_0208bc30(UnkStruct_0208bc30_2 *s)

@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_0220a0b4(void *addr, int a, int b);
 extern void func_ov127_02299b58(void *addr, int val);
@@ -24,7 +24,7 @@ typedef struct UnkStruct_0229bff0 {
 } UnkStruct_0229bff0;
 void func_ov128_0229bff0(UnkStruct_0229bff0 *self)
 {
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(self)) {
         func_ov128_0229be44(self);
         return;
     }

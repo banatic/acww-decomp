@@ -9,7 +9,7 @@ extern int func_ov002_0220b5ec(char *ptr, int val);
 extern int func_ov002_0220b59c(char *ptr, int val);
 extern void func_ov002_0220a0b4(char *ptr, int a, int b);
 extern void func_ov002_0220a374(char *ptr, int val);
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov106_0229cc50(char *self);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_0220a1dc(char *ptr);
@@ -33,19 +33,11 @@ void func_ov106_0229e134(char *self)
         func_ov002_0220a0b4(self + 0x22a0, v1, v2);
         func_ov002_0220a374(self + 0x22a0, 1);
     }
-    // clang-format off
-    asm {
-        mov r0, self
-    }
-    // clang-format on
-    if (func_ov002_02208014() != 0)
-    {
+    if (func_ov002_02208014(self) != 0) {
         func_ov106_0229cc50(self);
         func_ov002_02208098((void *) (self), 5);
         return;
-    }
-    else
-    {
+    } else {
         unsigned short flags;
         flags = data_021fbe40.flags;
         if ((flags & 1) != 0 || (flags & 2) != 0) {

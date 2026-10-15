@@ -4,12 +4,7 @@
 
 extern void MI_CpuFill8(int a, int b, int c);
 
-int func_02088754(int a)
+void func_02088754(int a)
 {
     MI_CpuFill8(a, 0xff, 1);
-    {
-        register int result;
-        asm { mov result, r0 }
-        return result;
-    }
 }

@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov096_0229f55c(void);
+extern int func_ov096_0229f55c(void *receiver);
 extern void func_ov096_0229fb9c(void *);
 extern void func_ov096_0229f874(void *, int, int, int);
 extern int func_ov096_0229f088(void *, unsigned char);
@@ -19,7 +19,7 @@ void func_ov096_0229d93c(UnkStruct_0229d93c *ptr)
 {
     int rv;
 
-    rv = func_ov096_0229f55c();
+    rv = func_ov096_0229f55c(ptr);
     if (rv == 0x26) {
         func_ov096_0229fb9c(ptr);
         func_ov096_0229f874(ptr, 0xb, 0xff, 1);

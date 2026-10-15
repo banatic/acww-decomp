@@ -4,7 +4,7 @@
 
 extern void *func_ov140_0229a12c(void *obj);
 extern void func_020708e4(void *handle, unsigned short *digits, int size);
-extern void func_02070a98(void *handle, int a, int b, int c, int d, int e, int f);
+extern void func_02070a98(void *receiver, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag);
 extern void func_02070a04(void *handle, int a, int b);
 
 void func_ov140_0229a078(unsigned char *obj)

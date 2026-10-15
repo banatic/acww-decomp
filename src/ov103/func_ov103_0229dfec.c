@@ -9,7 +9,7 @@ extern void func_ov002_02209eb8(void *);
 extern void func_ov103_0229ca00(void *);
 extern void func_ov094_0229a850(void *, int, void *);
 extern void func_ov094_0229b738(void *, int, void *);
-extern void func_ov094_02299d84(void *, void *);
+extern void func_ov094_02299d84(void *receiver, int value);
 extern int func_ov002_02207f60(void *);
 extern void func_0208f210(void *, int, int);
 
@@ -39,7 +39,7 @@ int func_ov103_0229dfec(void *self)
     if (func_ov103_0229c2f4(self, 2) != 0) {
         func_ov094_0229a850((char *) self + 0xcc, 0, *(void **) ((char *) self + 0x2b8c));
         func_ov094_0229b738((char *) self + 0xb2c, 0, *(void **) ((char *) self + 0x2b8c));
-        func_ov094_02299d84((char *) self + 0xb54, *(void **) ((char *) self + 0x2b8c));
+        func_ov094_02299d84((char *) self + 0xb54, (int) *(void **) ((char *) self + 0x2b8c));
     }
 
     if (func_ov103_0229c2f4(self, 0x80) != 0) {

@@ -46,7 +46,7 @@ extern unsigned char data_021c1d6c[];
 extern unsigned char data_021c1e14[];
 extern unsigned char data_021c307c[];
 
-int func_0202913c(struct UnkStruct_0202913c *param0, int param1, char *param2)
+int func_0202913c(struct UnkStruct_0202913c *param0, int param1, char *param2, unsigned int index)
 {
     char *a;
     char *b;

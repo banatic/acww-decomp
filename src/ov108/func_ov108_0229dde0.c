@@ -10,7 +10,7 @@ extern void func_ov108_0229c998(void *self);
 extern void func_ov002_0220ad18(void *p, void *q);
 extern void func_ov094_0229a850(void *p, int a, int b);
 extern void func_ov094_0229b738(void *p, int a, int b);
-extern void func_ov094_02299d84(void *p, int a);
+extern void func_ov094_02299d84(void *receiver, int value);
 
 int func_ov108_0229dde0(char *self)
 {

@@ -6,7 +6,7 @@ extern int func_020984e8(void);
 extern unsigned int func_020996b8(int object);
 extern unsigned int func_0206fc8c(void);
 extern unsigned int func_02072bb0(unsigned int, unsigned int);
-extern int func_02051c08(unsigned char *, unsigned char *, int);
+extern void func_02051c08(unsigned char *, unsigned char *, int);
 extern unsigned int func_02072d4c(unsigned int);
 extern void func_02072e3c(unsigned int, unsigned char *);
 

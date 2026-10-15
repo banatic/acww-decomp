@@ -7,7 +7,7 @@ extern void *func_020984e8(void);
 extern void *func_0209847c(unsigned char);
 extern void MI_CpuCopy8(void *, const void *, unsigned int);
 
-void func_020a24ac(void)
+void func_020a24ac(void *receiver)
 {
     void *p1;
     void *p2;

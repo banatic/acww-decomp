@@ -15,7 +15,7 @@ extern void func_02074078(void);
 extern int func_020a238c(UnkStruct_020a05e8 *s);
 extern void func_0209fb54(void *p);
 extern void func_020a2468(UnkStruct_020a05e8 *s);
-extern void func_020a0b94(void);
+extern void func_020a0b94(void *receiver);
 extern void func_02088368(void);
 extern int func_020a2120(UnkStruct_020a05e8 *s, int n);
 extern int func_02073dd4(void *g, int i);
@@ -54,8 +54,7 @@ int func_020a05e8(UnkStruct_020a05e8 *self, unsigned char *state, int p2, int ba
         func_0209fb54(data_021f3ba0);
         if (p7 != 0) {
             func_020a2468(self);
-            asm { mov r0, self }
-            func_020a0b94();
+            func_020a0b94(self);
             func_02088368();
         }
         *state = base + 1;

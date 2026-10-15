@@ -11,7 +11,7 @@ extern int CARD_GetBackupTotalSize(void);
 extern void func_0211ec34(unsigned short);
 extern void OS_ReleaseLockID(unsigned short);
 
-void func_02050b94(int *out, int arg2)
+void func_02050b94(int *out, int arg2, const void *metadata)
 {
     int r;
 

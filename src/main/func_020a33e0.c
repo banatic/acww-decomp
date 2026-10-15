@@ -38,7 +38,7 @@ extern void func_02073820(UnkStruct_020a33e0_2 *g);
 extern void func_02073770(UnkStruct_020a33e0_2 *g, int a, int b);
 extern void func_020ba37c(void);
 extern int func_020a0848(UnkStruct_020a33e0 *p, unsigned char *q, int a, int b, int c, int d);
-extern void func_020a25cc(void);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(UnkStruct_020a33e0 *p, int a);
 
 void func_020a33e0(UnkStruct_020a33e0 *p)
@@ -147,8 +147,7 @@ void func_020a33e0(UnkStruct_020a33e0 *p)
             func_020a0848(p, &p->unk_A1, 0xf, 0x15, 1, 1);
             break;
         default:
-            asm { add r0, p, #0 }
-            func_020a25cc();
+            func_020a25cc(p);
             func_020a4e94(p, 0xa);
             break;
     }

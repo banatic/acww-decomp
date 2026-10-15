@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void *func_ov119_0229ae50(void);
+extern void *func_ov119_0229ae50(void *receiver);
 extern int func_02077c3c(const char *);
 extern int func_02077e50(int);
 
@@ -12,7 +12,7 @@ int func_ov119_0229a650(void *a, int limit)
     int count;
     int i;
 
-    base = (char *) func_ov119_0229ae50();
+    base = (char *) func_ov119_0229ae50((void *) a);
     count = 0;
     i = count;
     for (; i < 0x20; i++) {

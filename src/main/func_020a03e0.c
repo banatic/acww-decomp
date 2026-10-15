@@ -21,8 +21,8 @@ extern int func_020a238c(void *self);
 extern int func_020a19c0(int unused, int idx);
 extern int func_020a2120(void *p, int idx);
 extern void func_020a2468(int p0);
-extern void func_020a24ac(void);
-extern void func_020a0b94(void);
+extern void func_020a24ac(void *receiver);
+extern void func_020a0b94(void *receiver);
 extern void func_02088368(void);
 extern void func_0209fb54(void *p);
 extern void func_0209fb4c(void *p);
@@ -73,11 +73,9 @@ int func_020a03e0(UnkStruct_020a03e0 *p, unsigned char *q, int a, int b, unsigne
         if (d) {
             func_020a2468((int) p);
         }
-        asm { add r0, p, #0 }
-        func_020a24ac();
+        func_020a24ac(p);
         if (d) {
-            asm { add r0, p, #0 }
-            func_020a0b94();
+            func_020a0b94(p);
             func_02088368();
         }
         func_0209fb54((void *) data_021f3ba0);

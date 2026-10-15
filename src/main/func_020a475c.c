@@ -16,8 +16,8 @@ struct UnkStruct_020a475c {
 extern int func_020a259c(UnkStruct_020a475c *self, int arg2);
 extern int func_020a238c(UnkStruct_020a475c *self);
 extern int func_020a2120(UnkStruct_020a475c *self, int value);
-extern void func_020a261c(void);
-extern void func_020a25cc(void);
+extern void func_020a261c(void *object);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(UnkStruct_020a475c *self, int arg2);
 
 void func_020a475c(UnkStruct_020a475c *self)
@@ -67,14 +67,13 @@ void func_020a475c(UnkStruct_020a475c *self)
             break;
         }
         case 5:
-            func_020a261c();
+            func_020a261c(self);
             self->state = 6;
             break;
         case 6:
             break;
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             func_020a4e94(self, 0xC);
             break;
     }

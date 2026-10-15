@@ -12,7 +12,7 @@ void func_ov002_0220ad18(void *a, int b);
 void func_ov094_0229a850(void *a, int b, int c);
 void func_ov094_0229a804(void *a, int b, int c, int d);
 void func_ov094_0229b738(void *a, int b, int c);
-void func_ov094_02299d84(void *a, int b);
+void func_ov094_02299d84(void *receiver, int value);
 void func_ov094_0229b700(void *a, int b, int c);
 int func_ov002_02207f60(void *self);
 void func_0208f210(void *a, int b, int c);

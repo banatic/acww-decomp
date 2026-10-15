@@ -10,7 +10,7 @@ extern void *func_02099664(int a);
 extern void *func_02077bc8(void *p);
 extern void *func_02077d68(void *);
 extern void *func_02099658(int a);
-extern void func_02077d00(void);
+extern void *func_02077d00(void *entries);
 extern void *func_02077c3c(struct UnkStruct_020a0c18 *p);
 extern int func_020eb058(void *a, void *b);
 
@@ -22,14 +22,8 @@ int func_020a0c18(int a, int b, int c)
     int i;
 
     x = (func_02077d68((void *) func_02077bc8(func_02099664(b))));
-    asm {
-        add r0, c, #0
-        bl func_02099658
-        bl func_02077d00
-        add arr, r0, #0
-    }
-    for (i = 0; i < 0x20; i++)
-    {
+    arr = func_02077d00(func_02099658(c));
+    for (i = 0; i < 0x20; i++) {
         y = (func_02077d68((void *) func_02077c3c(&arr[i])));
         if (y != 0 && func_020eb058(x, y) != 0) {
             return 1;

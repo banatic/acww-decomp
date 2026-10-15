@@ -7,7 +7,7 @@ extern int func_020984e8(void);
 extern int func_02099640(int argument0);
 extern void func_0209bb90(int, int);
 
-void func_ov068_02276230(void)
+void func_ov068_02276230(void *receiver)
 {
     if (func_ov068_02276254() != 0) {
         return;

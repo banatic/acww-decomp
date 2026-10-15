@@ -21,14 +21,14 @@ int func_0204bd08(void *p);
 int func_02062a28(void *p);
 int func_02062e78(UnkStruct_02062ea4_2 *self, int value);
 int func_020629e4(void *p);
-u8 func_020629dc(void *p);
-u8 func_020629d4(void *p);
+int func_020629dc(void *p);
+int func_020629d4(void *p);
 int func_0204bcdc(void *p);
 int func_0204bc64(void *p);
 int func_020537e8(int value);
 int func_02053da4(int value);
-u8 func_02053d9c(int value);
-u8 func_02053d94(int value);
+int func_02053d9c(int value);
+int func_02053d94(int value);
 
 int func_02062ea4(UnkStruct_02062ea4_2 *self, unsigned short *argument1)
 {

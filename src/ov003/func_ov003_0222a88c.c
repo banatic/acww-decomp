@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_0222a88c;
 int func_0204fd6c(int a, int b);
 
-int func_ov003_0222a88c(UnkStruct_0222a88c *self)
+int func_ov003_0222a88c(UnkStruct_0222a88c *self, void *object)
 {
     int r = 0;
     if (func_0204fd6c(self->unk_44, 1) != 0) {

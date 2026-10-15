@@ -17,7 +17,7 @@ typedef struct {
     unsigned short flags;
 } GlobalFlags;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(void *);
 extern unsigned char *func_ov002_02208098(void *, unsigned char value);
 extern int func_ov090_02299078(int);
@@ -39,7 +39,7 @@ extern GlobalFlags data_021fbe40;
 
 void func_ov118_0229bb74(UnkStruct_0229bb74 *p)
 {
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(p)) {
         func_ov118_0229b8b0(p);
         return;
     }

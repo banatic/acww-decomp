@@ -6,7 +6,7 @@ extern int func_020682e0(int);
 extern void func_02068358(int);
 extern void func_02068434(int);
 
-void func_020a25cc(void)
+void func_020a25cc(void *receiver)
 {
     int a;
     a = func_020682e0(0);

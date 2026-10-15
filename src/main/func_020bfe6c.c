@@ -5,7 +5,7 @@
 extern int func_0208a160(void *);
 extern void func_020c00fc(void *);
 extern void func_020c0084(void *, int);
-extern void func_020c0324(void *, unsigned int, unsigned int, int);
+extern void func_020c0324(void *out, int px, int py, int flag);
 extern void func_020c013c(void *);
 extern unsigned int data_020d2eec;
 

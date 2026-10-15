@@ -8,7 +8,7 @@ extern int func_02021ea8(void *self, int *arr, int count, void *predicate);
 extern int func_020814f4(int a);
 extern int func_02065f7c(int a);
 extern void func_020642fc(void *p);
-extern int func_020642bc(void *p, int a);
+extern void func_020642bc(void *p, int a);
 extern void *func_02015e70(void *a, void *p, int b);
 extern void func_020642f8(void *p);
 

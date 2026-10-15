@@ -22,7 +22,7 @@ typedef struct {
     unsigned char unk_8DF;
 } Main;
 
-extern ElemContainer *func_ov140_0229a15c(void);
+extern unsigned int func_ov140_0229a15c(void *receiver);
 extern int func_ov140_0229a1a4(void *, void *);
 extern void func_ov140_0229a020(void *);
 extern void func_ov140_0229a078(void *);
@@ -34,7 +34,7 @@ void func_ov140_0229a1c4(Main *r5)
     int count;
     int i;
 
-    r7 = func_ov140_0229a15c();
+    r7 = (ElemContainer *) func_ov140_0229a15c(r5);
     count = 0;
     i = count;
 

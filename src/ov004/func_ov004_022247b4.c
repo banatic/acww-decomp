@@ -8,7 +8,7 @@ extern int func_02073d90(void *g);
 extern short *func_0209d358(int a, int b);
 extern int func_020960f8(int a, int b);
 extern int func_ov004_0222c070(int k);
-extern void func_0208b514(void);
+extern void func_0208b514(unsigned int value);
 extern void func_0201ad18(void *p, int a, int b, int c, int d, int e, int f, int g);
 extern int func_0203e020(void *self);
 extern void func_ov004_022249b4(void *self, int a);
@@ -20,10 +20,11 @@ int func_ov004_022247b4(char *self)
     if (func_02014868(self + 0x618) == 0) {
         if (func_02073d90(data_020ccf94) == 0) {
             if (*func_0209d358(0, 0x4a) == 0) {
-                if (func_020960f8(0x28, 4) != 0) {
-                    func_ov004_0222c070(2);
+                int value = func_020960f8(0x28, 4);
+                if (value != 0) {
+                    value = func_ov004_0222c070(2);
                 }
-                func_0208b514();
+                func_0208b514(value);
             }
         }
         func_0201ad18(self + 0x3b0, 0, 0, 0, (int) &data_021fbee8, 4, data_020c814c, 1);

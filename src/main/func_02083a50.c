@@ -8,12 +8,11 @@ struct some_struct {
 };
 
 extern void func_02078a90(void *);
-extern void func_02083cb4(void);
+extern void func_02083cb4(void *receiver);
 
 struct some_struct *func_02083a50(struct some_struct *param)
 {
     func_02078a90(&param->unk_04);
-    asm { add r0, param, #0 }
-    func_02083cb4();
+    func_02083cb4(param);
     return param;
 }

@@ -3,15 +3,12 @@
  */
 
 extern int func_0206f8c8(void);
-extern int func_ov054_02261da4(void);
+extern unsigned char func_ov054_02261da4(void *receiver);
 
 int func_ov054_02261dc0(int param)
 {
     if (func_0206f8c8() != 0) {
         return 0x58;
     }
-    asm {
-        mov r0, param
-    }
-    return func_ov054_02261da4();
+    return func_ov054_02261da4((void *) param);
 }

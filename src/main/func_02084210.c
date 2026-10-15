@@ -16,7 +16,7 @@ extern int func_0208602c(void);
 extern int func_020860c4(int);
 extern void func_02087f58(void *);
 
-void func_02084210(void)
+void func_02084210(void *receiver)
 {
     unsigned int flag;
 

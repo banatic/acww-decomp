@@ -16,7 +16,7 @@ inline int chk(void)
     return 0;
 }
 
-extern "C" int func_ov004_0220ec8c(void)
+extern "C" int func_ov004_0220ec8c(void *receiver)
 {
     unsigned short v;
     int m;

@@ -6,8 +6,8 @@ extern int func_0208a840(int);
 extern int func_0208a1cc(int *);
 extern void func_0208a1f0(void *dst, const void *src);
 extern void func_0208a1ec(void *dst, int a);
-extern void func_0208a1e8(void *dst, int a);
-extern void func_0208a1e0(void *dst, int a, int b);
+extern void *func_0208a1e8(void *dst, int a);
+extern void *func_0208a1e0(void *dst, int a, int b);
 extern void func_0208a0c8(void *dst);
 extern char data_020d71d4[];
 

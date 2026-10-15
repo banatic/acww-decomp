@@ -15,7 +15,7 @@ struct UnkStruct_022a0614 {
 
 extern int func_ov126_022a0740(struct UnkStruct_022a0614 *self);
 extern void func_02051bf8(void *dst, int size);
-extern int func_02051c08(void *dst, void *src, int size);
+extern void func_02051c08(void *dst, void *src, int size);
 extern void func_ov126_0229f7b8(struct UnkStruct_022a0614 *self, int arg);
 extern void func_ov095_022999f4(void *addr);
 extern void func_ov126_022a0978(struct UnkStruct_022a0614 *self);

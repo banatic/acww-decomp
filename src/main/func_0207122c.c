@@ -5,7 +5,7 @@
 extern int func_0209f150(void *, int);
 extern int func_02070fa0(void *);
 extern void func_0209e474(void *);
-extern int func_02071188(void);
+extern int func_02071188(void *object);
 extern void func_0209f128(void *, int);
 extern unsigned char data_021dc7a8;
 
@@ -26,9 +26,7 @@ void func_0207122c(unsigned char *param)
             return;
         }
     }
-    asm { add r0, param, #0 }
-    if (func_02071188() == 0)
-    {
+    if (func_02071188(param) == 0) {
         return;
     }
     func_0209f128(&data_021dc7a8, 3);

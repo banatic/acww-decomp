@@ -23,7 +23,7 @@ extern void func_ov002_0220a658(void *p, int a);
 extern void func_ov095_0229ce84(void *p, int a);
 extern void func_ov095_0229cef4(void *p, int a);
 extern void func_ov095_0229bee4(void *p);
-extern void func_ov095_0229bed8(void *p, int a);
+extern void func_ov095_0229bed8(void *receiver, int value);
 extern int func_ov126_022a0740(UnkStruct_022a0978 *self);
 extern int func_ov126_0229f7c8(UnkStruct_022a0978 *self, int a);
 extern int func_ov126_022a0904(UnkStruct_022a0978 *self);

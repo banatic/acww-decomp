@@ -10,8 +10,8 @@ typedef struct {
 extern int func_020a259c(StateStruct *self, int a);
 extern int func_020a1628(void);
 extern int func_020a1cec(StateStruct *self, int a);
-extern void func_020a261c(void);
-extern void func_020a25cc(void);
+extern void func_020a261c(void *object);
+extern void func_020a25cc(void *receiver);
 extern void func_020a4e94(StateStruct *self, int a);
 
 void func_020a48cc(StateStruct *self)
@@ -59,12 +59,11 @@ void func_020a48cc(StateStruct *self)
             break;
         }
         case 5:
-            func_020a261c();
+            func_020a261c(self);
             self->state = 6;
             break;
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             func_020a4e94(self, 0xc);
             break;
         case 6:

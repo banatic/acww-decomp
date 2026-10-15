@@ -5,7 +5,7 @@
 extern int func_02073918(int, int);
 extern int data_020ccf94;
 
-unsigned char func_ov048_022609fc(void)
+unsigned char func_ov048_022609fc(void *receiver)
 {
     int val;
     if (func_02073918(data_020ccf94, 0) != 0) {

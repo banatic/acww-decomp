@@ -44,7 +44,7 @@ extern "C" void func_ov004_0220d280(char *p, int a, int b);
 extern "C" void func_0204f818(int *a, int *b, char *p);
 extern "C" int func_020b6680(void);
 extern "C" void func_02004108(char *p, int k);
-extern "C" int func_020040a4(char *p);
+extern "C" unsigned char func_020040a4(char *p);
 extern "C" int func_020b65c4(void);
 extern "C" int func_02052e98(int a, int b, int c, int d);
 extern "C" int func_02052ec0(int a, int b, int c);

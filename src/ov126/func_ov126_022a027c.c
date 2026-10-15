@@ -17,7 +17,7 @@ typedef struct {
 
 extern int func_ov126_022a0740(UnkStruct_022a027c *self);
 extern void func_ov126_022a06d8(UnkStruct_022a027c *self);
-extern void func_ov126_022a0110(void);
+extern void func_ov126_022a0110(void *receiver);
 extern void func_ov126_022a0168(UnkStruct_022a027c *self);
 extern void func_ov126_022a08c4(UnkStruct_022a027c *self);
 extern void func_ov095_0229b3ec(const void *p);
@@ -41,12 +41,7 @@ int func_ov126_022a027c(UnkStruct_022a027c *self, int b)
         func_ov126_022a06d8(self);
     } else {
         if (b) {
-            // clang-format off
-            asm {
-                mov r0, self
-            }
-            // clang-format on
-            func_ov126_022a0110();
+            func_ov126_022a0110((void *) self);
         }
         return 0;
     }

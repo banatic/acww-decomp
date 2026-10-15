@@ -4,7 +4,7 @@
 
 extern void RtcSendPxiCommand(int cmd);
 
-void func_ov126_022a0110(void)
+void func_ov126_022a0110(void *receiver)
 {
     RtcSendPxiCommand(0x34);
 }

@@ -6,7 +6,7 @@
 
 extern int func_020984e8(void);
 extern void func_0208b520(void);
-extern void func_0208b514(void);
+extern void func_0208b514(unsigned int context);
 extern int func_02099020(int, int);
 extern void func_02098ff8(int, int);
 extern int func_02099670(int);
@@ -112,7 +112,7 @@ void func_ov071_02278c4c(UnkStruct_02278c4c *p)
         case 0x16:
         case 0x1a:
         case 0x1f:
-            func_0208b514();
+            func_0208b514(g);
             break;
         case 0x1e:
             m.h4 = 0x14a0;

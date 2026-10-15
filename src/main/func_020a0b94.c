@@ -17,7 +17,7 @@ extern void *func_020641c8(void *);
 extern void *func_020641b0(void *);
 extern void MI_CpuCopy8(void *, int, int);
 
-void func_020a0b94(void)
+void func_020a0b94(void *receiver)
 {
     void *p5, *p4;
     int r6;

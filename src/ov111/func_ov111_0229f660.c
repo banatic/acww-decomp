@@ -3,10 +3,10 @@
  */
 
 extern int func_02051c8c_unk(const void *, int);
-extern void func_ov111_0229f854(void);
+extern void func_ov111_0229f854(void *receiver);
 extern int func_02095804(void);
 extern void RtcSendPxiCommand(int);
-extern void func_ov111_0229fc9c(void);
+extern void func_ov111_0229fc9c(void *receiver);
 
 int func_ov111_0229f660(unsigned char *self)
 {
@@ -14,21 +14,11 @@ int func_ov111_0229f660(unsigned char *self)
         return 0;
     }
     if (func_02051c8c_unk(self + 0x3d16, 0x10) == 0) {
-        // clang-format off
-        asm {
-            mov r0, self
-        }
-        // clang-format on
-        func_ov111_0229f854();
+        func_ov111_0229f854((void *) self);
     } else {
         func_02095804();
         RtcSendPxiCommand(0x32);
-        // clang-format off
-        asm {
-            mov r0, self
-        }
-        // clang-format on
-        func_ov111_0229fc9c();
+        func_ov111_0229fc9c((void *) self);
         return 1;
     }
     return 0;

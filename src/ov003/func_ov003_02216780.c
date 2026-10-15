@@ -37,7 +37,7 @@ extern void func_ov003_022241a4(int *p);
 extern int func_020912d4(int a, int *b, short *c, int d);
 extern int FX_MulFunc(int a, int b);
 extern int func_02073908(void *a, unsigned int b);
-extern int func_ov003_0221abf8(struct UnkStruct_02216780 *o, int a);
+extern int func_ov003_0221abf8(void *object, int flag);
 
 extern void *data_020ccf94;
 extern short FX_SinCosTable_[];

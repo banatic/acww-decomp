@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_0209d368(void);
+extern int func_0209d368(int id, int index);
 extern void RtcSendPxiCommand(int command);
 
 typedef struct {
@@ -13,26 +13,10 @@ typedef struct {
     char unk_198;
 } UnkStruct_020a9e8c;
 
-// clang-format off
-asm void func_020a9e8c(UnkStruct_020a9e8c *object)
+void func_020a9e8c(UnkStruct_020a9e8c *object)
 {
-    push {r4, lr}
-    add r4, r0, #0
-    mov r0, #3
-    str r0, [r4, #8]
-    mov r1, #1
-    ldr r0, =0x198
-    strb r1, [r4, r0]
-    mov r0, #0x65
-    mov r1, #2
-    bl func_0209d368
-    add r1, r0, #2
-    ldr r0, =0x194
-    str r1, [r4, r0]
-    mov r0, #0x14
-    bl RtcSendPxiCommand
-    pop {r4}
-    pop {r3}
-    bx r3
+    object->unk_08 = 3;
+    object->unk_198 = 1;
+    object->unk_194 = func_0209d368(0x65, 2) + 2;
+    RtcSendPxiCommand(0x14);
 }
-// clang-format on

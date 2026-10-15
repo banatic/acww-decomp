@@ -4,7 +4,7 @@
 
 extern void *func_02088220(void *record);
 extern void *func_ov123_02299d9c(void *arg);
-extern int func_02072d84(void *a, void *b);
+extern void func_02072d84(void *a, void *b);
 extern void *func_02072d4c(void *a);
 extern void func_02072f38(void *a);
 extern void func_02072f54(void *a, unsigned char b);

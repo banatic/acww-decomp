@@ -6,7 +6,7 @@
 
 extern int data_ov004_02259a14;
 extern int func_02082654(int i);
-void func_ov004_0223e3ec(void)
+void func_ov004_0223e3ec(void *receiver)
 {
     u8 i = 0;
     int *p = &data_ov004_02259a14;

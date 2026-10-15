@@ -40,7 +40,7 @@ extern UnkStruct_020723a8_2 data_021dc7a8;
 extern void *data_021d054c[4][8];
 extern void *data_021d04e4[8];
 
-void func_020723a8(void)
+void func_020723a8(void *object)
 {
     u8 i;
     void *p;

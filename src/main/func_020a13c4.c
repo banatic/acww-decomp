@@ -4,7 +4,7 @@
 
 extern unsigned char data_021f3c1c;
 
-void func_020a13c4(unsigned char value)
+void func_020a13c4(unsigned long value)
 {
     data_021f3c1c = value;
 }

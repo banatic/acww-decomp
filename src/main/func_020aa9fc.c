@@ -4,7 +4,7 @@
 
 extern int func_020a80c4(int, int, int, int);
 
-int func_020aa9fc(void)
+int func_020aa9fc(void *object)
 {
     int r4;
     int result;

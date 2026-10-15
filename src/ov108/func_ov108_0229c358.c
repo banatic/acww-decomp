@@ -9,7 +9,7 @@ extern int func_ov002_022088bc(void *arg);
 extern int func_ov108_0229cd70(void *self, int val);
 extern int func_ov108_0229c2dc(void *self, int val);
 
-void func_ov108_0229c358(unsigned char *self, void *arg)
+void func_ov108_0229c358(unsigned char *self, void *arg, int flag)
 {
     int r4;
     int r6;

@@ -28,8 +28,9 @@ extern void func_020983c0(int a, int b);
 extern void func_02098ff8(int a, int b);
 extern void func_0206844c(int h, u8 *p, int k);
 
-void func_ov054_02260710(UnkStruct_02260710 *self)
+void func_ov054_02260710(void *receiver, int event)
 {
+    UnkStruct_02260710 *self = (UnkStruct_02260710 *) receiver;
     int h;
     int a;
     int b;

@@ -2,6 +2,8 @@
  * mwccarm 1.2/base -O4,s
  */
 
+#pragma opt_propagation off
+
 extern char data_020da088[];
 extern char data_020d8c64[];
 extern char data_020d8414[];
@@ -10,7 +12,7 @@ extern void *func_02082f48(void *);
 extern void func_02014898(void *);
 extern void func_02019eac(void *);
 extern void func_02013c28(void *);
-extern void func_020f5914(void *, void *);
+extern void func_020f5914(void *);
 extern void *func_02089c70(void *);
 extern void *func_02032c50(void *);
 extern void func_0201a790(void *);
@@ -40,7 +42,7 @@ void *func_0202ef38(void *self)
     p = data_020d8414;
     s = (char *) self + 0x514;
     *(void **) s = p;
-    func_020f5914(s, p);
+    func_020f5914(s);
 
     func_02089c70((char *) self + 0x4cc);
     func_02032c50((char *) self + 0x49c);

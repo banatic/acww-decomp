@@ -17,7 +17,7 @@ extern void func_02048418(int *g, UnkStruct_020467cc *obj, int x, int y);
 extern void func_020483c4(int *g, UnkStruct_020467cc *obj, int x, int y);
 extern void func_02048a80(int *g, UnkStruct_020467cc *obj, int x, int y);
 extern void func_02048238(int *g, UnkStruct_020467cc *obj, int x, int y);
-extern int func_02046650(void);
+extern void func_02046650(void);
 
 void func_020467cc(void)
 {

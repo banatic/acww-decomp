@@ -17,7 +17,7 @@ extern void func_02068434(int);
 extern void func_0206844c(int, unsigned char *, unsigned char *);
 extern unsigned char data_020e3c2c[];
 
-int func_0209ffb0(void)
+int func_0209ffb0(void *receiver)
 {
     int tested_value0;
     int flag = 0;

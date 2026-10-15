@@ -9,9 +9,9 @@ typedef struct UnkStruct_0229d7d0 {
     u8 unk_BB;
 } UnkStruct_0229d7d0;
 
-extern int func_ov096_0229e158(UnkStruct_0229d7d0 *);
+extern int func_ov096_0229e158(void *receiver);
 extern int func_0204c120(int, int, int);
-extern int func_ov096_0229f55c(void);
+extern int func_ov096_0229f55c(void *receiver);
 extern void func_ov096_0229fb9c(UnkStruct_0229d7d0 *);
 extern void func_ov096_0229f874(UnkStruct_0229d7d0 *, int, int, int);
 extern void func_ov096_0229e0f8(UnkStruct_0229d7d0 *, int);
@@ -36,12 +36,7 @@ void func_ov096_0229d7d0(UnkStruct_0229d7d0 *o)
             v = func_0204c120(10000, 0, 0);
             break;
     }
-    // clang-format off
-    asm {
-        mov r0, o
-    }
-    // clang-format on
-    w = func_ov096_0229f55c();
+    w = func_ov096_0229f55c(o);
     if (w == 0x26) {
         func_ov096_0229fb9c(o);
         func_ov096_0229f874(o, 0xc, 0xff, 1);

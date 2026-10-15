@@ -2,11 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern unsigned int *func_0202eb88(void);
+extern unsigned int *func_0202eb88(void *object);
 
 extern unsigned char data_021c30ac[];
 
-unsigned int *func_0202eb88(void)
+unsigned int *func_0202eb88(void *object)
 {
     return *(unsigned int **) data_021c30ac;
 }

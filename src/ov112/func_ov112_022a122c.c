@@ -7,7 +7,7 @@ extern int func_ov112_0229fe70(void *p, int n);
 extern void func_ov112_0229fc18(void *p);
 extern void func_ov112_0229fe50(void *p, int n);
 extern void func_ov112_0229fe60(void *p, int n);
-extern void func_ov112_0229fbf0(void);
+extern void func_ov112_0229fbf0(void *receiver);
 extern void func_ov112_0229fbc0(void *p);
 
 void func_ov112_022a122c(void *self)
@@ -23,10 +23,7 @@ void func_ov112_022a122c(void *self)
         func_ov112_0229fe60(self, 2);
     }
     if (func_ov112_0229fe70(self, 2)) {
-        asm {
-            mov r0, self
-        }
-        func_ov112_0229fbf0();
+        func_ov112_0229fbf0(self);
         func_ov112_0229fbc0(self);
         func_ov112_0229fe50(self, 2);
     }

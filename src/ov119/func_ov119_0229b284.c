@@ -2,25 +2,25 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov119_0229ac80(void);
+extern int func_ov119_0229ac80(void *receiver);
 extern void func_ov119_0229bba8(void *self, int arg);
 extern int func_020984fc(int arg);
 extern int func_02099664(int arg);
 extern int func_02077bc8(int arg);
 extern int func_ov119_0229ac3c(void *self, int arg);
-extern char *func_ov119_0229ae50(void *self);
+extern void *func_ov119_0229ae50(void *receiver);
 extern int func_02099870(int arg);
 extern int func_02077c3c(char *elem);
 extern int func_02077ea4(int a, int b);
 extern int func_020950a8(int arg);
 extern int func_02077c38(char *elem);
-extern int func_02051c08(int a, int b, int c);
+extern void func_02051c08(int a, int b, int c);
 extern int func_02095040(int arg);
 extern int func_020642a4(int arg);
 extern int func_02077c34(char *elem);
 extern int func_020ee45c(void *self);
 extern void func_ov090_02298fa4(int arg);
-extern int func_ov119_0229ae68(void *self);
+extern int func_ov119_0229ae68(void *receiver);
 extern int func_02077d68(int arg);
 extern int func_020eaf48(int a, int b);
 extern unsigned char *func_ov002_02208098(void *self, unsigned char value);
@@ -33,7 +33,7 @@ void func_ov119_0229b284(void *self)
     char *r6;
     char *r7;
 
-    r4 = func_ov119_0229ac80();
+    r4 = func_ov119_0229ac80((void *) self);
     if (r4 == -1) {
         func_ov119_0229bba8(self, 0x13);
         return;
@@ -45,7 +45,7 @@ void func_ov119_0229b284(void *self)
         return;
     }
 
-    r6 = func_ov119_0229ae50(self);
+    r6 = func_ov119_0229ae50((void *) self);
     sp4 = func_02099870(tmp);
     r7 = r6 + r4 * 0x24;
     sp8 = func_02077c3c(r7);

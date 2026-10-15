@@ -32,7 +32,7 @@ extern void func_0203423c(void *buf);
 extern int func_020b66d8(void);
 extern int FX_Div(int a, int b);
 extern int FX_MulFunc(int a, int b);
-extern int func_020310c8(void);
+extern int func_020310c8(int value);
 extern int func_0203f8d0(UnkStruct_020acc0c *out, UnkStruct_020acc0c *in);
 extern void func_020e96c8(Big48 *g, int a, int b, int c);
 extern void func_020e9774(Big48 *g, int a);
@@ -113,8 +113,7 @@ void func_020acc0c(UnkStruct_020acc0c *p, int amt, int a2, int a3)
     v1.x = p->x;
     v1.y = p->y;
     v1.z = p->z;
-    asm { mov r0, #0 }
-    v1.y = y + func_020310c8();
+    v1.y = y + func_020310c8(0);
     h = func_0203f8d0(&v2, &v1);
     func_020e96c8(&data_021fbe48, v2.x, v2.y, v2.z);
     func_020e9774(&data_021fbe48, h);

@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40[2];
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov105_0229cbb0(unsigned char *self);
 extern int func_ov002_02208008(unsigned char *self);
 extern int func_ov105_0229c340(unsigned char *self, int arg);
@@ -17,7 +17,7 @@ void func_ov105_0229e230(unsigned char *self)
 {
     int r4;
     unsigned char d;
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov105_0229cbb0(self);
         return;
     }

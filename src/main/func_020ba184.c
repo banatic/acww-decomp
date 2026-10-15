@@ -3,18 +3,20 @@
  */
 
 typedef struct {
-    int unk_00;
-    int unk_04;
-    int unk_08;
+    unsigned int unk_00;
+    void *unk_04;
+    unsigned int unk_08;
 } UnkStruct_020ba184;
 
-extern int DC_FlushRange(int, int);
-extern void GX_BeginLoadTex(int);
-extern int GX_LoadTex(int, int, int);
-extern int GX_EndLoadTex(int);
+extern void DC_FlushRange(void *, unsigned int);
+extern void GX_BeginLoadTex(void);
+extern void GX_LoadTex(const void *, unsigned int, unsigned int);
+extern void GX_EndLoadTex(void);
 
-int func_020ba184(UnkStruct_020ba184 *p)
+void func_020ba184(UnkStruct_020ba184 *p)
 {
-    GX_BeginLoadTex(DC_FlushRange(p->unk_04, p->unk_08));
-    return GX_EndLoadTex(GX_LoadTex(p->unk_04, p->unk_00, p->unk_08));
+    DC_FlushRange(p->unk_04, p->unk_08);
+    GX_BeginLoadTex();
+    GX_LoadTex(p->unk_04, p->unk_00, p->unk_08);
+    GX_EndLoadTex();
 }

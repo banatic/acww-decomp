@@ -9,7 +9,7 @@ typedef struct {
     unsigned int unk_2D8;
 } Obj_ov121_0229c3a8;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern unsigned char *func_ov121_0229b008(Obj_ov121_0229c3a8 *self);
 extern int func_ov002_02207d24(void *ptr, int arg);
 extern int func_ov002_02208008(Obj_ov121_0229c3a8 *self);
@@ -33,7 +33,7 @@ void func_ov121_0229b484(Obj_ov121_0229c3a8 *self)
 {
     unsigned short flags;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov121_0229b008(self);
         func_ov002_02207d24(&self->unk_2D8, 1);
         return;

@@ -17,7 +17,7 @@ struct UnkStruct_0204cc98 {
     struct Vec2 size;
 };
 
-void func_0204cc98(void)
+void func_0204cc98(void *object)
 {
     struct UnkStruct_0204cc98 *ctx;
     unsigned short *o;

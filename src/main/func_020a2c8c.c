@@ -11,8 +11,8 @@ extern void func_020a4e94(void *, int);
 extern int func_020ec2d4(void);
 extern int func_020e8840(void *);
 extern int func_02074308(void);
-extern int func_0209ffb0(void);
-extern void func_020a0174(void);
+extern int func_0209ffb0(void *receiver);
+extern int func_020a0174(void);
 extern const char data_020e3c54;
 
 struct Self020a2c8c {
@@ -55,9 +55,7 @@ void func_020a2c8c(struct Self020a2c8c *self)
             if (flag) {
                 void *p;
 
-                asm { add r0, self, #0 }
-                if (func_0209ffb0())
-                {
+                if (func_0209ffb0(self)) {
                     func_020a0174();
                 }
                 p = func_020682e0(0);

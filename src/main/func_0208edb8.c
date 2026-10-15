@@ -5,7 +5,7 @@
 extern int func_0208ecd0(void);
 extern void func_0208a1f0(void *, void *);
 extern void func_0208a1ec(void *, int);
-extern void func_0208a144(void *);
+extern void *func_0208a144(void *);
 extern int data_020d5b4c;
 
 void func_0208edb8(void *arg)

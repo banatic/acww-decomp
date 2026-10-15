@@ -4,7 +4,7 @@
 
 extern void func_0206e928(void);
 
-void func_0206ea54(void)
+void func_0206ea54(void *object)
 {
     func_0206e928();
 }

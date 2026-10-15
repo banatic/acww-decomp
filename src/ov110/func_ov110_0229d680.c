@@ -4,7 +4,7 @@
 
 extern int func_ov110_0229d5d4(int, int);
 extern int func_ov110_0229d5e4(int, int);
-extern int func_ov110_0229d628(void);
+extern unsigned char func_ov110_0229d628(void *receiver);
 extern int func_ov110_0229d600(int);
 extern int func_ov110_0229d6c4(int, int, int);
 
@@ -15,12 +15,7 @@ int func_ov110_0229d680(int a, int b, int c)
     res = 0x1f;
     if (c >= 0x6c) {
         if (func_ov110_0229d5d4(a, b)) {
-            // clang-format off
-            asm {
-                mov r0, a
-            }
-            // clang-format on
-            res = func_ov110_0229d628();
+            res = func_ov110_0229d628((void *) a);
         }
     } else {
         if (func_ov110_0229d5e4(a, b)) {

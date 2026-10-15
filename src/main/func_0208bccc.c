@@ -6,7 +6,7 @@ void func_0208bccc(void *arg0)
 {
     extern void func_0208a1f0(void *, void *);
     extern void func_0208a1ec(void *, int);
-    extern void func_0208a144(void *);
+    extern void *func_0208a144(void *);
     extern unsigned char data_020d5c4c[];
 
     *(int *) ((char *) arg0 + 0x20) = 4;

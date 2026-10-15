@@ -4,9 +4,9 @@
 
 extern int func_020ba4b8(void);
 extern void func_020ba4c4(int *, int *);
-extern int func_0200421c(int);
+extern void func_0200421c(int);
 
-int func_020356fc(void)
+void func_020356fc(int receiver)
 {
     int r4;
     int r2;
@@ -44,5 +44,5 @@ int func_020356fc(void)
             r0 = 0xb;
         }
     }
-    return func_0200421c(r0);
+    func_0200421c(r0);
 }

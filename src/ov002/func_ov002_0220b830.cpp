@@ -17,7 +17,7 @@ extern "C" void func_02068340(void *w, void *p);
 extern "C" void func_02068314(void *w);
 extern "C" void func_02068308(void *w);
 extern "C" void func_02068440(void *w);
-extern "C" void func_ov002_0220b6b8(void);
+extern "C" void func_ov002_0220b6b8(void *receiver);
 extern const char data_ov002_0220bea0[];
 
 extern "C" void func_ov002_0220b830(char *self, u8 *src, int flag)
@@ -36,9 +36,6 @@ extern "C" void func_ov002_0220b830(char *self, u8 *src, int flag)
     func_02068440(w);
     *(u8 *) (self + 0x118) = 0;
     if (*(u8 *) (self + 0x119) == 0) {
-        asm {
-            mov r0, self
-        }
-        func_ov002_0220b6b8();
+        func_ov002_0220b6b8(self);
     }
 }

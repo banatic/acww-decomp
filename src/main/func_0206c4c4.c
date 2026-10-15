@@ -2,20 +2,9 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0206d420(void);
-
-typedef struct {
-    char pad_00[0x2c];
-    int unk_2C;
-} UnkStruct_0206c4c4;
-
-// clang-format off
-asm int func_0206c4c4(register UnkStruct_0206c4c4 *s)
+#pragma opt_propagation off
+extern void func_0206d420(void *self, void *part);
+void func_0206c4c4(char *self)
 {
-    ldr r2, [r0, #0x2c]
-    ldr r1, =0x18ac
-    add r1, r2, r1
-    ldr r3, =func_0206d420
-    bx r3
+    func_0206d420(self, *(char **) (self + 0x2c) + 0x18ac);
 }
-// clang-format on

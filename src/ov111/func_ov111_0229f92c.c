@@ -4,9 +4,9 @@
 
 extern int func_ov111_0229f4dc(void *);
 extern void func_02051bf8(void *, int);
-extern int func_02051c08(void *, const void *, int);
+extern void func_02051c08(void *, const void *, int);
 extern void func_ov111_0229efc8(void *, int);
-extern void func_ov095_022999f4(void);
+extern void func_ov095_022999f4(void *receiver);
 extern void func_ov111_0229efec(void *);
 
 void func_ov111_0229f92c(char *p)
@@ -25,13 +25,7 @@ void func_ov111_0229f92c(char *p)
         func_02051bf8(p + 0x3eb8, 0x10);
         func_02051c08(p + 0x3d16 + 2 * x, p + 0x3eb8, y);
         func_ov111_0229efc8(p, 8);
-        // clang-format off
-        asm {
-            mov r0, p
-            add r0, #0xac
-        }
-        // clang-format on
-        func_ov095_022999f4();
+        func_ov095_022999f4(p + 0xac);
         func_ov111_0229efec(p);
     }
 }

@@ -26,7 +26,7 @@ extern void func_02040c80(void);
 extern void func_02042500(void);
 extern int func_020c15bc(void);
 extern void func_0209fa40(char *p);
-extern int func_02046bf4(void *a, void *b, int c, int d, int e);
+extern void func_02046bf4(void *a, void *b, int c, int d, int e);
 extern void func_0209e100(void *p, int n);
 extern void func_0204763c(char *p, int n);
 extern void func_02046c2c(char *p);

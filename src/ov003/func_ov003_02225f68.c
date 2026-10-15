@@ -3,7 +3,7 @@
  */
 
 extern int (*data_ov003_0223b8a4[])(void);
-int func_ov003_02225f68(void)
+int func_ov003_02225f68(void *receiver)
 {
     int i;
     for (i = 0; i < 9; i++) {

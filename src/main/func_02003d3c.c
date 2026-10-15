@@ -6,7 +6,7 @@ extern int func_02003cc0(int *);
 extern int func_020ec39c(void);
 extern void func_02003c38(int *);
 extern void func_02003bc8(int *);
-extern void func_02003bc4(void);
+extern void func_02003bc4(void *receiver);
 
 void func_02003d3c(int *arg0)
 {
@@ -25,6 +25,5 @@ void func_02003d3c(int *arg0)
     }
     func_02003c38(arg0);
     func_02003bc8(arg0);
-    asm { add r0, arg0, #0 }
-    func_02003bc4();
+    func_02003bc4(arg0);
 }

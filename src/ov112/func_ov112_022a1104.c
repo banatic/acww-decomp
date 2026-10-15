@@ -12,7 +12,7 @@ extern int func_ov095_0229c000(void *a, void *b);
 extern void func_ov112_0229f488(void *a);
 extern void func_ov095_0229bfd8(void *a, int b);
 extern int func_ov095_0229c01c(void *a, int b);
-extern int func_ov095_0229b324(void);
+extern int func_ov095_0229b324(void *receiver);
 
 extern void *data_021fbe94; // at 0x021fbe94
 extern unsigned char data_ov112_022a2130[];
@@ -37,9 +37,5 @@ void func_ov112_022a1104(char *self)
     func_ov112_0229f488(self);
     func_ov095_0229bfd8(self + 0x384, 6);
     func_ov095_0229c01c(self + 0x384, 6);
-    asm {
-        ldr r0, =0x384
-        add r0, self, r0
-    }
-    func_ov095_0229b324();
+    func_ov095_0229b324((void *) ((char *) self + 0x384));
 }

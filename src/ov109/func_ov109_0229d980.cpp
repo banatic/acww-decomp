@@ -11,7 +11,7 @@ extern void func_ov109_0229c8f8(void *);
 extern void func_ov002_0220ad18(void *, int);
 extern void func_ov094_0229a850(void *, int, int);
 extern void func_ov094_0229b738(void *, int, int);
-extern void func_ov094_02299d84(void *, int);
+extern void func_ov094_02299d84(void *receiver, int value);
 }
 
 class UnkStruct_0229d980 {

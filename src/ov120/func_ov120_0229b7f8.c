@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov120_0229b64c(void *self);
 extern int func_ov002_02208008(void *self);
 extern int func_ov120_0229a584(void *self, int val);
@@ -30,7 +30,7 @@ typedef struct UnkStruct_0229b7f8 {
 
 void func_ov120_0229b7f8(UnkStruct_0229b7f8 *self)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov120_0229b64c(self);
         return;
     }

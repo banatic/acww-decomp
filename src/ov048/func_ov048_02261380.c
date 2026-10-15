@@ -12,7 +12,7 @@ extern void *func_020984e8(void);
 extern void *func_02073144(void *a);
 extern void func_02073100(void);
 extern int func_020eb8a0(int a);
-extern void func_ov048_02260e28(void *self, int a, int b);
+extern void func_ov048_02260e28(void *receiver, int code, int flag);
 extern int func_020eb704(int a);
 extern void func_ov048_022616b8(void *self, int a);
 extern int func_020eb6b8(void *a);
@@ -20,7 +20,7 @@ extern void *func_02099664(void *a);
 extern void *func_02077bc8(void *a);
 extern void *func_02077d68(void *object);
 extern void func_020eb6a0(void *a, void *b);
-extern void func_02077bcc(void);
+extern void *func_02077bcc(void *record);
 extern void MI_CpuCopy8(void *dst, void *src, int size);
 extern int func_020a15ac(void);
 extern int func_ov048_02260a60(void *self);
@@ -68,11 +68,7 @@ void func_ov048_02261380(void *self)
             void *b2;
 
             func_020eb6a0((char *) r4 + 0x20, a3);
-            func_02099664(r6);
-            func_02077bcc();
-            asm {
-                mov b2, r0
-            }
+            b2 = func_02077bcc(func_02099664(r6));
             r4 = (char *) r4 + 0x20;
             MI_CpuCopy8(r4, b2, 0x40);
             if (func_020a15ac() == 0) {

@@ -5,7 +5,7 @@
 extern char data_021e5a2c[];
 extern int func_0207b410(char *p);
 extern int func_0209a67c(int v);
-int func_ov004_022226f8(void)
+int func_ov004_022226f8(void *receiver)
 {
     int r;
     if (func_0209a67c(func_0207b410(data_021e5a2c)) != 0) {

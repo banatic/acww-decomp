@@ -16,7 +16,7 @@ typedef struct {
     char unk_734[4];
 } UnkStruct_0229cd54;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov129_0229c874(UnkStruct_0229cd54 *);
 extern void func_ov129_0229c328(UnkStruct_0229cd54 *);
 extern void func_ov129_0229b7cc(UnkStruct_0229cd54 *, int);
@@ -43,7 +43,7 @@ void func_ov129_0229cd54(UnkStruct_0229cd54 *p)
     int x0;
     int y0;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(p) != 0) {
         func_ov129_0229c874(p);
         return;
     }

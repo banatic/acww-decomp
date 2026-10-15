@@ -4,7 +4,7 @@
 
 extern int func_ov123_0229b174(void *param);
 extern void func_020708e4(void *a, unsigned short *b, int c);
-extern void func_02070a98(void *a, int b, int c, int d, int e, int f, int g);
+extern void func_02070a98(void *receiver, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag);
 extern void func_02070a04(void *a, int b, int c);
 
 void func_ov123_0229b0dc(void *self, int n)

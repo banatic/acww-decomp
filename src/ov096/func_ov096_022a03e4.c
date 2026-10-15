@@ -11,7 +11,7 @@ extern int func_ov002_0220b5ec(unsigned char *p, int arg);
 extern int func_ov002_0220b59c(unsigned char *p, int arg);
 extern void func_ov002_0220a0b4(unsigned char *p, int a, int b);
 extern void func_ov002_0220a374(unsigned char *p, int arg);
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern void func_ov096_0229ddd8(unsigned char *p);
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern void func_ov002_0220a1dc(unsigned char *p);
@@ -41,13 +41,7 @@ void func_ov096_022a03e4(unsigned char *self)
         func_ov002_0220a374(self + 0x2500, 1);
     }
 
-    // clang-format off
-    asm {
-        mov r0, self
-    }
-    // clang-format on
-    if (func_ov002_02208014())
-    {
+    if (func_ov002_02208014(self)) {
         func_ov096_0229ddd8(self);
         func_ov002_02208098((void *) (self), 7);
         return;

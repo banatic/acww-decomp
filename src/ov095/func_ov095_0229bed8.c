@@ -3,7 +3,7 @@
  */
 
 extern void func_ov095_0229ce84(int, int);
-void func_ov095_0229bed8(int a)
+void func_ov095_0229bed8(void *receiver, int value)
 {
-    func_ov095_0229ce84(a, 6);
+    func_ov095_0229ce84((int) receiver, 6);
 }

@@ -8,7 +8,7 @@ extern void func_02068434(int);
 extern void func_0206844c(int, char *, char *);
 extern char data_020e3c40[];
 
-void func_020a261c(void)
+void func_020a261c(void *object)
 {
     int a;
     char c;

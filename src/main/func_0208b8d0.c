@@ -4,7 +4,7 @@
 
 extern void func_0208a1f0(void *ptr, void *arg);
 extern void func_0208a1ec(void *ptr, int arg);
-extern void func_0208a144(void *ptr);
+extern void *func_0208a144(void *ptr);
 extern char data_020d5c5c;
 
 void func_0208b8d0(char *param)

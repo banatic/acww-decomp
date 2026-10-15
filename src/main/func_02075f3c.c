@@ -3,7 +3,7 @@
  */
 
 extern int func_02090040(int);
-extern int func_02090158(void);
+extern int func_02090158(void *object);
 extern int func_02075ff8(int, int, int, int, int);
 extern int func_02073044(void);
 extern int func_020ebf70(void);
@@ -18,7 +18,7 @@ int func_02075f3c(int param)
     int a, b, res1, res2;
 
     a = func_02090040(4);
-    if (func_02090158() != 0) {
+    if (func_02090158((void *) a) != 0) {
         return func_02075ff8(param, a, 0x950, 2, 1);
     }
     if ((func_02073044(), func_020ebf70()) && func_02077a8c(1)) {

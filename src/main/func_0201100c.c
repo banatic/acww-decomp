@@ -27,7 +27,7 @@ extern void *func_02032c64(void *);
 extern int func_020082a0(void *, void *);
 extern void func_02031288(void *, void *, void *, int, int, void *, int);
 extern void *func_02032c50(void *);
-extern int func_020310c8(void);
+extern int func_020310c8(int value);
 
 int func_0201100c(UnkStruct_0201100c *self)
 {
@@ -49,8 +49,7 @@ int func_0201100c(UnkStruct_0201100c *self)
     }
     func_02031288(a0, p5c, (char *) self + 0x68, s, 0xfd7, self, 0xf);
     func_02032c50(buf);
-    asm { mov r0, #0 }
-    result = func_020310c8();
+    result = func_020310c8(0);
     *(int *) (p5c + 4) = result;
     return result;
 }

@@ -3,9 +3,9 @@
  */
 
 extern int func_0206fc8c(void);
-extern int func_020b13e4(const void *p, int value);
+extern void func_020b13e4(const void *p, int value);
 
-int func_ov126_0229fc7c(char *p)
+void func_ov126_0229fc7c(char *p)
 {
-    return func_020b13e4(p + 0x4248, func_0206fc8c());
+    func_020b13e4(p + 0x4248, func_0206fc8c());
 }

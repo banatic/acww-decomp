@@ -3,7 +3,7 @@
  */
 
 extern void func_02077b9c(void *);
-extern void func_02077b70(void *, void *);
+extern int func_02077b70(void *, void *);
 extern unsigned char data_021d11c4[];
 extern unsigned char SDK_OVERLAY_ov066_ID;
 

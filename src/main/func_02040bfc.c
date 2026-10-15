@@ -11,7 +11,7 @@ typedef struct {
 extern int func_0203fae4(void);
 extern void func_0209e474(void *buf8);
 extern int data_021c7584;
-extern Result_02040bfc *func_02040980(void *field);
+extern void *func_02040980(void *context);
 extern void MI_CpuCopy8(void *a, void *b, int n);
 extern int func_0203fcb4(int a, void *b, int c);
 extern void func_020408a8(Result_02040bfc *result);

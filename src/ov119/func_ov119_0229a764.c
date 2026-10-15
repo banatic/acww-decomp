@@ -6,7 +6,7 @@ extern void *func_020641c8(void *);
 extern void *func_02064170(void *);
 extern void *func_02064158(void *);
 extern void *func_020641b0(void *);
-extern void *func_ov119_0229ae50(void);
+extern void *func_ov119_0229ae50(void *receiver);
 extern void *func_ov119_0229bb44(void *);
 extern void *func_02077c3c(void *object);
 extern int func_02077e50(void *friend_data);
@@ -34,7 +34,7 @@ void func_ov119_0229a764(unsigned char *self)
     int buf1[8];
     int buf2[7];
 
-    base = func_ov119_0229ae50();
+    base = func_ov119_0229ae50((void *) self);
     k = self[0x9c] << 3;
     incA = 0x1ce;
     incB = 0x14e;

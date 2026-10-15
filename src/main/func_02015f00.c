@@ -7,7 +7,7 @@ extern int func_020b4508(void *, int, int);
 extern void func_02068404(void *, int, void *);
 extern void *func_020b5618(void *);
 
-void func_02015f00(void *r5, int r4, int r6, int r7)
+void func_02015f00(void *r5, int r4, int r6, int r7, int kind)
 {
     char sp[0x44];
 

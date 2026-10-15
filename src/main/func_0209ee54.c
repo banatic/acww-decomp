@@ -5,7 +5,7 @@
 extern int func_020984e8(void);
 extern void func_0209e79c(char *);
 extern void func_0204e728(char *, int);
-extern void func_0209e7fc(void);
+extern void func_0209e7fc(void *receiver);
 extern int func_0209faac(char *, int);
 extern int func_02099870(int);
 extern void func_02095038(int, char *);
@@ -34,8 +34,7 @@ void func_0209ee54(char *self)
     r4 = func_020984e8();
     func_0209e79c(self);
     func_0204e728(self + 0xd304, data_021fbe94);
-    asm { add r0, self, #0 }
-    func_0209e7fc();
+    func_0209e7fc(self);
     func_0209faac(self + 0x173dd, 0);
     func_02095038(func_02099870(r4), self + 2);
     r6 = func_020996b8(r4);

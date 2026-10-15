@@ -3,7 +3,7 @@
  */
 
 extern "C" int func_020677d0(void *);
-extern "C" void func_0206bb9c(void);
+extern "C" void func_0206bb9c(void *object, int code, const void *message);
 extern "C" void func_020a9334(void *, int);
 extern "C" void func_020a7994(void *, int);
 
@@ -25,12 +25,7 @@ extern unsigned char data_020df170[];
 extern "C" void func_02069e98(UnkStruct_02069e98 *self)
 {
     if (func_020677d0(self->unk_24) == 0) {
-        asm {
-            mov r0, self
-            ldr r1, =0x0d9f
-            ldr r2, =data_020df170
-            bl func_0206bb9c
-        }
+        func_0206bb9c(self, 0x0d9f, &data_020df170);
     }
     int r = reinterpret_cast<Obj3 *>(self->unk_24 + 0x1da8)->f3();
     func_020a9334(self, r);

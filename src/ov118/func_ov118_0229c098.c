@@ -35,7 +35,7 @@ extern void func_ov118_0229b564(UnkStruct_0229c098 *self);
 extern Vec3 *func_02095794(int a);
 extern int func_020b5e10(void);
 extern Vec3 *func_020b64ec(void *p);
-extern void func_0208e95c(void *p, int a);
+extern void *func_0208e95c(void *p, int a);
 extern int func_020ee45c(UnkStruct_0229c098 *self);
 extern int func_ov090_02298f74(void *);
 extern void func_ov118_0229a450(UnkStruct_0229c098 *self, int a);

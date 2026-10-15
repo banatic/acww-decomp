@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_0209e7fc(void);
+extern void func_0209e7fc(void *receiver);
 extern void func_0204de34(void);
 extern void func_0204dde0(void);
 extern void func_0209dfc0(void);
@@ -21,7 +21,7 @@ extern char data_021dc7a8[];
 
 void func_0209eb74(char *self)
 {
-    func_0209e7fc();
+    func_0209e7fc(self);
     func_0204de34();
     func_0204dde0();
     func_0209dfc0();

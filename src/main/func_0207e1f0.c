@@ -4,7 +4,7 @@
 
 extern int func_02099824(int arg);
 
-int func_0207e1f0(int param)
+int func_0207e1f0(int param, int b, int c)
 {
     if (func_02099824(param) == 7 || func_02099824(param) == 15) {
         return 1;

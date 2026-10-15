@@ -20,7 +20,7 @@ extern int func_0209bd44(int h);
 extern Rec *func_0209b4cc(int c, int i);
 extern int memcmp(const void *a, const void *b, unsigned int n);
 extern int func_0209bc40(int h);
-extern int func_0209a778(void *p);
+extern void *func_0209a778(void *record);
 extern Rec *func_0209a774(void *p);
 extern int func_0209aebc(char *p, Rec *r);
 extern int func_0207f1c8(void *p);
@@ -64,10 +64,10 @@ int func_0207b86c(char *self, void *a1, void *a2)
             goto out;
         }
     }
-    if (func_0209bd44(func_0209a778(self + 0x3f90)) != 0) {
+    if (func_0209bd44((int) func_0209a778(self + 0x3f90)) != 0) {
         o = func_0209a774(self + 0x3f90);
         if (o->w == me->w && memcmp(o->d, me->d, 0xc) == 0 && o->unk_0F == me->unk_0F) {
-            ret = func_0209bc40(func_0209a778(self + 0x3f90));
+            ret = func_0209bc40((int) func_0209a778(self + 0x3f90));
             goto out;
         }
     }

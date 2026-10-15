@@ -11,7 +11,7 @@ extern int func_ov120_0229a9b4(void *arg);
 extern int func_ov120_0229aacc(void *arg);
 extern int func_ov120_0229aed8(void *arg);
 extern int func_ov120_0229b100(void *arg);
-extern void func_0208e95c(void *addr, int n);
+extern void *func_0208e95c(void *addr, int n);
 
 void func_ov120_0229b900(void *arg)
 {

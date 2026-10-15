@@ -9,7 +9,7 @@ extern int func_020a7e44(void);
 extern int func_020a812c(void);
 extern void func_020a7e70(void);
 
-int func_020ab0f4(void)
+int func_020ab0f4(void *object)
 {
     int result;
 

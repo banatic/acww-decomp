@@ -4,7 +4,7 @@
 
 extern void *func_020f6970(void);
 
-void *func_02004118(void)
+void *func_02004118(void *object)
 {
     return func_020f6970();
 }

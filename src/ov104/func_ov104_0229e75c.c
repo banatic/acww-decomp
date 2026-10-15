@@ -5,7 +5,7 @@
 extern unsigned char data_021fbdd8;
 extern unsigned char *func_ov002_02208098(void *object, unsigned char value);
 extern int func_ov104_0229c364(void *, int);
-extern int func_ov104_0229d6a4(void);
+extern int func_ov104_0229d6a4(void *receiver);
 extern void func_ov104_0229dc20(void *, unsigned char);
 extern void func_ov002_022096d8(void *, int);
 extern int func_ov002_02207d24(void *, int);
@@ -19,13 +19,7 @@ void func_ov104_0229e75c(void *arg)
     if (func_ov104_0229c364(arg, 4) == 0) {
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, arg
-    }
-    // clang-format on
-    if (func_ov104_0229d6a4() == 0)
-    {
+    if (func_ov104_0229d6a4(arg) == 0) {
         return;
     }
     func_ov104_0229dc20(arg, *(unsigned char *) ((char *) arg + 0xb5));

@@ -10,7 +10,7 @@ extern unsigned char data_ov095_0229ee08[];
 extern unsigned char data_ov095_0229ee24[];
 extern unsigned char data_ov095_0229ee40[];
 
-int func_ov095_0229b324(void)
+int func_ov095_0229b324(void *receiver)
 {
     void *obj = data_021fbe94;
 

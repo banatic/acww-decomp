@@ -13,7 +13,7 @@ extern int func_ov004_0222d4f4(void);
 extern void func_0207428c(void);
 extern int func_020ec1e8(void);
 extern void func_ov048_022616b8(struct UnkStruct_02261a38 *self, int arg);
-extern int func_ov048_02262658(void);
+extern int func_ov048_02262658(void *receiver);
 
 void func_ov048_02261a38(struct UnkStruct_02261a38 *self, int flag)
 {
@@ -32,9 +32,6 @@ void func_ov048_02261a38(struct UnkStruct_02261a38 *self, int flag)
     if (func_020ec1e8() == 3 || func_020ec1e8() == 4) {
         func_ov048_022616b8(self, 0x14);
     } else {
-        asm {
-            mov r0, self
-        }
-        func_ov048_02262658();
+        func_ov048_02262658(self);
     }
 }

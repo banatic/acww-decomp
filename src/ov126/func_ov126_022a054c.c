@@ -25,8 +25,8 @@ extern int func_ov126_022a0740(UnkStruct_022a054c *self);
 extern void func_ov126_022a06d8(UnkStruct_022a054c *self);
 extern int func_02051c8c_unk(void *p, int n);
 extern int func_ov095_0229bcec(void *p1, void *p2, unsigned short v, void *p3, unsigned char a, unsigned char b, int c, int d);
-extern void func_ov126_022a0110(void);
-extern void func_ov095_022999e8(void);
+extern void func_ov126_022a0110(void *receiver);
+extern void func_ov095_022999e8(void *receiver);
 extern void func_ov126_022a0924(UnkStruct_022a054c *self, unsigned char b);
 extern void func_ov126_022a08c4(UnkStruct_022a054c *self);
 extern void func_ov126_022a0168(UnkStruct_022a054c *self);
@@ -55,24 +55,13 @@ void func_ov126_022a054c(UnkStruct_022a054c *self)
         if (func_ov095_0229bcec((char *) self + 0x19c, (char *) self + 0x4248, self->arr[i], &local_byte, self->unk_A6,
                                 self->unk_AF, 0, 0) == 0) {
             if (i == 0) {
-                // clang-format off
-                asm {
-                    mov r0, self
-                }
-                // clang-format on
-                func_ov126_022a0110();
+                func_ov126_022a0110((void *) self);
             }
             i = count;
         }
     }
 
-    // clang-format off
-    asm {
-        ldr r0, =0x19c
-        add r0, self, r0
-    }
-    // clang-format on
-    func_ov095_022999e8();
+    func_ov095_022999e8((char *) self + 0x19c);
     func_ov126_022a0924(self, local_byte);
     func_ov126_022a08c4(self);
     func_ov126_022a0168(self);

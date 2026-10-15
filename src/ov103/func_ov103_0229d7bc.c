@@ -8,7 +8,7 @@ extern unsigned char *func_ov002_02208098(void *p, unsigned char value);
 extern void func_ov002_02207ce4(void *p, int n);
 extern void func_ov002_02207d00(void *p);
 extern int func_ov103_0229c2f4(void *p, int n);
-extern int func_ov103_0229cb1c(void);
+extern int func_ov103_0229cb1c(void *receiver);
 extern int func_ov103_0229cb08(void *p, int n);
 extern void func_ov103_0229ced0(void *p, unsigned char c);
 extern void func_ov103_0229c444(void *p, unsigned char c);
@@ -20,11 +20,7 @@ void func_ov103_0229d7bc(void *arg)
         func_ov002_02207ce4((char *) arg + 0x218c, 0x3c);
     } else {
         if (func_ov103_0229c2f4(arg, 4) != 0) {
-            asm {
-                mov r0, arg
-            }
-            if (func_ov103_0229cb1c() != 0)
-            {
+            if (func_ov103_0229cb1c(arg) != 0) {
                 func_ov103_0229ced0(arg, ((unsigned char *) arg)[0x2da1]);
                 return;
             }

@@ -7,7 +7,7 @@ typedef struct UnkSelf {
     unsigned char unk_A4;
 } UnkSelf;
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern char *func_ov002_02208008(UnkSelf *self);
 extern int func_ov002_02207fe4(UnkSelf *self);
 extern int func_ov002_02207fd8(UnkSelf *self);
@@ -28,7 +28,7 @@ void func_ov143_0229a438(UnkSelf *self)
     unsigned char old;
     unsigned short flags;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(self) != 0) {
         func_ov143_0229a2c8(self);
         return;
     }

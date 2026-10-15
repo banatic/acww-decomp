@@ -10,7 +10,7 @@ extern char data_ov094_0229be78[];
 extern char data_ov094_0229be90[];
 extern char data_ov094_0229bea8[];
 
-int func_ov094_0229a098(void)
+int func_ov094_0229a098(void *receiver)
 {
     void *p = data_021fbe94;
     func_02002d14(data_ov094_0229be58, p, 8, 4, 4, 6);

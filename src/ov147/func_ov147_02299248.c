@@ -25,7 +25,7 @@ extern unsigned char data_ov147_0229abc8[];
 extern unsigned char data_ov147_0229aeec[];
 extern void *data_021fbe94;
 
-void func_ov147_02299248(void)
+void func_ov147_02299248(void *receiver)
 {
     func_0203de6c(1);
     func_020028bc(5, 0, 0, 0);

@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02079900(void) {}
+int func_02079900(int address)
+{
+    return address;
+}

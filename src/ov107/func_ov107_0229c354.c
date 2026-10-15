@@ -10,7 +10,7 @@ typedef struct {
 extern UnkStruct_0229c354 *data_020ccf94;
 extern int func_02073dd4(UnkStruct_0229c354 *obj, int val);
 
-int func_ov107_0229c354(void)
+int func_ov107_0229c354(void *receiver)
 {
     int field;
     field = data_020ccf94->unk_64;

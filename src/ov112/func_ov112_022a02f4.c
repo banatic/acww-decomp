@@ -8,7 +8,7 @@ extern int func_ov112_0229f900(void *self);
 extern void func_ov095_0229b3ec(void *ptr);
 extern int func_ov095_0229b3a0(void *p, void *q, int _x);
 extern void func_ov112_0229f89c(void *self);
-extern void func_ov112_0229ff50(void *self);
+extern void func_ov112_0229ff50(void *receiver);
 extern void func_ov112_0229fd20(void *self);
 extern void func_ov112_0229f668(void *self);
 extern void RtcSendPxiCommand(int cmd);

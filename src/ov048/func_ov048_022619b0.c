@@ -3,7 +3,7 @@
  */
 
 extern void func_ov048_022635f4(void *ptr, int n);
-extern char func_ov048_022609fc(void);
+extern unsigned char func_ov048_022609fc(void *receiver);
 extern void func_0206844c(void *dst, char *buf, int data);
 extern int data_ov048_02263d20;
 
@@ -27,7 +27,7 @@ void func_ov048_022619b0(UnkStruct_022619b0 *obj, int mode)
         func_ov048_022635f4(obj->unk_B8, 0xe);
     } else if (mode == 1) {
         char buf[8];
-        buf[0] = func_ov048_022609fc();
+        buf[0] = func_ov048_022609fc(obj);
         func_0206844c(p, buf, data_ov048_02263d20);
     }
 }

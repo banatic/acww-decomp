@@ -8,7 +8,7 @@ typedef struct {
 } SomeGlobal;
 
 extern SomeGlobal data_021fbe40;
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(void *arg);
 extern void func_ov137_0229c9b4(void *arg);
 extern int func_ov137_0229c58c(void *arg, int value);
@@ -19,7 +19,7 @@ extern void func_ov137_0229c92c(void *arg);
 
 void func_ov137_0229cc80(void *arg)
 {
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(arg) != 0) {
         func_ov137_0229c9b4(arg);
         return;
     }

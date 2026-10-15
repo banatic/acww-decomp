@@ -41,8 +41,8 @@ extern void func_020732b4(void *g, int a);
 extern int func_020a2120(struct UnkStruct_020a2650 *o, int a);
 extern void func_0209fb54(char *p);
 extern int func_02075aa4(int a, int b);
-extern int func_0209ffb0(void);
-extern void func_020a0174(void);
+extern int func_0209ffb0(void *receiver);
+extern int func_020a0174(void);
 extern int func_020a0848(struct UnkStruct_020a2650 *o, unsigned char *p, int a, int b, int c, int d);
 extern void func_020a4e94(struct UnkStruct_020a2650 *o, int a);
 
@@ -178,7 +178,7 @@ void func_020a2650(struct UnkStruct_020a2650 *self)
             return;
 
         case 9:
-            if (func_0209ffb0()) {
+            if (func_0209ffb0(self)) {
                 func_020a0174();
             }
             MI_CpuCopy8(self->unk_BC, func_020984e8(), 0x249c);

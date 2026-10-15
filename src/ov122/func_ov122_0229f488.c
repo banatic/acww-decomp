@@ -3,7 +3,7 @@
  */
 
 extern unsigned short data_021fbe40;
-extern void func_ov002_0220a4c8(void *p);
+extern void func_ov002_0220a4c8(void *receiver);
 extern void func_ov122_0229f468(unsigned char *self, int value);
 
 void func_ov122_0229f488(unsigned char *self)

@@ -38,9 +38,9 @@ extern int func_02075848(void);
 extern void func_020732b4(void *g, int a);
 extern int func_020ec920(void);
 extern void func_020a1038(struct UnkStruct_020a2dec *o, int a, int b);
-extern void func_020a0174(void);
+extern int func_020a0174(void);
 extern int func_020a0848(struct UnkStruct_020a2dec *o, unsigned char *p, int a, int b, int c, int d);
-extern void func_020a25cc(void);
+extern void func_020a25cc(void *receiver);
 extern int func_020682e0(int a);
 extern void func_0206844c(int a, unsigned char *p, char *q);
 extern void func_020a4e94(struct UnkStruct_020a2dec *o, int a);
@@ -192,8 +192,7 @@ void func_020a2dec(struct UnkStruct_020a2dec *self)
             return;
 
         default:
-            asm { add r0, self, #0 }
-            func_020a25cc();
+            func_020a25cc(self);
             if (func_020a01ec()) {
                 tmp = 6;
                 func_0206844c(func_020682e0(0), &tmp, data_020e3c40);

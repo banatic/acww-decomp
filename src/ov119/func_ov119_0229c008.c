@@ -7,7 +7,7 @@ extern int func_ov119_0229b5a8(void *p, int v);
 extern void func_ov119_0229b930(void *p);
 extern void func_ov119_0229b808(void *p);
 extern int func_ov119_0229c608(void *p, int v);
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov002_02208008(void *p);
 extern int func_ov090_02299078(int a);
 extern int func_ov090_02299098(int a);
@@ -20,7 +20,7 @@ extern struct FlagsStruct data_021fbe40;
 
 void func_ov119_0229c008(void *p)
 {
-    if (func_ov002_02208014()) {
+    if (func_ov002_02208014(p)) {
         func_ov119_0229bc30(p);
         return;
     } else {

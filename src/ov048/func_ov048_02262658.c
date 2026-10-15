@@ -5,7 +5,7 @@
 extern int func_020749c4(void);
 extern int func_020a0174(void);
 
-int func_ov048_02262658(void)
+int func_ov048_02262658(void *receiver)
 {
     int result = func_020749c4();
     if (result) {

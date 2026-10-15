@@ -4,7 +4,7 @@
 
 extern int func_020eede8(int, int);
 
-int func_020f0f34(void)
+int func_020f0f34(void *context, void *receiver)
 {
     return func_020eede8(0x2c, 0);
 }

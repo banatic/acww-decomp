@@ -9,8 +9,8 @@ extern void func_ov095_0229b3ec(void *p);
 extern void func_ov095_0229b394(void *p);
 extern int func_02051c8c_unk(void *p, int len);
 extern int func_ov112_022a029c(void *p, unsigned short val, int j);
-extern void func_ov112_0229ff50(void);
-extern void func_ov095_022999e8(void);
+extern void func_ov112_0229ff50(void *receiver);
+extern void func_ov095_022999e8(void *receiver);
 extern void func_ov112_0229fd20(void *p);
 extern void func_ov112_0229f668(void *p);
 extern void func_ov095_0229b388(void *p);
@@ -36,20 +36,13 @@ void func_ov112_022a00ac(void *p)
     for (i = 0, j = i; i < count; i++) {
         if (func_ov112_022a029c(p, *(unsigned short *) ((char *) p + i * 2 + 0x184), j) == 0) {
             if (i == 0) {
-                asm {
-                    mov r0, p
-                }
-                func_ov112_0229ff50();
+                func_ov112_0229ff50((void *) p);
             }
             i = count;
         }
     }
 
-    asm {
-        ldr r0, =0x384
-        add r0, p, r0
-    }
-    func_ov095_022999e8();
+    func_ov095_022999e8((char *) p + 0x384);
     func_ov112_0229fd20(p);
     func_ov112_0229f668(p);
     func_ov095_0229b388((char *) p + 0x384);

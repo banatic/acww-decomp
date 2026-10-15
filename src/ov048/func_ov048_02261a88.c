@@ -11,7 +11,7 @@ typedef struct UnkStruct_02261a88 {
     u8 unk_AE;
 } UnkStruct_02261a88;
 
-extern u8 func_ov048_022609fc(void);
+extern unsigned char func_ov048_022609fc(void *receiver);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov048_02263d20;
 
@@ -32,10 +32,7 @@ void func_ov048_02261a88(UnkStruct_02261a88 *self, int mode, int v)
         }
     }
     if (mode == 1) {
-        asm {
-            mov r0, self
-        }
-        c = func_ov048_022609fc();
+        c = func_ov048_022609fc(self);
         func_0206844c(self->unk_40, &c, data_ov048_02263d20);
     }
 }

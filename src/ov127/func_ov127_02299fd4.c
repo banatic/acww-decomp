@@ -11,7 +11,7 @@ extern int func_02002c6c(const int *data, int a, unsigned char b, int c, int d, 
 extern int func_02064af4(const int *data, void *ptr, int size);
 extern int func_02002b40(void *ptr, unsigned char b, int size, int zero);
 
-void func_ov127_02299fd4(unsigned char *self, unsigned char val)
+void func_ov127_02299fd4(unsigned char *self, unsigned char val, int mode)
 {
     int g = data_021fbe94;
     self[0x2833] = val;

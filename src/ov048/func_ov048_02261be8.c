@@ -20,15 +20,15 @@ extern int func_02099020(int t, int a);
 extern int func_02073d90(UnkStruct_02261be8 *g);
 extern int func_02073918(UnkStruct_02261be8 *g, int a);
 extern int func_02073dd4(UnkStruct_02261be8 *g, int a);
-extern int func_ov048_02260a24(void);
+extern int func_ov048_02260a24(void *receiver);
 extern void func_020a0194(void);
 extern int func_02099664(int t);
-extern void func_02077bcc(void);
+extern void *func_02077bcc(void *record);
 extern int func_020eb064(void *data);
 extern int func_020eb6ac(int a);
 extern long long func_020eb694(int a);
 extern void func_ov048_02262588(UnkStruct_02261be8_2 *self, long long v);
-extern void func_020a0174(void);
+extern int func_020a0174(void);
 extern void func_0206844c(int h, u8 *p, int k);
 extern int data_ov048_02263d20;
 
@@ -64,10 +64,7 @@ void func_ov048_02261be8(UnkStruct_02261be8_2 *self, int mode)
             if (func_02099020(t, 1) != 0) {
                 code = 0xe;
             } else {
-                asm {
-                    mov r0, self
-                }
-                code = func_ov048_02260a24();
+                code = func_ov048_02260a24(self);
             }
             break;
         case 2:
@@ -79,24 +76,16 @@ void func_ov048_02261be8(UnkStruct_02261be8_2 *self, int mode)
                 break;
             }
             func_020a0194();
-            func_02099664(t);
-            func_02077bcc();
-            asm {
-                mov q, r0
-                bl func_020eb064
-                mov valid, r0
-            }
-            if (valid != 0)
-            {
+            q = (int) func_02077bcc((void *) func_02099664(t));
+            valid = func_020eb064((void *) q);
+            if (valid != 0) {
                 if (func_020eb6ac(q) != 0) {
                     code = 0x29;
                     func_ov048_02262588(self, func_020eb694(q));
                 } else {
                     code = 0x23;
                 }
-            }
-            else
-            {
+            } else {
                 code = 0x2f;
             }
             func_020a0174();

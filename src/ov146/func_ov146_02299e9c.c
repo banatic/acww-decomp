@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern int func_ov146_0229a174(void);
+extern unsigned int func_ov146_0229a174(void *receiver);
 extern int func_ov146_02299ee8(int a, int b);
 
 int func_ov146_02299e9c(int a, int b)
@@ -14,7 +14,7 @@ int func_ov146_02299e9c(int a, int b)
         return 0;
     }
 
-    v = func_ov146_0229a174();
+    v = func_ov146_0229a174((void *) a);
     idx = 35 * b;
     if (func_ov146_02299ee8(a, v + 0x180 + idx)) {
         unsigned char c = *(unsigned char *) (v + idx + 0x1a2);

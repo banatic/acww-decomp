@@ -23,7 +23,7 @@ extern int data_020e17ac;
 extern int data_020e17b0;
 extern int data_020e17b4;
 
-int func_02071188(void)
+int func_02071188(void *object)
 {
     char c8;
     u32 buf1[8];

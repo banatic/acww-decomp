@@ -13,7 +13,7 @@ class UnkStruct_0220b8ac {
 
 extern "C" int func_ov002_0220b71c(void);
 extern "C" void func_ov002_02207d00(char *self);
-extern "C" void func_ov002_0220b6b8(void);
+extern "C" void func_ov002_0220b6b8(void *receiver);
 extern "C" int func_0206f56c(void);
 extern "C" void func_ov002_0220b6f4(char *self);
 extern "C" int func_ov002_02207d24(char *self, int a);
@@ -36,10 +36,7 @@ extern "C" int func_ov002_0220b8ac(char *self, int flag)
                 *(u8 *) (self + 0x118) = 1;
                 func_ov002_02207d00(self);
                 if (*(u8 *) (self + 0x119) != 0) {
-                    asm {
-                        mov r0, self
-                    }
-                    func_ov002_0220b6b8();
+                    func_ov002_0220b6b8(self);
                 }
             }
             break;

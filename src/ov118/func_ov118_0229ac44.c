@@ -9,7 +9,7 @@ typedef struct Ov118Struct {
     unsigned char unk_678;
 } Ov118Struct;
 
-extern void func_ov002_0220a4c8(void *);
+extern void func_ov002_0220a4c8(void *receiver);
 extern int func_ov118_0229b374(void *);
 extern void func_ov118_0229adf0(void *, int);
 

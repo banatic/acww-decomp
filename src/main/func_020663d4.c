@@ -5,9 +5,9 @@
 extern void *func_020707d0(void *ptr);
 extern void *func_020707b8(void *ptr);
 extern int func_020a87e0(void *p1, void *p2);
-extern int func_02051c08(void *dst, const void *src, unsigned int size);
+extern void func_02051c08(void *dst, const void *src, unsigned int size);
 extern void *func_02065cb0(void *ptr);
-extern void *func_0205195c(void *ptr);
+extern void func_0205195c(void *ptr);
 extern void __register_global_object(void *, void *, void *);
 extern void *func_02065c98(void *);
 

@@ -4,7 +4,7 @@
 
 extern int func_020644cc(int);
 
-unsigned short func_0206426c(void)
+unsigned short func_0206426c(void *receiver)
 {
     unsigned short x;
 

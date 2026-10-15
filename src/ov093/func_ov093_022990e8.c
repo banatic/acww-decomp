@@ -24,7 +24,7 @@ extern void func_ov093_02298f9c(St *st, int n);
 extern void func_ov093_0229937c(void *a, char *s, int n, int m);
 extern void *func_ov093_02299090(void *a);
 extern int func_020a8a34(void *w, char *p);
-extern void func_02070a98(void *w, void *b, int x, int y, int p1, int p2, int p3);
+extern void func_02070a98(void *receiver, int p2, int p3, int p4, unsigned char p5, unsigned char p6, int flag);
 extern void func_02070a04(void *w, int x, int y);
 extern void func_02070adc(void *w, void *b, int x, int y, int p1, int p2, int p3);
 extern void func_0207099c(void *w);
@@ -85,7 +85,7 @@ void func_ov093_022990e8(void *a, void *b, St *st)
         func_ov093_0229937c(a, st->sub8, st->unk_04, st->unk_00 & 0x1f);
         w = func_ov093_02299090(a);
         func_020a8a34(w, p);
-        func_02070a98(w, b, st->unk_04 * 0x10 + 0x11, 0x10, 1, 0, 0);
+        func_02070a98(w, (int) b, st->unk_04 * 0x10 + 0x11, 0x10, 1, 0, 0);
         func_02070a04(w, 0, 0);
         st->unk_04 = st->unk_04 + 1;
         st->unk_02 = st->unk_02 + 1;
@@ -98,7 +98,7 @@ void func_ov093_022990e8(void *a, void *b, St *st)
         func_ov093_0229937c(a, st->sub8, st->unk_04, st->unk_00 & 0x1f);
         w = func_ov093_02299090(a);
         func_020a8a34(w, q);
-        func_02070a98(w, b, st->unk_04 * 0x10 + 0x11, 0x10, 1, 0, 0);
+        func_02070a98(w, (int) b, st->unk_04 * 0x10 + 0x11, 0x10, 1, 0, 0);
         func_02070a04(w, 0, 0);
         st->unk_04 = st->unk_04 + 1;
         st->unk_02 = st->unk_02 + 1;

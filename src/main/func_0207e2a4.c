@@ -4,7 +4,7 @@
 
 extern int func_02099824(int);
 
-int func_0207e2a4(int x)
+int func_0207e2a4(int x, int b, int c)
 {
     return (func_02099824(x) == 2) || (func_02099824(x) == 10);
 }

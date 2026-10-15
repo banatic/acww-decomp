@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-extern void func_ov002_0220a4c8(void);
+extern void func_ov002_0220a4c8(void *receiver);
 extern void func_ov112_0229fb8c(void *, int);
 
 extern volatile unsigned short data_021fbe40;
@@ -32,11 +32,7 @@ void func_ov112_0229f92c(void *p)
     }
 
     if (v != adj) {
-        asm {
-            ldr r0, =0x4234
-            add r0, base, r0
-        }
-        func_ov002_0220a4c8();
+        func_ov002_0220a4c8((char *) base + 0x4234);
     }
 
     func_ov112_0229fb8c(base, adj);

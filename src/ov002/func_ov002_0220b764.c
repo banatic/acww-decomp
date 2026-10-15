@@ -11,7 +11,7 @@ extern void func_0208aa98(void *);
 extern void func_ov002_02207cec(void *, int);
 extern void func_ov002_02207cf8(void *);
 extern void func_ov002_02207d00(void *);
-extern void func_ov002_0220b6b8(void);
+extern void func_ov002_0220b6b8(void *receiver);
 
 int func_ov002_0220b764(char *self)
 {
@@ -25,10 +25,7 @@ int func_ov002_0220b764(char *self)
     func_ov002_02207cf8(self);
     func_0208aa98(self);
     func_ov002_02207cec(self, 0x0);
-    asm {
-        mov r0, self
-    }
-    func_ov002_0220b6b8();
+    func_ov002_0220b6b8(self);
     func_ov002_02207d00(self);
     return func_02070be8(frame);
 }

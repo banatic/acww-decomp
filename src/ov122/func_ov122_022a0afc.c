@@ -6,7 +6,7 @@
 
 // The guard chain keeps a final dead compare, as in the original.
 
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern u8 func_ov002_02208008(void *);
 extern int func_ov002_02207fe4(void *);
 extern int func_ov095_02299a00(void *);
@@ -28,7 +28,7 @@ void func_ov122_022a0afc(void *o)
 {
     u8 f;
 
-    if (func_ov002_02208014() != 0) {
+    if (func_ov002_02208014(o) != 0) {
         func_ov122_022a0054(o);
         return;
     }

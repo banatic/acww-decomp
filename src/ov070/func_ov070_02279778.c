@@ -16,7 +16,7 @@ typedef struct UnkStruct_02279778 {
 extern int func_0206fc6c(void);
 extern int func_0206f83c(void);
 extern void func_0201b420(int a, int b);
-extern void func_0208b514(void);
+extern void func_0208b514(unsigned int context);
 extern int func_0208602c(void);
 extern void func_020860f0(int a, int b);
 extern void func_0206844c(int h, u8 *p, int k);
@@ -31,7 +31,8 @@ void func_ov070_02279778(UnkStruct_02279778 *self)
     h = self->unk_40;
     code = 0x4b;
     self->unk_C0 = 0;
-    if (func_0206fc6c() != 0) {
+    v = func_0206fc6c();
+    if (v != 0) {
         self->unk_C0 = func_0206f83c();
         code = 0x2d;
         v = self->unk_C0;
@@ -44,7 +45,7 @@ void func_ov070_02279778(UnkStruct_02279778 *self)
         }
         func_0201b420(self->unk_B4, self->unk_C0);
     } else {
-        func_0208b514();
+        func_0208b514(v);
         func_020860f0(func_0208602c(), 0xa);
     }
     func_0206844c(h, &code, (int) &data_ov070_02279d58);

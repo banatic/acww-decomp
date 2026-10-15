@@ -4,7 +4,7 @@
 
 extern int func_0206f56c(void);
 extern void func_ov096_0229d16c(void *p);
-extern int func_ov002_02208014(void);
+extern int func_ov002_02208014(void *receiver);
 extern int func_ov096_0229fb84(void *p);
 extern int func_ov002_02208008(void *p);
 extern int func_ov002_02209044(unsigned char *p, int a, unsigned char *q, int b);
@@ -24,13 +24,7 @@ void func_ov096_022a033c(unsigned char *p)
         func_ov096_0229d16c(p);
         return;
     }
-    // clang-format off
-    asm {
-        mov r0, p
-    }
-    // clang-format on
-    if (func_ov002_02208014())
-    {
+    if (func_ov002_02208014(p)) {
         func_ov096_0229fb84(p);
         return;
     }

@@ -8,7 +8,7 @@ typedef struct {
 } UnkStruct_020aaabc;
 
 extern int func_020a7e50(void);
-extern int func_020aaa38(void);
+extern int func_020aaa38(void *object);
 extern int func_020a7e44(void);
 extern int func_020aaa20(UnkStruct_020aaabc *);
 extern void func_020a7e7c(void);
@@ -27,9 +27,8 @@ void func_020aaabc(UnkStruct_020aaabc *self)
         flag = 0;
         res = func_020a7e50();
         if (res) {
-            asm { add r0, self, #0 }
-            if (func_020aaa38())
-            {
+
+            if (func_020aaa38(self)) {
                 flag = 1;
             }
         } else {

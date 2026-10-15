@@ -10,7 +10,7 @@ extern void func_0206e2ec(void *p, int v);
 extern void func_0206e1d8(void *p, void *v);
 extern void func_ov122_0229f468(void *self, int);
 extern void func_ov122_0229f454(void *self, int);
-extern void func_0208e95c(void *p, int v);
+extern void *func_0208e95c(void *p, int v);
 extern void func_ov002_02209984(void *p, int a, int b, int c);
 extern void func_ov002_02208e38(void *p);
 extern int func_02065f20(void *p);

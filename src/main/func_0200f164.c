@@ -8,7 +8,7 @@ extern void func_02073820(void *p);
 extern void func_020737f0(void *p, char *flag, int val);
 extern void func_02073770(void *p, int a, int b);
 
-void func_0200f164(void)
+void func_0200f164(void *receiver)
 {
     if (func_02073d90(data_020ccf94) != 0) {
         char flag = 0;

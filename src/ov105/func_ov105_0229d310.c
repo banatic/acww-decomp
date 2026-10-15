@@ -7,7 +7,7 @@ extern unsigned char data_021f6c58;
 extern unsigned char data_021f6c5c;
 extern unsigned char data_021f6c54;
 
-int func_ov105_0229d310(void)
+int func_ov105_0229d310(void *receiver)
 {
     int diff;
     int diff2;

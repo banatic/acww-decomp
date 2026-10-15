@@ -30,7 +30,7 @@ extern int func_020a12c0(void);
 extern void func_02098ff8(void *, int);
 extern int func_0209af80(void *, u16 *);
 extern int func_0202ea40(void *, Buf *, int);
-extern int func_ov054_02260484(void *);
+extern unsigned char func_ov054_02260484(void *receiver);
 
 extern u8 data_ov054_022629f8[][6];
 extern u8 data_ov054_02262974[];

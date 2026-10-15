@@ -11,7 +11,7 @@ typedef struct {
     unsigned int unk_04;
 } UnkStruct_02043cdc;
 
-int func_02043cdc(void *obj, UnkStruct_02043cdc *src)
+int func_02043cdc(void *obj, UnkStruct_02043cdc *src, int value)
 {
     if (func_020b6660()) {
         UnkStruct_02043cdc temp;

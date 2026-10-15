@@ -22,7 +22,7 @@ extern unsigned char data_020e5970[];
 extern unsigned char data_020e7ad0[];
 extern unsigned char data_021dc7bc[];
 
-void func_020bde98(void)
+void func_020bde98(void *object)
 {
     int zero = 0;
     int idx = 0;

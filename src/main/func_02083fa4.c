@@ -2,10 +2,12 @@
  * mwccarm 1.2/base -O4,s
  */
 
+#pragma opt_propagation off
+
 extern int func_0209fa30(void *);
 extern void data_021f3b85(void);
 extern unsigned char data_020e54a8;
-extern int func_020b65c4(int);
+extern unsigned char func_020b65c4(void);
 extern int func_02084af0(void);
 extern int func_02084ad0(void);
 
@@ -33,7 +35,7 @@ int func_02083fa4(void *self, int (**cb)(void), int c, int d)
         if (b == 0) {
             goto fail;
         }
-        if (func_020b65c4(b) == 0x2c) {
+        if (func_020b65c4() == 0x2c) {
             goto fail;
         }
     }

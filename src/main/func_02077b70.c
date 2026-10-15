@@ -13,12 +13,16 @@ struct UnkStruct_02077b70 {
     unsigned char unk_08[1];
 };
 
-void func_02077b70(struct UnkStruct_02077b70 *s, int val)
+int func_02077b70(struct UnkStruct_02077b70 *s, int val)
 {
+    int result;
+
     s->unk_04 = 1;
     s->unk_00 = val;
     func_0204fa5c(s->unk_08, val);
     FS_LoadOverlayImage(s->unk_08);
     FS_StartOverlay(s->unk_08);
-    s->unk_04 = 0;
+    result = 0;
+    s->unk_04 = result;
+    return result;
 }

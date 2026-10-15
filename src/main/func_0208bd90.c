@@ -13,7 +13,7 @@ typedef struct UnkStruct_0208bd90 {
 extern int data_020d5c44;
 void func_0208a1f0(char *, int);
 void func_0208a1ec(char *, int);
-void func_0208a144(char *);
+void *func_0208a144(char *);
 void func_0208a158(char *);
 
 void func_0208bd90(UnkStruct_0208bd90 *obj)

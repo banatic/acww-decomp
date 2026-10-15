@@ -2,4 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-void func_02077d00(void) {}
+void *func_02077d00(void *entries)
+{
+    return entries;
+}

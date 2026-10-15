@@ -10,7 +10,7 @@ typedef struct {
 
 extern UnkStruct_0204cbe0 *func_0204cc04(int);
 
-void func_0204cbe0(void)
+void func_0204cbe0(void *object)
 {
     UnkStruct_0204cbe0 *p;
     int i;
