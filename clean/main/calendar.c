@@ -4,23 +4,6 @@
 #include <assert.h>
 #include <stddef.h>
 
-/* The clock, refreshed from the RTC: NitroSDK's RTCDate and RTCTime. */
-typedef struct RtcDate {
-    u32 year;
-    u32 month;
-    u32 day;
-    u32 weekday; /* 0 = Sunday */
-} RtcDate;
-
-typedef struct RtcTime {
-    u32 hour;
-    u32 minute;
-    u32 second;
-} RtcTime;
-
-extern RtcDate data_021dc744;
-extern RtcTime data_021dc754;
-
 /* The last day of each period of the year, as (month << 8) | day, in the game's own tables.
  * What the game uses the two sets of periods for is not known yet. */
 extern const u16 data_020d1b04[19];

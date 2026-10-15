@@ -30,6 +30,23 @@ typedef struct DateTime {
     u8 unused[2];
 } DateTime;
 
+/* The clock, refreshed from the RTC: NitroSDK's RTCDate and RTCTime. */
+typedef struct RtcDate {
+    u32 year;
+    u32 month;
+    u32 day;
+    u32 weekday; /* 0 = Sunday */
+} RtcDate;
+
+typedef struct RtcTime {
+    u32 hour;
+    u32 minute;
+    u32 second;
+} RtcTime;
+
+extern RtcDate data_021dc744;
+extern RtcTime data_021dc754;
+
 enum PartOfDay {
     PART_OF_DAY_MORNING,   /* 5:00-11:59 */
     PART_OF_DAY_AFTERNOON, /* 12:00-16:59 */

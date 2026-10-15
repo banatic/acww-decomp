@@ -84,6 +84,7 @@ jobs:
         run: python3 tools/progress_map.py
 
       - name: Publish the progress map
+        if: github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

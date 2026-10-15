@@ -132,12 +132,13 @@ callee takes, undefined behaviour). Linux does not pass yet, and neither run is 
 - The same recording run with Native for every function that has a source gives the same frames
   and the same RAM at chosen points as the Reference run.
 
-**M5: Clean, one subsystem at a time.** In progress: ten subsystems of `main` in `clean/main/`
-(162 functions) pass their function-level checks, and on Windows the M4 recording run with
-`--clean` (each Clean function in place of its Native one, `tools/run.py`) gives the
-Reference's frames and RAM. The recording found what random entry states had not: callers that
+**M5: Clean, one subsystem at a time.** In progress: eleven subsystems of `main` in
+`clean/main/` (180 functions) pass their function-level checks, and on Windows the M4
+recording run with `--clean` (each Clean function in place of its Native one, `tools/run.py`)
+gives the Reference's frames and RAM. The recording found what random entry states had not: callers that
 ask the calendar about month 0 or 13, which the game's tables answer from their neighbouring
 bytes (`clean/main/calendar.c`), and a fifth argument that a check placed where the game does
-not (`diff_stack` in `runtime/diffcheck.h`).
+not (`diff_stack` in `runtime/diffcheck.h`). A Clean function need not call what the ROM's code
+calls: the Reference run records nothing of its calls out (`runtime/native_run.c`).
 - Clean functions are added by subsystem; each passes the function-level check and the M4
   recording. The progress map counts them.
