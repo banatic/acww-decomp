@@ -2,7 +2,7 @@
  * mwccarm 1.2/base -O4,s
  */
 
-func_02037e0c(unsigned int r0, unsigned int r1, unsigned int r2, unsigned int r3)
+unsigned int func_02037e0c(unsigned int r0, unsigned int r1, unsigned int r2, unsigned int r3)
 {
     unsigned int ip = 0;
     if (r3 < 2 && r1 < 0x10 && r2 < 0x10) {

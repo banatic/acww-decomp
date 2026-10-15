@@ -4,17 +4,19 @@
 
 extern unsigned char data_021dc7bc[];
 extern void *func_02081d60(void *record);
+extern int func_02081398(void *a, void *b);
+extern int func_0209871c(void *slots, void *key);
 
 int func_02021c08(int r0, int r1)
 {
     int r5 = (int) func_02081d60((void *) r1);
     int r6 = 0;
     int r4 = 0;
-    if (func_02081398(r0, r5) == 1) {
+    if (func_02081398((void *) r0, (void *) r5) == 1) {
         r4 = 1;
     }
     if (r4 != 0) {
-        if (func_0209871c((unsigned int) data_021dc7bc, r5) != -1) {
+        if (func_0209871c(data_021dc7bc, (void *) r5) != -1) {
             r6 = 1;
         }
     }

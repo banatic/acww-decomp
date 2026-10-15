@@ -2,6 +2,11 @@
  * mwccarm 1.2/base -O4,s
  */
 
+extern unsigned int func_0204e414(void);
+extern int func_020800dc(int arg);
+extern int func_020800d0(int a);
+extern int func_0204e3f4(int a, int b, int c, int d);
+
 void func_02080078(unsigned char *param1)
 {
     unsigned short local_4;
@@ -13,10 +18,10 @@ void func_02080078(unsigned char *param1)
     arg0 = param1;
     val = func_0204e414();
     if (val != 0) {
-        if (func_020800dc(arg0) != 0) {
-            puVar3 = (unsigned char *) func_020800d0(arg0);
+        if (func_020800dc((int) arg0) != 0) {
+            puVar3 = (unsigned char *) func_020800d0((int) arg0);
             local_4 = 0x500a;
-            func_0204e3f4(val, *puVar3, puVar3[1], &local_4);
+            func_0204e3f4(val, *puVar3, puVar3[1], (int) &local_4);
         }
     }
     return;
