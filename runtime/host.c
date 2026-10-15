@@ -13,38 +13,30 @@
 #include <string.h>
 #endif
 
-#define HOST_MEMBERS_THISCALL 0
-
 #if !defined(__i386__) && !defined(_M_IX86)
 #error "host_invoke is written for 32-bit x86"
 #endif
 
+#define HOST_MAX_ARGS 16
+
+/* Every Native function takes its arguments on the stack and returns in eax (edx for the high
+ * word of a 64-bit result), members too: tools/native.py builds the Windows objects for
+ * i686-pc-windows-itanium, whose members take `this` like any first argument, so `thiscall`
+ * changes nothing on either host. The call passes HOST_MAX_ARGS words, of which the callee
+ * reads the ones it takes; the caller removes them, as cdecl does, and the compiler keeps the
+ * stack aligned and the registers the callee may change accounted for. */
+typedef uint64_t (*HostFunction)(uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t,
+                                 uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t);
+
 uint64_t host_invoke(const void *fn, const uint32_t *args, int count, int thiscall)
 {
-    uint32_t lo, hi;
-    /* The Native objects are built so that member functions take `this` on the stack, like
-       any first argument (tools/native.py: i686-pc-windows-itanium, not windows-gnu, whose
-       members are thiscall), so `thiscall` changes nothing on either host. The ecx path is
-       kept for code built the other way. */
-    thiscall = thiscall && HOST_MEMBERS_THISCALL;
-    int first = thiscall ? 1 : 0;
-    uint32_t self = thiscall && count > 0 ? args[0] : 0;
-    /* Push the arguments right to left, call, and put the stack pointer back whether the
-     * callee popped its arguments (thiscall) or not (cdecl). */
-    __asm__ volatile("movl %%esp, %%edi\n\t"
-                     "1:\n\t"
-                     "cmpl %%ebx, %%esi\n\t"
-                     "jle 2f\n\t"
-                     "decl %%esi\n\t"
-                     "pushl (%%edx,%%esi,4)\n\t"
-                     "jmp 1b\n\t"
-                     "2:\n\t"
-                     "call *%%eax\n\t"
-                     "movl %%edi, %%esp\n\t"
-                     : "=a"(lo), "=d"(hi), "+S"(count)
-                     : "a"(fn), "d"(args), "b"(first), "c"(self)
-                     : "edi", "memory", "cc");
-    return ((uint64_t) hi << 32) | lo;
+    (void) thiscall;
+    uint32_t a[HOST_MAX_ARGS] = {0};
+    for (int i = 0; i < count && i < HOST_MAX_ARGS; i++) {
+        a[i] = args[i];
+    }
+    HostFunction f = (HostFunction) (uintptr_t) fn;
+    return f(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9], a[10], a[11], a[12], a[13], a[14], a[15]);
 }
 
 #ifdef _WIN32

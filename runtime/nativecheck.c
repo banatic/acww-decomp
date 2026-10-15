@@ -145,8 +145,9 @@ static uint32_t random_arg(DiffRng *rng)
     }
 }
 
-/* The parameters' kinds of the function at `address`, or NULL (native_param_kinds is sorted). */
-static const NativeParams *params_of(uint32_t address)
+/* The parameters' kinds of the function at `address` in `module`, or NULL (native_param_kinds
+ * is sorted by address). */
+static const NativeParams *params_of(uint32_t address, const char *module)
 {
     uint32_t lo = 0, hi = native_param_kinds_count;
     while (lo < hi) {
@@ -157,7 +158,12 @@ static const NativeParams *params_of(uint32_t address)
             hi = mid;
         }
     }
-    return lo < native_param_kinds_count && native_param_kinds[lo].address == address ? &native_param_kinds[lo] : NULL;
+    for (; lo < native_param_kinds_count && native_param_kinds[lo].address == address; lo++) {
+        if (strcmp(native_param_kinds[lo].module, module) == 0) {
+            return &native_param_kinds[lo];
+        }
+    }
+    return NULL;
 }
 
 /* A value of the parameter's kind: as mwccarm's callers pass it, widened to 32 bits. */
@@ -210,7 +216,7 @@ static enum Outcome check(const NativeFunction *f, int cases, const MemorySnapsh
         for (int i = 0; i < MAX_ARGS; i++) {
             args[i] = random_arg(&rng);
         }
-        const NativeParams *kinds = params_of(f->address & ~1u);
+        const NativeParams *kinds = params_of(f->address & ~1u, native_module(f));
         if (kinds && !(kinds->kinds >> 31)) {
             for (uint32_t i = 0; i < kinds->count && i < MAX_ARGS; i++) {
                 args[i] = typed_arg(&rng, (int) ((kinds->kinds >> (3 * i)) & 7));

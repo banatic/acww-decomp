@@ -82,6 +82,11 @@ jobs:
           apt-get install -y -qq --no-install-recommends gcc-multilib g++-multilib binutils >/dev/null
           python3 tools/native.py
 
+      # Every function that calls nothing, as Native against its Reference on generated states:
+      # each agrees, or tests/native/known.txt says why it may not.
+      - name: Check the Native functions
+        run: python3 tools/diffcheck.py --native
+
       # Every function with a source runs as Native, following the Reference run's timing: the
       # frames must be the Reference's, and memory the same apart from words holding PC addresses.
       - name: Run to the title as Native

@@ -16,7 +16,8 @@ enum NativeParamKind {
 };
 
 typedef struct NativeParams {
-    uint32_t address; /* DS address, bit 0 clear */
+    uint32_t address;   /* DS address, bit 0 clear */
+    const char *module; /* overlays that share an address range repeat addresses */
     uint32_t count;
     /* three bits per parameter, `this` first for a member function; bit 31 set when some are
      * unknown or there are more than ten */

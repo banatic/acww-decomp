@@ -8,7 +8,7 @@ extern char data_ov003_02260994[];
 int func_ov003_0222d7d0(int code)
 {
     unsigned char i = (unsigned char) (code & 0xf);
-    char *o;
+    char *o = (char *) code;
     if ((code >> 4) & 1) {
         o = data_ov003_022617bc + 0x25c * i;
     } else if ((code >> 5) & 1) {

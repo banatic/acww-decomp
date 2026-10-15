@@ -97,14 +97,15 @@ the check), `tools/diffcheck.py`, and the first Clean function in `clean/main/sl
   entry states and compares the contract above.
 - At least one Clean function is registered and passes.
 
-**M2: Native on the PC.** In progress: `tools/native.py` compiles 25,242 of the 25,247 sources
-for 32-bit x86 and points their references at the game's memory (`tools/objrewrite.py`);
-`python tools/diffcheck.py --native` runs every function that calls nothing as Native against
-its Reference on random states (6,340 agree; 34 differ, each listed with its reason in
-`tests/native/known.txt`: shifts by 32 or more and unaligned loads, which random states produce
-and the game may not).
-- Every game source compiles for 32-bit x86 (clang and gcc), with the differences behind
-  `AVOID_UB`.
+**M2: Native on the PC.** Done: `tools/native.py` compiles every game source with a C body
+for 32-bit x86 (clang on Windows, gcc on Linux) and points its references at the game's memory
+(`tools/objrewrite.py`); the sources whose matching code is assembly have no PC version and stay
+Reference. `python tools/diffcheck.py --native` runs every function that calls nothing as
+Native against its Reference on random states, and CI runs it on Linux: about 6,380 agree, and
+the others are listed with the reason in `tests/native/known.txt` (shifts by 32 or more,
+unaligned loads, indexes past a table, which random states produce and the game does not).
+- Every game source with a C body compiles for 32-bit x86 (clang and gcc), with the differences
+  behind `AVOID_UB`.
 - Every function that calls nothing (a leaf) runs as Native against its Reference in the
   differential check; the ones that differ are listed with the reason (an interpreter bug,
   undefined behaviour, or a source to fix) until none are left.

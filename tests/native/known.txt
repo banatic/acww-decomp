@@ -5,17 +5,21 @@
 02001c30 shift 0xf78 >> (param * 2) by 32 or more gives 0 on ARM and wraps on x86; callers pass 0 or 1 (func_02001bf0 passes its own argument, 0)
 0200f268 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, func_02095e84 passes 14 or 16, func_ov068_02271f80 leaves 0 in r1
 0200f27c shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-28, func_02095ea4 passes 14 or 16
+0200f290 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, and DWC_Alloc passes its first argument, which its callers give as constants 1-27
 02054548 shift 1 << (index - 32) for index 64 or more gives 0 on ARM and wraps on x86; index is the node ID byte of an NNS G3D render command (func_02054394), below the library's 64-node limit
 02054580 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_02054188 passes ranges 9-14 and those of data_020dd414 (9-17)
 020545b0 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_020541b8 passes the ranges of data_020dd414 (9-17)
 020549fc shift 1 << (index - 32) for index 64 or more gives 0 on ARM and wraps on x86; index is the node ID byte of an NNS G3D render command (func_02054394, func_0205490c, func_02054988), below the library's 64-node limit
 02054a34 shift 1 << (n - 32) for n 64 or more gives 0 on ARM and wraps on x86; func_020541b8 and func_02054718 pass the ranges of data_020dd414 (9-17)
 02054a64 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_02054188 and func_02054740 pass ranges 9-14 and those of data_020dd414 (9-17)
+02057988 halfword loads from odd addresses read the aligned halfword on ARM and the unaligned one on x86; p is an NNS G3D texture resource (palette dictionary offset at +0x34, palette data at +0x38), whose offsets the format keeps 4-byte aligned
 020727a4 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_020720ac, passes b & 7
 020728f8 field-by-field copy of a 0x234-byte record gives another result when dst and src overlap; the only caller, func_020b3850, copies a record into data_021f34b0 + 4, a separate global
 02072e90 20-byte copy from src + 30 to dst gives another result when they overlap; the only caller, func_ov126_0229fc98, copies into its own local buffer
 02098ee8 shifts 3 << (shift * 2) and val << (shift * 2) by 32 or more give 0 on ARM and wrap on x86; the only caller, func_02098f0c, passes shift after func_02098f70 checks it is 0-14
 0209b160 shift 1 << r1 by 32 or more gives 0 on ARM and wraps on x86; func_0209b044 and func_0209b0f4 pass func_0209b184's result only when it is below 5
+0209b890 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; func_02024d38 passes func_02026250's result as a byte (0-2, or 255, whose 1 << 31 leaves the stored byte unchanged on x86 too), func_020767ac the byte of message 4, which func_02024d38 sends with that value (func_02078618)
+020a238c index +0xa0 of 4 or more reads past the static table of four member-function pointers (the PC's copy is elsewhere and laid out otherwise); its handlers take +0xa0 from 0 to 3 and it puts 0 back after the last, and the states 4-6 that func_020a1e08 and func_020a1d54 set are func_020a2120's, which ends them at 0
 020b1730 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; the only caller, func_020b15b8, passes bytes of data_020e42a0, which are 0-63 (0xff is skipped)
 020b1974 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; bit is a slot of the 16 records of 0x4a bytes before the mask at 0x4a0, and every caller passes 0-15
 020b198c shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; param1 is a slot of the 16 records before the mask at 0x4a0 (func_020b14c0)
@@ -24,9 +28,12 @@
 020bec54 shift 1 << r1 by 32 or more gives 0 on ARM and wraps on x86; func_020c00fc passes values below 15 and func_020c0b88 passes 10-14
 020eaaa8 arithmetic shift >> shift by 32 or more fills with the sign on ARM and wraps on x86; the only caller, func_02060134, passes 3
 020eaad0 arithmetic shift >> shift by 32 or more fills with the sign on ARM and wraps on x86; callers pass 1 (func_0203affc, func_0203b0b8) or 5 (func_0205fe6c)
+020ef874 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass 0 (func_020ef840) or 1 (func_020ef498)
 020f5e50 a mode other than 0-2 leaves ret unset (the ROM returns p, the PC anything); every caller passes 0, 1 or 2
 020f6d78 a state byte (+0x10) other than 0-3 leaves result unset (the ROM returns the caller's r5, the PC anything); the state is sequence variable 2 (func_020f6eb4), which the player reads only as 0-3 (func_020f6a80, func_020f6ba0)
+02211394 bits 29-31 of the returned word are padding neither version writes (each returns what its stack slot held); the readers take fields from bits 8-27 (func_ov004_02211388, func_ov004_0221137c)
 0222daf0 no return value when data_ov004_02258310 is null (the ROM returns self, the PC 0xef7); the only caller, func_ov068_022748f0, ignores it
+02261f94 index of 5 or more reads past the static table of five member-function pointers (the PC's copy is elsewhere); the only callers, func_ov047_02261f74 and func_ov047_02261f84, pass their callers' constants 0-4
 02278f4c index idx of 8 or more reads past the static table (the PC's copy is elsewhere); the only caller, func_ov073_02278ca4, passes 0
 02279528 index idx of 3 or more reads past the static table (the PC's copy is elsewhere); callers pass 0-2 (func_ov079_02279508, func_ov079_02279518)
 022791b0 index of 2 or more reads past the static table (the PC's copy is elsewhere); callers pass 0 or 1 (func_ov082_02279190, func_ov082_022791a0)
@@ -34,4 +41,6 @@
 0229adac shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass 9-15, func_ov121_0229ae68's result (0-15 or 24) or the cursor byte +0xb1 (0-23)
 0229adc0 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_ov121_0229ba60, passes 9-15
 022997b0 index of 16 or more reads past the local 16-byte copy; func_ov143_0229a5cc and func_ov143_0229a6f8 keep it in 0-15
+022997d8 (ov143) index of 16 or more reads past the local 16-byte copy; callers pass notes of the 16-byte tune at data_021cfbbc (+0xa0), which func_ov143_0229a5cc writes only from func_ov143_022997b0's table (0-15)
 022999c4 a selector byte (+0xc0) of 4 or more reads past the static table (the PC's copy is elsewhere); func_ov145_0229996c sets it only to 3 or to +0xc1, which func_ov145_022998f0 keeps in 0-3
+022a2cd8 returns the address of its own static table, which the DS has at 022a3264 and the PC in its own memory; the only caller, func_ov098_022a2bfc, reads the pair through it and keeps nothing

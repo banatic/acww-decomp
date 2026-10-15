@@ -208,7 +208,10 @@ def param_table() -> pathlib.Path:
             packed |= k << (3 * i)
         if len(kinds) > 10 or PARAM_UNKNOWN in kinds:
             packed |= 1 << 31
-        rows.append((src.address, f"    {{0x{src.address:08x}u, {len(kinds)}u, 0x{packed:08x}u}},"))
+        # Overlays that share an address range have functions at the same address: the module
+        # tells them apart.
+        rows.append(((src.address, src.module),
+                     f"    {{0x{src.address:08x}u, \"{src.module}\", {len(kinds)}u, 0x{packed:08x}u}},"))
     rows = [row for _, row in sorted(rows)]  # sorted by address: the check searches it
     known = []
     for line in (C.ROOT / "tests" / "native" / "known.txt").read_text().splitlines():
@@ -264,7 +267,7 @@ def build_native() -> pathlib.Path:
     # Classes split one function per file define their destructors and vtable in several
     # objects, identically; the linker keeps the first.
     link = (["-Wl,/SAFESEH:NO", "-Wl,/FORCE:MULTIPLE", "-Wl,/DYNAMICBASE:NO", "-Wl,/FIXED"] if os.name == "nt"
-            else ["-no-pie", "-Wl,--allow-multiple-definition"])
+            else ["-no-pie", "-Wl,--allow-multiple-definition", "-Wl,-Ttext-segment=0x400000"])
     p = subprocess.run([*compiler(), *flags, *map(str, srcs), *map(str, asm), f"@{native / 'objects.txt'}",
                         *link, "-o", str(exe)], capture_output=True, text=True)
     if p.returncode != 0:
