@@ -3,6 +3,7 @@
 #ifndef RUNTIME_NATIVE_PARAMS_H
 #define RUNTIME_NATIVE_PARAMS_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 enum NativeParamKind {
@@ -27,8 +28,14 @@ typedef struct NativeParams {
 extern const NativeParams native_param_kinds[];
 extern const uint32_t native_param_kinds_count;
 
-/* Functions whose differences are explained in tests/native/known.txt (sorted). */
-extern const uint32_t native_known[];
+/* Functions whose differences are explained in tests/native/known.txt: the module is NULL when
+ * the entry holds for every function at the address. */
+typedef struct NativeKnown {
+    uint32_t address; /* DS address, bit 0 clear */
+    const char *module;
+} NativeKnown;
+
+extern const NativeKnown native_known[];
 extern const uint32_t native_known_count;
 
 #endif

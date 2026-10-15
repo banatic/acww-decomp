@@ -185,10 +185,11 @@ static uint32_t typed_arg(DiffRng *rng, int kind)
     }
 }
 
-static int is_known(uint32_t address)
+static int is_known(const NativeFunction *f)
 {
     for (uint32_t i = 0; i < native_known_count; i++) {
-        if (native_known[i] == address) {
+        const NativeKnown *k = &native_known[i];
+        if (k->address == (f->address & ~1u) && (k->module == NULL || strcmp(k->module, native_module(f)) == 0)) {
             return 1;
         }
     }
@@ -321,7 +322,7 @@ int main(int argc, char **argv)
                 any = 1;
             }
             enum Outcome outcome = check(f, cases, loaded, log);
-            if (outcome == DIFFERENT && is_known(f->address & ~1u)) {
+            if (outcome == DIFFERENT && is_known(f)) {
                 outcome = KNOWN;
             }
             counts[outcome]++;

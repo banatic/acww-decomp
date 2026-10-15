@@ -217,15 +217,17 @@ def param_table() -> pathlib.Path:
     for line in (C.ROOT / "tests" / "native" / "known.txt").read_text().splitlines():
         if line.strip() and not line.startswith("#"):
             address, reason = line.split(None, 1)
-            if not reason.strip():
+            module = re.match(r"\((\w+)\)\s+", reason)
+            if not (reason[module.end():] if module else reason).strip():
                 raise SystemExit(f"tests/native/known.txt: {address} has no reason")
-            known.append(int(address, 16) & ~1)
+            known.append((int(address, 16) & ~1, module.group(1) if module else None))
     rows.append("")
+    entries = [f"{{0x{a:08x}u, {chr(34) + m + chr(34) if m else 'NULL'}}}"
+               for a, m in sorted(known, key=lambda k: (k[0], k[1] or ""))] or ["{0, NULL}"]
     out = OUT / "native_params.c"
     out.write_text("\n".join(["#include \"native_params.h\"", "", "const NativeParams native_param_kinds[] = {",
                               *rows, "};", f"const uint32_t native_param_kinds_count = {len(rows) - 1};",
-                              "const uint32_t native_known[] = {"
-                              + ", ".join(f"0x{a:08x}u" for a in sorted(known) or [0]) + "};",
+                              "const NativeKnown native_known[] = {" + ", ".join(entries) + "};",
                               f"const uint32_t native_known_count = {len(known)};", ""]),
                    newline="\n")
     return out

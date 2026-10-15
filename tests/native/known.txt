@@ -1,6 +1,7 @@
 # Functions whose Native and Reference differ on states the check generates, with the reason.
-# One per line: <DS address> <reason>. tools/diffcheck.py --native counts these apart from
-# unexplained differences; the list only shrinks.
+# One per line: <DS address> <reason>, where a reason starting with "(<module>)" holds for that
+# module's function only (overlays share addresses). tools/diffcheck.py --native counts these
+# apart from unexplained differences; the list only shrinks.
 02001c08 shift 0x3de0 >> (param << 1) by 32 or more gives 0 on ARM and wraps on x86; callers pass 0 or 1 (func_02001bdc's callers pass 0 and 1)
 02001c30 shift 0xf78 >> (param * 2) by 32 or more gives 0 on ARM and wraps on x86; callers pass 0 or 1 (func_02001bf0 passes its own argument, 0)
 0200f268 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, func_02095e84 passes 14 or 16, func_ov068_02271f80 leaves 0 in r1

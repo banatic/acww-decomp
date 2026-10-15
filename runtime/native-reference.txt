@@ -302,4 +302,3 @@ func_ov147_0229a3ac touches the hardware at 0400000e
 func_ov147_0229a374 touches the hardware at 04000000
 func_02068e04 touches the hardware at 0400000c
 func_020bae60 updates the title sky's per-line tables and their variables while the display draws them (interrupts read them mid-run): Native code takes no time, so its stores land on other lines than the ROM's (frames 933, 963, 974)
-func_ov009_02264be0 passes func_02064328 (sprintf) two of the format's three values: the ROM passes func_ov003_022203dc()'s result as the %c on the stack, and the source's volatile local stands there only in mwccarm's frame layout (Linux gives a NUL, cutting the file name at frame 409)
