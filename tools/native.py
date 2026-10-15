@@ -336,6 +336,11 @@ def main() -> None:
                   "\tmovl $16, %ecx", "\trep movsl", f"\tcalll {body}", f"\t{extend}", "\taddl $64, %esp",
                   "\tpopl %edi", "\tpopl %esi", "\tpopl %ebp", "\tretl"]
     lines += ["\t.data"]
+    # each body with its wrapper, so the runtime can name the function a fault in a body is in
+    lines += [f"\t.globl {PREFIX}native_bodies", f"{PREFIX}native_bodies:"]
+    lines += [f"\t.long {PREFIX}{objrewrite.NATIVE}body_{name}, {PREFIX}{objrewrite.NATIVE}{name}"
+              for name in sorted(widen)] or ["\t.long 0, 0"]
+    lines += [f"\t.globl {PREFIX}native_body_count", f"{PREFIX}native_body_count:", f"\t.long {len(widen)}"]
 
     # Each function's own static data in the ROM (from tools/link.py's placement). The PC
     # version keeps its statics in its own memory, so writes there are not compared.

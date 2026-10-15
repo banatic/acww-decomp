@@ -31,6 +31,15 @@ extern const uint32_t native_function_count;
  * calls its check's run_clean (runtime/diffcheck.h) with r0-r3. Empty without --clean. */
 extern const NativeFunction clean_functions[];
 extern const uint32_t clean_function_count;
+/* A Native function whose result is widened by a wrapper (tools/native.py): its code is in the
+ * body, while the table's `host` is the wrapper. */
+typedef struct NativeBody {
+    const void *body;
+    const void *wrapper;
+} NativeBody;
+
+extern const NativeBody native_bodies[];
+extern const uint32_t native_body_count;
 /* A function's own static data in the ROM: writes there are its private state. */
 typedef struct NativePrivate {
     uint32_t function; /* DS address, bit 0 clear */

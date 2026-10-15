@@ -1407,6 +1407,11 @@ uintptr_t native_fault_execute(uint32_t target, uint32_t *eax, uint32_t ecx)
 
 /* Hardware ---------------------------------------------------------------------------------- */
 
+/* The bodies of the functions with a widening wrapper, as entries of by_host (each a copy of
+ * its function's entry with the body's address), and the function each stands for. */
+static NativeFunction *body_entries;
+static const NativeFunction **body_functions;
+
 static const NativeFunction *native_by_host(uint32_t eip)
 {
     uint32_t lo = 0, hi = by_host_count;
@@ -1418,7 +1423,11 @@ static const NativeFunction *native_by_host(uint32_t eip)
             hi = mid;
         }
     }
-    return lo ? by_host[lo - 1] : NULL;
+    const NativeFunction *n = lo ? by_host[lo - 1] : NULL;
+    if (n != NULL && n >= body_entries && n < body_entries + native_body_count) {
+        n = body_functions[n - body_entries];
+    }
+    return n;
 }
 
 int native_fault_data(uint32_t eip, uint32_t address, uint32_t esp)
@@ -1806,7 +1815,7 @@ int native_init(ArmCpu *c, const char *manifest)
         return -1;
     }
     /* the Native functions of the policy's functions, by DS address and module */
-    by_host = malloc(sizeof(*by_host) * (native_function_count + clean_function_count + 1));
+    by_host = malloc(sizeof(*by_host) * (native_function_count + clean_function_count + native_body_count + 1));
     for (uint32_t i = 0; i < native_function_count + clean_function_count; i++) {
         /* a Clean function comes after its Native one and takes its place */
         const NativeFunction *n =
@@ -1819,6 +1828,21 @@ int native_init(ArmCpu *c, const char *manifest)
             }
         }
         by_host[by_host_count++] = n;
+    }
+    /* the bodies: the code a fault or a return address is in belongs to the wrapper's function */
+    body_entries = calloc(native_body_count + 1, sizeof(*body_entries));
+    body_functions = calloc(native_body_count + 1, sizeof(*body_functions));
+    uint32_t tables = by_host_count;
+    for (uint32_t b = 0; b < native_body_count; b++) {
+        for (uint32_t i = 0; i < tables; i++) {
+            if (by_host[i]->host == native_bodies[b].wrapper) {
+                body_entries[b] = *by_host[i];
+                body_entries[b].host = native_bodies[b].body;
+                body_functions[b] = by_host[i];
+                by_host[by_host_count++] = &body_entries[b];
+                break;
+            }
+        }
     }
     qsort(by_host, by_host_count, sizeof(*by_host), host_compare);
     if (record != NULL && *record) {
