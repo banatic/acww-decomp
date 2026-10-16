@@ -4,6 +4,7 @@
 #include "acre_map.h"
 #include "acre_tile.h"
 #include "clean.h"
+#include "room_cells.h"
 #include "scene_kinds.h"
 #include "scene_query.h"
 #include "state_block.h"
@@ -57,12 +58,9 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void __register_global_object(void *object, void *destruct, void *record);
 /* The item code's destructor (nothing to do). */
 extern void func_020051b0(void *code);
-/* A room record's constructor, destructor and set-up for room `room`, and its acre map
- * source (taken from `heap`, NULL when there is no room for it). */
+/* A room record's constructor and destructor, which the array helpers are handed. */
 extern void *func_02061470(void *room);
 extern void *func_02061444(void *room);
-extern void func_0206126c(void *room, int index);
-extern void *func_0206122c(char *room, int heap);
 /* The house's code on the map for a size (0x5014 + size, 0x5014 past the sizes). */
 extern unsigned short func_0204bae8(unsigned int size);
 
@@ -449,7 +447,7 @@ AcreMapSource *HouseRecord_RoomSource(HouseRecord *house, int room, int heap)
     AcreMapSource *source = NULL;
     HouseRoom *record = HouseRecord_Room(house, room);
     if (record != NULL) {
-        source = func_0206122c((char *) record, heap);
+        source = HouseRecord_RoomMakeSource(record, heap);
         if (source != NULL) {
             source->model = HouseRecord_RoomModel((int) (uintptr_t) house, room);
         }
@@ -555,7 +553,7 @@ void HouseRecord_Init(HouseRecord *house)
     HouseRecordOwnerInfo info;
 
     for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
-        func_0206126c(&house->rooms[i], i);
+        HouseRecord_RoomInit(&house->rooms[i], i);
     }
     house_record_set_field(house, HOUSE_RECORD_SIZE_SHIFT, HOUSE_RECORD_SIZE_MASK, 0);
     HouseRecord_ClearSongs(house->songs);
@@ -625,3 +623,169 @@ u16 *HouseRecord_RoomCarpet(HouseRoom *room, unsigned int *flag)
     return &room->carpet;
 }
 CLEAN_AS(func_020611e8, HouseRecord_RoomCarpet)
+
+/* The room's codes when first set up, by room: function-local statics of the original, each
+ * set up the first time (bit 0 of their guard) and registered for destruction with the item
+ * code's destructor. */
+extern u16 data_021cb504[]; /* wallpapers: 0x113e for each room */
+extern u32 data_021cb500;
+extern u16 data_021cb510[]; /* carpets: 0x1182 for each room */
+extern u32 data_021cb4f8;
+extern u8 data_021cb570[], data_021cb594[], data_021cb588[], data_021cb57c[], data_021cb51c[];
+extern u8 data_021cb528[], data_021cb534[], data_021cb540[], data_021cb54c[], data_021cb558[];
+/* An item code's constructor (nothing), and a layer's destructor and constructor, which the
+ * array helpers are handed. */
+extern void func_02034ce0(void *code);
+extern void *func_020614e4(void *layer);
+extern int func_02061504(int layer);
+
+#define HOUSE_ROOM_FIRST_WALLPAPER 0x113e
+#define HOUSE_ROOM_FIRST_CARPET 0x1182
+#define HOUSE_ROOM_LAYERS 2
+#define HOUSE_ROOM_LAYER_CELLS 256
+#define HOUSE_ROOM_LAYER_WIDTH 16
+/* The first room's starting furniture, and the switch of the cell on top of it. */
+#define HOUSE_ROOM_START_LOWER 0x3808       /* layer 0 at (6, 10) */
+#define HOUSE_ROOM_START_LOWER_RIGHT 0x374c /* layer 0 at (9, 10) */
+#define HOUSE_ROOM_START_UPPER 0x382c       /* layer 1 at (6, 10) */
+#define HOUSE_ROOM_START_RIGHT_X 9
+#define HOUSE_ROOM_FIRST_SCENE 1
+
+/* func_02061204: the room's wallpaper, its flag to *flag unless `flag` is NULL. */
+u16 *HouseRecord_RoomWallpaper(HouseRoom *room, int *flag)
+{
+    if (flag != NULL) {
+        *flag = room->flags & HOUSE_ROOM_WALLPAPER_FLAG;
+    }
+    return &room->wallpaper;
+}
+CLEAN_AS(func_02061204, HouseRecord_RoomWallpaper)
+
+/* func_02061220: the room's cells. */
+struct RoomCells *HouseRecord_RoomCells(HouseRoom *room)
+{
+    return (RoomCells *) room->cells;
+}
+CLEAN_AS(func_02061220, HouseRecord_RoomCells)
+
+/* func_0206122c: an acre map source for the room, from `heap` (NULL when there is no room for
+ * it): its items the room's layer 0, the word after them its layer 1, and no extra record. */
+AcreMapSource *HouseRecord_RoomMakeSource(HouseRoom *room, int heap)
+{
+    AcreMapSource *source = AcreMap_MakeSources(1, heap);
+    if (source != NULL) {
+        AcreMap_InitSource(source);
+    }
+    if (source != NULL) {
+        source->items = HouseRecord_RoomLayer(room->items[0]);
+        source->unk_08 = (int) (uintptr_t) HouseRecord_RoomLayer(room->items[1]);
+        source->extra = NULL;
+    }
+    return source;
+}
+CLEAN_AS(func_0206122c, HouseRecord_RoomMakeSource)
+
+/* func_0206126c: room `index` set up: both layers empty, its cells reset, its first wallpaper
+ * and carpet and no song. The first room also gets its starting furniture, and the switch of
+ * the cell (6, 10) on top is turned off in scene 1 (the first room's).
+ * REQUIRES: `index` is 0-4 (it indexes the two tables of five). */
+void HouseRecord_RoomInit(HouseRoom *room, int index)
+{
+    for (int layer = 0; layer < HOUSE_ROOM_LAYERS; layer++) {
+        HouseRecord_ClearLayer(room->items[layer]);
+    }
+    RoomCells_Reset((RoomCells *) room->cells);
+
+    if ((data_021cb500 & 1) == 0) {
+        u8 *records[HOUSE_RECORD_ROOMS] = {data_021cb570, data_021cb594, data_021cb588, data_021cb57c, data_021cb51c};
+        for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
+            data_021cb504[i] = HOUSE_ROOM_FIRST_WALLPAPER;
+            __register_global_object(&data_021cb504[i], (void *) (uintptr_t) func_020051b0, records[i]);
+        }
+        data_021cb500 |= 1;
+    }
+    room->wallpaper = data_021cb504[index];
+
+    if ((data_021cb4f8 & 1) == 0) {
+        u8 *records[HOUSE_RECORD_ROOMS] = {data_021cb528, data_021cb534, data_021cb540, data_021cb54c, data_021cb558};
+        for (int i = 0; i < HOUSE_RECORD_ROOMS; i++) {
+            data_021cb510[i] = HOUSE_ROOM_FIRST_CARPET;
+            __register_global_object(&data_021cb510[i], (void *) (uintptr_t) func_020051b0, records[i]);
+        }
+        data_021cb4f8 |= 1;
+    }
+    room->carpet = data_021cb510[index];
+    room->song = HOUSE_RECORD_NO_ITEM;
+
+    if (index != 0) {
+        return;
+    }
+    u16 *lower = HouseRecord_RoomLayer(room->items[0]);
+    u16 *upper = HouseRecord_RoomLayer(room->items[1]);
+    int cell = HOUSE_ROOM_START_CELL_Y * HOUSE_ROOM_LAYER_WIDTH + HOUSE_ROOM_START_CELL_X;
+    if (lower != NULL) {
+        lower[cell] = HOUSE_ROOM_START_LOWER;
+        lower[HOUSE_ROOM_START_CELL_Y * HOUSE_ROOM_LAYER_WIDTH + HOUSE_ROOM_START_RIGHT_X] = HOUSE_ROOM_START_LOWER_RIGHT;
+    }
+    if (upper != NULL) {
+        upper[cell] = HOUSE_ROOM_START_UPPER;
+        RoomCells_SetSwitch(HOUSE_ROOM_START_CELL_X, HOUSE_ROOM_START_CELL_Y, 1, 0, HOUSE_ROOM_FIRST_SCENE);
+    }
+}
+CLEAN_AS(func_0206126c, HouseRecord_RoomInit)
+
+/* func_02061444: the destructor: the cells, then the two layers. Returns the room. */
+HouseRoom *HouseRecord_RoomDestruct(HouseRoom *room)
+{
+    RoomCells_Destruct((RoomCells *) room->cells);
+    __cxa_vec_cleanup(room->items, HOUSE_ROOM_LAYERS, sizeof(room->items[0]), (void (*)(void *))(uintptr_t) func_020614e4);
+    return room;
+}
+CLEAN_AS(func_02061444, HouseRecord_RoomDestruct)
+
+/* func_02061470: the constructor: the two layers, the cells, and no wallpaper, carpet or song.
+ * Returns the room. */
+HouseRoom *HouseRecord_RoomConstruct(HouseRoom *room)
+{
+    __cxa_vec_ctor(room->items, HOUSE_ROOM_LAYERS, sizeof(room->items[0]), (void (*)(void *))(uintptr_t) func_02061504,
+                   (void (*)(void *))(uintptr_t) func_020614e4);
+    RoomCells_Construct((RoomCells *) room->cells);
+    room->wallpaper = HOUSE_RECORD_NO_ITEM;
+    room->carpet = HOUSE_RECORD_NO_ITEM;
+    room->song = HOUSE_RECORD_NO_ITEM;
+    return room;
+}
+CLEAN_AS(func_02061470, HouseRecord_RoomConstruct)
+
+/* func_020614c4: a layer's codes (the layer itself). */
+u16 *HouseRecord_RoomLayer(u16 *layer)
+{
+    return layer;
+}
+CLEAN_AS(func_020614c4, HouseRecord_RoomLayer)
+
+/* func_020614c8: every code of the layer set to nothing. */
+void HouseRecord_ClearLayer(u16 *layer)
+{
+    for (int i = 0; i < HOUSE_ROOM_LAYER_CELLS; i++) {
+        layer[i] = HOUSE_RECORD_NO_ITEM;
+    }
+}
+CLEAN_AS(func_020614c8, HouseRecord_ClearLayer)
+
+/* func_020614e4: a layer's destructor (each code's, last first). Returns the layer. */
+u16 *HouseRecord_DestructLayer(u16 *layer)
+{
+    __cxa_vec_cleanup(layer, HOUSE_ROOM_LAYER_CELLS, sizeof(u16), (void (*)(void *))(uintptr_t) func_020051b0);
+    return layer;
+}
+CLEAN_AS(func_020614e4, HouseRecord_DestructLayer)
+
+/* func_02061504: a layer's constructor (each code nothing). Returns the layer. */
+int HouseRecord_ConstructLayer(int layer)
+{
+    __cxa_vec_ctor((void *) (uintptr_t) layer, HOUSE_ROOM_LAYER_CELLS, sizeof(u16),
+                   (void (*)(void *))(uintptr_t) func_02034ce0, (void (*)(void *))(uintptr_t) func_020051b0);
+    return layer;
+}
+CLEAN_AS(func_02061504, HouseRecord_ConstructLayer)

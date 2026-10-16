@@ -609,3 +609,26 @@ int CollisionQuery_Byte08IfFree(int x, int z)
     return CollisionQuery_Byte08IfNoPost(x, z);
 }
 CLEAN_AS(func_020319e4, CollisionQuery_Byte08IfFree)
+
+/* func_02031bb8: whether the ground under `position` has a height other than 0 (the ground in
+ * mode 0 of the first table set, CollisionGround_GetHeight without posts) or a post stands on
+ * its unit (CollisionQuery_PostAt). */
+int CollisionQuery_IsRaisedOrPost(const Vec3 *position)
+{
+    CollisionGround ground;
+    fx32 radius;
+    fx32 height;
+    int kind;
+    int result;
+
+    CollisionGround_Init(&ground, position, 0, 0);
+    if (CollisionGround_GetHeight(&ground, 0) != 0) {
+        result = 1;
+    } else {
+        result = CollisionQuery_PostAt(position->x >> COLLISION_UNIT_SHIFT, position->z >> COLLISION_UNIT_SHIFT, &radius,
+                                       &height, &kind) != 0;
+    }
+    CollisionGround_Destroy(&ground);
+    return result;
+}
+CLEAN_AS(func_02031bb8, CollisionQuery_IsRaisedOrPost)

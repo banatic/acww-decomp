@@ -83,5 +83,6 @@ int CollisionQuery_IsWaterAround(const Vec3 *point, fx32 radius, fx32 *surface, 
 int CollisionQuery_CanStep(int from_x, int from_z, int x, int z, u8 strict);
 int CollisionQuery_Byte08IfNoPost(int x, int z);
 int CollisionQuery_Byte08IfFree(int x, int z);
+int CollisionQuery_IsRaisedOrPost(const Vec3 *position);
 
 #endif

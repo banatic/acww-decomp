@@ -102,4 +102,26 @@ void CatchPanel_EnterHidden(CatchPanel *panel);
 int CatchPanel_IsIdle(CatchPanel *panel);
 int CatchPanel_IsHidden(CatchPanel *panel);
 
+void CatchPanel_Hide(CatchPanel *panel);
+void CatchPanel_Show(CatchPanel *panel);
+void CatchPanel_CountInsect(CatchPanel *panel);
+void CatchPanel_CountFish(CatchPanel *panel);
+void CatchPanel_Start(CatchPanel *panel, int time_limit, int quiet);
+unsigned int CatchPanel_IsStopped(CatchPanel *panel);
+int CatchPanel_CallDraw(CatchPanel *panel);
+void CatchPanel_CallUpdate(CatchPanel *panel);
+void CatchPanel_Rewind(CatchPanel *panel);
+void CatchPanel_Reset(CatchPanel *panel);
+void CatchPanel_Update(CatchPanel *panel);
+void CatchPanel_Draw(CatchPanel *panel);
+CatchPanel *CatchPanel_Delete(CatchPanel *panel);
+CatchPanel *CatchPanel_Destruct(CatchPanel *panel);
+CatchPanel *CatchPanel_Construct(CatchPanel *panel);
+
+/* The number text's class (vtable data_020e21e4), the clock panel's (clock_panel.h) too. */
+int CatchPanelText_Chars(CatchPanelText *text);
+int CatchPanelText_Capacity(CatchPanelText *text);
+CatchPanelText *CatchPanelText_Delete(CatchPanelText *text);
+CatchPanelText *CatchPanelText_Destruct(CatchPanelText *text);
+
 #endif

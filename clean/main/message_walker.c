@@ -308,3 +308,22 @@ void MessageWalkerStack_Push(MessageWalkerStack *stack, const u32 *position)
     stack->positions[count] = *position;
 }
 CLEAN_AS(func_020a9cac, MessageWalkerStack_Push)
+
+/* func_020a9cc0: the address of the top position.
+ * QUIRK: on an empty stack, the word just before the stack (no check; MessageWalker_Return's
+ * callers make sure it is not empty). */
+u32 *MessageWalkerStack_Top(MessageWalkerStack *stack)
+{
+    return (u32 *) (void *) ((uintptr_t) stack->positions + (uintptr_t) (stack->count - 1) * sizeof(u32));
+}
+CLEAN_AS(func_020a9cc0, MessageWalkerStack_Top)
+
+/* func_020a9ccc: the top position dropped and cleared; nothing when the stack is empty. */
+void MessageWalkerStack_Pop(MessageWalkerStack *stack)
+{
+    if (stack->count != 0) {
+        stack->count--;
+        stack->positions[stack->count] = 0;
+    }
+}
+CLEAN_AS(func_020a9ccc, MessageWalkerStack_Pop)

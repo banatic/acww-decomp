@@ -61,5 +61,6 @@ int CollisionMap_Setup(u32 blocks_wide, u32 blocks_high, CollisionPostSource *so
 void CollisionMap_Select(int slot);
 u8 CollisionMap_IsComplete(int slot);
 int CollisionMap_PathDirections(int x, int z);
+u8 CollisionMap_CompleteByte(int slot);
 
 #endif

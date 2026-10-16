@@ -2,6 +2,7 @@
 #include "catch_panel.h"
 
 #include "autoload_2/approach.h" /* Approach_EaseS32MinMax */
+#include "autoload_2/heap.h"     /* Heap_OperatorDeleteB */
 #include "cell_anim.h"
 #include "clean.h"
 #include "clock.h"          /* Clock_ReadRtcDateTime */
@@ -9,12 +10,16 @@
 #include "event_queue.h"    /* EventQueue_HasCurrent */
 #include "field_label.h"    /* FieldLabel_ShowNotice */
 #include "number_text.h"    /* NumberText_Format */
+#include "oam_buffer.h"     /* OamBuffer_DrawCell */
 #include "overlay_groups.h" /* OverlayGroups_HasOwner */
 #include "quick_message.h"  /* QuickMessage_OwnBalloonBusy */
 #include "scene_query.h"    /* SceneQuery_Current */
 #include "sound.h"          /* SoundSys_PlaySe */
 #include "state_flags.h"    /* StateFlags_Test4, StateFlags_ValueOrOne */
+#include "text_base.h"      /* TextBase_Destruct */
 #include "text_draw.h"      /* TextDraw_AlignRight, TextDraw_Center, TextDraw_RequestDraw */
+
+#include "ov004/member_pointer.h" /* MemberPointer */
 
 static_assert(sizeof(CatchPanelText) == 0x1c, "CatchPanelText");
 static_assert(offsetof(CatchPanel, anim) == 0x0c && offsetof(CatchPanel, state) == 0x20, "CatchPanel");
@@ -40,8 +45,6 @@ extern TextFont data_021c81d4;
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern u64 OS_GetTick(void);
-/* Whether the countdown is stopped (its time limit is 0). */
-extern unsigned int func_0208d12c(void *panel);
 
 /* The ease of `shift`: 20 pixels higher while this system's balloon is out, eased by 0x600 of
  * the distance a frame, the step from 0x2300 up to `shift_speed`, which grows by 0xa00 a frame
@@ -470,7 +473,7 @@ CLEAN_AS(func_0208d014, CatchPanel_EnterHidden)
 /* func_0208d01c: nothing to show: the countdown stopped and the lingering over. */
 int CatchPanel_IsIdle(CatchPanel *panel)
 {
-    return func_0208d12c(panel) != 0 && panel->linger <= 0;
+    return CatchPanel_IsStopped(panel) != 0 && panel->linger <= 0;
 }
 CLEAN_AS(func_0208d01c, CatchPanel_IsIdle)
 
@@ -480,3 +483,273 @@ int CatchPanel_IsHidden(CatchPanel *panel)
     return panel->state == CATCH_PANEL_HIDDEN;
 }
 CLEAN_AS(func_0208d03c, CatchPanel_IsHidden)
+
+/* ---- Showing, counting and the countdown's start; the class's vtable */
+
+extern u8 data_020e54a8; /* 0 outdoors, 1 in a room */
+/* The countdown's times, in seconds, by time limit: none, 3, 5, 10 and 15 minutes. */
+extern const s16 data_020d0a58[];
+/* The class's vtable, and the member function table of CatchPanel_Update (a function-local
+ * static of the game): its guard, the table, and the constants it is filled from. */
+extern const u32 data_020e2218[];
+extern u32 data_021d3154;
+extern MemberPointer data_021d3190[4];
+extern const MemberPointer data_020e21b4, data_020e2164, data_020e20fc, data_020e20dc;
+/* The number text's vtable, and its constructor. */
+extern const TextVtable data_020e21e4;
+extern void *func_0208e024(CatchPanelText *text);
+
+#define CATCH_PANEL_IN_A_ROOM 1
+/* The field label's notices of a countdown started and stopped. */
+#define CATCH_PANEL_NOTICE_STARTED 1
+#define CATCH_PANEL_NOTICE_STOPPED 2
+
+/* vtable slots */
+#define CATCH_PANEL_SLOT_DRAW 2
+#define CATCH_PANEL_SLOT_UPDATE 3
+
+/* func_0208d04c */
+void CatchPanel_Hide(CatchPanel *panel)
+{
+    panel->shown = 0;
+}
+CLEAN_AS(func_0208d04c, CatchPanel_Hide)
+
+/* func_0208d054: shown, in a room when data_020e54a8 is 1. */
+void CatchPanel_Show(CatchPanel *panel)
+{
+    panel->shown = 1;
+    panel->in_room = data_020e54a8 == CATCH_PANEL_IN_A_ROOM;
+}
+CLEAN_AS(func_0208d054, CatchPanel_Show)
+
+/* func_0208d07c: an insect caught, counted while the countdown runs. */
+void CatchPanel_CountInsect(CatchPanel *panel)
+{
+    if (panel->time_limit != 0) {
+        panel->insects++;
+        panel->insects_changed = 1;
+    }
+}
+CLEAN_AS(func_0208d07c, CatchPanel_CountInsect)
+
+/* func_0208d09c: a fish landed, counted while the countdown runs. */
+void CatchPanel_CountFish(CatchPanel *panel)
+{
+    if (panel->time_limit != 0) {
+        panel->fish++;
+        panel->fish_changed = 1;
+    }
+}
+CLEAN_AS(func_0208d09c, CatchPanel_CountFish)
+
+/* func_0208d0bc: the countdown started with time limit `time_limit` (an index into
+ * data_020d0a58), or stopped with 0, the lingering cleared. A start sets the end from the RTC
+ * and clears the counts, all four numbers to be redrawn. Unless `quiet`, the field label's
+ * notice of the start or the stop.
+ * QUIRK: the time limit indexes data_020d0a58 unchecked (the game passes 0-4). */
+void CatchPanel_Start(CatchPanel *panel, int time_limit, int quiet)
+{
+    panel->time_limit = time_limit;
+    panel->linger = 0;
+    if (time_limit != 0) {
+        Clock_ReadRtcDateTime(&panel->end);
+        DateTime_AddSeconds(&panel->end, data_020d0a58[time_limit]);
+        panel->fish = 0;
+        panel->insects = 0;
+        panel->minutes_changed = 1;
+        panel->seconds_changed = 1;
+        panel->fish_changed = 1;
+        panel->insects_changed = 1;
+    }
+    if (quiet == 0) {
+        FieldLabel_ShowNotice(time_limit == 0 ? CATCH_PANEL_NOTICE_STOPPED : CATCH_PANEL_NOTICE_STARTED);
+    }
+}
+CLEAN_AS(func_0208d0bc, CatchPanel_Start)
+
+/* func_0208d12c: whether the countdown is stopped (its time limit is 0). */
+unsigned int CatchPanel_IsStopped(CatchPanel *panel)
+{
+    return panel->time_limit == 0;
+}
+CLEAN_AS(func_0208d12c, CatchPanel_IsStopped)
+
+/* func_0208d13c: the class's draw (vtable slot 2).
+ * QUIRK: the result is whatever the slot leaves; CatchPanel_Draw returns nothing, and the
+ * caller (ScreenPanels_Draw) ignores it. */
+int CatchPanel_CallDraw(CatchPanel *panel)
+{
+    return ((int (*)(CatchPanel *))(uintptr_t) panel->base.vtable[CATCH_PANEL_SLOT_DRAW])(panel);
+}
+CLEAN_AS(func_0208d13c, CatchPanel_CallDraw)
+
+/* func_0208d14c: the class's update (vtable slot 3). */
+void CatchPanel_CallUpdate(CatchPanel *panel)
+{
+    ((void (*)(CatchPanel *))(uintptr_t) panel->base.vtable[CATCH_PANEL_SLOT_UPDATE])(panel);
+}
+CLEAN_AS(func_0208d14c, CatchPanel_CallUpdate)
+
+/* func_0208d15c: the text boxes freed. */
+void CatchPanel_Rewind(CatchPanel *panel)
+{
+    CatchPanel_FreeTextBoxes(panel);
+}
+CLEAN_AS(func_0208d15c, CatchPanel_Rewind)
+
+/* func_0208d164: not shown, and hidden at once. */
+void CatchPanel_Reset(CatchPanel *panel)
+{
+    panel->shown = 0;
+    CatchPanel_EnterHidden(panel);
+}
+CLEAN_AS(func_0208d164, CatchPanel_Reset)
+
+/* func_0208d174 (vtable slot 3): a frame: the countdown, the state's step (through the game's
+ * table, filled on the first call), the numbers redrawn and, unless hidden, the shift eased.
+ * REQUIRES: the state is 0-3 (the ROM indexes its table unchecked). */
+void CatchPanel_Update(CatchPanel *panel)
+{
+    static const MemberPointer *const constants[4] = {
+        &data_020e21b4, /* CatchPanel_StepHidden */
+        &data_020e2164, /* CatchPanel_StepAppearing */
+        &data_020e20fc, /* CatchPanel_StepShown */
+        &data_020e20dc, /* CatchPanel_StepHiding */
+    };
+    CatchPanel_UpdateTime(panel);
+    MemberTable_InitOnce(&data_021d3154, data_021d3190, constants, 4);
+    MemberPointer_CallVoid(&data_021d3190[panel->state], panel);
+    CatchPanel_RedrawNumbers(panel);
+    if (panel->state != CATCH_PANEL_HIDDEN) {
+        CatchPanel_UpdateShift(panel);
+    }
+}
+CLEAN_AS(func_0208d174, CatchPanel_Update)
+
+/* func_0208d20c (vtable slot 2): unless hidden, the animation's cell drawn on the main screen at
+ * the sprite's place plus the frame's offset, `shift` (rounded) lower. */
+void CatchPanel_Draw(CatchPanel *panel)
+{
+    if (panel->state == CATCH_PANEL_HIDDEN) {
+        return;
+    }
+    const OamEntry *cell = CellAnim_Cell(&panel->anim);
+    if (cell == NULL) {
+        return;
+    }
+    int frame_x = CellAnim_FrameX(&panel->anim, -1);
+    int frame_y = CellAnim_FrameY(&panel->anim, -1);
+    int x = ScreenSprite_X(&panel->base) + frame_x;
+    int shift = (panel->shift + CATCH_PANEL_FX_ONE / 2) >> 12;
+    int y = ScreenSprite_Y(&panel->base) + shift + frame_y;
+    OamBuffer_DrawCell(0, cell, x, y, -1, -1, CATCH_PANEL_FX_ONE, CATCH_PANEL_FX_ONE, 0, -1, 0, 0);
+}
+CLEAN_AS(func_0208d20c, CatchPanel_Draw)
+
+/* The destructor's work (the ROM has it in both destructors): the animation restarted, the
+ * text boxes freed, then the members, the last first, and the base. */
+static void catch_panel_destruct(CatchPanel *panel)
+{
+    panel->base.vtable = data_020e2218;
+    CellAnim_Restart(&panel->anim);
+    CatchPanel_Rewind(panel);
+    CatchPanelText_Destruct(&panel->insects_text);
+    CatchPanelText_Destruct(&panel->fish_text);
+    CatchPanelText_Destruct(&panel->seconds_text);
+    CatchPanelText_Destruct(&panel->minutes_text);
+    CellAnim_Destruct(&panel->anim);
+    ScreenSprite_DestructBase(&panel->base);
+}
+
+/* func_0208d290 (vtable slot 1): destructed and freed. */
+CatchPanel *CatchPanel_Delete(CatchPanel *panel)
+{
+    catch_panel_destruct(panel);
+    Heap_OperatorDeleteB(panel);
+    return panel;
+}
+CLEAN_AS(func_0208d290, CatchPanel_Delete)
+
+/* func_0208d2e8 (vtable slot 0): the destructor. */
+CatchPanel *CatchPanel_Destruct(CatchPanel *panel)
+{
+    catch_panel_destruct(panel);
+    return panel;
+}
+CLEAN_AS(func_0208d2e8, CatchPanel_Destruct)
+
+/* func_0208d338: the constructor (of the member of data_021d3258, at start-up): hidden, no
+ * boxes, nothing to redraw, not shown, the countdown stopped, the shift reset. */
+CatchPanel *CatchPanel_Construct(CatchPanel *panel)
+{
+    ScreenSprite_Construct(&panel->base);
+    panel->base.vtable = data_020e2218;
+    CellAnim_Construct(&panel->anim);
+    panel->state = CATCH_PANEL_HIDDEN;
+    panel->minutes_box = NULL;
+    panel->seconds_box = NULL;
+    panel->fish_box = NULL;
+    panel->insects_box = NULL;
+    func_0208e024(&panel->minutes_text);
+    func_0208e024(&panel->seconds_text);
+    func_0208e024(&panel->fish_text);
+    func_0208e024(&panel->insects_text);
+    panel->minutes_changed = 0;
+    panel->seconds_changed = 0;
+    panel->fish_changed = 0;
+    panel->insects_changed = 0;
+    panel->shown = 0;
+    panel->in_room = 0;
+    panel->fish = 0;
+    panel->insects = 0;
+    panel->time_limit = 0;
+    panel->end = (DateTime){0};
+    panel->left = (DateTime){0};
+    panel->linger = 0;
+    panel->shift = 0;
+    panel->shift_target = 0;
+    panel->shift_speed = 0;
+    panel->shift_wait = -1;
+    panel->beep_tick[0] = 0;
+    panel->beep_tick[1] = 0;
+    return panel;
+}
+CLEAN_AS(func_0208d338, CatchPanel_Construct)
+
+/* ---- The number text (vtable data_020e21e4): a text of the label base with room for 10
+ * characters, the catch panel's and the clock panel's numbers. */
+
+/* func_0208dfe4 (vtable slot 3): the address of the characters. */
+int CatchPanelText_Chars(CatchPanelText *text)
+{
+    return (int) ((u32) (uintptr_t) text + (u32) offsetof(CatchPanelText, text));
+}
+CLEAN_AS(func_0208dfe4, CatchPanelText_Chars)
+
+/* func_0208dfe8 (vtable slot 2): the capacity. */
+int CatchPanelText_Capacity(CatchPanelText *text)
+{
+    (void) text;
+    return CATCH_PANEL_TEXT_CAPACITY;
+}
+CLEAN_AS(func_0208dfe8, CatchPanelText_Capacity)
+
+/* func_0208dfec (vtable slot 1): destructed and freed. */
+CatchPanelText *CatchPanelText_Delete(CatchPanelText *text)
+{
+    text->vtable = &data_020e21e4;
+    TextBase_Destruct((TextBase *) text);
+    Heap_OperatorDeleteB(text);
+    return text;
+}
+CLEAN_AS(func_0208dfec, CatchPanelText_Delete)
+
+/* func_0208e00c (vtable slot 0): the destructor. */
+CatchPanelText *CatchPanelText_Destruct(CatchPanelText *text)
+{
+    text->vtable = &data_020e21e4;
+    TextBase_Destruct((TextBase *) text);
+    return text;
+}
+CLEAN_AS(func_0208e00c, CatchPanelText_Destruct)

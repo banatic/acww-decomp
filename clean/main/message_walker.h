@@ -67,5 +67,7 @@ void MessageWalkerStack_Construct(MessageWalkerStack *stack);
 void MessageWalkerStack_Destruct(void *stack);
 int MessageWalkerStack_IsEmpty(void *stack);
 void MessageWalkerStack_Push(MessageWalkerStack *stack, const u32 *position);
+u32 *MessageWalkerStack_Top(MessageWalkerStack *stack);
+void MessageWalkerStack_Pop(MessageWalkerStack *stack);
 
 #endif

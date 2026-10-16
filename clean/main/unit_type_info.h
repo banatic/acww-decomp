@@ -26,4 +26,19 @@ u8 UnitTypeInfo_Byte04At(int x, int z);
 int UnitTypeInfo_GroupAt(int x, int z);
 int UnitTypeInfo_IsType03At(int x, int z);
 
+struct Vec3;
+int UnitTypeInfo_IsType07At(int x, int z);
+int UnitTypeInfo_HasByte14InMode(int attr, int mode);
+int UnitTypeInfo_AltSideAttrAt(int x, int z, int side);
+u8 UnitTypeInfo_AltSideAttrNorth(int type);
+int UnitTypeInfo_AltSideAttrWest(int type);
+u8 UnitTypeInfo_AltSideAttrSouth(int type);
+int UnitTypeInfo_AltSideAttrEast(int type);
+int UnitTypeInfo_SideAttrAt(int x, int z, int side);
+int UnitTypeInfo_SideAttrNorth(int type);
+u8 UnitTypeInfo_SideAttrWest(int type);
+int UnitTypeInfo_SideAttrSouth(int type);
+int UnitTypeInfo_SideAttrEast(int type);
+int UnitTypeInfo_SideNearest(const struct Vec3 *position);
+
 #endif

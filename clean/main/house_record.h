@@ -122,4 +122,21 @@ void HouseRecord_RoomSetCarpet(HouseRoom *room, const u16 *carpet, int flag);
 void HouseRecord_RoomSetWallpaper(HouseRoom *room, const u16 *wallpaper, int flag);
 u16 *HouseRecord_RoomCarpet(HouseRoom *room, unsigned int *flag);
 
+struct RoomCells;
+
+/* The cell of the first room's starting furniture (HouseRecord_RoomInit). */
+#define HOUSE_ROOM_START_CELL_X 6
+#define HOUSE_ROOM_START_CELL_Y 10
+
+u16 *HouseRecord_RoomWallpaper(HouseRoom *room, int *flag);
+struct RoomCells *HouseRecord_RoomCells(HouseRoom *room);
+AcreMapSource *HouseRecord_RoomMakeSource(HouseRoom *room, int heap);
+void HouseRecord_RoomInit(HouseRoom *room, int index);
+HouseRoom *HouseRecord_RoomDestruct(HouseRoom *room);
+HouseRoom *HouseRecord_RoomConstruct(HouseRoom *room);
+u16 *HouseRecord_RoomLayer(u16 *layer);
+void HouseRecord_ClearLayer(u16 *layer);
+u16 *HouseRecord_DestructLayer(u16 *layer);
+int HouseRecord_ConstructLayer(int layer);
+
 #endif

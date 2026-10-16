@@ -17,6 +17,7 @@
 
 #include "acre_map.h"
 #include "calendar.h"
+#include "event_calendar.h"
 #include "state_block.h"
 #include "tile_changes.h"
 #include "tile_effects.h"
@@ -126,5 +127,19 @@ void TownDay_PutEventBuildings(TownDay *town, StateBlock *block, int loaded);
 void TownDay_StartEvents(TownDay *town, AcreMap *map, int wide, int high, const DateTime *today, int loaded,
                          StateBlock *block);
 void TownDay_MarkEvent(TownDay *town, int event);
+void TownDay_EndCode6d(TownDay *town, AcreMap *map, int wide);
+void TownDay_RevertCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z);
+void TownDay_PutCode6d(TownDay *town, AcreMap *map, int wide);
+void TownDay_PutCode6dIn(TownDay *town, AcreMap *map, int acre_x, int acre_z);
+void TownDay_StartEvent0e(TownDay *town, AcreMap *map, EventCalendarEvent *event, const DateTime *today, int loaded,
+                          int started, StateBlock *block);
+void TownDay_StartEvent10(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
+                          int loaded, int started, StateBlock *block);
+void TownDay_DropAroundLines(TownDay *town, AcreMap *map, EventCalendarEvent *event, int wide, int high, const DateTime *today,
+                             int loaded, int started, StateBlock *block);
+void TownDay_DropAroundLine(TownDay *town, AcreMap *map, int acre_x, int acre_z);
+u16 TownDay_DrawItem1542(TownDay *town);
+int TownDay_EventDays(TownDay *town, int event, const EventCalendarEvent *entry, const DateTime *today, int loaded,
+                      int started, StateBlock *block);
 
 #endif

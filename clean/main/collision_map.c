@@ -450,3 +450,10 @@ int CollisionMap_PathDirections(int x, int z)
     return high ? *byte >> 4 : *byte & 0x0f;
 }
 CLEAN_AS(func_02031a08, CollisionMap_PathDirections)
+
+/* func_02031e48: the byte that says whether map `slot` is complete (CollisionMapState). */
+u8 CollisionMap_CompleteByte(int slot)
+{
+    return collision_map_state(collision_map_slot(slot))->complete;
+}
+CLEAN_AS(func_02031e48, CollisionMap_CompleteByte)
