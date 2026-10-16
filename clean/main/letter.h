@@ -168,4 +168,12 @@ void LetterParty_SetKind(LetterParty *party, int kind);
 void LetterParty_Clear(LetterParty *party);
 void LetterParty_SetPlayer(LetterParty *party, const DesignCreator *player);
 
+void LetterParty_SetAsPlayer(LetterParty *party, const DesignCreator *player);
+void LetterParty_SetAsVillager(LetterParty *party, const NpcId *villager);
+LetterParty *LetterParty_AsVillager(LetterParty *party);
+LetterParty *LetterParty_AsPlayer(LetterParty *party);
+int LetterParty_NameToText(LetterParty *party, void *text);
+void *LetterParty_Name(LetterParty *party, u16 *name);
+Letter *Letter_Assign(Letter *dst, const Letter *src);
+
 #endif

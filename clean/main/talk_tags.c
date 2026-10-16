@@ -14,6 +14,7 @@
 #include "sky.h"
 #include "state_block.h"
 #include "talk_answers.h"
+#include "talk_object.h"
 #include "talk_windows.h"
 #include "villager_data.h"
 #include "villager_memory_entry.h"
@@ -132,8 +133,6 @@ extern int func_0206786c(u8 *talk);
 extern int func_020678f8(u8 *talk);
 extern int func_02067964(u8 *talk);
 extern int func_020679b0(u8 *talk);
-/* The talk's answers (at 0x31c). */
-extern TalkAnswers *func_0206837c(u8 *talk);
 /* An answer; all of them cleared (the pick too); an answer's weight and its byte 0x70; the
  * first answer's text. */
 extern TalkAnswer *func_020ab550(TalkAnswers *answers, int index);
@@ -154,6 +153,11 @@ typedef int TalkTagsCharactersFunction(const void *object);
 static u8 *talk_tags_at(TalkTagsWalker *walker, u32 offset)
 {
     return walker->talk + offset;
+}
+
+static TalkObject *talk_tags_talk(TalkTagsWalker *walker)
+{
+    return (TalkObject *) (void *) walker->talk;
 }
 
 static void *talk_tags_receiver(TalkTagsWalker *walker)
@@ -640,7 +644,7 @@ void TalkTags_SliderChoices(TalkTagsWalker *walker)
     }
 
     walker->choices_shown = 0;
-    TalkAnswers *answers = func_0206837c(walker->talk);
+    TalkAnswers *answers = TalkObject_Answers(talk_tags_talk(walker));
     TalkAnswer *first = func_020ab550(answers, 0);
     TalkAnswer *second = func_020ab550(answers, 1);
     TalkAnswer *third = func_020ab550(answers, 2);
@@ -881,15 +885,7 @@ CLEAN_AS(func_0206a150, TalkTags_PutLikedNpc)
 extern const char data_020df1b8[];
 
 /* The talk's texts of the date and time it began (func_02067c20 kept them at 0x1a64 to
- * 0x1a70), each set and answered by these: the second, the minute (with its unit word), the
- * hour on a 12-hour clock, the weekday's name, the day, the month, and the year after "20". */
-extern void *func_02067f74(u8 *talk);
-extern void *func_02067fa4(u8 *talk);
-extern void *func_02067fd4(u8 *talk);
-extern void *func_02068010(u8 *talk);
-extern void *func_02068034(u8 *talk);
-extern void *func_02068058(u8 *talk);
-extern void *func_0206807c(u8 *talk);
+ * 0x1a70) are set and answered by TalkObject_SecondText to TalkObject_YearText. */
 /* The town's name and this system's player's name (both answer 1), the villager's
  * catchphrase, and the text the villager remembers of the player: loaded into the talk; 0
  * when not. */
@@ -901,8 +897,6 @@ extern int func_020676d0(u8 *talk);
 extern void *func_020668d4(void *receiver);
 /* The talk's word 0x10 set. */
 extern void func_020676c4(u8 *talk, int value);
-/* The talk's window shaken: amplitude, its fall per frame (times 1.5), x and y scales. */
-extern void func_02067f28(u8 *talk, s32 amplitude, s32 fall, s32 scale_x, s32 scale_y);
 
 /* The tables of the handlers (function-local statics of the game, filled on the first call),
  * by group: the guard, the table, and the constants it is filled from. */
@@ -957,7 +951,7 @@ extern u32 data_021cda74;
 extern MemberPointer data_021cdad4[3];
 extern const MemberPointer data_020dec64, data_020deca4;
 
-typedef void *TalkTagsTextFunction(u8 *talk);
+typedef void *TalkTagsTextFunction(TalkObject *talk);
 typedef void TalkTagsIntSlot(void *receiver, int value);
 
 /* The receiver's slot `slot` handed `value`. */
@@ -987,9 +981,9 @@ static void talk_tags_tell_1c(TalkTagsWalker *walker, int value)
  * again for its last syllable, and the particles' ro_after_rieul set. */
 static void talk_tags_put_set_text(TalkTagsWalker *walker, TalkTagsTextFunction *text)
 {
-    MessageWalker_Enter(&walker->base, talk_tags_characters(text(walker->talk)));
+    MessageWalker_Enter(&walker->base, talk_tags_characters(text(talk_tags_talk(walker))));
     MailParticles_TakeLastSyllable((MailTextParticles *) (void *) talk_tags_at(walker, TALK_TAGS_PARTICLES),
-                                   (const char *) (uintptr_t) talk_tags_characters(text(walker->talk)));
+                                   (const char *) (uintptr_t) talk_tags_characters(text(talk_tags_talk(walker))));
     *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_RO_AFTER_RIEUL) = 1;
 }
 
@@ -1011,7 +1005,7 @@ static void talk_tags_show_choices(TalkTagsWalker *walker, TalkAnswers *answers,
 static TalkAnswers *talk_tags_clear_answers(TalkTagsWalker *walker, int count, u8 **bytes, MessageTagText **texts)
 {
     TalkAnswer *answer[5];
-    TalkAnswers *answers = func_0206837c(walker->talk);
+    TalkAnswers *answers = TalkObject_Answers(talk_tags_talk(walker));
     for (int i = 0; i < count; i++) {
         answer[i] = TalkAnswers_Answer(answers, i);
     }
@@ -1035,49 +1029,49 @@ static void talk_tags_dispatch(TalkTagsWalker *walker, u32 *guard, MemberPointer
 /* func_0206a1d4 (tag 4/10): the second the talk began at. */
 void TalkTags_PutSecond(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_02067f74);
+    talk_tags_put_set_text(walker, TalkObject_SecondText);
 }
 CLEAN_AS(func_0206a1d4, TalkTags_PutSecond)
 
 /* func_0206a21c (tag 4/9): the minute, with its unit word. */
 void TalkTags_PutMinute(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_02067fa4);
+    talk_tags_put_set_text(walker, TalkObject_MinuteText);
 }
 CLEAN_AS(func_0206a21c, TalkTags_PutMinute)
 
 /* func_0206a264 (tag 4/8): the hour on a 12-hour clock (12 for 0 and 12). */
 void TalkTags_PutHour12(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_02067fd4);
+    talk_tags_put_set_text(walker, TalkObject_HourText);
 }
 CLEAN_AS(func_0206a264, TalkTags_PutHour12)
 
 /* func_0206a2ac (tag 4/7): the weekday's name. */
 void TalkTags_PutWeekday(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_02068010);
+    talk_tags_put_set_text(walker, TalkObject_WeekdayText);
 }
 CLEAN_AS(func_0206a2ac, TalkTags_PutWeekday)
 
 /* func_0206a2f4 (tag 4/6): the day of the month. */
 void TalkTags_PutDay(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_02068034);
+    talk_tags_put_set_text(walker, TalkObject_DayText);
 }
 CLEAN_AS(func_0206a2f4, TalkTags_PutDay)
 
 /* func_0206a33c (tag 4/5): the month. */
 void TalkTags_PutMonth(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_02068058);
+    talk_tags_put_set_text(walker, TalkObject_MonthText);
 }
 CLEAN_AS(func_0206a33c, TalkTags_PutMonth)
 
 /* func_0206a384 (tag 4/4): the year, in four digits. */
 void TalkTags_PutYear(TalkTagsWalker *walker)
 {
-    talk_tags_put_set_text(walker, func_0206807c);
+    talk_tags_put_set_text(walker, TalkObject_YearText);
 }
 CLEAN_AS(func_0206a384, TalkTags_PutYear)
 
@@ -1158,7 +1152,7 @@ CLEAN_AS(func_0206a62c, TalkTags_TellReceiver20)
 void TalkTags_FiveChoicesCancelLast(TalkTagsWalker *walker)
 {
     TalkTags_FiveChoices(walker);
-    TalkAnswers_SetCancelToLast(func_0206837c(walker->talk));
+    TalkAnswers_SetCancelToLast(TalkObject_Answers(talk_tags_talk(walker)));
 }
 CLEAN_AS(func_0206a64c, TalkTags_FiveChoicesCancelLast)
 
@@ -1166,7 +1160,7 @@ CLEAN_AS(func_0206a64c, TalkTags_FiveChoicesCancelLast)
 void TalkTags_FourChoicesCancelLast(TalkTagsWalker *walker)
 {
     TalkTags_FourChoices(walker);
-    TalkAnswers_SetCancelToLast(func_0206837c(walker->talk));
+    TalkAnswers_SetCancelToLast(TalkObject_Answers(talk_tags_talk(walker)));
 }
 CLEAN_AS(func_0206a664, TalkTags_FourChoicesCancelLast)
 
@@ -1174,7 +1168,7 @@ CLEAN_AS(func_0206a664, TalkTags_FourChoicesCancelLast)
 void TalkTags_ThreeChoicesCancelLast(TalkTagsWalker *walker)
 {
     TalkTags_ThreeChoices(walker);
-    TalkAnswers_SetCancelToLast(func_0206837c(walker->talk));
+    TalkAnswers_SetCancelToLast(TalkObject_Answers(talk_tags_talk(walker)));
 }
 CLEAN_AS(func_0206a67c, TalkTags_ThreeChoicesCancelLast)
 
@@ -1182,7 +1176,7 @@ CLEAN_AS(func_0206a67c, TalkTags_ThreeChoicesCancelLast)
 void TalkTags_TwoChoicesCancelLast(TalkTagsWalker *walker)
 {
     TalkTags_TwoChoices(walker);
-    TalkAnswers_SetCancelToLast(func_0206837c(walker->talk));
+    TalkAnswers_SetCancelToLast(TalkObject_Answers(talk_tags_talk(walker)));
 }
 CLEAN_AS(func_0206a694, TalkTags_TwoChoicesCancelLast)
 
@@ -1281,7 +1275,7 @@ CLEAN_AS(func_0206aa28, TalkTags_Receiver1cWith0)
 void TalkTags_ShakeStrong(TalkTagsWalker *walker)
 {
     SoundSys_PlaySe(8);
-    func_02067f28(walker->talk, 0x11000, 0xa66, 0xccc, 0x1000);
+    TalkObject_StartShake(talk_tags_talk(walker), 0x11000, 0xa66, 0xccc, 0x1000);
 }
 CLEAN_AS(func_0206aa4c, TalkTags_ShakeStrong)
 
@@ -1289,7 +1283,7 @@ CLEAN_AS(func_0206aa4c, TalkTags_ShakeStrong)
 void TalkTags_ShakeMedium(TalkTagsWalker *walker)
 {
     SoundSys_PlaySe(7);
-    func_02067f28(walker->talk, 0xa000, 0x800, 0x800, 0x1333);
+    TalkObject_StartShake(talk_tags_talk(walker), 0xa000, 0x800, 0x800, 0x1333);
 }
 CLEAN_AS(func_0206aa80, TalkTags_ShakeMedium)
 
@@ -1297,7 +1291,7 @@ CLEAN_AS(func_0206aa80, TalkTags_ShakeMedium)
 void TalkTags_ShakeLight(TalkTagsWalker *walker)
 {
     SoundSys_PlaySe(6);
-    func_02067f28(walker->talk, 0x6000, 0x666, 0x4cc, 0x1199);
+    TalkObject_StartShake(talk_tags_talk(walker), 0x6000, 0x666, 0x4cc, 0x1199);
 }
 CLEAN_AS(func_0206aab0, TalkTags_ShakeLight)
 
@@ -1611,13 +1605,6 @@ extern MemberPointer data_021cdd34[12];
 extern const MemberPointer data_020ded94, data_020ded8c, data_020de9cc, data_020ded7c, data_020ded74, data_020ded6c,
     data_020ded64, data_020ded5c, data_020de9b4, data_020ded4c, data_020de9ac, data_020ded3c, data_020de99c;
 
-/* The talk set to go on with message `*message` (no name), and asked to (byte 0x1e92). */
-extern void func_0206844c(u8 *talk, const u8 *message, const char *name);
-extern void func_02068428(u8 *talk);
-/* The character pushed onto the talk's last characters (at 0x1a2c); those cleared and the
- * talk's byte 0x1e97 cleared. */
-extern void func_02068104(u8 *talk, int character);
-extern void func_020680d0(u8 *talk);
 /* A character turned into its other form. */
 extern int func_02050bdc_unk(int character);
 
@@ -1657,8 +1644,8 @@ CLEAN_AS(func_0206b840, TalkTags_DispatchTag)
 /* func_0206b964: the talk goes on with message `*message` of its file. */
 void TalkTags_GoToMessage(TalkTagsWalker *walker, const u8 *message)
 {
-    func_0206844c(walker->talk, message, NULL);
-    func_02068428(walker->talk);
+    TalkObject_SetMessage(talk_tags_talk(walker), message, NULL);
+    TalkObject_GoOn(talk_tags_talk(walker));
 }
 CLEAN_AS(func_0206b964, TalkTags_GoToMessage)
 
@@ -1855,7 +1842,7 @@ void TalkTags_OnCharacter(TalkTagsWalker *walker, int character)
             walker->state = TALK_TAGS_STATE_PAGE_FULL;
         }
     }
-    func_02068104(walker->talk, character);
+    TalkObject_PushVoiceChar(talk_tags_talk(walker), character);
     *talk_tags_at(walker, TALK_TAGS_PAUSED) = 0;
     if (!wide_space && !newline) {
         walker->unk_50++;
@@ -1891,7 +1878,7 @@ void TalkTags_OnText(TalkTagsWalker *walker)
     walker->unk_58 = 0;
     TalkPage_ClearPlain(walker->window);
     TalkPage_BeginLine(walker->window, (int) walker->base.position);
-    func_020680d0(walker->talk);
+    TalkObject_ClearVoice(talk_tags_talk(walker));
     walker->convert_next = 0;
     walker->unk_dc = 0;
     walker->unk_e0 = 0;

@@ -79,12 +79,6 @@ extern void *data_020e29dc[];
 extern void *data_020e29fc[];
 extern void *data_020e2a64[];
 
-/* The place being started (data_021d5658) filled: cleared, then the handle, the kind, the point,
- * the angle and the half-word 0x10 when given, and the frames. */
-extern void func_02091494(EffectKindsPlace *place, int handle, int kind, const Vec3 *position, const s16 *angle,
-                          const s16 *extra, int frames);
-/* A place cleared (no handle, no kind). */
-extern void func_020914dc(EffectKindsPlace *place);
 extern void func_02093678(void *transform);
 extern void func_020933c0(ParticleEmitter *emitter, unsigned int after);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
@@ -278,7 +272,7 @@ int EffectKinds_StartWithThree54(int kind, const Vec3 *position, const s16 *angl
 {
     int i;
 
-    func_02091494(&data_021d5658, -1, kind, position, angle, extra, -1);
+    EffectSystem_FillPlace(&data_021d5658, -1, kind, position, angle, extra, -1);
     if (EffectSystem_StartSet(set, position, angle, data_020e27c8) == 0) {
         return EFFECT_KINDS_NOT_STARTED;
     }
@@ -318,7 +312,7 @@ int EffectKinds_StartKind2d(int kind, const Vec3 *position, const s16 *angle, co
 {
     int result = EFFECT_KINDS_NOT_STARTED;
 
-    func_02091494(&data_021d5658, -1, kind, position, angle, extra, -1);
+    EffectSystem_FillPlace(&data_021d5658, -1, kind, position, angle, extra, -1);
     if (EffectSystem_StartSet(EFFECT_KINDS_SET_KIND_2D, position, angle, data_020e27c8) != 0 &&
         EffectSystem_StartSet(EFFECT_KINDS_SET_54, position, angle, data_020e29fc) != 0) {
         result = 1;
@@ -545,7 +539,7 @@ int EffectKinds_FollowKind26(EffectKindsInstance *instance)
         }
     }
     if (!lasts) {
-        func_020914dc(place);
+        EffectSystem_ClearPlace(place);
     }
     return lasts;
 }
@@ -909,12 +903,12 @@ static int effect_kinds_start_with_kept(int kind, const Vec3 *position, const s1
     int result = EFFECT_KINDS_NOT_STARTED;
 
     if (EffectPlaces_StartOneShot(set, kind, position, angle, extra, setups) < EFFECT_KINDS_NOT_STARTED) {
-        func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
+        EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
         if (EffectSystem_StartKeptSet(kept_set, position, angle, kept_setups) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     }
-    func_020914dc(&data_021d5658);
+    EffectSystem_ClearPlace(&data_021d5658);
     return result;
 }
 
@@ -1183,7 +1177,7 @@ int EffectKinds_FollowKind11Third(EffectKindsInstance *instance)
         }
     }
     if (!lasts) {
-        func_020914dc(place);
+        EffectSystem_ClearPlace(place);
     }
     return lasts;
 }
@@ -1221,7 +1215,7 @@ int EffectKinds_FollowKind0e(EffectKindsInstance *instance)
         CollisionGround_Destroy(&ground);
     }
     if (!lasts) {
-        func_020914dc(place);
+        EffectSystem_ClearPlace(place);
     }
     return lasts;
 }
@@ -1318,12 +1312,12 @@ int EffectKinds_StartWithModel(int kind, Vec3 *position, const s16 *angle, const
     if (EffectPlaces_StartOneShot(EFFECT_KINDS_SET_WITH_MODEL, kind, position, angle, extra, setups) <
         EFFECT_KINDS_NOT_STARTED) {
         EffectKinds_StartModel(EFFECT_KINDS_MODEL_WITH_SET, kind, position, angle, extra, model_setup);
-        func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
+        EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
         if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_WITH_MODEL_KEPT, position, angle, kept_setups) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     }
-    func_020914dc(&data_021d5658);
+    EffectSystem_ClearPlace(&data_021d5658);
     CollisionGround_Destroy(&ground);
     return result;
 }
@@ -1386,12 +1380,12 @@ int EffectKinds_StartKind0a(int kind, const Vec3 *position, const s16 *angle, co
     /* QUIRK: neither kept start clears the place being started afterwards, as the others do;
      * the one in the snow leaves out the half-word 0x10 (`extra`). */
     if (Sky_Falling() == SKY_FALLING_RAIN) {
-        func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
+        EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
         if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_0A_RAIN, position, angle, data_020e289c) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     } else if (SceneQuery_IsSnowSeason() != 0 && attr == EFFECT_KINDS_GROUND_3) {
-        func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
+        EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
         if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_0A_SNOW, position, angle, data_020e28ec) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
@@ -1517,12 +1511,12 @@ int EffectKinds_StartKind01(int kind, const Vec3 *position, const s16 *angle, co
     } else if (attr == EFFECT_KINDS_GROUND_16 || Sky_Falling() == SKY_FALLING_RAIN) {
         /* QUIRK: the kept starts leave out the half-word 0x10 (`extra`) and do not clear the
          * place being started afterwards. */
-        func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
+        EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
         if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_01_WET, position, angle, data_020e27dc) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     } else if (attr == EFFECT_KINDS_GROUND_3 && SceneQuery_IsSnowSeason() != 0) {
-        func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
+        EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
         if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_01_SNOW, position, angle, data_020e27f4) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
@@ -1628,7 +1622,7 @@ int EffectKinds_StartModel(int model, int kind, const Vec3 *position, const s16 
     if (setup == NULL) {
         setup = func_02094884;
     }
-    func_02091494(&data_021d5658, -1, kind, position, angle, extra, -1);
+    EffectSystem_FillPlace(&data_021d5658, -1, kind, position, angle, extra, -1);
     EffectSystem_StartModel(model, setup);
     return 1;
 }
@@ -1667,7 +1661,7 @@ int EffectKinds_FollowParticles(EffectKindsInstance *instance, int ground_set, v
         }
     }
     if (!lasts) {
-        func_020914dc(place);
+        EffectSystem_ClearPlace(place);
     }
     return lasts;
 }

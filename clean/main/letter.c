@@ -6,6 +6,7 @@
 #include "clean.h"
 #include "main/mail_text.h"
 #include "main/message_reader.h"
+#include "main/player_id.h"
 #include "main/player_pockets.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -48,15 +49,6 @@ extern u8 data_021e5a2c[];
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern int func_02051c8c_unk(const u16 *text, int max); /* the characters before a 0, at most max */
 
-/* A party's name: into a text object (func_0206671c) or as 16-bit characters (func_02066788). */
-extern int func_0206671c(LetterParty *party, void *text);
-extern void *func_02066788(LetterParty *party, u16 *name);
-/* The party if it is a villager (kinds 3, 5) or a player (kinds 1, 2, 6), else NULL. */
-extern LetterParty *func_020666f8(LetterParty *party);
-extern LetterParty *func_02066708(LetterParty *party);
-/* The party set to a player of kind 2 or to a villager of kind 3. */
-extern void func_020666d0(LetterParty *party, const DesignCreator *player);
-extern void func_020666e4(LetterParty *party, const NpcId *villager);
 /* A player's 0x1e bytes copied into a party (the kind is not touched). */
 extern void func_020951dc(const DesignCreator *player, LetterParty *party);
 
@@ -308,14 +300,14 @@ CLEAN_AS(func_02065f20, Letter_HasNoAddressee)
 /* func_02065f2c: the addressee's name put in the text object `text`. */
 int Letter_AddresseeNameText(Letter *letter, void *text)
 {
-    return func_0206671c(&letter->addressee, text);
+    return LetterParty_NameToText(&letter->addressee, text);
 }
 CLEAN_AS(func_02065f2c, Letter_AddresseeNameText)
 
 /* func_02065f38: the sender's name put in the text object `text`. */
 void Letter_SenderNameText(Letter *letter, void *text)
 {
-    func_0206671c(&letter->sender, text);
+    LetterParty_NameToText(&letter->sender, text);
 }
 CLEAN_AS(func_02065f38, Letter_SenderNameText)
 
@@ -326,38 +318,38 @@ u8 Letter_Tag(const Letter *letter)
 }
 CLEAN_AS(func_02065f44, Letter_Tag)
 
-/* func_02065f4c: the addressee's name written to `name`; returns what func_02066788 does. */
+/* func_02065f4c: the addressee's name written to `name`; returns what LetterParty_Name does. */
 int Letter_AddresseeName(Letter *letter, u16 *name)
 {
-    return (int) (uintptr_t) func_02066788(&letter->addressee, name);
+    return (int) (uintptr_t) LetterParty_Name(&letter->addressee, name);
 }
 CLEAN_AS(func_02065f4c, Letter_AddresseeName)
 
-/* func_02065f58: the sender's name written to `name`; returns what func_02066788 does. */
+/* func_02065f58: the sender's name written to `name`; returns what LetterParty_Name does. */
 int Letter_SenderName(Letter *letter, u16 *name)
 {
-    return (int) (uintptr_t) func_02066788(&letter->sender, name);
+    return (int) (uintptr_t) LetterParty_Name(&letter->sender, name);
 }
 CLEAN_AS(func_02065f58, Letter_SenderName)
 
 /* func_02065f64: the addressee if it is a villager, else NULL. */
 LetterParty *Letter_VillagerAddressee(Letter *letter)
 {
-    return func_020666f8(&letter->addressee);
+    return LetterParty_AsVillager(&letter->addressee);
 }
 CLEAN_AS(func_02065f64, Letter_VillagerAddressee)
 
 /* func_02065f70: the addressee if it is a player, else NULL. */
 LetterParty *Letter_PlayerAddressee(Letter *letter)
 {
-    return func_02066708(&letter->addressee);
+    return LetterParty_AsPlayer(&letter->addressee);
 }
 CLEAN_AS(func_02065f70, Letter_PlayerAddressee)
 
 /* func_02065f7c: the sender if it is a player, as an address; else 0. */
 int Letter_PlayerSender(Letter *letter)
 {
-    return (int) (uintptr_t) func_02066708(&letter->sender);
+    return (int) (uintptr_t) LetterParty_AsPlayer(&letter->sender);
 }
 CLEAN_AS(func_02065f7c, Letter_PlayerSender)
 
@@ -420,7 +412,7 @@ void Letter_SetSpecialToPlayer(Letter *letter, void *header, void *body, void *f
     letter->paper = *paper;
     letter->tag = *tag;
     LetterParty_SetKind(&letter->sender, LETTER_PARTY_SPECIAL);
-    func_020666d0(&letter->addressee, &addressee);
+    LetterParty_SetAsPlayer(&letter->addressee, &addressee);
     if (first_line < 0) {
         LetterParty_SetKind(&letter->addressee, LETTER_PARTY_PLAYER_B);
         first_line = 0;
@@ -482,8 +474,8 @@ void Letter_SetBetweenVillagers(Letter *letter, void *header, void *body, void *
     Letter_Clear(letter);
     letter->paper = *paper;
     letter->tag = 0;
-    func_020666e4(&letter->sender, &from);
-    func_020666e4(&letter->addressee, &to);
+    LetterParty_SetAsVillager(&letter->sender, &from);
+    LetterParty_SetAsVillager(&letter->addressee, &to);
     if (first_line < 0) {
         LetterParty_SetKind(&letter->addressee, LETTER_PARTY_VILLAGER_B);
         first_line = 0;
@@ -552,8 +544,8 @@ void Letter_SetVillagerToPlayer(Letter *letter, void *header, void *body, void *
     Letter_Clear(letter);
     letter->paper = *paper;
     letter->tag = 0;
-    func_020666e4(&letter->sender, &from);
-    func_020666d0(&letter->addressee, &to);
+    LetterParty_SetAsVillager(&letter->sender, &from);
+    LetterParty_SetAsPlayer(&letter->addressee, &to);
     if (first_line < 0) {
         LetterParty_SetKind(&letter->addressee, LETTER_PARTY_VILLAGER_B);
         first_line = 0;
@@ -664,7 +656,7 @@ void Letter_AddressToPlayer(Letter *letter, int index)
 {
     DesignCreator *player = PlayerRecord_Player(PlayerRecords_TownRecord(data_021dc7bc, index));
     Letter_TakeDefaultHeader(letter);
-    func_020666d0(&letter->addressee, player);
+    LetterParty_SetAsPlayer(&letter->addressee, player);
 }
 CLEAN_AS(func_02066560, Letter_AddressToPlayer)
 
@@ -674,7 +666,7 @@ void Letter_AddressToVillager(Letter *letter, int index)
 {
     NpcId *villager = TownVillager_NpcId(VillagerRoster_At((VillagerTown *) (void *) data_021e5a2c, index));
     Letter_TakeDefaultHeader(letter);
-    func_020666e4(&letter->addressee, villager);
+    LetterParty_SetAsVillager(&letter->addressee, villager);
 }
 CLEAN_AS(func_0206658c, Letter_AddressToVillager)
 
@@ -776,3 +768,123 @@ void LetterParty_SetPlayer(LetterParty *party, const DesignCreator *player)
     func_020951dc(player, party);
 }
 CLEAN_AS(func_020666bc, LetterParty_SetPlayer)
+
+/* func_020666d0: the party made a player (kind 2), copied from `player`. */
+void LetterParty_SetAsPlayer(LetterParty *party, const DesignCreator *player)
+{
+    party->kind = LETTER_PARTY_PLAYER;
+    PlayerId_CopyTo(player, &party->who.player);
+}
+CLEAN_AS(func_020666d0, LetterParty_SetAsPlayer)
+
+/* func_020666e4: the party made a villager (kind 3), copied from `villager`. */
+void LetterParty_SetAsVillager(LetterParty *party, const NpcId *villager)
+{
+    party->kind = LETTER_PARTY_VILLAGER;
+    NpcId_CopyTo(villager, &party->who.villager);
+}
+CLEAN_AS(func_020666e4, LetterParty_SetAsVillager)
+
+/* func_020666f8: the party if it is a villager (kinds 3 and 5), else NULL. */
+LetterParty *LetterParty_AsVillager(LetterParty *party)
+{
+    if (party->kind == LETTER_PARTY_VILLAGER || party->kind == LETTER_PARTY_VILLAGER_B) {
+        return party;
+    }
+    return NULL;
+}
+CLEAN_AS(func_020666f8, LetterParty_AsVillager)
+
+/* func_02066708: the party if it is a player (kinds 1, 2 and 6), else NULL. */
+LetterParty *LetterParty_AsPlayer(LetterParty *party)
+{
+    if (party->kind == LETTER_PARTY_SELF || party->kind == LETTER_PARTY_PLAYER || party->kind == LETTER_PARTY_PLAYER_B) {
+        return party;
+    }
+    return NULL;
+}
+CLEAN_AS(func_02066708, LetterParty_AsPlayer)
+
+/* func_0206671c: the party's name put into the 8-bit text `text`: a player's (kinds 1, 2, 6)
+ * or a villager's (kinds 3, 5); another kind leaves the text as it is.
+ * QUIRK: returns what the villager's destructor does, the address of the villager on its own
+ * stack, which means nothing to the caller. */
+int LetterParty_NameToText(LetterParty *party, void *text)
+{
+    NpcId villager;
+    DesignCreator player;
+    NpcId_Construct(&villager);
+    PlayerId_Construct(&player);
+    switch (party->kind) {
+        case LETTER_PARTY_SELF:
+        case LETTER_PARTY_PLAYER:
+        case LETTER_PARTY_PLAYER_B:
+            PlayerId_Assign(&player, &party->who.player);
+            PlayerId_NameToText(&player, (TextBase *) text);
+            break;
+        case LETTER_PARTY_VILLAGER:
+        case LETTER_PARTY_VILLAGER_B:
+            NpcId_Assign(&villager, &party->who.villager);
+            NpcId_FormatName(&villager, (char *) text);
+            break;
+        default:
+            break;
+    }
+    PlayerId_Destruct(&player);
+    return NpcId_Destruct(&villager);
+}
+CLEAN_AS(func_0206671c, LetterParty_NameToText)
+
+/* The menu message that names no one (kind 7). */
+#define LETTER_MESSAGE_NO_ONE 0x43
+
+/* func_02066788: the party's name as 16-bit characters into `name`: a player's six (kinds 1
+ * and 2), a villager's six (kind 3) through an 8-bit and a wide text, and for no one (kind 7)
+ * the menu message 0x43 (a wide text's worth). Another kind writes nothing.
+ * QUIRK: kinds 5 and 6, a villager and a player to func_0206671c, write nothing here.
+ * QUIRK: returns what the 8-bit text's destructor does, the address of that text on its own
+ * stack, which means nothing to the caller. */
+void *LetterParty_Name(LetterParty *party, u16 *name)
+{
+    PlayerIdText text;
+    PlayerIdWideText wide;
+    NpcId villager;
+    TextLabel label;
+    PlayerIdText_Construct(&text);
+    PlayerIdWideText_Construct(&wide);
+    NpcId_Construct(&villager);
+    TextLabel_Construct(&label);
+    switch (party->kind) {
+        case LETTER_PARTY_SELF:
+        case LETTER_PARTY_PLAYER:
+            TextString_CopyChars(party->who.player.player_name, name, LETTER_NAME_CHARS);
+            break;
+        case LETTER_PARTY_VILLAGER:
+            NpcId_Assign(&villager, &party->who.villager);
+            NpcId_FormatName(&villager, (char *) &text);
+            TextBase_BytesToWide((WideTextBase *) (void *) &wide, (TextBase *) (void *) &text);
+            PlayerIdWideText_CopyOut(&wide, name, LETTER_NAME_CHARS);
+            break;
+        case LETTER_PARTY_NONE:
+            TextLabel_LoadMenuMessage((int) (uintptr_t) &label, LETTER_MESSAGE_NO_ONE);
+            TextLabel_CopyWide(&label, name);
+            break;
+        default:
+            break;
+    }
+    TextLabel_Destruct(&label);
+    NpcId_Destruct(&villager);
+    PlayerIdWideText_Destruct(&wide);
+    return PlayerIdText_Destruct(&text);
+}
+CLEAN_AS(func_02066788, LetterParty_Name)
+
+extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
+
+/* func_02066830: the letter's 0x100 bytes copied from `src`, its vtable too; returns `dst`. */
+Letter *Letter_Assign(Letter *dst, const Letter *src)
+{
+    MI_CpuCopy8(src, dst, sizeof(Letter));
+    return dst;
+}
+CLEAN_AS(func_02066830, Letter_Assign)

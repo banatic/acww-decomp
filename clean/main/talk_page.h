@@ -71,4 +71,82 @@ void TalkPageMeasurer_Name2(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_Name1(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_Name0(TalkPageMeasurer *measurer);
 
+/* ---- The rest of the measurer's handlers, and its tables of them by the tag's kind. The
+ * measurer walks the texts the talk's tag walker (talk_tags.h) walks in place of a tag, without
+ * the colour tags around names, so that a centred line is measured as it will be shown. Its
+ * table by group (func_0206d330) holds group 0 (func_0206d26c), group 1
+ * (TalkPageMeasurer_DispatchGroup1), group 2 (TalkPageMeasurer_SkipTexts), group 4
+ * (TalkPageMeasurer_DispatchGroup4), group 11 (TalkPageMeasurer_DispatchGroup11) and group 0xff
+ * (TalkPageMeasurer_DispatchGroupFF). */
+
+/* Group 11. */
+void TalkPageMeasurer_Part10(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part9(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part8(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part7(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part6(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part5(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part4(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part3(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part2(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part1(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Part0(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Nothing11_4(void);
+void TalkPageMeasurer_Set50Two(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_Set50One(TalkPageMeasurer *measurer);
+
+/* Group 4. */
+void TalkPageMeasurer_PutBoom(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPraise(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutNickname(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutImpression(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutName3(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutName2(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutName1(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutName0(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart10(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart9(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart8(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart7(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart6(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart5(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart4(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart3(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart2(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart1(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPart0(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutOtherPlayer(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutRandomNpc(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutDislikedNpc(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutLikedNpc(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutSecond(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutMinute(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutHour12(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutWeekday(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutDay(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutMonth(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutYear(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutTownName(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutCatchphrase(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutReceiverName(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPlayerName(TalkPageMeasurer *measurer);
+
+/* Group 1. */
+void TalkPageMeasurer_RememberedEnd(void);
+void TalkPageMeasurer_RememberedText(TalkPageMeasurer *measurer);
+
+/* Group 0. */
+void TalkPageMeasurer_PutLeftBrace(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutPercent(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutAmpersand(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutSlash(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_PutAsterisk(TalkPageMeasurer *measurer);
+
+/* The tables by kind, and group 2. */
+void TalkPageMeasurer_DispatchGroupFF(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_DispatchGroup11(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_DispatchGroup4(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_SkipTexts(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_DispatchGroup1(TalkPageMeasurer *measurer);
+
 #endif

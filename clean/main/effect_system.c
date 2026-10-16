@@ -690,3 +690,789 @@ void *EffectSystem_New(void)
     return system;
 }
 CLEAN_AS(func_02091154, EffectSystem_New)
+
+/* --- The places effects start at and follow, and the kinds' start functions --- */
+
+#include "main/effect_places.h"
+
+static_assert(sizeof(EffectKindsPlace) == 0x1c && offsetof(EffectKindsPlace, handle) == 0x14, "EffectKindsPlace");
+static_assert(offsetof(EffectKindsPlace, unk_10) == 0x10 && offsetof(EffectKindsPlace, kind) == 0x18, "EffectKindsPlace");
+static_assert(offsetof(EffectSystemPlaces, starting) == 0x380 && offsetof(EffectSystemPlaces, next_handle) == 0x39c,
+              "EffectSystemPlaces");
+static_assert(offsetof(EffectKindsInstance, slot) == 0x04 && offsetof(EffectKindsInstance, emitter) == 0x0c,
+              "EffectKindsInstance");
+static_assert(offsetof(Particle, rotation) == 0x20 && offsetof(Particle, life) == 0x24 && offsetof(Particle, age) == 0x26,
+              "Particle");
+
+/* The places, and the kinds. */
+extern EffectSystemPlaces data_021d52d8;
+extern const EffectSystemKind data_020e2c1c[EFFECT_SYSTEM_KINDS];
+
+/* The kinds' set-up words (effect_kinds.h): one per emitter of a one-shot set, two (place,
+ * follow) per emitter of a kept one. data_020e2ac4 is a kept set's default. */
+extern void *data_020e2798[];
+extern void *data_020e27c0[];
+extern void *data_020e27d0[];
+extern void *data_020e286c[];
+extern void *data_020e2934[];
+extern void *data_020e2944[];
+extern void *data_020e2984[];
+extern void *data_020e29c4[];
+extern void *data_020e2a1c[];
+extern void *data_020e2ac4[];
+
+/* Offsets and axes the kinds' emitters are put at (turned by their place's angle). */
+extern const Vec3 data_020d16d8; /* (0, -0.5, 1) */
+extern const Vec3 data_020d16f0; /* (0, 0, 0.82) */
+extern const Vec3 data_020d1744; /* (-1, 1, 0) */
+extern const Vec3 data_020d1750; /* (0, 0, 1) */
+extern const Vec3 data_020d175c; /* (0, -0.5, 1) */
+extern const Vec3 data_020d178c; /* (1, 1, 0) */
+extern const Vec3 data_020d17bc; /* (0, 0.8, 0.8) */
+extern const Vec3 data_020d1810; /* (0, 0, 0.2) */
+extern const Vec3 data_020d1828; /* (-0.4, 0, 0.5) */
+extern const Vec3 data_020d1834; /* (-0.4, 0.47, 0) */
+extern const Vec3 data_020d1840; /* (0.4, 0, 0.5) */
+extern const Vec3 data_020d184c; /* (0.4, 0.47, 0) */
+/* Kind 0x4e's offsets, nine each, chosen by its place's half-word 0x10. */
+extern const Vec3 data_020e2b44[];
+extern const Vec3 data_020e2bb0[];
+
+#define EFFECT_SYSTEM_NO_HANDLE (-1)
+#define EFFECT_SYSTEM_FOR_EVER (-1)
+#define EFFECT_SYSTEM_KEPT_STARTED 0 /* a start function's answers */
+#define EFFECT_SYSTEM_KEPT_UNHANDED 2
+#define EFFECT_SYSTEM_NOT_STARTED 3
+#define EFFECT_SYSTEM_UNK_10_DEFAULT 0x1000
+#define EFFECT_SYSTEM_KIND_KEPT_SET 0x65
+#define EFFECT_SYSTEM_KIND_ONE_SHOT_SET 0x64
+#define EFFECT_SYSTEM_RAISED 3          /* a place's half-word 0x10 for kind 0x54's raised offsets */
+#define EFFECT_SYSTEM_SPIN 12500        /* kind 0x59's particles' angle, by the side it turns to */
+#define EFFECT_SYSTEM_FADE_STEP 6       /* kind 0x56's base alpha per frame left */
+#define EFFECT_SYSTEM_KIND_56_FRAMES 4  /* the frames kind 0x56's places last once ended */
+#define EFFECT_SYSTEM_KIND_55_FRAMES 15 /* the frames kind 0x55 follows its places */
+#define EFFECT_SYSTEM_KIND_59_FRAMES 0x25
+
+/* The particle file's sets the kinds start. */
+#define EFFECT_SYSTEM_SET_KIND_62 0x7d
+#define EFFECT_SYSTEM_SET_KIND_61 0x7c
+#define EFFECT_SYSTEM_SET_KIND_60 0x7b
+#define EFFECT_SYSTEM_SET_KIND_5F 0x51
+#define EFFECT_SYSTEM_SET_KIND_5C 0x15
+#define EFFECT_SYSTEM_SET_KIND_5B 0x82
+#define EFFECT_SYSTEM_SET_KIND_5A 0x14
+#define EFFECT_SYSTEM_SET_KIND_59 0x13
+#define EFFECT_SYSTEM_SET_KIND_59_KEPT 0x62
+#define EFFECT_SYSTEM_SET_KIND_58 0x12
+#define EFFECT_SYSTEM_SET_KIND_57 0x11
+#define EFFECT_SYSTEM_SET_KIND_56 0x10
+#define EFFECT_SYSTEM_SET_KIND_55 0x0f
+#define EFFECT_SYSTEM_SET_KIND_54 0x0e
+#define EFFECT_SYSTEM_SET_KIND_53 0x0d
+#define EFFECT_SYSTEM_SET_KIND_52 0x5d
+#define EFFECT_SYSTEM_SET_KIND_51 0x0c
+#define EFFECT_SYSTEM_SET_KIND_50 0x0b
+#define EFFECT_SYSTEM_SET_KIND_4F 0x0a
+#define EFFECT_SYSTEM_SET_KIND_4E 0x09
+#define EFFECT_SYSTEM_SET_KIND_4D 0x16
+#define EFFECT_SYSTEM_SET_KIND_4C 0x08
+/* The models kinds 0x5d and 0x5e start. */
+#define EFFECT_SYSTEM_MODEL_KIND_5D 0
+#define EFFECT_SYSTEM_MODEL_KIND_5E 1
+
+/* The emitter's point: `at` and its resource's base position. */
+static void effect_system_put_emitter(ParticleEmitter *emitter, const Vec3 *at)
+{
+    const Vec3 *base = &emitter->resource->header->base_pos;
+
+    emitter->position.x = particle_add(at->x, base->x);
+    emitter->position.y = particle_add(at->y, base->y);
+    emitter->position.z = particle_add(at->z, base->z);
+}
+
+/* func_0209120c: the kept set `set` started at a place filled from the arguments (kind 0x65);
+ * its handle, or -1 when it did not start. */
+int EffectSystem_StartKeptSetNumber(int set, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectSystem_StartKindIn(&data_021d52d8, EFFECT_SYSTEM_KIND_KEPT_SET, position, angle, extra, set);
+}
+CLEAN_AS(func_0209120c, EffectSystem_StartKeptSetNumber)
+
+/* func_02091230: the one-shot set `set` started at a place filled from the arguments (kind
+ * 0x64); -1 (a one-shot set has no handle). */
+int EffectSystem_StartOneShotSetNumber(int set, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectSystem_StartKindIn(&data_021d52d8, EFFECT_SYSTEM_KIND_ONE_SHOT_SET, position, angle, extra, set);
+}
+CLEAN_AS(func_02091230, EffectSystem_StartOneShotSetNumber)
+
+/* func_02091254: the same as EffectSystem_StartOneShotSetNumber, a second copy in the ROM. */
+int EffectSystem_StartOneShotSetNumberCopy(int set, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectSystem_StartKindIn(&data_021d52d8, EFFECT_SYSTEM_KIND_ONE_SHOT_SET, position, angle, extra, set);
+}
+CLEAN_AS(func_02091254, EffectSystem_StartOneShotSetNumberCopy)
+
+/* func_02091278: the places of handle `handle` moved to `position`, and given `angle` and the
+ * half-word `extra` when they are not NULL. */
+void EffectSystem_MoveHandle(int handle, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    EffectSystem_MovePlaces(data_021d52d8.places, handle, position, angle, extra);
+}
+CLEAN_AS(func_02091278, EffectSystem_MoveHandle)
+
+/* func_0209129c: the effect of handle `handle` ended by its kind's end function. */
+void EffectSystem_EndHandle(int handle)
+{
+    EffectSystem_EndHandleIn(&data_021d52d8, handle);
+}
+CLEAN_AS(func_0209129c, EffectSystem_EndHandle)
+
+/* func_020912ac: kind `kind` started at `position` and `angle`, its place's half-word 0x10
+ * `extra`; its handle, or -1. */
+int EffectSystem_StartKindWithExtra(int kind, short extra, const Vec3 *position, const s16 *angle)
+{
+    s16 given = extra;
+
+    return EffectSystem_StartKindIn(&data_021d52d8, (unsigned int) kind, position, angle, &given, -1);
+}
+CLEAN_AS(func_020912ac, EffectSystem_StartKindWithExtra)
+
+/* func_020912d4: kind `kind` started at `position` (`angle` and `extra` may be NULL); its
+ * handle when it started a kept set, else -1. */
+int EffectSystem_StartKind(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectSystem_StartKindIn(&data_021d52d8, (unsigned int) kind, position, angle, extra, -1);
+}
+CLEAN_AS(func_020912d4, EffectSystem_StartKind)
+
+/* func_02091300: every place cleared and the handles counted from 0 again. */
+void EffectSystem_ResetPlaces(void)
+{
+    EffectSystem_ResetPlacesIn(&data_021d52d8);
+}
+CLEAN_AS(func_02091300, EffectSystem_ResetPlaces)
+
+/* func_02091310: the kind of the first place of handle `handle`, EFFECT_SYSTEM_KINDS for none. */
+unsigned short EffectSystem_KindOfHandle(EffectSystemPlaces *places, int handle)
+{
+    const EffectKindsPlace *place = (const EffectKindsPlace *) (uintptr_t) EffectSystem_FindHandle(
+        places->places, handle, places->places, EFFECT_SYSTEM_PLACES);
+
+    if (place == NULL) {
+        return EFFECT_SYSTEM_KINDS;
+    }
+    return (unsigned short) place->kind;
+}
+CLEAN_AS(func_02091310, EffectSystem_KindOfHandle)
+
+/* func_0209132c: the end function of the kind of handle `handle` called with it, when the
+ * handle is not -1, has a place and its kind has one. */
+void EffectSystem_EndHandleIn(EffectSystemPlaces *places, int handle)
+{
+    unsigned int kind;
+
+    if (handle == EFFECT_SYSTEM_NO_HANDLE) {
+        return;
+    }
+    kind = EffectSystem_KindOfHandle(places, handle);
+    if (kind >= EFFECT_SYSTEM_KINDS) {
+        return;
+    }
+    if (data_020e2c1c[kind].end != NULL) {
+        data_020e2c1c[kind].end(handle);
+    }
+}
+CLEAN_AS(func_0209132c, EffectSystem_EndHandleIn)
+
+/* func_02091358: kind `kind`'s start function called (`set` is the set of kinds 0x64 and
+ * 0x65). When it started a kept set the next handle is used up: handed out when it answered
+ * 0, kept back when it answered 2. The handle, or -1. */
+int EffectSystem_StartKindIn(EffectSystemPlaces *places, unsigned int kind, const Vec3 *position, const s16 *angle,
+                             const s16 *extra, int set)
+{
+    int handle = EFFECT_SYSTEM_NO_HANDLE;
+    int result;
+
+    if (kind >= EFFECT_SYSTEM_KINDS || data_020e2c1c[kind].start == NULL) {
+        return handle;
+    }
+    result = data_020e2c1c[kind].start((int) kind, position, angle, extra, set);
+    if (result == EFFECT_SYSTEM_KEPT_STARTED) {
+        handle = places->next_handle;
+        places->next_handle++;
+    } else if (result == EFFECT_SYSTEM_KEPT_UNHANDED) {
+        places->next_handle++;
+    }
+    return handle;
+}
+CLEAN_AS(func_02091358, EffectSystem_StartKindIn)
+
+/* func_020913b0: every place cleared and the handles counted from 0 again. */
+void EffectSystem_ResetPlacesIn(EffectSystemPlaces *places)
+{
+    EffectSystem_ClearPlaces(places);
+    places->next_handle = 0;
+}
+CLEAN_AS(func_020913b0, EffectSystem_ResetPlacesIn)
+
+/* func_020913c8: the frames left of each of the 32 places of handle `handle` set to `frames`
+ * (none for handle -1). */
+void EffectSystem_SetHandleFrames(EffectKindsPlace *places, int handle, short frames)
+{
+    int i;
+
+    if (handle == EFFECT_SYSTEM_NO_HANDLE) {
+        return;
+    }
+    for (i = 0; i < EFFECT_SYSTEM_PLACES; i++) {
+        if (handle == places[i].handle) {
+            places[i].frames = frames;
+        }
+    }
+}
+CLEAN_AS(func_020913c8, EffectSystem_SetHandleFrames)
+
+/* func_020913f0: each of the 32 places of handle `handle` moved to `position`, and given
+ * `angle` and the half-word `extra` when they are not NULL (none for handle -1). */
+void EffectSystem_MovePlaces(EffectKindsPlace *places, int handle, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    int i;
+
+    if (handle == EFFECT_SYSTEM_NO_HANDLE) {
+        return;
+    }
+    for (i = 0; i < EFFECT_SYSTEM_PLACES; i++) {
+        EffectKindsPlace *place = &places[i];
+
+        if (handle == place->handle) {
+            place->position.x = position->x;
+            place->position.y = position->y;
+            place->position.z = position->z;
+            if (angle != NULL) {
+                place->angle = *angle;
+            }
+            if (extra != NULL) {
+                place->unk_10 = *extra;
+            }
+        }
+    }
+}
+CLEAN_AS(func_020913f0, EffectSystem_MovePlaces)
+
+/* func_02091444: the first of `count` places from `places` with handle `handle` (its address),
+ * 0 for none. QUIRK: the first argument is not read. */
+int EffectSystem_FindHandle(EffectKindsPlace *unused, int handle, EffectKindsPlace *places, int count)
+{
+    int i;
+
+    (void) unused;
+    for (i = 0; i < count; i++) {
+        if (handle == places[i].handle) {
+            return (int) (uintptr_t) &places[i];
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_02091444, EffectSystem_FindHandle)
+
+/* func_02091468: the place being started cleared, then the 32 kept ones. */
+void EffectSystem_ClearPlaces(EffectSystemPlaces *places)
+{
+    int i;
+
+    EffectSystem_ClearPlace(&places->starting);
+    for (i = 0; i < EFFECT_SYSTEM_PLACES; i++) {
+        EffectSystem_ClearPlace(&places->places[i]);
+    }
+}
+CLEAN_AS(func_02091468, EffectSystem_ClearPlaces)
+
+/* func_02091494: the place cleared, then given the handle, the kind, the point, the angle and
+ * the half-word 0x10 when they are not NULL, and the frames to follow it (-1 for ever). */
+void EffectSystem_FillPlace(EffectKindsPlace *place, int handle, short kind, const Vec3 *position, const s16 *angle,
+                            const s16 *extra, short frames)
+{
+    EffectSystem_ClearPlace(place);
+    place->handle = handle;
+    place->kind = kind;
+    place->position.x = position->x;
+    place->position.y = position->y;
+    place->position.z = position->z;
+    if (angle != NULL) {
+        place->angle = *angle;
+    }
+    if (extra != NULL) {
+        place->unk_10 = *extra;
+    }
+    place->frames = frames;
+}
+CLEAN_AS(func_02091494, EffectSystem_FillPlace)
+
+/* func_020914dc: the place cleared: point and angle 0, followed for ever, the half-word 0x10
+ * 0x1000, no handle and no kind. */
+void EffectSystem_ClearPlace(EffectKindsPlace *place)
+{
+    MI_CpuFill8(place, 0, offsetof(EffectKindsPlace, handle));
+    place->frames = EFFECT_SYSTEM_FOR_EVER;
+    place->unk_10 = EFFECT_SYSTEM_UNK_10_DEFAULT;
+    place->handle = EFFECT_SYSTEM_NO_HANDLE;
+    place->kind = EFFECT_SYSTEM_KINDS;
+}
+CLEAN_AS(func_020914dc, EffectSystem_ClearPlace)
+
+/* func_02091504: kind 0x65, the kept set `set` with the default words. */
+void EffectSystem_StartKind65(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int set)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(set, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091504, EffectSystem_StartKind65)
+
+/* func_02091528: kind 0x64, the one-shot set `set` with the default words. */
+int EffectSystem_StartKind64(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int set)
+{
+    return EffectPlaces_StartOneShot(set, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091528, EffectSystem_StartKind64)
+
+/* CMD_ReservedReqCmd (0x0209154c): kind 0x63, which starts nothing. */
+int EffectSystem_StartKind63(void)
+{
+    return EFFECT_SYSTEM_NOT_STARTED;
+}
+CLEAN_AS(CMD_ReservedReqCmd, EffectSystem_StartKind63)
+
+/* func_02091550: kind 0x62, one-shot set 0x7d. */
+int EffectSystem_StartKind62(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_62, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091550, EffectSystem_StartKind62)
+
+/* func_02091574: kind 0x61, kept set 0x7c. */
+int EffectSystem_StartKind61(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_61, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091574, EffectSystem_StartKind61)
+
+/* func_02091598: kind 0x60, one-shot set 0x7b. */
+void EffectSystem_StartKind60(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_60, kind, position, angle, extra, data_020e2798);
+}
+CLEAN_AS(func_02091598, EffectSystem_StartKind60)
+
+/* func_020915c0: kind 0x60's first emitter set up a little ahead of its place, its axis
+ * forward and down. */
+void EffectSystem_SetUpKind60(ParticleEmitter *emitter)
+{
+    EffectPlaces_SetUpAt(emitter, &data_020d1810, &data_020d16d8);
+}
+CLEAN_AS(func_020915c0, EffectSystem_SetUpKind60)
+
+/* func_020915d4: kind 0x5f, one-shot set 0x51. */
+void EffectSystem_StartKind5f(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_5F, kind, position, angle, extra, data_020e286c);
+}
+CLEAN_AS(func_020915d4, EffectSystem_StartKind5f)
+
+/* func_020915fc: kind 0x5f's first two emitters set up ahead of their place, their axis
+ * forward and down. */
+void EffectSystem_SetUpKind5f(ParticleEmitter *emitter)
+{
+    EffectPlaces_SetUpAt(emitter, &data_020d16f0, &data_020d175c);
+}
+CLEAN_AS(func_020915fc, EffectSystem_SetUpKind5f)
+
+/* func_02091610: kind 0x5e, model 1 at its place. */
+void EffectSystem_StartKind5e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the model's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectKinds_StartModel(EFFECT_SYSTEM_MODEL_KIND_5E, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091610, EffectSystem_StartKind5e)
+
+/* func_02091634: kind 0x5d, model 0 at its place. */
+int EffectSystem_StartKind5d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectKinds_StartModel(EFFECT_SYSTEM_MODEL_KIND_5D, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091634, EffectSystem_StartKind5d)
+
+/* func_02091658: kind 0x5c, one-shot set 0x15. */
+void EffectSystem_StartKind5c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_5C, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091658, EffectSystem_StartKind5c)
+
+/* func_0209167c: kind 0x5b, one-shot set 0x82 with kind 0x5a's words. */
+void EffectSystem_StartKind5b(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_5B, kind, position, angle, extra, data_020e27d0);
+}
+CLEAN_AS(func_0209167c, EffectSystem_StartKind5b)
+
+/* func_020916a4: kind 0x5a, one-shot set 0x14. */
+void EffectSystem_StartKind5a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_5A, kind, position, angle, extra, data_020e27d0);
+}
+CLEAN_AS(func_020916a4, EffectSystem_StartKind5a)
+
+/* func_020916cc: the first emitter of kinds 0x5a and 0x5b set up above and ahead of its place,
+ * its axis forward. */
+void EffectSystem_SetUpKind5a(ParticleEmitter *emitter)
+{
+    EffectPlaces_SetUpAt(emitter, &data_020d17bc, &data_020d1750);
+}
+CLEAN_AS(func_020916cc, EffectSystem_SetUpKind5a)
+
+/* func_020916e0: kind 0x59, one-shot set 0x13; then, whatever it answered, kept set 0x62 at the
+ * place filled again with the next handle and 0x25 frames, 2 when that started, else 3. The
+ * place being started is cleared after. */
+int EffectSystem_StartKind59(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    int result = EFFECT_SYSTEM_NOT_STARTED;
+
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_59, kind, position, angle, extra, NULL);
+    EffectSystem_FillPlace(&data_021d52d8.starting, data_021d52d8.next_handle, (short) kind, position, angle, extra,
+                           EFFECT_SYSTEM_KIND_59_FRAMES);
+    if (EffectSystem_StartKeptSet(EFFECT_SYSTEM_SET_KIND_59_KEPT, position, angle, data_020e2944) != 0) {
+        result = EFFECT_SYSTEM_KEPT_UNHANDED;
+    }
+    EffectSystem_ClearPlace(&data_021d52d8.starting);
+    return result;
+}
+CLEAN_AS(func_020916e0, EffectSystem_StartKind59)
+
+/* func_02091744: kind 0x59's follow word: while the instance's place has a handle and frames
+ * left, the angle of each of its emitter's particles is set (+12500, or -12500 when the place's
+ * angle is negative) and a counted frame used up; else the place is cleared. The emitter stays
+ * where it is. Whether it lasted. */
+int EffectSystem_FollowKind59(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+    int lasts = 0;
+
+    if (place->handle != EFFECT_SYSTEM_NO_HANDLE && place->frames != 0) {
+        u16 rotation = (u16) (place->angle < 0 ? -EFFECT_SYSTEM_SPIN : EFFECT_SYSTEM_SPIN);
+        ParticleLink *link;
+
+        for (link = instance->emitter->particles.first; link != NULL; link = link->next) {
+            ((Particle *) link)->rotation = rotation;
+        }
+        if (place->frames > 0) {
+            place->frames--;
+        }
+        lasts = 1;
+    }
+    if (!lasts) {
+        EffectSystem_ClearPlace(place);
+    }
+    return lasts;
+}
+CLEAN_AS(func_02091744, EffectSystem_FollowKind59)
+
+/* func_020917c8: kind 0x58, one-shot set 0x12. */
+void EffectSystem_StartKind58(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_58, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_020917c8, EffectSystem_StartKind58)
+
+/* func_020917ec: kind 0x57, one-shot set 0x11. */
+void EffectSystem_StartKind57(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_57, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_020917ec, EffectSystem_StartKind57)
+
+/* func_02091810: kind 0x56's end function: its places of handle `handle` left 4 frames, while
+ * which their emitters fade (EffectSystem_FollowKind56). */
+void EffectSystem_EndKind56(int handle)
+{
+    EffectSystem_SetHandleFrames(data_021d52d8.places, handle, EFFECT_SYSTEM_KIND_56_FRAMES);
+}
+CLEAN_AS(func_02091810, EffectSystem_EndKind56)
+
+/* func_02091824: kind 0x56, kept set 0x10. */
+void EffectSystem_StartKind56(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_56, kind, position, angle, extra, data_020e2a1c);
+}
+CLEAN_AS(func_02091824, EffectSystem_StartKind56)
+
+/* func_0209184c: the follow word of kind 0x56's emitters after the first: while the instance's
+ * place has a handle and frames left, its emitter is put at the place (not turned); while the
+ * frames are counted (once the effect is ended) the emitter's base alpha is 6 per frame left
+ * and a frame is used up. Else the place is cleared. Whether it lasted. */
+int EffectSystem_FollowKind56(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+    int lasts = 0;
+
+    if (place->handle != EFFECT_SYSTEM_NO_HANDLE && place->frames != 0) {
+        ParticleEmitter *emitter = instance->emitter;
+
+        effect_system_put_emitter(emitter, &place->position);
+        if (place->frames > 0) {
+            /* QUIRK: the alpha is the low byte of the product. */
+            emitter->misc =
+                particle_with_bits(emitter->misc, EMITTER_BASE_ALPHA_SHIFT, 8, (u8) (EFFECT_SYSTEM_FADE_STEP * place->frames));
+            place->frames--;
+        }
+        lasts = 1;
+    }
+    if (!lasts) {
+        EffectSystem_ClearPlace(place);
+    }
+    return lasts;
+}
+CLEAN_AS(func_0209184c, EffectSystem_FollowKind56)
+
+/* func_020918d8: the follow word of kind 0x56's first emitter: while the instance's place has a
+ * handle and is followed for ever, its emitter is put at the place (not turned). Else (once the
+ * effect is ended) each of the emitter's particles is made as old as its life, which ends it,
+ * and the place is cleared. Whether it lasted. */
+int EffectSystem_FollowKind56First(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+    int lasts = 0;
+
+    if (place->handle != EFFECT_SYSTEM_NO_HANDLE && place->frames == EFFECT_SYSTEM_FOR_EVER) {
+        effect_system_put_emitter(instance->emitter, &place->position);
+        lasts = 1;
+    }
+    if (!lasts) {
+        ParticleLink *link;
+
+        for (link = instance->emitter->particles.first; link != NULL; link = link->next) {
+            Particle *particle = (Particle *) link;
+
+            particle->age = particle->life;
+        }
+        EffectSystem_ClearPlace(place);
+    }
+    return lasts;
+}
+CLEAN_AS(func_020918d8, EffectSystem_FollowKind56First)
+
+/* func_02091960: kind 0x55, kept set 0x0f with the default words at the place filled with the
+ * next handle and 15 frames; 2 when it started, else 3. The place being started is cleared
+ * after. */
+int EffectSystem_StartKind55(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    int result = EFFECT_SYSTEM_NOT_STARTED;
+
+    EffectSystem_FillPlace(&data_021d52d8.starting, data_021d52d8.next_handle, (short) kind, position, angle, extra,
+                           EFFECT_SYSTEM_KIND_55_FRAMES);
+    if (EffectSystem_StartKeptSet(EFFECT_SYSTEM_SET_KIND_55, position, angle, data_020e2ac4) != 0) {
+        result = EFFECT_SYSTEM_KEPT_UNHANDED;
+    }
+    EffectSystem_ClearPlace(&data_021d52d8.starting);
+    return result;
+}
+CLEAN_AS(func_02091960, EffectSystem_StartKind55)
+
+/* func_020919ac: kind 0x54, kept set 0x0e: two emitters on either side of the place, raised
+ * when the place's half-word 0x10 is 3. */
+void EffectSystem_StartKind54(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_54, kind, position, angle, extra, data_020e2934);
+}
+CLEAN_AS(func_020919ac, EffectSystem_StartKind54)
+
+/* func_020919d4: kind 0x54's second emitter moved with its place, on its -X side. */
+void EffectSystem_FollowKind54Second(EffectKindsInstance *instance)
+{
+    const EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+
+    /* QUIRK: declared without a result; the follow's result is still in r0 when it returns. */
+    EffectPlaces_Follow(instance, place->unk_10 != EFFECT_SYSTEM_RAISED ? &data_020d1828 : &data_020d1834, &data_020d1744);
+}
+CLEAN_AS(func_020919d4, EffectSystem_FollowKind54Second)
+
+/* func_02091a24: kind 0x54's first emitter moved with its place, on its +X side. */
+void EffectSystem_FollowKind54First(EffectKindsInstance *instance)
+{
+    const EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+
+    /* QUIRK: declared without a result; the follow's result is still in r0 when it returns. */
+    EffectPlaces_Follow(instance, place->unk_10 != EFFECT_SYSTEM_RAISED ? &data_020d1840 : &data_020d184c, &data_020d178c);
+}
+CLEAN_AS(func_02091a24, EffectSystem_FollowKind54First)
+
+/* func_02091a74: kind 0x54's second emitter placed on the -X side of the place being started.
+ * QUIRK: the place is copied into the instance's entry twice (EffectPlaces_Place copies it
+ * too). */
+void EffectSystem_PlaceKind54Second(EffectKindsInstance *instance)
+{
+    u8 slot = instance->slot;
+
+    EffectPlaces_Place(instance, data_021d52d8.starting.unk_10 != EFFECT_SYSTEM_RAISED ? &data_020d1828 : &data_020d1834,
+                       &data_020d1744);
+    MI_CpuCopy8(&data_021d52d8.starting, &data_021d52d8.places[slot], sizeof(EffectKindsPlace));
+}
+CLEAN_AS(func_02091a74, EffectSystem_PlaceKind54Second)
+
+/* func_02091ad0: kind 0x54's first emitter placed on the +X side of the place being started.
+ * QUIRK: the place is copied into the instance's entry twice. */
+void EffectSystem_PlaceKind54First(EffectKindsInstance *instance)
+{
+    u8 slot = instance->slot;
+
+    EffectPlaces_Place(instance, data_021d52d8.starting.unk_10 != EFFECT_SYSTEM_RAISED ? &data_020d1840 : &data_020d184c,
+                       &data_020d178c);
+    MI_CpuCopy8(&data_021d52d8.starting, &data_021d52d8.places[slot], sizeof(EffectKindsPlace));
+}
+CLEAN_AS(func_02091ad0, EffectSystem_PlaceKind54First)
+
+/* func_02091b2c: kind 0x53, kept set 0x0d. */
+void EffectSystem_StartKind53(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_53, kind, position, angle, extra, data_020e2984);
+}
+CLEAN_AS(func_02091b2c, EffectSystem_StartKind53)
+
+/* func_02091b54: kind 0x52, one-shot set 0x5d. */
+void EffectSystem_StartKind52(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_52, kind, position, angle, extra, data_020e27c0);
+}
+CLEAN_AS(func_02091b54, EffectSystem_StartKind52)
+
+/* func_02091b7c: kind 0x52's first emitter set up below the place being started, at height 0,
+ * and tinted. */
+void EffectSystem_SetUpKind52(ParticleEmitter *emitter)
+{
+    Vec3 at = data_021d52d8.starting.position;
+
+    at.y = 0;
+    effect_system_put_emitter(emitter, &at);
+    EffectSystem_TintEmitter(emitter);
+}
+CLEAN_AS(func_02091b7c, EffectSystem_SetUpKind52)
+
+/* func_02091bc4: kind 0x51, one-shot set 0x0c. */
+void EffectSystem_StartKind51(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_51, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091bc4, EffectSystem_StartKind51)
+
+/* func_02091be8: kind 0x50, one-shot set 0x0b. */
+int EffectSystem_StartKind50(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_50, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091be8, EffectSystem_StartKind50)
+
+/* func_02091c0c: kind 0x4f, one-shot set 0x0a. */
+int EffectSystem_StartKind4f(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectPlaces_StartOneShot(EFFECT_SYSTEM_SET_KIND_4F, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091c0c, EffectSystem_StartKind4f)
+
+/* func_02091c30: kind 0x4e, kept set 9: two emitters at offsets chosen by the place's
+ * half-word 0x10, then two more. */
+void EffectSystem_StartKind4e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_4E, kind, position, angle, extra, data_020e29c4);
+}
+CLEAN_AS(func_02091c30, EffectSystem_StartKind4e)
+
+/* func_02091c58: kind 0x4e's second emitter moved with its place, at the offset of
+ * data_020e2bb0 its half-word 0x10 chooses (the table has nine; the ROM reads past it the same
+ * way for others). */
+void EffectSystem_FollowKind4eSecond(EffectKindsInstance *instance)
+{
+    const EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+
+    /* QUIRK: declared without a result; the follow's result is still in r0 when it returns. */
+    EffectPlaces_Follow(instance, &data_020e2bb0[place->unk_10], NULL);
+}
+CLEAN_AS(func_02091c58, EffectSystem_FollowKind4eSecond)
+
+/* func_02091ca0: kind 0x4e's first emitter moved with its place, at the offset of
+ * data_020e2b44 its half-word 0x10 chooses. */
+void EffectSystem_FollowKind4eFirst(EffectKindsInstance *instance)
+{
+    const EffectKindsPlace *place = &data_021d52d8.places[instance->slot];
+
+    /* QUIRK: declared without a result; the follow's result is still in r0 when it returns. */
+    EffectPlaces_Follow(instance, &data_020e2b44[place->unk_10], NULL);
+}
+CLEAN_AS(func_02091ca0, EffectSystem_FollowKind4eFirst)
+
+/* func_02091ce8: kind 0x4e's second emitter placed at the offset of data_020e2bb0 the place
+ * being started chooses. QUIRK: the place is copied into the instance's entry twice. */
+void EffectSystem_PlaceKind4eSecond(EffectKindsInstance *instance)
+{
+    u8 slot = instance->slot;
+
+    EffectPlaces_Place(instance, &data_020e2bb0[data_021d52d8.starting.unk_10], NULL);
+    MI_CpuCopy8(&data_021d52d8.starting, &data_021d52d8.places[slot], sizeof(EffectKindsPlace));
+}
+CLEAN_AS(func_02091ce8, EffectSystem_PlaceKind4eSecond)
+
+/* func_02091d3c: kind 0x4e's first emitter placed at the offset of data_020e2b44 the place
+ * being started chooses. QUIRK: the place is copied into the instance's entry twice. */
+void EffectSystem_PlaceKind4eFirst(EffectKindsInstance *instance)
+{
+    u8 slot = instance->slot;
+
+    EffectPlaces_Place(instance, &data_020e2b44[data_021d52d8.starting.unk_10], NULL);
+    MI_CpuCopy8(&data_021d52d8.starting, &data_021d52d8.places[slot], sizeof(EffectKindsPlace));
+}
+CLEAN_AS(func_02091d3c, EffectSystem_PlaceKind4eFirst)
+
+/* func_02091d90: kind 0x4d, kept set 0x16 with the default words. */
+void EffectSystem_StartKind4d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_4D, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091d90, EffectSystem_StartKind4d)
+
+/* func_02091db4: kind 0x4c, kept set 8 with the default words. */
+void EffectSystem_StartKind4c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_SYSTEM_SET_KIND_4C, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091db4, EffectSystem_StartKind4c)

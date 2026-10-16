@@ -2,6 +2,7 @@
 #include "effect_places.h"
 
 #include "clean.h"
+#include "effect_system.h"
 
 /* The place being started, followed by the handle the next kept set takes (at 0x39c of
  * data_021d52d8). */
@@ -24,21 +25,13 @@ extern const s16 FX_SinCosTable_[];
 extern void *data_020e29fc[];
 extern void *data_020e2ac4[];
 
-/* The place being started filled: cleared, then the handle, the kind, the point, the angle and
- * the half-word 0x10 when given, and the frames. */
-extern void func_02091494(EffectKindsPlace *place, int handle, int kind, const Vec3 *position, const s16 *angle,
-                          const s16 *extra, int frames);
 /* A kept set's emitters started at `position`, each given its two words of `setups`; nonzero
  * when it started. */
 extern int func_02090ac4(int set, const Vec3 *position, const s16 *angle, void *const *setups);
 /* A one-shot set's emitters started the same way, one word each. */
 extern int func_02090c2c(int set, const Vec3 *position, const s16 *angle, void *const *setups);
-/* A place cleared (no handle, no kind). */
-extern void func_020914dc(EffectKindsPlace *place);
 /* The emitter's colour tinted as its resource asks. */
 extern void func_02090db0(ParticleEmitter *emitter);
-/* The frames of each of the 32 places with handle `handle` set to `frames` (none for -1). */
-extern void func_020913c8(EffectKindsPlace *places, int handle, s16 frames);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -83,11 +76,12 @@ int EffectPlaces_StartKept(int set, int kind, const Vec3 *position, const s16 *a
     if (setups == NULL) {
         setups = data_020e2ac4;
     }
-    func_02091494(&data_021d5658.place, data_021d5658.next_handle, kind, position, angle, extra, EFFECT_PLACES_FOR_EVER);
+    EffectSystem_FillPlace(&data_021d5658.place, data_021d5658.next_handle, kind, position, angle, extra,
+                           EFFECT_PLACES_FOR_EVER);
     if (func_02090ac4(set, position, angle, setups) != 0) {
         result = EFFECT_PLACES_KEPT_STARTED;
     }
-    func_020914dc(&data_021d5658.place);
+    EffectSystem_ClearPlace(&data_021d5658.place);
     return result;
 }
 CLEAN_AS(func_02094b58, EffectPlaces_StartKept)
@@ -124,7 +118,7 @@ int EffectPlaces_Follow(EffectKindsInstance *instance, const Vec3 *offset, const
         lasts = 1;
     }
     if (!lasts) {
-        func_020914dc(place);
+        EffectSystem_ClearPlace(place);
     }
     return lasts;
 }
@@ -157,7 +151,7 @@ int EffectPlaces_CountDown(EffectKindsInstance *instance)
         lasts = 1;
     }
     if (!lasts) {
-        func_020914dc(place);
+        EffectSystem_ClearPlace(place);
     }
     return lasts;
 }
@@ -167,7 +161,7 @@ CLEAN_AS(func_02094c8c, EffectPlaces_CountDown)
  * emitters' following at their next frame. */
 void EffectPlaces_EndHandle(int handle)
 {
-    func_020913c8(data_021d52d8, handle, 0);
+    EffectSystem_SetHandleFrames(data_021d52d8, handle, 0);
 }
 CLEAN_AS(func_02094ce4, EffectPlaces_EndHandle)
 
@@ -180,7 +174,8 @@ int EffectPlaces_StartOneShot(int set, int kind, const Vec3 *position, const s16
     if (setups == NULL) {
         setups = data_020e29fc;
     }
-    func_02091494(&data_021d5658.place, EFFECT_PLACES_NO_HANDLE, kind, position, angle, extra, EFFECT_PLACES_FOR_EVER);
+    EffectSystem_FillPlace(&data_021d5658.place, EFFECT_PLACES_NO_HANDLE, kind, position, angle, extra,
+                           EFFECT_PLACES_FOR_EVER);
     if (func_02090c2c(set, position, angle, setups) != 0) {
         result = EFFECT_PLACES_ONE_SHOT_STARTED;
     }

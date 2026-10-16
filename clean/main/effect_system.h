@@ -127,4 +127,99 @@ void *EffectSystem_LoadFile(EffectSystem *system);
 void *EffectSystem_Alloc(unsigned int size);
 void *EffectSystem_New(void);
 
+/* --- The places effects start at and follow, and the kinds' start functions ---
+ *
+ * An effect is started by kind (EffectSystem_StartKind): the kind's start function, from the
+ * table at data_020e2c1c (EffectSystemKind), fills the place being started and starts its
+ * sets (effect_kinds.h). When it started a kept set, the places it keeps are named by a handle:
+ * the caller gets the handle, can move those places (EffectSystem_MoveHandle) and end them
+ * through the kind's end function (EffectSystem_EndHandle). Kinds 0x4c-0x65 start here; kind
+ * 0x64 starts a one-shot set and kind 0x65 a kept set given by number. */
+
+#include "main/effect_kinds.h"
+
+#define EFFECT_SYSTEM_KINDS 0x66 /* the kinds; also the kind of a free place */
+#define EFFECT_SYSTEM_PLACES 32
+
+/* The places (data_021d52d8, 0x39e bytes). */
+typedef struct EffectSystemPlaces {
+    EffectKindsPlace places[EFFECT_SYSTEM_PLACES]; /* 0x000: those kept for kept sets */
+    EffectKindsPlace starting;                     /* 0x380: the one being started (data_021d5658) */
+    u16 next_handle;                               /* 0x39c */
+} EffectSystemPlaces;
+
+/* An entry of the kind table. A start function answers 0 when a kept set started (the caller
+ * gets the next handle), 2 when one started that the caller keeps no handle of, 1 for a
+ * one-shot set and 3 when nothing started. */
+typedef struct EffectSystemKind {
+    int (*start)(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int set);
+    void (*end)(int handle); /* NULL for none */
+} EffectSystemKind;
+
+/* Starting and following places */
+int EffectSystem_StartKeptSetNumber(int set, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_StartOneShotSetNumber(int set, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_StartOneShotSetNumberCopy(int set, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_MoveHandle(int handle, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_EndHandle(int handle);
+int EffectSystem_StartKindWithExtra(int kind, short extra, const Vec3 *position, const s16 *angle);
+int EffectSystem_StartKind(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_ResetPlaces(void);
+unsigned short EffectSystem_KindOfHandle(EffectSystemPlaces *places, int handle);
+void EffectSystem_EndHandleIn(EffectSystemPlaces *places, int handle);
+int EffectSystem_StartKindIn(EffectSystemPlaces *places, unsigned int kind, const Vec3 *position, const s16 *angle,
+                             const s16 *extra, int set);
+void EffectSystem_ResetPlacesIn(EffectSystemPlaces *places);
+void EffectSystem_SetHandleFrames(EffectKindsPlace *places, int handle, short frames);
+void EffectSystem_MovePlaces(EffectKindsPlace *places, int handle, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_FindHandle(EffectKindsPlace *unused, int handle, EffectKindsPlace *places, int count);
+void EffectSystem_ClearPlaces(EffectSystemPlaces *places);
+void EffectSystem_FillPlace(EffectKindsPlace *place, int handle, short kind, const Vec3 *position, const s16 *angle,
+                            const s16 *extra, short frames);
+void EffectSystem_ClearPlace(EffectKindsPlace *place);
+
+/* Kinds 0x4c-0x65 */
+void EffectSystem_StartKind65(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int set);
+int EffectSystem_StartKind64(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int set);
+int EffectSystem_StartKind63(void);
+int EffectSystem_StartKind62(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_StartKind61(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind60(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_SetUpKind60(ParticleEmitter *emitter);
+void EffectSystem_StartKind5f(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_SetUpKind5f(ParticleEmitter *emitter);
+void EffectSystem_StartKind5e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_StartKind5d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind5c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind5b(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind5a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_SetUpKind5a(ParticleEmitter *emitter);
+int EffectSystem_StartKind59(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_FollowKind59(EffectKindsInstance *instance);
+void EffectSystem_StartKind58(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind57(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_EndKind56(int handle);
+void EffectSystem_StartKind56(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_FollowKind56(EffectKindsInstance *instance);
+int EffectSystem_FollowKind56First(EffectKindsInstance *instance);
+int EffectSystem_StartKind55(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind54(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_FollowKind54Second(EffectKindsInstance *instance);
+void EffectSystem_FollowKind54First(EffectKindsInstance *instance);
+void EffectSystem_PlaceKind54Second(EffectKindsInstance *instance);
+void EffectSystem_PlaceKind54First(EffectKindsInstance *instance);
+void EffectSystem_StartKind53(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind52(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_SetUpKind52(ParticleEmitter *emitter);
+void EffectSystem_StartKind51(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_StartKind50(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectSystem_StartKind4f(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind4e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_FollowKind4eSecond(EffectKindsInstance *instance);
+void EffectSystem_FollowKind4eFirst(EffectKindsInstance *instance);
+void EffectSystem_PlaceKind4eSecond(EffectKindsInstance *instance);
+void EffectSystem_PlaceKind4eFirst(EffectKindsInstance *instance);
+void EffectSystem_StartKind4d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectSystem_StartKind4c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+
 #endif
