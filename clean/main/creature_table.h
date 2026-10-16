@@ -30,4 +30,17 @@ int CreatureTable_PickNow(int *kind, int *second, int place);
 int CreatureTable_Pick(int *kind, int *second, int place, int period, int time_slot);
 void *CreatureTable_Lists(unsigned int month, unsigned int second_half);
 
+/* Each kind's details (data_020cb784), for the 56 kinds and the three models after them
+ * (0x38-0x3a, see fish_disp.h). */
+typedef struct CreatureTableInfo {
+    u8 offset_class; /* 0-6: picks the offset a held creature is moved by (func_02059cf8) */
+    u8 unk_01;
+    u8 unk_02;
+    u8 unk_03;
+    u16 base_value; /* scaled by a random 0.8 to 1.2 by func_02086564 */
+} CreatureTableInfo;
+
+int CreatureTable_OffsetClass(unsigned int kind);
+unsigned short CreatureTable_BaseValue(unsigned int kind);
+
 #endif

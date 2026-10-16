@@ -76,4 +76,95 @@ void MusicQueue_Tick(MusicQueue *queue);
 void MusicQueue_StartHead(Obj021c526c *self);
 void MusicRequest_ClearCurrent(MusicRequest *request);
 
+/* The member at 0x2d0 (vtable data_020da2d4): a delay counted down each frame; when it runs
+ * out a timer is set, and when that runs out the request of priority 7 is dropped. Its flags
+ * are set by the field's events (func_0204141c, func_020414e0, Music2e4_PlayMusic41) and read
+ * by the sound scene (func_020046c4) and Music2d0_Finish. */
+typedef struct Music2d0 {
+    const u32 *vtable;
+    Obj021c526c *owner;
+    u8 unk_08;
+    u8 unk_09; /* the tracks are faded in for the scene change when it is cleared */
+    u8 unk_0a;
+    u8 unk_0b; /* 2 becomes 3 in Music2d0_Mark08Unless */
+    s32 delay; /* 0x0c: frames left when above 0; below 0: chosen by Music2d0_Finish */
+    s32 timer; /* 0x10: frames left when above 0 */
+} Music2d0;
+
+/* The member at 0x2e4 (vtable data_020da2b4): a music it asked for and whether it holds a
+ * request of priority 10, both dropped when it is released. */
+typedef struct Music2e4 {
+    const u32 *vtable;
+    Obj021c526c *owner;
+    u16 music; /* 0x08: MUSIC_NONE: none */
+    u8 active; /* 0x0a: a request of priority 10 was made */
+    u8 unk_0b;
+} Music2e4;
+
+/* The member at 0x2f0 (vtable data_020da314): only a vtable. */
+typedef struct Music2f0 {
+    const u32 *vtable;
+} Music2f0;
+
+void MusicQueue_RemoveDone(MusicQueue *queue);
+void Obj021c526c_SendRequestValue(Obj021c526c *self);
+void Obj021c526c_UpdateQueue(Obj021c526c *self);
+void MusicQueue_DropMusic(MusicQueue *queue, u16 music, int unused);
+void MusicQueue_DropPriority(MusicQueue *queue, int priority);
+void MusicQueue_Add(MusicQueue *queue, const MusicRequest *request);
+MusicRequest *Music_CurrentRequest(void);
+void Music_OnSceneEnd(void);
+void Music_OnSceneStart(void);
+void Music_Reset(void);
+void Obj021c526c_Execute(Obj021c526c *self);
+void Obj021c526c_Delete(Obj021c526c *self);
+void Obj021c526c_Create(Obj021c526c *self);
+void *Obj021c526c_Destruct(Obj021c526c *self);
+Obj021c526c *Obj021c526c_Construct(Obj021c526c *self);
+void Music_Set2f4(void);
+void Music_Clear2f4(void);
+u16 Music_CurrentMusic(void);
+void Music_DropMusicFlagged(int music);
+void Music_DropPriority(int priority);
+void Music_DropMusic(int music);
+void Music_AddHeadOnly(int priority, int music);
+void Music_AddValue(int priority, int value, int frames);
+void Music_Add(int priority, int music, int unk_0c, int unk_10);
+void Music2f0_ApplyMode(Music2f0 *self);
+void Music2f0_SetTracksForScene(void);
+void Music2f0_Update(Music2f0 *self);
+void Music2f0_OnMusic(Music2f0 *self, int music);
+void Music2f0_FadeInForScene22(Music2f0 *self);
+void Music2f0_SetTracksForScene22(Music2f0 *self);
+void Music_FadeInForSceneChange(void);
+void Music_SetTracksForSceneChange(void);
+void *Music2f0_DestructDelete(Music2f0 *self);
+void Music2f0_Destruct(Music2f0 *self);
+void Music2f0_Construct(Music2f0 *self);
+void Music2e4_Release(Music2e4 *self);
+void Music2e4_Execute(Music2e4 *self);
+void Music2e4_Delete(Music2e4 *self);
+void Music2e4_Create(Music2e4 *self);
+void Music2e4_End(Music2e4 *self);
+void Music2e4_Begin(Music2e4 *self);
+void Music2e4_PlayMusic41(Music2e4 *self);
+Music2d0 *Music_Object2d0(void);
+void *Music2e4_DestructDelete(Music2e4 *self);
+void Music2e4_Destruct(Music2e4 *self);
+void Music2e4_Construct(Music2e4 *self, Obj021c526c *owner);
+void Music2d0_Tick(Music2d0 *self);
+int Music2d0_Is0bSet(const Music2d0 *self);
+int Music2d0_AnyFlag(const Music2d0 *self);
+void Music2d0_Set0a(Music2d0 *self);
+void Music2d0_SetDelay(Music2d0 *self, u8 index);
+void Music2d0_Mark08Unless(Music2d0 *self, int a, int b);
+void Music2d0_Mark08And0b(Music2d0 *self, int x, int y);
+void Music2d0_Reset(Music2d0 *self);
+void Music2d0_Execute(Music2d0 *self);
+void Music2d0_Delete(Music2d0 *self);
+void Music2d0_Create(Music2d0 *self);
+void Music2d0_Finish(Music2d0 *self);
+void *Music_Object2a0(void);
+void *Music_Object264(void);
+
 #endif

@@ -27,4 +27,23 @@ u8 *PlayerRecords_DestructGuests(u8 *guests);
 u8 *PlayerRecords_ConstructGuests(u8 *guests);
 u8 *PlayerRecords_NewPlayer(u8 *players, const void *name, int arg, int number);
 
+/* The start of a player's id (func_02099870, at 0x247e of the record): the player's town, its
+ * id and name. func_0209518c compares the rest (the player's number and name). */
+typedef struct PlayerRecordsId {
+    u16 town_id;
+    u8 town_name[12];
+} PlayerRecordsId;
+
+int PlayerRecords_FindIndex(u8 *players, const PlayerRecordsId *player);
+int PlayerRecords_FirstFree(u8 *players);
+void PlayerRecords_ClearTown(u8 *players);
+u8 *PlayerRecords_RandomOther(u8 *players, const PlayerRecordsId *player);
+u8 *PlayerRecords_TownRecord(u8 *players, int number);
+u8 *PlayerRecords_Find(u8 *players, const PlayerRecordsId *player);
+int PlayerRecords_CountTown(u8 *players);
+int PlayerRecords_TownExists(u8 *players, int number);
+int PlayerRecords_IsTownNumber(u32 number);
+u8 *PlayerRecords_DestructTown(u8 *players);
+u8 *PlayerRecords_ConstructTown(u8 *players);
+
 #endif
