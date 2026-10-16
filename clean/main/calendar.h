@@ -59,7 +59,7 @@ int Calendar_DaysFrom(const Date *date, const Date *origin);
 void Calendar_AddTime(Time time, Time delta, Time *sum);
 u8 Calendar_DaysInMonth(u32 year, u32 month);
 int Calendar_NthWeekday(int year, int month, int weekday, int n);
-int Calendar_Weekday(s8 year, s8 month, s8 day);
+int Calendar_Weekday(int year, int month, int day);
 int Calendar_PartOfDay(void);
 void Calendar_Today(Date *today);
 int Calendar_TodayWeekday(void);

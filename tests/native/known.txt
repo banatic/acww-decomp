@@ -26,6 +26,7 @@
 02098ee8 shifts 3 << (shift * 2) and val << (shift * 2) by 32 or more give 0 on ARM and wrap on x86; the only caller, func_02098f0c, passes shift after func_02098f70 checks it is 0-14
 0209b160 shift 1 << r1 by 32 or more gives 0 on ARM and wraps on x86; func_0209b044 and func_0209b0f4 pass func_0209b184's result only when it is below 5
 0209b890 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; func_02024d38 passes func_02026250's result as a byte (0-2, or 255, whose 1 << 31 leaves the stored byte unchanged on x86 too), func_020767ac the byte of message 4, which func_02024d38 sends with that value (func_02078618)
+0209ddd4 halfword stores to odd addresses write the aligned halfword on ARM and the unaligned one on x86; the output is a DateTime, which the game keeps word-aligned (aligning the pointer makes every case agree)
 020a238c index +0xa0 of 4 or more reads past the static table of four member-function pointers (the PC's copy is elsewhere and laid out otherwise); its handlers take +0xa0 from 0 to 3 and it puts 0 back after the last, and the states 4-6 that func_020a1e08 and func_020a1d54 set are func_020a2120's, which ends them at 0
 020b1730 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; the only caller, func_020b15b8, passes bytes of data_020e42a0, which are 0-63 (0xff is skipped)
 020b1974 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; bit is a slot of the 16 records of 0x4a bytes before the mask at 0x4a0, and every caller passes 0-15

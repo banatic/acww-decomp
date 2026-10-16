@@ -68,9 +68,9 @@ void *ActorTable_GetE(const ActorTable *table, const ItemCode *code);
 /* func_0208270c */
 void *ActorTable_GetD(const ActorTable *table, const ItemCode *code);
 /* func_02082a44 */
-void *ActorTable_GetEByIndex(const ActorTable *table, u32 index);
+void *ActorTable_GetEByIndex(const ActorTable *table, u16 index);
 /* func_02082798 */
-void *ActorTable_GetDByIndex(const ActorTable *table, u32 index);
+void *ActorTable_GetDByIndex(const ActorTable *table, u16 index);
 /* func_0208298c */
 void *ActorTable_SlotE(const ActorTable *table, int slot);
 /* func_020826e0 */
@@ -98,11 +98,11 @@ void *Actors_GetE(const ItemCode *code);
 /* func_020825e8 */
 void *Actors_Get(const ItemCode *code);
 /* func_02082644 */
-void *Actors_GetDByIndex(u32 index);
+void *Actors_GetDByIndex(int index);
 /* func_02082654 */
-void *Actors_GetEByIndex(u32 index);
+void *Actors_GetEByIndex(int index);
 /* func_02082618 */
-void *Actors_GetByIndex(int group, u32 index);
+void *Actors_GetByIndex(int group, int index);
 /* func_0208259c */
 void *Actors_FindAt(int x, int z);
 /* func_020826cc */

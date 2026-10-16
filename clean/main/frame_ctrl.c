@@ -1,5 +1,6 @@
 /* Animation frame counters. */
 #include "frame_ctrl.h"
+#include "clean.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -10,7 +11,7 @@
  * when `start` is 0xffff (the callers that play backwards pass that).
  * QUIRK: the frame count is shifted into 20.12 without a check, so counts of 0x80000 and more
  * wrap; the game's sequences are a few hundred frames. */
-void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, fx32 speed, u16 start)
+void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, u32 speed, u16 start)
 {
     if (start == 0xffff) {
         start = (u16) (frames - 1);
@@ -18,16 +19,17 @@ void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, fx32 speed, u16 start
     ctrl->end = (fx32) (frames << 12);
     ctrl->frame = (fx32) start << 12;
     ctrl->previous = ctrl->frame;
-    ctrl->speed = speed;
+    ctrl->speed = (fx32) speed;
     ctrl->flags = flags;
 }
+CLEAN_AS(func_02056fcc, FrameCtrl_Init)
 
 /* func_02056f28: did the last step reach whole frame `frame`? Moving forwards that is the
  * range (previous, frame], backwards [frame, previous), and a step that wrapped round the end
  * covers the two pieces outside the range it skipped. */
 BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame)
 {
-    fx32 at = frame << 12;
+    fx32 at = (fx32) ((u32) frame << 12);
     fx32 now = ctrl->frame;
     fx32 before = ctrl->previous;
 
@@ -51,6 +53,7 @@ BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame)
     }
     return !(at <= before && at > now);
 }
+CLEAN_AS(func_02056f28, FrameCtrl_Passed)
 
 /* func_02056f94: has a sequence that plays once reached its end? Looping sequences never do.
  * QUIRK: only the exact flag values 1 and 3 count, so another bit set in the flags makes a
@@ -66,6 +69,7 @@ BOOL FrameCtrl_IsDone(const FrameCtrl *ctrl)
             return FALSE;
     }
 }
+CLEAN_AS(func_02056f94, FrameCtrl_IsDone)
 
 /* func_02056ffc: move by one step of the speed, starting again at the other end of a looping
  * sequence and stopping on the first or last frame of one that plays once. */
@@ -93,6 +97,7 @@ void FrameCtrl_Step(FrameCtrl *ctrl)
     }
     ctrl->frame = frame;
 }
+CLEAN_AS(func_02056ffc, FrameCtrl_Step)
 
 /* func_02056e84: one step of the weight; TRUE once it is 1.0, including when it was never
  * started (a rate of 0). */
@@ -109,6 +114,7 @@ BOOL Ramp_Step(Ramp *ramp)
     }
     return FALSE;
 }
+CLEAN_AS(func_02056e84, Ramp_Step)
 
 static_assert(sizeof(FrameCtrl) == 0x18 && offsetof(FrameCtrl, flags) == 0x14, "FrameCtrl layout");
 static_assert(offsetof(Ramp, weight) == 0x34 && offsetof(Ramp, rate) == 0x38, "Ramp layout");

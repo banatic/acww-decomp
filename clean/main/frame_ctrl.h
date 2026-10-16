@@ -29,7 +29,7 @@ typedef struct Ramp {
     fx32 rate; /* 0 once the weight has reached 1.0 */
 } Ramp;
 
-void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, fx32 speed, u16 start);
+void FrameCtrl_Init(FrameCtrl *ctrl, u32 frames, u8 flags, u32 speed, u16 start);
 BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame);
 BOOL FrameCtrl_IsDone(const FrameCtrl *ctrl);
 void FrameCtrl_Step(FrameCtrl *ctrl);

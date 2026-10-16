@@ -1,5 +1,6 @@
 /* Small table lookups. */
 #include "lookups.h"
+#include "clean.h"
 
 #include <assert.h>
 
@@ -25,12 +26,14 @@ const DayWindow *Lookups_DayWindow(u32 kind)
     }
     return &data_020cd4ac[kind];
 }
+CLEAN_AS(func_0208222c, Lookups_DayWindow)
 
 /* func_02082264 */
 u32 Lookups_StarSignOf(const MonthDay *birthday)
 {
     return Lookups_StarSign(birthday->month, birthday->day);
 }
+CLEAN_AS(func_02082264, Lookups_StarSignOf)
 
 /* func_02082274: the star sign (enum StarSign) of a day of the year. Days after the last
  * sign's end fall through the table to Capricorn, which is where they belong. */
@@ -44,6 +47,7 @@ u32 Lookups_StarSign(u32 month, u32 day)
     }
     return STAR_SIGN_CAPRICORN;
 }
+CLEAN_AS(func_02082274, Lookups_StarSign)
 
 /* func_020822b0: a group (pair[0], 0-4) and a number in it (pair[1]) as one index in 0-31;
  * anything else is 0.
@@ -65,6 +69,7 @@ u8 Lookups_SlotIndex(const u8 *pair)
             return 0;
     }
 }
+CLEAN_AS(func_020822b0, Lookups_SlotIndex)
 
 /* func_020824d0: the record of an item of kind 0xd, or null for other items and indexes past
  * the table. */
@@ -76,12 +81,17 @@ const u8 *Lookups_KindDRecord(const ItemCode *item)
     }
     return data_020cd550[index];
 }
+CLEAN_AS(func_020824d0, Lookups_KindDRecord)
 
 /* func_02082374: the first byte of the item's record, signed, or 0 when it has none. */
 int Lookups_KindDFirst(const ItemCode *item)
 {
+    if (ITEM_KIND(*item) != ITEM_KIND_D) {
+        return 0;
+    }
     const u8 *record = Lookups_KindDRecord(item);
     return record != NULL ? (s8) record[0] : 0;
 }
+CLEAN_AS(func_02082374, Lookups_KindDFirst)
 
 static_assert(sizeof(DayWindow) == 4 && sizeof(MonthDay) == 2, "table layouts");

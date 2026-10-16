@@ -24,7 +24,7 @@ void StateFlags_Clear10(void);
 
 fx32 StateFlags_ValueOrOne(void);
 fx32 StateFlags_ValueOrZero(void);
-void StateFlags_SetValue(fx32 value);
+void StateFlags_SetValue(u32 value);
 void StateFlags_Reset(void);
 
 #endif
