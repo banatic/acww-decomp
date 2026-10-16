@@ -133,8 +133,12 @@ def build(sources: list[pathlib.Path]) -> pathlib.Path:
     names = game_names(objects)
     rest = [s for s in sources if s not in clean]
     link = ["-Wl,/SAFESEH:NO"] if os.name == "nt" else ["-no-pie"]
-    p = subprocess.run([*compiler(), *flags, *map(str, rest), *map(str, objects), *([str(names)] if names else []),
-                        *link, "-o", str(exe)], capture_output=True, text=True)
+    # Through a response file: the Clean objects' paths would pass Windows's limit on a command line.
+    listed = OUT / "clean" / "objects.txt"
+    listed.parent.mkdir(parents=True, exist_ok=True)
+    listed.write_text("".join(f"{p.as_posix()}\n" for p in [*objects, *([names] if names else [])]), newline="\n")
+    p = subprocess.run([*compiler(), *flags, *map(str, rest), f"@{listed}", *link, "-o", str(exe)],
+                       capture_output=True, text=True)
     if p.returncode != 0:
         raise SystemExit(p.stdout + p.stderr)
     return exe

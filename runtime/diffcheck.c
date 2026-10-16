@@ -200,6 +200,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "usage: diffcheck <manifest> [name...]\n");
         return 2;
     }
+    setvbuf(stdout, NULL, _IONBF, 0); /* a check that crashes still shows its name */
     if (memory_init() != 0) {
         fprintf(stderr, "cannot reserve the DS's memory at its addresses\n");
         return 2;

@@ -3,7 +3,7 @@
 #include "types.h"
 
 typedef struct SlotOwner SlotOwner;
-BOOL func_02039444(const SlotOwner *owner, const void *item);
+BOOL SlotOwner_Contains(const SlotOwner *owner, const void *item);
 
 static void generate(DiffRng *rng, uint32_t args[4])
 {
@@ -29,7 +29,7 @@ static void generate(DiffRng *rng, uint32_t args[4])
 
 static uint32_t run_clean(const uint32_t args[4])
 {
-    return (uint32_t) func_02039444((const SlotOwner *) (uintptr_t) args[0], (const void *) (uintptr_t) args[1]);
+    return (uint32_t) SlotOwner_Contains((const SlotOwner *) (uintptr_t) args[0], (const void *) (uintptr_t) args[1]);
 }
 
 const DiffTest diff_test_func_02039444 = {
