@@ -41,4 +41,13 @@ u16 ItemTraits_InsectSize(const ItemCode *item);
 int ItemTraits_FishValue(const ItemCode *item);
 int ItemTraits_FishGroupOrder(const ItemCode *item);
 
+int ItemTraits_StateBlockAddress(void);
+int ItemTraits_IsBellBag(const ItemCode *item);
+int ItemTraits_MemberPrice(const ItemCode *item);
+int ItemTraits_ShopPointsLevel(const u16 *count);
+int ItemTraits_Price(const ItemCode *item);
+int ItemTraits_SameItem(const ItemCode *a, const ItemCode *b);
+u16 ItemTraits_Fruit(u32 index);
+int ItemTraits_IsFruit(const ItemCode *item);
+
 #endif

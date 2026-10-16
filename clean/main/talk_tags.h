@@ -123,4 +123,100 @@ void TalkTags_PutRandomNpc(TalkTagsWalker *walker);
 void TalkTags_PutDislikedNpc(TalkTagsWalker *walker);
 void TalkTags_PutLikedNpc(TalkTagsWalker *walker);
 
+/* The other groups' handlers and the tables that pick them (TalkTags_DispatchGroup*):
+ *
+ * - group 0: characters that stand for codes in a text, put as themselves ("*", "/", "&", "%",
+ *   "{"), and nothing for the other kinds;
+ * - group 1: the walk itself: a pause, a stop that keeps the window, the whole text at once,
+ *   no hurrying, a text the villager remembers, the window shaken with a sound, the receiver's
+ *   slot 0x1c, the talk's word 0x10;
+ * - group 2: two to five choices from the tag's texts (also with the last as the cancel), after
+ *   the walk went through a lone tag 1/1;
+ * - group 3: the receiver's slots 0x20 to 0x30;
+ * - group 4 kinds 0 to 10: the player's, the receiver's and the town's names, the villager's
+ *   catchphrase, and the date and time the talk began;
+ * - group 7: the speaker's talking motion in the style the tag's kind gives;
+ * - group 0xff: two handlers (kinds 0 and 2) of the talk's own. */
+
+/* The walker's flags at 0x4c (TalkTagsWalker.unk_4c). */
+#define TALK_TAGS_FLAG_HURRY 0    /* asked to hurry (func_0206bd2c), unless TALK_TAGS_FLAG_NO_HURRY */
+#define TALK_TAGS_FLAG_INSTANT 2  /* the whole text is shown at once */
+#define TALK_TAGS_FLAG_NO_HURRY 3 /* the walk cannot be hurried */
+
+/* TalkTagsWalker.state where the walk stops as at a full page, but the talk goes on without
+ * clearing the window (func_02067be0 rather than func_02067bb8). */
+#define TALK_TAGS_STATE_STOP_KEEP 4
+
+/* Group 4, kinds 0 to 10. */
+void TalkTags_PutSecond(TalkTagsWalker *walker);
+void TalkTags_PutMinute(TalkTagsWalker *walker);
+void TalkTags_PutHour12(TalkTagsWalker *walker);
+void TalkTags_PutWeekday(TalkTagsWalker *walker);
+void TalkTags_PutDay(TalkTagsWalker *walker);
+void TalkTags_PutMonth(TalkTagsWalker *walker);
+void TalkTags_PutYear(TalkTagsWalker *walker);
+void TalkTags_PutTownName(TalkTagsWalker *walker);
+void TalkTags_PutCatchphrase(TalkTagsWalker *walker);
+void TalkTags_PutReceiverName(TalkTagsWalker *walker);
+void TalkTags_PutPlayerName(TalkTagsWalker *walker);
+
+/* Group 3. */
+void TalkTags_TellReceiver30(TalkTagsWalker *walker);
+void TalkTags_TellReceiver2c(TalkTagsWalker *walker);
+void TalkTags_TellReceiver28(TalkTagsWalker *walker);
+void TalkTags_TellReceiver24(TalkTagsWalker *walker);
+void TalkTags_TellReceiver20(TalkTagsWalker *walker);
+
+/* Group 2. */
+void TalkTags_FiveChoicesCancelLast(TalkTagsWalker *walker);
+void TalkTags_FourChoicesCancelLast(TalkTagsWalker *walker);
+void TalkTags_ThreeChoicesCancelLast(TalkTagsWalker *walker);
+void TalkTags_TwoChoicesCancelLast(TalkTagsWalker *walker);
+void TalkTags_FiveChoices(TalkTagsWalker *walker);
+void TalkTags_FourChoices(TalkTagsWalker *walker);
+void TalkTags_ThreeChoices(TalkTagsWalker *walker);
+void TalkTags_TwoChoices(TalkTagsWalker *walker);
+
+/* Group 1. */
+void TalkTags_SetTalkWord10(TalkTagsWalker *walker);
+void TalkTags_Receiver1cWith4(TalkTagsWalker *walker);
+void TalkTags_Receiver1cWith3(TalkTagsWalker *walker);
+void TalkTags_Receiver1cWith2(TalkTagsWalker *walker);
+void TalkTags_Receiver1cWith1(TalkTagsWalker *walker);
+void TalkTags_Receiver1cWith0(TalkTagsWalker *walker);
+void TalkTags_ShakeStrong(TalkTagsWalker *walker);
+void TalkTags_ShakeMedium(TalkTagsWalker *walker);
+void TalkTags_ShakeLight(TalkTagsWalker *walker);
+void TalkTags_RememberedEnd(void);
+void TalkTags_RememberedText(TalkTagsWalker *walker);
+void TalkTags_HurryAllowed(TalkTagsWalker *walker);
+void TalkTags_HurryForbidden(TalkTagsWalker *walker);
+void TalkTags_InstantOff(TalkTagsWalker *walker);
+void TalkTags_InstantOn(TalkTagsWalker *walker);
+void TalkTags_StopKeepWindow(TalkTagsWalker *walker);
+void TalkTags_Pause(TalkTagsWalker *walker);
+
+/* Group 0. */
+void TalkTags_PutLeftBrace(TalkTagsWalker *walker);
+void TalkTags_PutPercent(TalkTagsWalker *walker);
+void TalkTags_PutAmpersand(TalkTagsWalker *walker);
+void TalkTags_PutSlash(TalkTagsWalker *walker);
+void TalkTags_PutAsterisk(TalkTagsWalker *walker);
+void TalkTags_Nothing(void);
+
+/* The tables by group, and group 7. */
+void TalkTags_DispatchGroupFF(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup11(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup10(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup9(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup8(TalkTagsWalker *walker);
+void TalkTags_SpeakerTalkStyle(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup6(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup5(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup4(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup3(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup2(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup1(TalkTagsWalker *walker);
+void TalkTags_DispatchGroup0(TalkTagsWalker *walker);
+
 #endif

@@ -78,5 +78,6 @@ void TransitionMark_Update(TransitionMark *mark);
 void TransitionMark_Draw(TransitionMark *mark);
 TransitionMark *TransitionMark_Delete(TransitionMark *mark);
 TransitionMark *TransitionMark_Destruct(TransitionMark *mark);
+TransitionMark *TransitionMark_Construct(TransitionMark *mark);
 
 #endif

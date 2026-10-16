@@ -420,3 +420,22 @@ TransitionMark *TransitionMark_Destruct(TransitionMark *mark)
     return mark;
 }
 CLEAN_AS(func_0208fac4, TransitionMark_Destruct)
+
+/* func_0208fae8: the constructor: the base class's, then the animation's; waiting with no delay,
+ * the blink at its first part with the tick reached, not shown and not suppressed. */
+TransitionMark *TransitionMark_Construct(TransitionMark *mark)
+{
+    ScreenSprite_Construct(&mark->base);
+    mark->base.vtable = data_020e2400;
+    CellAnim_Construct(&mark->anim);
+    mark->state = TRANSITION_MARK_WAITING;
+    mark->delay = 0;
+    mark->frames_left = 0;
+    mark->blink_step = 0;
+    mark->next_tick[0] = 0;
+    mark->next_tick[1] = 0;
+    mark->shown = 0;
+    mark->suppressed = 0;
+    return mark;
+}
+CLEAN_AS(func_0208fae8, TransitionMark_Construct)

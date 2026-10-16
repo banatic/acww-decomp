@@ -77,4 +77,30 @@ void MesSliderWindow_StepSlider(MesSliderWindow *self);
 void MesSliderWindow_EnterSlider(MesSliderWindow *self);
 void MesSliderWindow_StepHidden(void);
 
+void MesSliderWindow_EnterHidden(MesSliderWindow *self);
+void MesSliderWindow_SetMarkerAnim(MesSliderWindow *self, int anim);
+void MesSliderWindow_RequestHide(MesSliderWindow *self);
+void MesSliderWindow_Choose(MesSliderWindow *self);
+void MesSliderWindow_RequestFocusButton(MesSliderWindow *self);
+void MesSliderWindow_Release(MesSliderWindow *self);
+void MesSliderWindow_Grab(MesSliderWindow *self);
+void MesSliderWindow_RequestFocusSlider(MesSliderWindow *self);
+int MesSliderWindow_State(MesSliderWindow *self);
+int MesSliderWindow_OnButton(MesSliderWindow *self);
+int MesSliderWindow_OnSlider(MesSliderWindow *self);
+int MesSliderWindow_TrackBottomY(MesSliderWindow *self);
+int MesSliderWindow_TrackTopY(MesSliderWindow *self);
+int MesSliderWindow_KnobY(MesSliderWindow *self);
+int MesSliderWindow_TrackX(MesSliderWindow *self);
+void MesSliderWindow_SetLevel(MesSliderWindow *self, fx32 level);
+void MesSliderWindow_SetButtons(MesSliderWindow *self, u8 buttons, int sound);
+int MesSliderWindow_GrabSettled(MesSliderWindow *self);
+void MesSliderWindow_Dismiss(MesSliderWindow *self);
+void MesSliderWindow_Open(MesSliderWindow *self);
+void MesSliderWindow_Draw(MesSliderWindow *self);
+void MesSliderWindow_Update(MesSliderWindow *self);
+MesSliderWindow *MesSliderWindow_DestructDelete(MesSliderWindow *self);
+MesSliderWindow *MesSliderWindow_Destruct(MesSliderWindow *self);
+MesSliderWindow *MesSliderWindow_Construct(MesSliderWindow *self);
+
 #endif

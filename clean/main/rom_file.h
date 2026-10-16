@@ -39,4 +39,26 @@ void RomFile_ReadPartByPath(const char *path, u8 *dst, int size, int offset);
 int RomFile_Exists(const char *path);
 int RomFile_Size(const char *path);
 
+/* Reading whole files (the functions below RomFile_Size). A file compressed whole begins with
+ * "LZ77" (either byte order) and a word that MI_UncompressLZ8 takes as its header: its bits
+ * 8-31 are the plain size. It is read into a buffer of the root heap and unpacked from there;
+ * when there is no room for it, a buffer as large as the root heap's largest block is used to
+ * unpack it piece by piece. Any other file is copied as it is. The paths given as a format
+ * are formatted into 0x80 bytes first. */
+
+struct Heap;
+
+int RomFile_OpenedSize(RomFileFs *file);
+int RomFile_ReadFormatted(void *dst, int size, const char *format, ...);
+void *RomFile_LoadFormatted(const char *format, ...);
+void *RomFile_LoadFormattedOn(struct Heap *heap, int align, const char *format, ...);
+void *RomFile_LoadFormattedV(struct Heap *heap, int align, u32 *size, const char *format, const void *args);
+int RomFile_ReadOpened(RomFileFs *file, u8 *dst, u32 size);
+int RomFile_Read(const char *path, void *dst, int size);
+void *RomFile_LoadDefault(const char *path);
+void *RomFile_Load(const char *path, struct Heap *heap, int align, u32 *size);
+void RomFile_Open(RomFileFs *file, const char *path);
+int RomFile_TryOpen(RomFileFs *file, const char *path);
+int RomFile_LoadOverlayOf(int target, unsigned int overlay);
+
 #endif

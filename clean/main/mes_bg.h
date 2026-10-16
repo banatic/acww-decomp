@@ -103,4 +103,29 @@ MesBgSlider *MesBgSlider_DestructDelete(MesBgSlider *slider);
 MesBgSlider *MesBgSlider_Destruct(MesBgSlider *slider);
 MesBgSlider *MesBgSlider_Construct(MesBgSlider *slider);
 
+/* The window's own functions: the line at a point, the labels' tiles, the lines' colours, its
+ * place, its plane (main BG1) hidden and shown, its colours and screen uploaded, its width, its
+ * frame cut to its lines and width, and the screen loaded and freed. */
+int MesBg_LineAt(MesBg *bg, int x, int y);
+int MesBg_LabelTile(int line, int lines);
+void MesBg_HighlightLine(MesBg *bg, int line, u16 colour);
+void MesBg_ResetLineColours(MesBg *bg);
+void MesBg_SetScroll(MesBg *bg, int x, int y);
+void MesBg_Hide(MesBg *bg);
+void MesBg_Show(MesBg *bg);
+void MesBg_UploadColours(MesBg *bg);
+void MesBg_UploadScreen(MesBg *bg);
+void MesBg_SetBgControl(MesBg *bg);
+void MesBg_SetColumns(MesBg *bg, int columns);
+void MesBg_SetTopRow(MesBg *bg, int row);
+void MesBg_NarrowRows(MesBg *bg, u32 first_row, u32 last_row);
+void MesBg_ShapeFiveLines(MesBg *bg);
+void MesBg_ShapeFourLines(MesBg *bg);
+void MesBg_ShapeThreeLines(MesBg *bg);
+void MesBg_ShapeTwoLines(MesBg *bg);
+void MesBg_ShapeOneLine(MesBg *bg);
+void MesBg_BlankCells(void *cells, int size);
+void MesBg_FreeScreen(MesBg *bg);
+int MesBg_Load(MesBg *bg);
+
 #endif

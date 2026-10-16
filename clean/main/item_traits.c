@@ -14,7 +14,11 @@
 #include "item_group.h"
 #include "item_info.h"
 #include "nook_store.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "shop_points.h"
 #include "state_block.h"
+#include "town_record.h"
 
 /* An item's value in bells (a bag of bells: what it holds). */
 extern int func_0204c878(const ItemCode *item);
@@ -417,3 +421,169 @@ int ItemTraits_StorePrice(const ItemCode *item)
     return shift_right(price, NookStore_IsTimeSale((NookStore *) (void *) block->nook_store));
 }
 CLEAN_AS(func_0204c788, ItemTraits_StorePrice)
+
+/* ---- an item's price ---- */
+
+extern StateBlock data_021dc7a8;
+extern int FX_Div(int numerator, int denominator);
+
+/* The five items 0x1518-0x151c, the fruit of town_record.h. */
+#define ITEM_TRAITS_FIRST_FRUIT 0x1518
+#define ITEM_TRAITS_LAST_FRUIT 0x151c
+#define ITEM_TRAITS_FRUITS 5
+/* A bag of bells is worth ten times its always.bin price; the town's own fruit a fifth of it;
+ * the items 0x1406 and 0x1407 and the variant item 0x208 a hundred times. */
+#define ITEM_TRAITS_BAG_FACTOR 10
+#define ITEM_TRAITS_OWN_FRUIT_DIVISOR 5
+#define ITEM_TRAITS_HUNDREDFOLD 100
+#define ITEM_TRAITS_HUNDREDFOLD_A 0x1406
+#define ITEM_TRAITS_HUNDREDFOLD_B 0x1407
+#define ITEM_TRAITS_HUNDREDFOLD_VARIANT 0x208
+/* The discount of each shop points level (ShopPoints_Level), in percent. */
+#define ITEM_TRAITS_LEVEL_2_DISCOUNT 5
+#define ITEM_TRAITS_LEVEL_3_DISCOUNT 10
+#define ITEM_TRAITS_LEVEL_4_DISCOUNT 20
+#define ITEM_TRAITS_PERCENT 100
+#define ITEM_TRAITS_FX_SHIFT 12
+
+static int item_traits_times(int value, int factor)
+{
+    return (int) ((u32) value * (u32) factor);
+}
+
+/* func_0204c7c0: the address of the state block (data_021dc7a8). */
+int ItemTraits_StateBlockAddress(void)
+{
+    return (int) (uintptr_t) &data_021dc7a8;
+}
+CLEAN_AS(func_0204c7c0, ItemTraits_StateBlockAddress)
+
+/* func_0204c7c8: whether an item is a bag of bells, 0x1492-0x14fd. */
+int ItemTraits_IsBellBag(const ItemCode *item)
+{
+    return *item >= ITEM_TRAITS_SMALLEST_BAG && *item <= ITEM_TRAITS_BIGGEST_BAG;
+}
+CLEAN_AS(func_0204c7c8, ItemTraits_IsBellBag)
+
+/* func_0204c7f0: an item's price (ItemTraits_Price) less the discount of the current player's
+ * shop points level: 5% at level 2, 10% at 3, 20% at 4. None for a bag of bells or without a
+ * player. A discounted price of 100 or more is rounded down by an integer division, a smaller
+ * one through FX_Div in 20.12 fixed point.
+ * QUIRK: the product is kept in 32 bits and wraps. */
+int ItemTraits_MemberPrice(const ItemCode *item)
+{
+    int price = ItemTraits_Price(item);
+    if (ItemTraits_IsBellBag(item)) {
+        return price;
+    }
+    u8 *player = PlayerRecords_Current();
+    if (player == NULL) {
+        return price;
+    }
+    int percent;
+    switch (ItemTraits_ShopPointsLevel(ShopPoints_Count(PlayerRecord_ShopPoints(player)))) {
+        case 2:
+            percent = ITEM_TRAITS_LEVEL_2_DISCOUNT;
+            break;
+        case 3:
+            percent = ITEM_TRAITS_LEVEL_3_DISCOUNT;
+            break;
+        case 4:
+            percent = ITEM_TRAITS_LEVEL_4_DISCOUNT;
+            break;
+        default:
+            percent = 0;
+            break;
+    }
+    if (percent == 0) {
+        return price;
+    }
+    int scaled = item_traits_times(price, ITEM_TRAITS_PERCENT - percent);
+    if (scaled >= ITEM_TRAITS_PERCENT) {
+        return scaled / ITEM_TRAITS_PERCENT;
+    }
+    int quotient = FX_Div((int) ((u32) scaled << ITEM_TRAITS_FX_SHIFT), ITEM_TRAITS_PERCENT << ITEM_TRAITS_FX_SHIFT);
+    return shift_right(quotient, ITEM_TRAITS_FX_SHIFT);
+}
+CLEAN_AS(func_0204c7f0, ItemTraits_MemberPrice)
+
+/* func_0204c86c: the shop points level of a count (ShopPoints_Level). */
+int ItemTraits_ShopPointsLevel(const u16 *count)
+{
+    return ShopPoints_Level(*count);
+}
+CLEAN_AS(func_0204c86c, ItemTraits_ShopPointsLevel)
+
+/* func_0204c878: an item's price in bells, by its carried form. Of kind 1: its always.bin price
+ * (ItemInfo_Price), ten times that for a bag of bells (so a bag's price is the bells it
+ * holds), a fifth for the town's own fruit, a hundred times for the items 0x1406 and 0x1407.
+ * Of kinds 3 and 4: its variant item's FurnitureInfo_DmaUnk16, a hundred times for variant
+ * item 0x208. 0 for another kind.
+ * QUIRK: 0x1406 and 0x1407 are looked for in the item as given, not its carried form. */
+int ItemTraits_Price(const ItemCode *item)
+{
+    ItemCode carried = carried_form(item);
+    switch (ItemCode_Kind(&carried)) {
+        case ITEM_TRAITS_KIND_CARRIED: {
+            ItemCode code;
+            if (ItemTraits_IsBellBag(&carried)) {
+                code = (ItemCode) ItemCode_Get(&carried);
+                return item_traits_times(ItemInfo_Price(&code), ITEM_TRAITS_BAG_FACTOR);
+            }
+            if (ItemTraits_IsFruit(&carried)) {
+                int record = ItemTraits_StateBlockAddress() + (int) offsetof(StateBlock, part_17254);
+                ItemCode own = ItemTraits_Fruit((u32) TownRecord_OwnFruit((const TownRecord *) (uintptr_t) (u32) record));
+                if (ItemTraits_SameItem(&carried, &own)) {
+                    code = (ItemCode) ItemCode_Get(&carried);
+                    return ItemInfo_Price(&code) / ITEM_TRAITS_OWN_FRUIT_DIVISOR;
+                }
+            } else if (ItemCode_Get(item) == ITEM_TRAITS_HUNDREDFOLD_A || ItemCode_Get(item) == ITEM_TRAITS_HUNDREDFOLD_B) {
+                code = (ItemCode) ItemCode_Get(&carried);
+                return item_traits_times(ItemInfo_Price(&code), ITEM_TRAITS_HUNDREDFOLD);
+            }
+            code = (ItemCode) ItemCode_Get(&carried);
+            return ItemInfo_Price(&code);
+        }
+        case ITEM_TRAITS_KIND_ROOM_A:
+        case ITEM_TRAITS_KIND_ROOM_B: {
+            int variant_item = ItemCode_VariantItem(&carried);
+            int price = FurnitureInfo_DmaUnk16(variant_item);
+            if (variant_item == ITEM_TRAITS_HUNDREDFOLD_VARIANT) {
+                return item_traits_times(price, ITEM_TRAITS_HUNDREDFOLD);
+            }
+            return price;
+        }
+        default:
+            return 0;
+    }
+}
+CLEAN_AS(func_0204c878, ItemTraits_Price)
+
+/* func_0204ca08: whether two items are the same: by their variant items when the first has a
+ * variant, else by their codes. */
+int ItemTraits_SameItem(const ItemCode *a, const ItemCode *b)
+{
+    if (ItemCode_HasVariant(a)) {
+        int own = ItemCode_VariantItem(a);
+        return own == ItemCode_VariantItem(b);
+    }
+    return *a == *b;
+}
+CLEAN_AS(func_0204ca08, ItemTraits_SameItem)
+
+/* func_0204ca48: fruit `index` (0x1518 + index); 0x1518 for an index past the five. */
+u16 ItemTraits_Fruit(u32 index)
+{
+    if (index < ITEM_TRAITS_FRUITS) {
+        return (u16) (ITEM_TRAITS_FIRST_FRUIT + index);
+    }
+    return ITEM_TRAITS_FIRST_FRUIT;
+}
+CLEAN_AS(func_0204ca48, ItemTraits_Fruit)
+
+/* func_0204ca64: whether an item is one of the fruit, 0x1518-0x151c. */
+int ItemTraits_IsFruit(const ItemCode *item)
+{
+    return *item >= ITEM_TRAITS_FIRST_FRUIT && *item <= ITEM_TRAITS_LAST_FRUIT;
+}
+CLEAN_AS(func_0204ca64, ItemTraits_IsFruit)

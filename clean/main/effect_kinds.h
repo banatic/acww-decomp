@@ -118,4 +118,79 @@ void EffectKinds_PlaceScaled05(EffectKindsInstance *instance);
 void EffectKinds_PlaceScaled04(EffectKindsInstance *instance);
 void EffectKinds_PlaceScaled03(EffectKindsInstance *instance);
 
+/* Kinds 0x00-0x19. Several of them choose their set by the ground at the point (in a room, on
+ * attributes 0x13, 3 in the snow season or 0x16, or while rain falls), some start a one-shot set
+ * and then a kept one, answering 2 when the kept one started (the kind's caller then uses up a
+ * handle without handing it out), and kinds 0x0b, 0x16, 0x17 and 0x19 start the same sets and
+ * model 2 at different sizes. The kept emitters of several kinds start more sets where their
+ * particles come down (EffectKinds_LandParticles). */
+int EffectKinds_StartKind19(int kind, Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetModelTransformKind19(EffectKindsModelTransform *transform);
+void EffectKinds_SetUpKind19(ParticleEmitter *emitter);
+void EffectKinds_PlaceKind19(EffectKindsInstance *instance);
+int EffectKinds_StartKind17(int kind, Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetModelTransformKind17(EffectKindsModelTransform *transform);
+void EffectKinds_SetUpKind17(ParticleEmitter *emitter);
+void EffectKinds_PlaceKind17(EffectKindsInstance *instance);
+void EffectKinds_StartKind16(int kind, Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetModelTransformKind16(EffectKindsModelTransform *transform);
+void EffectKinds_SetUpKind16(ParticleEmitter *emitter);
+void EffectKinds_PlaceKind16(EffectKindsInstance *instance);
+int EffectKinds_StartKind15(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetUpKind15Third(ParticleEmitter *emitter);
+void EffectKinds_SetUpKind15(ParticleEmitter *emitter);
+int EffectKinds_StartKind14(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_PlaceSet75(EffectKindsInstance *instance);
+void EffectKinds_SetUpKind14Third(ParticleEmitter *emitter);
+void EffectKinds_SetUpKind14(ParticleEmitter *emitter);
+int EffectKinds_StartKind13(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowSet75(EffectKindsInstance *instance);
+void EffectKinds_SetUpKind13Second(ParticleEmitter *emitter);
+void EffectKinds_SetUpKind13(ParticleEmitter *emitter);
+int EffectKinds_StartKind12(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind11(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind11Third(EffectKindsInstance *instance);
+void EffectKinds_StartKind0e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind0e(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind0e(EffectKindsInstance *instance);
+int EffectKinds_StartKind10(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind0f(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind0d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind0c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowSet5e(EffectKindsInstance *instance);
+void EffectKinds_StartKind0b(unsigned int kind, Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartWithModel(int kind, Vec3 *position, const s16 *angle, const s16 *extra, void *const *kept_setups,
+                               void *const *setups, void (*model_setup)(void *transform));
+void EffectKinds_FollowSet45(EffectKindsInstance *instance);
+void EffectKinds_SetModelTransformKind0b(EffectKindsModelTransform *transform);
+void EffectKinds_SetModelTransformScaled(EffectKindsModelTransform *transform, u32 scale);
+int EffectKinds_StartKind0a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind09(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetUpKind09(ParticleEmitter *emitter);
+int EffectKinds_StartKind08(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind07(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetUpKind07Second(ParticleEmitter *emitter);
+void EffectKinds_SetUpKind07First(ParticleEmitter *emitter);
+int EffectKinds_StartKind06(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind03(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind02(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetUpKind02(ParticleEmitter *emitter);
+int EffectKinds_StartKind01(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowWet(EffectKindsInstance *instance);
+int EffectKinds_FollowSnow(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind01(EffectKindsInstance *instance);
+int EffectKinds_StartKind00(int kind, const Vec3 *position, u16 *angle, const s16 *extra);
+int EffectKinds_StartModel(int model, int kind, const Vec3 *position, const s16 *angle, const s16 *extra,
+                           void (*setup)(void *transform));
+void EffectKinds_SetModelTransform(EffectKindsModelTransform *transform);
+int EffectKinds_FollowParticles(EffectKindsInstance *instance, int ground_set, void *const *ground_setups, int ground_set2,
+                                void *const *ground_setups2, int floor_set, void *const *floor_setups, int floor_set2,
+                                void *const *floor_setups2);
+int EffectKinds_LandParticles(ParticleEmitter *emitter, int ground_set, void *const *ground_setups, int ground_set2,
+                              void *const *ground_setups2, int floor_set, void *const *floor_setups, int floor_set2,
+                              void *const *floor_setups2);
+int EffectKinds_LandParticlesAtLimit(ParticleEmitter *emitter, int ground_set, void *const *ground_setups, int ground_set2,
+                                     void *const *ground_setups2, int floor_set, void *const *floor_setups, int floor_set2,
+                                     void *const *floor_setups2);
+
 #endif
