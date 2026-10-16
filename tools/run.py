@@ -22,6 +22,8 @@ Options for the screens (docs/runtime.md, M3):
     --input FILE     an input recording (format in runtime/input.h)
     --rtc "YYYY-MM-DD HH:MM:SS"  start the clock at a fixed moment and advance it with the
                      emulated time, so runs are identical (default: the host's clock)
+    --save FILE      start with this image in the save chip (a 256 KB flash image, as emulators
+                     write .sav files); the file is only read (default: an erased chip)
 
 Native functions (docs/runtime.md, M4; the design is in runtime/native_run.h):
     --native=all|leaf|none|FILE
@@ -446,8 +448,11 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
                 status = "-"
             # A Clean version runs in place of its function, unless the function stays Reference for
             # what the PC cannot do (hardware, the ROM's stack layout): its Clean code cannot either.
+            # One whose result the ROM's code takes another way than the PC's (a structure by
+            # value: mwccarm passes a pointer to it in r0) runs Clean for Native callers only, as
+            # its Native does.
             if (mod, s.address) in cleaned and s.name not in kept:
-                status = "N"
+                status = "C" if native and (native[1] & 15) == RET_SKIP else "N"
             counts[status] = counts.get(status, 0) + 1
             rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)}\n")
     path = OUT / "native-policy.txt"
@@ -574,6 +579,7 @@ def main() -> None:
     ap.add_argument("--hash", metavar="FILE", help="per-frame SHA-1s to FILE, or - for stdout")
     ap.add_argument("--input", metavar="FILE", help="input recording")
     ap.add_argument("--rtc", metavar="TIME", help='pin the clock: "YYYY-MM-DD HH:MM:SS"')
+    ap.add_argument("--save", metavar="FILE", help="the save chip's image at power-on")
     ap.add_argument("--native", metavar="POLICY", help="all, leaf, none, or a file of functions (see above)")
     ap.add_argument("--ram-hash", metavar="FRAMES", help="hash memory after these frames (comma-separated)")
     ap.add_argument("--ram-dump", metavar="DIR", help="write the hashed memory images to DIR")
@@ -605,6 +611,11 @@ def main() -> None:
         env["RUN_INPUT"] = str(pathlib.Path(args.input).resolve())
     if args.rtc:
         env["RUN_RTC"] = args.rtc
+    env.pop("RUN_SAVE", None)
+    if args.save:
+        if not pathlib.Path(args.save).is_file():
+            raise SystemExit(f"no save at {args.save}")
+        env["RUN_SAVE"] = str(pathlib.Path(args.save).resolve())
     budget = [a for a in (args.max_instructions, args.max_frames) if a is not None]
     if args.native:
         sys.exit(native_main(args, manifest, table, budget, env))

@@ -264,6 +264,21 @@ static void nvram_init(void)
     }
 }
 
+static void backup_load(const char *path)
+{
+    if (path == NULL || path[0] == 0) {
+        return;
+    }
+    FILE *f = fopen(path, "rb");
+    if (f == NULL) {
+        fprintf(stderr, "arm7: cannot read the save %s\n", path);
+        exit(2);
+    }
+    size_t n = fread(arm7.backup, 1, BACKUP_SIZE, f);
+    fclose(f);
+    fprintf(stderr, "arm7: save %s, %zu bytes\n", path, n);
+}
+
 void arm7_init(void)
 {
     memset(&arm7, 0, sizeof(arm7));
@@ -278,9 +293,11 @@ void arm7_init(void)
     rtc_pin();
     rtc_update();
     nvram_init();
-    /* the save chip, a 2 Mbit flash as this game has, never written: erased */
+    /* the save chip, a 2 Mbit flash as this game has: erased, or holding the image RUN_SAVE
+       names (a save file as emulators write it). Writes stay in memory; the file is only read. */
     arm7.backup = malloc(BACKUP_SIZE);
     memset(arm7.backup, 0xff, BACKUP_SIZE);
+    backup_load(getenv("RUN_SAVE"));
 }
 
 static void reply(uint32_t tag, uint32_t data, int err)
