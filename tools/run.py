@@ -73,6 +73,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 import diffcheck  # noqa: E402
 import native as native_build  # noqa: E402
+import objrewrite  # noqa: E402
 
 WINDOWS = os.name == "nt"
 # Per host: a Linux run (in a container) and a Windows one can share the build tree.
@@ -142,7 +143,7 @@ def clean_checks(only: str | None = None) -> list[tuple[str, str, int, int]]:
     those it lists."""
     out = []
     for path in sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
-        text = path.read_text()
+        text = path.read_text(encoding="utf-8")
         for m in diffcheck.TEST.finditer(text):
             fields = dict(diffcheck.FIELD.findall(m.group(2)))
             bits = re.search(r"\.return_bits\s*=\s*(\d+)", m.group(2))
@@ -163,7 +164,7 @@ def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, in
     syms = C.SymbolTable(C.modules())
     out = []
     for path in sorted((C.ROOT / "clean").rglob("*.c")):
-        for symbol, function in CLEAN_AS.findall(path.read_text()):
+        for symbol, function in CLEAN_AS.findall(path.read_text(encoding="utf-8")):
             found = [s for s in syms.by_name.get(symbol, []) if s.kind == "function" and s.size]
             if len(found) != 1:
                 raise SystemExit(f"{path.relative_to(C.ROOT)}: CLEAN_AS({symbol}, ...) names no single function")
@@ -200,14 +201,22 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
         rows.append(f"    {{0x{address:08x}u, 0x{fn.size:x}u, (const void *) clean_{i}, "
                     f"(uint32_t) {ret} | 4u << 4 | (uint32_t) {names[module]} << 16}},")
     # Functions registered with CLEAN_AS have their matching source's signature: the table calls
-    # them as it calls the Native version, with its result kind and parameter count.
+    # them as it calls the Native version, with its result kind and parameter count (a source
+    # that is assembly only has no Native version: a word result and four parameters). All of
+    # them are listed, since Clean code calls Clean code directly; the ones `clean` does not
+    # select are on standby (bit 11), and the runtime sends a call to one on to its function's
+    # Native version or to the ROM's code, as the policy says.
     table = natives_table()
-    for symbol, function, module, address, size in clean_registrations(clean) if clean else []:
+    selected = {r[0] for r in clean_registrations(clean)} if clean else set()
+    for symbol, function, module, address, size in clean_registrations("all") if clean else []:
+        if module not in names:
+            continue
         native = table.get((address, module))
-        if native is None or module not in names:
-            raise SystemExit(f"CLEAN_AS({symbol}, {function}): {symbol} has no Native version to stand in for")
+        info = native[1] if native else (5 | 4 << 4 | names[module] << 16)  # NATIVE_RET_32, 4 parameters
+        if symbol not in selected:
+            info |= 1 << 11
         lines += [f"extern void {function}(void);"]
-        rows.append(f"    {{0x{address:08x}u, 0x{size:x}u, (const void *) {function}, 0x{native[1]:08x}u}},")
+        rows.append(f"    {{0x{address:08x}u, 0x{size:x}u, (const void *) {function}, 0x{info:08x}u}},")
     lines += ["const NativeFunction clean_functions[] = {", *(rows or ["    {0, 0, 0, 0},"]), "};",
               f"const uint32_t clean_function_count = {len(rows)};", ""]
     path = OUT / "clean_table.c"
@@ -217,7 +226,18 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
 
 def build_clean(flags: list[str]) -> list[str]:
     """The Clean code and its checks as objects, and the names they take from the game placed at
-    their DS addresses (as tools/diffcheck.py builds them)."""
+    their DS addresses (as tools/diffcheck.py builds them). Each object is rewritten as the Native
+    objects are (tools/objrewrite.py): a call to a game function that has a Native version goes
+    to it, as a Native caller's does, so it runs where the run's policy says (Native, Clean, or
+    the ROM's code through the patched entry) with the same crossings as the Reference records."""
+    syms = C.SymbolTable(C.modules())
+    known = set(syms.by_name)
+    native = {name for name, _ in natives_table().values()}
+    prefix = "_" if WINDOWS else ""
+    # Each Clean function stays a function of its own, as each Native one is (one per source):
+    # the runtime redirects a function at its entry, which a call inlined into its caller, or
+    # two identical functions folded into one, would get round.
+    flags = [*flags, "-fno-inline"] + ([] if "clang" in " ".join(diffcheck.compiler()) else ["-fno-ipa-icf"])
     objects = []
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         obj = OUT / "clean" / src.relative_to(C.ROOT).with_suffix(".o")
@@ -227,6 +247,8 @@ def build_clean(flags: list[str]) -> list[str]:
                            capture_output=True, text=True)
         if p.returncode != 0:
             raise SystemExit(p.stdout + p.stderr)
+        data, _ = objrewrite.rewrite(obj.read_bytes(), known, native, prefix)
+        obj.write_bytes(data)
         objects.append(obj)
     names = diffcheck.game_names(objects)
     return [str(o) for o in objects] + ([str(names)] if names else [])

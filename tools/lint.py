@@ -74,6 +74,9 @@ def main() -> None:
             continue
         if b"\r" in raw:
             errors.append(f"{rel}: CRLF line endings; use LF")
+        if rel.startswith("clean/") and not text.isascii():
+            line = text.count("\n", 0, next(i for i, ch in enumerate(text) if not ch.isascii())) + 1
+            errors.append(f"{rel}:{line}: non-ASCII text; Clean code is plain ASCII")
         m = HANGUL.search(text)
         if m:
             line = text.count("\n", 0, m.start()) + 1

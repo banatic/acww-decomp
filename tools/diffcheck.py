@@ -94,8 +94,11 @@ def game_names(objects: list[pathlib.Path]) -> pathlib.Path | None:
                 defined.add(parts[2])
     syms = C.SymbolTable(C.modules())
     rows = []
+    import native  # noqa: PLC0415
     for host in sorted(undefined - defined):
         name = host[len(prefix):] if host.startswith(prefix) else host
+        if name in native.HOST_NAMES:
+            continue  # the PC's own C library function, as for Native code
         addrs = {s.address | (1 if s.kind == "function" and s.thumb else 0) for s in syms.by_name.get(name, [])}
         if len(addrs) == 1:
             rows.append(f"\t.globl {host}\n\t.set {host}, 0x{addrs.pop():08x}\n")

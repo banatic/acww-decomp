@@ -1694,8 +1694,40 @@ static int is_clean(const Fn *f)
 
 static int patch_clean(void)
 {
+    uint8_t *stubs = native_os_code_alloc((size_t) clean_function_count * 16 + 16);
+    if (stubs == NULL) {
+        return -1;
+    }
     for (uint32_t c = 0; c < clean_function_count; c++) {
         const NativeFunction *clean = &clean_functions[c];
+        if (clean->info & CLEAN_STANDBY) {
+            /* Not selected: Clean code calling it gets what its function's callers get, its
+               Native version (itself patched when that stays Reference) or else the ROM's code. */
+            const void *to = NULL;
+            for (uint32_t i = 0; i < native_function_count && to == NULL; i++) {
+                const NativeFunction *n = &native_functions[i];
+                if (n->address == clean->address && (n->info >> 16) == (clean->info >> 16)) {
+                    to = n->host;
+                }
+            }
+            if (to == NULL) {
+                uint8_t *stub = stubs + 16 * c;
+                uint32_t target = clean->address;
+                stub[0] = 0xb8; /* mov eax, target */
+                memcpy(stub + 1, &target, 4);
+                stub[5] = 0xe9; /* jmp native_trampoline */
+                int32_t rel = (int32_t) ((uintptr_t) native_trampoline - ((uintptr_t) stub + 10));
+                memcpy(stub + 6, &rel, 4);
+                to = stub;
+            }
+            uint8_t jmp[5] = {0xe9};
+            int32_t rel = (int32_t) ((uintptr_t) to - ((uintptr_t) clean->host + 5));
+            memcpy(jmp + 1, &rel, 4);
+            if (native_os_patch((void *) clean->host, jmp, 5) != 0) {
+                return -1;
+            }
+            continue;
+        }
         for (uint32_t i = 0; i < native_function_count; i++) {
             const NativeFunction *n = &native_functions[i];
             if (n->address != clean->address || (n->info >> 16) != (clean->info >> 16)) {
@@ -1797,6 +1829,9 @@ int native_init(ArmCpu *c, const char *manifest)
         /* a Clean function comes after its Native one and takes its place */
         const NativeFunction *n =
             i < native_function_count ? &native_functions[i] : &clean_functions[i - native_function_count];
+        if (n->info & CLEAN_STANDBY) {
+            continue; /* registered, not selected: patch_clean sends calls on */
+        }
         int m = module_index(native_module(n));
         Fn *f = first_at(n->address);
         for (; f && f < fns + fn_count && (f->address & ~1u) == (n->address & ~1u); f++) {

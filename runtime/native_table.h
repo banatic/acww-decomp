@@ -27,8 +27,10 @@ typedef struct NativeFunction {
 
 extern const NativeFunction native_functions[];
 extern const uint32_t native_function_count;
-/* The Clean functions that take the place of their Native ones (tools/run.py --clean): each
- * calls its check's run_clean (runtime/diffcheck.h) with r0-r3. Empty without --clean. */
+/* The Clean functions that take the place of their Native ones (tools/run.py --clean), empty
+ * without --clean. A Clean function on standby (CLEAN_STANDBY in `info`: registered, not
+ * selected) does not run; a call to it goes on as its function would go. */
+#define CLEAN_STANDBY (1u << 11)
 extern const NativeFunction clean_functions[];
 extern const uint32_t clean_function_count;
 /* A Native function whose result is widened by a wrapper (tools/native.py): its code is in the
