@@ -416,3 +416,55 @@ u16 *EventBuildings_FindSpot(int *tile_x, int *tile_z)
     return func_02037e0c(acre, EVENT_BUILDINGS_SPOT_X, EVENT_BUILDINGS_SPOT_Z, 0);
 }
 CLEAN_AS(func_020b3038, EventBuildings_FindSpot)
+
+/* ---- Emptying the tiles of item 0x1568 */
+
+#include "main/acre_record.h"
+#include "main/item_code.h"
+
+#define EVENT_BUILDINGS_ITEM_1568 0x1568
+#define EVENT_BUILDINGS_NO_ITEM 0xfff1
+
+/* Whether the code is item 0x1568: for a code with a variant, whether its item is 0x1568's
+ * (asked again for each tile). */
+static int event_buildings_is_1568(const u16 *code)
+{
+    if (ItemCode_HasVariant(code)) {
+        u16 item = EVENT_BUILDINGS_ITEM_1568;
+        int variant = ItemCode_VariantItem(code);
+        return variant == ItemCode_VariantItem(&item);
+    }
+    return *code == EVENT_BUILDINGS_ITEM_1568;
+}
+
+/* func_02085f48: in the town's inner acres (row by row), every tile of layer 0 holding item
+ * 0x1568 emptied. */
+void EventBuildings_Clear1568(void)
+{
+    AcreMap *town = (AcreMap *) (uintptr_t) AcreMap_Town();
+    if (town == NULL) {
+        return;
+    }
+    for (int z = EVENT_BUILDINGS_INNER_FIRST; z <= EVENT_BUILDINGS_INNER_LAST; z++) {
+        for (int x = EVENT_BUILDINGS_INNER_FIRST; x <= EVENT_BUILDINGS_INNER_LAST; x++) {
+            AcreRecord *acre = (AcreRecord *) (void *) event_buildings_acre(town, x, z);
+            if (acre == NULL) {
+                continue;
+            }
+            u16 *tile = AcreRecord_Tile(acre, 0, 0, 0);
+            if (tile == NULL) {
+                continue;
+            }
+            for (int row = 0; row < EVENT_BUILDINGS_ACRE_TILES; row++) {
+                for (int column = 0; column < EVENT_BUILDINGS_ACRE_TILES; column++) {
+                    if (event_buildings_is_1568(tile)) {
+                        u16 empty = EVENT_BUILDINGS_NO_ITEM;
+                        AcreRecord_SetTile(acre, &empty, column, row, 0);
+                    }
+                    tile++;
+                }
+            }
+        }
+    }
+}
+CLEAN_AS(func_02085f48, EventBuildings_Clear1568)

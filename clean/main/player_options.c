@@ -243,3 +243,36 @@ void PlayerOptions_ChangeSound(int on)
     PlayerOptions_MarkSoundChanged(&data_021c6998);
 }
 CLEAN_AS(func_0203d448, PlayerOptions_ChangeSound)
+
+/* func_0203d470: the sound flag in use. */
+int PlayerOptions_SoundInUse(void)
+{
+    return PlayerOptions_Sound(&data_021c6998.values);
+}
+CLEAN_AS(func_0203d470, PlayerOptions_SoundInUse)
+
+/* func_0203d480: the flag in use set (`on` is 1) or cleared, marked changed. */
+void PlayerOptions_ChangeFlag(int on)
+{
+    if (on == 1) {
+        PlayerOptions_SetFlag(&data_021c6998.values);
+    } else {
+        PlayerOptions_ClearFlag(&data_021c6998.values);
+    }
+    PlayerOptions_MarkFlagChanged(&data_021c6998);
+}
+CLEAN_AS(func_0203d480, PlayerOptions_ChangeFlag)
+
+/* func_0203d4a8: the flag in use. */
+int PlayerOptions_FlagInUse(void)
+{
+    return PlayerOptions_Flag(&data_021c6998.values);
+}
+CLEAN_AS(func_0203d4a8, PlayerOptions_FlagInUse)
+
+/* func_0203d4b8: the options in use, as an address. */
+int PlayerOptions_InUse(void)
+{
+    return (int) (uintptr_t) &data_021c6998;
+}
+CLEAN_AS(func_0203d4b8, PlayerOptions_InUse)

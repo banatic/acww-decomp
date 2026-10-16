@@ -216,3 +216,38 @@ void Activity_SetSlotMask(Activity *activity, u16 mask)
     activity->slot_mask = mask;
 }
 CLEAN_AS(func_020a1284, Activity_SetSlotMask)
+
+/* func_020a242c */
+void Activity_SetSlot107(Activity *activity, int slot, char value)
+{
+    activity->slot_107[slot] = (u8) value;
+}
+CLEAN_AS(func_020a242c, Activity_SetSlot107)
+
+/* func_020a2438 */
+u8 Activity_Slot107(Activity *activity, int slot)
+{
+    return activity->slot_107[slot];
+}
+CLEAN_AS(func_020a2438, Activity_Slot107)
+
+/* func_020a2444 */
+void Activity_SetBlockSource(Activity *activity, int slot, u8 source)
+{
+    activity->block_source[slot] = source;
+}
+CLEAN_AS(func_020a2444, Activity_SetBlockSource)
+
+/* func_020a2450 */
+u8 Activity_BlockSource(const Activity *activity, int slot)
+{
+    return activity->block_source[slot];
+}
+CLEAN_AS(func_020a2450, Activity_BlockSource)
+
+/* func_020a245c */
+u8 Activity_Byte102(Activity *activity)
+{
+    return activity->byte_102;
+}
+CLEAN_AS(func_020a245c, Activity_Byte102)

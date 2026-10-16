@@ -77,5 +77,6 @@ int ResourcePools_UnitSize2BCC(void);
 
 void ResourcePools_Shutdown(void);
 void ResourcePools_Startup(void);
+int ResourcePools_SceneHeapCount(void);
 
 #endif

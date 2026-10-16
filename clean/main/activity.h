@@ -89,5 +89,15 @@ void Activity_SetFlagE5(Activity *activity, u8 value);
 void Activity_SetFlagE4(Activity *activity, u8 value);
 void Activity_SetByteD7(Activity *activity, u8 value);
 void Activity_SetSlotMask(Activity *activity, u16 mask);
+void Activity_SetSlot107(Activity *activity, int slot, char value);
+u8 Activity_Slot107(Activity *activity, int slot);
+void Activity_SetBlockSource(Activity *activity, int slot, u8 source);
+u8 Activity_BlockSource(const Activity *activity, int slot);
+u8 Activity_Byte102(Activity *activity);
+
+/* activity_card.c: the exchange block and the player record copied for a save. */
+void Activity_ExchangeBlockToSystem(Activity *activity);
+void Activity_SystemExchangeBlockToActivity(Activity *activity);
+void Activity_CurrentRecordToGuest(Activity *activity);
 
 #endif

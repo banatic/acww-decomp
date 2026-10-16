@@ -1029,3 +1029,585 @@ void Spawner_PartConstruct(void *part)
     (void) part;
 }
 CLEAN_AS(func_02084f88, Spawner_PartConstruct)
+
+/* ---- The process's phases and the villagers it makes
+ *
+ * The vtable data_020e1cc0 has Spawner_Create in slot 0 (the create phase's work, done at
+ * once), Spawner_Delete in slot 3 (the delete phase's) and Spawner_Execute in slot 6 (the
+ * execute phase's). Creating the spawner makes the villagers of the scene: those out in the
+ * town (Spawner_PlaceTownVillagers), the owner of the villager's house shown
+ * (Spawner_SpawnHouseOwner) or the villager visiting the player's house
+ * (Spawner_SpawnHouseGuest). */
+
+#include "actor_table.h"
+#include "field_collision.h"
+#include "npc_id.h"
+#include "npc_lookup.h"
+#include "packed_bytes.h"
+#include "scene_exit.h"
+#include "scene_kinds.h"
+#include "scene_query.h"
+#include "scene_share_table.h"
+#include "tile_grid.h"
+#include "town_objects.h"
+#include "town_villager.h"
+#include "villager_events.h"
+#include "villager_furniture.h"
+#include "villager_home.h"
+#include "villager_move.h"
+#include "villager_move_record.h"
+#include "villager_outdoors.h"
+#include "villager_roster.h"
+#include "villager_state.h"
+#include "villager_status.h"
+#include "villager_town.h"
+
+extern VillagerTown data_021e5a2c; /* the town's villagers */
+/* The villagers' entries behind the session's records (scene_share_table.h). */
+extern SceneShareEntry data_021d213c[SCENE_SHARE_TABLE_E_COUNT];
+extern const int data_020d0648; /* the number of events of data_020d0684 */
+
+extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
+/* Whether `event` is on at `when` (`arg` 0). */
+extern int func_0203fc78(int event, const DateTime *when, int arg);
+/* Nonzero always without a session slot (scene_share.c). */
+extern int func_020a7278(void);
+/* What creating the spawner does with parts 0x24 and 0x31 of the object at data_021d27ac. */
+extern void func_02087e00(void *part);
+extern void func_02087b10(void *part);
+extern void func_02087b04(void *part);
+extern int func_02087e38(void *part);
+extern void func_02087df4(void *part);
+
+/* The profiles of the villager actors made here. */
+#define SPAWNER_PROFILE_EVENT_VILLAGER 0x80 /* the villager VillagerState_GetIndex162 names */
+#define SPAWNER_PROFILE_COMPANION 0x81      /* the one VillagerState_GetIndex163 names, with it */
+#define SPAWNER_PROFILE_GUEST 0x82          /* a villager who said it would come */
+#define SPAWNER_PROFILE_MOVING 0x83         /* the villager planning to move, while it does */
+#define SPAWNER_PROFILE_OUTDOORS 0x84       /* a villager out in the town */
+#define SPAWNER_PROFILE_VILLAGER 0x85       /* a villager at home */
+#define SPAWNER_PROFILE_STAYING 0x86        /* a villager at home in event 10, status 3 */
+#define SPAWNER_PROFILE_EVENT_GUEST 0x87    /* the visitor of event 10 */
+#define SPAWNER_PROFILE_NONE 0xd8           /* no companion */
+
+#define SPAWNER_PERSON_E 0xe000 /* a villager's person code (scene_share_table.h) */
+#define SPAWNER_PERSON_INDEX 0x0fff
+#define SPAWNER_NO_PERSON 0xfff1
+
+#define SPAWNER_VILLAGERS 8
+#define SPAWNER_NO_VILLAGER (-1)
+#define SPAWNER_EVENT_10 10                   /* VillagerTown_CurrentEvent's event 10 */
+#define SPAWNER_NO_EVENT VILLAGER_TOWN_EVENTS /* VillagerTown_CurrentEvent: none on */
+#define SPAWNER_CODE_D008 0xd008              /* the entry Spawner_Create treats apart */
+#define SPAWNER_SCENE_2C 0x2c
+#define SPAWNER_STATUS_STAYING 3 /* VillagerStatus_Stay */
+#define SPAWNER_DOOR_X 1         /* the tile before a house's door, from its tile */
+#define SPAWNER_DOOR_Z 2
+
+/* The player's appointment with a villager: an NpcId at 0xa4 of the player's villager part, an
+ * object of type 0x15 at 0xb4 and the time at 0xc0. The object's low five bits say how far it
+ * went: with 0 the villager comes within 30 minutes of the time, with 1-3 within 60. */
+#define SPAWNER_APPOINTMENT 0xa4
+#define SPAWNER_APPOINTMENT_OBJECT 0x10
+#define SPAWNER_APPOINTMENT_TIME 0x1c
+#define SPAWNER_APPOINTMENT_TYPE 0x15
+#define SPAWNER_APPOINTMENT_STEPS 4
+#define SPAWNER_APPOINTMENT_MINUTES 30
+#define SPAWNER_APPOINTMENT_LATE_MINUTES 60
+
+/* The tile grid kept in the spawner's part at 0x50 (tile_grid.h). */
+static TileGrid *spawner_grid(Spawner *self)
+{
+    return (TileGrid *) (void *) self->part_50;
+}
+
+static u16 spawner_villager_person(int index)
+{
+    return (u16) (((u32) index & SPAWNER_PERSON_INDEX) | SPAWNER_PERSON_E);
+}
+
+/* A random angle about Y, a whole number of quarter turns. */
+static s16 spawner_random_quarter(void)
+{
+    return (s16) (u16) (func_020644cc(4) << 14);
+}
+
+/* The centre of the tile before the villager's house's door. */
+static void spawner_at_door(u8 *villager, Vec3 *position)
+{
+    const VillagerPlot *home = VillagerHome_Tile(villager);
+    AcreTile_TileCentre(position, (u32) (home->x + SPAWNER_DOOR_X), (u32) (home->z + SPAWNER_DOOR_Z));
+}
+
+/* The x and z of an entry's place. */
+static void spawner_entry_place(const SceneShareEntry *entry, Vec3 *position)
+{
+    PackedBytes_UnpackPoint(entry->place, (u32 *) (void *) &position->x, (u32 *) (void *) &position->z);
+}
+
+/* func_0208541c (vtable slot 6, the execute phase): in scene 0 the villagers' idle frames are
+ * counted and, outside the session, the roster woken up. Outside the session, each villager
+ * with a state entry and no actor counts its entry down while byte 0x18 is set: byte 0x18 is
+ * cleared when the counter reaches 0, and the entry's tally ticks. Always 1. */
+int Spawner_Execute(void)
+{
+    VillagerTown *town = &data_021e5a2c;
+    if (SceneQuery_CurrentIs0() != 0) {
+        VillagerEvent_CountIdleFrame();
+        if (!in_session()) {
+            VillagerRoster_WakeUp(town);
+        }
+    }
+    if (in_session()) {
+        return 1;
+    }
+    for (int i = 0; i < SPAWNER_VILLAGERS; i++) {
+        u8 *villager = VillagerRoster_At(town, i);
+        if (villager == NULL || NpcId_IsValid(TownVillager_NpcId(villager)) == 0) {
+            continue;
+        }
+        VillagerState *state = VillagerStatus_StateEntry(villager);
+        if (state == NULL) {
+            continue;
+        }
+        ItemCode person = spawner_villager_person(i);
+        if (Actors_GetE(&person) != NULL || VillagerState_GetByte18(state) == 0) {
+            continue;
+        }
+        VillagerState_CountDown(state);
+        if (VillagerState_GetCounter(state) == 0) {
+            VillagerState_SetByte18(state, 0);
+        }
+        VillagerTally_Tick(VillagerState_Tally(state), 0);
+    }
+    return 1;
+}
+CLEAN_AS(func_0208541c, Spawner_Execute)
+
+/* func_020854f4 (vtable slot 3, the delete phase): the overlay released, the request cleared
+ * and the villagers' index 0x160 cleared. Leaving scene 0, the villagers are updated with the
+ * clock and, when the next scene is the house of a villager (scenes 0x11-0x18), that
+ * villager's furniture stored. Always 1. */
+int Spawner_Delete(Spawner *self)
+{
+    VillagerTown *town = &data_021e5a2c;
+    Spawner_ReleaseOverlay(self);
+    Spawner_ClearRequest(&data_020e1ca8);
+    VillagerState_ClearIndex160();
+    if (SceneQuery_CurrentIs0() == 0) {
+        return 1;
+    }
+    VillagerTown_UpdateWithClock(town);
+    int next = SceneExit_NextScene();
+    if (SceneQuery_In11(next) == 0) {
+        return 1;
+    }
+    u8 *villager = VillagerRoster_ForCode(town, (s8) next);
+    if (villager != NULL && NpcId_IsValid(TownVillager_NpcId(villager)) != 0) {
+        VillagerFurniture_StoreItems(villager);
+    }
+    return 1;
+}
+CLEAN_AS(func_020854f4, Spawner_Delete)
+
+/* func_02085558 (vtable slot 0, the create phase): parts 0x24 and 0x31 of the object at
+ * data_021d27ac prepared; in scene 0 the event villager updated, the states applied and index
+ * 0x164 cleared; coming from scene 0, indices 0x162 and 0x163 cleared (and the states applied)
+ * when the event villager changed. Then the scene's villagers made: outdoors (unless the sound
+ * flag is set) those out in the town, after drawing index 0x160 outside the session; in a
+ * villager's house its owner; in the player's house, outside event 10, index 0x164 and the
+ * extra visitors cleared, and in its first room the guest. Then the checks run and the request
+ * served; an entry served gets part 0x31 told, and part 0x24 too unless it is code 0xd008 and
+ * func_02087e38 refuses. Last part 0x0c updated in the session and, in scene 0, the villagers
+ * updated with the clock. Always 1. */
+int Spawner_Create(Spawner *self)
+{
+    int entries = data_020d0644;
+    VillagerTown *town = &data_021e5a2c;
+
+    func_02087e00(func_020860c0(func_0208602c()));
+    func_02087b10(func_020860bc(func_0208602c()));
+    if (SceneQuery_CurrentIs0() != 0) {
+        VillagerTown_UpdateEventVillager(town);
+        VillagerTown_ApplyEventStates(town);
+        VillagerState_SetIndex164((unsigned char) SPAWNER_NO_VILLAGER);
+    } else if (SceneQuery_Is0(SceneQuery_Previous()) != 0) {
+        DateTime now = {0};
+        int index = VillagerState_GetIndex162();
+        DateTime_Now(&now);
+        if (index != SPAWNER_NO_VILLAGER && index != VillagerTown_FindEventVillager(town, &now)) {
+            VillagerState_SetIndex162((unsigned char) SPAWNER_NO_VILLAGER);
+            VillagerState_SetIndex163((unsigned char) SPAWNER_NO_VILLAGER);
+            VillagerTown_ApplyEventStates(town);
+        }
+    }
+
+    if (outdoors()) {
+        if (Spawner_SoundFlagSet() == 0) {
+            if (!in_session()) {
+                const void *player = NULL;
+                if (PlayerRecords_Current() != NULL) {
+                    player = PlayerRecord_Player(PlayerRecords_Current());
+                }
+                VillagerOutdoors_DrawIndex160((const u8 *) town, player);
+            }
+            Spawner_PlaceTownVillagers(self);
+        }
+    } else if (SceneQuery_CurrentIn11() != 0) {
+        Spawner_SpawnHouseOwner(self);
+    } else if (SceneKinds_CurrentIsHouseRoom() != 0) {
+        if (VillagerTown_CurrentEvent() != SPAWNER_EVENT_10 && VillagerState_GetIndex164() != SPAWNER_NO_VILLAGER) {
+            VillagerState_SetIndex164((unsigned char) SPAWNER_NO_VILLAGER);
+            TownObjects_ClearExtraVisitors();
+        }
+        if (SceneKinds_CurrentHouseRoomIndex() == 0) {
+            Spawner_SpawnHouseGuest(self);
+        }
+    }
+
+    Spawner_RunChecks(self);
+    const SpawnerEntry *served = Spawner_Serve(self, data_020e1d8c, entries);
+    if (served != NULL) {
+        func_02087b04(func_020860bc(func_0208602c()));
+        if (served->code != SPAWNER_CODE_D008 || func_02087e38(func_020860c0(func_0208602c())) != 0) {
+            func_02087df4(func_020860c0(func_0208602c()));
+        }
+    }
+    Spawner_UpdatePartCInSession(self);
+    if (SceneQuery_CurrentIs0() != 0) {
+        VillagerTown_UpdateWithClock(town);
+    }
+    return 1;
+}
+CLEAN_AS(func_02085558, Spawner_Create)
+
+/* func_020856fc: outside the session, in the player's house: with no event on, the villager of
+ * the player's appointment (SPAWNER_APPOINTMENT) when its time is near enough, as profile 0x82;
+ * an appointment with steps done that is more than 60 minutes past instead clears the extra
+ * visitors and settles that villager's state. In event 10 the visitor (index 0x164, picked
+ * when coming from scene 0), as profile 0x87. A villager of steps 1-3 or of event 10 (not
+ * coming from scene 0) whose entry is in use stands at the entry's place; else at the origin.
+ * QUIRK: the entry's angle is copied out, but the actor is made with no angle. */
+void Spawner_SpawnHouseGuest(Spawner *self)
+{
+    VillagerTown *town = &data_021e5a2c;
+    if (in_session()) {
+        return;
+    }
+    int profile = SPAWNER_PROFILE_VILLAGER;
+    int spawn = 0;
+    Vec3 position = {0, 0, 0};
+    u16 person = SPAWNER_NO_PERSON;
+    u8 angle_unused[2];
+
+    int event = VillagerTown_CurrentEvent();
+    if (event == SPAWNER_NO_EVENT) {
+        u8 *appointment = PlayerRecord_VillagerPart(PlayerRecords_Current()) + SPAWNER_APPOINTMENT;
+        ItemObject *object = (ItemObject *) (void *) (appointment + SPAWNER_APPOINTMENT_OBJECT);
+        const NpcId *npc = (const NpcId *) (const void *) appointment;
+        int index = SPAWNER_NO_VILLAGER;
+        if (ItemObject_IsInUse(object) != 0 && ItemObject_Type(object) == SPAWNER_APPOINTMENT_TYPE) {
+            DateTime now = {0};
+            DateTime_Now(&now);
+            const DateTime *when = (const DateTime *) (const void *) (appointment + SPAWNER_APPOINTMENT_TIME);
+            int minutes = DateTime_MinutesBetween(when, &now);
+            if (ItemObject_Low5(object) == 0) {
+                if (minutes <= SPAWNER_APPOINTMENT_MINUTES) {
+                    index = VillagerRoster_IndexOf(town, npc);
+                }
+            } else if ((u32) ItemObject_Low5(object) < SPAWNER_APPOINTMENT_STEPS) {
+                if (minutes <= SPAWNER_APPOINTMENT_LATE_MINUTES) {
+                    index = VillagerRoster_IndexOf(town, npc);
+                    if (ActorTable_IsKindESlot((u32) index) && data_021d213c[index].in_use != 0) {
+                        spawner_entry_place(&data_021d213c[index], &position);
+                        MI_CpuCopy8(data_021d213c[index].angle, angle_unused, sizeof(angle_unused));
+                    }
+                } else {
+                    TownObjects_ClearExtraVisitors();
+                    u8 *villager = VillagerRoster_Find(town, npc);
+                    if (villager != NULL) {
+                        VillagerState_SettleState(VillagerStatus_StateEntry(villager));
+                    }
+                }
+            }
+        }
+        if (index != SPAWNER_NO_VILLAGER) {
+            person = spawner_villager_person(index);
+            profile = SPAWNER_PROFILE_GUEST;
+            spawn = 1;
+        }
+    } else if (event == SPAWNER_EVENT_10) {
+        if (SceneQuery_Is0(SceneQuery_Previous()) != 0) {
+            VillagerTown_PickIndex164(town);
+        }
+        int index = VillagerState_GetIndex164();
+        if (ActorTable_IsKindESlot((u32) index)) {
+            person = spawner_villager_person(index);
+            profile = SPAWNER_PROFILE_EVENT_GUEST;
+            if (SceneQuery_Is0(SceneQuery_Previous()) == 0 && data_021d213c[index].in_use != 0) {
+                spawner_entry_place(&data_021d213c[index], &position);
+                MI_CpuCopy8(data_021d213c[index].angle, angle_unused, sizeof(angle_unused));
+            }
+            spawn = 1;
+        }
+    }
+    if (spawn) {
+        Actor_Spawn(profile, person, &position, NULL, self);
+    }
+}
+CLEAN_AS(func_020856fc, Spawner_SpawnHouseGuest)
+
+/* func_020858ac: in the house of villager n (scenes 0x11-0x18), that villager, when valid: at
+ * its shared record's place and angle when the record is in use and func_020a7278 answers 0,
+ * else on a free tile (Spawner_PlaceOnFreeTile) facing a random quarter turn; nothing when
+ * there is none. Outside the session it is the event villager (index 0x162, profile 0x80) with
+ * its companion (index 0x163, profile 0x81, made after it on another free tile), the villager
+ * planning to move while it does (0x83), or in event 10 a villager with status 3 (0x86); else
+ * profile 0x85. */
+void Spawner_SpawnHouseOwner(Spawner *self)
+{
+    VillagerTown *town = &data_021e5a2c;
+    int index = SceneQuery_CurrentIndexIn11();
+    u8 *villager = VillagerRoster_At(town, index);
+    if (villager == NULL || NpcId_IsValid(TownVillager_NpcId(villager)) == 0) {
+        return;
+    }
+
+    u16 person = spawner_villager_person(index);
+    u16 companion = SPAWNER_NO_PERSON;
+    Vec3 position = {0, 0, 0};
+    s16 angle[3] = {0, 0, 0};
+
+    SceneShareEntry *record = SceneShareTable_SharedRecordE(&person);
+    int placed;
+    if (func_020a7278() == 0 && record != NULL && record->in_use != 0) {
+        spawner_entry_place(record, &position);
+        MI_CpuCopy8(record->angle, &angle[1], sizeof(angle[1]));
+        placed = 1;
+    } else {
+        placed = Spawner_PlaceOnFreeTile(self, &position);
+        angle[1] = spawner_random_quarter();
+    }
+    if (placed == 0) {
+        return;
+    }
+
+    int profile = SPAWNER_PROFILE_VILLAGER;
+    int companion_profile = SPAWNER_PROFILE_NONE;
+    if (!in_session()) {
+        if (index == VillagerState_GetIndex162()) {
+            profile = SPAWNER_PROFILE_EVENT_VILLAGER;
+            if (ActorTable_IsKindESlot((u32) VillagerState_GetIndex163())) {
+                companion = spawner_villager_person(VillagerState_GetIndex163());
+                companion_profile = SPAWNER_PROFILE_COMPANION;
+            }
+        } else if (index == VillagerMove_VillagerIndex(town)) {
+            if (VillagerMoveRecord_IsIdle(VillagerMove_Record(town)) == 0) {
+                profile = SPAWNER_PROFILE_MOVING;
+            }
+        } else if (VillagerTown_CurrentEvent() == SPAWNER_EVENT_10 &&
+                   VillagerStatus_Stay(villager) == SPAWNER_STATUS_STAYING) {
+            profile = SPAWNER_PROFILE_STAYING;
+        }
+    }
+
+    Actor_Spawn(profile, person, &position, angle, self);
+    if (companion_profile == SPAWNER_PROFILE_NONE) {
+        return;
+    }
+    if (((companion & 0xf000) >> 12) == SCENE_SHARE_KIND_E) {
+        Spawner_PlaceOnFreeTile(self, &position);
+        angle[1] = spawner_random_quarter();
+        Actor_Spawn(companion_profile, companion, &position, angle, self);
+    }
+}
+CLEAN_AS(func_020858ac, Spawner_SpawnHouseOwner)
+
+/* func_02085a30: as many of the villagers out in the town as NpcLookup_FourUnlessSlotTaken
+ * allows (counting those made), in order, as profile 0x84. By its shared record in use, each
+ * stands at the record's place and angle when the record is for the scene shown, else before
+ * its door. Without one, when func_020a7278 answers nonzero and its own entry is in use, it
+ * stands at the entry's place (kept off raised ground, Spawner_KeepOffRaisedGround) when the
+ * entry is for the scene shown, scene 0, scene 31 or scene 0x2c, else before its door. Else
+ * before its door. */
+void Spawner_PlaceTownVillagers(Spawner *self)
+{
+    VillagerTown *town = &data_021e5a2c;
+    int limit = NpcLookup_FourUnlessSlotTaken();
+    if (limit <= 0) {
+        return;
+    }
+    int made = 0;
+    for (int i = 0; i < SPAWNER_VILLAGERS && made < limit; i++) {
+        u8 *villager = VillagerRoster_At(town, i);
+        if (villager == NULL || NpcId_IsValid(TownVillager_NpcId(villager)) == 0 ||
+            VillagerRoster_IsOutside(town, TownVillager_NpcId(villager)) == 0) {
+            continue;
+        }
+        u8 scene = 0;
+        u16 person = spawner_villager_person(i);
+        Vec3 position = {0, 0, 0};
+        s16 angle[3] = {0, 0, 0};
+
+        SceneShareEntry *record = SceneShareTable_SharedRecordE(&person);
+        if (record != NULL && record->in_use != 0) {
+            PackedBytes_SplitScene(&record->scene, &scene, NULL);
+            if (scene == SceneQuery_Current()) {
+                spawner_entry_place(record, &position);
+                MI_CpuCopy8(record->angle, &angle[1], sizeof(angle[1]));
+            } else {
+                spawner_at_door(villager, &position);
+            }
+        } else if (func_020a7278() != 0 && data_021d213c[i].in_use != 0) {
+            SceneShareEntry *entry = &data_021d213c[i];
+            PackedBytes_SplitScene(&entry->scene, &scene, NULL);
+            if (scene != SceneQuery_Current() && SceneQuery_Is0(scene) == 0 && SceneQuery_Is31(scene) == 0 &&
+                scene != SPAWNER_SCENE_2C) {
+                spawner_at_door(villager, &position);
+            } else {
+                spawner_entry_place(entry, &position);
+                Spawner_KeepOffRaisedGround(villager, &position);
+            }
+        } else {
+            spawner_at_door(villager, &position);
+        }
+        if (Actor_Spawn(SPAWNER_PROFILE_OUTDOORS, person, &position, angle, self) != 0) {
+            made++;
+        }
+    }
+}
+CLEAN_AS(func_02085a30, Spawner_PlaceTownVillagers)
+
+/* func_02085be0: a villager of status 0 whose ground at `position` is not at height 0 is moved
+ * before its door. */
+void Spawner_KeepOffRaisedGround(u8 *villager, Vec3 *position)
+{
+    CollisionGround ground;
+    CollisionGround_Init(&ground, position, 0, 0);
+    if (VillagerStatus_Get(villager) == 0 && CollisionGround_GetHeight(&ground, 0) != 0) {
+        spawner_at_door(villager, position);
+    }
+    CollisionGround_Destroy(&ground);
+}
+CLEAN_AS(func_02085be0, Spawner_KeepOffRaisedGround)
+
+/* The entry a check answered, or NULL. */
+static const SpawnerEntry *spawner_answer(int result)
+{
+    return (const SpawnerEntry *) (intptr_t) result;
+}
+
+/* func_02085c2c: the code of the entry the checks would answer now (run without a check mode),
+ * 0xfff1 for none or when the check of profile 0x56 or of the events at data_020d06a4 answers.
+ * The events 0x3d, 0x3f and 0x40 count only while func_0209fa30 answers 0 for
+ * data_021f3b85. */
+void Spawner_PeekCode(u16 *code)
+{
+    int started = func_0209fa30(data_021f3b85);
+    int blocked = Spawner_CheckProfile56In(0);
+    if (blocked == 0) {
+        blocked = Spawner_CheckEvents06a4In(0);
+    }
+    const SpawnerEntry *entry;
+    if (blocked != 0) {
+        *code = SPAWNER_NO_PERSON;
+    } else if ((entry = spawner_answer(Spawner_CheckD00DIn(0))) != NULL) {
+        *code = entry->code;
+    } else if ((entry = spawner_answer(Spawner_CheckD002In(0))) != NULL) {
+        *code = entry->code;
+    } else if (started == 0 && Spawner_EventOn(EVENT_3D, NULL) != 0) {
+        *code = 0xd00e;
+    } else if ((entry = spawner_answer(Spawner_CheckD022In(0))) != NULL) {
+        *code = entry->code;
+    } else if ((entry = spawner_answer(Spawner_CheckD023In(0))) != NULL) {
+        *code = entry->code;
+    } else if ((entry = spawner_answer(Spawner_CheckEvents(data_020d0684, data_020d0654, data_020d0648, 0))) != NULL) {
+        *code = entry->code;
+    } else if (started == 0 && Spawner_EventOn(0x3f, NULL) != 0) {
+        *code = 0xd00a;
+    } else if (started == 0 && Spawner_EventOn(0x40, NULL) != 0) {
+        *code = 0xd00b;
+    } else if ((entry = spawner_answer(Spawner_CheckD020In(0))) != NULL) {
+        *code = entry->code;
+    } else {
+        *code = SPAWNER_NO_PERSON;
+    }
+}
+CLEAN_AS(func_02085c2c, Spawner_PeekCode)
+
+/* func_02085d2c: whether `event` is on at `when` (now when it is NULL), asked with a copy. */
+int Spawner_EventOn(u32 event, const DateTime *when)
+{
+    DateTime now = {0};
+    if (when == NULL) {
+        DateTime_Now(&now);
+        when = &now;
+    }
+    DateTime copy;
+    MI_CpuCopy8(when, &copy, sizeof(copy));
+    return func_0203fc78((int) event, &copy, 0) != 0;
+}
+CLEAN_AS(func_02085d2c, Spawner_EventOn)
+
+/* func_02085d6c: a random free tile of the grid in the spawner's part 0x50 (TileGrid_Build),
+ * of rows 0-13 (rows 14 and 15 are unmarked first), its centre into `position`. 0 when the
+ * grid cannot be built or has no free tile. */
+int Spawner_PlaceOnFreeTile(Spawner *self, Vec3 *position)
+{
+    TileGrid *grid = spawner_grid(self);
+    if (TileGrid_Build(grid) == 0) {
+        return 0;
+    }
+    for (u32 x = 0; x < TILE_GRID_SIZE; x++) {
+        TileGrid_Unmark(grid, x, TILE_GRID_SEARCH_ROWS);
+        TileGrid_Unmark(grid, x, TILE_GRID_SEARCH_ROWS + 1);
+    }
+    int count = 0;
+    for (u32 z = 0; z < TILE_GRID_SEARCH_ROWS; z++) {
+        for (u32 x = 0; x < TILE_GRID_SIZE; x++) {
+            if (TileGrid_IsMarked(grid, x, z)) {
+                count++;
+            }
+        }
+    }
+    if (count <= 0) {
+        return 0;
+    }
+    u32 pick = func_020644cc(count);
+    for (u32 z = 0; z < TILE_GRID_SEARCH_ROWS; z++) {
+        for (u32 x = 0; x < TILE_GRID_SIZE; x++) {
+            if (!TileGrid_IsMarked(grid, x, z)) {
+                continue;
+            }
+            if (pick == 0) {
+                AcreTile_TileCentre(position, x, z);
+                return 1;
+            }
+            pick--;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_02085d6c, Spawner_PlaceOnFreeTile)
+
+/* func_02085ed0: a new spawner (0x78 bytes, zeroed, from the auxiliary heap), or NULL.
+ * QUIRK: the base process's vtable is stored, then the spawner's, as a C++ constructor does. */
+Spawner *Spawner_New(void)
+{
+    Spawner *self = Heap_AllocAuxZeroed(sizeof(Spawner));
+    if (self != NULL) {
+        Process_Construct(&self->base);
+        self->base.vtable = data_020da13c;
+        self->base.vtable = data_020e1cc0;
+        Spawner_PartConstruct(self->part_50);
+    }
+    return self;
+}
+CLEAN_AS(func_02085ed0, Spawner_New)
+
+/* func_02085f04: the request's destructor (registered by __sinit_020c5f70); nothing to do. */
+void Spawner_RequestDestruct(void *request)
+{
+    (void) request;
+}
+CLEAN_AS(func_02085f04, Spawner_RequestDestruct)

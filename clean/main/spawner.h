@@ -130,4 +130,18 @@ void Spawner_SetRequest(SpawnerRequest *request, const u16 *profile, u8 scene, u
 void Spawner_PartDestruct(void *part);
 void Spawner_PartConstruct(void *part);
 
+/* The process's phases and the villagers it makes (the vtable's slots 0, 3 and 6). */
+int Spawner_Execute(void);
+int Spawner_Delete(Spawner *self);
+int Spawner_Create(Spawner *self);
+void Spawner_SpawnHouseGuest(Spawner *self);
+void Spawner_SpawnHouseOwner(Spawner *self);
+void Spawner_PlaceTownVillagers(Spawner *self);
+void Spawner_KeepOffRaisedGround(u8 *villager, Vec3 *position);
+void Spawner_PeekCode(u16 *code);
+int Spawner_EventOn(u32 event, const DateTime *when);
+int Spawner_PlaceOnFreeTile(Spawner *self, Vec3 *position);
+Spawner *Spawner_New(void);
+void Spawner_RequestDestruct(void *request);
+
 #endif

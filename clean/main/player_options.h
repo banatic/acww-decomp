@@ -60,5 +60,9 @@ void PlayerOptions_Store(void);
 void PlayerOptions_ChangeSetting(unsigned int setting);
 int PlayerOptions_CurrentSetting(void);
 void PlayerOptions_ChangeSound(int on);
+int PlayerOptions_SoundInUse(void);
+void PlayerOptions_ChangeFlag(int on);
+int PlayerOptions_FlagInUse(void);
+int PlayerOptions_InUse(void);
 
 #endif

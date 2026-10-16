@@ -7,6 +7,12 @@
 #include "main/fish_disp.h"
 #include "main/item_code.h"
 #include "main/scene_query.h"
+#include <string.h>
+#include "autoload_2/approach.h"
+#include "main/sound_emitter.h"
+#include "main/villager_data.h"
+#include "main/villager_roster.h"
+#include "ov004/member_pointer.h"
 
 static_assert(sizeof(Process) == 0x50, "Process size");
 static_assert(offsetof(Obj020dd33c, stage) == 0x58, "Obj020dd33c stage");
@@ -453,3 +459,238 @@ int Obj020dd33c_Begin(Obj020dd33c *obj, u16 *item, int look, u8 stage, int kind,
     return 0;
 }
 CLEAN_AS(func_020599a8, Obj020dd33c_Begin)
+
+/* ---- The process's own steps */
+
+/* func_02059ac4: the instance back to idle: no mode and no actors, no item, stage
+ * OBJ_020DD33C_NO_STAGE, no actor mode, the offsets and the scale at 0, not shown nor moving,
+ * the usual reach and no fish model. */
+void Obj020dd33c_Reset(Obj020dd33c *obj)
+{
+    obj->mode = 0;
+    for (int i = 0; i < 2; i++) {
+        obj->actors[i] = NULL;
+    }
+    obj->item = OBJ_020DD33C_NO_ITEM;
+    obj->stage = OBJ_020DD33C_NO_STAGE;
+    obj->frames = 0;
+    obj->phase = 0;
+    Obj020dd33c_ClearActorMode(obj);
+    obj->velocity.x = 0;
+    obj->velocity.y = 0;
+    obj->velocity.z = 0;
+    obj->offset.x = 0;
+    obj->offset.y = 0;
+    obj->offset.z = 0;
+    obj->scale.x = 0;
+    obj->scale.y = 0;
+    obj->scale.z = 0;
+    obj->shown = 0;
+    Obj020dd33c_SetMoving(obj, 0);
+    obj->reach = data_020cbafc;
+    obj->fish_model = -1;
+}
+CLEAN_AS(func_02059ac4, Obj020dd33c_Reset)
+
+/* func_02059b5c: the draw step: the item drawn (Obj020dd33c_Draw); always 1. */
+int Obj020dd33c_DrawStep(Obj020dd33c *obj)
+{
+    Obj020dd33c_Draw(obj);
+    return 1;
+}
+CLEAN_AS(func_02059b5c, Obj020dd33c_DrawStep)
+
+/* The mode handlers by mode, kind, and Enter or Update (obj_020dd33c_modes.c); a handler
+ * whose function word is 0 is not there. */
+#define OBJ_020DD33C_ENTER 0
+#define OBJ_020DD33C_UPDATE 1
+extern MemberPointer data_021c9460[OBJ_020DD33C_MODE_COUNT][2][2];
+
+/* func_02059b6c: the execute step, for a kind of 0 or 1 (nothing for another). A mode the
+ * first actor asked for (actor_mode below OBJ_020DD33C_MODE_COUNT) becomes the mode, from
+ * frame 0, its Enter handler runs and the request is cleared. Then, in a mode below
+ * OBJ_020DD33C_MODE_COUNT, its Update handler runs and the sound emitter is moved to the
+ * point. While the mode lets an actor anywhere count as near, the countdown at 0xd5 ticks.
+ * Always 1. */
+int Obj020dd33c_ExecuteStep(Obj020dd33c *obj)
+{
+    if (obj->kind < 0 || obj->kind >= 2) {
+        return 1;
+    }
+    if (obj->actor_mode < OBJ_020DD33C_MODE_COUNT) {
+        obj->mode = obj->actor_mode;
+        obj->frames = 0;
+        const MemberPointer *enter = &data_021c9460[obj->mode][obj->kind][OBJ_020DD33C_ENTER];
+        if (enter->function != 0) {
+            MemberPointer_CallVoid(enter, obj);
+        }
+        Obj020dd33c_ClearActorMode(obj);
+    }
+    if (obj->mode < OBJ_020DD33C_MODE_COUNT) {
+        const MemberPointer *update = &data_021c9460[obj->mode][obj->kind][OBJ_020DD33C_UPDATE];
+        if (update->function != 0) {
+            MemberPointer_CallVoid(update, obj);
+            Vec3 at = obj->point;
+            SoundEmitter_UpdateAtB((SoundEmitter *) (void *) obj->emitter, &at);
+        }
+    }
+    if (Obj020dd33c_ModeAllowsAway(obj) != 0) {
+        Countdown_Tick8(&obj->unk_d5);
+    }
+    return 1;
+}
+CLEAN_AS(func_02059b6c, Obj020dd33c_ExecuteStep)
+
+/* func_02059c40: the delete step: the instance's sound emitter's slot 0x10 called, and there
+ * is no instance any more. Always 1.
+ * REQUIRES: there is an instance (it is the object being deleted). */
+int Obj020dd33c_DeleteStep(void)
+{
+    SoundEmitter_Vfunc10B((SoundEmitter *) (void *) data_021c9350->emitter);
+    data_021c9350 = NULL;
+    return 1;
+}
+CLEAN_AS(func_02059c40, Obj020dd33c_DeleteStep)
+
+/* func_02059c60: the create step: the object reset, its sound emitter stopped, and it is the
+ * instance. Always 1. */
+int Obj020dd33c_CreateStep(Obj020dd33c *obj)
+{
+    Obj020dd33c_Reset(obj);
+    SoundEmitter_StopB((SoundEmitter *) (void *) obj->emitter);
+    data_021c9350 = obj;
+    return 1;
+}
+CLEAN_AS(func_02059c60, Obj020dd33c_CreateStep)
+
+/* func_02059c80: a new object from the auxiliary heap (zeroed): a process, given the scene
+ * objects' root vtable and then the class's, with no item and its sound emitter base made;
+ * NULL when there was no room. */
+Obj020dd33c *Obj020dd33c_New(void)
+{
+    Obj020dd33c *obj = Heap_AllocAuxZeroed(sizeof(Obj020dd33c));
+    if (obj != NULL) {
+        Process_Construct(&obj->base);
+        obj->base.vtable = data_020da13c;
+        obj->base.vtable = data_020dd33c;
+        obj->item = OBJ_020DD33C_NO_ITEM;
+        SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) obj->emitter);
+    }
+    return obj;
+}
+CLEAN_AS(func_02059c80, Obj020dd33c_New)
+
+/* ---- Where a held fish goes */
+
+/* The offsets of a held fish by holder shape, each an array by offset class. */
+extern Obj020dd33cFishOffsets *const data_020dd31c[];
+/* The size factor (20.12) of a held fish by offset class. */
+extern const u32 data_020cbb44[];
+
+/* The actor class (Actor.profile) whose holders always take the default shape. */
+#define OBJ_020DD33C_DEFAULT_SHAPE_PROFILE 9
+
+static int holder_shape(Actor *holder)
+{
+    if (holder->profile == OBJ_020DD33C_DEFAULT_SHAPE_PROFILE) {
+        return OBJ_020DD33C_SHAPE_DEFAULT;
+    }
+    return Obj020dd33c_HolderShape(holder);
+}
+
+/* func_02059cc4: the second offset of offset class `offset_class` for `holder`'s shape. */
+Vec3 *Obj020dd33c_FishSecondOffset(Actor *holder, int offset_class)
+{
+    return &data_020dd31c[holder_shape(holder)][offset_class].second;
+}
+CLEAN_AS(func_02059cc4, Obj020dd33c_FishSecondOffset)
+
+/* func_02059cf8: the first offset of offset class `offset_class` for `holder`'s shape. */
+Vec3 *Obj020dd33c_FishFirstOffset(Actor *holder, int offset_class)
+{
+    return &data_020dd31c[holder_shape(holder)][offset_class].first;
+}
+CLEAN_AS(func_02059cf8, Obj020dd33c_FishFirstOffset)
+
+/* The town's villagers. */
+extern VillagerTown data_021e5a2c;
+
+/* func_02059d28: the shape of `holder`, by the code in the low halfword of its word at 0x08:
+ * for 0xe000 + a villager's place, by the species of the villager there; three special
+ * characters (0xd00c, 0xd013, and 0xd012 or 0xd025) have their own; anything else the
+ * default.
+ * QUIRK: an empty villager place is asked for its species all the same. */
+int Obj020dd33c_HolderShape(Actor *holder)
+{
+    u32 word;
+    memcpy(&word, holder->unk_08, sizeof(word));
+    u16 code = (u16) word;
+    int shape = OBJ_020DD33C_SHAPE_DEFAULT;
+
+    switch (code >> 12) {
+        case 0xe:
+            switch (VillagerData_Species(VillagerRoster_At(&data_021e5a2c, code & 0x0fff))) {
+                case 0:
+                case 5:
+                case 6:
+                case 10:
+                case 12:
+                case 15:
+                case 16:
+                case 21:
+                case 25:
+                case 31:
+                case 32:
+                    shape = OBJ_020DD33C_SHAPE_SPECIES_A;
+                    break;
+                case 1:
+                case 2:
+                case 4:
+                case 7:
+                case 9:
+                case 13:
+                case 14:
+                case 17:
+                case 19:
+                case 20:
+                case 22:
+                case 23:
+                case 26:
+                case 27:
+                case 29:
+                    shape = OBJ_020DD33C_SHAPE_SPECIES_B;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case 0xd:
+            switch (code) {
+                case 0xd00c:
+                    shape = OBJ_020DD33C_SHAPE_D00C;
+                    break;
+                case 0xd013:
+                    shape = OBJ_020DD33C_SHAPE_D013;
+                    break;
+                case 0xd012:
+                case 0xd025:
+                    shape = OBJ_020DD33C_SHAPE_D012;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+    return shape;
+}
+CLEAN_AS(func_02059d28, Obj020dd33c_HolderShape)
+
+/* func_02059e10: the size factor of a held fish of offset class `offset_class`.
+ * REQUIRES: offset_class is one of the creature table's (0-6). */
+u32 Obj020dd33c_FishScale(u32 offset_class)
+{
+    return data_020cbb44[offset_class];
+}
+CLEAN_AS(func_02059e10, Obj020dd33c_FishScale)

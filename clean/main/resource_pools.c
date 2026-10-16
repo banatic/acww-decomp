@@ -395,3 +395,22 @@ void ResourcePools_Startup(void)
     ResourcePools_Heap4Startup(data_021fbe94);
 }
 CLEAN_AS(func_02078da4, ResourcePools_Startup)
+
+/* ---- The scene's count of heap4 heaps */
+
+#include "scene_query.h"
+#include "scene_tables.h"
+#include "session.h"
+
+extern NetSession *data_020ccf94; /* the session */
+
+/* func_02085f08: the scene's count of heap4 heaps (SceneTables_HeapCount), or 0 outdoors while
+ * this system's slot is taken in the session. */
+int ResourcePools_SceneHeapCount(void)
+{
+    if (data_020e54a8 == 0 && Session_IsSlotTaken(data_020ccf94, data_020ccf94->local_slot) != 0) {
+        return 0;
+    }
+    return SceneTables_HeapCount(SceneQuery_Current());
+}
+CLEAN_AS(func_02085f08, ResourcePools_SceneHeapCount)

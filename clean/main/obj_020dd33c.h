@@ -139,4 +139,34 @@ int Obj020dd33c_MakeLead(Obj020dd33c *obj, void *actor);
 int Obj020dd33c_IsActor(Obj020dd33c *obj, void *actor, unsigned int index);
 int Obj020dd33c_Begin(Obj020dd33c *obj, u16 *item, int look, u8 stage, int kind, Actor *first, Actor *second);
 
+/* The offsets a held fish is placed by (the table of data_020dd31c): for each holder shape
+ * (Obj020dd33c_HolderShape) and each offset class (CreatureTable_OffsetClass), two of them. */
+typedef struct Obj020dd33cFishOffsets {
+    Vec3 first;  /* 0x00: Obj020dd33c_FishFirstOffset */
+    Vec3 second; /* 0x0c: Obj020dd33c_FishSecondOffset */
+} Obj020dd33cFishOffsets;
+
+/* Obj020dd33c_HolderShape: those of three special characters, the default one (also of any
+ * holder of class 9) and the two the villagers' species fall into. */
+#define OBJ_020DD33C_SHAPE_D00C 0
+#define OBJ_020DD33C_SHAPE_D013 1
+#define OBJ_020DD33C_SHAPE_D012 2
+#define OBJ_020DD33C_SHAPE_DEFAULT 3
+#define OBJ_020DD33C_SHAPE_SPECIES_A 4
+#define OBJ_020DD33C_SHAPE_SPECIES_B 5
+
+/* The process's own steps (its class's vtable) and its making. */
+void Obj020dd33c_Reset(Obj020dd33c *obj);
+int Obj020dd33c_DrawStep(Obj020dd33c *obj);
+int Obj020dd33c_ExecuteStep(Obj020dd33c *obj);
+int Obj020dd33c_DeleteStep(void);
+int Obj020dd33c_CreateStep(Obj020dd33c *obj);
+Obj020dd33c *Obj020dd33c_New(void);
+
+/* Where a held fish goes, by its holder. */
+Vec3 *Obj020dd33c_FishSecondOffset(Actor *holder, int offset_class);
+Vec3 *Obj020dd33c_FishFirstOffset(Actor *holder, int offset_class);
+int Obj020dd33c_HolderShape(Actor *holder);
+u32 Obj020dd33c_FishScale(u32 offset_class);
+
 #endif

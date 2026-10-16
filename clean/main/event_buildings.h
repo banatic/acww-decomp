@@ -31,5 +31,6 @@ void EventBuildings_Put5012(void);
 int EventBuildings_RemoveAtSpot(int code);
 void EventBuildings_PutAtSpot(int code);
 u16 *EventBuildings_FindSpot(int *tile_x, int *tile_z);
+void EventBuildings_Clear1568(void);
 
 #endif
