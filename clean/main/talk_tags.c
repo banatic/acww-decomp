@@ -123,18 +123,6 @@ extern const s32 data_020cd40c;
 extern StateBlock data_021dc7a8;
 extern HouseRecord data_021ebcd4;
 
-/* The talk goes on with message `*message` of its file (func_0206844c, then the request
- * func_02068428 flags). */
-extern void func_0206b964(TalkTagsWalker *walker, const u8 *message);
-/* A failure note: empty in this build. */
-extern void func_0206bb9c(void *walker, int line, const void *label);
-/* Empty: handed a part of the talk, or nothing. */
-extern void func_0206b97c(TalkTagsWalker *walker, void *part);
-extern void func_0206b980(void);
-/* The talk's name `index` (0 to 3, at 0x18ac) or part `index` (0 to 10) walked in place of
- * the tag. */
-extern void func_0206b984(TalkTagsWalker *walker, int index);
-extern void func_0206ba08(TalkTagsWalker *walker, int index);
 /* The texts of the villager loaded into the talk: 0 when they could not be. */
 extern int func_0206781c(u8 *talk);
 extern int func_02067728(u8 *talk);
@@ -209,7 +197,7 @@ static int talk_tags_characters(const void *object)
 /* The talk goes on with `message`. */
 static void talk_tags_go_to(TalkTagsWalker *walker, u8 message)
 {
-    func_0206b964(walker, &message);
+    TalkTags_GoToMessage(walker, &message);
 }
 
 /* A text the talk loaded (`loaded`: whether the load worked) walked in place of the tag between
@@ -220,7 +208,7 @@ static void talk_tags_put_loaded(TalkTagsWalker *walker, int loaded, int line, c
                                  s32 ro_after_rieul)
 {
     if (loaded == 0) {
-        func_0206bb9c(walker, line, label);
+        TalkTags_FailureNote(walker, line, label);
     }
     if (colour_after >= 0) {
         MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
@@ -237,28 +225,28 @@ static void talk_tags_put_loaded(TalkTagsWalker *walker, int loaded, int line, c
 /* func_020694b4 (tag 11/7): part 2 of the talk handed to the empty func_0206b97c. */
 void TalkTags_NotePart2(TalkTagsWalker *walker)
 {
-    func_0206b97c(walker, talk_tags_at(walker, TALK_TAGS_PARTS + 2 * TALK_TAGS_PART_SIZE));
+    TalkTags_NotePart(walker, talk_tags_at(walker, TALK_TAGS_PARTS + 2 * TALK_TAGS_PART_SIZE));
 }
 CLEAN_AS(func_020694b4, TalkTags_NotePart2)
 
 /* func_020694c8 (tag 11/6): part 1, likewise. */
 void TalkTags_NotePart1(TalkTagsWalker *walker)
 {
-    func_0206b97c(walker, talk_tags_at(walker, TALK_TAGS_PARTS + 1 * TALK_TAGS_PART_SIZE));
+    TalkTags_NotePart(walker, talk_tags_at(walker, TALK_TAGS_PARTS + 1 * TALK_TAGS_PART_SIZE));
 }
 CLEAN_AS(func_020694c8, TalkTags_NotePart1)
 
 /* func_020694dc (tag 11/5): part 0, likewise. */
 void TalkTags_NotePart0(TalkTagsWalker *walker)
 {
-    func_0206b97c(walker, talk_tags_at(walker, TALK_TAGS_PARTS));
+    TalkTags_NotePart(walker, talk_tags_at(walker, TALK_TAGS_PARTS));
 }
 CLEAN_AS(func_020694dc, TalkTags_NotePart0)
 
 /* func_020694f0 (tag 11/4): the empty func_0206b980. */
 void TalkTags_Nothing11_4(void)
 {
-    func_0206b980();
+    TalkTags_NoteNothing();
 }
 CLEAN_AS(func_020694f0, TalkTags_Nothing11_4)
 
@@ -405,7 +393,7 @@ void TalkTags_BranchBySpecies(TalkTagsWalker *walker)
             other = 1;
         }
     } else {
-        func_0206bb9c(walker, TALK_TAGS_NOTE_SPECIES, data_020df138);
+        TalkTags_FailureNote(walker, TALK_TAGS_NOTE_SPECIES, data_020df138);
     }
     talk_tags_go_to(walker, messages[other]);
 }
@@ -608,7 +596,7 @@ void TalkTags_BranchByFondness(TalkTagsWalker *walker)
             index = 1;
         }
     } else {
-        func_0206bb9c(walker, TALK_TAGS_NOTE_FONDNESS, data_020df140);
+        TalkTags_FailureNote(walker, TALK_TAGS_NOTE_FONDNESS, data_020df140);
     }
     talk_tags_go_to(walker, messages[index]);
 }
@@ -717,105 +705,105 @@ CLEAN_AS(func_02069e98, TalkTags_PutImpression)
 /* func_02069f00 (tag 4/29): the talk's name 3. */
 void TalkTags_PutName3(TalkTagsWalker *walker)
 {
-    func_0206b984(walker, 3);
+    TalkTags_PutName(walker, 3);
 }
 CLEAN_AS(func_02069f00, TalkTags_PutName3)
 
 /* func_02069f0c (tag 4/28): the talk's name 2. */
 void TalkTags_PutName2(TalkTagsWalker *walker)
 {
-    func_0206b984(walker, 2);
+    TalkTags_PutName(walker, 2);
 }
 CLEAN_AS(func_02069f0c, TalkTags_PutName2)
 
 /* func_02069f18 (tag 4/27): the talk's name 1. */
 void TalkTags_PutName1(TalkTagsWalker *walker)
 {
-    func_0206b984(walker, 1);
+    TalkTags_PutName(walker, 1);
 }
 CLEAN_AS(func_02069f18, TalkTags_PutName1)
 
 /* func_02069f24 (tag 4/26): the talk's name 0. */
 void TalkTags_PutName0(TalkTagsWalker *walker)
 {
-    func_0206b984(walker, 0);
+    TalkTags_PutName(walker, 0);
 }
 CLEAN_AS(func_02069f24, TalkTags_PutName0)
 
 /* func_02069f30 (tag 4/25): the talk's part 10. */
 void TalkTags_PutPart10(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 10);
+    TalkTags_PutPart(walker, 10);
 }
 CLEAN_AS(func_02069f30, TalkTags_PutPart10)
 
 /* func_02069f3c (tag 4/24): the talk's part 9. */
 void TalkTags_PutPart9(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 9);
+    TalkTags_PutPart(walker, 9);
 }
 CLEAN_AS(func_02069f3c, TalkTags_PutPart9)
 
 /* func_02069f48 (tag 4/23): the talk's part 8. */
 void TalkTags_PutPart8(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 8);
+    TalkTags_PutPart(walker, 8);
 }
 CLEAN_AS(func_02069f48, TalkTags_PutPart8)
 
 /* func_02069f54 (tag 4/22): the talk's part 7. */
 void TalkTags_PutPart7(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 7);
+    TalkTags_PutPart(walker, 7);
 }
 CLEAN_AS(func_02069f54, TalkTags_PutPart7)
 
 /* func_02069f60 (tag 4/21): the talk's part 6. */
 void TalkTags_PutPart6(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 6);
+    TalkTags_PutPart(walker, 6);
 }
 CLEAN_AS(func_02069f60, TalkTags_PutPart6)
 
 /* func_02069f6c (tag 4/20): the talk's part 5. */
 void TalkTags_PutPart5(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 5);
+    TalkTags_PutPart(walker, 5);
 }
 CLEAN_AS(func_02069f6c, TalkTags_PutPart5)
 
 /* func_02069f78 (tag 4/19): the talk's part 4. */
 void TalkTags_PutPart4(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 4);
+    TalkTags_PutPart(walker, 4);
 }
 CLEAN_AS(func_02069f78, TalkTags_PutPart4)
 
 /* func_02069f84 (tag 4/18): the talk's part 3. */
 void TalkTags_PutPart3(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 3);
+    TalkTags_PutPart(walker, 3);
 }
 CLEAN_AS(func_02069f84, TalkTags_PutPart3)
 
 /* func_02069f90 (tag 4/17): the talk's part 2. */
 void TalkTags_PutPart2(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 2);
+    TalkTags_PutPart(walker, 2);
 }
 CLEAN_AS(func_02069f90, TalkTags_PutPart2)
 
 /* func_02069f9c (tag 4/16): the talk's part 1. */
 void TalkTags_PutPart1(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 1);
+    TalkTags_PutPart(walker, 1);
 }
 CLEAN_AS(func_02069f9c, TalkTags_PutPart1)
 
 /* func_02069fa8 (tag 4/15): the talk's part 0. */
 void TalkTags_PutPart0(TalkTagsWalker *walker)
 {
-    func_0206ba08(walker, 0);
+    TalkTags_PutPart(walker, 0);
 }
 CLEAN_AS(func_02069fa8, TalkTags_PutPart0)
 
@@ -824,7 +812,7 @@ CLEAN_AS(func_02069fa8, TalkTags_PutPart0)
 void TalkTags_PutOtherPlayer(TalkTagsWalker *walker)
 {
     if (func_0206786c(walker->talk) == 0) {
-        func_0206bb9c(walker, TALK_TAGS_NOTE_OTHER_PLAYER, data_020df178);
+        TalkTags_FailureNote(walker, TALK_TAGS_NOTE_OTHER_PLAYER, data_020df178);
     }
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
     MessageWalker_Enter(&walker->base, talk_tags_characters(talk_tags_at(walker, TALK_TAGS_OTHER_PLAYER)));
@@ -1585,3 +1573,431 @@ void TalkTags_DispatchGroup0(TalkTagsWalker *walker)
     talk_tags_dispatch(walker, &data_021cda78, data_021cdc84, constants, 11);
 }
 CLEAN_AS(func_0206b750, TalkTags_DispatchGroup0)
+
+/* ---- The walker itself: the table by group, its slots, and pacing the text */
+
+#include "autoload_2/heap.h"
+#include "talk_page.h"
+#include "talk_span.h"
+
+/* The parts of a talk used below. */
+#define TALK_TAGS_NAMES 0x18ac        /* four names (text objects, TALK_TAGS_PART_SIZE bytes) */
+#define TALK_TAGS_NAME_COLOURS 0x1a1c /* the colour tag put after each name */
+#define TALK_TAGS_COLOUR 0x1a54       /* the colour of the text shown (set by tag 0xff/0) */
+
+/* The characters that do not count towards a frame's share: a newline, which begins a line,
+ * and the ideographic space. */
+#define TALK_TAGS_NEWLINE 0x000a
+#define TALK_TAGS_WIDE_SPACE 0x3000
+
+/* A page holds three lines. */
+#define TALK_TAGS_PAGE_LINES 3
+
+/* The characters let through a frame (1 and 2 alternately, 3 when hurried), and the pause the
+ * walker takes off at each frame (1.5 frames in 20.12 fixed point). */
+#define TALK_TAGS_SHARE_SLOW 1
+#define TALK_TAGS_SHARE_FAST 2
+#define TALK_TAGS_SHARE_HURRIED 3
+#define TALK_TAGS_PAUSE_STEP 0x1800
+
+/* The vtables of this class and of its base class. */
+extern const u8 data_020defe4[];
+extern const u8 data_020e3e68[];
+
+/* The table of the groups (a function-local static of the game) and the handler of group
+ * 0xff. */
+extern u32 data_021cda98;
+extern MemberPointer data_021cdd34[12];
+extern const MemberPointer data_020ded94, data_020ded8c, data_020de9cc, data_020ded7c, data_020ded74, data_020ded6c,
+    data_020ded64, data_020ded5c, data_020de9b4, data_020ded4c, data_020de9ac, data_020ded3c, data_020de99c;
+
+/* The talk set to go on with message `*message` (no name), and asked to (byte 0x1e92). */
+extern void func_0206844c(u8 *talk, const u8 *message, const char *name);
+extern void func_02068428(u8 *talk);
+/* The character pushed onto the talk's last characters (at 0x1a2c); those cleared and the
+ * talk's byte 0x1e97 cleared. */
+extern void func_02068104(u8 *talk, int character);
+extern void func_020680d0(u8 *talk);
+/* A character turned into its other form. */
+extern int func_02050bdc_unk(int character);
+
+/* The span at 0x60 (the characters after a 0xff/2 tag) and at 0x9c (the tag's own text). */
+static TalkSpan *talk_tags_span_after(TalkTagsWalker *walker)
+{
+    return (TalkSpan *) (void *) walker->unk_60;
+}
+
+static TalkSpan *talk_tags_span_own(TalkTagsWalker *walker)
+{
+    return (TalkSpan *) (void *) walker->unk_9c;
+}
+
+/* func_0206b840: the tag handled by the table of its group (TalkTags_DispatchGroup0 to
+ * TalkTags_DispatchGroup11, TalkTags_DispatchGroupFF).
+ * REQUIRES: the group is 0 to 11 or 0xff: for another the ROM calls the null member pointer
+ * (at address 0). */
+void TalkTags_DispatchTag(TalkTagsWalker *walker)
+{
+    static const MemberPointer *const constants[12] = {
+        &data_020ded94, &data_020ded8c, &data_020de9cc, &data_020ded7c, &data_020ded74, &data_020ded6c,
+        &data_020ded64, &data_020ded5c, &data_020de9b4, &data_020ded4c, &data_020de9ac, &data_020ded3c,
+    };
+    MemberTable_InitOnce(&data_021cda98, data_021cdd34, constants, 12);
+    s32 group = (s32) walker->tag.group;
+    const MemberPointer *handler = &__ptmf_null;
+    if (group == 0xff) {
+        handler = &data_020de99c;
+    } else if (group < 12) {
+        handler = &data_021cdd34[group];
+    }
+    MemberPointer_CallVoid(handler, walker);
+}
+CLEAN_AS(func_0206b840, TalkTags_DispatchTag)
+
+/* func_0206b964: the talk goes on with message `*message` of its file. */
+void TalkTags_GoToMessage(TalkTagsWalker *walker, const u8 *message)
+{
+    func_0206844c(walker->talk, message, NULL);
+    func_02068428(walker->talk);
+}
+CLEAN_AS(func_0206b964, TalkTags_GoToMessage)
+
+/* func_0206b97c: empty: handed a part of the talk (tags 11/5 to 11/7). */
+void TalkTags_NotePart(TalkTagsWalker *walker, void *part)
+{
+    (void) walker;
+    (void) part;
+}
+CLEAN_AS(func_0206b97c, TalkTags_NotePart)
+
+/* func_0206b980: empty (tag 11/4). */
+void TalkTags_NoteNothing(void) {}
+CLEAN_AS(func_0206b980, TalkTags_NoteNothing)
+
+/* The characters of `text` kept as the last syllable for the particles, and their
+ * ro_after_rieul set. */
+static void talk_tags_keep_last_syllable(TalkTagsWalker *walker, const void *text)
+{
+    MailParticles_TakeLastSyllable((MailTextParticles *) (void *) talk_tags_at(walker, TALK_TAGS_PARTICLES),
+                                   (const char *) (uintptr_t) talk_tags_characters(text));
+    *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_RO_AFTER_RIEUL) = 1;
+}
+
+/* func_0206b984: the talk's name `index` (0 to 3) walked in place of the tag, between the
+ * walker's name colour and the colour the talk keeps for after that name. */
+void TalkTags_PutName(TalkTagsWalker *walker, int index)
+{
+    const void *name = talk_tags_at(walker, TALK_TAGS_NAMES + (u32) index * TALK_TAGS_PART_SIZE);
+    s32 colour_after = *(const s32 *) (const void *) talk_tags_at(walker, TALK_TAGS_NAME_COLOURS + (u32) index * 4);
+    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
+    MessageWalker_Enter(&walker->base, talk_tags_characters(name));
+    MessageWalker_Enter(&walker->base, MessageTag_ColourTag(colour_after));
+    TalkTags_ClearE0(walker);
+    talk_tags_keep_last_syllable(walker, name);
+}
+CLEAN_AS(func_0206b984, TalkTags_PutName)
+
+/* func_0206ba08: the talk's part `index` (0 to 10) walked in place of the tag. */
+void TalkTags_PutPart(TalkTagsWalker *walker, int index)
+{
+    const void *part = talk_tags_at(walker, TALK_TAGS_PARTS + (u32) index * TALK_TAGS_PART_SIZE);
+    MessageWalker_Enter(&walker->base, talk_tags_characters(part));
+    TalkTags_ClearE0(walker);
+    talk_tags_keep_last_syllable(walker, part);
+}
+CLEAN_AS(func_0206ba08, TalkTags_PutPart)
+
+/* func_0206ba64: the setting of tags 11/1 and 11/2 cleared (the ROM's callers also hand it the
+ * text and a flag, which it does not read). */
+void TalkTags_ClearE0(TalkTagsWalker *walker)
+{
+    walker->unk_e0 = 0;
+}
+CLEAN_AS(func_0206ba64, TalkTags_ClearE0)
+
+/* This frame's share of characters used up: the next frame lets the other share through. */
+static void talk_tags_next_share(TalkTagsWalker *walker)
+{
+    walker->unk_50 = 0;
+    walker->unk_54++;
+    if (walker->unk_54 >= 2) {
+        walker->unk_54 = 0;
+    }
+}
+
+/* func_0206ba6c: whether the walk may go on this frame (each character counted in unk_50, the
+ * share alternating with unk_54, a pause counting down in unk_58):
+ * - held (flag 1): not this frame, and no longer held;
+ * - shown at once (speed or flag): the spans run to their ends, and on;
+ * - hurried (flag 0, unless the speed is steady or flag 3 forbids it): the pause dropped and 3
+ *   characters a frame;
+ * - while a pause lasts: 1.5 frames off it, and not on;
+ * - else the spans stepped with each character until the frame's share is used up. */
+int TalkTags_Pace(TalkTagsWalker *walker)
+{
+    int whole = walker->unk_34 == TALK_TAGS_SPEED_INSTANT || walker->unk_4c[TALK_TAGS_FLAG_INSTANT] != 0;
+    if (walker->unk_4c[TALK_TAGS_FLAG_HOLD] != 0) {
+        walker->unk_4c[TALK_TAGS_FLAG_HOLD] = 0;
+        return 0;
+    }
+    if (whole) {
+        walker->unk_50 = 0;
+        walker->unk_54 = 0;
+        walker->unk_58 = 0;
+        while (!TalkTags_SpansIdle(walker)) {
+            TalkTags_StepSpans(walker);
+        }
+        return 1;
+    }
+    int hurried = walker->unk_34 != TALK_TAGS_SPEED_STEADY && walker->unk_4c[TALK_TAGS_FLAG_NO_HURRY] == 0 &&
+                  walker->unk_4c[TALK_TAGS_FLAG_HURRY] != 0;
+    if (hurried) {
+        walker->unk_58 = 0;
+    }
+    if (walker->unk_58 > 0) {
+        walker->unk_58 -= TALK_TAGS_PAUSE_STEP;
+        return 0;
+    }
+    s32 share = walker->unk_54 == 0 ? TALK_TAGS_SHARE_SLOW : TALK_TAGS_SHARE_FAST;
+    if (hurried) {
+        share = TALK_TAGS_SHARE_HURRIED;
+    }
+    if (walker->unk_50 >= share) {
+        talk_tags_next_share(walker);
+        return 0;
+    }
+    while (!TalkTags_SpansIdle(walker)) {
+        TalkTags_StepSpans(walker);
+        walker->unk_50++;
+        if (walker->unk_50 >= share) {
+            talk_tags_next_share(walker);
+            return 0;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_0206ba6c, TalkTags_Pace)
+
+/* func_0206bb5c: both spans stepped by a character. */
+void TalkTags_StepSpans(TalkTagsWalker *walker)
+{
+    TalkSpan_Step(talk_tags_span_after(walker));
+    TalkSpan_Step(talk_tags_span_own(walker));
+}
+CLEAN_AS(func_0206bb5c, TalkTags_StepSpans)
+
+/* func_0206bb74: whether both spans are stopped (the second is not asked when the first runs). */
+int TalkTags_SpansIdle(TalkTagsWalker *walker)
+{
+    return TalkSpan_IsIdle(talk_tags_span_after(walker)) && TalkSpan_IsIdle(talk_tags_span_own(walker));
+}
+CLEAN_AS(func_0206bb74, TalkTags_SpansIdle)
+
+/* func_0206bb9c: a failure note (a line number and a label): empty in this build. */
+void TalkTags_FailureNote(void *walker, int line, const void *label)
+{
+    (void) walker;
+    (void) line;
+    (void) label;
+}
+CLEAN_AS(func_0206bb9c, TalkTags_FailureNote)
+
+/* func_0206bba0 (slot 6): whether the walk goes on: not on a full page, a stop or the choices
+ * (the frame's counts cleared; a stop keeps the pause), on while running as TalkTags_Pace
+ * says, and on in the other states. */
+int TalkTags_WantsMore(TalkTagsWalker *walker)
+{
+    switch (walker->state) {
+        case TALK_TAGS_STATE_PAGE_FULL:
+        case TALK_TAGS_STATE_CHOOSING:
+            walker->unk_50 = 0;
+            walker->unk_54 = 0;
+            walker->unk_58 = 0;
+            return 0;
+        case TALK_TAGS_STATE_STOP_KEEP:
+            walker->unk_50 = 0;
+            walker->unk_54 = 0;
+            return 0;
+        case TALK_TAGS_STATE_RUNNING:
+            return TalkTags_Pace(walker) != 0;
+        default:
+            return 1;
+    }
+}
+CLEAN_AS(func_0206bba0, TalkTags_WantsMore)
+
+/* func_0206bbdc (slot 5): the tag at `position` read and handled. */
+void TalkTags_OnTag(TalkTagsWalker *walker, int position)
+{
+    MessageTag_Read(&walker->tag, position);
+    TalkTags_DispatchTag(walker);
+}
+CLEAN_AS(func_0206bbdc, TalkTags_OnTag)
+
+/* func_0206bbf4 (slot 4): a character shown (first turned into its other form after tag 11/3):
+ * put into the page, where a newline begins a line (the third fills the page); pushed onto the
+ * talk's last characters; the pause flag cleared; counted towards the frame's share unless it
+ * is a newline or an ideographic space. At the address unk_dc the walk comes back from the
+ * text it entered. */
+void TalkTags_OnCharacter(TalkTagsWalker *walker, int character)
+{
+    if (walker->convert_next != 0) {
+        character = func_02050bdc_unk(character);
+        walker->convert_next = 0;
+    }
+    int newline = character == TALK_TAGS_NEWLINE;
+    int wide_space = character == TALK_TAGS_WIDE_SPACE;
+    TalkPage_PutChar(walker->window, character);
+    if (newline) {
+        TalkPage_BeginLine(walker->window, (int) walker->base.position);
+        walker->lines++;
+        if ((u32) walker->lines >= TALK_TAGS_PAGE_LINES) {
+            walker->state = TALK_TAGS_STATE_PAGE_FULL;
+        }
+    }
+    func_02068104(walker->talk, character);
+    *talk_tags_at(walker, TALK_TAGS_PAUSED) = 0;
+    if (!wide_space && !newline) {
+        walker->unk_50++;
+    }
+    if (walker->base.position == walker->unk_dc) {
+        walker->unk_dc = 0;
+        MessageWalker_Return(&walker->base);
+    }
+}
+CLEAN_AS(func_0206bbf4, TalkTags_OnCharacter)
+
+/* func_0206bc98 (slot 3): the text ended. */
+void TalkTags_OnEnd(TalkTagsWalker *walker)
+{
+    walker->state = TALK_TAGS_STATE_ENDED;
+    TalkPage_Nothing();
+}
+CLEAN_AS(func_0206bc98, TalkTags_OnEnd)
+
+/* func_0206bca8 (slot 2): a text set: running, with no line, flag, count or pause, the page
+ * emptied and its first line begun, the talk's last characters cleared, and the talk's copies
+ * of the instant and pause flags cleared. */
+void TalkTags_OnText(TalkTagsWalker *walker)
+{
+    walker->state = TALK_TAGS_STATE_RUNNING;
+    walker->lines = 0;
+    walker->unk_4c[0] = 0;
+    walker->unk_4c[1] = 0;
+    walker->unk_4c[2] = 0;
+    walker->unk_4c[3] = 0;
+    walker->unk_50 = 0;
+    walker->unk_54 = 0;
+    walker->unk_58 = 0;
+    TalkPage_ClearPlain(walker->window);
+    TalkPage_BeginLine(walker->window, (int) walker->base.position);
+    func_020680d0(walker->talk);
+    walker->convert_next = 0;
+    walker->unk_dc = 0;
+    walker->unk_e0 = 0;
+    *talk_tags_at(walker, TALK_TAGS_INSTANT_COPY) = 0;
+    *talk_tags_at(walker, TALK_TAGS_PAUSED) = 0;
+}
+CLEAN_AS(func_0206bca8, TalkTags_OnText)
+
+/* func_0206bd14: the name colour and the talk's text colour back to 0. */
+void TalkTags_ResetColour(TalkTagsWalker *walker)
+{
+    walker->name_colour = 0;
+    *(u32 *) (void *) talk_tags_at(walker, TALK_TAGS_COLOUR) = 0;
+}
+CLEAN_AS(func_0206bd14, TalkTags_ResetColour)
+
+/* func_0206bd24: no longer asked to hurry. */
+void TalkTags_ClearHurry(TalkTagsWalker *walker)
+{
+    walker->unk_4c[TALK_TAGS_FLAG_HURRY] = 0;
+}
+CLEAN_AS(func_0206bd24, TalkTags_ClearHurry)
+
+/* func_0206bd2c: asked to hurry, unless the walk cannot be hurried. */
+void TalkTags_Hurry(TalkTagsWalker *walker)
+{
+    if (walker->unk_4c[TALK_TAGS_FLAG_NO_HURRY] == 0) {
+        walker->unk_4c[TALK_TAGS_FLAG_HURRY] = 1;
+    }
+}
+CLEAN_AS(func_0206bd2c, TalkTags_Hurry)
+
+/* NNS_G2dSetRndCore3DSoftSpriteZvalue (0x0206bd40, a misnamed symbol): the message's speed
+ * (func_0206741c hands it the value of the message's kind, and keeps whether it is
+ * TALK_TAGS_SPEED_INSTANT in the talk's byte 0x1a48). */
+void TalkTags_SetSpeed(TalkTagsWalker *walker, int speed)
+{
+    walker->unk_34 = speed;
+}
+CLEAN_AS(NNS_G2dSetRndCore3DSoftSpriteZvalue, TalkTags_SetSpeed)
+
+/* func_0206bd44: a new page: no line shown, the page emptied in the name colour, and its first
+ * line begun where the walk is. */
+void TalkTags_NewPage(TalkTagsWalker *walker)
+{
+    walker->lines = 0;
+    TalkPage_Nothing();
+    TalkPage_Clear(walker->window, walker->name_colour);
+    TalkPage_BeginLine(walker->window, (int) walker->base.position);
+    walker->convert_next = 0;
+    walker->unk_e0 = 0;
+}
+CLEAN_AS(func_0206bd44, TalkTags_NewPage)
+
+/* The walker destroyed: its spans (the second first), then as a base walker. */
+static void talk_tags_destroy(TalkTagsWalker *walker)
+{
+    walker->base.vtable = data_020defe4;
+    TalkSpan_Destruct(talk_tags_span_own(walker));
+    TalkSpan_Destruct(talk_tags_span_after(walker));
+    walker->base.vtable = data_020e3e68;
+    MessageWalker_BaseDestruct(walker);
+}
+
+/* func_0206bd74 (vtable slot 1): destroyed and freed. */
+void *TalkTags_Delete(void *walker)
+{
+    talk_tags_destroy(walker);
+    Heap_OperatorDeleteB(walker);
+    return walker;
+}
+CLEAN_AS(func_0206bd74, TalkTags_Delete)
+
+/* func_0206bdac (vtable slot 0) */
+void *TalkTags_Destruct(void *walker)
+{
+    talk_tags_destroy(walker);
+    return walker;
+}
+CLEAN_AS(func_0206bdac, TalkTags_Destruct)
+
+/* func_0206bde0: an idle walker of `talk` writing into `page`, and its two spans. */
+TalkTagsWalker *TalkTags_Construct(TalkTagsWalker *walker, u8 *talk, void *page)
+{
+    MessageWalker_Construct(&walker->base);
+    walker->base.vtable = data_020defe4;
+    walker->talk = talk;
+    walker->window = page;
+    walker->lines = 0;
+    walker->state = TALK_TAGS_STATE_IDLE;
+    walker->unk_34 = TALK_TAGS_SPEED_NORMAL;
+    MessageTag_Construct(&walker->tag);
+    walker->unk_4c[0] = 0;
+    walker->unk_4c[1] = 0;
+    walker->unk_4c[2] = 0;
+    walker->unk_4c[3] = 0;
+    walker->unk_50 = 0;
+    walker->unk_54 = 0;
+    walker->unk_58 = 0;
+    walker->name_colour = 0;
+    TalkSpan_Construct(talk_tags_span_after(walker), talk, page);
+    TalkSpan_Construct(talk_tags_span_own(walker), talk, page);
+    walker->choices_shown = 0;
+    walker->convert_next = 0;
+    walker->unk_dc = 0;
+    walker->unk_e0 = 0;
+    return walker;
+}
+CLEAN_AS(func_0206bde0, TalkTags_Construct)

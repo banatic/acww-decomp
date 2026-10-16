@@ -219,4 +219,53 @@ void TalkTags_DispatchGroup2(TalkTagsWalker *walker);
 void TalkTags_DispatchGroup1(TalkTagsWalker *walker);
 void TalkTags_DispatchGroup0(TalkTagsWalker *walker);
 
+/* ---- The walker itself: its vtable (data_020defe4) after the base class's (message_walker.h)
+ * holds the destructor, the deleting destructor, then slots 2 (the text was set:
+ * TalkTags_OnText), 3 (the end: TalkTags_OnEnd), 4 (a character: TalkTags_OnCharacter), 5 (a
+ * tag: TalkTags_OnTag) and 6 (whether to go on: TalkTags_WantsMore).
+ *
+ * The talk shows its text a few characters a frame: the walk goes on while slot 6 says so, and
+ * TalkTags_Pace lets 1 and 2 characters through on alternate frames (3 when hurried), each
+ * also stepping the two spans of a 0xff/2 tag (talk_span.h, at 0x60 and 0x9c). The characters go
+ * into the page of the talk's window (talk_page.h, the walker's word at 0x28). */
+
+/* TalkTagsWalker.state, besides TALK_TAGS_STATE_STOP_KEEP and TALK_TAGS_STATE_CHOOSING. */
+#define TALK_TAGS_STATE_IDLE 0
+#define TALK_TAGS_STATE_RUNNING 1   /* the text is being shown */
+#define TALK_TAGS_STATE_PAGE_FULL 2 /* three lines are shown: the walk waits */
+#define TALK_TAGS_STATE_ENDED 3
+
+/* TalkTagsWalker.unk_34: the message's speed (from its kind, set by TalkTags_SetSpeed). */
+#define TALK_TAGS_SPEED_NORMAL 0
+#define TALK_TAGS_SPEED_INSTANT 1 /* the whole text at once */
+#define TALK_TAGS_SPEED_STEADY 2  /* never hurried */
+
+/* The walker's flag at 0x4d (TalkTagsWalker.unk_4c[1]): the next frame shows nothing. */
+#define TALK_TAGS_FLAG_HOLD 1
+
+void TalkTags_DispatchTag(TalkTagsWalker *walker);
+void TalkTags_GoToMessage(TalkTagsWalker *walker, const u8 *message);
+void TalkTags_NotePart(TalkTagsWalker *walker, void *part);
+void TalkTags_NoteNothing(void);
+void TalkTags_PutName(TalkTagsWalker *walker, int index);
+void TalkTags_PutPart(TalkTagsWalker *walker, int index);
+void TalkTags_ClearE0(TalkTagsWalker *walker);
+int TalkTags_Pace(TalkTagsWalker *walker);
+void TalkTags_StepSpans(TalkTagsWalker *walker);
+int TalkTags_SpansIdle(TalkTagsWalker *walker);
+void TalkTags_FailureNote(void *walker, int line, const void *label);
+int TalkTags_WantsMore(TalkTagsWalker *walker);
+void TalkTags_OnTag(TalkTagsWalker *walker, int position);
+void TalkTags_OnCharacter(TalkTagsWalker *walker, int character);
+void TalkTags_OnEnd(TalkTagsWalker *walker);
+void TalkTags_OnText(TalkTagsWalker *walker);
+void TalkTags_ResetColour(TalkTagsWalker *walker);
+void TalkTags_ClearHurry(TalkTagsWalker *walker);
+void TalkTags_Hurry(TalkTagsWalker *walker);
+void TalkTags_SetSpeed(TalkTagsWalker *walker, int speed);
+void TalkTags_NewPage(TalkTagsWalker *walker);
+void *TalkTags_Delete(void *walker);
+void *TalkTags_Destruct(void *walker);
+TalkTagsWalker *TalkTags_Construct(TalkTagsWalker *walker, u8 *talk, void *page);
+
 #endif

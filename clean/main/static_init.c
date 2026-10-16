@@ -4,15 +4,23 @@
 #include "a_mes_obj.h"
 #include "ab_all_obj.h"
 #include "actor_palettes.h"
+#include "actor_table.h"
 #include "anim_slots.h"
 #include "autoload_2/fx_math.h"
+#include "autoload_2/heap.h"
 #include "autoload_2/links.h"
+#include "autoload_2/process.h"
+#include "autoload_2/sound_position.h"
+#include "autoload_2/sound_system.h"
 #include "autoload_2/vector.h"
 #include "backup_card.h"
+#include "bbs.h"
 #include "bg_models.h"
 #include "block_02034858.h"
+#include "block_021d27ac.h"
 #include "body_anim_heaps.h"
 #include "body_look.h"
+#include "bottle_mail.h"
 #include "calendar.h"
 #include "camera_view.h"
 #include "caution_window.h"
@@ -20,34 +28,104 @@
 #include "cloth_slots.h"
 #include "collision_area.h"
 #include "collision_box.h"
+#include "collision_post_source.h"
 #include "collision_segment.h"
+#include "constellations.h"
+#include "control_mode_icon.h"
+#include "date_random.h"
+#include "day_plan.h"
+#include "design_assets.h"
+#include "design_sets.h"
+#include "display_frame.h"
 #include "event_announce.h"
 #include "event_calendar.h"
 #include "event_entries.h"
 #include "event_queue.h"
+#include "event_schedule.h"
+#include "event_winner.h"
+#include "exchange_block.h"
 #include "face_anim_heaps.h"
 #include "face_anim_slots.h"
 #include "face_texture.h"
 #include "field_collision.h"
+#include "field_label.h"
 #include "fishing_float.h"
+#include "fox_shop.h"
 #include "furniture_info.h"
 #include "glasses_look.h"
+#include "global_021dc5b0.h"
 #include "globe.h"
 #include "head_look.h"
 #include "held_item_pool.h"
+#include "house_looks.h"
+#include "house_record.h"
+#include "item_1568_count.h"
+#include "item_group_order.h"
 #include "item_info.h"
+#include "last_sale.h"
+#include "library_overlay.h"
+#include "link_state.h"
+#include "mail.h"
 #include "mail_text.h"
+#include "message_query.h"
+#include "message_reader.h"
+#include "missing_npc1.h"
+#include "missing_npc2.h"
+#include "model_object.h"
+#include "museum_record.h"
+#include "nook_store.h"
+#include "npc_plc.h"
 #include "obj_020dd33c.h"
 #include "ov004/member_pointer.h"
+#include "paired_town.h"
 #include "place_claim.h"
 #include "player_options.h"
+#include "player_records.h"
+#include "resource_pools.h"
 #include "room_cells.h"
 #include "room_interior.h"
-#include "screen_icon.h"
+#include "room_score_state.h"
+#include "save_stamp.h"
+#include "scene_claim.h"
+#include "scene_exit.h"
 #include "scene_look.h"
+#include "scene_place.h"
+#include "screen_icon.h"
+#include "screen_mark.h"
+#include "screen_panels.h"
+#include "select_bmg.h"
+#include "session_link.h"
+#include "shadow.h"
+#include "shop_answers.h"
+#include "shop_list_a.h"
+#include "sky.h"
+#include "sky_objects.h"
+#include "sky_weather_day.h"
+#include "slot_pool.h"
+#include "snowmen.h"
+#include "spawner.h"
+#include "star_palette.h"
+#include "state_block.h"
 #include "text_font.h"
+#include "text_walker.h"
 #include "tile_requests.h"
+#include "touch_pick_shapes.h"
+#include "town_item_lists.h"
+#include "town_layout.h"
+#include "town_name.h"
+#include "town_record.h"
+#include "town_start_day.h"
+#include "town_villager.h"
+#include "transition_mark.h"
 #include "trivial_object.h"
+#include "turnip_prices.h"
+#include "view_frustum.h"
+#include "villager_part_block.h"
+#include "villager_roster.h"
+#include "villager_state.h"
+#include "waiting_letter.h"
+#include "wfc_delivery.h"
+#include "wfc_stats.h"
 #include "wireless_icon.h"
 
 /* ---- What the initialisers share */
@@ -1130,3 +1208,930 @@ CLEAN_AS(__sinit_020c5c40, StaticInit_OverlayGroups)
 /* __sinit_020c5c90: nothing. */
 void StaticInit_Nothing5c90(void) {}
 CLEAN_AS(__sinit_020c5c90, StaticInit_Nothing5c90)
+
+/* The design sample (design_sets.h), the designs' manager and their information file
+ * (design_assets.h), with their records and destructors. */
+extern Design data_021d0800;
+extern DesignManager data_021d0504;
+extern RecordFile data_021d04c8;
+extern StaticInitRecord data_021d04bc, data_021d04a4, data_021d04b0;
+extern void func_020728d8(void *sample);  /* the sample's destructor */
+extern void func_020727d4(void *manager); /* the manager's destructor */
+extern void func_02072350(void *archive); /* the file's destructor */
+
+/* __sinit_020c5c94: the design sample, the designs' manager and their information file. */
+void StaticInit_Designs(void)
+{
+    DesignSample_Construct(&data_021d0800);
+    static_init_register(&data_021d0800, func_020728d8, &data_021d04bc);
+    DesignManager_Construct((char *) &data_021d0504);
+    static_init_register(&data_021d0504, func_020727d4, &data_021d04a4);
+    DesignArchive_Construct(&data_021d04c8);
+    static_init_register(&data_021d04c8, func_02072350, &data_021d04b0);
+}
+CLEAN_AS(__sinit_020c5c94, StaticInit_Designs)
+
+extern NetSession data_021d0a44;
+extern StaticInitRecord data_021d0a38;
+extern void func_02073fc8(void *session); /* the session's destructor */
+
+/* __sinit_020c5cf4: the wireless session (session_link.h). */
+void StaticInit_Session(void)
+{
+    Session_Construct(&data_021d0a44);
+    static_init_register(&data_021d0a44, func_02073fc8, &data_021d0a38);
+}
+CLEAN_AS(__sinit_020c5cf4, StaticInit_Session)
+
+extern LibraryOverlaySlot data_021d11c4;
+extern StaticInitRecord data_021d11b8;
+extern void func_02077bb4(void *slot); /* LibraryOverlay_Destroy: nothing to do */
+
+/* __sinit_020c5d1c: the library overlay's slot (library_overlay.h), holding no overlay. */
+void StaticInit_LibraryOverlay(void)
+{
+    data_021d11c4.overlay = -1;
+    static_init_register(&data_021d11c4, func_02077bb4, &data_021d11b8);
+}
+CLEAN_AS(__sinit_020c5d1c, StaticInit_LibraryOverlay)
+
+/* The town villager being set up (town_villager.h), the filters of the villagers' house items
+ * (villager_house_items.c), the villagers' states (villager_state.h) and the resource pools of
+ * blocks, 8-byte heaps and 4-byte heaps (resource_pools.h). */
+#define STATIC_INIT_HOUSE_FILTERS 5
+extern u8 data_021d1554[];
+extern MemberPointer data_021d1330[STATIC_INIT_HOUSE_FILTERS];
+extern const MemberPointer data_020e18b8, data_020e18a8, data_020e1898, data_020e18b0, data_020e18a0;
+extern VillagerStates data_021d13e4;
+extern u8 *data_021d12dc[];
+extern Heap *data_021d1310[];
+extern Heap *data_021d12a4[];
+extern StaticInitRecord data_021d1280, data_021d1274, data_021d128c, data_021d1250, data_021d1268;
+extern void func_02081710(void *villager); /* the town villager's destructor */
+extern void func_020795c8(void *entry);    /* a villager state's constructor */
+extern void func_020795a8(void *entry);    /* a villager state's destructor */
+extern void func_02082528(void *states);   /* the states' destructor */
+extern void func_02078d64(void *pool);     /* the block pool's destructor */
+extern void func_02078c74(void *pool);     /* the 8-byte heap pool's destructor */
+extern void func_02078bac(void *pool);     /* the 4-byte heap pool's destructor */
+
+static_assert(sizeof(VillagerState) == 44, "VillagerState");
+
+/* __sinit_020c5d3c: the town villager, the house items' filters, the villagers' states (their
+ * entries constructed by __cxa_vec_ctor, then the whole registered) and the three resource
+ * pools. */
+void StaticInit_Villagers(void)
+{
+    static const MemberPointer *const filter_fns[STATIC_INIT_HOUSE_FILTERS] = {
+        &data_020e18b8, &data_020e18a8, &data_020e1898, &data_020e18b0, &data_020e18a0,
+    };
+    TownVillager_Construct(data_021d1554);
+    static_init_register(data_021d1554, func_02081710, &data_021d1280);
+    static_init_copy(data_021d1330, filter_fns, STATIC_INIT_HOUSE_FILTERS);
+    __cxa_vec_ctor(data_021d13e4.entries, VILLAGER_STATE_ENTRIES, sizeof(VillagerState), func_020795c8, func_020795a8);
+    static_init_register(&data_021d13e4, func_02082528, &data_021d1274);
+    ResourcePools_BlockConstruct(data_021d12dc);
+    static_init_register(data_021d12dc, func_02078d64, &data_021d128c);
+    ResourcePools_Heap8Construct(data_021d1310);
+    static_init_register(data_021d1310, func_02078c74, &data_021d1250);
+    ResourcePools_Heap4Construct(data_021d12a4);
+    static_init_register(data_021d12a4, func_02078bac, &data_021d1268);
+}
+CLEAN_AS(__sinit_020c5d3c, StaticInit_Villagers)
+
+/* The actors' table (actor_table.h): its entries' constructors set their code to none, their
+ * destructors do nothing. */
+extern ActorTable data_021d1d4c;
+extern StaticInitRecord data_021d1d40;
+extern void func_02082c00(void *entry); /* a kind 0xe entry's constructor */
+extern void func_02082bfc(void *entry); /* its destructor */
+extern void func_02082bf0(void *entry); /* a kind 0xd entry's constructor */
+extern void func_02082bec(void *entry); /* its destructor */
+extern void func_02082bc0(void *table); /* ActorEntries_DestructTable */
+
+static_assert(sizeof(ActorEntry) == 8, "ActorEntry");
+
+/* __sinit___sinit_020c5e30.cpp (the initialiser of a C++ source file): the actors' table,
+ * both arrays of entries constructed by __cxa_vec_ctor, then the table registered.
+ * Not registered: CLEAN_AS takes a C name, and this function's symbol has a '.' in it. */
+void StaticInit_ActorTable(void)
+{
+    __cxa_vec_ctor(data_021d1d4c.kind_e, ACTOR_TABLE_KIND_E_ENTRIES, sizeof(ActorEntry), func_02082c00, func_02082bfc);
+    __cxa_vec_ctor(data_021d1d4c.kind_d, ACTOR_TABLE_KIND_D_ENTRIES, sizeof(ActorEntry), func_02082bf0, func_02082bec);
+    static_init_register(&data_021d1d4c, func_02082bc0, &data_021d1d40);
+}
+
+/* The slot pools (slot_pool.h): speakers, 8-byte heaps, 4-byte heaps, clothes, blocks,
+ * animation sets, parts and held items. */
+extern SlotPoolSpeakers data_021d1e48;
+extern SlotPoolHeap8 data_021d1ebc;
+extern SlotPoolHeap4 data_021d1e64;
+extern SlotPoolBytes data_021d1e20;
+extern SlotPoolBlocks data_021d1e8c;
+extern SlotPoolBytes data_021d1e0c;
+extern SlotPoolBytes data_021d1e34;
+extern SlotPoolItems data_021d1f04;
+extern StaticInitRecord data_021d1dac, data_021d1db8, data_021d1dc4, data_021d1dd0, data_021d1de8, data_021d1ddc,
+    data_021d1e00, data_021d1df4;
+extern void func_02083b3c(void *pool);
+extern void func_020839d8(void *pool);
+extern void func_02083898(void *pool);
+extern void func_02083744(void *pool);
+extern void func_020835dc(void *pool);
+extern void func_0208349c(void *pool);
+extern void func_0208335c(void *pool);
+extern void func_020831fc(void *pool);
+
+/* __sinit_020c5e84: the eight slot pools, each constructed and registered. */
+void StaticInit_SlotPools(void)
+{
+    SlotPool_SpeakersConstruct(&data_021d1e48);
+    static_init_register(&data_021d1e48, func_02083b3c, &data_021d1dac);
+    SlotPool_Heap8Construct(&data_021d1ebc);
+    static_init_register(&data_021d1ebc, func_020839d8, &data_021d1db8);
+    SlotPool_Heap4Construct(&data_021d1e64);
+    static_init_register(&data_021d1e64, func_02083898, &data_021d1dc4);
+    SlotPool_ClothesConstruct(&data_021d1e20);
+    static_init_register(&data_021d1e20, func_02083744, &data_021d1dd0);
+    SlotPool_BlocksConstruct(&data_021d1e8c);
+    static_init_register(&data_021d1e8c, func_020835dc, &data_021d1de8);
+    SlotPool_AnimSetsConstruct(&data_021d1e0c);
+    static_init_register(&data_021d1e0c, func_0208349c, &data_021d1ddc);
+    SlotPool_PartsConstruct(&data_021d1e34);
+    static_init_register(&data_021d1e34, func_0208335c, &data_021d1e00);
+    SlotPool_ItemsConstruct(&data_021d1f04);
+    static_init_register(&data_021d1f04, func_020831fc, &data_021d1df4);
+}
+CLEAN_AS(__sinit_020c5e84, StaticInit_SlotPools)
+
+/* The spawner's request, its checks and its spawn table (spawner.h): the checks' member
+ * functions and the placers of the table's 23 entries come from the program's constants. */
+#define STATIC_INIT_SPAWN_ENTRIES 23
+extern SpawnerRequest data_020e1ca8;
+extern SpawnerCheck data_020e1d08[SPAWNER_CHECKS];
+extern SpawnerEntry data_020e1d8c[STATIC_INIT_SPAWN_ENTRIES];
+extern StaticInitRecord data_021d2130;
+extern void func_02085f04(void *request); /* Spawner_RequestDestruct */
+extern const MemberFn data_020e1bb8, data_020e1c90, data_020e1c00, data_020e1ba0, data_020e1be8, data_020e1bc0, data_020e1ca0,
+    data_020e1c98, data_020e1bd8, data_020e1c88, data_020e1c80;
+extern const MemberFn data_020e1c68, data_020e1c60, data_020e1c18, data_020e1c20, data_020e1c48, data_020e1c28, data_020e1c30,
+    data_020e1c38, data_020e1c50, data_020e1c58, data_020e1c70, data_020e1c78, data_020e1c10, data_020e1c08, data_020e1b90,
+    data_020e1b98, data_020e1bf0, data_020e1ba8, data_020e1be0, data_020e1bb0, data_020e1bc8, data_020e1bd0, data_020e1bf8;
+
+/* __sinit_020c5f70: the spawner's request registered and its position cleared, then each
+ * check's member function and each spawn table entry's placer filled in. The ROM names the
+ * table's later entries by the symbols data_020e1e0c, data_020e1e8c and data_020e1f0c; they
+ * are the same table.
+ * QUIRK: the request is registered before its position is cleared. */
+void StaticInit_Spawner(void)
+{
+    static const MemberFn *const check_fns[SPAWNER_CHECKS] = {
+        &data_020e1bb8, &data_020e1c90, &data_020e1c00, &data_020e1ba0, &data_020e1be8, &data_020e1bc0,
+        &data_020e1ca0, &data_020e1c98, &data_020e1bd8, &data_020e1c88, &data_020e1c80,
+    };
+    static const MemberFn *const place_fns[STATIC_INIT_SPAWN_ENTRIES] = {
+        &data_020e1c68, &data_020e1c60, &data_020e1c18, &data_020e1c20, &data_020e1c48, &data_020e1c28,
+        &data_020e1c30, &data_020e1c38, &data_020e1c50, &data_020e1c58, &data_020e1c70, &data_020e1c78,
+        &data_020e1c10, &data_020e1c08, &data_020e1b90, &data_020e1b98, &data_020e1bf0, &data_020e1ba8,
+        &data_020e1be0, &data_020e1bb0, &data_020e1bc8, &data_020e1bd0, &data_020e1bf8,
+    };
+    static_init_register(&data_020e1ca8, func_02085f04, &data_021d2130);
+    static_init_vec(&data_020e1ca8.position, 0, 0, 0);
+    for (int i = 0; i < SPAWNER_CHECKS; i++) {
+        data_020e1d08[i].check = *check_fns[i];
+    }
+    for (int i = 0; i < STATIC_INIT_SPAWN_ENTRIES; i++) {
+        data_020e1d8c[i].place = *place_fns[i];
+    }
+}
+CLEAN_AS(__sinit_020c5f70, StaticInit_Spawner)
+
+/* The tiles around a tile the event winners' code checks (event_winner.c): the eight next to
+ * it, and the fourteen around a house (columns -3 and 2 and row 2), and the object of
+ * block_021d27ac.h. */
+#define STATIC_INIT_NEIGHBOURS 8
+#define STATIC_INIT_HOUSE_RING 14
+extern EventWinnerTile data_021d27e0[STATIC_INIT_NEIGHBOURS];
+extern EventWinnerTile data_021d2820[STATIC_INIT_HOUSE_RING];
+extern Block021d27ac data_021d27ac;
+extern StaticInitRecord data_021d27a0;
+extern void func_02086158(void *block); /* the object's destructor */
+
+static void static_init_tile(EventWinnerTile *tile, int x, int z)
+{
+    tile->x = x;
+    tile->z = z;
+}
+
+/* __sinit_020c6194: the fourteen tiles around a house, the eight next to a tile, and the
+ * object at data_021d27ac.
+ * The start-up code constructs that object with func_02086198 and registers func_02086158 as
+ * its destructor: of the two names block_021d27ac.c gives them, Block021d27ac_Destruct is the
+ * constructor. */
+void StaticInit_EventWinnerTiles(void)
+{
+    static_init_tile(&data_021d2820[0], -3, -2);
+    static_init_tile(&data_021d2820[1], 2, -2);
+    static_init_tile(&data_021d2820[2], -3, -1);
+    static_init_tile(&data_021d2820[3], 2, -1);
+    static_init_tile(&data_021d2820[4], -3, 0);
+    static_init_tile(&data_021d2820[5], 2, 0);
+    static_init_tile(&data_021d2820[6], -3, 1);
+    static_init_tile(&data_021d2820[7], 2, 1);
+    static_init_tile(&data_021d2820[8], -3, 2);
+    static_init_tile(&data_021d2820[9], -2, 2);
+    static_init_tile(&data_021d2820[10], -1, 2);
+    static_init_tile(&data_021d2820[11], 0, 2);
+    static_init_tile(&data_021d2820[12], 1, 2);
+    static_init_tile(&data_021d2820[13], 2, 2);
+    static_init_tile(&data_021d27e0[0], 0, 1);
+    static_init_tile(&data_021d27e0[1], 0, -1);
+    static_init_tile(&data_021d27e0[2], -1, 0);
+    static_init_tile(&data_021d27e0[3], 1, 0);
+    static_init_tile(&data_021d27e0[4], -1, -1);
+    static_init_tile(&data_021d27e0[5], 1, -1);
+    static_init_tile(&data_021d27e0[6], -1, 1);
+    static_init_tile(&data_021d27e0[7], 1, 1);
+    Block021d27ac_Destruct(&data_021d27ac);
+    static_init_register(&data_021d27ac, func_02086158, &data_021d27a0);
+}
+CLEAN_AS(__sinit_020c6194, StaticInit_EventWinnerTiles)
+
+/* __sinit_020c62a0: nothing. */
+void StaticInit_Nothing62a0(void) {}
+CLEAN_AS(__sinit_020c62a0, StaticInit_Nothing62a0)
+
+extern ScreenPanels data_021d3258;
+extern StaticInitRecord data_021d3164;
+extern void func_0208b5b0(void *panels); /* the panels' destructor */
+
+/* __sinit_020c62a4: the screen panels (screen_panels.h). */
+void StaticInit_ScreenPanels(void)
+{
+    ScreenPanels_Construct(&data_021d3258);
+    static_init_register(&data_021d3258, func_0208b5b0, &data_021d3164);
+}
+CLEAN_AS(__sinit_020c62a4, StaticInit_ScreenPanels)
+
+extern ScreenMark data_021d35f8;
+extern StaticInitRecord data_021d35cc;
+extern void func_0208ef34(void *mark); /* the mark's destructor */
+
+/* __sinit_020c62cc: the screen mark (screen_mark.h). */
+void StaticInit_ScreenMark(void)
+{
+    ScreenMark_Construct(&data_021d35f8);
+    static_init_register(&data_021d35f8, func_0208ef34, &data_021d35cc);
+}
+CLEAN_AS(__sinit_020c62cc, StaticInit_ScreenMark)
+
+extern TransitionMark data_021d3654;
+extern StaticInitRecord data_021d3628;
+extern void func_0208fac4(void *mark); /* the mark's destructor */
+
+/* __sinit_020c62f4: the transition mark (transition_mark.h). */
+void StaticInit_TransitionMark(void)
+{
+    TransitionMark_Construct(&data_021d3654);
+    static_init_register(&data_021d3654, func_0208fac4, &data_021d3628);
+}
+CLEAN_AS(__sinit_020c62f4, StaticInit_TransitionMark)
+
+extern ControlModeIcon data_021d369c;
+extern StaticInitRecord data_021d3690;
+extern void func_0208fe5c(void *icon); /* the icon's destructor */
+
+/* __sinit_020c631c: the control mode's icon (control_mode_icon.h). */
+void StaticInit_ControlModeIcon(void)
+{
+    ControlModeIcon_Construct(&data_021d369c);
+    static_init_register(&data_021d369c, func_0208fe5c, &data_021d3690);
+}
+CLEAN_AS(__sinit_020c631c, StaticInit_ControlModeIcon)
+
+extern ExchangeBlock data_021d36d4[EXCHANGE_BLOCK_VISITORS];
+extern StaticInitRecord data_021d36c8;
+extern void func_0209008c(void *blocks); /* the visitors' blocks' destructor */
+
+/* __sinit_020c6344: the exchange blocks kept for the visitors (exchange_block.h). */
+void StaticInit_ExchangeBlocks(void)
+{
+    ExchangeBlock_ConstructVisitors(data_021d36d4);
+    static_init_register(data_021d36d4, func_0209008c, &data_021d36c8);
+}
+CLEAN_AS(__sinit_020c6344, StaticInit_ExchangeBlocks)
+
+/* An object of four slots (func_020962f8 builds it: four points, and for each slot two calls
+ * on the object itself), with its record and destructor. */
+extern u8 data_021d5684[];
+extern StaticInitRecord data_021d5678;
+extern void *func_020962f8(void *object);
+extern void func_020962dc(void *object);
+
+/* __sinit_020c636c: the object at data_021d5684. */
+void StaticInit_Object5684(void)
+{
+    func_020962f8(data_021d5684);
+    static_init_register(data_021d5684, func_020962dc, &data_021d5678);
+}
+CLEAN_AS(__sinit_020c636c, StaticInit_Object5684)
+
+extern u8 data_021d5738[];
+extern StaticInitRecord data_021d56fc;
+extern void func_02098580(void *guests); /* the guests' records' destructor */
+
+/* __sinit_020c6394: the three guests' records (player_records.h). */
+void StaticInit_GuestRecords(void)
+{
+    PlayerRecords_ConstructGuests(data_021d5738);
+    static_init_register(data_021d5738, func_02098580, &data_021d56fc);
+}
+CLEAN_AS(__sinit_020c6394, StaticInit_GuestRecords)
+
+/* The step types' entries of the villagers' part blocks (villager_part_block.h). */
+extern VillagerPartTypeEntry data_020e3504[VILLAGER_PART_BLOCK_STEPS];
+extern const MemberPointer data_020e3498, data_020e34a0, data_020e34a8, data_020e34c0, data_020e34b0;
+
+/* __sinit_020c63bc: each step type's two member functions: the set-ups of types 10, 14, 16,
+ * 17 and 19 from the program's constants, every other one null. */
+void StaticInit_VillagerPartTypes(void)
+{
+    static const MemberPointer *const setup_fns[VILLAGER_PART_BLOCK_STEPS] = {
+        &data_020e3498, &__ptmf_null,   &__ptmf_null,   &__ptmf_null, &data_020e34a0,
+        &__ptmf_null,   &data_020e34a8, &data_020e34c0, &__ptmf_null, &data_020e34b0,
+    };
+    for (int i = 0; i < VILLAGER_PART_BLOCK_STEPS; i++) {
+        data_020e3504[i].setup = *setup_fns[i];
+        data_020e3504[i].unknown = __ptmf_null;
+    }
+}
+CLEAN_AS(__sinit_020c63bc, StaticInit_VillagerPartTypes)
+
+extern u8 data_021dc5b0;
+extern StaticInitRecord data_021dc5b4;
+extern void func_0209d080(void *object); /* Global021dc5b0_Destruct */
+
+/* __sinit_020c6464: the byte of global_021dc5b0.h. */
+void StaticInit_Global021dc5b0(void)
+{
+    Global021dc5b0_Construct(&data_021dc5b0);
+    static_init_register(&data_021dc5b0, func_0209d080, &data_021dc5b4);
+}
+CLEAN_AS(__sinit_020c6464, StaticInit_Global021dc5b0)
+
+/* The scene claims (scene_claim.h): the exit and the scenes' masks. */
+extern SceneClaimExit data_021dc6e8;
+extern SceneClaimMask data_021dc70c[SCENE_CLAIM_SCENES];
+extern StaticInitRecord data_021dc6dc, data_021dc6d0;
+extern void func_0209d89c(void *exit);  /* the exit's destructor */
+extern void func_0209d9c4(void *mask);  /* a mask's constructor */
+extern void func_0209d934(void *mask);  /* a mask's destructor */
+extern void func_0209d9a8(void *masks); /* SceneClaimMasks_Destruct */
+
+static_assert(sizeof(SceneClaimMask) == 1, "SceneClaimMask");
+
+/* __sinit_020c648c: the scene claims' exit, and their masks constructed by __cxa_vec_ctor,
+ * cleared and registered as a whole. */
+void StaticInit_SceneClaims(void)
+{
+    SceneClaimExit_Construct(&data_021dc6e8);
+    static_init_register(&data_021dc6e8, func_0209d89c, &data_021dc6dc);
+    __cxa_vec_ctor(data_021dc70c, SCENE_CLAIM_SCENES, sizeof(SceneClaimMask), func_0209d9c4, func_0209d934);
+    SceneClaimMasks_Clear((char *) data_021dc70c);
+    static_init_register(data_021dc70c, func_0209d9a8, &data_021dc6d0);
+}
+CLEAN_AS(__sinit_020c648c, StaticInit_SceneClaims)
+
+/* The state block (state_block.h), its record, and the constructors and destructors of its
+ * parts that the game is handed: the mailboxes' and the parts at 0x16800's. */
+extern StateBlock data_021dc7a8;
+extern StaticInitRecord data_021dc764;
+extern void func_020980c4(void *box);   /* a mailbox's constructor */
+extern void func_020980a4(void *box);   /* a mailbox's destructor */
+extern void func_0203a690(void *part);  /* a part at 0x16800's constructor */
+extern void func_0203a68c(void *part);  /* its destructor */
+extern void func_0209f1a8(void *block); /* StateBlock_Destruct */
+extern void *func_020901d8(void *part); /* the part at 0x11c70's constructor */
+
+/* __sinit_020c64e8: the state block's parts constructed from the first to the last (the
+ * mailboxes and the parts at 0x16800 as arrays, by __cxa_vec_ctor), then the block registered
+ * whole. */
+void StaticInit_StateBlock(void)
+{
+    StateBlock *block = &data_021dc7a8;
+    TownName_Construct(&block->town);
+    PlayerRecords_ConstructTown(block->players);
+    VillagerRoster_Construct((VillagerTown *) block->villagers);
+    TownLayout_Construct(block->layout);
+    Item1568Count_Construct(&block->part_0f52a);
+    DayPlan_Construct(&block->part_0f52b);
+    HouseRecord_Construct((HouseRecord *) block->part_0f52c);
+    ShopDesigns_Construct((ShopDesigns *) block->shop_designs);
+    func_020901d8(block->part_11c70);
+    Bbs_Construct((Bbs *) block->bbs);
+    __cxa_vec_ctor(block->mailboxes, STATE_BLOCK_PLAYERS, sizeof(block->mailboxes[0]), func_020980c4, func_020980a4);
+    MailPostOffice_Construct((MailPostOffice *) block->post_office);
+    Constellations_ConstructList((int) (uintptr_t) block->constellations);
+    __cxa_vec_ctor(block->part_16800, STATE_BLOCK_PLAYERS, sizeof(block->part_16800[0]), func_0203a690, func_0203a68c);
+    WfcStats_Construct((WfcStats *) block->part_16ad0);
+    HouseLooks_Construct((HouseLooksRecord *) block->house_looks);
+    BottleMail_ConstructState((BottleState *) block->bottle);
+    WaitingLetter_Construct((WaitingLetter *) block->part_1704c);
+    MuseumRecord_Construct((MuseumRecord *) block->museum);
+    NookStore_Construct((NookStore *) block->nook_store);
+    EventSchedule_ClearWeek((EventSchedule *) block->part_17218);
+    TownRecord_Construct(block->part_17254);
+    TownItemLists_ConstructListA(block->part_172c0);
+    TownItemLists_ConstructListB(block->part_172de);
+    EventWinner_Construct((EventWinner *) block->part_172fc);
+    LastSale_Construct((LastSale *) block->part_17344);
+    TurnipPrices_Construct((TurnipPrices *) block->part_17364);
+    SkyWeatherDay_Construct((SkyWeatherDay *) block->part_1737e);
+    FoxShop_Construct((FoxShop *) block->fox_shop);
+    ShopListA_Construct((ShopListA *) block->shop_list_a);
+    Snowmen_ConstructRecords((SnowmenRecord *) block->snowmen);
+    RoomScoreState_ConstructJudgeDate(block->part_173c8);
+    ItemGroupOrder_ConstructAll(block->part_173d4);
+    TownStartDay_Construct((TownStartDay *) block->part_173dd);
+    PairedTown_Construct(block->part_173e2);
+    SaveStamp_Construct((SaveStamp *) block->part_173f8);
+    static_init_register(block, func_0209f1a8, &data_021dc764);
+}
+CLEAN_AS(__sinit_020c64e8, StaticInit_StateBlock)
+
+/* The start menu's states' entries and updates (start_menu.c). */
+#define STATIC_INIT_START_MENU_FNS 12
+extern MemberPointer data_021f3ba4[STATIC_INIT_START_MENU_FNS];
+extern const MemberPointer data_020e3698, data_020e36f8, data_020e36f0, data_020e36e8, data_020e36e0, data_020e36d8,
+    data_020e36d0, data_020e36a8, data_020e36c0, data_020e36b8, data_020e36b0, data_020e36c8;
+
+/* __sinit_020c66e0: the start menu's states' member functions. Their table's address. */
+int StaticInit_StartMenu(void)
+{
+    static const MemberPointer *const menu_fns[STATIC_INIT_START_MENU_FNS] = {
+        &data_020e3698, &data_020e36f8, &data_020e36f0, &data_020e36e8, &data_020e36e0, &data_020e36d8,
+        &data_020e36d0, &data_020e36a8, &data_020e36c0, &data_020e36b8, &data_020e36b0, &data_020e36c8,
+    };
+    static_init_copy(data_021f3ba4, menu_fns, STATIC_INIT_START_MENU_FNS);
+    return (int) (uintptr_t) data_021f3ba4;
+}
+CLEAN_AS(__sinit_020c66e0, StaticInit_StartMenu)
+
+/* The Wi-Fi session's letter, notice and statistics (wfc_session.c) and the activity's jobs'
+ * starts and steps (activity_process.c). */
+#define STATIC_INIT_ACTIVITY_FNS 64
+extern WfcLetter data_021f3d90;
+extern WfcNotice data_021f3cbc;
+extern WfcStats data_021f40a4;
+extern StaticInitRecord data_021f3c40, data_021f3c4c, data_021f3c58;
+extern void func_0203f664(void *letter); /* the letter's destructor */
+extern void func_0203f5dc(void *notice); /* the notice's destructor */
+extern void func_02088264(void *stats);  /* the statistics' destructor */
+extern MemberPointer data_021f3ea4[STATIC_INIT_ACTIVITY_FNS];
+extern const MemberPointer data_020e3a48, data_020e3a40, data_020e38c8, data_020e3a30, data_020e3a28, data_020e38b8,
+    data_020e3888, data_020e3a10, data_020e3a08, data_020e3a00, data_020e39f8, data_020e39f0, data_020e39e8, data_020e38d8,
+    data_020e38e0, data_020e39d0, data_020e39c8, data_020e39c0, data_020e39b8, data_020e39b0, data_020e39a8, data_020e39a0,
+    data_020e3958, data_020e3970, data_020e3978, data_020e3988, data_020e3990, data_020e39e0, data_020e3a18, data_020e3a38,
+    data_020e3a50, data_020e3950, data_020e3948, data_020e3940, data_020e3848, data_020e3840, data_020e3810, data_020e3818,
+    data_020e3820, data_020e3910, data_020e3908, data_020e3900, data_020e3830, data_020e3878, data_020e38e8, data_020e3860,
+    data_020e3870, data_020e38d0, data_020e3880, data_020e38c0, data_020e3890, data_020e3898, data_020e38a0, data_020e38b0,
+    data_020e38f8, data_020e3920, data_020e3928, data_020e3938, data_020e3960, data_020e3980, data_020e3998, data_020e3a20,
+    data_020e3a58, data_020e3850;
+
+/* __sinit_020c6790: the Wi-Fi letter, notice and statistics, and the activity's jobs' member
+ * functions. */
+void StaticInit_Activity(void)
+{
+    static const MemberPointer *const job_fns[STATIC_INIT_ACTIVITY_FNS] = {
+        &data_020e3a48, &data_020e3a40, &data_020e38c8, &data_020e3a30, &data_020e3a28, &data_020e38b8, &data_020e3888,
+        &data_020e3a10, &data_020e3a08, &data_020e3a00, &data_020e39f8, &data_020e39f0, &data_020e39e8, &data_020e38d8,
+        &data_020e38e0, &data_020e39d0, &data_020e39c8, &data_020e39c0, &data_020e39b8, &data_020e39b0, &data_020e39a8,
+        &data_020e39a0, &data_020e3958, &data_020e3970, &data_020e3978, &data_020e3988, &data_020e3990, &data_020e39e0,
+        &data_020e3a18, &data_020e3a38, &data_020e3a50, &data_020e3950, &data_020e3948, &data_020e3940, &data_020e3848,
+        &data_020e3840, &data_020e3810, &data_020e3818, &data_020e3820, &data_020e3910, &data_020e3908, &data_020e3900,
+        &data_020e3830, &data_020e3878, &data_020e38e8, &data_020e3860, &data_020e3870, &data_020e38d0, &data_020e3880,
+        &data_020e38c0, &data_020e3890, &data_020e3898, &data_020e38a0, &data_020e38b0, &data_020e38f8, &data_020e3920,
+        &data_020e3928, &data_020e3938, &data_020e3960, &data_020e3980, &data_020e3998, &data_020e3a20, &data_020e3a58,
+        &data_020e3850,
+    };
+    WfcDelivery_ConstructLetter(&data_021f3d90);
+    static_init_register(&data_021f3d90, func_0203f664, &data_021f3c40);
+    WfcDelivery_ConstructNotice(&data_021f3cbc);
+    static_init_register(&data_021f3cbc, func_0203f5dc, &data_021f3c4c);
+    WfcStats_Construct(&data_021f40a4);
+    static_init_register(&data_021f40a4, func_02088264, &data_021f3c58);
+    static_init_copy(data_021f3ea4, job_fns, STATIC_INIT_ACTIVITY_FNS);
+}
+CLEAN_AS(__sinit_020c6790, StaticInit_Activity)
+
+extern LinkState data_021f4320;
+extern StaticInitRecord data_021f42fc;
+extern void func_020a6b38(void *state); /* the link state's destructor */
+
+/* __sinit_020c6b88: the link state (link_state.h). */
+void StaticInit_LinkState(void)
+{
+    LinkState_Construct(&data_021f4320);
+    static_init_register(&data_021f4320, func_020a6b38, &data_021f42fc);
+}
+CLEAN_AS(__sinit_020c6b88, StaticInit_LinkState)
+
+/* Three message numbers of the talk code, with an empty destructor
+ * (TrivialObject_DestructByte); the box walker and the text copier (text_walker.h) and the
+ * message query (message_query.h). */
+#define STATIC_INIT_NO_MESSAGE 0xff
+#define STATIC_INIT_MESSAGE_FE 0xfe
+extern u8 data_021f43ec, data_021f43f8, data_021f43e8;
+extern BoxWalker data_021f44dc;
+extern TextCopier data_021f450c;
+extern MessageQuery data_021f4548;
+extern StaticInitRecord data_021f4410, data_021f4434, data_021f441c, data_021f4440, data_021f444c, data_021f4404;
+extern void func_020088f8(void *byte);   /* TrivialObject_DestructByte */
+extern void func_020a91d8(void *walker); /* the box walker's destructor */
+extern void func_020a8d78(void *copier); /* the text copier's destructor */
+extern void func_020a7d48(void *query);  /* the message query's destructor */
+
+/* __sinit_020c6bb0: the three message numbers (0xff, 0xff and 0xfe), the box walker, the text
+ * copier and the message query. */
+void StaticInit_TextWalkers(void)
+{
+    data_021f43ec = STATIC_INIT_NO_MESSAGE;
+    static_init_register(&data_021f43ec, func_020088f8, &data_021f4410);
+    data_021f43f8 = STATIC_INIT_NO_MESSAGE;
+    static_init_register(&data_021f43f8, func_020088f8, &data_021f4434);
+    data_021f43e8 = STATIC_INIT_MESSAGE_FE;
+    static_init_register(&data_021f43e8, func_020088f8, &data_021f441c);
+    BoxWalker_Construct(&data_021f44dc);
+    static_init_register(&data_021f44dc, func_020a91d8, &data_021f4440);
+    TextCopier_Construct(&data_021f450c);
+    static_init_register(&data_021f450c, func_020a8d78, &data_021f444c);
+    MessageQuery_Construct(&data_021f4548);
+    static_init_register(&data_021f4548, func_020a7d48, &data_021f4404);
+}
+CLEAN_AS(__sinit_020c6bb0, StaticInit_TextWalkers)
+
+extern SelectBmg data_021f4670;
+extern StaticInitRecord data_021f45b4;
+extern void func_020ab948(void *file); /* the file's destructor */
+
+/* __sinit_020c6c54: the selection message file (select_bmg.h). */
+void StaticInit_SelectBmg(void)
+{
+    SelectBmg_Construct(&data_021f4670);
+    static_init_register(&data_021f4670, func_020ab948, &data_021f45b4);
+}
+CLEAN_AS(__sinit_020c6c54, StaticInit_SelectBmg)
+
+/* The shadows' model (shadow.c), a model object (model_object.h). */
+extern ModelObject data_021f472c;
+extern StaticInitRecord data_021f4720;
+extern void func_02055764(void *object); /* the model object's destructor */
+
+/* __sinit_020c6c7c: the shadows' model. */
+void StaticInit_ShadowModel(void)
+{
+    ModelObject_Construct(&data_021f472c);
+    static_init_register(&data_021f472c, func_02055764, &data_021f4720);
+}
+CLEAN_AS(__sinit_020c6c7c, StaticInit_ShadowModel)
+
+/* The five shadows (shadow.h): trees of sizes 2, 3 and 4, the wide one and the narrow one. */
+extern ObjShadow data_021f4904, data_021f4938, data_021f496c, data_021f489c, data_021f48d0;
+extern StaticInitRecord data_021f47f4, data_021f480c, data_021f4830, data_021f483c, data_021f47dc;
+extern void func_020ad1d8(void *shadow); /* a shadow's destructor */
+
+/* __sinit_020c6ca4: the five shadows. */
+void StaticInit_Shadows(void)
+{
+    ObjShadow_Construct(&data_021f4904);
+    static_init_register(&data_021f4904, func_020ad1d8, &data_021f47f4);
+    ObjShadow_Construct(&data_021f4938);
+    static_init_register(&data_021f4938, func_020ad1d8, &data_021f480c);
+    ObjShadow_Construct(&data_021f496c);
+    static_init_register(&data_021f496c, func_020ad1d8, &data_021f4830);
+    ObjShadow_Construct(&data_021f489c);
+    static_init_register(&data_021f489c, func_020ad1d8, &data_021f483c);
+    ObjShadow_Construct(&data_021f48d0);
+    static_init_register(&data_021f48d0, func_020ad1d8, &data_021f47dc);
+}
+CLEAN_AS(__sinit_020c6ca4, StaticInit_Shadows)
+
+/* The shops' dated random numbers (date_random.h), two item codes (shop_stock.c: none, and
+ * the sold marker 0x1547) and the shops' answers (shop_answers.h). */
+#define STATIC_INIT_SOLD_MARKER 0x1547
+extern DatedRandom data_021f4a80;
+extern u16 data_021f49f0;
+extern u16 data_021f49f4;
+extern ShopAnswers data_021f49ec;
+extern StaticInitRecord data_021f4aa4, data_021f4a44, data_021f4ab0, data_021f4a68;
+extern void func_02063ddc(void *random);  /* the dated random numbers' destructor */
+extern void func_020b023c(void *answers); /* the answers' destructor */
+
+/* __sinit_020c6d2c: the shops' random numbers, their two item codes and their answers. */
+void StaticInit_Shops(void)
+{
+    DatedRandom_Construct(&data_021f4a80);
+    static_init_register(&data_021f4a80, func_02063ddc, &data_021f4aa4);
+    data_021f49f0 = STATIC_INIT_NO_ITEM;
+    static_init_register(&data_021f49f0, func_020051b0, &data_021f4a44);
+    data_021f49f4 = STATIC_INIT_SOLD_MARKER;
+    static_init_register(&data_021f49f4, func_020051b0, &data_021f4ab0);
+    ShopAnswers_Construct(&data_021f49ec);
+    static_init_register(&data_021f49ec, func_020b023c, &data_021f4a68);
+}
+CLEAN_AS(__sinit_020c6d2c, StaticInit_Shops)
+
+extern SnowmenLooseBall data_021f4ae8[SNOWMEN_LOOSE_BALLS];
+extern StaticInitRecord data_021f4adc;
+extern void func_020b0aa8(void *ball);  /* a loose ball's constructor */
+extern void func_020b0aa4(void *ball);  /* its destructor */
+extern void func_020b0a88(void *balls); /* Snowmen_DestructLooseBalls */
+
+static_assert(sizeof(SnowmenLooseBall) == 16, "SnowmenLooseBall");
+
+/* __sinit_020c6da8: the two loose snowballs (snowmen.h), constructed by __cxa_vec_ctor and
+ * registered as a whole. */
+void StaticInit_SnowmenBalls(void)
+{
+    __cxa_vec_ctor(data_021f4ae8, SNOWMEN_LOOSE_BALLS, sizeof(SnowmenLooseBall), func_020b0aa8, func_020b0aa4);
+    static_init_register(data_021f4ae8, func_020b0a88, &data_021f4adc);
+}
+CLEAN_AS(__sinit_020c6da8, StaticInit_SnowmenBalls)
+
+/* The town's post source (town_posts.c): a post source with overlay 3's vtable. */
+extern CollisionPostSource data_021f4b3c;
+extern const CollisionPostSourceVtable data_ov003_0223a248;
+extern StaticInitRecord data_021f4b70;
+extern void func_020b3fe4(void *source); /* its destructor */
+
+/* __sinit_020c6de0: the town's post source, constructed as a base post source and then given
+ * its class's vtable (in overlay 3). */
+void StaticInit_TownPostSource(void)
+{
+    CollisionPostSource_Construct(&data_021f4b3c);
+    data_021f4b3c.vtable = &data_ov003_0223a248;
+    static_init_register(&data_021f4b3c, func_020b3fe4, &data_021f4b70);
+}
+CLEAN_AS(__sinit_020c6de0, StaticInit_TownPostSource)
+
+extern MessageReader data_021f4dac;
+extern StaticInitRecord data_021f4c80;
+extern void func_020b4070(void *reader); /* the reader's destructor */
+
+/* __sinit_020c6e10: the message reader (message_reader.h). */
+void StaticInit_MessageReader(void)
+{
+    MessageReader_Construct(&data_021f4dac);
+    static_init_register(&data_021f4dac, func_020b4070, &data_021f4c80);
+}
+CLEAN_AS(__sinit_020c6e10, StaticInit_MessageReader)
+
+/* The scenes' objects: the display hooks a scene on the field runs with (scene_process.c), the
+ * view frustum (view_frustum.h), the touch screen's picks (touch_pick_shapes.h), the scene's
+ * exit (scene_exit.h) and the saved and marked places (scene_place.h). */
+extern DisplayFrameHooks data_021f693c;
+extern const DisplayFrameHooksVtable data_020e550c;
+extern ViewFrustum data_021f6a6c;
+extern TouchPick data_021f6a14;
+extern SceneExit data_021f69d0;
+extern ScenePlace data_021f69a0, data_021f69b8;
+extern StaticInitRecord data_021f6964, data_021f6970, data_021f697c, data_021f694c, data_021f6958;
+extern void func_0203a9a8(void *frustum); /* the frustum's destructor */
+extern void func_020b7e5c(void *pick);    /* the picks' destructor */
+extern void func_020b649c(void *exit);    /* the exit's destructor */
+extern void func_020b657c(void *place);   /* a place's destructor */
+
+/* __sinit_020c6e38: the field's display hooks given their vtable, then the frustum, the picks,
+ * the exit and the two places. */
+void StaticInit_SceneObjects(void)
+{
+    data_021f693c.vtable = &data_020e550c;
+    ViewFrustum_Construct(&data_021f6a6c);
+    static_init_register(&data_021f6a6c, func_0203a9a8, &data_021f6964);
+    TouchPick_Construct(&data_021f6a14);
+    static_init_register(&data_021f6a14, func_020b7e5c, &data_021f6970);
+    SceneExit_Construct(&data_021f69d0);
+    static_init_register(&data_021f69d0, func_020b649c, &data_021f697c);
+    ScenePlace_Construct(&data_021f69a0);
+    static_init_register(&data_021f69a0, func_020b657c, &data_021f694c);
+    ScenePlace_Construct(&data_021f69b8);
+    static_init_register(&data_021f69b8, func_020b657c, &data_021f6958);
+}
+CLEAN_AS(__sinit_020c6e38, StaticInit_SceneObjects)
+
+extern StaticInitColour data_021f6acc, data_021f6aec, data_021f6ae8, data_021f6ae4, data_021f6ae0, data_021f6adc;
+
+/* __sinit_020c6ed8: the six colours of its source file. */
+void StaticInit_Colours6ed8(void)
+{
+    static_init_colours(&data_021f6acc, &data_021f6aec, &data_021f6ae8, &data_021f6ae4, &data_021f6ae0, &data_021f6adc);
+}
+CLEAN_AS(__sinit_020c6ed8, StaticInit_Colours6ed8)
+
+extern FieldLabel data_021f6b20;
+extern StaticInitRecord data_021f6af4;
+extern void func_020b8cec(void *label); /* the label's destructor */
+
+/* __sinit_020c6f34: the field's label (field_label.h). */
+void StaticInit_FieldLabel(void)
+{
+    FieldLabel_Construct(&data_021f6b20);
+    static_init_register(&data_021f6b20, func_020b8cec, &data_021f6af4);
+}
+CLEAN_AS(__sinit_020c6f34, StaticInit_FieldLabel)
+
+/* The transfer queues (transfer_queue.c): the VBlank's and the main loop's. */
+extern List data_021f6ca0;
+extern List data_021f6c98;
+
+/* __sinit_020c6f5c: both transfer queues empty. The main loop's queue's address. */
+int StaticInit_TransferQueues(void)
+{
+    data_021f6ca0.first = NULL;
+    data_021f6ca0.last = NULL;
+    data_021f6c98.first = NULL;
+    data_021f6c98.last = NULL;
+    return (int) (uintptr_t) &data_021f6c98;
+}
+CLEAN_AS(__sinit_020c6f5c, StaticInit_TransferQueues)
+
+/* The sky (sky.h), its stars' palette (star_palette.h) and its objects (sky_objects.h), and
+ * the sky objects' path length: six acres' width. */
+#define STATIC_INIT_SKY_PATH_ACRES 6
+extern StarPalette data_021f7280;
+extern SkyObjects data_021f8b48;
+extern const fx32 data_020ca0ec;
+extern s32 data_021f6cdc;
+extern StaticInitRecord data_021f6d20, data_021f6d14, data_021f6d08;
+extern void func_020bb998(void *sky);     /* the sky's destructor */
+extern void func_020b18a8(void *palette); /* the palette's destructor */
+extern void func_020c1574(void *objects); /* the objects' destructor */
+
+/* __sinit_020c6f74: the sky, its stars' palette, its objects and their path's length. */
+void StaticInit_Sky(void)
+{
+    Sky_Construct(&data_021f75b0);
+    static_init_register(&data_021f75b0, func_020bb998, &data_021f6d20);
+    StarPalette_Construct(&data_021f7280);
+    static_init_register(&data_021f7280, func_020b18a8, &data_021f6d14);
+    SkyObjects_Construct(&data_021f8b48);
+    static_init_register(&data_021f8b48, func_020c1574, &data_021f6d08);
+    data_021f6cdc = STATIC_INIT_SKY_PATH_ACRES * data_020ca0ec;
+}
+CLEAN_AS(__sinit_020c6f74, StaticInit_Sky)
+
+/* The first missing villager's colours and its states' entries and updates (missing_npc1.c). */
+#define STATIC_INIT_MISSING1_FNS (MISSING_NPC1_STATES * 2)
+extern StaticInitColour data_021fbbf4, data_021fbbe8, data_021fbbec, data_021fbbe4, data_021fbbf8, data_021fbbf0;
+extern MemberPointer data_021fbbfc[STATIC_INIT_MISSING1_FNS];
+extern const MemberPointer data_020e7b64, data_020e7b5c, data_020e7ae4, data_020e7aec, data_020e7b44, data_020e7b3c,
+    data_020e7b34, data_020e7b14, data_020e7b24, data_020e7b2c, data_020e7b4c, data_020e7b54, data_020e7b04, data_020e7adc,
+    data_020e7af4, data_020e7afc, data_020e7b0c, data_020e7b1c;
+
+/* __sinit_020c6fe8: the six colours of missing_npc1.c and its states' member functions. */
+void StaticInit_MissingNpc1(void)
+{
+    static const MemberPointer *const state_fns[STATIC_INIT_MISSING1_FNS] = {
+        &data_020e7b64, &data_020e7b5c, &data_020e7ae4, &data_020e7aec, &data_020e7b44, &data_020e7b3c,
+        &data_020e7b34, &data_020e7b14, &data_020e7b24, &data_020e7b2c, &data_020e7b4c, &data_020e7b54,
+        &data_020e7b04, &data_020e7adc, &data_020e7af4, &data_020e7afc, &data_020e7b0c, &data_020e7b1c,
+    };
+    static_init_colours(&data_021fbbf4, &data_021fbbe8, &data_021fbbec, &data_021fbbe4, &data_021fbbf8, &data_021fbbf0);
+    static_init_copy(data_021fbbfc, state_fns, STATIC_INIT_MISSING1_FNS);
+}
+CLEAN_AS(__sinit_020c6fe8, StaticInit_MissingNpc1)
+
+/* The second missing villager's colours, its states' entries and updates (missing_npc2.c: one
+ * table of 20 member pointers whose last four the ROM names data_021fbd58) and its two side
+ * points (+-0.5, 0, 1.0). */
+#define STATIC_INIT_MISSING2_FNS (MISSING_NPC2_STATES * 2)
+#define STATIC_INIT_MISSING2_FIRST 16
+#define STATIC_INIT_MISSING2_LAST (STATIC_INIT_MISSING2_FNS - STATIC_INIT_MISSING2_FIRST)
+extern StaticInitColour data_021fbc98, data_021fbca4, data_021fbc9c, data_021fbc8c, data_021fbc90, data_021fbc94;
+extern MemberPointer data_021fbcd8[STATIC_INIT_MISSING2_FIRST];
+extern MemberPointer data_021fbd58[STATIC_INIT_MISSING2_LAST];
+extern Vec3 data_021fbcc0[2];
+extern StaticInitRecord data_021fbca8, data_021fbcb4;
+extern const MemberPointer data_020e7d78, data_020e7d80, data_020e7da8, data_020e7da0, data_020e7d98, data_020e7d20,
+    data_020e7d88, data_020e7d18, data_020e7d30, data_020e7d38, data_020e7d68, data_020e7d40, data_020e7d48, data_020e7d50,
+    data_020e7d58, data_020e7d60, data_020e7d70, data_020e7d90, data_020e7d28, data_020e7d10;
+
+/* __sinit_020c714c: the six colours of missing_npc2.c, its states' member functions, and its
+ * two side points, each registered with an empty destructor. */
+void StaticInit_MissingNpc2(void)
+{
+    static const MemberPointer *const first_fns[STATIC_INIT_MISSING2_FIRST] = {
+        &data_020e7d78, &data_020e7d80, &data_020e7da8, &data_020e7da0, &data_020e7d98, &data_020e7d20,
+        &data_020e7d88, &data_020e7d18, &data_020e7d30, &data_020e7d38, &data_020e7d68, &data_020e7d40,
+        &data_020e7d48, &data_020e7d50, &data_020e7d58, &data_020e7d60,
+    };
+    static const MemberPointer *const last_fns[STATIC_INIT_MISSING2_LAST] = {
+        &data_020e7d70,
+        &data_020e7d90,
+        &data_020e7d28,
+        &data_020e7d10,
+    };
+    static_init_colours(&data_021fbc98, &data_021fbca4, &data_021fbc9c, &data_021fbc8c, &data_021fbc90, &data_021fbc94);
+    static_init_copy(data_021fbcd8, first_fns, STATIC_INIT_MISSING2_FIRST);
+    static_init_copy(data_021fbd58, last_fns, STATIC_INIT_MISSING2_LAST);
+    static_init_vec(&data_021fbcc0[0], 0x800, 0, 0x1000);
+    static_init_register(&data_021fbcc0[0], func_020012dc, &data_021fbca8);
+    static_init_vec(&data_021fbcc0[1], -0x800, 0, 0x1000);
+    static_init_register(&data_021fbcc0[1], func_020012dc, &data_021fbcb4);
+}
+CLEAN_AS(__sinit_020c714c, StaticInit_MissingNpc2)
+
+/* The placing villager's states' entries and updates (npc_plc.c). */
+#define STATIC_INIT_NPC_PLC_FNS (NPC_PLC_STATES * 2)
+extern MemberPointer data_021fbd90[STATIC_INIT_NPC_PLC_FNS];
+extern const MemberPointer data_020e7f78, data_020e7f90, data_020e7f50, data_020e7f58, data_020e7f70, data_020e7f60,
+    data_020e7f80;
+
+/* __sinit_020c7320: the placing villager's states' member functions (state 2 has no entry).
+ * Their table's address. */
+int StaticInit_NpcPlc(void)
+{
+    static const MemberPointer *const state_fns[STATIC_INIT_NPC_PLC_FNS] = {
+        &data_020e7f78, &data_020e7f90, &data_020e7f50, &data_020e7f58,
+        &__ptmf_null,   &data_020e7f70, &data_020e7f60, &data_020e7f80,
+    };
+    static_init_copy(data_021fbd90, state_fns, STATIC_INIT_NPC_PLC_FNS);
+    return (int) (uintptr_t) data_021fbd90;
+}
+CLEAN_AS(__sinit_020c7320, StaticInit_NpcPlc)
+
+/* __sinit_020c7398: nothing. */
+void StaticInit_Nothing7398(void) {}
+CLEAN_AS(__sinit_020c7398, StaticInit_Nothing7398)
+
+/* A point at the origin that several objects use (camera_modes.c, caution_window.c, the
+ * missing villagers). */
+extern Vec3 data_021fbee8;
+extern StaticInitRecord data_021fbedc;
+
+/* __sinit_020c739c: the origin, registered with an empty destructor. */
+void StaticInit_Origin(void)
+{
+    static_init_vec(&data_021fbee8, 0, 0, 0);
+    static_init_register(&data_021fbee8, func_020012dc, &data_021fbedc);
+}
+CLEAN_AS(__sinit_020c739c, StaticInit_Origin)
+
+/* __sinit_020c73d0: nothing. */
+void StaticInit_Nothing73d0(void) {}
+CLEAN_AS(__sinit_020c73d0, StaticInit_Nothing73d0)
+
+/* The processes' tree and lists (autoload_2/process.c) and the member function each phase
+ * calls on them: CONNECT on the tree, CREATE, EXECUTE, DRAW and DELETE on the lists. */
+extern ProcessTree data_021fcff8;
+extern ProcessList data_021fd014, data_021fd004, data_021fd024, data_021fd034;
+extern const MemberFn data_0213e838, data_0213e848, data_0213e820, data_0213e840, data_0213e828;
+
+static void static_init_process_list(ProcessList *list, const MemberFn *each)
+{
+    list->list.first = NULL;
+    list->list.last = NULL;
+    list->each = *each;
+}
+
+/* __sinit_020c73d4: the processes' tree and four lists empty, each with its phase's member
+ * function. */
+void StaticInit_Processes(void)
+{
+    data_021fcff8.each = data_0213e838;
+    data_021fcff8.tree.top = NULL;
+    static_init_process_list(&data_021fd014, &data_0213e848);
+    static_init_process_list(&data_021fd004, &data_0213e820);
+    static_init_process_list(&data_021fd024, &data_0213e840);
+    static_init_process_list(&data_021fd034, &data_0213e828);
+}
+CLEAN_AS(__sinit_020c73d4, StaticInit_Processes)
+
+extern SoundSystem data_021fd1bc;
+
+/* __sinit_020c74b0: the sound system (autoload_2/sound_system.h); it is never destructed. */
+void StaticInit_SoundSystem(void)
+{
+    SoundSystem_Construct(&data_021fd1bc);
+}
+CLEAN_AS(__sinit_020c74b0, StaticInit_SoundSystem)
+
+/* The sounds' distance curve and the slopes of two speakers' volumes
+ * (autoload_2/sound_position.c): the full volume, 127.0, over 0.6, 0.4 and 0.2. */
+#define STATIC_INIT_FULL_VOLUME 0x7f000
+#define STATIC_INIT_SPLIT 0x99a      /* 0.6 */
+#define STATIC_INIT_SPLIT_REST 0x666 /* 0.4 */
+#define STATIC_INIT_SPLIT_LOW 0x333  /* 0.2 */
+extern SoundDistanceCurve data_021fd248;
+extern fx32 data_021fd23c, data_021fd244, data_021fd240;
+extern fx32 FX_Div(fx32 numerator, fx32 denominator);
+
+/* __sinit_020c74c4: the distance curve cleared, and the three slopes. */
+void StaticInit_SoundPosition(void)
+{
+    SoundPosition_ClearCurve(&data_021fd248);
+    data_021fd23c = FX_Div(STATIC_INIT_FULL_VOLUME, STATIC_INIT_SPLIT);
+    data_021fd244 = FX_Div(STATIC_INIT_FULL_VOLUME, STATIC_INIT_SPLIT_REST);
+    data_021fd240 = FX_Div(STATIC_INIT_FULL_VOLUME, STATIC_INIT_SPLIT_LOW);
+}
+CLEAN_AS(__sinit_020c74c4, StaticInit_SoundPosition)

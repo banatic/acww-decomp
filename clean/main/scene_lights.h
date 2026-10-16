@@ -203,4 +203,25 @@ int SceneLights_Draw(SceneLights *self);
 int SceneLights_Execute(SceneLights *self);
 int SceneLights_Create(SceneLights *self);
 
+/* A light of a scene's set (0x14 bytes), copied into a SceneLight by SceneLights_SetUp. */
+typedef struct SceneLightDef {
+    s32 kind; /* SceneLightKind */
+    s32 light;
+    Time time_offset; /* 0x08 */
+    u16 unk_0a;       /* not copied */
+    s32 colour_index; /* 0x0c */
+    s16 angle_x;      /* 0x10 */
+    s16 angle_y;      /* 0x12 */
+} SceneLightDef;
+
+/* The lights of a set (data_020de6f4, by the scene's light kind). */
+typedef struct SceneLightSet {
+    s32 count;
+    const SceneLightDef *const *lights;
+} SceneLightSet;
+
+void SceneLights_SetUp(SceneLights *self);
+int SceneLights_New(void);
+SceneLight *SceneLight_Construct(SceneLight *light);
+
 #endif

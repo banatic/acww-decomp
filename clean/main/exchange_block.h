@@ -45,5 +45,9 @@ void ExchangeBlock_SetArrivesAtOnce(ExchangeBlock *block, unsigned int value);
 int ExchangeBlock_IsSendable(ExchangeBlock *block);
 u16 ExchangeBlock_Checksum(ExchangeBlock *block);
 void ExchangeBlock_SetChecksum(ExchangeBlock *block, u16 checksum);
+void ExchangeBlock_Clear(ExchangeBlock *block);
+void ExchangeBlock_SetUp(ExchangeBlock *block);
+ExchangeBlock *ExchangeBlock_Destruct(ExchangeBlock *block);
+ExchangeBlock *ExchangeBlock_Construct(ExchangeBlock *block);
 
 #endif

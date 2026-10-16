@@ -3,6 +3,8 @@
 
 #include "autoload_2/fx_math.h"
 #include "clean.h"
+#include "effect_places.h"
+#include "effect_system.h"
 #include "field_collision.h"
 #include "scene_query.h"
 #include "sky.h"
@@ -77,31 +79,10 @@ extern void *data_020e29dc[];
 extern void *data_020e29fc[];
 extern void *data_020e2a64[];
 
-/* A kept set started at a place filled from the arguments (`setups` NULL for the default
- * words): 0 when it started, else 3. */
-extern int func_02094b58(int set, int kind, const Vec3 *position, const s16 *angle, const s16 *extra, void *const *setups);
-/* A one-shot set started the same way: 1 when it started, else 3. */
-extern int func_02094cf8(int set, int kind, const Vec3 *position, const s16 *angle, const s16 *extra, void *const *setups);
 /* The place being started (data_021d5658) filled: cleared, then the handle, the kind, the point,
  * the angle and the half-word 0x10 when given, and the frames. */
 extern void func_02091494(EffectKindsPlace *place, int handle, int kind, const Vec3 *position, const s16 *angle,
                           const s16 *extra, int frames);
-/* The set's emitters started at `position`, each given its word of `setups`; 0 when `position`
- * is NULL, else 1. */
-extern int func_02090c2c(int set, const Vec3 *position, const s16 *angle, void *const *setups);
-/* The instance's emitter put at the place being started, `offset` and `axis` (each NULL for
- * none) turned by its angle; the place kept in the instance's entry of data_021d52d8. */
-extern void func_02094c38(EffectKindsInstance *instance, const Vec3 *offset, const Vec3 *axis);
-/* The instance's emitter moved with its kept place while it lasts (counting its frames down);
- * whether it did, the entry cleared when not. */
-extern int func_02094bcc(EffectKindsInstance *instance, const Vec3 *offset, const Vec3 *axis);
-/* The new emitter put at the place being started, `offset` and `axis` turned by its angle, and
- * tinted. */
-extern void func_02094d48(ParticleEmitter *emitter, const Vec3 *offset, const Vec3 *axis);
-/* The new emitter put at the place being started, and tinted. */
-extern void func_02094ef4(ParticleEmitter *emitter);
-/* The emitter's colour tinted as its resource asks. */
-extern void func_02090db0(ParticleEmitter *emitter);
 /* A place cleared (no handle, no kind). */
 extern void func_020914dc(EffectKindsPlace *place);
 extern void func_02093678(void *transform);
@@ -183,7 +164,7 @@ CLEAN_AS(func_02092e5c, EffectKinds_PlaceKind35A)
  * set. */
 void EffectKinds_PlaceWithSpeeds(EffectKindsInstance *instance, char interval, fx32 speed, fx32 axis_speed)
 {
-    func_02094c38(instance, NULL, &data_020d1750);
+    EffectPlaces_Place(instance, NULL, &data_020d1750);
     instance->emitter->misc = particle_with_bits(instance->emitter->misc, EMITTER_INTERVAL_SHIFT, 8, (u8) interval);
     instance->emitter->speed = speed;
     instance->emitter->axis_speed = axis_speed;
@@ -195,7 +176,7 @@ void EffectKinds_StartKind34(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_34, kind, position, angle, extra, NULL);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_34, kind, position, angle, extra, NULL);
 }
 CLEAN_AS(func_02092ea4, EffectKinds_StartKind34)
 
@@ -203,7 +184,7 @@ CLEAN_AS(func_02092ea4, EffectKinds_StartKind34)
 int EffectKinds_StartKind33(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
 {
     if (Sky_Falling() == SKY_FALLING_RAIN) {
-        return func_02094b58(EFFECT_KINDS_SET_KIND_33, kind, position, angle, extra, data_020e28d4);
+        return EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_33, kind, position, angle, extra, data_020e28d4);
     }
     return EFFECT_KINDS_NOT_STARTED;
 }
@@ -212,14 +193,14 @@ CLEAN_AS(func_02092ec8, EffectKinds_StartKind33)
 /* func_02092f00: kind 0x33's emitter moved with its place, its axis up and back. */
 int EffectKinds_FollowKind33(EffectKindsInstance *instance)
 {
-    return func_02094bcc(instance, NULL, &data_020d1768);
+    return EffectPlaces_Follow(instance, NULL, &data_020d1768);
 }
 CLEAN_AS(func_02092f00, EffectKinds_FollowKind33)
 
 /* func_02092f10: kind 0x33's emitter placed, its axis up and back. */
 void EffectKinds_PlaceKind33(EffectKindsInstance *instance)
 {
-    func_02094c38(instance, NULL, &data_020d1768);
+    EffectPlaces_Place(instance, NULL, &data_020d1768);
 }
 CLEAN_AS(func_02092f10, EffectKinds_PlaceKind33)
 
@@ -228,7 +209,7 @@ void EffectKinds_StartKind32(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094cf8(EFFECT_KINDS_SET_KIND_32, kind, position, angle, extra, data_020e27a4);
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_32, kind, position, angle, extra, data_020e27a4);
 }
 CLEAN_AS(func_02092f20, EffectKinds_StartKind32)
 
@@ -236,7 +217,7 @@ CLEAN_AS(func_02092f20, EffectKinds_StartKind32)
  * colour 3 instead of the tint. */
 void EffectKinds_SetUpKind32(ParticleEmitter *emitter)
 {
-    func_02094ef4(emitter);
+    EffectPlaces_SetUp(emitter);
     /* QUIRK: each of the colour's components is scaled by white's (c * 31 / 31), which leaves
      * the light colour as it is, its top bit too. */
     emitter->color = (u16) Sky_LightColor(EFFECT_KINDS_LIGHT_COLOR);
@@ -248,7 +229,7 @@ void EffectKinds_StartKind31(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_31, kind, position, angle, extra, data_020e27fc);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_31, kind, position, angle, extra, data_020e27fc);
 }
 CLEAN_AS(func_02092ff8, EffectKinds_StartKind31)
 
@@ -257,14 +238,14 @@ void EffectKinds_FollowKind31(EffectKindsInstance *instance)
 {
     Vec3 forward = {0, 0, EFFECT_KINDS_ONE};
 
-    func_02094bcc(instance, NULL, &forward);
+    EffectPlaces_Follow(instance, NULL, &forward);
 }
 CLEAN_AS(func_02093020, EffectKinds_FollowKind31)
 
 /* func_02093040: kind 0x31's emitter placed, its axis forward. */
 void EffectKinds_PlaceKind31(EffectKindsInstance *instance)
 {
-    func_02094c38(instance, NULL, &data_020d1750);
+    EffectPlaces_Place(instance, NULL, &data_020d1750);
 }
 CLEAN_AS(func_02093040, EffectKinds_PlaceKind31)
 
@@ -273,7 +254,7 @@ void EffectKinds_StartKind30(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_30, kind, position, angle, extra, data_020e28a4);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_30, kind, position, angle, extra, data_020e28a4);
 }
 CLEAN_AS(func_02093050, EffectKinds_StartKind30)
 
@@ -298,11 +279,11 @@ int EffectKinds_StartWithThree54(int kind, const Vec3 *position, const s16 *angl
     int i;
 
     func_02091494(&data_021d5658, -1, kind, position, angle, extra, -1);
-    if (func_02090c2c(set, position, angle, data_020e27c8) == 0) {
+    if (EffectSystem_StartSet(set, position, angle, data_020e27c8) == 0) {
         return EFFECT_KINDS_NOT_STARTED;
     }
     for (i = 0; i < 3; i++) {
-        if (func_02090c2c(EFFECT_KINDS_SET_54, position, angle, &data_020e2904[i]) == 0) {
+        if (EffectSystem_StartSet(EFFECT_KINDS_SET_54, position, angle, &data_020e2904[i]) == 0) {
             return EFFECT_KINDS_NOT_STARTED;
         }
     }
@@ -313,21 +294,21 @@ CLEAN_AS(func_020930a0, EffectKinds_StartWithThree54)
 /* func_0209310c: the third emitter of set 0x54 set up at its offset (data_020d1738). */
 void EffectKinds_SetUp54C(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, &data_020d1738, NULL);
+    EffectPlaces_SetUpAt(emitter, &data_020d1738, NULL);
 }
 CLEAN_AS(func_0209310c, EffectKinds_SetUp54C)
 
 /* func_0209311c: the second emitter of set 0x54 set up at its offset (data_020d1720). */
 void EffectKinds_SetUp54B(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, &data_020d1720, NULL);
+    EffectPlaces_SetUpAt(emitter, &data_020d1720, NULL);
 }
 CLEAN_AS(func_0209311c, EffectKinds_SetUp54B)
 
 /* func_0209312c: the first emitter of set 0x54 set up at its offset (data_020d1714). */
 void EffectKinds_SetUp54A(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, &data_020d1714, NULL);
+    EffectPlaces_SetUpAt(emitter, &data_020d1714, NULL);
 }
 CLEAN_AS(func_0209312c, EffectKinds_SetUp54A)
 
@@ -338,8 +319,8 @@ int EffectKinds_StartKind2d(int kind, const Vec3 *position, const s16 *angle, co
     int result = EFFECT_KINDS_NOT_STARTED;
 
     func_02091494(&data_021d5658, -1, kind, position, angle, extra, -1);
-    if (func_02090c2c(EFFECT_KINDS_SET_KIND_2D, position, angle, data_020e27c8) != 0 &&
-        func_02090c2c(EFFECT_KINDS_SET_54, position, angle, data_020e29fc) != 0) {
+    if (EffectSystem_StartSet(EFFECT_KINDS_SET_KIND_2D, position, angle, data_020e27c8) != 0 &&
+        EffectSystem_StartSet(EFFECT_KINDS_SET_54, position, angle, data_020e29fc) != 0) {
         result = 1;
     }
     return result;
@@ -349,7 +330,7 @@ CLEAN_AS(func_0209313c, EffectKinds_StartKind2d)
 /* func_02093194: the emitter of sets 0x76-0x78 (kinds 0x2d-0x2f) set up, its axis mostly up. */
 void EffectKinds_SetUpKind2d(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, NULL, &data_020d16fc);
+    EffectPlaces_SetUpAt(emitter, NULL, &data_020d16fc);
 }
 CLEAN_AS(func_02093194, EffectKinds_SetUpKind2d)
 
@@ -438,7 +419,7 @@ static int effect_kinds_start_on_mark_ground(int kind, const Vec3 *position, con
     CollisionGround_Init(&ground, position, 0, 0);
     attr = ground.attr;
     if ((attr == EFFECT_KINDS_GROUND_13 || (SceneQuery_IsSnowSeason() && attr == EFFECT_KINDS_GROUND_3)) && set != -1) {
-        result = func_02094cf8(set, kind, position, angle, extra, setups);
+        result = EffectPlaces_StartOneShot(set, kind, position, angle, extra, setups);
     } else {
         result = EFFECT_KINDS_NOT_STARTED;
     }
@@ -479,7 +460,7 @@ void EffectKinds_SetUpMark(ParticleEmitter *emitter, const Vec3 *offset, int tur
     emitter->axis.x = FX_SinCosTable_[index];
     emitter->axis.y = 0;
     emitter->axis.z = FX_SinCosTable_[index + 1];
-    func_02090db0(emitter);
+    EffectSystem_TintEmitter(emitter);
     emitter->callback = func_020933c0;
 }
 CLEAN_AS(func_0209332c, EffectKinds_SetUpMark)
@@ -521,7 +502,7 @@ void EffectKinds_StartKind26(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_26, kind, position, angle, extra, data_020e28c4);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_26, kind, position, angle, extra, data_020e28c4);
 }
 CLEAN_AS(func_020934a4, EffectKinds_StartKind26)
 
@@ -573,7 +554,7 @@ CLEAN_AS(func_020934cc, EffectKinds_FollowKind26)
 /* func_020935c4: kind 0x26's emitter placed, its axis forward. */
 void EffectKinds_PlaceKind26(EffectKindsInstance *instance)
 {
-    func_02094c38(instance, NULL, &data_020d1750);
+    EffectPlaces_Place(instance, NULL, &data_020d1750);
 }
 CLEAN_AS(func_020935c4, EffectKinds_PlaceKind26)
 
@@ -582,7 +563,7 @@ void EffectKinds_StartKind25(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_25, kind, position, angle, extra, data_020e2a64);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_25, kind, position, angle, extra, data_020e2a64);
 }
 CLEAN_AS(func_020935d4, EffectKinds_StartKind25)
 
@@ -592,7 +573,7 @@ int EffectKinds_FollowKind25(EffectKindsInstance *instance)
 {
     ParticleLink *link;
 
-    if (func_02094bcc(instance, NULL, NULL) != 0) {
+    if (EffectPlaces_Follow(instance, NULL, NULL) != 0) {
         return 1;
     }
     for (link = instance->emitter->particles.first; link != NULL; link = link->next) {
@@ -610,7 +591,7 @@ int EffectKinds_StartKind24(int kind, const Vec3 *position, const s16 *angle, co
 {
     int result = EFFECT_KINDS_NOT_STARTED;
 
-    if (func_02094cf8(EFFECT_KINDS_SET_KIND_24, kind, position, angle, extra, data_020e2964) < 3) {
+    if (EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_24, kind, position, angle, extra, data_020e2964) < 3) {
         EffectKinds_StartModel(EFFECT_KINDS_MODEL_KIND_24, kind, position, angle, extra, func_02093678);
         result = 1;
     }
@@ -639,7 +620,7 @@ CLEAN_AS(func_02093678, EffectKinds_SetModelTransformTurned)
 /* func_020936ac: an emitter of kind 0x24 set up, its axis up and forward. */
 void EffectKinds_SetUpKind24(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, NULL, &data_020d17d4);
+    EffectPlaces_SetUpAt(emitter, NULL, &data_020d17d4);
 }
 CLEAN_AS(func_020936ac, EffectKinds_SetUpKind24)
 
@@ -652,7 +633,7 @@ int EffectKinds_StartKind23(int kind, const Vec3 *position, const s16 *angle, co
 
     CollisionGround_Init(&ground, position, 0, 0);
     set = ground.attr == EFFECT_KINDS_GROUND_13 ? EFFECT_KINDS_SET_KIND_23_ON_13 : EFFECT_KINDS_SET_KIND_23;
-    result = func_02094cf8(set, kind, position, angle, extra, data_020e27cc);
+    result = EffectPlaces_StartOneShot(set, kind, position, angle, extra, data_020e27cc);
     CollisionGround_Destroy(&ground);
     return result;
 }
@@ -661,7 +642,7 @@ CLEAN_AS(func_020936bc, EffectKinds_StartKind23)
 /* func_02093704: kind 0x23's emitter set up, its axis up and forward. */
 void EffectKinds_SetUpKind23(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, NULL, &data_020d17c8);
+    EffectPlaces_SetUpAt(emitter, NULL, &data_020d17c8);
 }
 CLEAN_AS(func_02093704, EffectKinds_SetUpKind23)
 
@@ -681,7 +662,7 @@ int EffectKinds_StartKind22(void *kind, const Vec3 *position, const s16 *angle, 
     result = EFFECT_KINDS_NOT_STARTED;
     if (data_020e54a8 == 1) {
         if (attr == EFFECT_KINDS_GROUND_9 || attr == EFFECT_KINDS_GROUND_3) {
-            result = func_02094cf8(EFFECT_KINDS_SET_KIND_22, (int) (intptr_t) kind, position, angle, extra, NULL);
+            result = EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_22, (int) (intptr_t) kind, position, angle, extra, NULL);
         }
     } else {
         if (attr == EFFECT_KINDS_GROUND_16 || Sky_Falling() == SKY_FALLING_RAIN) {
@@ -693,7 +674,7 @@ int EffectKinds_StartKind22(void *kind, const Vec3 *position, const s16 *angle, 
         } else {
             set = EFFECT_KINDS_SET_KIND_22;
         }
-        result = func_02094cf8(set, (int) (intptr_t) kind, position, angle, extra, NULL);
+        result = EffectPlaces_StartOneShot(set, (int) (intptr_t) kind, position, angle, extra, NULL);
     }
     CollisionGround_Destroy(&ground);
     return result;
@@ -703,7 +684,7 @@ CLEAN_AS(func_02093714, EffectKinds_StartKind22)
 /* func_020937d4: kind 0x21, kept set 0x73 at its own size. */
 int EffectKinds_StartKind21(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
 {
-    return func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, NULL);
+    return EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, NULL);
 }
 CLEAN_AS(func_020937d4, EffectKinds_StartKind21)
 
@@ -712,14 +693,14 @@ void EffectKinds_StartKind1f(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e27e4);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e27e4);
 }
 CLEAN_AS(func_020937f8, EffectKinds_StartKind1f)
 
 /* The instance's emitter placed (no offset, its own axis), its particles' base scale `scale`. */
 static void effect_kinds_place_scaled(EffectKindsInstance *instance, fx32 scale)
 {
-    func_02094c38(instance, NULL, NULL);
+    EffectPlaces_Place(instance, NULL, NULL);
     instance->emitter->base_scale = scale;
 }
 
@@ -735,7 +716,7 @@ void EffectKinds_StartKind1e(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e27ec);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e27ec);
 }
 CLEAN_AS(func_0209383c, EffectKinds_StartKind1e)
 
@@ -751,7 +732,7 @@ CLEAN_AS(func_02093864, EffectKinds_PlaceScaled07)
 int EffectKinds_StartKind1d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int unused)
 {
     (void) unused;
-    return func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e2854);
+    return EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e2854);
 }
 CLEAN_AS(func_02093880, EffectKinds_StartKind1d)
 
@@ -767,7 +748,7 @@ void EffectKinds_StartKind1c(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e28b4);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e28b4);
 }
 CLEAN_AS(func_020938c4, EffectKinds_StartKind1c)
 
@@ -783,7 +764,7 @@ void EffectKinds_StartKind1b(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e2844);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e2844);
 }
 CLEAN_AS(func_02093908, EffectKinds_StartKind1b)
 
@@ -799,7 +780,7 @@ void EffectKinds_StartKind1a(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e283c);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_SIZED, kind, position, angle, extra, data_020e283c);
 }
 CLEAN_AS(func_0209394c, EffectKinds_StartKind1a)
 
@@ -849,16 +830,6 @@ extern const Vec3 data_020d1780; /* (-1, 1, 0) */
 extern const Vec3 data_020d17a4; /* (-0.2, 1, -0.4) */
 extern const Vec3 data_020d181c; /* (-0.15, 1, -0.15) */
 
-/* A kept set's emitters started at `position`, each given its two words of `setups`; whether
- * they started. */
-extern int func_02090ac4(int set, const Vec3 *position, const s16 *angle, void *const *setups);
-/* Model `model` started, `setup` setting its transform up. */
-extern void func_02090aa4(int model, void (*setup)(void *transform));
-/* The instance's emitter placed at the place being started (no offset, its own axis). */
-extern void func_02094bc0(EffectKindsInstance *instance);
-/* The new emitter set up at the place being started and tinted (func_02094ef4), its
- * particles' base scale `scale`. */
-extern void func_02094e04(ParticleEmitter *emitter, fx32 scale);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* The models' transform set-up functions handed to func_02094840. */
@@ -937,9 +908,9 @@ static int effect_kinds_start_with_kept(int kind, const Vec3 *position, const s1
 {
     int result = EFFECT_KINDS_NOT_STARTED;
 
-    if (func_02094cf8(set, kind, position, angle, extra, setups) < EFFECT_KINDS_NOT_STARTED) {
+    if (EffectPlaces_StartOneShot(set, kind, position, angle, extra, setups) < EFFECT_KINDS_NOT_STARTED) {
         func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
-        if (func_02090ac4(kept_set, position, angle, kept_setups) != 0) {
+        if (EffectSystem_StartKeptSet(kept_set, position, angle, kept_setups) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     }
@@ -955,7 +926,8 @@ static int effect_kinds_start_by_ground(int kind, const Vec3 *position, const s1
     int result;
 
     CollisionGround_Init(&ground, position, 0, 0);
-    result = func_02094cf8(ground.attr == EFFECT_KINDS_GROUND_13 ? set_on_13 : set, kind, position, angle, extra, setups);
+    result = EffectPlaces_StartOneShot(ground.attr == EFFECT_KINDS_GROUND_13 ? set_on_13 : set, kind, position, angle, extra,
+                                       setups);
     CollisionGround_Destroy(&ground);
     return result;
 }
@@ -1001,14 +973,14 @@ CLEAN_AS(func_020939b8, EffectKinds_SetModelTransformKind19)
 /* func_020939c8: kind 0x19's set 0x4a emitter set up at 1.8 of its size. */
 void EffectKinds_SetUpKind19(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x1ccd);
+    EffectPlaces_SetUpScaled(emitter, 0x1ccd);
 }
 CLEAN_AS(func_020939c8, EffectKinds_SetUpKind19)
 
 /* func_020939d8: kind 0x19's kept emitter placed, its speed along its axis 0.75. */
 void EffectKinds_PlaceKind19(EffectKindsInstance *instance)
 {
-    func_02094bc0(instance);
+    EffectPlaces_PlaceDefault(instance);
     instance->emitter->axis_speed = 0xc00;
 }
 CLEAN_AS(func_020939d8, EffectKinds_PlaceKind19)
@@ -1031,14 +1003,14 @@ CLEAN_AS(func_02093a18, EffectKinds_SetModelTransformKind17)
 /* func_02093a28: kind 0x17's set 0x4a emitter set up at 1.3 of its size. */
 void EffectKinds_SetUpKind17(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x14cd);
+    EffectPlaces_SetUpScaled(emitter, 0x14cd);
 }
 CLEAN_AS(func_02093a28, EffectKinds_SetUpKind17)
 
 /* func_02093a38: kind 0x17's kept emitter placed, its speed along its axis 0.6. */
 void EffectKinds_PlaceKind17(EffectKindsInstance *instance)
 {
-    func_02094bc0(instance);
+    EffectPlaces_PlaceDefault(instance);
     instance->emitter->axis_speed = 0x99a;
 }
 CLEAN_AS(func_02093a38, EffectKinds_PlaceKind17)
@@ -1063,14 +1035,14 @@ CLEAN_AS(func_02093a78, EffectKinds_SetModelTransformKind16)
 /* func_02093a88: kind 0x16's set 0x4a emitter set up at 1.1 of its size. */
 void EffectKinds_SetUpKind16(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x119a);
+    EffectPlaces_SetUpScaled(emitter, 0x119a);
 }
 CLEAN_AS(func_02093a88, EffectKinds_SetUpKind16)
 
 /* func_02093a98: kind 0x16's kept emitter placed, its speed along its axis 0.5. */
 void EffectKinds_PlaceKind16(EffectKindsInstance *instance)
 {
-    func_02094bc0(instance);
+    EffectPlaces_PlaceDefault(instance);
     instance->emitter->axis_speed = 0x800;
 }
 CLEAN_AS(func_02093a98, EffectKinds_PlaceKind16)
@@ -1087,14 +1059,14 @@ CLEAN_AS(func_02093ab0, EffectKinds_StartKind15)
 /* func_02093b28: kind 0x15's third emitter set up at 1.6 of its size. */
 void EffectKinds_SetUpKind15Third(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x199a);
+    EffectPlaces_SetUpScaled(emitter, 0x199a);
 }
 CLEAN_AS(func_02093b28, EffectKinds_SetUpKind15Third)
 
 /* func_02093b38: kind 0x15's first two emitters set up at twice their size. */
 void EffectKinds_SetUpKind15(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x2000);
+    EffectPlaces_SetUpScaled(emitter, 0x2000);
 }
 CLEAN_AS(func_02093b38, EffectKinds_SetUpKind15)
 
@@ -1111,7 +1083,7 @@ CLEAN_AS(func_02093b48, EffectKinds_StartKind14)
  * their size. */
 void EffectKinds_PlaceSet75(EffectKindsInstance *instance)
 {
-    func_02094bc0(instance);
+    EffectPlaces_PlaceDefault(instance);
     instance->emitter->base_scale = 0x1333;
 }
 CLEAN_AS(func_02093bc0, EffectKinds_PlaceSet75)
@@ -1119,14 +1091,14 @@ CLEAN_AS(func_02093bc0, EffectKinds_PlaceSet75)
 /* func_02093bd8: kind 0x14's third emitter set up at 1.2 of its size. */
 void EffectKinds_SetUpKind14Third(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x1333);
+    EffectPlaces_SetUpScaled(emitter, 0x1333);
 }
 CLEAN_AS(func_02093bd8, EffectKinds_SetUpKind14Third)
 
 /* func_02093be8: kind 0x14's first two emitters set up at 1.5 of their size. */
 void EffectKinds_SetUpKind14(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x1800);
+    EffectPlaces_SetUpScaled(emitter, 0x1800);
 }
 CLEAN_AS(func_02093be8, EffectKinds_SetUpKind14)
 
@@ -1152,14 +1124,14 @@ CLEAN_AS(func_02093c70, EffectKinds_FollowSet75)
 /* func_02093c94: kind 0x13's second emitter set up (func_02094ef4). */
 void EffectKinds_SetUpKind13Second(ParticleEmitter *emitter)
 {
-    func_02094ef4(emitter);
+    EffectPlaces_SetUp(emitter);
 }
 CLEAN_AS(func_02093c94, EffectKinds_SetUpKind13Second)
 
 /* func_02093c9c: kind 0x13's first emitter set up at 1.8 of its size. */
 void EffectKinds_SetUpKind13(ParticleEmitter *emitter)
 {
-    func_02094e04(emitter, 0x1ccd);
+    EffectPlaces_SetUpScaled(emitter, 0x1ccd);
 }
 CLEAN_AS(func_02093c9c, EffectKinds_SetUpKind13)
 
@@ -1177,7 +1149,7 @@ void EffectKinds_StartKind11(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_11, kind, position, angle, extra, data_020e29ac);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_11, kind, position, angle, extra, data_020e29ac);
 }
 CLEAN_AS(func_02093d20, EffectKinds_StartKind11)
 
@@ -1223,7 +1195,7 @@ void EffectKinds_StartKind0e(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094b58(EFFECT_KINDS_SET_KIND_0E, kind, position, angle, extra, data_020e280c);
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_0E, kind, position, angle, extra, data_020e280c);
 }
 CLEAN_AS(func_02093e14, EffectKinds_StartKind0e)
 
@@ -1265,7 +1237,7 @@ void EffectKinds_PlaceKind0e(EffectKindsInstance *instance)
     Vec3 at;
 
     effect_kinds_put(instance->emitter, &place->position);
-    func_02090db0(instance->emitter);
+    EffectSystem_TintEmitter(instance->emitter);
     at = place->position;
     effect_kinds_axis_from_ground(instance->emitter, &ground, &at);
     MI_CpuCopy8(place, &data_021d52d8[slot], sizeof(EffectKindsPlace));
@@ -1286,7 +1258,7 @@ void EffectKinds_StartKind0f(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094cf8(EFFECT_KINDS_SET_KIND_0F, kind, position, angle, extra, NULL);
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_0F, kind, position, angle, extra, NULL);
 }
 CLEAN_AS(func_02094038, EffectKinds_StartKind0f)
 
@@ -1343,10 +1315,11 @@ int EffectKinds_StartWithModel(int kind, Vec3 *position, const s16 *angle, const
         /* QUIRK: the point handed in by the kind's caller is changed. */
         position->y = ground.limit;
     }
-    if (func_02094cf8(EFFECT_KINDS_SET_WITH_MODEL, kind, position, angle, extra, setups) < EFFECT_KINDS_NOT_STARTED) {
+    if (EffectPlaces_StartOneShot(EFFECT_KINDS_SET_WITH_MODEL, kind, position, angle, extra, setups) <
+        EFFECT_KINDS_NOT_STARTED) {
         EffectKinds_StartModel(EFFECT_KINDS_MODEL_WITH_SET, kind, position, angle, extra, model_setup);
         func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
-        if (func_02090ac4(EFFECT_KINDS_SET_WITH_MODEL_KEPT, position, angle, kept_setups) != 0) {
+        if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_WITH_MODEL_KEPT, position, angle, kept_setups) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     }
@@ -1414,17 +1387,18 @@ int EffectKinds_StartKind0a(int kind, const Vec3 *position, const s16 *angle, co
      * the one in the snow leaves out the half-word 0x10 (`extra`). */
     if (Sky_Falling() == SKY_FALLING_RAIN) {
         func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, extra, -1);
-        if (func_02090ac4(EFFECT_KINDS_SET_KIND_0A_RAIN, position, angle, data_020e289c) != 0) {
+        if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_0A_RAIN, position, angle, data_020e289c) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     } else if (SceneQuery_IsSnowSeason() != 0 && attr == EFFECT_KINDS_GROUND_3) {
         func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
-        if (func_02090ac4(EFFECT_KINDS_SET_KIND_0A_SNOW, position, angle, data_020e28ec) != 0) {
+        if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_0A_SNOW, position, angle, data_020e28ec) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     } else {
-        result = func_02094cf8(attr == EFFECT_KINDS_GROUND_13 ? EFFECT_KINDS_SET_KIND_0A_ON_13 : EFFECT_KINDS_SET_KIND_0A,
-                               kind, position, angle, extra, NULL);
+        result = EffectPlaces_StartOneShot(attr == EFFECT_KINDS_GROUND_13 ? EFFECT_KINDS_SET_KIND_0A_ON_13
+                                                                          : EFFECT_KINDS_SET_KIND_0A,
+                                           kind, position, angle, extra, NULL);
     }
     CollisionGround_Destroy(&ground);
     return result;
@@ -1443,7 +1417,7 @@ CLEAN_AS(func_02094364, EffectKinds_StartKind09)
  * to the side (data_020d1780). */
 void EffectKinds_SetUpKind09(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, &data_020d1708, &data_020d1780);
+    EffectPlaces_SetUpAt(emitter, &data_020d1708, &data_020d1780);
 }
 CLEAN_AS(func_020943ac, EffectKinds_SetUpKind09)
 
@@ -1467,14 +1441,14 @@ CLEAN_AS(func_02094404, EffectKinds_StartKind07)
 /* func_0209444c: kind 0x07's second emitter set up, its axis mostly up (data_020d17a4). */
 void EffectKinds_SetUpKind07Second(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, NULL, &data_020d17a4);
+    EffectPlaces_SetUpAt(emitter, NULL, &data_020d17a4);
 }
 CLEAN_AS(func_0209444c, EffectKinds_SetUpKind07Second)
 
 /* func_0209445c: kind 0x07's first emitter set up, its axis mostly up (data_020d181c). */
 void EffectKinds_SetUpKind07First(ParticleEmitter *emitter)
 {
-    func_02094d48(emitter, NULL, &data_020d181c);
+    EffectPlaces_SetUpAt(emitter, NULL, &data_020d181c);
 }
 CLEAN_AS(func_0209445c, EffectKinds_SetUpKind07First)
 
@@ -1492,7 +1466,7 @@ void EffectKinds_StartKind03(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094cf8(EFFECT_KINDS_SET_KIND_03, kind, position, angle, extra, data_020e2814);
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_03, kind, position, angle, extra, data_020e2814);
 }
 CLEAN_AS(func_020944b0, EffectKinds_StartKind03)
 
@@ -1501,7 +1475,7 @@ void EffectKinds_StartKind02(int kind, const Vec3 *position, const s16 *angle, c
 {
     /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
      * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
-    func_02094cf8(EFFECT_KINDS_SET_KIND_02, kind, position, angle, extra, data_020e277c);
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_02, kind, position, angle, extra, data_020e277c);
 }
 CLEAN_AS(func_020944d8, EffectKinds_StartKind02)
 
@@ -1519,7 +1493,7 @@ void EffectKinds_SetUpKind02(ParticleEmitter *emitter)
     Vec_RotateX(&axis, -0x2000);
     Vec_RotateY(&axis, behind);
     effect_kinds_set_axis(emitter, &axis);
-    func_02090db0(emitter);
+    EffectSystem_TintEmitter(emitter);
 }
 CLEAN_AS(func_02094500, EffectKinds_SetUpKind02)
 
@@ -1538,23 +1512,24 @@ int EffectKinds_StartKind01(int kind, const Vec3 *position, const s16 *angle, co
     result = EFFECT_KINDS_NOT_STARTED;
     if (data_020e54a8 == 1) {
         if (attr == EFFECT_KINDS_GROUND_9 || attr == EFFECT_KINDS_GROUND_3) {
-            result = func_02094cf8(EFFECT_KINDS_SET_KIND_01, kind, position, angle, extra, data_020e27bc);
+            result = EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_01, kind, position, angle, extra, data_020e27bc);
         }
     } else if (attr == EFFECT_KINDS_GROUND_16 || Sky_Falling() == SKY_FALLING_RAIN) {
         /* QUIRK: the kept starts leave out the half-word 0x10 (`extra`) and do not clear the
          * place being started afterwards. */
         func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
-        if (func_02090ac4(EFFECT_KINDS_SET_KIND_01_WET, position, angle, data_020e27dc) != 0) {
+        if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_01_WET, position, angle, data_020e27dc) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     } else if (attr == EFFECT_KINDS_GROUND_3 && SceneQuery_IsSnowSeason() != 0) {
         func_02091494(&data_021d5658, effect_kinds_next_handle(), kind, position, angle, NULL, -1);
-        if (func_02090ac4(EFFECT_KINDS_SET_KIND_01_SNOW, position, angle, data_020e27f4) != 0) {
+        if (EffectSystem_StartKeptSet(EFFECT_KINDS_SET_KIND_01_SNOW, position, angle, data_020e27f4) != 0) {
             result = EFFECT_KINDS_KEPT_STARTED;
         }
     } else {
-        result = func_02094cf8(attr == EFFECT_KINDS_GROUND_13 ? EFFECT_KINDS_SET_KIND_01_ON_13 : EFFECT_KINDS_SET_KIND_01,
-                               kind, position, angle, extra, data_020e27bc);
+        result = EffectPlaces_StartOneShot(attr == EFFECT_KINDS_GROUND_13 ? EFFECT_KINDS_SET_KIND_01_ON_13
+                                                                          : EFFECT_KINDS_SET_KIND_01,
+                                           kind, position, angle, extra, data_020e27bc);
     }
     CollisionGround_Destroy(&ground);
     return result;
@@ -1593,7 +1568,7 @@ void EffectKinds_PlaceKind01(EffectKindsInstance *instance)
     Vec3 axis = {0, 0xb50, 0xb50};
 
     effect_kinds_put(instance->emitter, &place->position);
-    func_02090db0(instance->emitter);
+    EffectSystem_TintEmitter(instance->emitter);
     Vec_RotateY(&axis, place->angle);
     effect_kinds_set_axis(instance->emitter, &axis);
     MI_CpuCopy8(place, &data_021d52d8[slot], sizeof(EffectKindsPlace));
@@ -1619,7 +1594,7 @@ int EffectKinds_StartKind00(int kind, const Vec3 *position, u16 *angle, const s1
     set = EFFECT_KINDS_SET_KIND_00;
     if (data_020e54a8 == 1) {
         if (attr == EFFECT_KINDS_GROUND_9 || attr == EFFECT_KINDS_GROUND_3) {
-            result = func_02094cf8(set, kind, position, (const s16 *) angle, extra, setups);
+            result = EffectPlaces_StartOneShot(set, kind, position, (const s16 *) angle, extra, setups);
         }
     } else {
         if (attr == EFFECT_KINDS_GROUND_16 || Sky_Falling() == SKY_FALLING_RAIN) {
@@ -1637,7 +1612,7 @@ int EffectKinds_StartKind00(int kind, const Vec3 *position, u16 *angle, const s1
         } else if (attr == EFFECT_KINDS_GROUND_13) {
             set = EFFECT_KINDS_SET_KIND_00_ON_13;
         }
-        result = func_02094cf8(set, kind, position, (const s16 *) angle, extra, setups);
+        result = EffectPlaces_StartOneShot(set, kind, position, (const s16 *) angle, extra, setups);
     }
     CollisionGround_Destroy(&ground);
     return result;
@@ -1654,7 +1629,7 @@ int EffectKinds_StartModel(int model, int kind, const Vec3 *position, const s16 
         setup = func_02094884;
     }
     func_02091494(&data_021d5658, -1, kind, position, angle, extra, -1);
-    func_02090aa4(model, setup);
+    EffectSystem_StartModel(model, setup);
     return 1;
 }
 CLEAN_AS(func_02094840, EffectKinds_StartModel)
@@ -1728,21 +1703,21 @@ static int effect_kinds_land_particles(ParticleEmitter *emitter, int scaled, int
             if (at.y <= top) {
                 at.y = top;
                 if (ground_set != -1) {
-                    func_02094cf8(ground_set, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, ground_setups);
+                    EffectPlaces_StartOneShot(ground_set, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, ground_setups);
                 }
                 if (ground_set2 != -1) {
-                    func_02094cf8(ground_set2, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, ground_setups2);
+                    EffectPlaces_StartOneShot(ground_set2, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, ground_setups2);
                 }
                 particle->age = particle->life;
             }
         } else if (at.y <= 0) {
             if (floor_set != -1) {
                 at.y = 0;
-                func_02094cf8(floor_set, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, floor_setups);
+                EffectPlaces_StartOneShot(floor_set, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, floor_setups);
             }
             if (floor_set2 != -1) {
                 at.y = 0;
-                func_02094cf8(floor_set2, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, floor_setups2);
+                EffectPlaces_StartOneShot(floor_set2, EFFECT_KINDS_KIND_LANDED, &at, NULL, NULL, floor_setups2);
             }
             particle->age = particle->life;
         }

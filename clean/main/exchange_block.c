@@ -153,3 +153,52 @@ void ExchangeBlock_SetChecksum(ExchangeBlock *block, u16 checksum)
     block->checksum = checksum;
 }
 CLEAN_AS(func_02090168, ExchangeBlock_SetChecksum)
+
+/* The parts' own functions. */
+#include "main/constellations.h"
+#include "main/paired_town.h"
+#include "main/villager_copy.h"
+
+extern void MI_CpuFill8(void *dst, u8 value, u32 size);
+extern void func_02066650(MailLetter *letter); /* a letter emptied */
+extern void func_02066688(MailLetter *letter); /* a letter's destructor */
+extern void func_02066694(MailLetter *letter); /* and constructor */
+
+/* func_02090174: the block cleared to 0, then its letter emptied and its constellation cleared. */
+void ExchangeBlock_Clear(ExchangeBlock *block)
+{
+    MI_CpuFill8(block, 0, sizeof(ExchangeBlock));
+    func_02066650(&block->bottle_letter);
+    Constellations_Clear((Constellation *) (void *) block->constellation);
+}
+CLEAN_AS(func_02090174, ExchangeBlock_Clear)
+
+/* func_0209019c: the block's set-up when a town is set up: nothing to do. */
+void ExchangeBlock_SetUp(ExchangeBlock *block)
+{
+    (void) block;
+}
+CLEAN_AS(func_0209019c, ExchangeBlock_SetUp)
+
+/* func_020901a0: the block's destructor: its parts' in the reverse order of construction. */
+ExchangeBlock *ExchangeBlock_Destruct(ExchangeBlock *block)
+{
+    PairedTown_Destruct(block->paired_town);
+    VillagerCopy_Destruct(block->villager);
+    Constellations_DestructOne((Constellation *) (void *) block->constellation);
+    func_02066688(&block->bottle_letter);
+    return block;
+}
+CLEAN_AS(func_020901a0, ExchangeBlock_Destruct)
+
+/* func_020901d8: the block's constructor: its letter's, constellation's, villager's and paired
+ * town's. */
+ExchangeBlock *ExchangeBlock_Construct(ExchangeBlock *block)
+{
+    func_02066694(&block->bottle_letter);
+    Constellations_ConstructOne((int) (uintptr_t) block->constellation);
+    VillagerCopy_Construct(block->villager);
+    PairedTown_Construct(block->paired_town);
+    return block;
+}
+CLEAN_AS(func_020901d8, ExchangeBlock_Construct)

@@ -880,3 +880,80 @@ int SceneLights_Create(SceneLights *self)
     return 1;
 }
 CLEAN_AS(func_020659b8, SceneLights_Create)
+
+/* --- The set-up and the construction --- */
+
+/* The light sets, by the scene's light kind. */
+extern const SceneLightSet *const data_020de6f4[];
+/* A light's constructor, handed to the vector helper with the game's destructor. */
+extern void func_02065bec(void *light);
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+
+static_assert(sizeof(SceneLightDef) == 0x14, "light def");
+
+/* func_02065a7c: the lights set up from the set of the scene's light kind. First the lamps'
+ * requests: in a room that is not a house's, request 0 asks its lamps on (a fade of 2 frames),
+ * else off (1 frame); request 1 asks its glow off. Then each light of the set is copied (all
+ * but its halfword 0x0a); a lamp (kinds 3 to 5) takes the turns of the scene's preset, starts
+ * off with its fader set to 0, and the emission follows the fader of the last lamp. */
+void SceneLights_SetUp(SceneLights *self)
+{
+    int scene = SceneQuery_Current();
+    if (data_020e54a8 == SCENE_LIGHTS_IN_A_ROOM && SceneKinds_CurrentIsHouseRoom() == 0) {
+        SceneLights_RequestOn(0, 2, SCENE_LIGHT_FADE);
+    } else {
+        SceneLights_RequestOff(0, 1);
+    }
+    SceneLights_RequestOff(1, 1);
+
+    const SceneLightSet *set = data_020de6f4[self->kind];
+    const SceneLightsPreset *preset = &data_020ccc7c[scene];
+    int count = set->count;
+    self->count = count;
+    for (int i = 0; i < count; i++) {
+        const SceneLightDef *def = set->lights[i];
+        SceneLight *light = &self->lights[i];
+        light->kind = def->kind;
+        light->light = def->light;
+        light->time_offset = def->time_offset;
+        light->colour_index = def->colour_index;
+        light->angle_x = def->angle_x;
+        light->angle_y = def->angle_y;
+        switch (def->kind) {
+            case SCENE_LIGHT_SWITCHED_LAMP:
+            case SCENE_LIGHT_LAMP:
+            case SCENE_LIGHT_GLOW:
+                light->angle_x = preset->angle_x;
+                light->angle_y = preset->angle_y;
+                light->sw.on = 0;
+                Fader_Set(&light->sw.fader, 0);
+                self->fader = &light->sw.fader;
+                break;
+        }
+    }
+}
+CLEAN_AS(func_02065a7c, SceneLights_SetUp)
+
+/* func_02065ba0: the process allocated (zeroed) and constructed: the base process, then the
+ * three lights (the game's func_02065bec, destructed by func_02064d8c if one fails). Returns it
+ * as an address, 0 when the allocation failed. */
+int SceneLights_New(void)
+{
+    SceneLights *self = Heap_AllocAuxZeroed(sizeof(SceneLights));
+    if (self != NULL) {
+        Process_Construct(&self->process);
+        self->process.vtable = data_020da13c;
+        self->process.vtable = data_020de710;
+        __cxa_vec_ctor(self->lights, SCENE_LIGHTS_MAX, sizeof(SceneLight), func_02065bec, func_02064d8c);
+    }
+    return (int) (uintptr_t) self;
+}
+CLEAN_AS(func_02065ba0, SceneLights_New)
+
+/* func_02065bec: a light's constructor: its fader built. */
+SceneLight *SceneLight_Construct(SceneLight *light)
+{
+    Fader_Construct(&light->sw.fader);
+    return light;
+}
+CLEAN_AS(func_02065bec, SceneLight_Construct)

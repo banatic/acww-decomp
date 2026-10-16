@@ -28,6 +28,7 @@
 020727a4 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_020720ac, passes b & 7
 020728f8 field-by-field copy of a 0x234-byte record gives another result when dst and src overlap; the only caller, func_020b3850, copies a record into data_021f34b0 + 4, a separate global
 02072e90 20-byte copy from src + 30 to dst gives another result when they overlap; the only caller, func_ov126_0229fc98, copies into its own local buffer
+02090a2c word accesses through a misaligned emitter pointer use the aligned word on ARM and the unaligned one on x86; emitters are allocated word-aligned (aligning the pointer makes every case agree)
 02098ee8 shifts 3 << (shift * 2) and val << (shift * 2) by 32 or more give 0 on ARM and wrap on x86; the only caller, func_02098f0c, passes shift after func_02098f70 checks it is 0-14
 0209b160 shift 1 << r1 by 32 or more gives 0 on ARM and wraps on x86; func_0209b044 and func_0209b0f4 pass func_0209b184's result only when it is below 5
 0209b890 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; func_02024d38 passes func_02026250's result as a byte (0-2, or 255, whose 1 << 31 leaves the stored byte unchanged on x86 too), func_020767ac the byte of message 4, which func_02024d38 sends with that value (func_02078618)
