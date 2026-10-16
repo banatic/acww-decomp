@@ -159,8 +159,8 @@ def clean_checks(only: str | None = None) -> list[tuple[str, str, int, int]]:
 
 def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, int, int]]:
     """Every Clean function registered with CLEAN_AS (clean/clean.h): (symbol, function, module,
-    DS address with the Thumb bit, size); with `only` ("all" or a file of names or addresses),
-    those it lists."""
+    DS address with the Thumb bit, size); with `only` ("all" or a file listing game symbols,
+    Clean function names or addresses), those it lists."""
     syms = C.SymbolTable(C.modules())
     out = []
     for path in sorted((C.ROOT / "clean").rglob("*.c")):
@@ -172,7 +172,7 @@ def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, in
             out.append((symbol, function, s.module, s.address | (1 if s.thumb else 0), s.size))
     if only and only != "all":
         wanted = {w.split()[0] for w in pathlib.Path(only).read_text().splitlines() if w.strip()}
-        out = [r for r in out if r[0] in wanted or f"{r[3] & ~1:08x}" in wanted]
+        out = [r for r in out if r[0] in wanted or r[1] in wanted or f"{r[3] & ~1:08x}" in wanted]
     return out
 
 
