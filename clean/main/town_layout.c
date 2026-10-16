@@ -259,3 +259,20 @@ CLEAN_AS(func_0204ea98, TownLayout_Destruct)
 static_assert(offsetof(TownLayout, items) == 0x24, "TownLayout items");
 static_assert(offsetof(TownLayout, records) == 0x2024, "TownLayout records");
 static_assert(offsetof(TownLayout, settings) == 0x2224, "TownLayout settings");
+
+/* The constructors handed to the C++ runtime by TownLayout_Construct. */
+extern int func_0204e6f8(void *items);   /* an acre's items' constructor (TownLayout_ConstructBlock) */
+extern void func_02037d10(void *record); /* an acre record's constructor: nothing */
+
+/* func_0204ead0: the layout's constructor: its acres' items (func_0204e6f8), then its records
+ * (func_02037d10). The models and the settings are left alone. */
+void *TownLayout_Construct(void *layout)
+{
+    TownLayout *self = layout;
+
+    __cxa_vec_ctor(self->items, TOWN_LAYOUT_INNER_ACRES, sizeof(self->items[0]), (void (*)(void *))(uintptr_t) func_0204e6f8,
+                   (void (*)(void *))(uintptr_t) func_0204e6d8);
+    __cxa_vec_ctor(self->records, TOWN_LAYOUT_INNER_ACRES, sizeof(TownLayoutAcreRecord), func_02037d10, func_02037d0c);
+    return layout;
+}
+CLEAN_AS(func_0204ead0, TownLayout_Construct)

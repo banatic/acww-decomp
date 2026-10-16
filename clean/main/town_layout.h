@@ -55,5 +55,6 @@ void *TownLayout_AcreRecord(void *layout, int *acre);
 int TownLayout_AcreItems(void *layout, int *acre);
 void TownLayout_Clear(unsigned char *layout);
 void *TownLayout_Destruct(void *layout);
+void *TownLayout_Construct(void *layout);
 
 #endif

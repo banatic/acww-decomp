@@ -33,5 +33,6 @@ void DebugScreen_DumpWords(void *dest, void *src, u32 size);
 int DebugScreen_IsReadable(void *start, u32 size);
 void Fatal_Printf(const char *format, ...);
 void Fatal_Report(const char *file, int line, const char *format, const void *args);
+void DebugScreen_Nothing(void);
 
 #endif

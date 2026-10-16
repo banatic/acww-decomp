@@ -467,3 +467,7 @@ void Fatal_Report(const char *file, int line, const char *format, const void *ar
     OS_Terminate();
 }
 CLEAN_AS(func_02001988, Fatal_Report)
+
+/* func_0204f8b8: does nothing (the debug screen calls it on B). */
+void DebugScreen_Nothing(void) {}
+CLEAN_AS(func_0204f8b8, DebugScreen_Nothing)

@@ -308,4 +308,49 @@ CollisionCell *CollisionCellGrid_Get(CollisionCellGrid *grid, int x, int z);
 void CollisionCellGrid_Load(CollisionCellGrid *grid, int x0, int x1, int z0, int z1, int alternate);
 void CollisionCell_Construct(CollisionCell *cell);
 
+#include "itcm/field_units.h"
+
+/* Up to four posts of kind 2 put on single units for a few frames (data_021c5124): their
+ * radius grows with their age (0.5, 0.75, 1.0 for ages 0 to 2) and they go at age 3. A slot
+ * is in use when its bit of `in_use` is set; a free slot has age 0xff. */
+#define COLLISION_EXTRA_POSTS 4
+#define COLLISION_EXTRA_POST_AGES 3
+typedef struct CollisionExtraPosts {
+    u8 in_use;
+    u8 age[COLLISION_EXTRA_POSTS];    /* 0x01 */
+    s8 unit_x[COLLISION_EXTRA_POSTS]; /* 0x05 */
+    s8 unit_z[COLLISION_EXTRA_POSTS]; /* 0x09 */
+} CollisionExtraPosts;
+
+/* Everything above in one global object (data_021c31e8), built by __sinit_020c4af0. */
+#define COLLISION_BLOCK_MAPS 8
+typedef struct CollisionWorld {
+    int map_index;                            /* CollisionMaps_SetIndex */
+    FieldBlockMap maps[COLLISION_BLOCK_MAPS]; /* 0x0004 */
+    CollisionWallList walls;                  /* 0x09c4 */
+    CollisionFloorList floors;                /* 0x0e48 */
+    CollisionPostList posts;                  /* 0x184c */
+    u8 unk_1a90;                              /* objects with empty constructors and destructors */
+    u8 unk_1a91;
+    u8 unk_1a92[2];
+    CollisionCellGrid grid;          /* 0x1a94 */
+    CollisionExtraPosts extra_posts; /* 0x1f3c */
+} CollisionWorld;
+
+void *CollisionCellGrid_Construct(CollisionCellGrid *grid);
+void CollisionCell_Load(CollisionCell *cell, int x, int z, int alternate);
+int CollisionCell_LoadAt(CollisionCell *cell, const Vec3 *position, int alternate);
+fx32 CollisionExtraPosts_RadiusAt(const CollisionExtraPosts *posts, int x, int z);
+void CollisionExtraPosts_Age(CollisionExtraPosts *posts);
+int CollisionExtraPosts_FindFree(const CollisionExtraPosts *posts);
+int CollisionExtraPosts_Add(CollisionExtraPosts *posts, int x, int z);
+void CollisionExtraPosts_Clear(CollisionExtraPosts *posts);
+void CollisionBlockMap_Clear(FieldBlockMap *map);
+int CollisionWall_IsRecorded(const CollisionWall *wall);
+void *CollisionWorld_Destroy(CollisionWorld *world);
+void *CollisionBlockMap_Destroy(FieldBlockMap *map);
+void CollisionBlock_Destroy(FieldBlock *block);
+int CollisionBlockMap_Construct(FieldBlockMap *map);
+void CollisionBlock_Construct(FieldBlock *block);
+
 #endif

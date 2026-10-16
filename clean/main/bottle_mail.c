@@ -183,3 +183,92 @@ int BottleMail_Open(void)
     return 1;
 }
 CLEAN_AS(func_02096e38, BottleMail_Open)
+
+/* ---- The bottle's letter and its used messages ---- */
+
+extern void func_02066694(void *letter); /* a letter's constructor */
+extern void func_02066688(void *letter); /* and destructor */
+
+/* func_02097e38: one of the messages not used yet, at random; when all are used, all become
+ * unused first. */
+int BottleMail_DrawMessage(BottleState *bottle)
+{
+    int unused = 0;
+    for (int i = 0; i < BOTTLE_MESSAGES; i++) {
+        if (BottleMail_IsMessageUsed(bottle, i) == 0) {
+            unused++;
+        }
+    }
+    if (unused == 0) {
+        BottleMail_ClearUsed(bottle);
+        unused = BOTTLE_MESSAGES;
+    }
+    int skip = (int) func_020644cc(unused);
+    for (int i = 0; i < BOTTLE_MESSAGES; i++) {
+        if (BottleMail_IsMessageUsed(bottle, i) != 0) {
+            continue;
+        }
+        if (skip <= 0) {
+            return i;
+        }
+        skip--;
+    }
+    return 0;
+}
+CLEAN_AS(func_02097e38, BottleMail_DrawMessage)
+
+/* func_02097e94: every message unused. */
+void BottleMail_ClearUsed(BottleState *bottle)
+{
+    for (int i = 0; i < BOTTLE_USED_BYTES; i++) {
+        bottle->used[i] = 0;
+    }
+}
+CLEAN_AS(func_02097e94, BottleMail_ClearUsed)
+
+/* func_02097eb0 */
+int BottleMail_IsMessageUsed(BottleState *bottle, int message)
+{
+    return (bottle->used[message >> 3] & (1 << (message & 7))) != 0;
+}
+CLEAN_AS(func_02097eb0, BottleMail_IsMessageUsed)
+
+/* func_02097edc */
+void BottleMail_MarkMessageUsed(BottleState *bottle, int message)
+{
+    bottle->used[message >> 3] |= (u8) (1 << (message & 7));
+}
+CLEAN_AS(func_02097edc, BottleMail_MarkMessageUsed)
+
+/* func_02097f00: no letter, every message unused. */
+void BottleMail_InitState(BottleState *bottle)
+{
+    func_02066650(&bottle->letter);
+    BottleMail_ClearUsed(bottle);
+}
+CLEAN_AS(func_02097f00, BottleMail_InitState)
+
+/* func_02097f14 */
+MailLetter *BottleMail_Letter(BottleState *bottle)
+{
+    return &bottle->letter;
+}
+CLEAN_AS(func_02097f14, BottleMail_Letter)
+
+/* func_02097f18: the destructor. */
+BottleState *BottleMail_DestructState(BottleState *bottle)
+{
+    func_02066688(&bottle->letter);
+    return bottle;
+}
+CLEAN_AS(func_02097f18, BottleMail_DestructState)
+
+/* func_02097f28: the constructor. */
+BottleState *BottleMail_ConstructState(BottleState *bottle)
+{
+    func_02066694(&bottle->letter);
+    return bottle;
+}
+CLEAN_AS(func_02097f28, BottleMail_ConstructState)
+
+static_assert(offsetof(BottleState, used) == 0x100, "BottleState layout");

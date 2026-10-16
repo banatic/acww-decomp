@@ -21,4 +21,25 @@ int BottleMail_PlaceOnMap(void);
 int BottleMail_Write(const u8 *message);
 int BottleMail_Open(void);
 
+#include "mail.h"
+
+/* The game's own bottle messages, and the bytes of their used bits. */
+#define BOTTLE_MESSAGES 40
+#define BOTTLE_USED_BYTES 5
+
+/* What data_021f36ec holds: the bottle's letter and a bit for each message used. */
+typedef struct BottleState {
+    MailLetter letter;
+    u8 used[BOTTLE_USED_BYTES];
+} BottleState;
+
+int BottleMail_DrawMessage(BottleState *bottle);
+void BottleMail_ClearUsed(BottleState *bottle);
+int BottleMail_IsMessageUsed(BottleState *bottle, int message);
+void BottleMail_MarkMessageUsed(BottleState *bottle, int message);
+void BottleMail_InitState(BottleState *bottle);
+MailLetter *BottleMail_Letter(BottleState *bottle);
+BottleState *BottleMail_DestructState(BottleState *bottle);
+BottleState *BottleMail_ConstructState(BottleState *bottle);
+
 #endif

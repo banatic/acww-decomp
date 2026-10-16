@@ -501,3 +501,53 @@ void MomLetterState_SetFlags(MomLetterState *state, int flags)
     state->flags = (u8) (state->flags | flags);
 }
 CLEAN_AS(func_02097d48, MomLetterState_SetFlags)
+
+/* func_02097d50: the day last checked becomes `date`. */
+void MomLetterState_SetDate(MomLetterState *state, const MomDate *date)
+{
+    state->year = (u8) date->year;
+    state->month = (u8) date->month;
+    state->day = (u8) date->day;
+    MomLetterState_SetFlags(state, MOM_STATE_DATE_SET);
+}
+CLEAN_AS(func_02097d50, MomLetterState_SetDate)
+
+/* func_02097d68: whether the day last checked is `date`. With no day kept yet, it becomes
+ * `date` and the answer is 1. */
+int MomLetterState_IsDate(MomLetterState *state, const MomDate *date)
+{
+    if (MomLetterState_TestFlags(state, MOM_STATE_DATE_SET) == 0) {
+        MomLetterState_SetDate(state, date);
+        return 1;
+    }
+    return state->year == date->year && state->month == date->month && state->day == date->day;
+}
+CLEAN_AS(func_02097d68, MomLetterState_IsDate)
+
+/* func_02097dac: a new player's state: day 1/1/00 (not marked as set), no letter sent, and
+ * MOM_STATE_NO_BIRTHDAY as the year of the last birthday letter. */
+void MomLetterState_Init(MomLetterState *state)
+{
+    state->day = 1;
+    state->month = 1;
+    state->year = 0;
+    for (int i = 0; i < MOM_STATE_SENT_BYTES; i++) {
+        sent_bits(state)[i] = 0;
+    }
+    state->flags = MOM_STATE_NO_BIRTHDAY;
+}
+CLEAN_AS(func_02097dac, MomLetterState_Init)
+
+/* func_02097dcc: the destructor (of a player record, func_02099ad0): nothing to do. */
+void MomLetterState_Destruct(MomLetterState *state)
+{
+    (void) state;
+}
+CLEAN_AS(func_02097dcc, MomLetterState_Destruct)
+
+/* func_02097dd0: the constructor (of a player record, func_02099bc8): nothing to do. */
+void MomLetterState_Construct(MomLetterState *state)
+{
+    (void) state;
+}
+CLEAN_AS(func_02097dd0, MomLetterState_Construct)

@@ -7,6 +7,7 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "ov004/member_pointer.h"
+#include "scene_command.h"
 
 /* The scene's parts used here. */
 #define SCENE_TALK_TALK 0x40
@@ -156,3 +157,23 @@ int SceneTalk_Begin(void *scene)
     return 0;
 }
 CLEAN_AS(func_02014a20, SceneTalk_Begin)
+
+/* func_02014a44: asks the scene for its talk turns (its command 11, scene_command.h), beginning
+ * with the camera on the next speaker when `with_camera` is set. Whether the scene took it. */
+int SceneTalk_Request(u8 *scene, u8 with_camera)
+{
+    if (SceneCommand_Request((SceneCommandScene *) scene, SCENE_COMMAND_TALK_TURNS)) {
+        *scene_talk_part(scene, SCENE_TALK_START_WITH_CAMERA) = with_camera;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_02014a44, SceneTalk_Request)
+
+/* func_02015a10: the talk turns, beginning with the camera; whether the scene took them is
+ * dropped. */
+void SceneTalk_RequestWithCamera(int scene)
+{
+    SceneTalk_Request((u8 *) (uintptr_t) scene, 1);
+}
+CLEAN_AS(func_02015a10, SceneTalk_RequestWithCamera)

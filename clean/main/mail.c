@@ -500,3 +500,172 @@ static_assert(offsetof(MailPostOffice, last_check) == 0xa00, "MailPostOffice lay
 static_assert(offsetof(MailPostOffice, flags) == 0xa04, "MailPostOffice layout");
 static_assert(offsetof(MailTask, flags) == 0x50, "MailTask layout");
 static_assert(sizeof(MailTask) == 0x54, "MailTask layout");
+
+/* ---- The letter a player's record keeps for a date, the post office and the mailboxes ---- */
+
+/* A letter's constructor and destructor; handed to the game's array helpers, so the game's
+ * symbols. */
+extern void func_02066694(void *letter);
+extern void func_02066688(void *letter);
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+
+/* func_02097dd4: empty the letter, its date 1/1/00 at 0:00. */
+void MailDated_Init(MailDatedLetter *dated)
+{
+    func_02066650(&dated->letter);
+    dated->date.day = DATED_RESET_DAY;
+    dated->date.month = DATED_RESET_MONTH;
+    dated->date.year = 0;
+    dated->date.hour = 0;
+}
+CLEAN_AS(func_02097dd4, MailDated_Init)
+
+/* func_02097e08 */
+MailTime *MailDated_Date(MailDatedLetter *dated)
+{
+    return &dated->date;
+}
+CLEAN_AS(func_02097e08, MailDated_Date)
+
+/* func_02097e14 */
+MailLetter *MailDated_Letter(MailDatedLetter *dated)
+{
+    return &dated->letter;
+}
+CLEAN_AS(func_02097e14, MailDated_Letter)
+
+/* func_02097e18: the destructor. */
+MailDatedLetter *MailDated_Destruct(MailDatedLetter *dated)
+{
+    func_02066688(&dated->letter);
+    return dated;
+}
+CLEAN_AS(func_02097e18, MailDated_Destruct)
+
+/* func_02097e28: the constructor. */
+MailDatedLetter *MailDated_Construct(MailDatedLetter *dated)
+{
+    func_02066694(&dated->letter);
+    return dated;
+}
+CLEAN_AS(func_02097e28, MailDated_Construct)
+
+/* func_02097f70: whether any of `flags` is set. */
+int MailPostOffice_TestFlags(MailPostOffice *office, u32 flags)
+{
+    return (office->flags & flags) != 0;
+}
+CLEAN_AS(func_02097f70, MailPostOffice_TestFlags)
+
+/* func_02097f88 */
+void MailPostOffice_SetFlags(MailPostOffice *office, u16 flags)
+{
+    office->flags |= flags;
+}
+CLEAN_AS(func_02097f88, MailPostOffice_SetFlags)
+
+/* func_02097f98 */
+MailTime *MailPostOffice_LastCheck(MailPostOffice *office)
+{
+    return &office->last_check;
+}
+CLEAN_AS(func_02097f98, MailPostOffice_LastCheck)
+
+/* func_02097fa4: empty every letter, no flag, the last check 1/1/00 at 0:00. */
+void MailPostOffice_Init(MailPostOffice *office)
+{
+    for (int i = 0; i < MAILBOX_LETTERS; i++) {
+        func_02066650(letter_at(office->letters, i));
+    }
+    office->flags = 0;
+    office->last_check.day = DATED_RESET_DAY;
+    office->last_check.month = DATED_RESET_MONTH;
+    office->last_check.year = 0;
+    office->last_check.hour = 0;
+}
+CLEAN_AS(func_02097fa4, MailPostOffice_Init)
+
+/* func_02097ff0: letter `index`; NULL outside 0-9. */
+MailLetter *MailPostOffice_Letter(MailPostOffice *office, int index)
+{
+    if (index >= 0 && index < MAILBOX_LETTERS) {
+        return letter_at(office->letters, index);
+    }
+    return NULL;
+}
+CLEAN_AS(func_02097ff0, MailPostOffice_Letter)
+
+/* func_02098004: the destructor. */
+MailPostOffice *MailPostOffice_Destruct(MailPostOffice *office)
+{
+    __cxa_vec_cleanup(office->letters, MAILBOX_LETTERS, MAIL_LETTER_SIZE, func_02066688);
+    return office;
+}
+CLEAN_AS(func_02098004, MailPostOffice_Destruct)
+
+/* func_02098024: the constructor. */
+MailPostOffice *MailPostOffice_Construct(MailPostOffice *office)
+{
+    __cxa_vec_ctor(office->letters, MAILBOX_LETTERS, MAIL_LETTER_SIZE, func_02066694, func_02066688);
+    return office;
+}
+CLEAN_AS(func_02098024, MailPostOffice_Construct)
+
+static u16 *mailbox_mark(MailBox *box)
+{
+    return (u16 *) (void *) box->unk_a00;
+}
+
+/* func_02098050: the mark of the last letter put in from elsewhere (func_0203f5e4 compares a
+ * letter's mark with it, so the same letter is not put in twice). QUIRK: kept in 16 bits. */
+void MailBox_SetMark(MailBox *box, u32 mark)
+{
+    *mailbox_mark(box) = (u16) mark;
+}
+CLEAN_AS(func_02098050, MailBox_SetMark)
+
+/* func_0209805c */
+u16 MailBox_Mark(MailBox *box)
+{
+    return *mailbox_mark(box);
+}
+CLEAN_AS(func_0209805c, MailBox_Mark)
+
+/* func_02098068: empty every letter, no mark. */
+void MailBox_Init(MailBox *box)
+{
+    for (int i = 0; i < MAILBOX_LETTERS; i++) {
+        func_02066650(letter_at(box->letters, i));
+    }
+    *mailbox_mark(box) = 0;
+}
+CLEAN_AS(func_02098068, MailBox_Init)
+
+/* func_02098090: letter `index`; NULL outside 0-9. */
+MailLetter *MailBox_Letter(MailBox *box, int index)
+{
+    if (index >= 0 && index < MAILBOX_LETTERS) {
+        return letter_at(box->letters, index);
+    }
+    return NULL;
+}
+CLEAN_AS(func_02098090, MailBox_Letter)
+
+/* func_020980a4: the destructor. */
+MailBox *MailBox_Destruct(MailBox *box)
+{
+    __cxa_vec_cleanup(box->letters, MAILBOX_LETTERS, MAIL_LETTER_SIZE, func_02066688);
+    return box;
+}
+CLEAN_AS(func_020980a4, MailBox_Destruct)
+
+/* func_020980c4: the constructor. */
+MailBox *MailBox_Construct(MailBox *box)
+{
+    __cxa_vec_ctor(box->letters, MAILBOX_LETTERS, MAIL_LETTER_SIZE, func_02066694, func_02066688);
+    return box;
+}
+CLEAN_AS(func_020980c4, MailBox_Construct)
+
+static_assert(offsetof(MailDatedLetter, date) == 0x100, "MailDatedLetter layout");

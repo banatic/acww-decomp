@@ -37,5 +37,10 @@ void Shops_SetListBPlace(int place, int kind, int send, int g);
 int Shops_AllAnsweredB(void);
 void Shops_TakeFromListA(int a, int b, int kind);
 int Shops_MailNookItem(const u16 *item);
+int Shops_CanMail(void);
+int Shops_AllAnsweredC(void);
+void Shops_TakeFromStore(void *a, void *b, int amount, int kind);
+void Shops_SpendAtStore(int spent);
+void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 send, int g);
 
 #endif

@@ -1327,3 +1327,248 @@ void CollisionCell_Construct(CollisionCell *cell)
     (void) cell;
 }
 CLEAN_AS(func_020343f0, CollisionCell_Construct)
+
+/* ---- The grid's constructor, loading the units and the extra posts */
+
+static_assert(offsetof(CollisionExtraPosts, unit_z) == 0x09, "extra posts");
+static_assert(sizeof(CollisionExtraPosts) == 0x0d, "extra posts size");
+static_assert(sizeof(FieldBlockMap) == 0x138, "block map");
+static_assert(offsetof(CollisionWorld, walls) == 0x09c4, "world walls");
+static_assert(offsetof(CollisionWorld, floors) == 0x0e48, "world floors");
+static_assert(offsetof(CollisionWorld, posts) == 0x184c, "world posts");
+static_assert(offsetof(CollisionWorld, unk_1a90) == 0x1a90, "world bytes");
+static_assert(offsetof(CollisionWorld, grid) == 0x1a94, "world grid");
+static_assert(offsetof(CollisionWorld, extra_posts) == 0x1f3c, "world extra posts");
+
+/* The last words of a FieldBlockMap, which CollisionBlockMap_Clear sets. */
+typedef struct CollisionBlockMapTail {
+    s32 unk_12c;
+    u8 unk_130;
+    u8 unk_131;
+    s16 unk_132;
+    s16 unk_134;
+    u8 unk_136[2];
+} CollisionBlockMapTail;
+static_assert(sizeof(CollisionBlockMapTail) == sizeof(((FieldBlockMap *) 0)->unk_12C), "block map tail");
+
+/* The constructors and destructors handed to __cxa_vec_ctor and __cxa_vec_cleanup are the
+ * game's own: a unit's, a block's, a block map's destructor. Then the destructors of the two
+ * bytes at 0x1a90 and 0x1a91 of the world. All but the block map's do nothing. */
+extern void func_020343f0(void *cell);
+extern void func_02031608(void *cell);
+extern void func_02034850(void *block);
+extern void func_02034820(void *block);
+extern void func_02034804(void *map);
+extern void func_02032438(void *object);
+extern void func_020326bc(void *object);
+
+/* func_020343f4: the grid's constructor: 7 by 7 empty units and all bounds 0. */
+void *CollisionCellGrid_Construct(CollisionCellGrid *grid)
+{
+    __cxa_vec_ctor(grid->cells, COLLISION_GRID_SIZE * COLLISION_GRID_SIZE, sizeof(CollisionCell), func_020343f0,
+                   func_02031608);
+    grid->max_z = 0;
+    grid->min_z = 0;
+    grid->max_x = 0;
+    grid->min_x = 0;
+    return grid;
+}
+CLEAN_AS(func_020343f4, CollisionCellGrid_Construct)
+
+/* The attribute of side `side` of a unit of type `type`, from one set or the other; 0 for the
+ * types past the table. */
+static u8 collision_side_attr(u8 type, int side, int alternate)
+{
+    if (type >= COLLISION_TYPE_COUNT) {
+        return 0;
+    }
+    const CollisionTypeInfo *info = collision_type_info(type);
+    return alternate == 0 ? info->side_attr[side] : info->side_attr_alt[side];
+}
+
+/* The height of a side of attribute `attr`: the row's height (in 1/256) in 20.12 fixed point;
+ * 0 past the table. */
+static fx32 collision_side_height(u8 attr)
+{
+    if (attr >= COLLISION_TYPE_COUNT) {
+        return 0;
+    }
+    return (fx32) ((u32) (s32) collision_type_info(attr)->height << 8);
+}
+
+/* func_02034448: unit (x, z): its type, and the attribute and height of each side, from the
+ * set chosen by `alternate`. */
+void CollisionCell_Load(CollisionCell *cell, int x, int z, int alternate)
+{
+    int side;
+
+    cell->type = FieldUnits_GetType(x, z);
+    for (side = COLLISION_NORTH; side <= COLLISION_EAST; side++) {
+        cell->side_attr[side] = collision_side_attr(cell->type, side, alternate);
+        cell->side_height[side] = collision_side_height(cell->side_attr[side]);
+    }
+}
+CLEAN_AS(func_02034448, CollisionCell_Load)
+
+/* func_020345e0: the unit `position` is in. */
+int CollisionCell_LoadAt(CollisionCell *cell, const Vec3 *position, int alternate)
+{
+    CollisionCell_Load(cell, position->x >> COLLISION_UNIT_SHIFT, position->z >> COLLISION_UNIT_SHIFT, alternate);
+    return (int) (uintptr_t) cell;
+}
+CLEAN_AS(func_020345e0, CollisionCell_LoadAt)
+
+/* func_02034600: the radius of the extra post on unit (x, z), 0 when there is none. */
+fx32 CollisionExtraPosts_RadiusAt(const CollisionExtraPosts *posts, int x, int z)
+{
+    int i;
+
+    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
+        if (((posts->in_use >> i) & 1) != 0 && posts->age[i] < COLLISION_EXTRA_POST_AGES && posts->unit_x[i] == x &&
+            posts->unit_z[i] == z) {
+            return data_020c9050[posts->age[i]];
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_02034600, CollisionExtraPosts_RadiusAt)
+
+/* func_02034664: one frame on: each post in use below age 3 gets one older; one at age 3 is
+ * taken away. Every slot not in use is (again) given age 0xff. */
+void CollisionExtraPosts_Age(CollisionExtraPosts *posts)
+{
+    int i;
+
+    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
+        if (((posts->in_use >> i) & 1) != 0 && posts->age[i] < COLLISION_EXTRA_POST_AGES) {
+            posts->age[i]++;
+        } else {
+            posts->age[i] = 0xff;
+            posts->in_use &= (u8) ~(1u << i);
+        }
+    }
+}
+CLEAN_AS(func_02034664, CollisionExtraPosts_Age)
+
+/* func_020346a4: the first slot not in use, -1 when all four are. */
+int CollisionExtraPosts_FindFree(const CollisionExtraPosts *posts)
+{
+    int i;
+
+    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
+        if (((posts->in_use >> i) & 1) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+CLEAN_AS(func_020346a4, CollisionExtraPosts_FindFree)
+
+/* func_020346c4: a new post of age 0 on unit (x, z) (kept as signed bytes); whether there was
+ * a free slot. */
+int CollisionExtraPosts_Add(CollisionExtraPosts *posts, int x, int z)
+{
+    int i = CollisionExtraPosts_FindFree(posts);
+
+    if (i == -1) {
+        return 0;
+    }
+    posts->in_use |= (u8) (1u << i);
+    posts->unit_x[i] = (s8) x;
+    posts->unit_z[i] = (s8) z;
+    posts->age[i] = 0;
+    return 1;
+}
+CLEAN_AS(func_020346c4, CollisionExtraPosts_Add)
+
+/* func_020346fc: no posts. */
+void CollisionExtraPosts_Clear(CollisionExtraPosts *posts)
+{
+    int i;
+
+    posts->in_use = 0;
+    for (i = 0; i < COLLISION_EXTRA_POSTS; i++) {
+        posts->age[i] = 0xff;
+    }
+}
+CLEAN_AS(func_020346fc, CollisionExtraPosts_Clear)
+
+/* ---- The block maps and the world */
+
+/* func_02034714: an empty map: no size, every block 0, the word at 0x12c -1. */
+void CollisionBlockMap_Clear(FieldBlockMap *map)
+{
+    CollisionBlockMapTail *tail = (CollisionBlockMapTail *) (void *) map->unk_12C;
+    int row;
+    int column;
+
+    map->width = 0;
+    map->height = 0;
+    map->unk_120 = 0;
+    tail->unk_132 = 0;
+    tail->unk_134 = 0;
+    tail->unk_12c = -1;
+    tail->unk_130 = 0;
+    for (row = 0; row < 6; row++) {
+        for (column = 0; column < 6; column++) {
+            map->blocks[row][column].unit_types = NULL;
+            map->blocks[row][column].unk_04 = 0;
+        }
+    }
+}
+CLEAN_AS(func_02034714, CollisionBlockMap_Clear)
+
+/* func_02034780: a wall's vtable slot 0: whether touching it is recorded in the contacts (all
+ * kinds but 3; CollisionWalls_PushOut tests the kind itself). */
+int CollisionWall_IsRecorded(const CollisionWall *wall)
+{
+    return (u32) wall->kind != COLLISION_KIND_SILENT;
+}
+CLEAN_AS(func_02034780, CollisionWall_IsRecorded)
+
+/* func_02034790: the world's destructor: its members in the reverse order of their
+ * construction. */
+void *CollisionWorld_Destroy(CollisionWorld *world)
+{
+    __cxa_vec_cleanup(world->grid.cells, COLLISION_GRID_SIZE * COLLISION_GRID_SIZE, sizeof(CollisionCell), func_02031608);
+    func_020326bc(&world->unk_1a91);
+    func_02032438(&world->unk_1a90);
+    CollisionPosts_Destroy(&world->posts);
+    CollisionFloors_Destroy(&world->floors);
+    CollisionWalls_Destroy(&world->walls);
+    __cxa_vec_cleanup(world->maps, COLLISION_BLOCK_MAPS, sizeof(FieldBlockMap), func_02034804);
+    return world;
+}
+CLEAN_AS(func_02034790, CollisionWorld_Destroy)
+
+/* func_02034804: a map's destructor. */
+void *CollisionBlockMap_Destroy(FieldBlockMap *map)
+{
+    __cxa_vec_cleanup(map->blocks, 6 * 6, sizeof(FieldBlock), func_02034820);
+    return map;
+}
+CLEAN_AS(func_02034804, CollisionBlockMap_Destroy)
+
+/* func_02034820: a block's destructor; nothing to do. */
+void CollisionBlock_Destroy(FieldBlock *block)
+{
+    (void) block;
+}
+CLEAN_AS(func_02034820, CollisionBlock_Destroy)
+
+/* func_02034824: a map's constructor: its blocks, then cleared. */
+int CollisionBlockMap_Construct(FieldBlockMap *map)
+{
+    __cxa_vec_ctor(map->blocks, 6 * 6, sizeof(FieldBlock), func_02034850, func_02034820);
+    CollisionBlockMap_Clear(map);
+    return (int) (uintptr_t) map;
+}
+CLEAN_AS(func_02034824, CollisionBlockMap_Construct)
+
+/* func_02034850: a block's constructor: both words 0. */
+void CollisionBlock_Construct(FieldBlock *block)
+{
+    block->unit_types = NULL;
+    block->unk_04 = 0;
+}
+CLEAN_AS(func_02034850, CollisionBlock_Construct)

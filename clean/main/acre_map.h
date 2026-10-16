@@ -105,4 +105,16 @@ void AcreMap_FreeTown(void *heap);
 int AcreMap_CreateTown(void *heap);
 void AcreMap_InitTown(AcreMap *map);
 
+/* A map's size in acres. */
+typedef struct AcreMapSize {
+    int wide;
+    int high;
+} AcreMapSize;
+
+int AcreMap_Build(AcreMap *map, AcreMapSource *sources, const AcreMapSize *size, void *heap);
+void AcreMap_Release(AcreMap *map, void *heap);
+void AcreMap_Init(AcreMap *map);
+AcreMapSource *AcreMap_MakeSources(int count, int heap);
+void AcreMap_InitSource(AcreMapSource *source);
+
 #endif

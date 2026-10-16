@@ -820,3 +820,114 @@ static_assert(offsetof(AcreMap, slot) == 0x1c, "AcreMap slot");
 static_assert(sizeof(AcreMapVillager) == 0x24, "AcreMapVillager size");
 static_assert(sizeof(AcreMapSource) == 0x10, "AcreMapSource size");
 static_assert(sizeof(AcreMapTemplate) == 8, "AcreMapTemplate size");
+
+/* ---- maps built from a list of sources ---- */
+
+/* An object the maps hand to func_02030ddc, constructed once (func_020b3afc) and destroyed at
+ * exit (func_020b3ae4, registered with the C++ runtime). */
+extern u8 data_021c80c4[];
+extern u32 data_021c80d0;  /* bit 0: data_021c80c4 is constructed */
+extern u8 data_021c80d4[]; /* its record for the C++ runtime */
+extern void *func_020b3afc(void *object);
+extern void *func_020b3ae4(void *object);
+extern void __register_global_object(void *object, void *destruct, void *record);
+/* The data of an acre's model, looked up in the cache of acre data (func_0203750c). */
+extern int func_02037608(void *cache, int model);
+
+/* func_0204ebb0: builds `map` (slot 0) of size[0] x size[1] acres from `sources`, one per acre
+ * row by row, acre (x, z) at (x, 0, z) * 0x20000 with its model's data from the cache.
+ * Allocates the acres from `heap` when the map has none; 0 when that fails. */
+int AcreMap_Build(AcreMap *map, AcreMapSource *sources, const AcreMapSize *size, void *heap)
+{
+    int count = size->wide * size->high;
+
+    map->slot = 0;
+    if (map->acres == NULL) {
+        map->acres = func_02037e90(count, (int) (uintptr_t) heap, 4);
+    }
+    if (map->acres == NULL) {
+        return 0;
+    }
+
+    u8 *acre = map->acres;
+    AcreMapSource *source = sources;
+    map->acres_wide = size->wide;
+    map->acres_high = size->high;
+    map->world_wide = (int) ((u32) map->acres_wide * (u32) data_020ca0ec);
+    map->world_high = (int) ((u32) map->acres_high * (u32) data_020ca0e8);
+    func_0204f800(&map->tiles_wide, &map->tiles_high, map->acres_wide, map->acres_high, 0, 0);
+    if (!(data_021c80d0 & 1)) {
+        func_020b3afc(data_021c80c4);
+        __register_global_object(data_021c80c4, (void *) (uintptr_t) func_020b3ae4, data_021c80d4);
+        data_021c80d0 |= 1;
+    }
+    func_02030ddc(map->acres_wide, map->acres_high, (int) (uintptr_t) data_021c80c4, map->slot);
+    for (int z = 0; z < map->acres_high; z++) {
+        for (int x = 0; x < map->acres_wide; x++) {
+            int coordinates[2] = {x, z};
+            Vec3 position = {(fx32) ((u32) x << 17), 0, (fx32) ((u32) z << 17)};
+            int data = func_02037608(func_0203750c(), source->model);
+            func_02037eec(acre, source->model, &position, source->items, source->unk_08, source->extra, data, 0, coordinates,
+                          0);
+            acre += ACRE_MAP_ACRE_SIZE;
+            source++;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_0204ebb0, AcreMap_Build)
+
+/* func_0204ecd4: frees the map's acres to `heap` (when it has them) and releases its slot. */
+void AcreMap_Release(AcreMap *map, void *heap)
+{
+    if (map->acres != NULL) {
+        Heap_Free(heap, map->acres);
+        map->acres = NULL;
+    }
+    func_02030bac(map->slot);
+}
+CLEAN_AS(func_0204ecd4, AcreMap_Release)
+
+/* func_0204ecf8: a map before it is built (slot 0; the world size is left alone). */
+void AcreMap_Init(AcreMap *map)
+{
+    map->acres_wide = 0;
+    map->acres_high = 0;
+    map->tiles_wide = 0;
+    map->tiles_high = 0;
+    map->acres = NULL;
+    map->slot = 0;
+}
+CLEAN_AS(func_0204ecf8, AcreMap_Init)
+
+/* The model number a source starts with. */
+#define ACRE_MAP_SOURCE_MODEL_DEFAULT 0x102a
+
+/* func_0204f86c: `count` sources from the back of `heap`, each set up by AcreMap_InitSource;
+ * 0 when they cannot be allocated. */
+AcreMapSource *AcreMap_MakeSources(int count, int heap)
+{
+    AcreMapSource *sources = Heap_AllocBack((Heap *) (uintptr_t) heap, (int) ((u32) count << 4));
+
+    if (sources != NULL) {
+        for (int i = 0; i < count; i++) {
+            /* QUIRK: each source's address is checked against 0 before it is set up. */
+            uintptr_t source = (uintptr_t) sources + (uintptr_t) ((u32) i << 4);
+            if (source != 0) {
+                AcreMap_InitSource((AcreMapSource *) source);
+            }
+        }
+    }
+    return sources;
+}
+CLEAN_AS(func_0204f86c, AcreMap_MakeSources)
+
+/* func_0204f89c: model 0x102a, no items, the rest 0. */
+void AcreMap_InitSource(AcreMapSource *source)
+{
+    source->model = ACRE_MAP_SOURCE_MODEL_DEFAULT;
+    source->items = NULL;
+    source->unk_08 = 0;
+    source->extra = NULL;
+}
+CLEAN_AS(func_0204f89c, AcreMap_InitSource)

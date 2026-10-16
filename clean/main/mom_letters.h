@@ -75,4 +75,15 @@ void MomLetterState_MarkSent(MomLetterState *state, int letter);
 int MomLetterState_TestFlags(MomLetterState *state, u32 flags);
 void MomLetterState_SetFlags(MomLetterState *state, int flags);
 
+/* The bytes of sent bits (120 letters), and the birthday year a new state holds: 100, which no
+ * date's year (0-99) equals. */
+#define MOM_STATE_SENT_BYTES 15
+#define MOM_STATE_NO_BIRTHDAY 100
+
+void MomLetterState_SetDate(MomLetterState *state, const MomDate *date);
+int MomLetterState_IsDate(MomLetterState *state, const MomDate *date);
+void MomLetterState_Init(MomLetterState *state);
+void MomLetterState_Destruct(MomLetterState *state);
+void MomLetterState_Construct(MomLetterState *state);
+
 #endif

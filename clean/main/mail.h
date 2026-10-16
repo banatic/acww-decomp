@@ -94,4 +94,32 @@ int MailTask_Execute(MailTask *task);
 int MailTask_Create(MailTask *task);
 MailTask *MailTask_New(void);
 
+/* The letter a player's record keeps for a date (at 0x1d3c), posted once the date has come. */
+typedef struct MailDatedLetter {
+    MailLetter letter;
+    MailTime date;
+} MailDatedLetter;
+
+void MailDated_Init(MailDatedLetter *dated);
+MailTime *MailDated_Date(MailDatedLetter *dated);
+MailLetter *MailDated_Letter(MailDatedLetter *dated);
+MailDatedLetter *MailDated_Destruct(MailDatedLetter *dated);
+MailDatedLetter *MailDated_Construct(MailDatedLetter *dated);
+
+int MailPostOffice_TestFlags(MailPostOffice *office, u32 flags);
+void MailPostOffice_SetFlags(MailPostOffice *office, u16 flags);
+MailTime *MailPostOffice_LastCheck(MailPostOffice *office);
+void MailPostOffice_Init(MailPostOffice *office);
+MailLetter *MailPostOffice_Letter(MailPostOffice *office, int index);
+MailPostOffice *MailPostOffice_Destruct(MailPostOffice *office);
+MailPostOffice *MailPostOffice_Construct(MailPostOffice *office);
+
+/* MailBox.unk_a00 holds, in its first halfword, the mark MailBox_SetMark keeps. */
+void MailBox_SetMark(MailBox *box, u32 mark);
+u16 MailBox_Mark(MailBox *box);
+void MailBox_Init(MailBox *box);
+MailLetter *MailBox_Letter(MailBox *box, int index);
+MailBox *MailBox_Destruct(MailBox *box);
+MailBox *MailBox_Construct(MailBox *box);
+
 #endif

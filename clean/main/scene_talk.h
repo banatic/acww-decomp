@@ -17,5 +17,7 @@ int SceneTalk_Run(void *scene);
 int SceneTalk_PassTurn(void *scene);
 int SceneTalk_LookAtNext(void *scene);
 int SceneTalk_Begin(void *scene);
+int SceneTalk_Request(u8 *scene, u8 with_camera);
+void SceneTalk_RequestWithCamera(int scene);
 
 #endif

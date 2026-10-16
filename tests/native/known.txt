@@ -9,6 +9,8 @@
 0200f290 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass constants 0-29, and DWC_Alloc passes its first argument, which its callers give as constants 1-27
 02012748 word stores to misaligned addresses write the aligned word on ARM and the unaligned one on x86; out is a tile pair in a path walker, which the game keeps word-aligned
 02014a20 word stores to misaligned addresses write the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)
+02015578 word accesses at misaligned addresses use the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)
+02015760 word accesses at misaligned addresses use the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)
 02054548 shift 1 << (index - 32) for index 64 or more gives 0 on ARM and wraps on x86; index is the node ID byte of an NNS G3D render command (func_02054394), below the library's 64-node limit
 02054580 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_02054188 passes ranges 9-14 and those of data_020dd414 (9-17)
 020545b0 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_020541b8 passes the ranges of data_020dd414 (9-17)

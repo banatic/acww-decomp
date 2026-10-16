@@ -239,3 +239,195 @@ int Shops_MailNookItem(const u16 *item)
     return 0;
 }
 CLEAN_AS(func_020ad944, Shops_MailNookItem)
+
+#include "fox_shop.h"
+#include "shop_points.h"
+
+/* Message 38, the change of a place, and the kind its handler gets. */
+#define SHOPS_MESSAGE_CHANGE 0x26
+#define SHOPS_CHANGE_KIND 4
+
+#define SHOPS_STORE_PLACES 0x25
+#define SHOPS_MAX_SPENT 150000
+/* The two items that stand for any of the store's places holding one of them, in the shop
+ * whose kind is SHOPS_KIND_PAIRED. */
+#define SHOPS_PAIRED_FIRST 0x151d
+#define SHOPS_PAIRED_LAST 0x151e
+#define SHOPS_KIND_PAIRED 0x1d
+/* What func_02094ffc gives for the name of this town. */
+#define SHOPS_THIS_TOWN 0
+
+/* What a sold place reads as. */
+extern u16 data_021f49f4;
+/* 1 while the field shows the changes of places (func_020afe94, func_020afdc8). */
+extern u8 data_020e54a8;
+
+extern u16 *func_020af854(u32 *store, int place, u16 *out); /* a place of Nook's store */
+extern int func_020af83c(u32 *store, u16 *item);            /* the place of an item, or -1 */
+extern int func_020af674(u32 *store, int place, int amount, int flag);
+extern u16 *func_020ae8e4(u8 *list, int place, u16 *out); /* a place of data_021f3b44 */
+extern int func_020ae850(u8 *list, u16 *item);
+extern void func_020afdc8(u16 *item, int kind, int g);
+extern void func_020afe94(int x, int z, int kind, int g);
+extern int func_0204bcdc(u16 *item);
+extern int func_0204bc64(u16 *item);
+extern u8 func_020b65c4(void); /* the kind of the shop the player is in */
+extern int func_02094ffc(int name);
+extern u16 *func_ov004_02246378(void *a, void *b);
+extern int func_ov004_0224632c(void *a, void *b);
+extern int func_ov004_0224627c(int *x, int *z, int place);
+
+/* func_020ada14: whether a letter can be posted now: not linked, and the post office has room. */
+int Shops_CanMail(void)
+{
+    if (Session_IsLinked(data_020ccf94) != 0) {
+        return 0;
+    }
+    return Mail_PostOfficeHasRoom() != 0;
+}
+CLEAN_AS(func_020ada14, Shops_CanMail)
+
+/* func_020ada40: the same as Shops_AllAnsweredA. */
+int Shops_AllAnsweredC(void)
+{
+    return func_020afc5c();
+}
+CLEAN_AS(func_020ada40, Shops_AllAnsweredC)
+
+/* The flag of a change made here: whether this system's player is of this town. */
+static int shops_player_is_local(void)
+{
+    return func_02094ffc(func_02099870(func_020984e8())) == SHOPS_THIS_TOWN;
+}
+
+/* Whether `item` is in the paired range. */
+static int shops_is_paired(u16 item)
+{
+    return item >= SHOPS_PAIRED_FIRST && item <= SHOPS_PAIRED_LAST;
+}
+
+/* func_020ada48: the item func_ov004_02246378 gives for (a, b) taken from Nook's store for
+ * `amount`, sent to the other systems, when it is there. In the shop of kind 0x1d an item of
+ * the pair stands for the first place holding either, moved on by func_ov004_0224632c.
+ * QUIRK: when no place holds one of the pair the place is 0x25 moved on, past the store. */
+void Shops_TakeFromStore(void *a, void *b, int amount, int kind)
+{
+    u16 item = *func_ov004_02246378(a, b);
+    int place;
+
+    if (shops_is_paired(item) && func_020b65c4() == SHOPS_KIND_PAIRED) {
+        u16 here = 0xfff1;
+        int i;
+        for (i = 0; i < SHOPS_STORE_PLACES; i++) {
+            func_020af854(data_021f395c, i, &here);
+            if (shops_is_paired(here)) {
+                break;
+            }
+        }
+        place = i + func_ov004_0224632c(a, b);
+    } else {
+        place = func_020af83c(data_021f395c, &item);
+    }
+
+    if (place != -1) {
+        int flag = shops_player_is_local();
+        func_020b0200(data_021f49ec);
+        Shops_ChangePlace(place, amount, kind, flag, 0, 1, 0);
+    }
+}
+CLEAN_AS(func_020ada48, Shops_TakeFromStore)
+
+/* func_020adb24: `spent` (at most 150000) counts as spent at Nook's store, also on the other
+ * systems. */
+void Shops_SpendAtStore(int spent)
+{
+    int flag = shops_player_is_local();
+    if (spent > SHOPS_MAX_SPENT) {
+        spent = SHOPS_MAX_SPENT;
+    }
+    Shops_ChangePlace(SHOPS_NO_PLACE, spent, func_020b65c4(), flag, 0, 1, 0);
+}
+CLEAN_AS(func_020adb24, Shops_SpendAtStore)
+
+/* Whether `item` reads as a sold place. */
+static int shops_is_sold(u16 *item)
+{
+    if (func_0204bcdc(item) != 0) {
+        return func_0204bc64(item) == func_0204bc64(&data_021f49f4);
+    }
+    return *item == data_021f49f4;
+}
+
+/* Sends message 38 for the change. */
+static void shops_send_change(int place, int amount, int kind, int flag)
+{
+    u32 word = ((u32) place & SHOPS_PLACE_MASK) | (((u32) amount & SHOPS_AMOUNT_MASK) << SHOPS_AMOUNT_SHIFT) |
+               (((u32) flag & 1) << SHOPS_FLAG_SHIFT) | ((u32) kind << SHOPS_KIND_SHIFT);
+    NetSession *session = data_020ccf94;
+    Session_BeginMessage(session);
+    Session_AppendMessage(session, &word, sizeof word);
+    Session_EndMessage(session, SHOPS_MESSAGE_CHANGE, SHOPS_CHANGE_KIND);
+}
+
+/* func_020adb70: takes `place` of a shop (`mode` 0 Nook's store, 1 data_021f3b44, 2 the fox's
+ * shop) unless it is sold already, and when linked and `send` is set tells the other systems
+ * (message 38). For Nook's store `amount` counts as spent there with `flag`, and in this
+ * player's shop points too when `send` is set; the field shows the change where
+ * func_ov004_0224627c finds the place, while data_020e54a8 is 1. Place 63 is no place: only the
+ * amount is spent (and sent).
+ * QUIRK: a `mode` above 2 reads the place as sold and does nothing. */
+void Shops_ChangePlace(int place, int amount, int kind, int flag, int mode, u8 send, int g)
+{
+    if (place == SHOPS_NO_PLACE) {
+        func_020af750(data_021f395c, (u32) amount, (u32) flag);
+        if (Session_IsLinked(data_020ccf94) != 0 && send != 0) {
+            shops_send_change(place, amount, kind, flag);
+        }
+        return;
+    }
+
+    u16 item = data_021f49f4;
+    switch (mode) {
+        case 0:
+            item = *func_020af854(data_021f395c, place, NULL);
+            break;
+        case 1:
+            item = *func_020ae8e4(data_021f3b44, place, NULL);
+            break;
+        case 2:
+            item = *FoxShop_Item((FoxShop *) data_021f3b30, place, NULL);
+            break;
+    }
+    if (shops_is_sold(&item)) {
+        return;
+    }
+
+    switch (mode) {
+        case 0:
+            func_020af674(data_021f395c, place, amount, flag);
+            if (send != 0) {
+                ShopPoints_AddSpent(ShopPoints_Count((void *) (uintptr_t) func_020996a0((u32) func_020984e8())), amount);
+            }
+            if (data_020e54a8 == 1) {
+                int x;
+                int z;
+                if (func_ov004_0224627c(&x, &z, place) != 0) {
+                    func_020afe94(x, z, kind, g);
+                }
+            }
+            break;
+        case 1:
+            func_020ae850(data_021f3b44, &item);
+            func_020afdc8(&item, kind, g);
+            break;
+        case 2:
+            FoxShop_TakeItem((FoxShop *) data_021f3b30, &item);
+            func_020afdc8(&item, kind, g);
+            break;
+    }
+
+    if (Session_IsLinked(data_020ccf94) != 0 && send != 0) {
+        shops_send_change(place, amount, kind, flag);
+    }
+}
+CLEAN_AS(func_020adb70, Shops_ChangePlace)
