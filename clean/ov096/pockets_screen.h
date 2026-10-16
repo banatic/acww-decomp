@@ -22,6 +22,7 @@
 #ifndef CLEAN_OV096_POCKETS_SCREEN_H
 #define CLEAN_OV096_POCKETS_SCREEN_H
 
+#include "ov002/error_message.h"
 #include "ov002/glide.h"
 #include "ov002/label_button.h"
 #include "ov002/menu_scene.h"
@@ -31,6 +32,7 @@
 
 /* In `flags`. */
 enum PocketsScreenFlag {
+    POCKETS_FLAG_04 = 0x04,            /* the place touched holds nothing (PocketsScreen_TouchPlace) */
     POCKETS_FLAG_08 = 0x08,            /* cleared and tested by PocketsScreen_AddLetterEntries */
     POCKETS_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */
     POCKETS_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it over the right edge */
@@ -40,10 +42,12 @@ enum PocketsScreenFlag {
     POCKETS_FLAG_SWITCH_ON = 0x400,      /* see PocketsScreen_ApplySwitch */
     POCKETS_FLAG_SWITCH_PENDING = 0x800, /* see PocketsScreen_ApplySwitch */
     POCKETS_FLAG_1000 = 0x1000,
-    POCKETS_FLAG_2000 = 0x2000,
+    POCKETS_FLAG_2000 = 0x2000, /* the held thing glides on to `unk_b9` (PocketsScreen_SettleHeld) */
+    POCKETS_FLAG_4000 = 0x4000, /* a touch on the bells' place finds no place (PocketsScreen_PlaceAtTouch) */
     POCKETS_FLAG_8000 = 0x8000,
-    POCKETS_FLAG_EXITING = 0x20000,   /* set by PocketsScreen_ExitToParent */
-    POCKETS_FLAG_FIXED_MENU = 0x40000 /* the choice is PocketsScreen_OpenFixedMenu's */
+    POCKETS_FLAG_NO_ENTRIES = 0x10000, /* the touched place of the grid offers no choice row */
+    POCKETS_FLAG_EXITING = 0x20000,    /* set by PocketsScreen_ExitToParent */
+    POCKETS_FLAG_FIXED_MENU = 0x40000  /* the choice is PocketsScreen_OpenFixedMenu's */
 };
 
 #define POCKETS_FLAGS_WRAPPED (POCKETS_FLAG_WRAPPED_LEFT | POCKETS_FLAG_WRAPPED_RIGHT)
@@ -62,7 +66,7 @@ enum PocketsScreenPlace {
     POCKETS_PLACE_PLAYER = 0x24, /* its choice offers the record's items at 0x240c, 0x240a, 0x2406 */
     POCKETS_PLACE_BELLS = 0x25,
     POCKETS_PLACE_27 = 0x27, /* given to PocketsScreen_OpenSlotMenu; becomes the bells' place */
-    POCKETS_NO_PLACE = 0x26  /* func_ov096_0229f55c: no free pocket slot */
+    POCKETS_NO_PLACE = 0x26  /* PocketsScreen_FreePocketSlot: no free pocket slot */
 };
 
 /* What the scene holds (`held_kind`): a thing picked up from a place moves with the stylus or
@@ -82,38 +86,42 @@ enum PocketsHeldKind {
 #define POCKETS_ACTION_CANCEL 0x22 /* the value of every row added without one */
 
 typedef struct PocketsScreen {
-    MenuScene base; /* 0x00 */
-    u32 flags;      /* 0x94: PocketsScreenFlag */
-    u32 unk_98;     /* 0x98 */
-    s32 grab_dx;    /* 0x9c: from the touch to the held thing (PocketsScreen_FollowTouch) */
-    s32 grab_dy;    /* 0xa0 */
-    s32 menu_x;     /* 0xa4: where the held thing (or the menu) is drawn */
-    s32 menu_y;     /* 0xa8 */
-    u16 item;       /* 0xac: the held item's code */
-    u16 place_item; /* 0xae: the item code of places 0x22-0x25 (PocketsScreen_PlaceItem) */
-    u8 held_state;  /* 0xb0: the held item's state (PocketsScreen_PlaceItemState) */
-    u8 held_kind;   /* 0xb1: PocketsHeldKind */
-    u8 unk_b2;      /* 0xb2 */
-    u8 popup_place; /* 0xb3: the place the popup tells of (PocketsScreen_UpdatePopup) */
-    u8 held_place;  /* 0xb4: the place the held thing goes back to; a free pocket slot when
-                      * taken from the record or the wallet (func_ov096_0229f55c) */
-    u8 cursor;      /* 0xb5: PocketsScreenPlace */
-    u8 slot;        /* 0xb6: the place picked */
-    u8 unk_b7;      /* 0xb7 */
-    u8 prev_slot;   /* 0xb8 */
-    u8 unk_b9;      /* 0xb9 */
-    u8 unk_ba;      /* 0xba: a sub state kept by PocketsScreen_BeginSubState15 */
-    u8 action;      /* 0xbb: see POCKETS_ACTION_COUNT */
-    u8 choice_row;  /* 0xbc: the choice row the cursor sprite points at */
-    u8 choice_page; /* 0xbd */
-    u8 choice_code; /* 0xbe: the code given to PagedChoice_Apply */
-    u8 unk_bf;      /* 0xbf */
-    u8 record_slot; /* 0xc0: 3-5, of func_ov096_0229e4a4 */
-    u8 unk_c1[3];
+    MenuScene base;  /* 0x00 */
+    u32 flags;       /* 0x94: PocketsScreenFlag */
+    u32 unk_98;      /* 0x98 */
+    s32 grab_dx;     /* 0x9c: from the touch to the held thing (PocketsScreen_FollowTouch) */
+    s32 grab_dy;     /* 0xa0 */
+    s32 menu_x;      /* 0xa4: where the held thing (or the menu) is drawn */
+    s32 menu_y;      /* 0xa8 */
+    u16 item;        /* 0xac: the held item's code */
+    u16 place_item;  /* 0xae: the item code of places 0x22-0x25 (PocketsScreen_PlaceItem) */
+    u8 held_state;   /* 0xb0: the held item's state (PocketsScreen_PlaceItemState) */
+    u8 held_kind;    /* 0xb1: PocketsHeldKind */
+    u8 touch_place;  /* 0xb2: the place touched (PocketsScreen_TouchPlace) */
+    u8 popup_place;  /* 0xb3: the place the popup tells of (PocketsScreen_UpdatePopup) */
+    u8 held_place;   /* 0xb4: the place the held thing goes back to; a free pocket slot when
+                      * taken from the record or the wallet (PocketsScreen_FreePocketSlot) */
+    u8 cursor;       /* 0xb5: PocketsScreenPlace */
+    u8 slot;         /* 0xb6: the place picked */
+    u8 unk_b7;       /* 0xb7 */
+    u8 prev_slot;    /* 0xb8 */
+    u8 unk_b9;       /* 0xb9 */
+    u8 return_state; /* 0xba: the sub state to go back to (PocketsScreen_ShowError,
+                      * PocketsScreen_BeginSubState15) */
+    u8 action;       /* 0xbb: see POCKETS_ACTION_COUNT */
+    u8 choice_row;   /* 0xbc: the choice row the cursor sprite points at */
+    u8 choice_page;  /* 0xbd */
+    u8 choice_code;  /* 0xbe: the code given to PagedChoice_Apply */
+    u8 bell_choice;  /* 0xbf: 1, 2, 3 for 100, 1000, 10000 bells (PocketsScreen_BellAmountAtTouch) */
+    u8 record_slot;  /* 0xc0: 3-5, of func_ov096_0229e4a4 */
+    u8 blink;        /* 0xc1: frames left of PocketsScreen_BlinkSlot */
+    u8 unk_c2;       /* 0xc2: set to 2 by PocketsScreen_TouchPlace */
+    u8 pad_c3;
     s32 unk_c4;            /* 0xc4: func_020435fc's result */
     u8 unk_c8[0x20];       /* 0xc8 */
-    u8 unk_e8[0x238];      /* 0xe8 */
-    u8 unk_320[0x38];      /* 0x320 */
+    u8 unk_e8[0x200];      /* 0xe8 */
+    u8 unk_2e8[0x38];      /* 0x2e8: an object of main's class (PocketsScreen_UpdateObjects2e8) */
+    u8 unk_320[0x38];      /* 0x320: one more (PocketsScreen_UpdateObjects2e8) */
     u8 grid[0xa60];        /* 0x358: an object of ov094's (destructor func_ov094_0229afe0) */
     u8 letters[0x28];      /* 0xdb8: an object of ov094's (func_ov094_0229bc30) */
     u8 unk_de0[0x1638];    /* 0xde0: an object of ov094's (destructor func_ov094_0229a2d0) */
@@ -123,7 +131,7 @@ typedef struct PocketsScreen {
     u8 choice[0x3e8];      /* 0x2564: a PagedChoice */
     ChoiceEntries entries; /* 0x294c */
     u8 pad_2957;           /* 0x2957 */
-    u8 unk_2958[0x11c];    /* 0x2958: destructor func_ov002_0220ba0c */
+    ErrorMessage error;    /* 0x2958 */
     u8 unk_2a74[0x328];    /* 0x2a74: destructor func_0206e35c */
     LabelButton button;    /* 0x2d9c: a LabelButton0 */
     u8 pad_2e14[0x14];     /* 0x2e14 */
@@ -253,5 +261,65 @@ u16 PocketsScreen_PlaceItem(PocketsScreen *self, int place);
 int PocketsScreen_PlaceIsEmpty(PocketsScreen *self, int place);
 int PocketsScreen_PlaceIsTaken(PocketsScreen *self, int place);
 int PocketsScreen_PlaceY(PocketsScreen *self, int place);
+int PocketsScreen_PlaceX(PocketsScreen *self, int place);
+int PocketsScreen_BellAmountAtTouch(PocketsScreen *self, int x, int y);
+int PocketsScreen_TouchOnBells(PocketsScreen *self, int x, int y);
+int PocketsScreen_TouchOnPlayer(PocketsScreen *self, int x, int y);
+int PocketsScreen_PlaceAtTouch(PocketsScreen *self, int x, int y);
+int PocketsScreen_TouchOnPlace21(PocketsScreen *self, int x, int y);
+void PocketsScreen_PutLetterAt(PocketsScreen *self, int place, void *letter);
+int PocketsScreen_PutHeldLetterAt(PocketsScreen *self, int place);
+int PocketsScreen_LetterPlaceAtTouch(PocketsScreen *self, int x, int y, int with_letter);
+u8 PocketsScreen_LetterPlace(PocketsScreen *self, unsigned int index);
+int PocketsScreen_LetterIndex(PocketsScreen *self, unsigned int place);
+int PocketsScreen_FreePocketSlot(PocketsScreen *self);
+void PocketsScreen_RemoveLetterAt(PocketsScreen *self, int place);
+void PocketsScreen_EmptyPlace(PocketsScreen *self, int place);
+void PocketsScreen_SetPlaceItem(PocketsScreen *self, int place, int item, int state);
+int PocketsScreen_PutHeldItemAt(PocketsScreen *self, int place);
+int PocketsScreen_GridPlaceAtTouch(PocketsScreen *self, int x, int y, int with_item);
+unsigned int PocketsScreen_GridPlace(PocketsScreen *self, unsigned int index);
+u8 PocketsScreen_GridIndex(u16 self_low, u16 place);
+void PocketsScreen_CursorToSpriteColumn(PocketsScreen *self);
+int PocketsScreen_IsTopPlace(PocketsScreen *self, unsigned int place);
+int PocketsScreen_IsRowPlace(PocketsScreen *self, unsigned int place);
+int PocketsScreen_IsLetterPlace(PocketsScreen *self, unsigned int place);
+int PocketsScreen_IsGridPlace(PocketsScreen *self, unsigned int place);
+void PocketsScreen_UpdateObjects2e8(PocketsScreen *self);
+u8 *PocketsScreen_StartBlinkSlot(PocketsScreen *self);
+void PocketsScreen_ShowError(PocketsScreen *self, int message, int return_state, unsigned int flag);
+u8 *PocketsScreen_HoldAndGlide(PocketsScreen *self, int from, int to, int item, u8 state);
+u8 *PocketsScreen_GlideHeldTo(PocketsScreen *self, u8 place, int steps);
+void PocketsScreen_PickUpWithCursor(PocketsScreen *self, int place);
+void PocketsScreen_PickUpWithTouch(PocketsScreen *self, int place);
+void PocketsScreen_TouchPlace(PocketsScreen *self, int place);
+void PocketsScreen_FillTouchedEntries(PocketsScreen *self);
+void PocketsScreen_BeginSubState08Or19(PocketsScreen *self);
+int PocketsScreen_BeginSubState19(PocketsScreen *self);
+int PocketsScreen_BeginSubState08(PocketsScreen *self);
+void PocketsScreen_EndAction(PocketsScreen *self);
+void PocketsScreen_EndActionAtCursor(PocketsScreen *self);
+void PocketsScreen_EndActionHidden(PocketsScreen *self);
+void PocketsScreen_WaitUseRequest29(PocketsScreen *self);
+void PocketsScreen_WaitUseRequest28(PocketsScreen *self);
+void PocketsScreen_BlinkSlot(PocketsScreen *self);
+u8 *PocketsScreen_HandSlotItemToActor(PocketsScreen *self);
+void PocketsScreen_WaitActorState(PocketsScreen *self);
+void PocketsScreen_WaitGridObject(PocketsScreen *self);
+void PocketsScreen_WaitLettersObject(PocketsScreen *self);
+void PocketsScreen_WaitActorForRecord(PocketsScreen *self);
+void PocketsScreen_WaitRecordBlink(PocketsScreen *self);
+void PocketsScreen_GiveToRecordSlot(PocketsScreen *self);
+void PocketsScreen_RunChoice(PocketsScreen *self);
+void PocketsScreen_CloseChoiceThenRun(PocketsScreen *self);
+void PocketsScreen_WaitChoiceShown(PocketsScreen *self);
+void PocketsScreen_FollowButton(PocketsScreen *self);
+void PocketsScreen_WaitError(PocketsScreen *self);
+void PocketsScreen_RunActionWhenIdle(PocketsScreen *self);
+void PocketsScreen_CloseChoiceToAction(PocketsScreen *self);
+int PocketsScreen_CloseChoice(PocketsScreen *self);
+void PocketsScreen_WaitChoiceToPoint(PocketsScreen *self);
+void PocketsScreen_SettleHeld(PocketsScreen *self);
+void PocketsScreen_StepHeldGlide(PocketsScreen *self);
 
 #endif

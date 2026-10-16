@@ -1,7 +1,7 @@
 /* Overlay 3's part of the field actor (class vtable 0x020d82b4, include/cpp/main/Obj_020d82b4.h):
  * the checks the actor's frame update runs while overlay 3 is loaded (func_020058e4), the
- * choice of what to do with the held tool, and states of its state machine (0x3e, 0x45 to 0x6e,
- * 0x71 to 0x75, 0x78, 0x80 to 0x82, 0x89 and 0x8f, and state 0x3d's update).
+ * choice of what to do with the held tool, and states of its state machine (0x16, 0x17, 0x38 to
+ * 0x3e, 0x45 to 0x6e, 0x71 to 0x75, 0x78, 0x80 to 0x82, 0x89 and 0x8f).
  *
  * States 0x58 to 0x56 catch an insect and 0x55 to 0x51 a fish: 0x56 is a swing that sweeps a
  * line with the held item and asks for 0x57 when it catches something; 0x57 shows the insect
@@ -27,12 +27,21 @@
  * item. State 0x3e plays animation 0x62 (backwards unless its flags say 2) and then asks for the
  * state its request names (0x38, 0x39, 0x10 or 2).
  *
+ * State 0x3d does what 0x3e does with animation 0x6b, and gives the held item a weight that
+ * moves towards 1.0 (flags 2) or 0 before it goes on; a request for it becomes one for 0x3e
+ * while the held item is in 0x1380-0x13a7. State 0x38 (animation 0x37) holds the actor at a
+ * point and yaw and asks for 0x39, which plays animation 0x32 or 0x33 there and asks for 0x3a,
+ * a state that does nothing. States 0x3c and 0x3b play animation 0x34 or 0x35 (0x3b may play
+ * 0x36 first); 0x3b ends one of four ways by its kind (FieldActor_EndState3B). State 0x16 waits
+ * on a tile and goes on to state 0x17, which walks to the tile and acts on its map object at
+ * frame 10.
+ *
  * The state machine: each state has an update, a message handler and an entry function, picked
  * by the state number at 0x7f0 from tables in main; some also have one run when the actor leaves
- * them (from another table in main: states 0x66, 0x63, 0x62, 0x5f, 0x5e, 0x5d, 0x58, 0x49 and
- * 0x45 here). A state is asked for by queueing a
+ * them (from another table in main: states 0x66, 0x63, 0x62, 0x5f, 0x5e, 0x5d, 0x58, 0x49,
+ * 0x45, 0x3d, 0x3c and 0x17 here). A state is asked for by queueing a
  * StateRequest on the actor (func_0200e894); the helpers that build one pass a priority (6 for
- * all of them here) and an argument (-1 here unless passed on).
+ * all of them here but state 0x3c's message handler, which passes 1) and an argument (-1 here unless passed on).
  *
  * The actor's player number (0x800) is compared with the session's (func_02073908) to tell
  * the player at this console from the others. */
@@ -359,6 +368,60 @@ typedef struct State3ESaved {
     u8 flags;
 } State3ESaved;
 
+/* State 0x3d's work: what a request for it carries (laid out as State3EWork, `value` being a
+ * yaw) and a weight that moves by 0x249 a frame towards 1.0 (flags 2) or 0 and is given to the
+ * held item. */
+typedef struct State3DWork {
+    int next;
+    fx32 x;
+    fx32 z;
+    fx32 weight;
+    s16 yaw;
+    u8 flags; /* as State3EWork.flags */
+} State3DWork;
+
+/* What a request for state 0x3b carries, also saved at 0x8f0. */
+typedef struct State3BArgs {
+    u8 alt;  /* animation 0x34 instead of 0x35 or 0x36 (func_ov003_022203ac for this console) */
+    u8 kind; /* 0 to 3: how state 0x3b ends (FieldActor_EndState3B) */
+} State3BArgs;
+
+/* State 0x3b's work. */
+typedef struct State3BWork {
+    u8 kind;  /* as State3BArgs.kind */
+    u8 count; /* frames of animation 0x36 left before animation 0x35 */
+} State3BWork;
+
+/* State 0x39's work; a request for it carries the same but `count`. */
+typedef struct State39Work {
+    fx32 x;
+    fx32 z;
+    s16 yaw;
+    u8 kind;  /* 0: animation 0x33; 1: animation 0x32; 2: animation 0, then 0x33 */
+    u8 count; /* frames of animation 0 left (kind 2) */
+} State39Work;
+
+/* State 0x38's work and what a request for it carries: a point and a yaw for func_0200fbc4. */
+typedef struct State38Work {
+    fx32 x;
+    fx32 z;
+    s16 yaw;
+} State38Work;
+
+/* State 0x17's work: the middle of the request's tile, which the actor walks to. */
+typedef struct State17Work {
+    Vec3 point;
+    u8 unk_0C; /* set to 0 */
+} State17Work;
+
+/* State 0x16's work: a tile and how the state ends (0: not yet; 1: state 0x17 on the tile;
+ * 2: the usual way). */
+typedef struct State16Work {
+    u8 x;
+    u8 z;
+    u8 outcome;
+} State16Work;
+
 /* The bytes at 0x7d4 that each state uses its own way. */
 typedef union FieldActorWork {
     LookArgs look; /* state 0x8f */
@@ -407,6 +470,12 @@ typedef union FieldActorWork {
     State46Work s46; /* states 0x46 and 0x47 */
     State45Work s45;
     State3EWork s3e;
+    State3DWork s3d;
+    State3BWork s3b;
+    State39Work s39;
+    State38Work s38;
+    State17Work s17;
+    State16Work s16;
     u8 bytes[0x1c];
 } FieldActorWork;
 
@@ -534,6 +603,12 @@ typedef struct FieldActor {
         u8 flag4b; /* state 0x4b: the request's flag */
         State49Saved s49;
         State3ESaved s3e;
+        /* States 0x3d, 0x39 and 0x38 save their point, yaw (in `value`) and flags or kind
+         * (0x38: none) the way state 0x3e does. */
+        State3ESaved s3d;
+        State3ESaved s39;
+        State3ESaved s38;
+        State3BArgs s3b;
         /* Points packed by func_02077950 (x, y and z, states 0x6a and 0x4f, with a mode for
          * 0x4f) or func_020779b8 (x and z, states 0x68 and 0x4d; for 0x68 with the request's
          * flags in byte 5). */
@@ -1061,5 +1136,73 @@ int FieldActor_RequestState3E(FieldActor *actor, int next, int flags, fx32 x, fx
 void FieldActor_SetState3EArgs(State3EWork *args, int next, char flags, fx32 x, fx32 z, s16 value);
 
 void FieldActor_UpdateState3D(FieldActor *actor);
+void FieldActor_StepState3D(FieldActor *actor);
+void FieldActor_ExitState3D(FieldActor *actor);
+void FieldActor_State3DMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState3D(FieldActor *actor, const StateRequest *request, int previous);
+void FieldActor_GetState3DSaved(const State3ESaved *saved, u8 *flags, fx32 *x, fx32 *z, u16 *yaw);
+void FieldActor_SetState3DSaved(State3ESaved *saved, char flags, fx32 x, fx32 z, s16 yaw);
+void FieldActor_SetState3DWork(State3DWork *work, int next, int flags, fx32 x, fx32 z, s16 yaw, fx32 weight);
+/* Asks for state 0x3d, or for state 0x3e while the held item is in 0x1380-0x13a7. */
+int FieldActor_RequestState3D(FieldActor *actor, int next, int flags, fx32 x, fx32 z, s16 yaw, int priority, s16 arg);
+void FieldActor_SetState3DArgs(State3EWork *args, int next, char flags, fx32 x, fx32 z, s16 yaw);
+
+void FieldActor_UpdateState3C(FieldActor *actor);
+void FieldActor_ExitState3C(FieldActor *actor, int next);
+void FieldActor_State3CMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState3C(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_RequestState3C(FieldActor *actor, int priority, int arg);
+
+void FieldActor_UpdateState3B(FieldActor *actor);
+void FieldActor_EndState3B(FieldActor *actor);
+void FieldActor_RunState3B(FieldActor *actor);
+void FieldActor_State3BMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState3B(FieldActor *actor, const StateRequest *request, int previous);
+void FieldActor_GetState3BSaved(const State3BArgs *saved, u8 *alt, u8 *kind);
+void FieldActor_SetState3BSaved(State3BArgs *saved, int alt, int kind);
+int FieldActor_RequestState3B(FieldActor *actor, int alt, int kind, int priority, s16 arg);
+int FieldActor_RequestState3BPlain(FieldActor *actor, int priority, int arg);
+
+void FieldActor_UpdateState3A(FieldActor *actor);
+void FieldActor_State3AMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState3A(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_RequestState3A(FieldActor *actor, int priority, int arg);
+
+void FieldActor_UpdateState39(FieldActor *actor);
+void FieldActor_EndState39(FieldActor *actor);
+void FieldActor_SoundState39(FieldActor *actor);
+void FieldActor_RunState39(FieldActor *actor);
+void FieldActor_State39Message(FieldActor *actor, int arg);
+void FieldActor_EnterState39(FieldActor *actor, const StateRequest *request, int previous);
+void FieldActor_GetState39Saved(const State3ESaved *saved, u8 *kind, fx32 *x, fx32 *z, u16 *yaw);
+void FieldActor_SetState39Saved(State3ESaved *saved, char kind, fx32 x, fx32 z, s16 yaw);
+void FieldActor_SetState39Work(State39Work *work, char kind, fx32 x, fx32 z, s16 yaw, u8 count);
+int FieldActor_RequestState39(FieldActor *actor, int kind, fx32 x, fx32 z, s16 yaw, int priority, s16 arg);
+void FieldActor_SetState39Args(State39Work *args, char kind, fx32 x, fx32 z, s16 yaw);
+
+void FieldActor_UpdateState38(FieldActor *actor);
+void FieldActor_EndState38(FieldActor *actor);
+void FieldActor_RunState38(FieldActor *actor);
+void FieldActor_FaceState38(FieldActor *actor);
+void FieldActor_State38Message(FieldActor *actor, int arg);
+void FieldActor_EnterState38(FieldActor *actor, const StateRequest *request, int previous);
+void FieldActor_GetState38Saved(const State3ESaved *saved, fx32 *x, fx32 *z, s16 *yaw);
+void FieldActor_SetState38Saved(State3ESaved *saved, fx32 x, fx32 z, int yaw);
+void FieldActor_SetState38Work(State38Work *work, fx32 x, fx32 z, int yaw);
+int FieldActor_RequestState38(FieldActor *actor, fx32 x, fx32 z, int yaw, int priority, s16 arg);
+void FieldActor_SetState38Args(State38Work *args, fx32 x, fx32 z, int yaw);
+
+void FieldActor_UpdateState17(FieldActor *actor);
+void FieldActor_EndState17(FieldActor *actor);
+void FieldActor_ActState17(FieldActor *actor);
+void FieldActor_RunState17(FieldActor *actor);
+void FieldActor_ExitState17(FieldActor *actor);
+void FieldActor_State17Message(FieldActor *actor, int arg);
+void FieldActor_EnterState17(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_RequestState17(FieldActor *actor, const u32 *tile, int priority, int arg);
+
+void FieldActor_UpdateState16(FieldActor *actor);
+void FieldActor_EndState16(FieldActor *actor);
+void FieldActor_RunState16Local(FieldActor *actor);
 
 #endif

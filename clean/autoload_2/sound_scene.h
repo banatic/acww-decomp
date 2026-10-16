@@ -257,4 +257,28 @@ void SoundScene_CreatePlayer18And19Heaps(SoundScene *scene);
 void SoundScene_CreatePlayer17Heaps(SoundScene *scene);
 void SoundScene_CreatePlayer6Heaps(SoundScene *scene);
 
+/* The base class (vtable 0x0213efb4, kind -1): its slots, constructor and destructors. Its
+ * slot 7 makes the keyboard's mode the voice's kind and loads that mode's sounds (sequence
+ * archive 0x85, 0x86 or 0x87); slot 8 drops them again. */
+void SoundSceneBase_OnMusic(SoundScene *scene, int stopped, int music);
+void SoundSceneBase_RestoreHeap(SoundScene *scene);
+int SoundSceneBase_SetKeyboardMode(SoundScene *scene, unsigned int mode);
+void SoundSceneBase_Unload(SoundScene *scene);
+int SoundSceneBase_Stop(SoundScene *scene);
+void SoundSceneBase_Update(SoundScene *scene, int value);
+void SoundSceneBase_Start(void);
+void SoundSceneBase_Vfunc08(SoundScene *scene);
+SoundScene *SoundSceneBase_DestructBase(SoundScene *scene);
+SoundScene *SoundSceneBase_DestructDelete(SoundScene *scene);
+SoundScene *SoundSceneBase_Destruct(SoundScene *scene);
+SoundScene *SoundSceneBase_Construct(SoundScene *scene);
+
+/* The loading every class's start begins with: player 0's heap of `player_heap` bytes (unless
+ * the system's byte 0x62 is set) and group `group` of the archive. */
+void SoundScene_LoadGroup(SoundScene *scene, int player_heap, unsigned char group);
+void SoundScene_CreatePlayer5Heap(SoundScene *scene);
+void SoundScene_CreatePlayer11Heaps(SoundScene *scene, int count);
+void SoundScene_CreatePlayer4Heap(SoundScene *scene);
+void SoundScene_StopPlayers(SoundScene *scene, int fade_frames);
+
 #endif
