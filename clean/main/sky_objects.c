@@ -710,3 +710,26 @@ SkyObject *SkyObject_Destruct(SkyObject *object)
     return object;
 }
 CLEAN_AS(func_020be554, SkyObject_Destruct)
+
+#define SKY_OBJECTS_PART_302C 0x302c /* eight parts of 12 bytes, destroyed as trivial objects */
+#define SKY_OBJECTS_PARTS_302C 8
+#define SKY_OBJECTS_REQUESTS 0x2f58 /* the shots' four requests, 0x14 bytes each */
+#define SKY_OBJECTS_REQUEST_COUNT 4
+#define SKY_OBJECTS_REQUEST_SIZE 0x14
+
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern void func_020012dc(void *object); /* a trivial object's destructor */
+extern void func_020be550(void *request);
+extern void func_020be554(void *object);
+
+/* func_020c1574: the objects destroyed: the eight parts at 0x302c, the shots' requests, then
+ * the entries, each array from its last element by the game's own destructors. */
+SkyObjects *SkyObjects_Destruct(SkyObjects *objects)
+{
+    __cxa_vec_cleanup((u8 *) objects + SKY_OBJECTS_PART_302C, SKY_OBJECTS_PARTS_302C, 0xc, func_020012dc);
+    __cxa_vec_cleanup((u8 *) objects + SKY_OBJECTS_REQUESTS, SKY_OBJECTS_REQUEST_COUNT, SKY_OBJECTS_REQUEST_SIZE,
+                      func_020be550);
+    __cxa_vec_cleanup(objects->entries, SKY_OBJECT_COUNT, (int) sizeof(SkyObject), func_020be554);
+    return objects;
+}
+CLEAN_AS(func_020c1574, SkyObjects_Destruct)

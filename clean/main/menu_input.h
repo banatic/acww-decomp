@@ -23,4 +23,16 @@ int MenuInput_DownHeld(void);
 int MenuInput_UpHeld(void);
 int MenuInput_BHeld(void);
 
+int MenuInput_AHeld(void);
+int MenuInput_StartPressed(void);
+int MenuInput_DownPressed(void);
+int MenuInput_UpPressed(void);
+int MenuInput_BPressed(void);
+int MenuInput_APressed(void);
+int MenuInput_AnyPressed(void);
+int MenuInput_TouchPosition(int *x, int *y);
+int MenuInput_TouchPressedAt(int *x, int *y);
+int MenuInput_TouchPressedIn(int left, int right, int top, int bottom);
+int MenuInput_TouchPressed(void);
+
 #endif

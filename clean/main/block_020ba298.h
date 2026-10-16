@@ -30,4 +30,8 @@ int SkyProcess_Draw(void);
 int SkyProcess_Execute(SkyProcess *process);
 int SkyProcess_Create(SkyProcess *process);
 
+/* The sky's process made: zeroed from the aux heap, constructed as a process, then as the sky's
+ * with its sound; NULL when there is no room. */
+SkyProcess *SkyProcess_New(void);
+
 #endif

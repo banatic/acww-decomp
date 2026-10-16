@@ -13,6 +13,7 @@
 #include "ov004/member_pointer.h"
 #include "player_record.h"
 #include "player_records.h"
+#include "sky_object_kinds.h"
 #include "sky_object_sounds.h"
 #include "state_block.h"
 
@@ -50,11 +51,6 @@ extern int func_02095518(int pitch, int yaw, int player);     /* the player's lo
 extern void func_020c14bc(fx32 *x, const Position *position); /* a position's x on the screen */
 extern int func_ov003_02220c8c(int variant, int x);
 extern void func_0204130c(int event, int a, int b);
-extern void func_020bf2b8(Vec3 *point, fx32 x, fx32 y, fx32 scale); /* a sound's point */
-extern void func_020beb98(SkyShotsHit *hit, int player);            /* the player's state ended at once */
-extern void func_020beba4(SkyShotsHit *hit, int player);            /* waiting for this system's shot */
-extern void func_020bebd8(SkyShotRequest *request);                 /* the request cleared */
-extern void func_020bebec(SkyShotRequest *request, int player, const Position *from, int triple);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 static const MemberPointer *const sky_shots_hit_constants[SKY_SHOTS_HIT_STATES] = {
@@ -81,9 +77,9 @@ void SkyShots_Launch(SkyObjects *objects)
                 SkyObjects_Add(objects, SKY_OBJECT_SHOT, entry + 2, NULL, player | SKY_SHOTS_THIRD);
             }
         } else {
-            func_020beb98((SkyShotsHit *) (void *) objects->unk_2fa8, request->player);
+            SkyShots_EndPlayerState((SkyShotsHit *) (void *) objects->unk_2fa8, request->player);
         }
-        func_020bebd8(request);
+        SkyShots_ClearRequest(request);
     }
 }
 CLEAN_AS(func_020bcfbc, SkyShots_Launch)
@@ -105,13 +101,14 @@ void SkyShots_Fire(SkyObjects *objects, int player)
     const Position *from = func_02095794(player);
     SkyShotsHit *hit = (SkyShotsHit *) (void *) objects->unk_2fa8;
     if (from == NULL) {
-        func_020beb98(hit, player);
+        SkyShots_EndPlayerState(hit, player);
         return;
     }
     u16 item;
     func_02095764(&item, player);
-    func_020bebec(SkyShots_Request(objects, index), player, from, item == SKY_SHOTS_TRIPLE_ITEM);
-    func_020beba4(hit, player);
+    SkyShots_SetRequest(SkyShots_Request(objects, index), player, (const Vec3 *) (const void *) from,
+                        item == SKY_SHOTS_TRIPLE_ITEM);
+    SkyShots_StartWaiting(hit, player);
 }
 CLEAN_AS(func_020bdf68, SkyShots_Fire)
 
@@ -177,7 +174,7 @@ CLEAN_AS(func_020be758, SkyShots_ResetHit)
 static void sky_shots_play(SkyShotsHit *hit, int number)
 {
     Vec3 point;
-    func_020bf2b8(&point, hit->x, hit->y, hit->scale);
+    SkyObjectKinds_SoundPoint(&point, hit->x, hit->y, hit->scale);
     SkyObjectSounds_PlayHeld(&data_021fbb14, 0, number, &point);
 }
 
@@ -311,7 +308,7 @@ void SkyShots_HitWait(SkyShotsHit *hit)
     if (hit->timer > 0) {
         return;
     }
-    func_020beb98(hit, hit->player);
+    SkyShots_EndPlayerState(hit, hit->player);
     SkyShots_ResetHit(hit);
 }
 CLEAN_AS(func_020be9b8, SkyShots_HitWait)
@@ -346,3 +343,289 @@ void SkyShots_RunHit(SkyShotsHit *hit)
     }
 }
 CLEAN_AS(func_020bea1c, SkyShots_RunHit)
+
+/* ---- The hit's states set, the requests, and the shots' objects */
+
+#define SKY_SHOTS_FALL8_FRAMES 20
+#define SKY_SHOTS_FALL5_FRAMES 30
+#define SKY_SHOTS_DROP3_FRAMES 2
+#define SKY_SHOTS_WAIT_FRAMES 43
+#define SKY_SHOTS_NO_PLAYER 4
+#define SKY_SHOTS_END_NOW 0    /* FieldActor_PlayerEndState: end the state at once */
+#define SKY_SHOTS_END_WATCH 1  /* ask for state 0x65 */
+#define SKY_SHOTS_REACH 0x1000 /* a shot hits within 1.0 of its point */
+#define SKY_SHOTS_ANIMATION 0x2d
+#define SKY_SHOTS_PRIORITY 2
+#define SKY_SHOTS_DELAY 24
+#define SKY_SHOTS_START_Y 0xc5000 /* y 197: below the screen */
+#define SKY_SHOTS_SPEED (-0xc000) /* 12 pixels a frame up */
+#define SKY_SHOTS_SPREAD 0x2800   /* the second and third of three: 2.5 pixels a frame across */
+#define SKY_SHOTS_SHOWN_Y 0xc0000 /* shown above line 0xc0 */
+#define SKY_SHOTS_FAR_NORTH (-0x14000)
+#define SKY_SHOTS_FAR_SOUTH 0xf000
+#define SKY_SHOTS_FAR 0x80000000u /* SkyObjectBody.shot_flags: fired far from the camera */
+
+extern SkyObject data_021f9a3c[SKY_SHOTS_PLAYERS * 3]; /* the shots' entries, 33 to 44 */
+extern u8 data_021f8b48[];                             /* the sky's objects (SkyObjects) */
+extern const Vec3 data_021c67d0;                       /* the point the camera looks at */
+extern const fx32 data_020ca0e8;                       /* an acre's depth in world units */
+extern int func_020952ec(void);                        /* this system's player */
+extern fx32 FX_MulFunc(fx32 a, fx32 b);
+extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
+
+/* func_020beb00: where what was hit is on the screen, its scale, and the side it fell. */
+void SkyShots_SetHitPoint(SkyShotsHit *hit, u32 x, u32 y, u32 scale, u8 side)
+{
+    hit->x = (fx32) x;
+    hit->y = (fx32) y;
+    hit->scale = (fx32) scale;
+    hit->side = side;
+}
+CLEAN_AS(func_020beb00, SkyShots_SetHitPoint)
+
+/* func_020beb14: state 8 for 20 frames. */
+void SkyShots_StartFall8(SkyShotsHit *hit)
+{
+    hit->state = SKY_SHOTS_HIT_FALL_8;
+    hit->timer = SKY_SHOTS_FALL8_FRAMES;
+}
+CLEAN_AS(func_020beb14, SkyShots_StartFall8)
+
+/* func_020beb20: state 7: the shooter's actor asked to watch (state 0x65), and a hit counted. */
+void SkyShots_StartLook7(SkyShotsHit *hit)
+{
+    hit->state = SKY_SHOTS_HIT_LOOK_7;
+    FieldActor_PlayerEndState(SKY_SHOTS_END_WATCH, hit->player);
+    SkyShots_CountHit();
+}
+CLEAN_AS(func_020beb20, SkyShots_StartLook7)
+
+/* func_020beb3c: state 5 for 30 frames. */
+void SkyShots_StartFall5(SkyShotsHit *hit)
+{
+    hit->state = SKY_SHOTS_HIT_FALL_5;
+    hit->timer = SKY_SHOTS_FALL5_FRAMES;
+}
+CLEAN_AS(func_020beb3c, SkyShots_StartFall5)
+
+/* func_020beb48: state 4: the shooter's actor asked to watch, and a hit counted. */
+void SkyShots_StartLook4(SkyShotsHit *hit)
+{
+    hit->state = SKY_SHOTS_HIT_LOOK_4;
+    FieldActor_PlayerEndState(SKY_SHOTS_END_WATCH, hit->player);
+    SkyShots_CountHit();
+}
+CLEAN_AS(func_020beb48, SkyShots_StartLook4)
+
+/* func_020beb64: state 3 for 2 frames, not done, no sound asked for. */
+void SkyShots_StartDrop3(SkyShotsHit *hit)
+{
+    hit->state = SKY_SHOTS_HIT_DROP_3;
+    hit->timer = SKY_SHOTS_DROP3_FRAMES;
+    hit->done = 0;
+    hit->sound_7f9 = 0;
+    hit->sound_7fa = 0;
+}
+CLEAN_AS(func_020beb64, SkyShots_StartDrop3)
+
+/* func_020beb78: state 2 with its variant: the shooter's actor asked to watch, and a hit
+ * counted. */
+void SkyShots_StartLook2(SkyShotsHit *hit, int variant)
+{
+    hit->variant = (u8) variant;
+    hit->state = SKY_SHOTS_HIT_LOOK_2;
+    FieldActor_PlayerEndState(SKY_SHOTS_END_WATCH, hit->player);
+    SkyShots_CountHit();
+}
+CLEAN_AS(func_020beb78, SkyShots_StartLook2)
+
+/* func_020beb98: `player`'s state ended at once (the hit is not touched). */
+void SkyShots_EndPlayerState(SkyShotsHit *hit, int player)
+{
+    (void) hit;
+    FieldActor_PlayerEndState(SKY_SHOTS_END_NOW, player);
+}
+CLEAN_AS(func_020beb98, SkyShots_EndPlayerState)
+
+/* func_020beba4: for this system's player, the hit waiting 43 frames for its shot to hit. */
+void SkyShots_StartWaiting(SkyShotsHit *hit, int player)
+{
+    if (player == func_020952ec()) {
+        hit->state = SKY_SHOTS_HIT_WAITING;
+        hit->player = player;
+        hit->timer = SKY_SHOTS_WAIT_FRAMES;
+    }
+}
+CLEAN_AS(func_020beba4, SkyShots_StartWaiting)
+
+/* func_020bebc8: the hit's constructor: no hit. */
+SkyShotsHit *SkyShots_ConstructHit(SkyShotsHit *hit)
+{
+    SkyShots_ResetHit(hit);
+    return hit;
+}
+CLEAN_AS(func_020bebc8, SkyShots_ConstructHit)
+
+/* func_020bebd8: no request. */
+void SkyShots_ClearRequest(SkyShotRequest *request)
+{
+    request->player = SKY_SHOTS_NO_PLAYER;
+    request->from.x = 0;
+    request->from.y = 0;
+    request->from.z = 0;
+    request->triple = 0;
+    request->pending = 0;
+}
+CLEAN_AS(func_020bebd8, SkyShots_ClearRequest)
+
+/* func_020bebec: a request of `player` from `from`, pending. */
+void SkyShots_SetRequest(SkyShotRequest *request, int player, const Vec3 *from, u8 triple)
+{
+    request->player = player;
+    request->from.x = from->x;
+    request->from.y = from->y;
+    request->from.z = from->z;
+    request->triple = triple;
+    request->pending = 1;
+}
+CLEAN_AS(func_020bebec, SkyShots_SetRequest)
+
+/* func_020bec04: a request's constructor (the requests', by __cxa_vec_ctor): no request. */
+SkyShotRequest *SkyShots_ConstructRequest(SkyShotRequest *request)
+{
+    SkyShots_ClearRequest(request);
+    return request;
+}
+CLEAN_AS(func_020bec04, SkyShots_ConstructRequest)
+
+/* func_020bf308: whether a running shot that can hit is in the box of `width` by `height`
+ * (scaled by the object's scale) centred `offset_y` (scaled) below the object; each such shot
+ * is marked hit. A shot reaches 1.0 around its point, and below it by its speed. */
+int SkyShots_HitsBox(SkyObject *object, fx32 width, fx32 height, fx32 offset_y)
+{
+    fx32 half_width = FX_MulFunc(width, object->scale_x) / 2;
+    fx32 half_height = FX_MulFunc(height, object->scale_y) / 2;
+    fx32 centre_y = object->position.y + FX_MulFunc(offset_y, object->scale_y);
+    fx32 left = object->position.x - half_width;
+    fx32 right = object->position.x + half_width;
+    fx32 top = centre_y - half_height;
+    fx32 bottom = centre_y + half_height;
+    int hit = 0;
+    for (int i = 0; i < SKY_SHOTS_PLAYERS * 3; i++) {
+        SkyObjectBody *shot = SkyObject_Body(&data_021f9a3c[i]);
+        if (shot->state != SKY_OBJECT_RUNNING || shot->can_hit == 0) {
+            continue;
+        }
+        fx32 speed = shot->velocity.y < 0 ? -shot->velocity.y : shot->velocity.y;
+        fx32 shot_left = shot->position.x - SKY_SHOTS_REACH;
+        fx32 shot_top = shot->position.y - SKY_SHOTS_REACH;
+        fx32 shot_bottom = shot->position.y + SKY_SHOTS_REACH + speed;
+        fx32 shot_right = shot->position.x + SKY_SHOTS_REACH;
+        if (left <= shot_right && right >= shot_left && top <= shot_bottom && bottom >= shot_top) {
+            hit = 1;
+            shot->hit = 1;
+        }
+    }
+    return hit;
+}
+CLEAN_AS(func_020bf308, SkyShots_HitsBox)
+
+/* func_020bfb18: a shot's object taken down. */
+void SkyShots_ObjectTakeDown(SkyObject *object)
+{
+    SkyObjectKinds_Remove(object);
+}
+CLEAN_AS(func_020bfb18, SkyShots_ObjectTakeDown)
+
+/* func_020bfb20: a frame of a shot's object: after its delay it moves (the second and third of
+ * three start spreading two frames after that), done once out of view or once it hit; while
+ * hidden it is shown once above line 0xc0, unless it was fired far from the camera. */
+void SkyShots_ObjectRun(SkyObject *object)
+{
+    SkyObjectBody *shot = SkyObject_Body(object);
+    u32 flags = shot->shot_flags;
+    shot->shot_timer--;
+    if (shot->shot_timer < 0) {
+        if (shot->shot_timer == -2) {
+            u32 which = (flags >> 4) & 0xf;
+            if (which == SKY_SHOTS_SECOND >> 4) {
+                shot->velocity.x = SKY_SHOTS_SPREAD;
+            } else if (which == SKY_SHOTS_THIRD >> 4) {
+                shot->velocity.x = -SKY_SHOTS_SPREAD;
+            }
+        }
+        VEC_Add(&shot->position, &shot->velocity, &shot->position);
+        if (SkyObject_OutOfView(&shot->position) || shot->hit != 0) {
+            shot->state = SKY_OBJECT_DONE;
+        }
+    }
+    if (shot->hidden != 0 && (flags & SKY_SHOTS_FAR) == 0 && shot->position.y < SKY_SHOTS_SHOWN_Y) {
+        shot->hidden = 0;
+    }
+}
+CLEAN_AS(func_020bfb20, SkyShots_ObjectRun)
+
+/* func_020bfbec: a shot's object set up from its player's request (`param`: the player, with
+ * 0x10 or 0x20 for the second and third of three): below the screen under the player's place,
+ * rising after 24 frames; it can hit when it is this system's player's, fired in the town's
+ * two northern rows of acres. Hidden.
+ * QUIRK: the game hides it when it was fired far from the camera or starts at or below line
+ * 0xc0, which it always does. */
+void SkyShots_ObjectSetUp(SkyObject *object, int param)
+{
+    SkyObjectBody *shot = SkyObject_Body(object);
+    const SkyShotRequest *request = SkyShots_Request((SkyObjects *) (void *) data_021f8b48, param & 0xf);
+    shot->animation = SKY_SHOTS_ANIMATION;
+    shot->priority = SKY_SHOTS_PRIORITY;
+    shot->shot_timer = SKY_SHOTS_DELAY;
+    int player = request->player;
+    shot->shot_player = player;
+    fx32 x;
+    func_020c14bc(&x, (const Position *) (const void *) &request->from);
+    shot->position.x = x;
+    shot->position.y = SKY_SHOTS_START_Y;
+    shot->position.z = 0;
+    shot->velocity.x = 0;
+    shot->velocity.y = SKY_SHOTS_SPEED;
+    shot->velocity.z = 0;
+    fx32 north_rows = data_020ca0e8 * 2;
+    if (player == func_020952ec() && request->from.z < north_rows) {
+        shot->can_hit = 1;
+    }
+    fx32 from_camera = request->from.z - data_021c67d0.z;
+    u32 flags = (u32) param;
+    if (from_camera < SKY_SHOTS_FAR_NORTH || from_camera > SKY_SHOTS_FAR_SOUTH) {
+        flags |= SKY_SHOTS_FAR;
+    }
+    shot->hidden = 1;
+    shot->shot_flags = flags;
+}
+CLEAN_AS(func_020bfbec, SkyShots_ObjectSetUp)
+
+#include "camera_view.h"
+#include "globe.h"
+
+#define SKY_SHOTS_SCREEN_DEPTH 0x60000
+
+extern Mtx43 data_021fbe48; /* a matrix kept for those who use it next */
+extern CameraControl *data_021c67a4;
+extern void MTX_MultVec43(const Vec3 *vec, const Mtx43 *mtx, Vec3 *dst);
+
+/* func_020c14bc: a world point's x on the screen: bent onto the drawn world, taken into the
+ * camera's view (the view matrix kept in data_021fbe48), scaled by the projection's 6.0 over
+ * its depth, from the screen's middle. */
+void SkyShots_ScreenX(fx32 *x, const Vec3 *point)
+{
+    data_021fbe48 = *CameraControl_ViewMatrix();
+    Vec3 in = *point;
+    Vec3 bent;
+    Globe_Bend(&bent, &in);
+    Vec3 view;
+    MTX_MultVec43(&bent, &data_021fbe48, &view);
+    fx32 projection = (fx32) CameraControl_Projection(data_021c67a4);
+    fx32 scale = -FX_Div(SKY_SHOTS_SCREEN_DEPTH, projection);
+    scale = FX_Div(scale, view.z);
+    Vec_Scale(&view, scale);
+    *x = view.x + SKY_SHOTS_SCREEN_MIDDLE;
+}
+CLEAN_AS(func_020c14bc, SkyShots_ScreenX)

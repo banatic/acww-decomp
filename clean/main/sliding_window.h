@@ -91,4 +91,31 @@ void *SlidingWindow_RequestOpen(SlidingWindow *window);
 void SlidingWindow_RefreshText(SlidingWindow *window, int fit);
 void SlidingWindow_SetKeepOnScreen(SlidingWindow *window, u8 keep);
 
+/* A line's text keeps up to SLIDING_WINDOW_TEXT_CAPACITY characters from byte 4 on. */
+#define SLIDING_WINDOW_TEXT_CAPACITY 42
+
+struct TextObject;
+
+void SlidingWindow_CenterText(SlidingWindow *window);
+void SlidingWindow_SetText(SlidingWindow *window, struct TextObject *text);
+void SlidingWindow_SetPlace(SlidingWindow *window, int x, int y);
+void SlidingWindow_HideExtra(SlidingWindow *window);
+void SlidingWindow_ShowExtra(SlidingWindow *window);
+void SlidingWindow_ClearSlideFlip(SlidingWindow *window);
+void SlidingWindow_SetSlideFlip(SlidingWindow *window);
+void SlidingWindow_SetInstant(SlidingWindow *window);
+void SlidingWindow_ClearObjWindow(SlidingWindow *window);
+void SlidingWindow_SetObjWindow(SlidingWindow *window);
+void SlidingWindow_Update(SlidingWindow *window);
+void SlidingWindow_Draw(SlidingWindow *window);
+SlidingWindow *SlidingWindow_DestructBase(SlidingWindow *window);
+void *SlidingWindow_Delete(SlidingWindow *window);
+void *SlidingWindow_Destruct(SlidingWindow *window);
+SlidingWindow *SlidingWindow_Construct(SlidingWindow *window, int on_main);
+int SlidingWindowText_Buffer(int line);
+int SlidingWindowText_Capacity(void);
+void *SlidingWindowText_Delete(SlidingWindowText *line);
+void SlidingWindowText_Destruct(SlidingWindowText *line);
+void *SlidingWindowText_Construct(SlidingWindowText *line);
+
 #endif

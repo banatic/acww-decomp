@@ -1,8 +1,12 @@
 /* main's sliding window (sliding_window.h). */
 #include "sliding_window.h"
 
+#include "autoload_2/heap.h" /* Heap_OperatorDeleteB */
 #include "cell_anim.h"
 #include "clean.h"
+#include "oam_buffer.h"           /* OamBuffer_DrawCell */
+#include "ov004/member_pointer.h" /* MemberPointer */
+#include "screen_sprite.h"
 #include "text_string.h" /* TextString_ClearBytes */
 
 static_assert(offsetof(SlidingWindow, state) == 0x34 && offsetof(SlidingWindow, priority) == 0x44, "SlidingWindow");
@@ -404,3 +408,268 @@ void SlidingWindow_SetKeepOnScreen(SlidingWindow *window, u8 keep)
     window->keep_on_screen = keep;
 }
 CLEAN_AS(func_0208aa38, SlidingWindow_SetKeepOnScreen)
+
+/* ---- Setting it up, its update and drawing, its construction and destruction. */
+
+static_assert(sizeof(SlidingWindowText) == 0x30, "SlidingWindowText");
+
+#define WINDOW_OBJ_MODE_OWN (-1) /* the cells' own OBJ mode */
+#define WINDOW_OBJ_MODE_WINDOW 2 /* OBJ window */
+#define WINDOW_SCALE_ONE 0x1000
+
+extern const u32 data_020e20ac[];      /* the window's vtable */
+extern const TextVtable data_020e2094; /* a line's vtable */
+extern const TextVtable data_020da6dc; /* its base class's */
+
+/* The member function table of SlidingWindow_Update (a function-local static of the game): its
+ * guard, the table, and the constants it is filled from. */
+extern u32 data_021d3128;
+extern MemberPointer data_021d312c[4];
+extern const MemberPointer data_020e2074, data_020e2084, data_020e206c, data_020e207c;
+
+/* func_0208aa40 */
+void SlidingWindow_CenterText(SlidingWindow *window)
+{
+    window->center_text = 1;
+}
+CLEAN_AS(func_0208aa40, SlidingWindow_CenterText)
+
+/* func_0208aa48: one line, a copy of `text`. */
+void SlidingWindow_SetText(SlidingWindow *window, struct TextObject *text)
+{
+    TextString_CopyBytes((TextObject *) &window->lines[0], text);
+    window->line_count = 1;
+}
+CLEAN_AS(func_0208aa48, SlidingWindow_SetText)
+
+/* func_0208aa60 */
+void SlidingWindow_SetPlace(SlidingWindow *window, int x, int y)
+{
+    window->x = x;
+    window->y = y;
+}
+CLEAN_AS(func_0208aa60, SlidingWindow_SetPlace)
+
+/* func_0208aa68 */
+void SlidingWindow_HideExtra(SlidingWindow *window)
+{
+    window->show_extra = 0;
+}
+CLEAN_AS(func_0208aa68, SlidingWindow_HideExtra)
+
+/* func_0208aa70 */
+void SlidingWindow_ShowExtra(SlidingWindow *window)
+{
+    window->show_extra = 1;
+}
+CLEAN_AS(func_0208aa70, SlidingWindow_ShowExtra)
+
+/* func_0208aa78 */
+void SlidingWindow_ClearSlideFlip(SlidingWindow *window)
+{
+    window->slide_y_flipped = 0;
+}
+CLEAN_AS(func_0208aa78, SlidingWindow_ClearSlideFlip)
+
+/* func_0208aa80 */
+void SlidingWindow_SetSlideFlip(SlidingWindow *window)
+{
+    window->slide_y_flipped = 1;
+}
+CLEAN_AS(func_0208aa80, SlidingWindow_SetSlideFlip)
+
+/* func_0208aa88 */
+void SlidingWindow_SetInstant(SlidingWindow *window)
+{
+    window->instant = 1;
+}
+CLEAN_AS(func_0208aa88, SlidingWindow_SetInstant)
+
+/* func_0208aa90 */
+void SlidingWindow_ClearObjWindow(SlidingWindow *window)
+{
+    window->unk_58 = 0;
+}
+CLEAN_AS(func_0208aa90, SlidingWindow_ClearObjWindow)
+
+/* func_0208aa98 */
+void SlidingWindow_SetObjWindow(SlidingWindow *window)
+{
+    window->unk_58 = 1;
+}
+CLEAN_AS(func_0208aa98, SlidingWindow_SetObjWindow)
+
+/* func_0208aaa0 (vtable slot 3): a frame of the state's step (through the game's table, filled
+ * on the first call); then, unless closed, both animations advanced and the window kept on the
+ * screen.
+ * REQUIRES: the state is 0-3 (the ROM indexes its table unchecked). */
+void SlidingWindow_Update(SlidingWindow *window)
+{
+    static const MemberPointer *const constants[4] = {
+        &data_020e2074, /* SlidingWindow_StepClosed */
+        &data_020e2084, /* SlidingWindow_StepOpening */
+        &data_020e206c, /* SlidingWindow_StepOpen */
+        &data_020e207c, /* SlidingWindow_StepClosing */
+    };
+    MemberTable_InitOnce(&data_021d3128, data_021d312c, constants, 4);
+    MemberPointer_CallVoid(&data_021d312c[window->state], window);
+    if (window->state != SLIDING_WINDOW_CLOSED) {
+        CellAnim_Advance(&window->body);
+        CellAnim_Advance(&window->extra);
+        SlidingWindow_KeepOnScreen(window);
+    }
+}
+CLEAN_AS(func_0208aaa0, SlidingWindow_Update)
+
+/* The body's cell and, with `show_extra`, the extra one's, each at its frame's offset from the
+ * window's place, in OBJ mode `obj_mode`. */
+static void draw_cells(SlidingWindow *window, int screen, int obj_mode, const OamEntry *body_cell, const OamEntry *extra_cell,
+                       int body_x, int body_y, int extra_x, int extra_y)
+{
+    OamBuffer_DrawCell(screen, body_cell, body_x, body_y, -1, window->priority, WINDOW_SCALE_ONE, WINDOW_SCALE_ONE, 0,
+                       obj_mode, 0, 0);
+    if (window->show_extra != 0) {
+        OamBuffer_DrawCell(screen, extra_cell, extra_x, extra_y, -1, window->priority, WINDOW_SCALE_ONE, WINDOW_SCALE_ONE, 0,
+                           obj_mode, 0, 0);
+    }
+}
+
+/* func_0208ab3c (vtable slot 2): unless closed, the cells drawn on the window's screen at its
+ * drawn place, and again as OBJ windows when `unk_58` is set. */
+void SlidingWindow_Draw(SlidingWindow *window)
+{
+    if (window->state == SLIDING_WINDOW_CLOSED) {
+        return;
+    }
+    const OamEntry *body_cell = CellAnim_Cell(&window->body);
+    const OamEntry *extra_cell = CellAnim_Cell(&window->extra);
+    int x = SlidingWindow_DrawX(window);
+    int y = SlidingWindow_DrawY(window);
+    int body_x = x + CellAnim_FrameX(&window->body, -1);
+    int body_y = y + CellAnim_FrameY(&window->body, -1);
+    int extra_x = x + CellAnim_FrameX(&window->extra, -1);
+    int extra_y = y + CellAnim_FrameY(&window->extra, -1);
+    int screen = window->on_main != 0 ? OAM_BUFFER_SCREEN_MAIN : OAM_BUFFER_SCREEN_SUB;
+
+    draw_cells(window, screen, WINDOW_OBJ_MODE_OWN, body_cell, extra_cell, body_x, body_y, extra_x, extra_y);
+    if (window->unk_58 != 0) {
+        draw_cells(window, screen, WINDOW_OBJ_MODE_WINDOW, body_cell, extra_cell, body_x, body_y, extra_x, extra_y);
+    }
+}
+CLEAN_AS(func_0208ab3c, SlidingWindow_Draw)
+
+/* The window's own parts destructed: the text boxes freed, then the lines, the animations and
+ * the base class. */
+static void destruct_parts(SlidingWindow *window)
+{
+    window->vtable = data_020e20ac;
+    SlidingWindow_FreeBoxes(window);
+    SlidingWindowText_Destruct(&window->lines[1]);
+    SlidingWindowText_Destruct(&window->lines[0]);
+    CellAnim_Destruct(&window->extra);
+    CellAnim_Destruct(&window->body);
+    ScreenSprite_DestructBase((ScreenSprite *) window);
+}
+
+/* func_0208ad24: the destructor, as a derived class's destructor calls it. */
+SlidingWindow *SlidingWindow_DestructBase(SlidingWindow *window)
+{
+    destruct_parts(window);
+    return window;
+}
+CLEAN_AS(func_0208ad24, SlidingWindow_DestructBase)
+
+/* func_0208ad64 (vtable slot 1): destructed and freed. */
+void *SlidingWindow_Delete(SlidingWindow *window)
+{
+    destruct_parts(window);
+    Heap_OperatorDeleteB(window);
+    return window;
+}
+CLEAN_AS(func_0208ad64, SlidingWindow_Delete)
+
+/* func_0208ada8 (vtable slot 0): the destructor. */
+void *SlidingWindow_Destruct(SlidingWindow *window)
+{
+    destruct_parts(window);
+    return window;
+}
+CLEAN_AS(func_0208ada8, SlidingWindow_Destruct)
+
+/* func_0208ade8: the constructor: closed, at the base class's place, on the main screen when
+ * `on_main` is set, with no lines and nothing asked. */
+SlidingWindow *SlidingWindow_Construct(SlidingWindow *window, int on_main)
+{
+    ScreenSprite_Construct((ScreenSprite *) window);
+    window->vtable = data_020e20ac;
+    CellAnim_Construct(&window->body);
+    CellAnim_Construct(&window->extra);
+    window->state = SLIDING_WINDOW_CLOSED;
+    window->timer = 0;
+    window->x = 0;
+    window->y = 0;
+    window->priority = -1;
+    window->slide_x = 0;
+    window->slide_y = 0;
+    window->screen_shift = 0;
+    window->open_request = 0;
+    window->close_request = 0;
+    window->on_main = (u8) on_main;
+    window->keep_on_screen = 0;
+    window->unk_58 = 0;
+    window->instant = 0;
+    window->slide_y_flipped = 0;
+    window->show_extra = 0;
+    window->center_text = 0;
+    SlidingWindowText_Construct(&window->lines[0]);
+    SlidingWindowText_Construct(&window->lines[1]);
+    window->boxes[0] = NULL;
+    window->boxes[1] = NULL;
+    window->line_count = 0;
+    SlidingWindow_LoadAnims(window);
+    SlidingWindow_SetClosed(window);
+    return window;
+}
+CLEAN_AS(func_0208ade8, SlidingWindow_Construct)
+
+/* func_0208ae90 (a line's vtable slot 3): the address of its characters. */
+int SlidingWindowText_Buffer(int line)
+{
+    return line + 4;
+}
+CLEAN_AS(func_0208ae90, SlidingWindowText_Buffer)
+
+/* func_0208ae94 (slot 2) */
+int SlidingWindowText_Capacity(void)
+{
+    return SLIDING_WINDOW_TEXT_CAPACITY;
+}
+CLEAN_AS(func_0208ae94, SlidingWindowText_Capacity)
+
+/* func_0208ae98 (slot 1): destructed (its class's vtable, then its base class's) and freed. */
+void *SlidingWindowText_Delete(SlidingWindowText *line)
+{
+    line->vtable = &data_020e2094;
+    line->vtable = &data_020da6dc;
+    Heap_OperatorDeleteB(line);
+    return line;
+}
+CLEAN_AS(func_0208ae98, SlidingWindowText_Delete)
+
+/* func_0208aeb8 (slot 0): destructed. */
+void SlidingWindowText_Destruct(SlidingWindowText *line)
+{
+    line->vtable = &data_020e2094;
+    line->vtable = &data_020da6dc;
+}
+CLEAN_AS(func_0208aeb8, SlidingWindowText_Destruct)
+
+/* func_0208aecc: constructed (its base class's vtable, then its own) and empty. */
+void *SlidingWindowText_Construct(SlidingWindowText *line)
+{
+    line->vtable = &data_020da6dc;
+    line->vtable = &data_020e2094;
+    TextString_ClearBytes((TextObject *) line);
+    return line;
+}
+CLEAN_AS(func_0208aecc, SlidingWindowText_Construct)

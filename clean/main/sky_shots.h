@@ -87,4 +87,35 @@ int SkyShots_HitCountFull(void);
 void SkyShots_CountHit(void);
 void SkyShots_RunHit(SkyShotsHit *hit);
 
+/* ---- The hit's states set, the requests, and the shots' objects.
+ *
+ * A shot's object (kind 11, set up by SkyShots_ObjectSetUp) starts below the screen under its
+ * player's place, hidden, and after 24 frames rises 12 pixels a frame; the second and third of
+ * a triple shot then spread right and left. It is shown once it rises above line 0xc0 unless
+ * it was fired far from the point the camera looks at (more than 20.0 north of it or 15.0
+ * south), and it is done once out of view or once it hits. Only a shot of this system's player
+ * fired in the town's two northern rows of acres can hit: SkyShots_HitsBox, called by the kinds
+ * a shot can hit, finds the running ones in a box around the object and marks them hit. */
+void SkyShots_SetHitPoint(SkyShotsHit *hit, u32 x, u32 y, u32 scale, u8 side);
+void SkyShots_StartFall8(SkyShotsHit *hit);
+void SkyShots_StartLook7(SkyShotsHit *hit);
+void SkyShots_StartFall5(SkyShotsHit *hit);
+void SkyShots_StartLook4(SkyShotsHit *hit);
+void SkyShots_StartDrop3(SkyShotsHit *hit);
+void SkyShots_StartLook2(SkyShotsHit *hit, int variant);
+void SkyShots_EndPlayerState(SkyShotsHit *hit, int player);
+void SkyShots_StartWaiting(SkyShotsHit *hit, int player);
+SkyShotsHit *SkyShots_ConstructHit(SkyShotsHit *hit);
+void SkyShots_ClearRequest(SkyShotRequest *request);
+void SkyShots_SetRequest(SkyShotRequest *request, int player, const Vec3 *from, u8 triple);
+SkyShotRequest *SkyShots_ConstructRequest(SkyShotRequest *request);
+int SkyShots_HitsBox(SkyObject *object, fx32 width, fx32 height, fx32 offset_y);
+void SkyShots_ObjectTakeDown(SkyObject *object);
+void SkyShots_ObjectRun(SkyObject *object);
+void SkyShots_ObjectSetUp(SkyObject *object, int param);
+
+/* A world point's x on the screen as the camera shows it (SkyShots_Launch's shots start
+ * there). */
+void SkyShots_ScreenX(fx32 *x, const Vec3 *point);
+
 #endif

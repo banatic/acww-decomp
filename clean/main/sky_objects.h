@@ -182,4 +182,7 @@ void SkyObjects_LoadSlots(SkyObjects *objects);
 SkyObjects *SkyObjects_Construct(SkyObjects *objects);
 SkyObject *SkyObject_Destruct(SkyObject *object);
 
+/* The objects' destructor, registered with the global object (__sinit_020c6f74). */
+SkyObjects *SkyObjects_Destruct(SkyObjects *objects);
+
 #endif

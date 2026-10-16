@@ -210,3 +210,22 @@ int SkyProcess_Create(SkyProcess *process)
     return added;
 }
 CLEAN_AS(func_020baa28, SkyProcess_Create)
+
+extern const u32 data_0213efe8[]; /* the sound's base class's vtable */
+extern const u32 data_0213f004[]; /* the sound's */
+
+/* func_020c1538: the sky's process made: its base class's vtables set before its own, as the
+ * constructors run. */
+SkyProcess *SkyProcess_New(void)
+{
+    SkyProcess *process = Heap_AllocAuxZeroed((int) sizeof(SkyProcess));
+    if (process != NULL) {
+        Process_Construct(&process->base);
+        process->base.vtable = data_020da13c;
+        process->base.vtable = data_020e69a4;
+        process->sound.vtable = data_0213efe8;
+        process->sound.vtable = data_0213f004;
+    }
+    return process;
+}
+CLEAN_AS(func_020c1538, SkyProcess_New)
