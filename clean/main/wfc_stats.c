@@ -40,3 +40,81 @@ u8 WfcStats_Byte237(const WfcStats *stats)
     return stats->byte_237;
 }
 CLEAN_AS(func_020881f0, WfcStats_Byte237)
+
+/* The record's design, blanked when the record is reset. */
+#include "design.h"
+#include "design_info.h"
+
+static_assert(sizeof(Design) == offsetof(WfcStats, checksum), "stats design");
+
+#define WFC_STATS_BLANK_COLOUR 0xf
+#define WFC_STATS_BLANK_PALETTE 0
+
+/* func_020881fc */
+void WfcStats_SetByte237(WfcStats *stats, u8 value)
+{
+    stats->byte_237 = value;
+}
+CLEAN_AS(func_020881fc, WfcStats_SetByte237)
+
+/* func_02088208 */
+u8 WfcStats_Status(const WfcStats *stats)
+{
+    return stats->status;
+}
+CLEAN_AS(func_02088208, WfcStats_Status)
+
+/* func_02088214 */
+void WfcStats_SetStatus(WfcStats *stats, u8 status)
+{
+    stats->status = status;
+}
+CLEAN_AS(func_02088214, WfcStats_SetStatus)
+
+/* func_02088220: the design the record starts with (the record itself). */
+Design *WfcStats_Design(WfcStats *stats)
+{
+    return (Design *) (void *) stats;
+}
+CLEAN_AS(func_02088220, WfcStats_Design)
+
+/* func_02088224: the design blanked: every pixel colour 15, then palette 0. The design is
+ * asked for once for each. */
+void WfcStats_ClearDesign(WfcStats *stats)
+{
+    Design_Fill((unsigned int *) (void *) WfcStats_Design(stats)->pixels, WFC_STATS_BLANK_COLOUR);
+    Design *design = WfcStats_Design(stats);
+    DesignInfo_SetPalette((DesignInfo *) (uintptr_t) Design_Info((unsigned int) (uintptr_t) design), WFC_STATS_BLANK_PALETTE);
+}
+CLEAN_AS(func_02088224, WfcStats_ClearDesign)
+
+/* func_02088248: the record set up: reset. */
+void WfcStats_Init(WfcStats *stats)
+{
+    WfcStats_Reset(stats);
+}
+CLEAN_AS(func_02088248, WfcStats_Init)
+
+/* func_02088250: back to WFC_STATS_STATUS_NONE with a blank design. */
+void WfcStats_Reset(WfcStats *stats)
+{
+    stats->status = WFC_STATS_STATUS_NONE;
+    WfcStats_ClearDesign(stats);
+}
+CLEAN_AS(func_02088250, WfcStats_Reset)
+
+/* func_02088264: destructs the record's design. */
+WfcStats *WfcStats_Destruct(WfcStats *stats)
+{
+    Design_Destruct((Design *) (void *) stats);
+    return stats;
+}
+CLEAN_AS(func_02088264, WfcStats_Destruct)
+
+/* func_02088274: constructs the record's design. */
+WfcStats *WfcStats_Construct(WfcStats *stats)
+{
+    Design_Construct((char *) stats);
+    return stats;
+}
+CLEAN_AS(func_02088274, WfcStats_Construct)

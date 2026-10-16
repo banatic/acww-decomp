@@ -241,3 +241,184 @@ void PairedTown_TakeOwn(void *unused)
     func_020641b0(&player_text);
 }
 CLEAN_AS(func_020a0b94, PairedTown_TakeOwn)
+
+/* The paired town's own parts. */
+#include "autoload_2/approach.h"
+
+/* The days in which the pairing counts as in its last week (of PAIRED_TOWN_DAYS). */
+#define PAIRED_TOWN_WEEK_FIRST 1
+#define PAIRED_TOWN_WEEK_LAST 7
+/* The player record's flag cleared once the pairing is outside its last week. */
+#define PAIRED_TOWN_PLAYER_FLAG 0x33
+
+extern u32 data_021dc7a8[]; /* the state block (state_block.h) */
+
+/* A town object's copy, reset, destructor and constructor (StateBlockTown). */
+extern void func_020642d0(void *town, const void *source);
+extern void func_020642e0(void *town);
+extern void func_020642f8(void *town);
+extern void func_020642fc(void *town);
+
+static u8 *paired_town_of_state_block(void)
+{
+    return (u8 *) data_021dc7a8 + PAIRED_TOWN_STATE_BLOCK_OFFSET;
+}
+
+/* func_02088284 */
+void PairedTown_ClearFlag5(u8 *pairing)
+{
+    pairing[PAIRED_TOWN_STATE] &= (u8) ~PAIRED_TOWN_FLAG_5;
+}
+CLEAN_AS(func_02088284, PairedTown_ClearFlag5)
+
+/* func_02088290 */
+void PairedTown_SetFlag5(u8 *pairing)
+{
+    pairing[PAIRED_TOWN_STATE] |= PAIRED_TOWN_FLAG_5;
+}
+CLEAN_AS(func_02088290, PairedTown_SetFlag5)
+
+/* func_0208829c */
+int PairedTown_Flag5(u8 *pairing)
+{
+    return (pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_FLAG_5) != 0;
+}
+CLEAN_AS(func_0208829c, PairedTown_Flag5)
+
+/* func_020882b0: the flag set from bit 0 of `flag`. */
+void PairedTown_SetFlag4(u8 *pairing, u32 flag)
+{
+    u8 state = pairing[PAIRED_TOWN_STATE] & (u8) ~PAIRED_TOWN_FLAG_4;
+    pairing[PAIRED_TOWN_STATE] = (u8) (state | ((flag & 1) << 4));
+}
+CLEAN_AS(func_020882b0, PairedTown_SetFlag4)
+
+/* func_020882c4 */
+int PairedTown_Flag4(u8 *pairing)
+{
+    return (pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_FLAG_4) != 0;
+}
+CLEAN_AS(func_020882c4, PairedTown_Flag4)
+
+/* func_020882cc: the days set to the low four bits of `days`. */
+void PairedTown_SetDays(u8 *pairing, u8 days)
+{
+    u8 state = pairing[PAIRED_TOWN_STATE] & (u8) ~PAIRED_TOWN_DAYS_MASK;
+    pairing[PAIRED_TOWN_STATE] = (u8) (state | (days & PAIRED_TOWN_DAYS_MASK));
+}
+CLEAN_AS(func_020882cc, PairedTown_SetDays)
+
+/* func_020882dc */
+int PairedTown_Days(u8 *pairing)
+{
+    return pairing[PAIRED_TOWN_STATE] & PAIRED_TOWN_DAYS_MASK;
+}
+CLEAN_AS(func_020882dc, PairedTown_Days)
+
+/* func_020882e4: the town copied in. */
+void PairedTown_SetTown(u8 *pairing, const void *town)
+{
+    func_020642d0(pairing, town);
+}
+CLEAN_AS(func_020882e4, PairedTown_SetTown)
+
+/* func_020882ec: the town (the object itself). */
+u8 *PairedTown_Town(u8 *pairing)
+{
+    return pairing;
+}
+CLEAN_AS(func_020882ec, PairedTown_Town)
+
+/* func_020882f0: no town, no days and both flags clear. */
+void PairedTown_Reset(u8 *pairing)
+{
+    func_020642e0(pairing);
+    pairing[PAIRED_TOWN_STATE] &= (u8) ~(PAIRED_TOWN_DAYS_MASK | PAIRED_TOWN_FLAG_4 | PAIRED_TOWN_FLAG_5);
+}
+CLEAN_AS(func_020882f0, PairedTown_Reset)
+
+/* func_02088318: the state block's pairing copied back into the current player's record;
+ * outside its last week the record's flag 0x33 is cleared. Nothing without a current player. */
+void PairedTown_RestoreCurrent(void)
+{
+    u8 *record = PlayerRecords_Current();
+    if (record == NULL) {
+        return;
+    }
+    u8 *pairing = paired_town_of_state_block();
+    MI_CpuCopy8(pairing, PlayerRecord_Field242C(record), PAIRED_TOWN_SIZE);
+    if (Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) == 0) {
+        PlayerRecord_ClearFlag(record, PAIRED_TOWN_PLAYER_FLAG);
+    }
+}
+CLEAN_AS(func_02088318, PairedTown_RestoreCurrent)
+
+/* func_02088368: the current player's pairing copied into the state block. */
+void PairedTown_SaveCurrent(void)
+{
+    u8 *record = PlayerRecords_Current();
+    if (record != NULL) {
+        MI_CpuCopy8(PlayerRecord_Field242C(record), paired_town_of_state_block(), PAIRED_TOWN_SIZE);
+    }
+}
+CLEAN_AS(func_02088368, PairedTown_SaveCurrent)
+
+/* func_02088394: whether the current player's pairing has the flag and 1-7 days left. */
+int PairedTown_CurrentFlaggedInLastWeek(void)
+{
+    u8 *record = PlayerRecords_Current();
+    if (record == NULL) {
+        return 0;
+    }
+    u8 *pairing = PlayerRecord_Field242C(record);
+    return PairedTown_Flag4(pairing) == 1 &&
+           Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) != 0;
+}
+CLEAN_AS(func_02088394, PairedTown_CurrentFlaggedInLastWeek)
+
+/* func_020883cc: whether the current player's pairing lacks the flag and has 1-7 days left. */
+int PairedTown_CurrentUnflaggedInLastWeek(void)
+{
+    u8 *record = PlayerRecords_Current();
+    if (record == NULL) {
+        return 0;
+    }
+    u8 *pairing = PlayerRecord_Field242C(record);
+    return PairedTown_Flag4(pairing) == 0 &&
+           Math_IsBetween(PairedTown_Days(pairing), PAIRED_TOWN_WEEK_FIRST, PAIRED_TOWN_WEEK_LAST) != 0;
+}
+CLEAN_AS(func_020883cc, PairedTown_CurrentUnflaggedInLastWeek)
+
+/* func_02088404: `days` days (1 or more) taken off the state block's pairing, which is reset
+ * when none are left; then it goes back into the current player's record. */
+void PairedTown_PassDays(int days)
+{
+    if (days < 1) {
+        return;
+    }
+    u8 *pairing = paired_town_of_state_block();
+    int left = PairedTown_Days(pairing) - days;
+    if (left <= 0) {
+        PairedTown_Reset(pairing);
+    } else {
+        PairedTown_SetDays(pairing, (u8) left);
+    }
+    PairedTown_RestoreCurrent();
+}
+CLEAN_AS(func_02088404, PairedTown_PassDays)
+
+/* func_02088450: destructs the town. */
+u8 *PairedTown_Destruct(u8 *pairing)
+{
+    func_020642f8(pairing);
+    return pairing;
+}
+CLEAN_AS(func_02088450, PairedTown_Destruct)
+
+/* func_02088460: constructs the town. */
+u8 *PairedTown_Construct(u8 *pairing)
+{
+    func_020642fc(pairing);
+    return pairing;
+}
+CLEAN_AS(func_02088460, PairedTown_Construct)

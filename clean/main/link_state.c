@@ -649,3 +649,188 @@ void LinkState_HostStep(LinkState *state)
     }
 }
 CLEAN_AS(func_020a5c38, LinkState_HostStep)
+
+/* ---- The link statuses, and the whole link state made, reset and ended */
+
+#include "link_scene.h"
+
+/* The parts' own helpers (link_scene.h): a place reset (no scene), a move reset (no slot, no
+ * scene), an arrived word cleared and a pending change cleared; and the parts' constructors
+ * and destructors handed to the C++ runtime (only their addresses are taken here; each
+ * constructor returns its object). */
+extern void func_020a772c(LinkStatePlace *place);
+extern void func_020a76f8(LinkStateMove *move);
+extern void func_020a76d0(u32 *arrived);
+extern void func_020a7768(LinkStatePlaceChange *change);
+extern void func_020a7758(void *place);
+extern void func_020a7754(void *place);
+extern void func_020a771c(void *move);
+extern void func_020a7718(void *move);
+extern void func_020a76e8(void *arrived);
+extern void func_020a76e4(void *arrived);
+extern void func_020a77cc(void *change);
+extern void func_020a77c8(void *change);
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+
+/* func_020a6104: the request of `slot` refused: with `direct`, or for the host's own slot, its
+ * status set to 6; else the status 6 sent to it (session message 1) and its status set to 7. */
+void LinkState_RefuseRequest(LinkState *state, int slot, int direct)
+{
+    if (direct) {
+        LinkState_SetStatus(state, slot, STATUS_DONE);
+    } else if (slot == HOST_SLOT) {
+        LinkState_SetStatus(state, HOST_SLOT, STATUS_DONE);
+    } else {
+        send_link_status(data_020ccf94, STATUS_DONE, slot);
+        LinkState_SetStatus(state, slot, STATUS_TOLD);
+    }
+}
+CLEAN_AS(func_020a6104, LinkState_RefuseRequest)
+
+/* func_020a6160: every slot's status 7. */
+void LinkState_ResetStatuses(LinkState *state)
+{
+    for (int slot = 0; slot < LINK_STATE_SLOTS; slot++) {
+        state->status[slot] = STATUS_TOLD;
+    }
+}
+CLEAN_AS(func_020a6160, LinkState_ResetStatuses)
+
+/* func_020a6170 */
+int LinkState_Status(LinkState *state, int slot)
+{
+    return state->status[slot];
+}
+CLEAN_AS(func_020a6170, LinkState_Status)
+
+/* func_020a617c */
+void LinkState_SetStatus(LinkState *state, int slot, int status)
+{
+    state->status[slot] = status;
+}
+CLEAN_AS(func_020a617c, LinkState_SetStatus)
+
+/* func_020a6998: every part reset: the slots' places, moves, arrivals and pending changes
+ * (from slot 3 down), then the request, the answers, the statuses and the moving's fields. */
+void LinkState_Reset(LinkState *state)
+{
+    for (int slot = LINK_STATE_SLOTS - 1; slot >= 0; slot--) {
+        func_020a772c(&state->places[slot]);
+        func_020a76f8(&state->moves[slot]);
+        func_020a76d0(&state->arrived[slot]);
+        func_020a7768(&state->changes[slot]);
+    }
+    LinkState_ResetHostPhase(state);
+    LinkState_ResetChosen(state);
+    LinkState_ResetKind(state);
+    LinkState_ResetAnswers(state);
+    LinkState_SetWaitFrames(state, 0);
+    LinkState_ResetStatuses(state);
+    LinkScene_SetSuccessor(state, LINK_STATE_SLOTS);
+    LinkScene_ResetAcked(state);
+    LinkScene_SetLeavingHolder(state, LINK_STATE_SLOTS);
+    LinkScene_SetPhase(state, LINK_SCENE_IDLE);
+    LinkScene_SetStateAsker(state, LINK_STATE_SLOTS);
+    LinkScene_SetStateSentTo(state, LINK_STATE_SLOTS);
+    LinkScene_SetNextHolder(state, LINK_STATE_SLOTS);
+    LinkScene_SetReleased(state, 0);
+    LinkScene_SetLeavingGuest(state, LINK_STATE_SLOTS);
+    LinkState_SetServedSlot(state, LINK_STATE_SLOTS);
+    LinkScene_SetEntersFirst(state, 0);
+    LinkState_SetHoldFrames(state, 0);
+    LinkState_SetDoneKind(state, LINK_STATE_KIND_NONE);
+    LinkState_SetByteC4(state, 0);
+}
+CLEAN_AS(func_020a6998, LinkState_Reset)
+
+/* func_020a6a74: the slot `slot` forgotten: its place, move, arrival, pending change, answer
+ * and ack reset, its status 7 (not for the host's slot), and every field naming it no longer
+ * does. */
+void LinkState_ForgetSlot(LinkState *state, int slot)
+{
+    func_020a772c(&state->places[slot]);
+    func_020a76f8(&state->moves[slot]);
+    func_020a76d0(&state->arrived[slot]);
+    func_020a7768(&state->changes[slot]);
+    LinkState_ResetAnswer(state, slot);
+    LinkScene_SetAcked(state, slot, 0);
+    if (slot != HOST_SLOT) {
+        LinkState_SetStatus(state, slot, STATUS_TOLD);
+    }
+    if (slot == LinkScene_Successor(state)) {
+        LinkScene_SetSuccessor(state, LINK_STATE_SLOTS);
+    }
+    if (slot == LinkScene_LeavingHolder(state)) {
+        LinkScene_SetLeavingHolder(state, LINK_STATE_SLOTS);
+    }
+    if ((u32) slot == LinkScene_LeavingGuest(state)) {
+        LinkScene_SetLeavingGuest(state, LINK_STATE_SLOTS);
+    }
+    if (slot == LinkScene_StateAsker(state)) {
+        LinkScene_SetStateAsker(state, LINK_STATE_SLOTS);
+    }
+    if (slot == LinkScene_StateSentTo(state)) {
+        LinkScene_SetStateSentTo(state, LINK_STATE_SLOTS);
+    }
+    if (slot == LinkScene_NextHolder(state)) {
+        LinkScene_SetNextHolder(state, LINK_STATE_SLOTS);
+    }
+}
+CLEAN_AS(func_020a6a74, LinkState_ForgetSlot)
+
+/* func_020a6b38: the destructor: the parts' arrays ended, last first. */
+LinkState *LinkState_Destruct(LinkState *state)
+{
+    __cxa_vec_cleanup(state->changes, LINK_STATE_SLOTS, sizeof(LinkStatePlaceChange), (void (*)(void *)) func_020a77c8);
+    __cxa_vec_cleanup(state->arrived, LINK_STATE_SLOTS, sizeof(u32), (void (*)(void *)) func_020a76e4);
+    __cxa_vec_cleanup(state->moves, LINK_STATE_SLOTS, sizeof(LinkStateMove), (void (*)(void *)) func_020a7718);
+    __cxa_vec_cleanup(state->places, LINK_STATE_SLOTS, sizeof(LinkStatePlace), (void (*)(void *)) func_020a7754);
+    return state;
+}
+CLEAN_AS(func_020a6b38, LinkState_Destruct)
+
+/* func_020a6b88: the constructor (data_021f4320's, at start-up): the parts' arrays made, then
+ * everything reset. */
+LinkState *LinkState_Construct(LinkState *state)
+{
+    __cxa_vec_ctor(state->places, LINK_STATE_SLOTS, sizeof(LinkStatePlace), (void (*)(void *)) func_020a7758,
+                   (void (*)(void *)) func_020a7754);
+    __cxa_vec_ctor(state->moves, LINK_STATE_SLOTS, sizeof(LinkStateMove), (void (*)(void *)) func_020a771c,
+                   (void (*)(void *)) func_020a7718);
+    __cxa_vec_ctor(state->arrived, LINK_STATE_SLOTS, sizeof(u32), (void (*)(void *)) func_020a76e8,
+                   (void (*)(void *)) func_020a76e4);
+    __cxa_vec_ctor(state->changes, LINK_STATE_SLOTS, sizeof(LinkStatePlaceChange), (void (*)(void *)) func_020a77cc,
+                   (void (*)(void *)) func_020a77c8);
+    LinkState_Reset(state);
+    return state;
+}
+CLEAN_AS(func_020a6b88, LinkState_Construct)
+
+/* func_020a6c6c: the slot `slot` forgotten by data_021f4320. */
+void LinkState_GlobalForgetSlot(int slot)
+{
+    LinkState_ForgetSlot(&data_021f4320, slot);
+}
+CLEAN_AS(func_020a6c6c, LinkState_GlobalForgetSlot)
+
+/* func_020a6c7c */
+void LinkState_GlobalReset(void)
+{
+    LinkState_Reset(&data_021f4320);
+}
+CLEAN_AS(func_020a6c7c, LinkState_GlobalReset)
+
+/* func_020a6cc4 */
+u8 LinkState_GlobalByteC4(void)
+{
+    return LinkState_ByteC4(&data_021f4320);
+}
+CLEAN_AS(func_020a6cc4, LinkState_GlobalByteC4)
+
+/* func_020a6cd4 */
+void LinkState_GlobalSetByteC4(int value)
+{
+    LinkState_SetByteC4(&data_021f4320, (u8) value);
+}
+CLEAN_AS(func_020a6cd4, LinkState_GlobalSetByteC4)

@@ -253,3 +253,128 @@ void SceneObjectBase_SetId(SceneObjectBase *object, u32 value)
     object->entry.id = value | ((u32) object->process.class_id << 16);
 }
 CLEAN_AS(func_0203efb0, SceneObjectBase_SetId)
+
+/* ---- The object's life ---- */
+
+/* The vtables of this class, of the actors (actor.h) and of the root of the scene objects. */
+extern const u32 data_020dab34[];
+extern const u32 data_020d7244[];
+extern const u32 data_020da13c[];
+/* Every actor, linked through the actor's link at 0x50 (actor.h). */
+extern List data_0213ff78;
+
+/* Appends `node` to `list`; 1. */
+extern int func_02065c1c(List *list, ListNode *node);
+/* Empties `list` (its first and last node set to NULL). */
+extern void func_02065c68(List *list);
+
+/* func_0203efbc (the events' ids): the object's id. */
+u32 SceneObjectBase_Id(SceneObjectBase *object)
+{
+    return object->entry.id;
+}
+CLEAN_AS(func_0203efbc, SceneObjectBase_Id)
+
+/* func_0203efc4 (vtable slot 0x1c, asked before the object runs): the actors' answer as 0 or
+ * 1. */
+int SceneObjectBase_CanRun(SceneObjectBase *object)
+{
+    return Actor_CanRun((Actor *) object) != 0;
+}
+CLEAN_AS(func_0203efc4, SceneObjectBase_CanRun)
+
+/* func_0203efdc (vtable slot 0x10, whether the object can be deleted): when the actors' answer
+ * is yes, the object leaves the registry. */
+int SceneObjectBase_CanDelete(SceneObjectBase *object)
+{
+    if (Actor_Vfunc10((Actor *) object) == 0) {
+        return 0;
+    }
+    List_Remove(&data_021c72cc, &object->entry.link);
+    return 1;
+}
+CLEAN_AS(func_0203efdc, SceneObjectBase_CanDelete)
+
+/* func_0203f004 (vtable slot 0x08, told how its creation went): once created
+ * (OUTCOME_DONE), the object joins the registry; then the actors' own. */
+void SceneObjectBase_AfterCreate(SceneObjectBase *object, int outcome)
+{
+    if (outcome == OUTCOME_DONE) {
+        func_02065c1c(&data_021c72cc, &object->entry.link);
+    }
+    Actor_Vfunc08((Actor *) object, outcome);
+}
+CLEAN_AS(func_0203f004, SceneObjectBase_AfterCreate)
+
+/* func_0203f030 (vtable slot 0x04, asked before its creation): when the actors' answer is yes,
+ * the object is set up: no id yet, its registry node pointing back at it, a reach of 3.0, no
+ * flags and the default approach. */
+int SceneObjectBase_CanCreate(SceneObjectBase *object)
+{
+    if (Actor_Vfunc04() == 0) {
+        return 0;
+    }
+    object->entry.id = 0;
+    object->entry.object = object;
+    SceneObjectBase_SetReach(object, 0x3000);
+    object->flags = 0;
+    SceneObjectBase_DefaultApproach(object);
+    return 1;
+}
+CLEAN_AS(func_0203f030, SceneObjectBase_CanCreate)
+
+/* func_0203f070: the registry emptied (the objects are not touched). */
+void SceneObjectBase_ClearRegistry(void)
+{
+    func_02065c68(&data_021c72cc);
+}
+CLEAN_AS(func_0203f070, SceneObjectBase_ClearRegistry)
+
+/* What each destructor does: the actors' destructor (the object leaves the list of actors), then
+ * the root's. The vtable pointer steps down through each class on the way. */
+static void destruct(SceneObjectBase *object)
+{
+    object->process.vtable = data_020dab34;
+    object->process.vtable = data_020d7244;
+    List_Remove(&data_0213ff78, &((Actor *) object)->link.node);
+    object->process.vtable = data_020da13c;
+    Process_Destruct(&object->process);
+}
+
+/* func_0203f080: the destructor the derived classes' destructors end with. */
+SceneObjectBase *SceneObjectBase_DestructBase(SceneObjectBase *object)
+{
+    destruct(object);
+    return object;
+}
+CLEAN_AS(func_0203f080, SceneObjectBase_DestructBase)
+
+/* func_0203f0b8 (vtable slot 0x44): the destructor that also frees the object. */
+SceneObjectBase *SceneObjectBase_DestructFree(SceneObjectBase *object)
+{
+    destruct(object);
+    Heap_FreeAux(object);
+    return object;
+}
+CLEAN_AS(func_0203f0b8, SceneObjectBase_DestructFree)
+
+/* func_0203f0f8 (vtable slot 0x40): the destructor (the same as SceneObjectBase_DestructBase). */
+SceneObjectBase *SceneObjectBase_Destruct(SceneObjectBase *object)
+{
+    destruct(object);
+    return object;
+}
+CLEAN_AS(func_0203f0f8, SceneObjectBase_Destruct)
+
+/* func_0203f130: the constructor: an actor's, then this class's vtable, an unlinked registry
+ * node and no id. */
+SceneObjectBase *SceneObjectBase_Construct(SceneObjectBase *object)
+{
+    Actor_Construct((Actor *) object);
+    object->process.vtable = data_020dab34;
+    object->entry.link.prev = NULL;
+    object->entry.link.next = NULL;
+    object->entry.id = 0;
+    return object;
+}
+CLEAN_AS(func_0203f130, SceneObjectBase_Construct)

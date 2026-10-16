@@ -26,4 +26,32 @@ void PairedTown_PairAll(Activity *activity);
 void PairedTown_PairOwn(Activity *activity);
 void PairedTown_TakeOwn(void *unused);
 
+/* The byte after the town: its days in bits 0-3 and the two flags. */
+#define PAIRED_TOWN_STATE 0xe
+#define PAIRED_TOWN_DAYS_MASK 0x0f
+#define PAIRED_TOWN_FLAG_4 0x10
+#define PAIRED_TOWN_FLAG_5 0x20
+
+/* The state block keeps the current player's pairing at this offset (PairedTown_SaveCurrent,
+ * PairedTown_RestoreCurrent). */
+#define PAIRED_TOWN_STATE_BLOCK_OFFSET 0x173e2
+
+void PairedTown_ClearFlag5(u8 *pairing);
+void PairedTown_SetFlag5(u8 *pairing);
+int PairedTown_Flag5(u8 *pairing);
+void PairedTown_SetFlag4(u8 *pairing, u32 flag);
+int PairedTown_Flag4(u8 *pairing);
+void PairedTown_SetDays(u8 *pairing, u8 days);
+int PairedTown_Days(u8 *pairing);
+void PairedTown_SetTown(u8 *pairing, const void *town);
+u8 *PairedTown_Town(u8 *pairing);
+void PairedTown_Reset(u8 *pairing);
+void PairedTown_RestoreCurrent(void);
+void PairedTown_SaveCurrent(void);
+int PairedTown_CurrentFlaggedInLastWeek(void);
+int PairedTown_CurrentUnflaggedInLastWeek(void);
+void PairedTown_PassDays(int days);
+u8 *PairedTown_Destruct(u8 *pairing);
+u8 *PairedTown_Construct(u8 *pairing);
+
 #endif

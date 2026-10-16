@@ -21,8 +21,48 @@
 
 #define LINK_STATE_SLOTS 4
 
+/* Where a slot is (link_scene.h): the scene it is in (0x3f for none), whether it holds that
+ * scene's state, and whether the host let it move to another scene. */
+typedef struct LinkStatePlace {
+    u8 scene;
+    u8 holder;
+    u8 moving;
+} LinkStatePlace;
+
+/* A move asked of the host: the slot (LINK_STATE_SLOTS for none) and the scene it goes to. */
+typedef struct LinkStateMove {
+    s32 slot;
+    u8 scene;
+    u8 unk_05[3];
+} LinkStateMove;
+
+/* Changes to a slot's place the host has still to apply and send: the values, and in `mask`
+ * the fields they are for (bit 0 the scene, bit 1 holder, bit 2 moving). */
+typedef struct LinkStatePlaceChange {
+    u8 scene;
+    u8 holder;
+    u8 moving;
+    u8 unk_03;
+    u32 mask;
+} LinkStatePlaceChange;
+
 typedef struct LinkState {
-    u8 unk_00[0x84];
+    LinkStatePlace places[LINK_STATE_SLOTS];        /* 0x00 */
+    LinkStateMove moves[LINK_STATE_SLOTS];          /* 0x0c: the host's queue, oldest first */
+    u32 arrived[LINK_STATE_SLOTS];                  /* 0x2c: 1 once the slot is in its new scene */
+    LinkStatePlaceChange changes[LINK_STATE_SLOTS]; /* 0x3c */
+    u8 enters_first;                                /* 0x5c: no system held the scene entered */
+    u8 unk_5d[3];
+    s32 scene_phase;            /* 0x60: LinkScenePhase (link_scene.h) */
+    s32 successor;              /* 0x64: the slot handed the scene's state on leaving it */
+    u8 acked[LINK_STATE_SLOTS]; /* 0x68: the slots that saw this system leave as holder */
+    s32 leaving_holder;         /* 0x6c: the moving holder this system last acknowledged */
+    s32 next_holder;            /* 0x70: the holder of the scene this system enters */
+    s32 state_asker;            /* 0x74: the slot that asked this system for its scene's state */
+    s32 state_sent_to;          /* 0x78: the slot this system sent its scene's state to */
+    u8 released;                /* 0x7c: the scene's holder let this system leave */
+    u8 unk_7d[3];
+    u32 leaving_guest;            /* 0x80: the moving slot this system last released */
     s32 status[LINK_STATE_SLOTS]; /* 0x84: each slot's link status (func_020a6170) */
     u32 served_slot;              /* 0x94: the slot of the last change carried out */
     u16 half_98;                  /* 0x98 */
@@ -87,5 +127,18 @@ void LinkState_SetHalf98(LinkState *state, u16 value);
 u32 LinkState_ServedSlot(LinkState *state);
 void LinkState_SetServedSlot(LinkState *state, u32 slot);
 void LinkState_HostStep(LinkState *state);
+
+void LinkState_RefuseRequest(LinkState *state, int slot, int direct);
+void LinkState_ResetStatuses(LinkState *state);
+int LinkState_Status(LinkState *state, int slot);
+void LinkState_SetStatus(LinkState *state, int slot, int status);
+void LinkState_Reset(LinkState *state);
+void LinkState_ForgetSlot(LinkState *state, int slot);
+LinkState *LinkState_Destruct(LinkState *state);
+LinkState *LinkState_Construct(LinkState *state);
+void LinkState_GlobalForgetSlot(int slot);
+void LinkState_GlobalReset(void);
+u8 LinkState_GlobalByteC4(void);
+void LinkState_GlobalSetByteC4(int value);
 
 #endif

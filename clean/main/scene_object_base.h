@@ -102,4 +102,17 @@ void *SceneObjectBase_FindActable(void *actor);
 int SceneObjectBase_FindAddress(int id);
 void SceneObjectBase_SetId(SceneObjectBase *object, u32 value);
 
+/* The life of a scene object (the class's process slots, its destructors and constructor) and
+ * the registry's reset. */
+u32 SceneObjectBase_Id(SceneObjectBase *object);
+int SceneObjectBase_CanRun(SceneObjectBase *object);
+int SceneObjectBase_CanDelete(SceneObjectBase *object);
+void SceneObjectBase_AfterCreate(SceneObjectBase *object, int outcome);
+int SceneObjectBase_CanCreate(SceneObjectBase *object);
+void SceneObjectBase_ClearRegistry(void);
+SceneObjectBase *SceneObjectBase_DestructBase(SceneObjectBase *object);
+SceneObjectBase *SceneObjectBase_DestructFree(SceneObjectBase *object);
+SceneObjectBase *SceneObjectBase_Destruct(SceneObjectBase *object);
+SceneObjectBase *SceneObjectBase_Construct(SceneObjectBase *object);
+
 #endif

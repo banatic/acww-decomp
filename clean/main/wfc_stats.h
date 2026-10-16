@@ -29,4 +29,18 @@ void WfcStats_SetChecksum(WfcStats *stats, u16 checksum);
 int WfcStats_IsInUse(const WfcStats *stats);
 u8 WfcStats_Byte237(const WfcStats *stats);
 
+/* The record's first bytes are a design (design.h): a blank one is all colour 15 with
+ * palette 0. */
+struct Design;
+
+void WfcStats_SetByte237(WfcStats *stats, u8 value);
+u8 WfcStats_Status(const WfcStats *stats);
+void WfcStats_SetStatus(WfcStats *stats, u8 status);
+struct Design *WfcStats_Design(WfcStats *stats);
+void WfcStats_ClearDesign(WfcStats *stats);
+void WfcStats_Init(WfcStats *stats);
+void WfcStats_Reset(WfcStats *stats);
+WfcStats *WfcStats_Destruct(WfcStats *stats);
+WfcStats *WfcStats_Construct(WfcStats *stats);
+
 #endif
