@@ -1,0 +1,612 @@
+/* Finding, copying and swapping designs (design.h). */
+#include "design.h"
+
+#include <assert.h>
+#include <stddef.h>
+#include <stdint.h>
+#include <string.h>
+
+#include "clean.h"
+#include "design_assets.h"
+#include "main/item_code.h"
+
+static_assert(sizeof(DesignCreator) == 0x1e, "creator");
+static_assert(offsetof(DesignInfo, title) == 0x1e, "title");
+static_assert(offsetof(DesignInfo, palette_and_kind) == 0x32, "palette");
+static_assert(offsetof(Design, info) == DESIGN_PIXELS_SIZE, "info");
+static_assert(sizeof(Design) == DESIGN_SIZE, "design");
+
+/* What a copy moves: everything but the last byte, which is padding. */
+#define DESIGN_COPIED_SIZE (offsetof(Design, info) + offsetof(DesignInfo, palette_and_kind) + 1)
+
+/* The player-message category of DesignMessage and the third argument it is sent with. */
+#define DESIGN_MESSAGE_CATEGORY 0x15
+#define DESIGN_MESSAGE_TARGET 4
+
+#define MESSAGE_KIND_BITS 0xf
+#define MESSAGE_INDEX_BITS 0x3ff
+#define MESSAGE_KIND_A_SHIFT 0
+#define MESSAGE_INDEX_A_SHIFT 4
+#define MESSAGE_KIND_B_SHIFT 14
+#define MESSAGE_INDEX_B_SHIFT 18
+#define MESSAGE_SWAP (1u << 28)
+
+/* What a lookup of the kind table answers with: the design's address, or 0. */
+typedef int (*DesignLookup)(int index);
+
+/* The multiplayer session; only the slot of this system is read here. */
+typedef struct Session {
+    u8 unk_00[0x64];
+    int local_slot;
+} Session;
+
+/* A map of acres (the town, or one room), each 0x28 bytes and holding a 16x16 grid of item
+ * codes that func_02037e0c reads. */
+typedef struct ItemMap {
+    u8 *acres;
+    int width;
+    int height;
+} ItemMap;
+
+#define ACRE_SIZE 0x28
+#define ACRE_ITEMS 16 /* 16 by 16 */
+#define ROOMS 5
+
+/* The item codes that stand for one of a player's eight designs, eight per player in player
+ * order. On the town map one code each; in the rooms four codes each (the low two bits are a
+ * variant, ITEM_CODE_VARIANT_BASE) in four ranges; and the two codes at 0x448 and 0x44a of the
+ * records at data_021ebcd4, which get 0x113e and 0x1182 back. */
+#define TOWN_DESIGN_FIRST 0xa7
+#define TOWN_DESIGN_LAST 0xc6
+#define ROOM_DESIGN_RANGES 4
+#define ROOM_DESIGN_CODES 0x80
+#define RECORD_DESIGN_FIRST 0x1188
+#define RECORD_DESIGN_LAST 0x11a7
+#define RECORD_FIRST_DEFAULT 0x113e
+#define RECORD_SECOND_DEFAULT 0x1182
+
+static const u16 room_design_first[ROOM_DESIGN_RANGES] = {0x3d84, 0x3ea4, 0x3f24, 0x4224};
+
+/* Design_VillagerTakeShopDesign's draw (of 100) and the items it looks for. */
+#define TAKE_DRAW 100
+#define TAKE_ITEMS 6
+#define TAKE_ITEM_FIRST 0x1380
+#define TAKE_ITEM_LAST 0x139f
+#define TAKE_ROOM_ITEM_FIRST 0x3e24
+#define TAKE_ROOM_ITEM_LAST 0x3ea3
+
+/* Design_Changed: the scene (func_020b65c4) the shop's textures exist in, and the overlay 3
+ * actor that shows DESIGN_KIND_RECORD_5. */
+#define SHOP_SCENE 10
+#define RECORD_5_ACTOR 0x500b
+
+extern const u32 data_020ccf6c[]; /* the lookups by kind: Design_FindSlot0 ... Design_FindLocal */
+extern Session *data_020ccf94;    /* the session (also the message being built to send) */
+extern u8 data_021ed278[];        /* the shop's designs */
+extern u8 data_021e5a2c[];        /* the villagers (0x7ec bytes each) */
+extern u8 data_021f3278[];        /* DESIGN_KIND_RECORD_8 */
+extern u8 data_021f34b0[];        /* DESIGN_KIND_RECORD_5, at 4 */
+extern u8 data_021ebcd4[];        /* five 0x450-byte records with two design codes */
+extern u8 data_021f3b44[];        /* the list of six items Design_VillagerTakeShopDesign reads */
+extern u8 data_020e54a8;          /* 0 or 1: which of the refreshes of Design_Changed apply */
+
+/* Design_Swap's function-local static design, built on first use. */
+extern u32 data_021d0474; /* its guard: bit 0 */
+extern Design data_021d05cc;
+extern u8 data_021d0498[]; /* its destruction record */
+/* Design_RemovePlayerItems's function-local static item code. */
+extern u32 data_021d0488; /* its guard: bit 0 */
+extern ItemCode data_021d046c;
+extern u8 data_021d048c[]; /* its destruction record */
+
+extern void __register_global_object(void *object, void *destruct, void *record);
+extern void func_020051b0(void *item);                                   /* an item code's destructor: nothing */
+extern int func_02073d90(Session *session);                              /* whether a session with others is running */
+extern void func_02073820(Session *message);                             /* begin a message */
+extern void func_020737f0(Session *message, const void *data, int size); /* append */
+extern void func_02073770(Session *message, u32 category, u32 player);   /* end and send */
+
+extern int func_020984fc(int slot);                                          /* the player record at a session slot */
+extern int func_020984e8(void);                                              /* this system's player record */
+extern void *func_020996b8(void *record);                                    /* a player record's designs */
+extern int func_02072bd0(int designs, int index);                            /* designs + (index & 7) designs */
+extern unsigned int func_02072a48(unsigned int designs, unsigned int index); /* the same */
+extern void *func_02088220(void *design);                                    /* returns its argument */
+extern int func_02072824(void);                                              /* the sample's place (data_021d0800) */
+extern int func_02072830(void *sample, unsigned int index);                  /* read sample `index` into it */
+extern void *func_0207282c(void *sample);                                    /* its design */
+extern void *func_0207cec0(void *villagers, int villager);                   /* a villager, NULL when there is none */
+extern unsigned int func_02081500(unsigned int villager);                    /* its design (at 0x400) */
+extern int func_020b374c(int record);                                        /* record + 4 */
+extern void *func_020b3848(void *record);                                    /* its design */
+extern char *func_02072dbc(char *design);                                    /* the design's constructor */
+extern void *func_02072da4(void *design);                                    /* and destructor */
+extern unsigned int func_02072d4c(unsigned int design);                      /* its DesignInfo */
+extern int func_02072e30(DesignInfo *info);                                  /* the low four bits of its byte 0x32 */
+
+extern unsigned int func_0204e414(void); /* the town's ItemMap */
+extern int func_0204df30(int room);      /* a room's ItemMap, or 0 */
+extern u16 *func_02037e0c(void *acre, int x, int y, int layer);
+extern int func_02037e44(void *acre, const ItemCode *code, int x, int y, u8 layer);
+extern int func_02060ee0(void *records, int index);         /* one of the records at data_021ebcd4, or 0 */
+extern u16 *func_02061204(void *record, int *flag);         /* its code at 0x448 */
+extern u8 *func_020611e8(void *record, unsigned int *flag); /* its code at 0x44a */
+extern void func_020611bc(void *record, const ItemCode *code, int flag);
+extern void func_02061194(void *record, const ItemCode *code, int flag);
+
+extern unsigned int func_0208150c(unsigned int villager); /* + 0x7a0 */
+extern int func_02003704(void *data);                     /* whether that part is valid */
+extern int func_020808b0(unsigned int villager);          /* the address of its byte compared */
+extern unsigned int func_0207f1c8(unsigned int villager); /* + 0x734 */
+extern void *func_0209b5ec(void *data);                   /* returns its argument */
+extern int func_0209c330(unsigned char *data);            /* its byte 16 */
+extern unsigned int func_020644cc(int bound);             /* a random number below `bound` */
+extern int func_020ae8e4(void *list, int index, ItemCode *item);
+extern void func_02061e2c(ItemCode *out, const ItemCode *item);
+
+extern int func_0209985c(int record); /* the player number of a player record, or -1 */
+extern u8 func_020b65c4(void);        /* the scene */
+extern void func_020727a4(int manager, int index);
+extern int func_020b6660(void);
+extern void *func_ov003_02220174(unsigned short id); /* an actor of overlay 3 */
+extern int func_ov003_0221c4bc(void *actor);
+
+static int design_address(const void *design)
+{
+    return (int) (uintptr_t) design;
+}
+
+static Design *design_at(int address)
+{
+    return (Design *) (uintptr_t) address;
+}
+
+/* func_020714a0: message 0x15 from another system: copy or swap the two designs it names,
+ * without sending it on. QUIRK: the indices are cut to 8 bits. */
+int Design_Receive(const DesignMessage *message)
+{
+    u32 bits = message->bits;
+    int kind_a = (int) ((bits >> MESSAGE_KIND_A_SHIFT) & MESSAGE_KIND_BITS);
+    int index_a = (u8) ((bits >> MESSAGE_INDEX_A_SHIFT) & MESSAGE_INDEX_BITS);
+    int kind_b = (int) ((bits >> MESSAGE_KIND_B_SHIFT) & MESSAGE_KIND_BITS);
+    int index_b = (u8) ((bits >> MESSAGE_INDEX_B_SHIFT) & MESSAGE_INDEX_BITS);
+    if (bits & MESSAGE_SWAP) {
+        return Design_Swap(kind_a, index_a, kind_b, index_b, 0);
+    }
+    return Design_Copy(kind_a, index_a, kind_b, index_b, 0);
+}
+CLEAN_AS(func_020714a0, Design_Receive)
+
+/* func_02071604: the design `index` of a kind, through the kind's lookup; 0 for kinds past
+ * the table. REQUIRES: kind >= 0 (a negative one would call what lies before the table). */
+int Design_Find(int kind, int index)
+{
+    if (kind >= DESIGN_KINDS) {
+        return 0;
+    }
+    return ((DesignLookup) (uintptr_t) data_020ccf6c[kind])(index);
+}
+CLEAN_AS(func_02071604, Design_Find)
+
+/* func_02071628: DESIGN_KIND_LOCAL: one of this system's player's designs, 0 without one. */
+int Design_FindLocal(int index)
+{
+    int record = func_020984e8();
+    if (record == 0) {
+        return 0;
+    }
+    return func_02072bd0(design_address(func_020996b8((void *) (uintptr_t) record)), index);
+}
+CLEAN_AS(func_02071628, Design_FindLocal)
+
+/* func_02071648: DESIGN_KIND_RECORD_8, a single design: the index is not used. */
+int Design_FindRecord8(int index)
+{
+    (void) index;
+    return design_address(func_02088220(data_021f3278));
+}
+CLEAN_AS(func_02071648, Design_FindRecord8)
+
+/* func_02071658: DESIGN_KIND_SAMPLE: reads sample `index` into the one place for a sample and
+ * returns it. */
+int Design_FindSample(int index)
+{
+    int sample = func_02072824();
+    func_02072830((void *) (uintptr_t) sample, (unsigned int) index);
+    return design_address(func_0207282c((void *) (uintptr_t) sample));
+}
+CLEAN_AS(func_02071658, Design_FindSample)
+
+/* func_02071678: DESIGN_KIND_VILLAGER: the design of a villager, 0 without the villager. */
+int Design_FindVillager(int villager)
+{
+    void *record = func_0207cec0(data_021e5a2c, villager);
+    if (record == NULL) {
+        return 0;
+    }
+    return (int) func_02081500((unsigned int) (uintptr_t) record);
+}
+CLEAN_AS(func_02071678, Design_FindVillager)
+
+/* func_0207169c: DESIGN_KIND_RECORD_5, a single design: the index is not used. */
+int Design_FindRecord5(int index)
+{
+    (void) index;
+    int record = func_020b374c(design_address(data_021f34b0));
+    return design_address(func_020b3848((void *) (uintptr_t) record));
+}
+CLEAN_AS(func_0207169c, Design_FindRecord5)
+
+/* func_020716b4: DESIGN_KIND_SHOP. */
+int Design_FindShop(int index)
+{
+    return (int) func_02072a48((unsigned int) (uintptr_t) data_021ed278, (unsigned int) index);
+}
+CLEAN_AS(func_020716b4, Design_FindShop)
+
+/* func_020716c4: kind 3. */
+int Design_FindSlot3(int index)
+{
+    return Design_FindSessionPlayer(3, index);
+}
+CLEAN_AS(func_020716c4, Design_FindSlot3)
+
+/* func_020716d0: kind 2. */
+int Design_FindSlot2(int index)
+{
+    return Design_FindSessionPlayer(2, index);
+}
+CLEAN_AS(func_020716d0, Design_FindSlot2)
+
+/* func_020716dc: kind 1. */
+int Design_FindSlot1(int index)
+{
+    return Design_FindSessionPlayer(1, index);
+}
+CLEAN_AS(func_020716dc, Design_FindSlot1)
+
+/* func_020716e8: kind 0. */
+int Design_FindSlot0(int index)
+{
+    return Design_FindSessionPlayer(0, index);
+}
+CLEAN_AS(func_020716e8, Design_FindSlot0)
+
+/* func_020716f4: one of the designs of the player at a session slot; 0 outside a session or
+ * without that player. */
+int Design_FindSessionPlayer(int slot, int index)
+{
+    if (func_02073d90(data_020ccf94) == 0) {
+        return 0;
+    }
+    int record = func_020984fc(slot);
+    if (record == 0) {
+        return 0;
+    }
+    return func_02072bd0(design_address(func_020996b8((void *) (uintptr_t) record)), index);
+}
+CLEAN_AS(func_020716f4, Design_FindSessionPlayer)
+
+static void *acre_at(const ItemMap *map, int x, int y)
+{
+    if ((unsigned int) x < (unsigned int) map->width && (unsigned int) y < (unsigned int) map->height && map->acres != NULL) {
+        return map->acres + ACRE_SIZE * (x + y * map->width);
+    }
+    return NULL;
+}
+
+/* The player (0-3) a room code of a design belongs to, or -1 for other codes. */
+static int room_design_owner(unsigned int code)
+{
+    for (int i = 0; i < ROOM_DESIGN_RANGES; i++) {
+        if (code >= room_design_first[i] && code < room_design_first[i] + ROOM_DESIGN_CODES) {
+            int design = (int) (code - room_design_first[i]) >> 2;
+            return (design >> 3) & 3;
+        }
+    }
+    return -1;
+}
+
+static int is_record_design(unsigned int code)
+{
+    return code >= RECORD_DESIGN_FIRST && code <= RECORD_DESIGN_LAST;
+}
+
+static int record_design_owner(unsigned int code)
+{
+    return ((int) (code - RECORD_DESIGN_FIRST) >> 3) & 3;
+}
+
+/* func_0207172c: takes away every item code that stands for one of a player's designs (the
+ * player leaves the town, func_0209ef10): on the town map but its border acres, and in the
+ * five rooms, they become nothing; the two codes of the records at data_021ebcd4 get their
+ * defaults back.
+ * QUIRK: the first call builds a function-local static item code (nothing, 0xfff1) and
+ * registers it for destruction (func_020051b0, which does nothing); it is what is written. */
+void Design_RemovePlayerItems(int player)
+{
+    if ((data_021d0488 & 1) == 0) {
+        data_021d046c = ITEM_CODE_NONE;
+        __register_global_object(&data_021d046c, (void *) func_020051b0, data_021d048c);
+        data_021d0488 |= 1;
+    }
+
+    ItemMap *town = (ItemMap *) (uintptr_t) func_0204e414();
+    if (town != NULL) {
+        for (int y = 1; y < town->height - 1; y++) {
+            for (int x = 1; x < town->width - 1; x++) {
+                void *acre = acre_at(town, x, y);
+                if (acre == NULL) {
+                    continue;
+                }
+                for (int row = 0; row < ACRE_ITEMS; row++) {
+                    for (int column = 0; column < ACRE_ITEMS; column++) {
+                        u16 *item = func_02037e0c(acre, column, row, 0);
+                        if (item == NULL) {
+                            continue;
+                        }
+                        unsigned int code = *item;
+                        if (code >= TOWN_DESIGN_FIRST && code <= TOWN_DESIGN_LAST &&
+                            (int) (code - TOWN_DESIGN_FIRST) / 8 == player) {
+                            func_02037e44(acre, &data_021d046c, column, row, 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 0; i < ROOMS; i++) {
+        ItemMap *room = (ItemMap *) (uintptr_t) func_0204df30(i);
+        if (room != NULL) {
+            void *acre = acre_at(room, 0, 0);
+            if (acre != NULL) {
+                for (int y = 0; y < ACRE_ITEMS; y++) {
+                    for (int x = 0; x < ACRE_ITEMS; x++) {
+                        u16 *item = func_02037e0c(acre, x, y, 0);
+                        if (item == NULL) {
+                            continue;
+                        }
+                        int owner = room_design_owner(*item);
+                        if (owner != -1 && owner == player) {
+                            func_02037e44(acre, &data_021d046c, x, y, 0);
+                        }
+                    }
+                }
+            }
+        }
+
+        void *record = (void *) (uintptr_t) func_02060ee0(data_021ebcd4, i);
+        if (record == NULL) {
+            continue;
+        }
+        /* Each code is read once to test it and again to see whose it is. */
+        if (is_record_design(*func_02061204(record, NULL))) {
+            unsigned int code = *func_02061204(record, NULL);
+            if (record_design_owner(code) == player) {
+                ItemCode first = RECORD_FIRST_DEFAULT;
+                func_020611bc(record, &first, 0);
+            }
+        }
+        if (!is_record_design(*(u16 *) func_020611e8(record, NULL))) {
+            continue;
+        }
+        unsigned int code = *(u16 *) func_020611e8(record, NULL);
+        if (record_design_owner(code) == player) {
+            ItemCode second = RECORD_SECOND_DEFAULT;
+            func_02061194(record, &second, 0);
+        }
+    }
+}
+CLEAN_AS(func_0207172c, Design_RemovePlayerItems)
+
+/* Sends DesignMessage: the two designs (by resolved kind) and whether they were swapped. */
+static void send_message(int kind_a, int index_a, int kind_b, int index_b, int swap)
+{
+    DesignMessage message;
+    message.bits = ((u32) (kind_a & MESSAGE_KIND_BITS) << MESSAGE_KIND_A_SHIFT) |
+                   ((u32) (index_a & MESSAGE_INDEX_BITS) << MESSAGE_INDEX_A_SHIFT) |
+                   ((u32) (kind_b & MESSAGE_KIND_BITS) << MESSAGE_KIND_B_SHIFT) |
+                   ((u32) (index_b & MESSAGE_INDEX_BITS) << MESSAGE_INDEX_B_SHIFT) | (swap ? MESSAGE_SWAP : 0);
+    Session *outgoing = data_020ccf94;
+    func_02073820(outgoing);
+    func_020737f0(outgoing, &message, sizeof(message));
+    func_02073770(outgoing, DESIGN_MESSAGE_CATEGORY, DESIGN_MESSAGE_TARGET);
+}
+
+/* func_02071aa8: swaps two designs, refreshes what shows them and, when asked and in a session,
+ * tells the other systems. 0 when either is a sample (which is read only).
+ * REQUIRES: both designs exist (Design_Find gives no 0).
+ * QUIRK: the swap goes through a function-local static design (data_021d05cc), built and
+ * registered for destruction on first use. */
+int Design_Swap(int kind_a, int index_a, int kind_b, int index_b, u8 announce_it)
+{
+    int a = Design_ResolveKind(kind_a);
+    int b = Design_ResolveKind(kind_b);
+    if (a == DESIGN_KIND_SAMPLE || b == DESIGN_KIND_SAMPLE) {
+        return 0;
+    }
+    Design *design_a = design_at(Design_Find(a, index_a));
+    Design *design_b = design_at(Design_Find(b, index_b));
+    if ((data_021d0474 & 1) == 0) {
+        func_02072dbc((char *) &data_021d05cc);
+        __register_global_object(&data_021d05cc, (void *) func_02072da4, data_021d0498);
+        data_021d0474 |= 1;
+    }
+    memcpy(&data_021d05cc, design_b, DESIGN_COPIED_SIZE);
+    memmove(design_b, design_a, DESIGN_COPIED_SIZE);
+    memcpy(design_a, &data_021d05cc, DESIGN_COPIED_SIZE);
+
+    Design_Changed(a, index_a);
+    Design_Changed(b, index_b);
+    if (announce_it != 0 && func_02073d90(data_020ccf94) != 0) {
+        send_message(a, index_a, b, index_b, 1);
+    }
+    return 1;
+}
+CLEAN_AS(func_02071aa8, Design_Swap)
+
+/* func_02071d60: in a session, DESIGN_KIND_LOCAL becomes this system's slot (kind 0-3), the
+ * kind the other systems know its player by; other kinds stay. */
+int Design_ResolveKind(int kind)
+{
+    Session *session = data_020ccf94;
+    if (func_02073d90(session) != 0 && kind == DESIGN_KIND_LOCAL) {
+        return session->local_slot;
+    }
+    return kind;
+}
+CLEAN_AS(func_02071d60, Design_ResolveKind)
+
+/* func_02071d8c: copies one design over another, refreshes what shows the copy and, when asked
+ * and in a session, tells the other systems. 0 when the copy would go to a sample.
+ * REQUIRES: both designs exist (Design_Find gives no 0). */
+int Design_Copy(int kind_from, int index_from, int kind_to, int index_to, u8 announce_it)
+{
+    int from = Design_ResolveKind(kind_from);
+    int to = Design_ResolveKind(kind_to);
+    if (to == DESIGN_KIND_SAMPLE) {
+        return 0;
+    }
+    Design *source = design_at(Design_Find(from, index_from));
+    Design *target = design_at(Design_Find(to, index_to));
+    memmove(target, source, DESIGN_COPIED_SIZE);
+    Design_Changed(to, index_to);
+    if (announce_it != 0 && func_02073d90(data_020ccf94) != 0) {
+        send_message(from, index_from, to, index_to, 0);
+    }
+    return 1;
+}
+CLEAN_AS(func_02071d8c, Design_Copy)
+
+static int shop_design_kind(unsigned int index)
+{
+    unsigned int design = func_02072a48((unsigned int) (uintptr_t) data_021ed278, (u8) index);
+    return func_02072e30((DesignInfo *) (uintptr_t) func_02072d4c(design));
+}
+
+/* func_02071efc: a villager may take one of the shop's designs as its own. A draw of 100 decides:
+ * when the villager's byte 16 at 0x734 is 3, below 15 it takes a design whose kind (the low
+ * bits of DesignInfo byte 0x32) is the villager's byte (func_020808b0), below 20 one whose
+ * kind differs; otherwise below 10 a matching one. Which design of those is random. The result
+ * is Design_Copy's, 0 when nothing is taken.
+ * QUIRK: draws of 20-29 (byte 3) or 10-14 (otherwise) look through six items for one of 0x1380-
+ * 0x139f or 0x3e24-0x3ea3, convert it (func_02061e2c) and throw the result away.
+ * REQUIRES: the villager's byte exists (func_020808b0 gives no 0). */
+int Design_VillagerTakeShopDesign(int villager, int announce_it)
+{
+    void *record = func_0207cec0(data_021e5a2c, villager);
+    if (record == NULL) {
+        return 0;
+    }
+    unsigned int address = (unsigned int) (uintptr_t) record;
+    if (func_02003704((void *) (uintptr_t) func_0208150c(address)) == 0) {
+        return 0;
+    }
+    int wanted = *(u8 *) (uintptr_t) func_020808b0(address);
+    int mode = func_0209c330(func_0209b5ec((void *) (uintptr_t) func_0207f1c8(address)));
+    unsigned int draw = func_020644cc(TAKE_DRAW);
+
+    int take = 0;
+    int matching = 0;
+    int look_at_items = 0;
+    if (mode == 3) {
+        if (draw < 15) {
+            take = 1;
+            matching = 1;
+        } else if (draw < 20) {
+            take = 1;
+        } else if (draw < 30) {
+            look_at_items = 1;
+        }
+    } else {
+        if (draw < 10) {
+            take = 1;
+            matching = 1;
+        } else if (draw < 15) {
+            look_at_items = 1;
+        }
+    }
+
+    if (look_at_items) {
+        ItemCode item = ITEM_CODE_NONE;
+        int found = 0;
+        for (int i = 0; i < TAKE_ITEMS; i++) {
+            func_020ae8e4(data_021f3b44, i, &item);
+            if ((item >= TAKE_ITEM_FIRST && item <= TAKE_ITEM_LAST) ||
+                (item >= TAKE_ROOM_ITEM_FIRST && item <= TAKE_ROOM_ITEM_LAST)) {
+                found = 1;
+                break;
+            }
+        }
+        if (found) {
+            ItemCode converted;
+            func_02061e2c(&converted, &item);
+        }
+    }
+
+    if (!take) {
+        return 0;
+    }
+    int candidates = 0;
+    for (unsigned int i = 0; i < DESIGNS_PER_SET; i++) {
+        int kind = shop_design_kind(i);
+        if ((kind == wanted) == matching) {
+            candidates++;
+        }
+    }
+    if (candidates <= 0) {
+        return 0;
+    }
+    int pick = (int) func_020644cc(candidates);
+    int seen = 0;
+    unsigned int chosen;
+    for (chosen = 0; chosen < DESIGNS_PER_SET; chosen++) {
+        int kind = shop_design_kind(chosen);
+        if ((kind == wanted) == matching) {
+            if (pick == seen) {
+                break;
+            }
+            seen++;
+        }
+    }
+    return Design_Copy(DESIGN_KIND_SHOP, (u8) (chosen & 7), DESIGN_KIND_VILLAGER, (u8) villager, (u8) announce_it);
+}
+CLEAN_AS(func_02071efc, Design_VillagerTakeShopDesign)
+
+/* func_020720ac: after a design of a kind changed, refreshes what shows it. 1 for the kinds it
+ * knows (0, 4, 5 and 9), 0 for the others.
+ * QUIRK: kinds 0 and 9 both refresh the textures of the player at session slot 0 (their
+ * player number from func_0209985c, with the given index), whichever player the design is. */
+int Design_Changed(int kind, int index)
+{
+    switch (kind) {
+        case DESIGN_KIND_SLOT_0:
+        case DESIGN_KIND_LOCAL: {
+            int record = func_020984fc(0);
+            if (record != 0) {
+                int player = func_0209985c(record);
+                if (player != -1) {
+                    DesignTextures_UpdatePlayer((u8) (player & 3), index);
+                }
+            }
+            return 1;
+        }
+        case DESIGN_KIND_SHOP:
+            if (data_020e54a8 == 1 && func_020b65c4() == SHOP_SCENE) {
+                DesignTextures_UpdateShop((unsigned int) index);
+                func_020727a4(DesignManager_Get(), index & 7);
+            }
+            return 1;
+        case DESIGN_KIND_RECORD_5:
+            if (data_020e54a8 == 0 && func_020b6660() != 0) {
+                void *actor = func_ov003_02220174(RECORD_5_ACTOR);
+                if (actor != NULL) {
+                    func_ov003_0221c4bc(actor);
+                }
+            }
+            return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_020720ac, Design_Changed)

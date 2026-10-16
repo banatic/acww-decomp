@@ -6,13 +6,7 @@
 #define CLEAN_AUTOLOAD_2_APPROACH_H
 
 #include "types.h"
-
-/* A point in 20.12 fixed point (NitroSDK's VecFx32). */
-typedef struct Vec3 {
-    fx32 x;
-    fx32 y;
-    fx32 z;
-} Vec3;
+#include "vector.h"
 
 u16 Countdown_Tick16(u16 *counter);
 u8 Countdown_Tick8(u8 *counter);
