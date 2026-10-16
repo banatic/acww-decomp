@@ -155,3 +155,11 @@ FrameCtrl *FrameCtrl_Delete(FrameCtrl *ctrl)
     return ctrl;
 }
 CLEAN_AS(func_02057060, FrameCtrl_Delete)
+
+/* func_02057078: the frame control's destructor as the classes that contain one call it: the
+ * same as FrameCtrl_Destruct. */
+void FrameCtrl_DestructComplete(FrameCtrl *ctrl)
+{
+    ctrl->vtable = data_020dd184;
+}
+CLEAN_AS(func_02057078, FrameCtrl_DestructComplete)

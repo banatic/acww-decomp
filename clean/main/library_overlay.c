@@ -101,3 +101,30 @@ void LibraryOverlay_Destroy(LibraryOverlaySlot *slot)
     (void) slot;
 }
 CLEAN_AS(func_02077bb4, LibraryOverlay_Destroy)
+
+extern char SDK_OVERLAY_ov068_ID;
+
+/* func_020a0174: the overlay in the slot ended and overlay 68 loaded in its place;
+ * LibraryOverlay_Load's result. */
+int LibraryOverlay_Switch68(void)
+{
+    LibraryOverlay_End(&data_021d11c4);
+    return LibraryOverlay_Load(&data_021d11c4, overlay_id(&SDK_OVERLAY_ov068_ID));
+}
+CLEAN_AS(func_020a0174, LibraryOverlay_Switch68)
+
+/* func_020a0194: the same for overlay 65. */
+void LibraryOverlay_Switch65(void)
+{
+    LibraryOverlay_End(&data_021d11c4);
+    LibraryOverlay_Load(&data_021d11c4, overlay_id(&SDK_OVERLAY_ov065_ID));
+}
+CLEAN_AS(func_020a0194, LibraryOverlay_Switch65)
+
+/* func_020a01b4: the same for overlay 66. */
+void LibraryOverlay_Switch66(void)
+{
+    LibraryOverlay_End(&data_021d11c4);
+    LibraryOverlay_Load(&data_021d11c4, overlay_id(&SDK_OVERLAY_ov066_ID));
+}
+CLEAN_AS(func_020a01b4, LibraryOverlay_Switch66)

@@ -83,5 +83,10 @@ void StartMenu_UpdateIdle(StartMenu *menu);
 void StartMenu_EnterIdle(void);
 void StartMenu_SetState(StartMenu *menu, int state);
 int StartMenu_Execute(StartMenu *menu);
+int StartMenu_Delete(void);
+int StartMenu_Create(StartMenu *menu);
+StartMenu *StartMenu_New(void);
+void StartMenu_SetLeaveChoice(u8 choice);
+u8 StartMenu_LeaveChoice(void);
 
 #endif

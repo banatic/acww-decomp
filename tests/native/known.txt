@@ -20,7 +20,9 @@
 02054a34 shift 1 << (n - 32) for n 64 or more gives 0 on ARM and wraps on x86; func_020541b8 and func_02054718 pass the ranges of data_020dd414 (9-17)
 02054a64 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_02054188 and func_02054740 pass ranges 9-14 and those of data_020dd414 (9-17)
 020550e4 word stores to misaligned addresses write the aligned word on ARM and the unaligned one on x86; anim is an NNS G3D animation object, which the library keeps word-aligned (aligning the pointer makes every case agree)
+02057918 halfword and word loads from misaligned addresses read the aligned (and rotated) value on ARM and the unaligned one on x86; p is an NNS G3D texture resource, whose offsets the format keeps aligned (reading as the ARM does makes every case agree)
 02057988 halfword loads from odd addresses read the aligned halfword on ARM and the unaligned one on x86; p is an NNS G3D texture resource (palette dictionary offset at +0x34, palette data at +0x38), whose offsets the format keeps 4-byte aligned
+020579f0 halfword and word loads from misaligned addresses read the aligned (and rotated) value on ARM and the unaligned one on x86; p is an NNS G3D texture resource, whose offsets the format keeps aligned (reading as the ARM does makes every case agree)
 020727a4 shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; the only caller, func_020720ac, passes b & 7
 020728f8 field-by-field copy of a 0x234-byte record gives another result when dst and src overlap; the only caller, func_020b3850, copies a record into data_021f34b0 + 4, a separate global
 02072e90 20-byte copy from src + 30 to dst gives another result when they overlap; the only caller, func_ov126_0229fc98, copies into its own local buffer

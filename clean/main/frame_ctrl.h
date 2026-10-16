@@ -37,5 +37,6 @@ BOOL Ramp_Step(Ramp *ramp);
 void Ramp_Start(Ramp *ramp, u32 frames);
 void FrameCtrl_Destruct(FrameCtrl *ctrl);
 FrameCtrl *FrameCtrl_Delete(FrameCtrl *ctrl);
+void FrameCtrl_DestructComplete(FrameCtrl *ctrl);
 
 #endif

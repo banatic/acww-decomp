@@ -23,5 +23,8 @@ void LibraryOverlay_Require65(void);
 int LibraryOverlay_Load(LibraryOverlaySlot *slot, int overlay);
 void LibraryOverlay_End(LibraryOverlaySlot *slot);
 void LibraryOverlay_Destroy(LibraryOverlaySlot *slot);
+int LibraryOverlay_Switch68(void);
+void LibraryOverlay_Switch65(void);
+void LibraryOverlay_Switch66(void);
 
 #endif

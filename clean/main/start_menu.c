@@ -462,3 +462,52 @@ int StartMenu_Execute(StartMenu *menu)
     return 1;
 }
 CLEAN_AS(func_0209f858, StartMenu_Execute)
+
+/* func_0209f9e4 (vtable slot 3, the DELETE phase's work): done at once. */
+int StartMenu_Delete(void)
+{
+    return 1;
+}
+CLEAN_AS(func_0209f9e4, StartMenu_Delete)
+
+/* func_0209f9e8 (vtable slot 0, the CREATE phase's work): the receiver given its owner; done. */
+int StartMenu_Create(StartMenu *menu)
+{
+    StartMenuReceiver_SetOwner(&menu->receiver, menu);
+    return 1;
+}
+CLEAN_AS(func_0209f9e8, StartMenu_Create)
+
+/* func_0209f9fc: the profile's create function: the object allocated (zeroed) and constructed,
+ * the base class's vtable and then the class's stored as the C++ constructors do; NULL when
+ * the heap is short. */
+StartMenu *StartMenu_New(void)
+{
+    StartMenu *menu = Heap_AllocAuxZeroed(sizeof(StartMenu));
+    if (menu != NULL) {
+        Process_Construct(&menu->process);
+        menu->process.vtable = data_020da13c;
+        menu->process.vtable = data_020e3708;
+        StartMenuReceiver_Construct(&menu->receiver);
+    }
+    return menu;
+}
+CLEAN_AS(func_0209f9fc, StartMenu_New)
+
+/* The leave choice: 0 after the session agreed to local status 2, 1 after status 3
+ * (StartMenu_UpdateWait2, StartMenu_UpdateWait3); the activity process reads it. */
+extern u8 data_021f3c0c;
+
+/* func_020a01e0 */
+void StartMenu_SetLeaveChoice(u8 choice)
+{
+    data_021f3c0c = choice;
+}
+CLEAN_AS(func_020a01e0, StartMenu_SetLeaveChoice)
+
+/* func_020a01ec */
+u8 StartMenu_LeaveChoice(void)
+{
+    return data_021f3c0c;
+}
+CLEAN_AS(func_020a01ec, StartMenu_LeaveChoice)
