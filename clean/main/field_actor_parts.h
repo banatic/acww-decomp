@@ -73,7 +73,8 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
     FIELD_ACTOR_FIELD(actor, Vec3, 0x8c4)                               /* where the sound emitters play; 0 for none yet */
 #define FIELD_ACTOR_BODY_ARG(actor) FIELD_ACTOR_FIELD(actor, u8, 0x8e9) /* handed to func_02055d38 with each model */
 #define FIELD_ACTOR_UNK_8EA(actor) FIELD_ACTOR_FIELD(actor, u8, 0x8ea)
-#define FIELD_ACTOR_COUNTDOWN(actor) FIELD_ACTOR_FIELD(actor, u8, 0x8ec)     /* counted down each frame */
+#define FIELD_ACTOR_UNK_8EB(actor) FIELD_ACTOR_FIELD(actor, s8, 0x8eb)   /* 0 on entering state 0x76; 3, 2, 1 by state 0x35 */
+#define FIELD_ACTOR_COUNTDOWN(actor) FIELD_ACTOR_FIELD(actor, u8, 0x8ec) /* counted down each frame */
 #define FIELD_ACTOR_REMOTE_STATE(actor) FIELD_ACTOR_FIELD(actor, int, 0x8f8) /* 147 for none */
 #define FIELD_ACTOR_PENDING_X(actor) FIELD_ACTOR_FIELD(actor, int, 0x8fc)
 #define FIELD_ACTOR_PENDING_Z(actor) FIELD_ACTOR_FIELD(actor, int, 0x900)

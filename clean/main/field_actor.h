@@ -2,9 +2,9 @@
  * 0x020d832c for its message receiver at 0xec; include/cpp/main/Obj_020d82b4.h): the
  * allocation and freeing of its objects, the vtable slots that only pass on to the real work,
  * the constructor and destructors (field_actor.c), the placing of its models for drawing
- * (field_actor_model.c), and its state machine with the states 0x84 to 0x86 and 0x90 to 0x92
- * (field_actor_states.c; field_actor_parts.h has what they share). Overlay 3's part is in
- * ov003/field_actor.h.
+ * (field_actor_model.c), and its state machine with the states 0x34, 0x35, 0x3f, 0x6f, 0x70,
+ * 0x76, 0x77, 0x79, 0x83 to 0x86 and 0x90 to 0x92 (field_actor_states.c; field_actor_parts.h
+ * has what they share). Overlay 3's part is in ov003/field_actor.h.
  *
  * Its objects come from the heap at data_021c9ab4, zeroed and aligned to 4. */
 #ifndef CLEAN_MAIN_FIELD_ACTOR_H
@@ -87,5 +87,69 @@ void FieldActor_UpdateState84(struct FieldActor *actor);
 void FieldActor_RunState84(struct FieldActor *actor);
 void FieldActor_State84Message(struct FieldActor *actor, int arg);
 void FieldActor_EnterState84(struct FieldActor *actor, const struct StateRequest *request, int previous);
+
+/* field_actor_states.c: states 0x83, 0x79, 0x77, 0x76, 0x70, 0x6f, 0x3f, 0x35 and 0x34. */
+struct State6FWork;
+struct State6FArgs;
+int FieldActor_RequestState84(struct FieldActor *actor, u8 kind, int priority, int arg);
+void FieldActor_UpdateState83(struct FieldActor *actor);
+void FieldActor_EndState83(struct FieldActor *actor);
+void FieldActor_RunState83(struct FieldActor *actor);
+void FieldActor_State83Message(struct FieldActor *actor, int arg);
+void FieldActor_EnterState83(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActor_RequestState83(struct FieldActor *actor, int priority, int arg);
+void FieldActor_UpdateState79(struct FieldActor *actor);
+void FieldActor_RunState79(struct FieldActor *actor);
+void FieldActor_State79Message(struct FieldActor *actor, int arg);
+void FieldActor_EnterState79(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActor_RequestState79(struct FieldActor *actor, int priority, int arg);
+void FieldActor_UpdateState77(struct FieldActor *actor);
+void FieldActor_EndState77(struct FieldActor *actor);
+void FieldActor_TurnState77(struct FieldActor *actor);
+void FieldActor_State77Message(struct FieldActor *actor, int arg);
+void FieldActor_EnterState77(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActor_GetSavedYaw77(const u8 *saved, u16 *yaw);
+void FieldActor_SetSavedYaw77(u8 *saved, int yaw);
+int FieldActor_RequestState77(struct FieldActor *actor, u16 yaw, int priority, int arg);
+void FieldActor_UpdateState76(struct FieldActor *actor);
+void FieldActor_RunState76(struct FieldActor *actor);
+void FieldActor_State76Message(struct FieldActor *actor, int arg);
+void FieldActor_EnterState76(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActor_GetSaved76(const u8 *saved, u8 *mode, u8 *kind, u8 *slot);
+void FieldActor_SetSaved76(u8 *saved, int mode, int kind, int slot);
+void *FieldActor_RequestState76(struct FieldActor *actor, u8 mode, u8 kind, u8 slot, u32 priority, s16 arg);
+void FieldActor_UpdateState70(struct FieldActor *actor);
+void FieldActor_EndState70(struct FieldActor *actor);
+void FieldActor_TurnState70(struct FieldActor *actor);
+void FieldActor_State70Message(struct FieldActor *actor, int arg);
+void FieldActor_EnterState70(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActor_SetYaw70(u16 *target, int yaw);
+int FieldActor_RequestState70(struct FieldActor *actor, int yaw, int priority, int arg);
+void FieldActor_SetArgs70(u16 *payload, int yaw);
+void FieldActor_UpdateState6F(struct FieldActor *actor);
+void FieldActor_EndState6F(struct FieldActor *actor, int arrived);
+void FieldActor_HeightState6F(struct FieldActor *actor);
+void FieldActor_AnimateState6F(struct FieldActor *actor);
+int FieldActor_MoveState6F(struct FieldActor *actor);
+void FieldActor_State6FMessage(struct FieldActor *actor, int arg);
+void FieldActor_EnterState6F(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActor_SetWork6F(struct State6FWork *work, Vec3 point, int accel, int previous);
+int FieldActor_RequestState6F(struct FieldActor *actor, const Vec3 *point, int accel, int priority, s16 arg);
+void FieldActor_SetArgs6F(struct State6FArgs *args, Vec3 point, int accel);
+void FieldActor_UpdateState3F(struct FieldActor *actor);
+void FieldActor_RunState3F(struct FieldActor *actor);
+void FieldActor_ExitState3F(struct FieldActor *actor);
+void FieldActor_State3FMessage(struct FieldActor *actor, int arg);
+void FieldActor_EnterState3F(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActor_GetSavedItem3F(const u8 *saved, u16 *item);
+void FieldActor_SetSavedItem3F(u8 *saved, u16 item);
+int FieldActor_RequestState3F(struct FieldActor *actor, u16 item, int priority, int arg);
+void FieldActor_UpdateState35(struct FieldActor *actor);
+void FieldActor_EndState35(struct FieldActor *actor);
+void FieldActor_State35Message(struct FieldActor *actor, int arg);
+void FieldActor_EnterState35(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActor_RequestState35(struct FieldActor *actor, int priority, int arg);
+void FieldActor_UpdateState34(struct FieldActor *actor);
+void FieldActor_EndState34(struct FieldActor *actor);
 
 #endif

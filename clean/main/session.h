@@ -3,8 +3,8 @@
  * (the slots in order, without this system's).
  *
  * Every frame each peer is sent one packet from its block in send_blocks and its packets are
- * received into a queue of three blocks in recv_blocks (Session_SendBlocks, func_02074330; the
- * receive callback func_02075050). A packet starts with a byte whose low two bits give credits
+ * received into a queue of three blocks in recv_blocks (Session_SendBlocks and Session_Update,
+ * func_02074330; the receive callback Session_OnReceived, func_02075050). A packet starts with a byte whose low two bits give credits
  * back and whose top bit marks a system packet (func_02077b20, func_02077b28), then the shared
  * records that changed (an id below 70 and the record's bytes, ended by an id of 70 or more),
  * then messages. A peer is sent a data packet only while it has a credit, one per free entry of
@@ -67,7 +67,11 @@ typedef struct NetSession {
     int local_slot;                                       /* 0x64: this system's slot; 4 when it has none */
     int local_player;                                     /* 0x68: the player number at this system */
     u8 player_count;                                      /* 0x6c: 0-4 */
-    u8 unk_06d[0x78 - 0x6d];
+    u8 max_record_size;                                   /* 0x6d: the largest shared record's size */
+    u8 unk_06e[2];
+    u8 *record_scratch; /* 0x70: a block of max_record_size bytes */
+    u8 active;          /* 0x74: set while the network library is started (session_link.c) */
+    u8 unk_075[3];
     u8 *record_table;                 /* 0x78: the shared records (0x6a0 bytes) */
     u8 record_flags[SESSION_RECORDS]; /* 0x7c: set for a record to send */
     u8 unk_0c2[2];

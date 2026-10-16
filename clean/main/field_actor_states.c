@@ -18,8 +18,10 @@
 #include <stdint.h>
 
 #include "autoload_2/approach.h"
+#include "autoload_2/fx_math.h"
 #include "clean.h"
 #include "field_actor_parts.h"
+#include "main/calendar.h"
 #include "main/group_params.h"
 #include "main/item_code.h"
 #include "main/session.h"
@@ -297,7 +299,6 @@ extern int FX_Div(int numerator, int denominator);
 extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern u16 func_02077898(const u8 *packed);
 extern void func_020778b0(u8 *packed, int item, ...);
-extern int func_02008934(FieldActor *actor, u8 kind, int priority, int arg);
 extern void func_0203ee14(FieldActor *actor, void *receiver);
 extern void func_0203ee08(FieldActor *actor, void *receiver);
 extern void func_020a8164(void *receiver, const char *name);
@@ -312,7 +313,7 @@ static int anim_frame(const FieldActor *actor)
 
 static BOOL is_local_player(const FieldActor *actor)
 {
-    return func_02073908(data_020ccf94, actor->player) != 0;
+    return Session_IsLocalPlayer(data_020ccf94, actor->player) != 0;
 }
 
 /* An arithmetic shift right, for negative values too. */
@@ -1241,10 +1242,10 @@ void FieldActor_RunState84(FieldActor *actor)
 }
 CLEAN_AS(func_020087e0, FieldActor_RunState84)
 
-/* func_020088fc: state 0x84's message handler: asks for it with kind 0 (func_02008934). */
+/* func_020088fc: state 0x84's message handler: asks for it with kind 0. */
 void FieldActor_State84Message(FieldActor *actor, int arg)
 {
-    func_02008934(actor, 0, 6, arg);
+    FieldActor_RequestState84(actor, 0, 6, arg);
 }
 CLEAN_AS(func_020088fc, FieldActor_State84Message)
 
@@ -1257,3 +1258,1309 @@ void FieldActor_EnterState84(FieldActor *actor, const StateRequest *request, int
     func_020109fc(actor, 0, 3, 3);
 }
 CLEAN_AS(func_02008910, FieldActor_EnterState84)
+
+/* func_02008934: asks for state 0x84 with a kind (FieldActor_EnterState84); whether it was
+ * queued. */
+int FieldActor_RequestState84(FieldActor *actor, u8 kind, int priority, int arg)
+{
+    return request_state(actor, 0x84, priority, arg, &kind, 1);
+}
+CLEAN_AS(func_02008934, FieldActor_RequestState84)
+
+/* ---- The states below: what they share */
+
+extern int func_02056f28(const FrameCtrl *ctrl, int frame);
+/* A sound effect played on the sound system (data_021fd1bc). */
+extern void func_020f1fb4(void *sound_system, int number);
+extern u8 data_021fd1bc[];
+extern void func_0203ae98(void);
+extern int func_0203b144(void);
+extern int func_0203e110(void);
+extern int func_0203e3f8(void);
+extern void func_02035624(int a);
+extern void func_02035684(int a, int b, int c);
+extern void func_020356c4(int a, int b, int c, int d);
+extern int func_0200c3b0(FieldActor *actor, int a, int priority, int arg);
+extern int func_02011404(s16 *angle, int target, int a, int b, int c);
+extern int func_020113e0(s16 *angle, int target);
+extern void func_020110a0(FieldActor *actor, s16 *yaw);
+extern void func_020110c4(u16 *item, FieldActor *actor);
+extern int func_020778f8(const u8 *packed);
+extern void func_02077910(u8 *packed, int value);
+extern int func_020912d4(int kind, Vec3 *position, s16 *angle, int a);
+extern void func_0200ee40(FieldActor *actor);
+extern void *func_020604f8(void *line);
+extern void func_0205eae0(void *held, int pose, int a, int b);
+extern int func_0204bcdc(u16 *item);
+extern int func_0204bc64(u16 *item);
+extern int func_0200fc90(FieldActor *actor);
+extern int func_0200fbe0(FieldActor *actor);
+extern int func_ov003_0222e5fc(int slot);
+extern void func_ov003_0222e898(int kind, int player);
+extern void func_ov003_02219668(FieldActorBlock48 *matrix, const Vec3 *offset);
+extern int func_ov003_0222d83c(int player, u16 *values, FieldActorBlock48 *matrix, int a);
+extern void func_ov003_0222aaa0(Vec3 *out, int kind);
+extern int func_ov003_0222aa50(void *fish, Vec3 *a, Vec3 *b);
+extern int func_ov003_02217c5c(FieldActor *actor, int a, int b, int c, int d, int e, int priority, int arg);
+extern u8 *func_0209d5e8(void);
+extern u8 func_0209d848(const u8 *object);
+extern u8 *func_0209d844(u8 *object);
+extern int func_020310c8(int a);
+extern int FX_MulFunc(int a, int b);
+extern void func_020109c8(FieldActor *actor, int animation, int a, int b);
+extern void func_02054860(void *body);
+extern void func_0200f95c(FieldActor *actor);
+extern u8 func_020b65c4(void);
+extern void func_02011490(fx32 *value, fx32 target);
+extern int func_02011398(int value, int a);
+extern int func_020113b0(int value, int a);
+extern void func_0201107c(FieldActor *actor, int *value);
+extern const s16 FX_SinCosTable_[];
+extern int func_0200ee0c(FieldActor *actor);
+extern void func_0209e474(DateTime *now);
+extern u8 *func_0209626c(void);
+extern void func_0209e140(DateTime *when, int days);
+extern void *func_02011368(FieldActor *actor);
+/* The date packed into 16 bits, stored in the player's record at 0x2412. */
+extern void func_02099794(void *record, u16 date);
+extern int func_02095694(int a, int player);
+extern void func_020108cc(FieldActor *actor, int a, int b);
+extern void *func_020984fc(int player);
+extern u16 *func_02099728(void *record);
+extern void func_0200f1a4(FieldActor *actor, int a, u16 item);
+extern void func_0209971c(void *record, u16 *item);
+extern void func_02057bb8(u16 *item);
+extern void func_02057cb8(FieldActor *actor);
+extern int func_02057cf4(void);
+extern void *func_02057d0c(int a, FieldActor *actor);
+
+/* The receivers' names: "obj_etc_player", "obj_etc_getinsect" and "obj_etc_getfish". */
+extern const char data_020d83b4[];
+extern const char data_020d83c4[];
+extern const char data_020d83d8[];
+
+/* The item code for nothing. */
+#define NO_ITEM 0xfff1
+
+/* The byte of the receiver's link at 0x1e77 (the message the conversation reads). */
+#define LINK_MESSAGE 0x1e77
+
+/* The receiver's address as the game takes it: NULL for a NULL actor. */
+static void *receiver_of(FieldActor *actor)
+{
+    return actor != NULL ? actor->receiver : NULL;
+}
+
+/* The receiver released (flag 0x11) and func_0203e19c. */
+static void close_receiver(FieldActor *actor)
+{
+    func_0203ee08(actor, receiver_of(actor));
+    func_0200f268(actor, 0x11);
+    func_0203e19c();
+}
+
+/* The bar drops to the state's end priority. */
+static void drop_priority(FieldActor *actor)
+{
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+}
+
+/* a - b and a + b, wrapping as the ARM does. */
+static int sub32(int a, int b)
+{
+    return (int) ((u32) a - (u32) b);
+}
+
+static int add32(int a, int b)
+{
+    return (int) ((u32) a + (u32) b);
+}
+
+/* ---- State 0x83: the lid is closed (animation 0x81) */
+
+/* func_02008970: state 0x83's update; this console's actor leaves it once the lid is open,
+ * another console's actor also runs func_0200f554. */
+void FieldActor_UpdateState83(FieldActor *actor)
+{
+    FieldActor_RunState83(actor);
+    if (is_local_player(actor)) {
+        func_02010d64(actor);
+        FieldActor_EndState83(actor);
+    } else {
+        func_0200f554(actor);
+        func_02010d64(actor);
+    }
+}
+CLEAN_AS(func_02008970, FieldActor_UpdateState83)
+
+/* func_020089b0: once the lid is open again (bit 15 of the ARM7's button word clear),
+ * func_0200d4e8 (3).
+ * HW: reads the word the ARM7 keeps in the shared area (NitroSDK's PAD_DetectFold). */
+void FieldActor_EndState83(FieldActor *actor)
+{
+    u16 buttons = *(const volatile u16 *) 0x027fffa8;
+    if ((buttons & 0x8000) == 0) {
+        func_0200d4e8(actor, 3, 1, -1);
+    }
+}
+CLEAN_AS(func_020089b0, FieldActor_EndState83)
+
+/* func_020089dc: at frame 1 of the animation sound 0x79 plays: on the sound system for this
+ * console's actor, from the actor for another's. */
+void FieldActor_RunState83(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    if (func_02056f28(&actor->anim, 1)) {
+        if (is_local_player(actor)) {
+            func_020f1fb4(data_021fd1bc, 0x79);
+        } else {
+            func_0200f328(actor, 0x79);
+        }
+    }
+}
+CLEAN_AS(func_020089dc, FieldActor_RunState83)
+
+/* func_02008a2c: state 0x83's message handler: asks for it with priority 1. */
+void FieldActor_State83Message(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState83(actor, 1, arg);
+}
+CLEAN_AS(func_02008a2c, FieldActor_State83Message)
+
+/* func_02008a38: state 0x83's entry: animation 0x81, blended over 5 frames unless the actor
+ * comes from state 0. */
+void FieldActor_EnterState83(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    int blend = previous != 0 ? 5 : 0;
+    func_020109fc(actor, 0x81, blend, blend);
+}
+CLEAN_AS(func_02008a38, FieldActor_EnterState83)
+
+/* func_02008a54: asks for state 0x83; whether it was queued. */
+int FieldActor_RequestState83(FieldActor *actor, int priority, int arg)
+{
+    return request_state(actor, 0x83, priority, arg, NULL, 0);
+}
+CLEAN_AS(func_02008a54, FieldActor_RequestState83)
+
+/* ---- State 0x79: animations 0x76 and 0x77, then the receiver "obj_etc_player" */
+
+/* func_02008a8c: state 0x79's update. */
+void FieldActor_UpdateState79(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_02010d64(actor);
+    FieldActor_RunState79(actor);
+}
+CLEAN_AS(func_02008a8c, FieldActor_UpdateState79)
+
+/* func_02008aa8: at the end of animation 0x76 comes 0x77; for another console's actor the step
+ * becomes 3 and the bar drops. After that the actor turns towards yaw 0 (by 0x400) and goes by
+ * the step (the work's first byte):
+ *   0: once func_0203e1c4 allows, the receiver at 0xec is registered as "obj_etc_player" (flag
+ *      0x11) with byte 0x15 at 0x1e, the link's request is raised and func_0203ae98 runs; then
+ *      1. Either way the check of step 1 follows;
+ *   1: once the link reports itself open, 2;
+ *   2: once the link is closed the receiver is released, the bar drops, func_0200d4e8 (3)
+ *      moves on, flag 8 is cleared, func_0203b144 and func_02035624 (0xc) run;
+ *   3 (another console's actor): nothing.
+ * QUIRK: the receiver's address is taken as NULL for a NULL actor.
+ * REQUIRES: the link is set at step 0 (the ROM writes through it unchecked there). */
+void FieldActor_RunState79(FieldActor *actor)
+{
+    u8 *step = &actor->work.bytes[0];
+    if (actor->animation == 0x76) {
+        if (func_02056f94(&actor->anim)) {
+            func_020109fc(actor, 0x77, 0, 0);
+            if (!is_local_player(actor)) {
+                *step = 3;
+                drop_priority(actor);
+            }
+        }
+        return;
+    }
+    func_0200faf0(actor, 0x400);
+    switch (*step) {
+        case 0:
+            if (func_0203e1c4()) {
+                *step = 1;
+                func_0203ee14(actor, receiver_of(actor));
+                func_0200f27c(actor, 0x11);
+                func_020a8164(actor->receiver, data_020d83b4);
+                actor->receiver_unk_1E = 0x15;
+                actor->link->requested = 1;
+                func_0203ae98();
+            }
+            /* fall through */
+        case 1:
+            if (actor->link != NULL && actor->link->open != 0) {
+                *step = 2;
+            }
+            break;
+        case 2:
+            if (actor->link != NULL && actor->link->open == 0) {
+                close_receiver(actor);
+                drop_priority(actor);
+                func_0200d4e8(actor, 3, 1, -1);
+                func_0200f268(actor, 8);
+                func_0203b144();
+                func_02035624(0xc);
+            }
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_02008aa8, FieldActor_RunState79)
+
+/* func_02008be8: state 0x79's message handler: asks for it with priority 5. */
+void FieldActor_State79Message(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState79(actor, 5, arg);
+}
+CLEAN_AS(func_02008be8, FieldActor_State79Message)
+
+/* func_02008bf4: state 0x79's entry: animation 0x76, step 0, func_02035684 (0xc, 0xf) for this
+ * console's actor, and sound 0x83a. */
+void FieldActor_EnterState79(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    func_020109a0(actor, 0x76, 3, 0);
+    actor->work.bytes[0] = 0;
+    if (is_local_player(actor)) {
+        func_02035684(0xc, 0xf, 0);
+    }
+    func_0200f328(actor, 0x83a);
+}
+CLEAN_AS(func_02008bf4, FieldActor_EnterState79)
+
+/* func_02008c40: asks for state 0x79; when it was queued flag 8 is set. Whether it was queued
+ * (1 or 0).
+ * BUG: as in request_state, the request's unset bytes are the stack's. */
+int FieldActor_RequestState79(FieldActor *actor, int priority, int arg)
+{
+    StateRequest request;
+#ifdef BUGFIX
+    request = (StateRequest){0};
+#endif
+    func_0200e92c(&request);
+    func_0200e90c(&request, 0x79, priority, arg);
+    int queued = func_0200e894(actor, &request) != 0;
+    if (queued) {
+        func_0200f27c(actor, 8);
+    }
+    func_0200e91c(&request);
+    return queued;
+}
+CLEAN_AS(func_02008c40, FieldActor_RequestState79)
+
+/* ---- State 0x77: turning to a yaw (animation 0x70) */
+
+/* The yaw state 0x77 turns to: the work's first halfword. */
+static s16 *state77_yaw(FieldActor *actor)
+{
+    return (s16 *) &actor->work;
+}
+
+/* func_02008c8c: state 0x77's update. */
+void FieldActor_UpdateState77(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    FieldActor_TurnState77(actor);
+    func_02010d64(actor);
+    FieldActor_EndState77(actor);
+}
+CLEAN_AS(func_02008c8c, FieldActor_UpdateState77)
+
+/* func_02008cac: at the animation's end the bar drops and func_0200d4e8 (3) moves on. */
+void FieldActor_EndState77(FieldActor *actor)
+{
+    if (func_02056f94(&actor->anim)) {
+        drop_priority(actor);
+        func_0200d4e8(actor, 3, 1, -1);
+    }
+}
+CLEAN_AS(func_02008cac, FieldActor_EndState77)
+
+/* func_02008cec: the body turns towards the yaw (func_02011404 with 0x800). */
+void FieldActor_TurnState77(FieldActor *actor)
+{
+    s16 yaw = actor->yaw;
+    func_02011404(&yaw, *state77_yaw(actor), 0x800, 0x1770000, 0xc0000);
+    func_020110a0(actor, &yaw);
+}
+CLEAN_AS(func_02008cec, FieldActor_TurnState77)
+
+/* func_02008d2c: state 0x77's message handler: asks for it with the saved yaw. */
+void FieldActor_State77Message(FieldActor *actor, int arg)
+{
+    u16 yaw;
+    FieldActor_GetSavedYaw77(actor->saved.packed, &yaw);
+    FieldActor_RequestState77(actor, yaw, 6, arg);
+}
+CLEAN_AS(func_02008d2c, FieldActor_State77Message)
+
+/* func_02008d5c: state 0x77's entry: animation 0x70, effect 0x43 at the effect point, sound
+ * 0x86, and the request's yaw kept in the work and saved at 0x8f0. */
+void FieldActor_EnterState77(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    s16 yaw = (s16) (request->payload[0] | request->payload[1] << 8);
+    func_020109a0(actor, 0x70, 3, 0);
+    func_020912d4(0x43, &actor->effect_point, NULL, 0);
+    func_0200f328(actor, 0x86);
+    *state77_yaw(actor) = yaw;
+    FieldActor_SetSavedYaw77(actor->saved.packed, yaw);
+}
+CLEAN_AS(func_02008d5c, FieldActor_EnterState77)
+
+/* func_02008da8: the yaw saved by state 0x77 (func_020778f8). */
+void FieldActor_GetSavedYaw77(const u8 *saved, u16 *yaw)
+{
+    *yaw = (u16) func_020778f8(saved);
+}
+CLEAN_AS(func_02008da8, FieldActor_GetSavedYaw77)
+
+/* func_02008db8: saves state 0x77's yaw (func_02077910). */
+void FieldActor_SetSavedYaw77(u8 *saved, int yaw)
+{
+    func_02077910(saved, yaw);
+}
+CLEAN_AS(func_02008db8, FieldActor_SetSavedYaw77)
+
+/* func_02008dc0: asks for state 0x77 with a yaw; whether it was queued. */
+int FieldActor_RequestState77(FieldActor *actor, u16 yaw, int priority, int arg)
+{
+    u8 payload[2] = {(u8) yaw, (u8) (yaw >> 8)};
+    return request_state(actor, 0x77, priority, arg, payload, 2);
+}
+CLEAN_AS(func_02008dc0, FieldActor_RequestState77)
+
+/* ---- State 0x76: a catch or a find held up (data_020c7620's animation) with a jingle */
+
+/* State 0x76's work. */
+typedef struct State76Work {
+    u16 jingle; /* data_020c75f0's entry for the mode (this console's actor only) */
+    u8 mode;    /* 0 an insect, 1 a fish, 2 to 7 others */
+    u8 step;    /* 0 to 2; 3 waits (mode 0 unless coming from state 0x57) */
+    u8 unk_04;  /* set to 0 */
+    u8 kind;    /* the request's kind */
+    u8 slot;    /* the request's slot */
+} State76Work;
+
+static_assert(sizeof(State76Work) <= sizeof(FieldActorWork), "state 0x76 work");
+
+/* Per mode (0 to 7): the animation and the jingle. */
+extern const u32 data_020c7620[8];
+extern const u16 data_020c75f0[8];
+
+static State76Work *state76_work(FieldActor *actor)
+{
+    return (State76Work *) &actor->work;
+}
+
+/* func_02008dfc: state 0x76's update. The words at 0xc4, the halfword at 0xd0 and the matrices
+ * at 0x298 and 0x698 are kept across func_0200ee40. */
+void FieldActor_UpdateState76(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    Vec3 kept_c4 = actor->unk_0C4;
+    s16 kept_d0 = actor->unk_0D0;
+    FieldActorBlock48 kept_298 = actor->unk_298;
+    FieldActorBlock48 kept_698 = actor->unk_698;
+    func_0200ee40(actor);
+    func_02010d64(actor);
+    FieldActor_RunState76(actor);
+    actor->unk_0C4 = kept_c4;
+    actor->unk_0D0 = kept_d0;
+    actor->unk_298 = kept_298;
+    actor->unk_698 = kept_698;
+}
+CLEAN_AS(func_02008dfc, FieldActor_UpdateState76)
+
+/* Whether an item code is nothing: for a code func_0204bcdc accepts, by comparing func_0204bc64
+ * of it and of NO_ITEM; otherwise by the code itself. */
+static BOOL state76_item_is_nothing(u16 *item)
+{
+    if (func_0204bcdc(item)) {
+        u16 none = NO_ITEM;
+        int code = func_0204bc64(item);
+        return code == func_0204bc64(&none);
+    }
+    return *item == NO_ITEM;
+}
+
+/* What follows state 0x76 in modes 2 to 7: outdoors, with an item in hand and no
+ * func_0200fc90, func_ov003_02217c5c; otherwise func_0200d4e8 (3), outdoors after func_0203e110
+ * and flag 0. */
+static void state76_finish(FieldActor *actor)
+{
+    u16 item;
+    func_020110c4(&item, actor);
+    if (!state76_item_is_nothing(&item) && func_0200fc90(actor) == 0 && data_020e54a8 == 0) {
+        func_ov003_02217c5c(actor, 2, 2, 0, 0, 0, 6, -1);
+        return;
+    }
+    if (data_020e54a8 == 0) {
+        func_0203e110();
+        func_0200f27c(actor, 0);
+    }
+    func_0200d4e8(actor, 3, 1, -1);
+}
+
+/* The translation of a matrix (its last row). */
+static Vec3 matrix_translation(const FieldActorBlock48 *matrix)
+{
+    return (Vec3){(fx32) matrix->words[9], (fx32) matrix->words[10], (fx32) matrix->words[11]};
+}
+
+/* func_02008ea8: the actor turns towards yaw 0 (by 0x400). What is held up is placed from joint
+ * 0xb's matrix moved by an offset (func_ov003_02219668): an insect (mode 0; at step 3 the step
+ * becomes 0 and func_ov003_0222e5fc and func_ov003_0222e898 run first) by
+ * func_ov003_0222d83c, the fish hanging from the held line (mode 1) by func_ov003_0222aa50.
+ * Animations 0x87 and 0x89 are followed by 0x88 and 0x8a (with held poses 0xa and 0x20) and
+ * nothing else that frame. From frame 0x19 of animation 0x86 (at its frame 0xc this console's
+ * actor runs func_0203ae98) and frame 5 of the others, another console's actor drops the bar,
+ * this console's goes by the step:
+ *   0: once func_0203e1c4 allows, the receiver is registered (flag 0x11) by mode as
+ *      "obj_etc_getinsect" or "obj_etc_getfish" with byte 0x40, else "obj_etc_player" with
+ *      0x28, 0x29, 0x22 for mode 7 or mode + 0x1a, and the link's request is raised; then 1.
+ *      Either way the check of step 1 follows;
+ *   1: once the link reports itself open, 2;
+ *   2: an insect or a fish waits for the link's message byte 0xfe and asks for state 0x57 (mode
+ *      3) or 0x54 (mode 1). The others wait for the link to close: the receiver is released,
+ *      func_0203b144 runs and the bar drops; then outdoors, with an item in hand and no
+ *      func_0200fc90, func_ov003_02217c5c follows; otherwise (outdoors with func_0203e110 and
+ *      flag 0) func_0200d4e8 (3).
+ * QUIRK: the point of the insect on the curved ground (func_0203f7d0) is worked out and not
+ * used; the receiver's address is taken as NULL for a NULL actor.
+ * REQUIRES: the link is set at step 0 (the ROM writes through it unchecked there). */
+void FieldActor_RunState76(FieldActor *actor)
+{
+    State76Work *work = state76_work(actor);
+    func_0200faf0(actor, 0x400);
+    u8 mode = work->mode;
+    int kind = work->kind;
+    FieldActorBlock48 joint = actor->unk_698;
+
+    if (mode == 0) {
+        if (work->step == 3) {
+            work->step = 0;
+            func_ov003_0222e5fc(work->slot);
+            func_ov003_0222e898(kind, (u8) actor->player);
+        }
+        Vec3 offset = kind == 9 ? (Vec3){0x119a, 0x4cd, -0x4cd} : (Vec3){0xb33, 0x19a, -0x19a};
+        func_ov003_02219668(&joint, &offset);
+        u16 values[3] = {100, 100, 100};
+        Vec3 point = matrix_translation(&joint);
+        func_0203f7d0(&point, &point);
+        func_ov003_0222d83c((u8) actor->player, values, &joint, 0);
+    } else if (mode == 1) {
+        u8 *fish = func_020604f8(&actor->held[0x28]);
+        if (fish != NULL) {
+            Vec3 offset = {0xb33, 0x19a, -0x19a};
+            func_ov003_02219668(&joint, &offset);
+            Vec3 point = matrix_translation(&joint);
+            func_0203f7d0(&point, &point);
+            Vec3 angles;
+            func_ov003_0222aaa0(&angles, (s8) fish[0x7e]);
+            func_ov003_0222aa50(fish, &point, &angles);
+        }
+    }
+
+    int start_frame;
+    switch (actor->animation) {
+        case 0x87:
+            if (func_02056f94(&actor->anim)) {
+                func_020109a0(actor, 0x88, 0, 0);
+                func_0205eae0(actor->held, 0xa, 0, 1);
+            }
+            return;
+        case 0x89:
+            if (func_02056f94(&actor->anim)) {
+                func_020109a0(actor, 0x8a, 0, 0);
+                func_0205eae0(actor->held, 0x20, 0, 1);
+            }
+            return;
+        case 0x86:
+            start_frame = 0x19;
+            if (is_local_player(actor) && func_02056f28(&actor->anim, 0xc)) {
+                func_0203ae98();
+            }
+            break;
+        default:
+            start_frame = 5;
+            break;
+    }
+    if (anim_frame(actor) < start_frame) {
+        return;
+    }
+    if (!is_local_player(actor)) {
+        drop_priority(actor);
+        return;
+    }
+
+    switch (work->step) {
+        case 0:
+            if (func_0203e1c4()) {
+                work->step = 1;
+                func_0203ee14(actor, receiver_of(actor));
+                func_0200f27c(actor, 0x11);
+                switch (mode) {
+                    case 0:
+                        func_020a8164(actor->receiver, data_020d83c4);
+                        actor->receiver_unk_1E = 0x40;
+                        break;
+                    case 1:
+                        func_020a8164(actor->receiver, data_020d83d8);
+                        actor->receiver_unk_1E = 0x40;
+                        break;
+                    case 2:
+                        func_020a8164(actor->receiver, data_020d83b4);
+                        actor->receiver_unk_1E = 0x28;
+                        break;
+                    case 3:
+                        func_020a8164(actor->receiver, data_020d83b4);
+                        actor->receiver_unk_1E = 0x29;
+                        break;
+                    case 7:
+                        func_020a8164(actor->receiver, data_020d83b4);
+                        actor->receiver_unk_1E = 0x22;
+                        break;
+                    default:
+                        func_020a8164(actor->receiver, data_020d83b4);
+                        actor->receiver_unk_1E = (u8) (mode + 0x1a);
+                        break;
+                }
+                actor->link->requested = 1;
+            }
+            /* fall through */
+        case 1:
+            if (actor->link != NULL && actor->link->open != 0) {
+                work->step = 2;
+            }
+            break;
+        case 2:
+            if (mode < 2) {
+                if (actor->link == NULL || ((const u8 *) actor->link)[LINK_MESSAGE] != 0xfe) {
+                    break;
+                }
+                if (mode == 1) {
+                    FieldActor_RequestState54(actor, 1, 6, -1);
+                } else {
+                    FieldActor_RequestState57(actor, 3, (u8) kind, (u8) kind, 6, -1);
+                }
+                break;
+            }
+            if (actor->link == NULL || actor->link->open != 0) {
+                break;
+            }
+            close_receiver(actor);
+            if (is_local_player(actor)) {
+                func_0203b144();
+            }
+            drop_priority(actor);
+            state76_finish(actor);
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_02008ea8, FieldActor_RunState76)
+
+/* func_02009310: state 0x76's message handler: asks for it with the saved mode, kind and
+ * slot. */
+void FieldActor_State76Message(FieldActor *actor, int arg)
+{
+    u8 mode;
+    u8 kind;
+    u8 slot;
+    FieldActor_GetSaved76(actor->saved.packed, &mode, &kind, &slot);
+    FieldActor_RequestState76(actor, mode, kind, slot, 6, (s16) arg);
+}
+CLEAN_AS(func_02009310, FieldActor_State76Message)
+
+/* func_0200934c: state 0x76's entry. Modes 2 and 3 run func_0203e110 first. The request's
+ * mode, kind and slot go into the work and are saved at 0x8f0; mode 0 waits at step 3 unless
+ * the actor comes from state 0x57. The mode's animation starts, the byte at 0x8eb becomes 0,
+ * and a held tool of kind 4 or 3 (func_0200fbe0) takes pose 9 or 0x1f. For this console's
+ * actor the mode's jingle is noted and played (func_020356c4) on channel 6 for modes 0 to 3
+ * (2 and 3 after func_02035624 (0x12) and func_02035684 (5)), else on 0xd after
+ * func_02035684 (0xc); from mode 2 on the word at 0x81c becomes 7.
+ * REQUIRES: the mode is 0 to 7 (the tables' size). */
+void FieldActor_EnterState76(FieldActor *actor, const StateRequest *request, int previous)
+{
+    u8 mode = request->payload[0];
+    u8 kind = request->payload[1];
+    u8 slot = request->payload[2];
+    State76Work *work = state76_work(actor);
+
+    if (mode == 2 || mode == 3) {
+        func_0203e110();
+    }
+    work->mode = mode;
+    work->step = (mode == 0 && previous != 0x57) ? 3 : 0;
+    work->unk_04 = 0;
+    work->kind = kind;
+    work->slot = slot;
+    FieldActor_SetSaved76(actor->saved.packed, mode, kind, slot);
+    func_020109a0(actor, (int) data_020c7620[mode], 3, 0);
+    FIELD_ACTOR_UNK_8EB(actor) = 0;
+
+    switch (func_0200fbe0(actor)) {
+        case 4:
+            func_0205eae0(actor->held, 9, 3, 1);
+            break;
+        case 3:
+            func_0205eae0(actor->held, 0x1f, 3, 1);
+            break;
+        default:
+            break;
+    }
+
+    if (is_local_player(actor)) {
+        int channel;
+        switch (mode) {
+            case 0:
+            case 1:
+                channel = 6;
+                break;
+            case 2:
+            case 3:
+                channel = 6;
+                func_02035624(0x12);
+                func_02035684(5, 0, 1);
+                actor->unk_81C = 7;
+                break;
+            default:
+                channel = 0xd;
+                func_02035684(0xc, 0, 1);
+                actor->unk_81C = 7;
+                break;
+        }
+        work->jingle = data_020c75f0[mode];
+        func_020356c4(channel, data_020c75f0[mode], 0x7f, 1);
+    }
+}
+CLEAN_AS(func_0200934c, FieldActor_EnterState76)
+
+/* func_02009484: state 0x76's saved mode, kind and slot. */
+void FieldActor_GetSaved76(const u8 *saved, u8 *mode, u8 *kind, u8 *slot)
+{
+    *mode = saved[0];
+    *kind = saved[1];
+    *slot = saved[2];
+}
+CLEAN_AS(func_02009484, FieldActor_GetSaved76)
+
+/* func_02009498: saves state 0x76's mode, kind and slot. */
+void FieldActor_SetSaved76(u8 *saved, int mode, int kind, int slot)
+{
+    saved[0] = (u8) mode;
+    saved[1] = (u8) kind;
+    saved[2] = (u8) slot;
+}
+CLEAN_AS(func_02009498, FieldActor_SetSaved76)
+
+/* func_020094a0: asks for state 0x76 with a mode, a kind and a slot; whether it was queued. */
+void *FieldActor_RequestState76(FieldActor *actor, u8 mode, u8 kind, u8 slot, u32 priority, s16 arg)
+{
+    u8 payload[3] = {mode, kind, slot};
+    return (void *) (intptr_t) request_state(actor, 0x76, (int) priority, arg, payload, 3);
+}
+CLEAN_AS(func_020094a0, FieldActor_RequestState76)
+
+/* ---- State 0x70: turning to a yaw */
+
+/* State 0x70's work: the yaw to turn to, and the body's yaw before the last turn. */
+typedef struct State70Work {
+    s16 target;
+    s16 before;
+} State70Work;
+
+static State70Work *state70_work(FieldActor *actor)
+{
+    return (State70Work *) &actor->work;
+}
+
+/* func_020094e4: state 0x70's update. */
+void FieldActor_UpdateState70(FieldActor *actor)
+{
+    FieldActor_TurnState70(actor);
+    func_02010f5c(actor);
+    func_02010d64(actor);
+    FieldActor_EndState70(actor);
+}
+CLEAN_AS(func_020094e4, FieldActor_UpdateState70)
+
+/* func_02009504: once the body faces the yaw, func_0200c3b0 (3, priority 5) and flag 6 is
+ * cleared. */
+void FieldActor_EndState70(FieldActor *actor)
+{
+    if (state70_work(actor)->target == actor->yaw) {
+        func_0200c3b0(actor, 3, 5, -1);
+        func_0200f268(actor, 6);
+    }
+}
+CLEAN_AS(func_02009504, FieldActor_EndState70)
+
+/* func_02009534: the body turns towards the yaw (func_020113e0); the yaw before is noted. */
+void FieldActor_TurnState70(FieldActor *actor)
+{
+    State70Work *work = state70_work(actor);
+    s16 yaw = actor->yaw;
+    work->before = yaw;
+    func_020113e0(&yaw, work->target);
+    func_020110a0(actor, &yaw);
+}
+CLEAN_AS(func_02009534, FieldActor_TurnState70)
+
+/* func_02009568: state 0x70's message handler: nothing. */
+void FieldActor_State70Message(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_02009568, FieldActor_State70Message)
+
+/* func_0200956c: state 0x70's entry: animation 1 unless flag 0x17 is set, the request's yaw
+ * into the work, and flag 6. */
+void FieldActor_EnterState70(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    s16 yaw = (s16) (request->payload[0] | request->payload[1] << 8);
+    if (!func_0200f290(actor, 0x17)) {
+        func_020109fc(actor, 1, 3, 0);
+    }
+    FieldActor_SetYaw70((u16 *) &state70_work(actor)->target, yaw);
+    func_0200f27c(actor, 6);
+}
+CLEAN_AS(func_0200956c, FieldActor_EnterState70)
+
+/* func_020095ac: state 0x70's yaw into its work. */
+void FieldActor_SetYaw70(u16 *target, int yaw)
+{
+    *target = (u16) yaw;
+}
+CLEAN_AS(func_020095ac, FieldActor_SetYaw70)
+
+/* func_020095b0: asks for state 0x70 with a yaw; whether it was queued.
+ * BUG: as in request_state, the request's unset bytes are the stack's. */
+int FieldActor_RequestState70(FieldActor *actor, int yaw, int priority, int arg)
+{
+    StateRequest request;
+#ifdef BUGFIX
+    request = (StateRequest){0};
+#endif
+    func_0200e92c(&request);
+    func_0200e90c(&request, 0x70, priority, arg);
+    FieldActor_SetArgs70((u16 *) request.payload, yaw);
+    int queued = func_0200e894(actor, &request);
+    func_0200e91c(&request);
+    return queued;
+}
+CLEAN_AS(func_020095b0, FieldActor_RequestState70)
+
+/* func_020095f0: state 0x70's yaw into a request's payload. */
+void FieldActor_SetArgs70(u16 *payload, int yaw)
+{
+    *payload = (u16) yaw;
+}
+CLEAN_AS(func_020095f0, FieldActor_SetArgs70)
+
+/* ---- State 0x6f: walking to a point */
+
+/* State 0x6f's work, and what a request for it carries. */
+typedef struct State6FWork {
+    Vec3 point;
+    fx32 speed;
+    fx32 accel;
+    int previous; /* the state the actor came from */
+} State6FWork;
+
+typedef struct State6FArgs {
+    Vec3 point;
+    fx32 accel;
+} State6FArgs;
+
+static_assert(sizeof(State6FWork) <= sizeof(FieldActorWork), "state 0x6f work");
+static_assert(sizeof(State6FArgs) <= sizeof(((StateRequest *) NULL)->payload), "state 0x6f arguments");
+
+static State6FWork *state6f_work(FieldActor *actor)
+{
+    return (State6FWork *) &actor->work;
+}
+
+/* func_020095f4: state 0x6f's update. */
+void FieldActor_UpdateState6F(FieldActor *actor)
+{
+    int arrived = FieldActor_MoveState6F(actor);
+    FieldActor_AnimateState6F(actor);
+    FieldActor_HeightState6F(actor);
+    func_02010d64(actor);
+    FieldActor_EndState6F(actor, arrived);
+}
+CLEAN_AS(func_020095f4, FieldActor_UpdateState6F)
+
+/* func_02009624: once the actor is at the point: with flag 0x18 it stops (animation 0 if not
+ * already), the bar drops, func_0200d4e8 (3) moves on, func_0203e3f8 runs and flags 5, 0x18 and
+ * 3 are cleared; without it func_0200c3b0 (3, priority 5) and flag 5 is cleared. */
+void FieldActor_EndState6F(FieldActor *actor, int arrived)
+{
+    if (!arrived) {
+        return;
+    }
+    if (func_0200f290(actor, 0x18)) {
+        if (actor->animation != 0) {
+            func_020109fc(actor, 0, 3, 0);
+        }
+        drop_priority(actor);
+        func_0200d4e8(actor, 3, 1, -1);
+        func_0203e3f8();
+        func_0200f268(actor, 5);
+        func_0200f268(actor, 0x18);
+        func_0200f268(actor, 3);
+    } else {
+        func_0200c3b0(actor, 3, 5, -1);
+        func_0200f268(actor, 5);
+    }
+}
+CLEAN_AS(func_02009624, FieldActor_EndState6F)
+
+/* func_020096ac: func_0201100c; then with flag 0x18, while the object at data_021dc6e8 has its
+ * byte 0x20 at 1, the actor's height follows func_020310c8 (0): it is set to it when below it
+ * or when 1.0 or more away along Z from the object's Z (its word at 0xc); nearer it rises by
+ * 6/32 x (1.0 - the distance). */
+void FieldActor_HeightState6F(FieldActor *actor)
+{
+    if (!func_0200f290(actor, 0x18)) {
+        func_0201100c(actor);
+        return;
+    }
+    func_0201100c(actor);
+    u8 *object = func_0209d5e8();
+    if (func_0209d848(object) != 1) {
+        return;
+    }
+    int ground = func_020310c8(0);
+    if (actor->position.y < ground) {
+        actor->position.y = ground;
+        return;
+    }
+    const u8 *at = func_0209d844(object);
+    int distance = sub32(*(const int *) (at + 8), actor->position.z);
+    if (distance < 0) {
+        distance = (int) (0u - (u32) distance);
+    }
+    if (distance < FX32_ONE) {
+        int rise = (int) ((u32) FX_Div(sub32(FX32_ONE, distance), FX32_ONE) * 6u);
+        actor->position.y = add32(actor->position.y, shift_right(rise, 5));
+    } else {
+        actor->position.y = ground;
+    }
+}
+CLEAN_AS(func_020096ac, FieldActor_HeightState6F)
+
+/* func_02009728: with no animation, func_02010f5c only. Otherwise the speed (the word at 0x98,
+ * doubled with flag 0x18) times 0x3ae1 becomes the animation's speed (unless above its frame
+ * count) and picks animation 2 above 0x53f, else 1 (func_020109c8); then the body is updated
+ * and func_0200f95c runs. */
+void FieldActor_AnimateState6F(FieldActor *actor)
+{
+    if (actor->animation == 0) {
+        func_02010f5c(actor);
+        return;
+    }
+    int speed = actor->unk_098;
+    if (func_0200f290(actor, 0x18)) {
+        speed = (int) ((u32) speed << 1);
+    }
+    int anim_speed = FX_MulFunc(speed, 0x3ae1);
+    if (anim_speed <= actor->anim.end) {
+        actor->anim.speed = anim_speed;
+    }
+    if (speed > 0x53f) {
+        if (actor->animation != 2) {
+            func_020109c8(actor, 2, 3, 0);
+        }
+    } else if (actor->animation != 1) {
+        func_020109c8(actor, 1, 3, 0);
+    }
+    func_02054860(actor->unk_234);
+    func_0200f95c(actor);
+}
+CLEAN_AS(func_02009728, FieldActor_AnimateState6F)
+
+/* func_020097c0: one step towards the point; whether the actor got there.
+ * With flag 0x18 the point's X is the actor's (it walks along Z); in scene 0x20, coming from
+ * state 0x40, the point's Z is raised to the actor's when that is at or past it. Within
+ * 4 x speed (at least 1.0) of the point, at a speed of 0x333 or less, the actor is moved
+ * towards it (func_02011490 on X and Z): when it gets there the speed is 0 and the result 1;
+ * else the speed becomes the distance moved and the actor goes back to where it was. Nearer at
+ * a higher speed the speed falls (func_02011398, 819); farther it rises (func_020113b0, the
+ * acceleration). While the speed is not 0 the body turns towards the point (func_020113e0);
+ * the step taken (func_0201107c) is the speed times the cosine of the angle between the body
+ * and the point, made positive. */
+int FieldActor_MoveState6F(FieldActor *actor)
+{
+    State6FWork *work = state6f_work(actor);
+    fx32 *speed = &work->speed;
+    fx32 accel = work->accel;
+    int arrived = 0;
+    Vec3 start = actor->position;
+
+    if (func_0200f290(actor, 0x18)) {
+        work->point.x = actor->position.x;
+    }
+    if (func_020b65c4() == 0x20 && work->previous == 0x40 && start.z >= work->point.z) {
+        work->point.z = start.z;
+    }
+    Vec3 to = {sub32(work->point.x, actor->position.x), 0, sub32(work->point.z, actor->position.z)};
+    int near = FX_MulFunc(0x4000, *speed);
+    if (near < FX32_ONE) {
+        near = FX32_ONE;
+    }
+    if (Vec_LengthXZ(&to) < near) {
+        if (*speed <= 0x333) {
+            func_02011490(&actor->position.x, work->point.x);
+            func_02011490(&actor->position.z, work->point.z);
+            if (work->point.x == actor->position.x && work->point.z == actor->position.z) {
+                *speed = 0;
+                arrived = 1;
+            } else {
+                *speed = Vec_DistanceXZ(&actor->position, &start);
+                actor->position = start;
+            }
+        } else {
+            *speed = func_02011398(*speed, 819);
+        }
+    } else {
+        *speed = func_020113b0(*speed, accel);
+    }
+
+    s16 toward = Math_Atan2(to.x, to.z);
+    s16 yaw = actor->yaw;
+    if (*speed != 0) {
+        func_020113e0(&yaw, toward);
+        func_020110a0(actor, &yaw);
+    }
+    u32 index = (u16) (yaw - toward) >> 4;
+    int step = FX_MulFunc(*speed, FX_SinCosTable_[index * 2 + 1]);
+    if (step < 0) {
+        step = (int) (0u - (u32) step);
+    }
+    func_0201107c(actor, &step);
+    return arrived;
+}
+CLEAN_AS(func_020097c0, FieldActor_MoveState6F)
+
+/* func_02009914: state 0x6f's message handler: nothing. */
+void FieldActor_State6FMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_02009914, FieldActor_State6FMessage)
+
+/* func_02009918: state 0x6f's entry: animation 1, the request's point and acceleration into the
+ * work with speed 0 and the state before, flag 5, and the word at 0x808 cleared. In scene 0xc,
+ * for this console's actor with func_0200ee0c and an acceleration of 0x666, flags 1 and 2 of
+ * func_0209626c are cleared and today's date (yesterday's unless flag 0 is set) goes into the
+ * player's record (func_02099794) packed as year (7 bits), month (4 bits) and day (5 bits). */
+void FieldActor_EnterState6F(FieldActor *actor, const StateRequest *request, int previous)
+{
+    const State6FArgs *args = (const State6FArgs *) request->payload;
+    func_020109fc(actor, 1, 3, 0);
+    fx32 accel = args->accel;
+    FieldActor_SetWork6F(state6f_work(actor), args->point, accel, previous);
+    func_0200f27c(actor, 5);
+    FIELD_ACTOR_FIELD(actor, int, 0x808) = 0;
+
+    if (func_0200ee0c(actor) != 0 && is_local_player(actor) && func_020b65c4() == 0xc && accel == 0x666) {
+        DateTime now = {0};
+        func_0209e474(&now);
+        *func_0209626c() &= 0xf9;
+        if ((*func_0209626c() & 1) == 0) {
+            func_0209e140(&now, 1);
+        }
+        u16 date = (u16) ((now.year & 0x7f) | (now.month & 0xf) << 7 | (now.day & 0x1f) << 11);
+        func_02099794(func_02011368(actor), date);
+    }
+}
+CLEAN_AS(func_02009918, FieldActor_EnterState6F)
+
+/* func_02009a24: state 0x6f's work from a point, an acceleration and the state before. */
+void FieldActor_SetWork6F(State6FWork *work, Vec3 point, int accel, int previous)
+{
+    work->point = point;
+    work->speed = 0;
+    work->accel = accel;
+    work->previous = previous;
+}
+CLEAN_AS(func_02009a24, FieldActor_SetWork6F)
+
+/* func_02009a44: asks for state 0x6f with a point and an acceleration, unless the actor is
+ * already in it; whether it was queued.
+ * BUG: as in request_state, the request's unset bytes are the stack's. */
+int FieldActor_RequestState6F(FieldActor *actor, const Vec3 *point, int accel, int priority, s16 arg)
+{
+    if (actor->state == 0x6f) {
+        return 0;
+    }
+    StateRequest request;
+#ifdef BUGFIX
+    request = (StateRequest){0};
+#endif
+    func_0200e92c(&request);
+    func_0200e90c(&request, 0x6f, priority, arg);
+    FieldActor_SetArgs6F((State6FArgs *) request.payload, *point, accel);
+    int queued = func_0200e894(actor, &request);
+    func_0200e91c(&request);
+    return queued;
+}
+CLEAN_AS(func_02009a44, FieldActor_RequestState6F)
+
+/* func_02009a9c: state 0x6f's point and acceleration into a request's payload. */
+void FieldActor_SetArgs6F(State6FArgs *args, Vec3 point, int accel)
+{
+    args->point = point;
+    args->accel = accel;
+}
+CLEAN_AS(func_02009a9c, FieldActor_SetArgs6F)
+
+/* ---- State 0x3f: animation 0x13 with an item */
+
+/* State 0x3f's work. */
+typedef struct State3FWork {
+    fx32 unk_00; /* 1.0 */
+    u16 item;
+    u8 from_10; /* the actor came from state 0x10: func_0200c3b0 ends the state, else
+                 * func_0200c9a8 */
+} State3FWork;
+
+static State3FWork *state3f_work(FieldActor *actor)
+{
+    return (State3FWork *) &actor->work;
+}
+
+/* Items 0x1369 to 0x13a7 go to func_02095694 as 1 to 0x3f. */
+static BOOL state3f_numbered(u16 item)
+{
+    return item >= 0x1369 && item <= 0x13a7;
+}
+
+/* Ends state 0x3f: the bar drops and func_0200c3b0 or func_0200c9a8 (3, priority 5). */
+static void state3f_end(FieldActor *actor, const State3FWork *work)
+{
+    drop_priority(actor);
+    if (work->from_10) {
+        func_0200c3b0(actor, 3, 5, -1);
+    } else {
+        func_0200c9a8(actor, 3, 5, -1);
+    }
+}
+
+/* func_02009ab4: state 0x3f's update. */
+void FieldActor_UpdateState3F(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    FieldActor_RunState3F(actor);
+}
+CLEAN_AS(func_02009ab4, FieldActor_UpdateState3F)
+
+/* func_02009ad4: indoors (scene 1) the item's number (0 for an item outside 0x1369 to 0x13a7)
+ * goes to func_02095694 and the state ends at once. Otherwise the actor turns towards yaw 0 (by
+ * 0x400); at frame 8 func_02095694 gets 0, at frame 11 the item's number (only for an item in
+ * the range), at frame 14 func_020108cc (0, 6) runs, and the state ends with the animation. */
+void FieldActor_RunState3F(FieldActor *actor)
+{
+    State3FWork *work = state3f_work(actor);
+    u16 item = work->item;
+    if (data_020e54a8 == 1) {
+        func_02095694(state3f_numbered(item) ? item - 0x1368 : 0, actor->player);
+        state3f_end(actor, work);
+        return;
+    }
+    func_0200faf0(actor, 0x400);
+    switch (anim_frame(actor)) {
+        case 8:
+            func_02095694(0, actor->player);
+            break;
+        case 11:
+            if (state3f_numbered(item)) {
+                func_02095694(item - 0x1368, actor->player);
+            }
+            break;
+        case 14:
+            func_020108cc(actor, 0, 6);
+            break;
+        default:
+            break;
+    }
+    if (func_02056f94(&actor->anim)) {
+        state3f_end(actor, work);
+    }
+}
+CLEAN_AS(func_02009ad4, FieldActor_RunState3F)
+
+/* func_02009c08: leaving state 0x3f: for this console's actor the item in the player's record
+ * (func_02099728), if there is one, goes to func_0200f1a4 (3). */
+void FieldActor_ExitState3F(FieldActor *actor)
+{
+    if (!is_local_player(actor)) {
+        return;
+    }
+    u16 *item = func_02099728(func_020984fc(actor->player));
+    if (item != NULL) {
+        func_0200f1a4(actor, 3, *item);
+    }
+}
+CLEAN_AS(func_02009c08, FieldActor_ExitState3F)
+
+/* func_02009c48: state 0x3f's message handler: asks for it with the saved item. */
+void FieldActor_State3FMessage(FieldActor *actor, int arg)
+{
+    u16 item;
+    FieldActor_GetSavedItem3F(actor->saved.packed, &item);
+    FieldActor_RequestState3F(actor, item, 6, arg);
+}
+CLEAN_AS(func_02009c48, FieldActor_State3FMessage)
+
+/* func_02009c74: state 0x3f's entry. Outdoors animation 0x13 starts while the record's item is
+ * nothing (func_0209971c), and the item is put back after. The request's item and whether the
+ * actor comes from state 0x10 go into the work, sound 0x31 plays (0x78 for no item) and the
+ * item is saved at 0x8f0. */
+void FieldActor_EnterState3F(FieldActor *actor, const StateRequest *request, int previous)
+{
+    u16 requested = (u16) (request->payload[0] | request->payload[1] << 8);
+    if (data_020e54a8 == 0) {
+        u16 held;
+        func_020110c4(&held, actor);
+        void *record = func_02011368(actor);
+        u16 none = NO_ITEM;
+        func_0209971c(record, &none);
+        func_020109a0(actor, 0x13, 5, 5);
+        func_0209971c(record, &held);
+    }
+    State3FWork *work = state3f_work(actor);
+    work->unk_00 = FX32_ONE;
+    work->item = requested;
+    work->from_10 = previous == 0x10;
+    func_0200f328(actor, work->item != NO_ITEM ? 0x31 : 0x78);
+    FieldActor_SetSavedItem3F(actor->saved.packed, requested);
+}
+CLEAN_AS(func_02009c74, FieldActor_EnterState3F)
+
+/* func_02009d20: the item saved by state 0x3f (func_02077898). */
+void FieldActor_GetSavedItem3F(const u8 *saved, u16 *item)
+{
+    *item = func_02077898(saved);
+}
+CLEAN_AS(func_02009d20, FieldActor_GetSavedItem3F)
+
+/* func_02009d30: saves state 0x3f's item (func_020778b0). */
+void FieldActor_SetSavedItem3F(u8 *saved, u16 item)
+{
+    func_020778b0(saved, item);
+}
+CLEAN_AS(func_02009d30, FieldActor_SetSavedItem3F)
+
+/* func_02009d38: asks for state 0x3f with an item; whether it was queued. */
+int FieldActor_RequestState3F(FieldActor *actor, u16 item, int priority, int arg)
+{
+    u8 payload[2] = {(u8) item, (u8) (item >> 8)};
+    return request_state(actor, 0x3f, priority, arg, payload, 2);
+}
+CLEAN_AS(func_02009d38, FieldActor_RequestState3F)
+
+/* ---- States 0x35 and 0x34: animation 0x2c with the object of func_02057cf4 */
+
+/* func_02009d74: state 0x35's update. */
+void FieldActor_UpdateState35(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_02010d64(actor);
+    FieldActor_EndState35(actor);
+}
+CLEAN_AS(func_02009d74, FieldActor_UpdateState35)
+
+/* func_02009d90: at the animation's end the bar drops, func_0200c3b0 (3, priority 5) follows,
+ * the byte at 0x8eb (unless negative) becomes 3, 2 or 1 for the item func_02057bb8 gives
+ * (0x1373, 0x1375, 0x1377), and func_02057cb8 runs. */
+void FieldActor_EndState35(FieldActor *actor)
+{
+    if (!func_02056f94(&actor->anim)) {
+        return;
+    }
+    drop_priority(actor);
+    func_0200c3b0(actor, 3, 5, -1);
+    if (FIELD_ACTOR_UNK_8EB(actor) >= 0) {
+        u16 item;
+        func_02057bb8(&item);
+        switch (item) {
+            case 0x1373:
+                FIELD_ACTOR_UNK_8EB(actor) = 3;
+                break;
+            case 0x1375:
+                FIELD_ACTOR_UNK_8EB(actor) = 2;
+                break;
+            case 0x1377:
+                FIELD_ACTOR_UNK_8EB(actor) = 1;
+                break;
+            default:
+                break;
+        }
+    }
+    func_02057cb8(actor);
+}
+CLEAN_AS(func_02009d90, FieldActor_EndState35)
+
+/* func_02009e24: state 0x35's message handler: nothing. */
+void FieldActor_State35Message(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_02009e24, FieldActor_State35Message)
+
+/* func_02009e28: state 0x35's entry: animation 0x2c, the actor handed to func_02057d0c with
+ * func_02057cf4's value, and sound 0x4f. */
+void FieldActor_EnterState35(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    func_020109a0(actor, 0x2c, 3, 0);
+    func_02057d0c(func_02057cf4(), actor);
+    func_0200f328(actor, 0x4f);
+}
+CLEAN_AS(func_02009e28, FieldActor_EnterState35)
+
+/* func_02009e50: asks for state 0x35; whether it was queued. */
+int FieldActor_RequestState35(FieldActor *actor, int priority, int arg)
+{
+    return request_state(actor, 0x35, priority, arg, NULL, 0);
+}
+CLEAN_AS(func_02009e50, FieldActor_RequestState35)
+
+/* func_02009e88: state 0x34's update. */
+void FieldActor_UpdateState34(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_02010d64(actor);
+    FieldActor_EndState34(actor);
+}
+CLEAN_AS(func_02009e88, FieldActor_UpdateState34)
+
+/* func_02009ea4: at the animation's end, while func_02057cf4 gives 5, state 0x35 is asked
+ * for. */
+void FieldActor_EndState34(FieldActor *actor)
+{
+    if (func_02056f94(&actor->anim) && func_02057cf4() == 5) {
+        FieldActor_RequestState35(actor, 6, -1);
+    }
+}
+CLEAN_AS(func_02009ea4, FieldActor_EndState34)
