@@ -1,11 +1,15 @@
 /* The menu tab, the third screen panel (menu_tab.h). */
 #include "menu_tab.h"
 
+#include "autoload_2/heap.h"  /* Heap_OperatorDeleteB */
 #include "autoload_2/input.h" /* PadState */
+#include "camera_grid.h"
 #include "cell_anim.h"
 #include "clean.h"
 #include "event_queue.h" /* EventQueue_FinishKind10, EventQueue_IsKind10Unfinished, ... */
-#include "sound.h"       /* SoundSys_PlaySe */
+#include "oam_buffer.h"  /* OamBuffer_DrawCell */
+#include "ov004/member_pointer.h"
+#include "sound.h" /* SoundSys_PlaySe */
 
 static_assert(offsetof(MenuTab, anim) == 0x0c && offsetof(MenuTab, state) == 0x20, "MenuTab");
 static_assert(offsetof(MenuTab, open) == 0x24 && offsetof(MenuTab, shown) == 0x26, "MenuTab");
@@ -312,3 +316,138 @@ void MenuTab_CallDraw(MenuTab *tab)
     func_0208c638(tab->window);
 }
 CLEAN_AS(func_0208bfd0, MenuTab_CallDraw)
+
+/* ---- The tab's update, draw, reset, constructor and destructors */
+
+extern const u32 data_020e2234[]; /* the class's vtable */
+
+/* The member function table of MenuTab_Step (a function-local static of the game): its guard,
+ * the table, and the constants it is filled from. */
+extern u32 data_021d315c;
+extern MemberPointer data_021d3220[7];
+extern const MemberPointer data_020e21a4, data_020e216c, data_020e2194, data_020e218c, data_020e2184, data_020e217c,
+    data_020e2174;
+
+/* The palettes of the tab: while its window opens, is open or closes; else. */
+#define MENU_TAB_PALETTE_OPEN 6
+#define MENU_TAB_PALETTE 5
+#define MENU_TAB_FX_ONE 0x1000
+
+#define MENU_TAB_SLOT_STEP 3
+
+static CameraGrid *menu_tab_grid(MenuTab *tab)
+{
+    return (CameraGrid *) (void *) tab->window;
+}
+
+/* func_0208bfe8: a frame: the class's step, the window's update, and the input followed. */
+void MenuTab_Update(MenuTab *tab)
+{
+    ((void (*)(MenuTab *))(uintptr_t) tab->base.vtable[MENU_TAB_SLOT_STEP])(tab);
+    CameraGrid_CallUpdate(menu_tab_grid(tab));
+    MenuTab_FollowInput(tab);
+}
+CLEAN_AS(func_0208bfe8, MenuTab_Update)
+
+/* func_0208c008: the window's animations and the tab's restarted. */
+void MenuTab_Rewind(MenuTab *tab)
+{
+    CameraGrid_RestartButtons(menu_tab_grid(tab));
+    CellAnim_Restart(&tab->anim);
+}
+CLEAN_AS(func_0208c008, MenuTab_Rewind)
+
+/* func_0208c020: not shown, the menu not open, hidden, and the window reset. */
+void MenuTab_Reset(MenuTab *tab)
+{
+    tab->shown = 0;
+    tab->open = 0;
+    tab->by_button = 0;
+    MenuTab_EnterHidden(tab);
+    CameraGrid_Reset(menu_tab_grid(tab));
+}
+CLEAN_AS(func_0208c020, MenuTab_Reset)
+
+/* func_0208c04c (vtable slot 3): the state's step, through the game's table (filled on the
+ * first call).
+ * REQUIRES: the state is 0-6 (the ROM indexes its table unchecked). */
+void MenuTab_Step(MenuTab *tab)
+{
+    static const MemberPointer *const constants[7] = {
+        &data_020e21a4, /* MenuTab_StepHidden */
+        &data_020e216c, /* MenuTab_StepAppearing */
+        &data_020e2194, /* MenuTab_StepShown */
+        &data_020e218c, /* MenuTab_StepOpening */
+        &data_020e2184, /* MenuTab_StepOpen */
+        &data_020e217c, /* MenuTab_StepClosing */
+        &data_020e2174, /* MenuTab_StepHiding */
+    };
+    MemberTable_InitOnce(&data_021d315c, data_021d3220, constants, 7);
+    MemberPointer_CallVoid(&data_021d3220[tab->state], tab);
+}
+CLEAN_AS(func_0208c04c, MenuTab_Step)
+
+/* func_0208c0f8 (vtable slot 2): unless hidden, the animation's cell drawn on the main screen at
+ * the sprite's place plus the frame's offset, in palette 6 from the window's opening to its
+ * closing. */
+void MenuTab_Draw(MenuTab *tab)
+{
+    if (tab->state == MENU_TAB_HIDDEN) {
+        return;
+    }
+    const OamEntry *cell = CellAnim_Cell(&tab->anim);
+    if (cell == NULL) {
+        return;
+    }
+    int dx = CellAnim_FrameX(&tab->anim, -1);
+    int dy = CellAnim_FrameY(&tab->anim, -1);
+    int x = ScreenSprite_X(&tab->base);
+    int y = ScreenSprite_Y(&tab->base);
+    int with_window = tab->state >= MENU_TAB_OPENING && tab->state <= MENU_TAB_CLOSING;
+    int palette = with_window ? MENU_TAB_PALETTE_OPEN : MENU_TAB_PALETTE;
+    OamBuffer_DrawCell(OAM_BUFFER_SCREEN_MAIN, cell, x + dx, y + dy, palette, -1, MENU_TAB_FX_ONE, MENU_TAB_FX_ONE, 0, -1, 0,
+                       0);
+}
+CLEAN_AS(func_0208c0f8, MenuTab_Draw)
+
+static void menu_tab_destruct(MenuTab *tab)
+{
+    tab->base.vtable = data_020e2234;
+    MenuTab_Rewind(tab);
+    CameraGrid_Destruct(menu_tab_grid(tab));
+    CellAnim_Destruct(&tab->anim);
+    ScreenSprite_DestructBase(&tab->base);
+}
+
+/* func_0208c178 (vtable slot 1): destructed and freed. */
+MenuTab *MenuTab_Delete(MenuTab *tab)
+{
+    menu_tab_destruct(tab);
+    Heap_OperatorDeleteB(tab);
+    return tab;
+}
+CLEAN_AS(func_0208c178, MenuTab_Delete)
+
+/* func_0208c1ac (vtable slot 0): the destructor: rewound, then the window and the animation
+ * destructed. */
+MenuTab *MenuTab_Destruct(MenuTab *tab)
+{
+    menu_tab_destruct(tab);
+    return tab;
+}
+CLEAN_AS(func_0208c1ac, MenuTab_Destruct)
+
+/* func_0208c1dc: the constructor: hidden, not shown, the menu not open. */
+MenuTab *MenuTab_Construct(MenuTab *tab)
+{
+    ScreenSprite_Construct(&tab->base);
+    tab->base.vtable = data_020e2234;
+    CellAnim_Construct(&tab->anim);
+    tab->state = MENU_TAB_HIDDEN;
+    tab->open = 0;
+    tab->by_button = 0;
+    tab->shown = 0;
+    CameraGrid_Construct(menu_tab_grid(tab));
+    return tab;
+}
+CLEAN_AS(func_0208c1dc, MenuTab_Construct)

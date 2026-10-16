@@ -64,5 +64,13 @@ int MenuTab_IsSettled(MenuTab *tab);
 void MenuTab_Hide(MenuTab *tab);
 void MenuTab_Show(MenuTab *tab);
 void MenuTab_CallDraw(MenuTab *tab);
+void MenuTab_Update(MenuTab *tab);
+void MenuTab_Rewind(MenuTab *tab);
+void MenuTab_Reset(MenuTab *tab);
+void MenuTab_Step(MenuTab *tab);
+void MenuTab_Draw(MenuTab *tab);
+MenuTab *MenuTab_Delete(MenuTab *tab);
+MenuTab *MenuTab_Destruct(MenuTab *tab);
+MenuTab *MenuTab_Construct(MenuTab *tab);
 
 #endif

@@ -162,3 +162,35 @@ void SkyWeatherDay_SetToday(SkyWeatherDay *day)
     Calendar_Today((Date *) (void *) day);
 }
 CLEAN_AS(func_020c17f0, SkyWeatherDay_SetToday)
+
+/* func_020c17f8: the patterns set up with the state block (state_block.c): the wet flag of
+ * the day before and the day's cleared, the date set to 1 January of year 0, then refreshed to
+ * the clock (SkyWeatherDay_Refresh).
+ * QUIRK: the day is set to 0 after the date is written, so the date kept before the refresh is
+ * day 0 of January. */
+void SkyWeatherDay_Reset(SkyWeatherDay *day)
+{
+    data_021fbbd8 = 0;
+    day->wet = 0;
+    day->day = 1;
+    day->month = 1;
+    day->year = 0;
+    day->unk_03 = 0;
+    day->day = 0;
+    SkyWeatherDay_Refresh(day);
+}
+CLEAN_AS(func_020c17f8, SkyWeatherDay_Reset)
+
+/* func_020c1818: the destructor, which does nothing. */
+void SkyWeatherDay_Destruct(SkyWeatherDay *day)
+{
+    (void) day;
+}
+CLEAN_AS(func_020c1818, SkyWeatherDay_Destruct)
+
+/* func_020c181c: the constructor, which does nothing. */
+void SkyWeatherDay_Construct(SkyWeatherDay *day)
+{
+    (void) day;
+}
+CLEAN_AS(func_020c181c, SkyWeatherDay_Construct)

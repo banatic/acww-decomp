@@ -12,11 +12,6 @@ static_assert(sizeof(CollisionCylinder) == 0x14, "CollisionCylinder size");
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_Sqrt(fx32 value);
-/* Whether `point` is within the cylinder's radius of its axis, seen from above. */
-extern int func_020306a4(const CollisionCylinder *cylinder, const Vec3 *point);
-/* The base class's setter (base and radius) and destructor. */
-extern void func_02030708(CollisionCylinder *cylinder, const Vec3 *base, u32 radius);
-extern void func_02030718(void);
 
 static fx32 abs_fx(fx32 value)
 {
@@ -86,7 +81,7 @@ static int side_crossings(const CollisionCylinder *cylinder, const Vec3 *from, c
  * and the result is 1; else 0. */
 int CollisionCylinder_HitSide(CollisionCylinder *cylinder, Vec3 *end, const Vec3 *start)
 {
-    if (func_020306a4(cylinder, start) != 0) {
+    if (CollisionCylinder_ContainsXZ(cylinder, start) != 0) {
         return 0;
     }
     Vec3 from = *start;
@@ -148,7 +143,7 @@ int CollisionCylinder_HitCaps(CollisionCylinder *cylinder, Vec3 *end, const Vec3
     }
     Vec3 point;
     at_height(&point, &from, &direction, along);
-    if (func_020306a4(cylinder, &point) != 0) {
+    if (CollisionCylinder_ContainsXZ(cylinder, &point) != 0) {
         *end = point;
         return 1;
     }
@@ -160,7 +155,7 @@ CLEAN_AS(func_0203021c, CollisionCylinder_HitCaps)
  * counts. */
 int CollisionCylinder_HitSideBelowTop(CollisionCylinder *cylinder, Vec3 *end, const Vec3 *start)
 {
-    if (func_020306a4(cylinder, start) != 0) {
+    if (CollisionCylinder_ContainsXZ(cylinder, start) != 0) {
         return 0;
     }
     Vec3 from = *start;
@@ -205,7 +200,7 @@ int CollisionCylinder_HitTop(CollisionCylinder *cylinder, Vec3 *end, const Vec3 
     }
     Vec3 point;
     at_height(&point, &from, &direction, FX_Div(top - from.y, direction.y));
-    if (func_020306a4(cylinder, &point) != 0) {
+    if (CollisionCylinder_ContainsXZ(cylinder, &point) != 0) {
         *end = point;
         return 1;
     }
@@ -218,7 +213,7 @@ CLEAN_AS(func_020304d4, CollisionCylinder_HitTop)
 int CollisionCylinder_LandOnTop(CollisionCylinder *cylinder, Vec3 *position, const Vec3 *previous)
 {
     fx32 top = cylinder->base.y + cylinder->height;
-    if (previous->y >= top && position->y < top && func_020306a4(cylinder, position) != 0) {
+    if (previous->y >= top && position->y < top && CollisionCylinder_ContainsXZ(cylinder, position) != 0) {
         position->y = top;
         return 1;
     }
@@ -259,7 +254,7 @@ CLEAN_AS(func_020305b0, CollisionCylinder_PushOut)
 /* func_02030640 */
 void CollisionCylinder_Set(CollisionCylinder *cylinder, const Vec3 *base, fx32 radius, fx32 height)
 {
-    func_02030708(cylinder, base, (u32) radius);
+    CollisionCylinder_SetCircle(cylinder, base, (u32) radius);
     cylinder->height = height;
 }
 CLEAN_AS(func_02030640, CollisionCylinder_Set)
@@ -267,7 +262,7 @@ CLEAN_AS(func_02030640, CollisionCylinder_Set)
 /* func_02030658: the base destructor (of a post's cylinder). */
 CollisionCylinder *CollisionCylinder_DestructBase(CollisionCylinder *cylinder)
 {
-    func_02030718();
+    CollisionCylinder_DestructCircle();
     return cylinder;
 }
 CLEAN_AS(func_02030658, CollisionCylinder_DestructBase)
@@ -275,7 +270,77 @@ CLEAN_AS(func_02030658, CollisionCylinder_DestructBase)
 /* func_02030668: the destructor. */
 CollisionCylinder *CollisionCylinder_Destruct(CollisionCylinder *cylinder)
 {
-    func_02030718();
+    CollisionCylinder_DestructCircle();
     return cylinder;
 }
 CLEAN_AS(func_02030668, CollisionCylinder_Destruct)
+
+/* ---- The base class (the base and the radius) and the constructors ---- */
+
+/* func_02030678: constructs the cylinder with its base, radius and height. */
+CollisionCylinder *CollisionCylinder_ConstructSet(CollisionCylinder *cylinder, const Vec3 *base, fx32 radius, fx32 height)
+{
+    CollisionCylinder_ConstructCircleSet(cylinder, base, (u32) radius);
+    cylinder->height = height;
+    return cylinder;
+}
+CLEAN_AS(func_02030678, CollisionCylinder_ConstructSet)
+
+/* func_02030690: constructs an empty cylinder (all zero). */
+CollisionCylinder *CollisionCylinder_Construct(CollisionCylinder *cylinder)
+{
+    CollisionCylinder_ConstructCircle(cylinder);
+    cylinder->height = 0;
+    return cylinder;
+}
+CLEAN_AS(func_02030690, CollisionCylinder_Construct)
+
+/* func_020306a4: whether `point` is within the radius of the cylinder's axis seen from above
+ * (on the circle counts). Each axis is first compared alone, then the squares are.
+ * QUIRK: the squares are 20.12 products that wrap in 32 bits. */
+int CollisionCylinder_ContainsXZ(const CollisionCylinder *cylinder, const Vec3 *point)
+{
+    fx32 dx = point->x - cylinder->base.x;
+    fx32 dz = point->z - cylinder->base.z;
+    if (abs_fx(dx) > cylinder->radius || abs_fx(dz) > cylinder->radius) {
+        return 0;
+    }
+    fx32 zz = FX_MulFunc(dz, dz);
+    fx32 xx = FX_MulFunc(dx, dx);
+    fx32 rr = FX_MulFunc(cylinder->radius, cylinder->radius);
+    return xx + zz <= rr;
+}
+CLEAN_AS(func_020306a4, CollisionCylinder_ContainsXZ)
+
+/* func_02030708: the base class's setter. The base is copied a word at a time from X to Z, as
+ * the game does, which matters only when it overlaps the cylinder. */
+void CollisionCylinder_SetCircle(CollisionCylinder *cylinder, const Vec3 *base, u32 radius)
+{
+    cylinder->base.x = base->x;
+    cylinder->base.y = base->y;
+    cylinder->base.z = base->z;
+    cylinder->radius = (fx32) radius;
+}
+CLEAN_AS(func_02030708, CollisionCylinder_SetCircle)
+
+/* func_02030718: the base class's destructor; nothing to do. */
+void CollisionCylinder_DestructCircle(void) {}
+CLEAN_AS(func_02030718, CollisionCylinder_DestructCircle)
+
+/* func_0203071c: constructs the base class with a base and a radius; the object. */
+int CollisionCylinder_ConstructCircleSet(CollisionCylinder *cylinder, const Vec3 *base, u32 radius)
+{
+    CollisionCylinder_SetCircle(cylinder, base, radius);
+    return (int) (uintptr_t) cylinder;
+}
+CLEAN_AS(func_0203071c, CollisionCylinder_ConstructCircleSet)
+
+/* func_0203072c: constructs the base class empty: base (0, 0, 0), radius 0. */
+void CollisionCylinder_ConstructCircle(CollisionCylinder *cylinder)
+{
+    cylinder->base.x = 0;
+    cylinder->base.y = 0;
+    cylinder->base.z = 0;
+    cylinder->radius = 0;
+}
+CLEAN_AS(func_0203072c, CollisionCylinder_ConstructCircle)

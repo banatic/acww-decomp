@@ -24,5 +24,8 @@ int SkyWeatherDay_DrawPattern(SkyWeatherDay *day, const DateTime *date);
 int SkyWeatherDay_Update(SkyWeatherDay *day, const DateTime *now);
 void SkyWeatherDay_Refresh(SkyWeatherDay *day);
 void SkyWeatherDay_SetToday(SkyWeatherDay *day);
+void SkyWeatherDay_Reset(SkyWeatherDay *day);
+void SkyWeatherDay_Destruct(SkyWeatherDay *day);
+void SkyWeatherDay_Construct(SkyWeatherDay *day);
 
 #endif

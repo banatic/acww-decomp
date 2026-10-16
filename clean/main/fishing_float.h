@@ -126,5 +126,15 @@ VramRegion *FishingFloatPool_Region(FishingFloatPool *pool, int entry);
 unsigned long FishingFloatPool_ModelFile(FishingFloatPool *pool, int entry);
 void FishingFloatPool_Clear(FishingFloatPool *pool);
 void FishingFloatPool_AllocEntries(FishingFloatPool *pool);
+FishingFloatPool *FishingFloatPool_Destruct(FishingFloatPool *pool);
+FishingFloatPool *FishingFloatPool_Construct(FishingFloatPool *pool);
+int FishingFloatPool_PaletteSize(void);
+int FishingFloatPool_Texture4x4Size(void);
+int FishingFloatPool_TextureSize(void);
+int FishingFloatPool_ModelFileSize(void);
+char *FishingFloatPool_ModelPath(int model);
+int FishingFloat_FloatingOf(int entry);
+void FishingFloat_EndScene(void);
+void FishingFloat_StartScene(struct Heap *parent);
 
 #endif

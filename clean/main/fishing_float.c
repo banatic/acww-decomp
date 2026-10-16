@@ -113,16 +113,9 @@ extern int func_ov003_0222aae8(u8 *fish);
 extern int func_ov003_0222ab14(u8 *fish);
 extern int func_ov003_0222ab4c(u8 *fish);
 extern int func_ov003_0222aba4(u8 *fish);
-/* The model files: the file's texture resource, a file read (its size, 0 on failure), the
- * path of model `model` ("/PItm/Uki0/<model>.nsbmd") and the sizes of an entry's buffer and
- * VRAM: plain textures, 4x4 compressed textures, palettes. */
+/* The model files: the file's texture resource and a file read (its size, 0 on failure). */
 extern G3dResTex *func_021077e8(void *file);
 extern int func_02064af4(const char *path, void *buffer, int size);
-extern char *func_02060904(int model);
-extern int func_020608fc(void);
-extern int func_020608f4(void);
-extern int func_020608f0(void);
-extern int func_020608ec(void);
 
 static fx32 fishing_float_sin(u16 angle)
 {
@@ -739,9 +732,9 @@ CLEAN_AS(func_02060588, FishingFloatPool_PlaceTexture)
  * size, 0 on failure. */
 int FishingFloatPool_LoadModel(FishingFloatPool *pool, int entry, int model)
 {
-    char *path = func_02060904(model);
+    char *path = FishingFloatPool_ModelPath(model);
     unsigned long file = FishingFloatPool_ModelFile(pool, entry);
-    int size = func_020608fc();
+    int size = FishingFloatPool_ModelFileSize();
     return func_02064af4(path, (void *) (uintptr_t) file, size);
 }
 CLEAN_AS(func_020605ac, FishingFloatPool_LoadModel)
@@ -875,23 +868,133 @@ void FishingFloatPool_AllocEntries(FishingFloatPool *pool)
     unsigned int others = first + (unsigned int) ResourcePools_SceneHeapCount() - at_least_one;
 
     for (unsigned int i = 0; i < players; i++) {
-        u32 texture_size = (u32) func_020608f4();
-        u32 texture_4x4_size = (u32) func_020608f0();
-        u32 palette_size = (u32) func_020608ec();
+        u32 texture_size = (u32) FishingFloatPool_TextureSize();
+        u32 texture_4x4_size = (u32) FishingFloatPool_Texture4x4Size();
+        u32 palette_size = (u32) FishingFloatPool_PaletteSize();
         VramRegion_Alloc(&pool->region[i], texture_size, texture_4x4_size, palette_size);
     }
     for (unsigned int i = FISHING_FLOAT_POOL_OTHERS; i < others + FISHING_FLOAT_POOL_OTHERS; i++) {
-        u32 texture_size = (u32) func_020608f4();
-        u32 texture_4x4_size = (u32) func_020608f0();
-        u32 palette_size = (u32) func_020608ec();
+        u32 texture_size = (u32) FishingFloatPool_TextureSize();
+        u32 texture_4x4_size = (u32) FishingFloatPool_Texture4x4Size();
+        u32 palette_size = (u32) FishingFloatPool_PaletteSize();
         VramRegion_Alloc(&pool->region[i], texture_size, texture_4x4_size, palette_size);
     }
     Heap *heap = data_021c9ac8;
     for (unsigned int i = 0; i < players; i++) {
-        pool->model_file[i] = Heap_AllocAligned(heap, func_020608fc(), FISHING_FLOAT_POOL_ALIGN);
+        pool->model_file[i] = Heap_AllocAligned(heap, FishingFloatPool_ModelFileSize(), FISHING_FLOAT_POOL_ALIGN);
     }
     for (unsigned int i = FISHING_FLOAT_POOL_OTHERS; i < others + FISHING_FLOAT_POOL_OTHERS; i++) {
-        pool->model_file[i] = Heap_AllocAligned(heap, func_020608fc(), FISHING_FLOAT_POOL_ALIGN);
+        pool->model_file[i] = Heap_AllocAligned(heap, FishingFloatPool_ModelFileSize(), FISHING_FLOAT_POOL_ALIGN);
     }
 }
 CLEAN_AS(func_02060754, FishingFloatPool_AllocEntries)
+
+/* The members' constructors and destructors handed to __cxa_vec_ctor and __cxa_vec_cleanup:
+ * the game's own (VramRegion_Construct, VramRegion_Destruct, ModelObject_Construct,
+ * ModelObject_DestructComplete). */
+extern void *func_02055cf4(void *region);
+extern void func_02055ce8(void *region);
+extern void *func_0205577c(void *model);
+extern void *func_02055764(void *model);
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
+/* The model file's path: its buffer, and "/PItm/Uki0/%d.nsbmd". */
+extern char data_021cad1c[];
+extern const char data_020dd814[];
+
+#define FISHING_FLOAT_PALETTE_SIZE 32
+#define FISHING_FLOAT_TEXTURE_4X4_SIZE 0
+#define FISHING_FLOAT_TEXTURE_SIZE 512
+#define FISHING_FLOAT_MODEL_FILE_SIZE 1240
+
+/* func_02060844: the pool's destructor: the models, then the VRAM regions. Returns the pool. */
+FishingFloatPool *FishingFloatPool_Destruct(FishingFloatPool *pool)
+{
+    __cxa_vec_cleanup(pool->model, FISHING_FLOAT_POOL_COUNT, sizeof(ModelObject), (void (*)(void *))(uintptr_t) func_02055764);
+    __cxa_vec_cleanup(pool->region, FISHING_FLOAT_POOL_COUNT, sizeof(VramRegion), func_02055ce8);
+    return pool;
+}
+CLEAN_AS(func_02060844, FishingFloatPool_Destruct)
+
+/* func_02060878: the pool's constructor: the VRAM regions, the tasks and the models; no
+ * buffer and no float. Returns the pool. */
+FishingFloatPool *FishingFloatPool_Construct(FishingFloatPool *pool)
+{
+    __cxa_vec_ctor(pool->region, FISHING_FLOAT_POOL_COUNT, sizeof(VramRegion), (void (*)(void *))(uintptr_t) func_02055cf4,
+                   func_02055ce8);
+    for (int i = 0; i < FISHING_FLOAT_POOL_COUNT; i++) {
+        VramCopyTask_Construct((VramCopyTask *) &pool->task[i]);
+    }
+    __cxa_vec_ctor(pool->model, FISHING_FLOAT_POOL_COUNT, sizeof(ModelObject), (void (*)(void *))(uintptr_t) func_0205577c,
+                   (void (*)(void *))(uintptr_t) func_02055764);
+    for (int i = 0; i < FISHING_FLOAT_POOL_COUNT; i++) {
+        pool->model_file[i] = NULL;
+        pool->owner[i] = NULL;
+    }
+    return pool;
+}
+CLEAN_AS(func_02060878, FishingFloatPool_Construct)
+
+/* func_020608ec: an entry's VRAM for palettes. */
+int FishingFloatPool_PaletteSize(void)
+{
+    return FISHING_FLOAT_PALETTE_SIZE;
+}
+CLEAN_AS(func_020608ec, FishingFloatPool_PaletteSize)
+
+/* func_020608f0: an entry's VRAM for 4x4 compressed textures: none. */
+int FishingFloatPool_Texture4x4Size(void)
+{
+    return FISHING_FLOAT_TEXTURE_4X4_SIZE;
+}
+CLEAN_AS(func_020608f0, FishingFloatPool_Texture4x4Size)
+
+/* func_020608f4: an entry's VRAM for plain textures. */
+int FishingFloatPool_TextureSize(void)
+{
+    return FISHING_FLOAT_TEXTURE_SIZE;
+}
+CLEAN_AS(func_020608f4, FishingFloatPool_TextureSize)
+
+/* func_020608fc: the size of an entry's model file buffer. */
+int FishingFloatPool_ModelFileSize(void)
+{
+    return FISHING_FLOAT_MODEL_FILE_SIZE;
+}
+CLEAN_AS(func_020608fc, FishingFloatPool_ModelFileSize)
+
+/* func_02060904: the path of model `model`, "/PItm/Uki0/<model>.nsbmd", in its buffer. */
+char *FishingFloatPool_ModelPath(int model)
+{
+    func_02064328(data_021cad1c, data_020dd814, model);
+    return data_021cad1c;
+}
+CLEAN_AS(func_02060904, FishingFloatPool_ModelPath)
+
+/* func_02060924: FishingFloatPool_FloatingOf for the pool. */
+int FishingFloat_FloatingOf(int entry)
+{
+    return FishingFloatPool_FloatingOf(&data_021cad80, entry);
+}
+CLEAN_AS(func_02060924, FishingFloat_FloatingOf)
+
+/* func_02060934, when a scene ends: the pool cleared and the model files' heap destroyed. */
+void FishingFloat_EndScene(void)
+{
+    FishingFloatPool_Clear(&data_021cad80);
+    SceneHeaps_Destroy021c9ac8();
+}
+CLEAN_AS(func_02060934, FishingFloat_EndScene)
+
+/* func_0206094c, when a scene starts: the model files' heap made from `parent`, the scene's
+ * entries allocated from it, and the heap shrunk to what they took. */
+void FishingFloat_StartScene(Heap *parent)
+{
+    SceneHeaps_Create021c9ac8(parent);
+    FishingFloatPool_AllocEntries(&data_021cad80);
+    if (data_021c9ac8 != NULL) {
+        Heap_Adjust(data_021c9ac8);
+    }
+}
+CLEAN_AS(func_0206094c, FishingFloat_StartScene)

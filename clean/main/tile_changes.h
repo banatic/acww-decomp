@@ -65,4 +65,24 @@ void TileChanges_LetGoAt(const TileChangesTile *tile, int layer);
 void TileChanges_FinishOwnAt(const TileChangesTile *tile, int slot, int layer);
 void TileChanges_FinishAt(int index);
 
+void TileChanges_FinishAtTile(const TileChangesTile *tile, int layer);
+int TileChanges_Replace(int slot, const TileChangesTile *tile, u32 item, int code, u8 kind, u8 result, u8 unk_20, u8 tag,
+                        u8 layer, s8 number);
+int TileChanges_Put(int slot, const TileChangesTile *tile, u32 item, u32 code, u8 kind, u8 result, u8 unk_20, u8 tag, u8 layer,
+                    s8 number);
+int TileChanges_PutNew(int slot, const TileChangesTile *tile, int item, int code, u8 kind, u8 result, u8 unk_20, u8 tag,
+                       u8 layer, s8 number);
+int TileChanges_MakeRoomAt(const TileChangesTile *tile);
+int TileChanges_FillAt(u32 index, u32 slot, const TileChangesTile *tile, u32 item, u16 code, u8 kind, u8 result, u8 unk_20,
+                       u8 tag, u8 layer, s8 number);
+void TileChanges_Done(TileChange *change);
+void TileChanges_InitRecord(TileChange *change);
+void TileChanges_LetGo(TileChange *change);
+void TileChanges_Finish(TileChange *change);
+void TileChanges_NoteItem(const TileChange *change);
+void TileChanges_Report(TileChange *change);
+int TileChanges_Fill(TileChange *change, u32 slot, u16 tile, u32 item, u16 code, u8 kind, u8 result, u8 unk_20, u8 tag,
+                     u8 layer, s8 number);
+void TileChanges_Free(TileChange *change);
+
 #endif

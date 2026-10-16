@@ -26,4 +26,13 @@ void CollisionCylinder_Set(CollisionCylinder *cylinder, const Vec3 *base, fx32 r
 CollisionCylinder *CollisionCylinder_DestructBase(CollisionCylinder *cylinder);
 CollisionCylinder *CollisionCylinder_Destruct(CollisionCylinder *cylinder);
 
+/* The base class (0x10 bytes: the base and the radius) and the cylinder's constructors. */
+CollisionCylinder *CollisionCylinder_ConstructSet(CollisionCylinder *cylinder, const Vec3 *base, fx32 radius, fx32 height);
+CollisionCylinder *CollisionCylinder_Construct(CollisionCylinder *cylinder);
+int CollisionCylinder_ContainsXZ(const CollisionCylinder *cylinder, const Vec3 *point);
+void CollisionCylinder_SetCircle(CollisionCylinder *cylinder, const Vec3 *base, u32 radius);
+void CollisionCylinder_DestructCircle(void);
+int CollisionCylinder_ConstructCircleSet(CollisionCylinder *cylinder, const Vec3 *base, u32 radius);
+void CollisionCylinder_ConstructCircle(CollisionCylinder *cylinder);
+
 #endif
