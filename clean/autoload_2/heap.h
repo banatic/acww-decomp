@@ -149,5 +149,13 @@ int Heap_CreateRoot(void *memory, u32 size);
 u32 Heap_InstallThreadHook(void);
 void Heap_SetThreadHeap(struct OSThread *thread, Heap *heap);
 void Heap_SwitchThreads(struct OSThread *from, struct OSThread *to);
+void Heap_OperatorFree(void *block);
+void *Heap_OperatorAlloc(u32 size);
+void Heap_OperatorDelete(void *block);
+void Heap_OperatorDeleteB(void *block);
+void Heap_OperatorNew(u32 size);
+void *Heap_OperatorNewB(u32 size);
+void Heap_FreeAux(void *block);
+void *Heap_AllocAuxZeroed(int size);
 
 #endif

@@ -20,3 +20,12 @@ CLEAN_AS(func_020e906c, System_ResetFrameCount)
 /* func_020e95f8: does nothing; the graphics set-up (func_020540e4) calls it first. */
 void System_Nothing(void) {}
 CLEAN_AS(func_020e95f8, System_Nothing)
+
+extern void OS_InitTick(void);
+
+/* func_020edb98: the start-up (func_020b1b84) starts NitroSDK's tick counter. */
+void System_InitTick(void)
+{
+    OS_InitTick();
+}
+CLEAN_AS(func_020edb98, System_InitTick)

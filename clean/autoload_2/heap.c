@@ -932,3 +932,74 @@ void Heap_SwitchThreads(OSThread *from, OSThread *to)
     }
 }
 CLEAN_AS(func_020ea5c4, Heap_SwitchThreads)
+
+/* ---- Allocation for objects ---- */
+
+extern void MI_CpuFill8(void *dst, u8 value, u32 size);
+
+/* func_020edb60: a block freed to the current heap. */
+void Heap_OperatorFree(void *block)
+{
+    Heap_Free(data_021fbe94, block);
+}
+CLEAN_AS(func_020edb60, Heap_OperatorFree)
+
+/* func_020edb7c: a block from the front of the current heap. */
+void *Heap_OperatorAlloc(u32 size)
+{
+    return Heap_Alloc(data_021fbe94, (int) size);
+}
+CLEAN_AS(func_020edb7c, Heap_OperatorAlloc)
+
+/* func_020edb30 and func_020edb3c free through the current heap, func_020edb48 and
+ * func_020edb54 allocate from it: by their shape C++'s operator delete and delete[], new and
+ * new[] (which of each pair is the array form is not known). */
+
+/* func_020edb30 */
+void Heap_OperatorDelete(void *block)
+{
+    Heap_OperatorFree(block);
+}
+CLEAN_AS(func_020edb30, Heap_OperatorDelete)
+
+/* func_020edb3c: what most of the game frees with. */
+void Heap_OperatorDeleteB(void *block)
+{
+    Heap_OperatorFree(block);
+}
+CLEAN_AS(func_020edb3c, Heap_OperatorDeleteB)
+
+/* func_020edb48. QUIRK: it jumps to Heap_OperatorAlloc, so the block is left in the result
+ * register, but it is declared without a result. */
+void Heap_OperatorNew(u32 size)
+{
+    Heap_OperatorAlloc(size);
+}
+CLEAN_AS(func_020edb48, Heap_OperatorNew)
+
+/* func_020edb54 */
+void *Heap_OperatorNewB(u32 size)
+{
+    return Heap_OperatorAlloc(size);
+}
+CLEAN_AS(func_020edb54, Heap_OperatorNewB)
+
+/* func_020edf54: a block freed to the auxiliary heap (processes are freed with it). */
+void Heap_FreeAux(void *block)
+{
+    Heap_FreeBlock(sSubOBJExtPltt, block);
+}
+CLEAN_AS(func_020edf54, Heap_FreeAux)
+
+/* func_020edf70: a zeroed block of `size` bytes from the back of the auxiliary heap; NULL when
+ * there is no room. The game allocates its processes with it. */
+void *Heap_AllocAuxZeroed(int size)
+{
+    void *block = Heap_AllocBlock(sSubOBJExtPltt, size, ALIGN_BACK);
+    if (block == NULL) {
+        return NULL;
+    }
+    MI_CpuFill8(block, 0, (u32) size);
+    return block;
+}
+CLEAN_AS(func_020edf70, Heap_AllocAuxZeroed)

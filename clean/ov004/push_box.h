@@ -40,7 +40,9 @@ typedef struct PushingActor {
 
 typedef struct PushBox {
     const void *vtable;
-    u8 unk_04[0x98];
+    u8 unk_04[0x94];
+    u8 unk_98; /* clear: func_ov004_0220f8c0 does not update it */
+    u8 unk_99[3];
     struct RoomObject *owner; /* the object it belongs to while it is in the world */
 } PushBox;
 

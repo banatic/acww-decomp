@@ -93,8 +93,8 @@ extern const char data_0213e73c[]; /* "region" */
 extern void *data_021fbf78[LOCAL_ENTRY_COUNT];
 extern u8 data_021fc040[LOCAL_ENTRY_SIZE];
 
-/* Allocates and frees through the functions the game installed (func_020ece54).
- * UTi_PutString's name is NitroSDK's but does not fit: it calls the free function. */
+/* Net_Alloc and Net_Free by the game's symbols, handed to the local library. UTi_PutString's
+ * name is NitroSDK's but does not fit: it calls the free function. */
 extern void *func_020edaf0(int size, int align);
 extern void UTi_PutString(void *block);
 
@@ -225,7 +225,7 @@ void Exchange_Init(u8 *send, u8 *receive, int size)
     data_021fbef8 = MODE_EXCHANGE;
     data_021fbf48 = 0;
     data_021fbf50 = 0;
-    data_021fbf28 = func_020edaf0(0xa000, 0x20);
+    data_021fbf28 = Net_Alloc(0xa000, 0x20);
     func_ov067_02268990(data_021fbf28, func_020ed17c, 2);
     WXC_SetParentParameter(0x3c, 0x3c, 1);
     func_ov067_02268688(data_021fbf20, func_020ed168, send, size, receive, size);
@@ -329,8 +329,8 @@ int Wfc_FinishGet(void)
         return FALSE;
     }
     if (data_021fbf44 != NULL) {
-        UTi_PutString(data_021fbf44);
-        UTi_PutString(data_021fbf0c);
+        Net_Free(data_021fbf44);
+        Net_Free(data_021fbf0c);
         data_021fbf44 = NULL;
         data_021fbf0c = NULL;
     }
@@ -362,13 +362,13 @@ int Wfc_GetSigned(const char *url, void *buffer, int size, const char *region)
     if (data_021fbefc < STAGE_LOGGED_IN || !data_0213e6c0) {
         return FALSE;
     }
-    data_021fbf44 = func_020edaf0(URL_SIZE, 4);
+    data_021fbf44 = Net_Alloc(URL_SIZE, 4);
     if (data_021fbf44 == NULL) {
         return FALSE;
     }
-    data_021fbf0c = func_020edaf0(HASH_TEXT_SIZE, 4);
+    data_021fbf0c = Net_Alloc(HASH_TEXT_SIZE, 4);
     if (data_021fbf0c == NULL) {
-        UTi_PutString(data_021fbf44);
+        Net_Free(data_021fbf44);
         data_021fbf44 = NULL;
         return FALSE;
     }
@@ -391,8 +391,8 @@ int Wfc_FinishPost(void)
         return FALSE;
     }
     if (data_021fbf1c != NULL) {
-        UTi_PutString(data_021fbf1c);
-        UTi_PutString(data_021fbf2c);
+        Net_Free(data_021fbf1c);
+        Net_Free(data_021fbf2c);
         data_021fbf1c = NULL;
         data_021fbf2c = NULL;
     }
@@ -427,13 +427,13 @@ int Wfc_PostSigned(const char *url, const void *data, u32 length, const char *re
     }
     u32 capacity = (length + 2) / 3 * 4 + 1;
     int key_length = STD_GetStringLength(data_0213e708);
-    data_021fbf1c = func_020edaf0((int) (key_length + capacity), 4);
+    data_021fbf1c = Net_Alloc((int) (key_length + capacity), 4);
     if (data_021fbf1c == NULL) {
         return FALSE;
     }
-    data_021fbf2c = func_020edaf0(HASH_TEXT_SIZE, 4);
+    data_021fbf2c = Net_Alloc(HASH_TEXT_SIZE, 4);
     if (data_021fbf2c == NULL) {
-        UTi_PutString(data_021fbf1c);
+        Net_Free(data_021fbf1c);
         data_021fbf1c = NULL;
         return FALSE;
     }
@@ -834,11 +834,12 @@ typedef struct LocalParameters {
 } LocalParameters;
 extern int func_ov066_0226b9b8(LocalParameters *parameters);
 
-/* Not rewritten here: the next block of the send queue sent (func_020ed9f4), the end of a send
- * (func_020ed950) and one frame's wait while the connection is processed (func_020edb14). */
-extern int func_020ed9f4(void);
+/* Net_OnBlockSent by the game's symbol, the callback the local library is given. */
 extern void func_020ed950(void *argument);
-extern void func_020edb14(void);
+extern int func_ov066_022698ec(const void *buffer, u32 size, u16 to, void (*sent)(void *argument));
+extern int func_ov065_0227ee74(u8 aid, const void *buffer, u32 size);
+/* Waits for the next frame (OS_SleepThread on the frame's thread queue). */
+extern void func_0206e6b0(void);
 
 static BOOL is_local(u8 mode)
 {
@@ -1309,7 +1310,7 @@ int Net_SendBlocks(const void *buffer1, int size1, int to1, SentCallback *sent1,
     int queued2 = Net_QueueSend(buffer2, size2, to2, sent2);
     int queued3 = Net_QueueSend(buffer3, size3, to3, sent3);
     if (queued1 || queued2 || queued3) {
-        if (func_020ed9f4()) {
+        if (Net_SendNext()) {
             return TRUE;
         }
         Net_ClearSendQueue();
@@ -1349,7 +1350,7 @@ CLEAN_AS(func_020ebfd8, Wfc_CanSendToAll)
 
 /* func_020ec040: TRUE when the library is `ready` and the send queue is empty. A block found
  * waiting has its time noted, and once it waited past the limit it is sent again
- * (func_020ed9f4). */
+ * (Net_SendNext). */
 int Net_IsSendQueueIdle(u32 ready)
 {
     u32 message;
@@ -1365,7 +1366,7 @@ int Net_IsSendQueueIdle(u32 ready)
         data_021fbf18 = now_ms();
     } else if (timed_out(data_021fbf18)) {
         data_021fbf18 = 0;
-        func_020ed9f4();
+        Net_SendNext();
     }
     return FALSE;
 }
@@ -1442,6 +1443,90 @@ void Net_ClearSendQueue(void)
 }
 CLEAN_AS(func_020ed8f4, Net_ClearSendQueue)
 
+/* func_020ed950: the block first in the queue was sent: it leaves the queue, its callback is
+ * called (with what the library passed) and its slot freed. The next block, if any, is then
+ * started, waiting frame after frame until the library takes it. */
+void Net_OnBlockSent(void *argument)
+{
+    u32 index;
+    if (!OS_ReceiveMessage(&data_021fbf98, &index, 0)) {
+        return;
+    }
+    SendSlot *slot = &data_021fc120[index];
+    if (slot->sent != NULL) {
+        slot->sent(argument);
+    }
+    slot->buffer = NULL;
+    while (OS_ReadMessage(&data_021fbf98, &index, 0) && !Net_SendNext()) {
+        Net_WaitFrame();
+    }
+}
+CLEAN_AS(func_020ed950, Net_OnBlockSent)
+
+/* func_020ed9f4: the block first in the queue handed to the library in use (the local library
+ * calls Net_OnBlockSent when it was sent; NitroDWC's own callback does); what the library
+ * answers, FALSE with nothing queued or no library. */
+int Net_SendNext(void)
+{
+    u32 index;
+    if (!OS_ReadMessage(&data_021fbf98, &index, 0)) {
+        return FALSE;
+    }
+    const SendSlot *slot = &data_021fc120[index];
+    u8 mode = data_021fbef8;
+    if (is_local(mode)) {
+        return func_ov066_022698ec(slot->buffer, slot->size, slot->to, func_020ed950);
+    }
+    if (is_wfc(mode)) {
+        return func_ov065_0227ee74((u8) slot->to, slot->buffer, slot->size);
+    }
+    return FALSE;
+}
+CLEAN_AS(func_020ed9f4, Net_SendNext)
+
+/* func_020edb14: the Wi-Fi Connection processed and the next frame waited for. */
+void Net_WaitFrame(void)
+{
+    Wfc_Process();
+    func_0206e6b0();
+}
+CLEAN_AS(func_020edb14, Net_WaitFrame)
+
+/* ---- Memory ---- */
+
+/* func_020edaa8: NitroDWC's free function (func_ov065_0227f1f4), `name` being the kind of
+ * block. QUIRK: it jumps to Net_Free, whose result stays in the result register, but it is
+ * declared without a result. */
+void Wfc_Free(int name, void *block)
+{
+    (void) name;
+    Net_Free(block);
+}
+CLEAN_AS(func_020edaa8, Wfc_Free)
+
+/* func_020edab8: NitroDWC's allocator. */
+void *Wfc_Alloc(int name, int size, int align)
+{
+    (void) name;
+    return Net_Alloc(size, align);
+}
+CLEAN_AS(func_020edab8, Wfc_Alloc)
+
+/* UTi_PutString: a block freed through the free function the game installed (Net_Init).
+ * QUIRK: what the free function leaves in the result register is returned. */
+int Net_Free(void *block)
+{
+    return ((int (*)(void *)) OS_PutString)(block);
+}
+CLEAN_AS(UTi_PutString, Net_Free)
+
+/* func_020edaf0: a block from the allocator the game installed (Net_Init). */
+void *Net_Alloc(int size, int align)
+{
+    return data_021fbf08(size, align);
+}
+CLEAN_AS(func_020edaf0, Net_Alloc)
+
 /* ---- Ending ---- */
 
 /* func_020ec49c */
@@ -1461,7 +1546,7 @@ int Net_End(void)
     }
     if (is_wfc(mode)) {
         while (!Wfc_EndStep()) {
-            func_020edb14();
+            Net_WaitFrame();
         }
         data_021fbef8 = MODE_ENDED;
         return TRUE;
@@ -1479,9 +1564,9 @@ int Exchange_End(void)
 {
     WXC_End();
     while (!data_021fbf48) {
-        func_020edb14();
+        Net_WaitFrame();
     }
-    UTi_PutString(data_021fbf28);
+    Net_Free(data_021fbf28);
     data_021fbf28 = NULL;
     data_021fbef8 = MODE_ENDED;
     return TRUE;
@@ -1530,14 +1615,14 @@ int Wfc_EndStep(void)
             break;
         case END_FREE_REQUESTS:
             if (data_021fbf1c != NULL) {
-                UTi_PutString(data_021fbf1c);
-                UTi_PutString(data_021fbf2c);
+                Net_Free(data_021fbf1c);
+                Net_Free(data_021fbf2c);
                 data_021fbf1c = NULL;
                 data_021fbf2c = NULL;
             }
             if (data_021fbf44 != NULL) {
-                UTi_PutString(data_021fbf44);
-                UTi_PutString(data_021fbf0c);
+                Net_Free(data_021fbf44);
+                Net_Free(data_021fbf0c);
                 data_021fbf44 = NULL;
                 data_021fbf0c = NULL;
             }
@@ -1741,11 +1826,11 @@ void Wfc_OnReceived(int aid, char *buffer, int size)
 CLEAN_AS(func_020ed658, Wfc_OnReceived)
 
 /* func_020ed68c: data to `aid` sent: the peer answered, and the send queue moves on
- * (func_020ed950, given the size). */
+ * (Net_OnBlockSent, given the size). */
 void Wfc_OnSent(int size, int aid)
 {
     data_021fbff8[aid].unanswered = 0;
-    func_020ed950((void *) (uintptr_t) (u32) size);
+    Net_OnBlockSent((void *) (uintptr_t) (u32) size);
 }
 CLEAN_AS(func_020ed68c, Wfc_OnSent)
 

@@ -255,3 +255,54 @@ void ScreenIcon_Draw(ScreenIcon *icon)
     func_02088df8(0, cell, x, y, -1, -1, 0x1000, 0x1000, 0, -1, 0, 0);
 }
 CLEAN_AS(func_02003a90, ScreenIcon_Draw)
+
+/* The icon's class (vtable 0x020d72cc); its base is the screen indicator (vtable 0x020e20c8). */
+extern const ScreenIconVtable data_020d72cc;
+extern void func_0208af30(ScreenIcon *icon); /* indicator constructor: at (0x80, 0x60) */
+extern void func_0208af00(ScreenIcon *icon); /* indicator destructor */
+extern void func_0208a1f8(CellAnim *anim);   /* no animation, speed 1.0 */
+extern void func_0208a1f4(CellAnim *anim);   /* animation destructor (does nothing) */
+extern void func_020edb3c(void *block);      /* operator delete */
+
+/* func_02003b24: the deleting destructor. */
+ScreenIcon *ScreenIcon_DestructFree(ScreenIcon *icon)
+{
+    ScreenIcon_Destruct(icon);
+    func_020edb3c(icon);
+    return icon;
+}
+CLEAN_AS(func_02003b24, ScreenIcon_DestructFree)
+
+/* func_02003b50: the destructor, run at exit for data_0213ffb0. QUIRK: it starts the animation
+ * again from its first frame before going back to the base class. */
+ScreenIcon *ScreenIcon_Destruct(ScreenIcon *icon)
+{
+    icon->vtable = &data_020d72cc;
+    ScreenIcon_RestartAnim(icon);
+    func_0208a1f4(&icon->anim);
+    func_0208af00(icon);
+    return icon;
+}
+CLEAN_AS(func_02003b50, ScreenIcon_Destruct)
+
+/* func_02003b78: the constructor, run at start for data_0213ffb0: out of view and disabled,
+ * with variant 0 at the fixed place and no variant asked for. */
+ScreenIcon *ScreenIcon_Construct(ScreenIcon *icon)
+{
+    func_0208af30(icon);
+    icon->vtable = &data_020d72cc;
+    func_0208a1f8(&icon->anim);
+    icon->slide_x = 0;
+    icon->step = 0;
+    icon->flag_value = 0;
+    icon->delay = 0;
+    icon->flag4 = 0;
+    icon->enabled = 0;
+    icon->fixed_place = 1;
+    icon->restart_anim = 0;
+    icon->mode = 0;
+    icon->next_mode = SCREEN_ICON_MODE_NONE;
+    icon->timer = 0;
+    return icon;
+}
+CLEAN_AS(func_02003b78, ScreenIcon_Construct)

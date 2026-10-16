@@ -27,9 +27,20 @@ typedef struct ByteSet {
     u8 value;
 } ByteSet;
 
+/* A sound played at a point (func_ov004_0223cf54 and func_ov004_0223cf40 play one while
+ * `playing`, func_ov004_0223cf68 stops it); the point is the object's centre, kept each frame. */
+typedef struct RoomSound {
+    u8 unk_00[0x1c];
+    u8 playing;
+    u8 unk_1d[3];
+    Vec3 position;
+} RoomSound;
+
 /* The vtable slots used here; derived classes override them. */
 typedef struct RoomObjectVtable {
-    const void *unk_00[36];
+    const void *unk_00[30];
+    int (*vfunc_78)(struct RoomObject *object); /* RoomObject_Unk77C in the base */
+    const void *unk_7c[5];
     void (*vfunc_90)(struct RoomObject *object);            /* when it starts to vanish */
     void (*vfunc_94)(struct RoomObject *object, int ahead); /* when a move starts: 1 in state 3, 0 in 4 */
     void (*vfunc_98)(struct RoomObject *object, int down);  /* when a turn starts: 1 towards a lower angle */
@@ -39,13 +50,16 @@ typedef struct RoomObjectVtable {
 
 typedef struct RoomObject {
     const RoomObjectVtable *vtable;
-    u8 unk_004[8];
-    u16 unk_00C; /* 0x3d: moving it plays no sound */
+    u8 unk_004[4];
+    u32 placement; /* how it was placed (room_object_body.c) */
+    u16 unk_00C;   /* 0x3d: moving it plays no sound */
     u8 unk_00e[0x4e];
     Vec3 position;
     u8 unk_068[0x26];
     s16 angle;
-    u8 unk_090[0xb4];
+    u8 unk_090[0xa2];
+    u16 slot; /* its entry in the pool data_ov004_02259698 (func_0209d238), 0xffff for none */
+    u8 unk_134[0x10];
     Vec3 pivot;  /* where its model turns about, in its space (func_ov004_0220dbac) */
     int scale_x; /* 20.12 fixed point, as the rest */
     int scale_y;
@@ -61,15 +75,24 @@ typedef struct RoomObject {
     Vec3 target_position;
     Mount mount;
     CarriedItems carried;
-    u8 unk_1d0[0x80];
-    u8 unk_250[0x34]; /* given to the move functions func_ov004_0223b004/58/80 */
-    s32 unk_284;      /* the furniture's number (func_ov004_0220fde0), which names its files */
-    u8 unk_288;       /* 0: the objects on its cells turn with it; the layer of the town's map it is on */
-    u8 unk_289[0x2ab];
-    s32 state; /* RoomObjectState */
-    u8 unk_538[0x64];
+    u8 item_shadows[4][0x20]; /* of the items lying on its cells (func_020b7d3c) */
+    u8 unk_250[4];            /* given to the move functions func_ov004_0223b004/58/80 */
+    Mtx43 base_matrix;        /* its place in the world, about its pivot (func_ov004_0220fc98) */
+    s32 unk_284;              /* the furniture's number (func_ov004_0220fde0), which names its files */
+    u8 unk_288;               /* 0: the objects on its cells turn with it; the layer of the town's map it is on */
+    u8 is_set_up;             /* func_ov004_0220f52c has run */
+    u8 unk_28a[2];
+    u8 shadow[4]; /* its shadow (func_020b7dc8) */
+    u8 unk_290[0x2a4];
+    s32 state;        /* RoomObjectState */
+    u8 unk_538[0x5c]; /* the main program's model object, up to 0x62c */
+    G3dModel *model_resource;
+    u8 unk_598[4];
     Mtx43 matrix; /* its place in the world, for what it carries */
-    u8 unk_5cc[0x60];
+    u8 unk_5cc[8];
+    u8 joint_anim[8]; /* the model's joint animation, its frame below */
+    u32 joint_frame;
+    u8 unk_5e0[0x4c];
     PushBox push_box;
     FurnitureModel model_files;
     Switch light_switch;
@@ -80,7 +103,13 @@ typedef struct RoomObject {
     u8 unk_769[3];
     s32 unk_76C;      /* 2: func_ov004_0220e5c8 says so */
     u16 state_frames; /* frames in the state, for the states that count them */
-    u8 unk_772[0xe];
+    u8 unk_772[2];
+    s32 unk_774;
+    s32 unk_778;
+    u8 unk_77C; /* what vtable slot 0x78 gives in the base (the map's record gets it) */
+    u8 unk_77D; /* set: it neither moves nor switches */
+    u8 unk_77E; /* set while the constructor's loading binds its model */
+    u8 unk_77f;
     u32 unk_780; /* 0x23 to 0x25: spinning does not turn it */
     u32 unk_784; /* 1: two cells long, its pivot at either end (func_ov004_0220dbac) */
     u32 unk_788; /* 1: the objects on its cells turn with it */
@@ -88,7 +117,18 @@ typedef struct RoomObject {
     u8 unk_78D; /* 0: its switch starts on when unk_76C is 1 or 2 */
     u8 unk_78e[2];
     fx32 top_height; /* the height of what stands on it, in its own space */
+    s32 light_kind;  /* func_02053818 of its number: 0 for no light */
+    RoomSound sound;
+    FurnitureAnim anims[4]; /* ROOM_ANIM_MATERIAL to ROOM_ANIM_VISIBILITY */
 } RoomObject;
+
+/* The animations in RoomObject.anims, with the AnimSet entry each plays. */
+enum RoomAnim {
+    ROOM_ANIM_MATERIAL = 0,  /* anim_08 */
+    ROOM_ANIM_TEXCOORD = 1,  /* anim_18 */
+    ROOM_ANIM_PATTERN = 2,   /* anim_20, with the texture */
+    ROOM_ANIM_VISIBILITY = 3 /* anim_10 */
+};
 
 /* The cells an object covers (func_ov004_0220f27c fills them in). */
 typedef struct Cell {

@@ -36,7 +36,9 @@ typedef struct FurnitureModel {
  * writes it there), none until it is bound. */
 typedef struct FurnitureAnim {
     const void *vtable;
-    u8 unk_04[0x14];
+    u8 unk_04[4];
+    u32 frame; /* in 20.12 fixed point */
+    u8 unk_0c[0xc];
     u32 *target;
     u32 unk_1c;
 } FurnitureAnim;
