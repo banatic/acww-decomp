@@ -62,5 +62,31 @@ unsigned int TalkAnswers_Picked(TalkAnswers *answers);
 int TalkAnswers_Cancel(TalkAnswers *answers);
 unsigned int TalkAnswers_Count(TalkAnswers *answers);
 u8 *TalkAnswers_FifthText(TalkAnswers *answers);
+u8 *TalkAnswers_FirstText(TalkAnswers *answers);
+TalkAnswer *TalkAnswers_Answer(TalkAnswers *answers, int index);
+void TalkAnswers_ClearAnswers(TalkAnswers *answers);
+void TalkAnswers_ClearPick(TalkAnswers *answers);
+void TalkAnswers_Clear(TalkAnswers *answers);
+void TalkAnswers_LoadTexts(TalkAnswers *answers);
+void TalkAnswers_Set(TalkAnswers *answers, int index, const u8 *message, int file, const u8 *unk_70, const char *name,
+                     int sound_kind);
+void TalkAnswers_Reset(TalkAnswers *answers, int count, int cancel);
+TalkAnswers *TalkAnswers_Destruct(TalkAnswers *answers);
+TalkAnswers *TalkAnswers_Construct(TalkAnswers *answers);
+void TalkAnswers_LoadAnswerText(TalkAnswer *answer);
+void TalkAnswers_SetSoundKind(TalkAnswer *answer, u32 sound_kind);
+void TalkAnswers_SetName(TalkAnswer *answer, const char *name);
+void TalkAnswers_Set70(TalkAnswer *answer, const u8 *value);
+void TalkAnswers_SetFile(TalkAnswer *answer, int file);
+void TalkAnswers_SetMessage(TalkAnswer *answer, const u8 *message);
+u32 TalkAnswers_SoundKind(TalkAnswer *answer);
+u8 *TalkAnswers_Weight(TalkAnswer *answer);
+Block020a8248 *TalkAnswers_Record(TalkAnswer *answer);
+char *TalkAnswers_Name(TalkAnswer *answer);
+u8 *TalkAnswers_Answer70(TalkAnswer *answer);
+struct TextBase *TalkAnswers_Text(TalkAnswer *answer);
+void TalkAnswers_ClearAnswer(TalkAnswer *answer);
+TalkAnswer *TalkAnswers_DestructAnswer(TalkAnswer *answer);
+TalkAnswer *TalkAnswers_ConstructAnswer(TalkAnswer *answer);
 
 #endif

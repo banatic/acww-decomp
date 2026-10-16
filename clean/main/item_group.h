@@ -38,4 +38,52 @@ void ItemGroup_TestIsCarpet(const u16 *code);
 int ItemGroup_IsHeadB(const u16 *code);
 void ItemGroup_TestIsHeadB(const u16 *code);
 
+/* More groups, with the index of a code in its group (-1 for a code outside it):
+ *
+ *   0x1144-0x1187  carpets (68)                ItemGroup_Carpet
+ *   0x1188-0x11a7  the players' designs (32: four players of eight, design.c)
+ *                                              ItemGroup_Design, ItemGroup_IsDesign,
+ *                                              ItemGroup_DesignIndex, ItemGroup_DesignOf
+ *   0x12b0-0x12e7  insects (56, insect_tables.h)
+ *                                              ItemGroup_Insect, ItemGroup_IsInsect,
+ *                                              ItemGroup_InsectIndex
+ *   0x12e8-0x131f  fish (56, creature_table.h) ItemGroup_IsFish, ItemGroup_FishIndex
+ *   0x13c8-0x1407  worn on the head, the second model (64)
+ *                                              ItemGroup_HeadB
+ *   0x1408-0x1428  worn on the head, the first of a pair (33; item_form.h)
+ *                                              ItemGroup_HeadC, ItemGroup_IsHeadC,
+ *                                              ItemGroup_HeadCIndex
+ *   0x1471-0x1491  worn as part C, the second of a pair (33; glasses_look.h)
+ *                                              ItemGroup_PartC2, ItemGroup_IsPartC2,
+ *                                              ItemGroup_PartC2Index
+ *   0x1492-0x14fd  bags of bells (108, smallest first; player_pockets.h)
+ *                                              ItemGroup_BellBag
+ *
+ * and three groups of room codes (four codes per item): 0x3894-0x38e3 (museum_record.h),
+ * 0x450c-0x45db (item_attributes.h) and 0x45dc-0x47d7 (room_sync.h). */
+u16 ItemGroup_Carpet(u16 index);
+u16 ItemGroup_HeadB(u32 index);
+u16 ItemGroup_Insect(u32 index);
+u16 ItemGroup_HeadC(u32 index);
+u16 ItemGroup_PartC2(u32 index);
+u16 ItemGroup_Design(u32 index);
+u16 ItemGroup_BellBag(u32 index);
+int ItemGroup_IsHeadC(const u16 *code);
+int ItemGroup_HeadCIndex(const u16 *code);
+int ItemGroup_IsPartC2(const u16 *code);
+int ItemGroup_PartC2Index(const u16 *code);
+int ItemGroup_IsDesign(const u16 *code);
+int ItemGroup_DesignIndex(const u16 *code);
+int ItemGroup_DesignSlot(const u16 *code);
+int ItemGroup_DesignPlayer(const u16 *code);
+int ItemGroup_DesignOf(int player, int slot);
+void ItemGroup_ConstructDesign(u16 *code, int player, int slot);
+int ItemGroup_IsInsect(const u16 *code);
+int ItemGroup_InsectIndex(const u16 *code);
+int ItemGroup_IsFish(const u16 *code);
+int ItemGroup_FishIndex(const u16 *code);
+int ItemGroup_IsRoom3894(const u16 *code);
+int ItemGroup_IsRoom45dc(const u16 *code);
+int ItemGroup_IsRoom450c(const u16 *code);
+
 #endif

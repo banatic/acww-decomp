@@ -36,5 +36,11 @@ void ScreenMark_StepHidden(ScreenMark *mark);
 void ScreenMark_DrawInstance(void);
 void ScreenMark_UpdateInstance(void);
 void ScreenMark_RewindInstance(void);
+void ScreenMark_ResetInstance(void);
+void ScreenMark_Update(ScreenMark *mark);
+void ScreenMark_Draw(ScreenMark *mark);
+ScreenMark *ScreenMark_Delete(ScreenMark *mark);
+ScreenMark *ScreenMark_Destruct(ScreenMark *mark);
+ScreenMark *ScreenMark_Construct(ScreenMark *mark);
 
 #endif

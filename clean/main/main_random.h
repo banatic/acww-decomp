@@ -9,5 +9,7 @@
 
 void MainRandom_SeedFromClock(void);
 void MainRandom_Destruct(Random *random);
+unsigned int MainRandom_BelowB(int bound);
+unsigned int MainRandom_Below(int bound);
 
 #endif
