@@ -503,3 +503,16 @@ VillagerState *VillagerState_Construct(VillagerState *entry)
     return entry;
 }
 CLEAN_AS(func_020795c8, VillagerState_Construct)
+
+/* The entry destructor, as the game hands it to __cxa_vec_cleanup. */
+extern void func_020795a8(void *entry);
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+
+/* func_02082528: the table's destructor (registered when the game starts): the eight entries,
+ * from the last to the first (VillagerState_Destruct). The town bytes need none. */
+VillagerStates *VillagerState_DestructTable(VillagerStates *table)
+{
+    __cxa_vec_cleanup(table->entries, VILLAGER_STATE_ENTRIES, sizeof(VillagerState), func_020795a8);
+    return table;
+}
+CLEAN_AS(func_02082528, VillagerState_DestructTable)

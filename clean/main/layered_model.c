@@ -641,3 +641,73 @@ LayeredModel *LayeredModel_ConstructABase(LayeredModel *model)
     return model;
 }
 CLEAN_AS(func_02054c2c, LayeredModel_ConstructABase)
+
+/* The destructors reached through the vtables of the base frame control part (at 0x9c) and the
+ * base Ramp part (at 0xb8), with the part's address. */
+static LayeredModel *from_base_frames(FrameCtrl *frames)
+{
+    return (LayeredModel *) ((uintptr_t) frames - offsetof(LayeredModel, base_frames));
+}
+
+static LayeredModel *from_base_ramp(LayeredModelRamp *ramp)
+{
+    return (LayeredModel *) ((uintptr_t) ramp - offsetof(LayeredModel, base_ramp));
+}
+
+/* _ZThn156_N12Obj_020dd0acD0Ev (func_0205586c): the deleting destructor of the class with
+ * layer A. */
+LayeredModel *LayeredModel_DeleteAFromFrames(FrameCtrl *frames)
+{
+    return LayeredModel_DeleteA(from_base_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd0acD0Ev, LayeredModel_DeleteAFromFrames)
+
+/* _ZThn156_N12Obj_020dd0acD1Ev (func_02055888): its complete destructor. */
+LayeredModel *LayeredModel_DestructAFromFrames(FrameCtrl *frames)
+{
+    return LayeredModel_DestructAComplete(from_base_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd0acD1Ev, LayeredModel_DestructAFromFrames)
+
+/* _ZThn184_N12Obj_020dd0acD0Ev (func_020558a4): its deleting destructor. */
+LayeredModel *LayeredModel_DeleteAFromRamp(LayeredModelRamp *ramp)
+{
+    return LayeredModel_DeleteA(from_base_ramp(ramp));
+}
+CLEAN_AS(_ZThn184_N12Obj_020dd0acD0Ev, LayeredModel_DeleteAFromRamp)
+
+/* _ZThn184_N12Obj_020dd0acD1Ev (func_020558c0): its complete destructor. */
+LayeredModel *LayeredModel_DestructAFromRamp(LayeredModelRamp *ramp)
+{
+    return LayeredModel_DestructAComplete(from_base_ramp(ramp));
+}
+CLEAN_AS(_ZThn184_N12Obj_020dd0acD1Ev, LayeredModel_DestructAFromRamp)
+
+/* _ZThn156_N12Obj_020dd07cD0Ev (func_020558dc): the deleting destructor of the class with both
+ * layers. */
+LayeredModel *LayeredModel_DeleteBFromFrames(FrameCtrl *frames)
+{
+    return LayeredModel_DeleteB(from_base_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd07cD0Ev, LayeredModel_DeleteBFromFrames)
+
+/* _ZThn156_N12Obj_020dd07cD1Ev (func_020558f8): its complete destructor. */
+LayeredModel *LayeredModel_DestructBFromFrames(FrameCtrl *frames)
+{
+    return LayeredModel_DestructB(from_base_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd07cD1Ev, LayeredModel_DestructBFromFrames)
+
+/* _ZThn184_N12Obj_020dd07cD0Ev (func_02055914): its deleting destructor. */
+LayeredModel *LayeredModel_DeleteBFromRamp(LayeredModelRamp *ramp)
+{
+    return LayeredModel_DeleteB(from_base_ramp(ramp));
+}
+CLEAN_AS(_ZThn184_N12Obj_020dd07cD0Ev, LayeredModel_DeleteBFromRamp)
+
+/* _ZThn184_N12Obj_020dd07cD1Ev (func_02055930): its complete destructor. */
+LayeredModel *LayeredModel_DestructBFromRamp(LayeredModelRamp *ramp)
+{
+    return LayeredModel_DestructB(from_base_ramp(ramp));
+}
+CLEAN_AS(_ZThn184_N12Obj_020dd07cD1Ev, LayeredModel_DestructBFromRamp)

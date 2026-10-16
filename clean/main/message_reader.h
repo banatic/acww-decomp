@@ -69,4 +69,12 @@ void MessageReader_Clear(MessageReader *reader);
 int MessageReader_FilterTaboo(void *text);
 int MessageReader_LoadNickname(void *text, void *context, unsigned char *message);
 
+/* Loading a message by group: a general message, into a part of the reader, from the menu
+ * files, decoded, or plain. */
+void MessageReader_LoadGeneral(void *text, int index, int decoded);
+void *MessageReader_SetPart(int index, int source);
+int MessageReader_LoadMenuMessage(int text, unsigned char *message, const char *name);
+void *MessageReader_LoadDecoded(void *text, unsigned char *message, const char *name);
+int MessageReader_LoadMessage(int text, unsigned char *message, int name);
+
 #endif

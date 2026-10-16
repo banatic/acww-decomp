@@ -121,5 +121,6 @@ void VillagerState_SetState(VillagerState *entry, int state);
 int VillagerState_LinkedState(const VillagerState *entry);
 VillagerState *VillagerState_Destruct(VillagerState *entry);
 VillagerState *VillagerState_Construct(VillagerState *entry);
+VillagerStates *VillagerState_DestructTable(VillagerStates *table);
 
 #endif

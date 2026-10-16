@@ -118,5 +118,13 @@ LayeredModel *LayeredModel_DeleteA(LayeredModel *model);
 LayeredModel *LayeredModel_DestructAComplete(LayeredModel *model);
 LayeredModel *LayeredModel_ConstructA(LayeredModel *model);
 LayeredModel *LayeredModel_ConstructABase(LayeredModel *model);
+LayeredModel *LayeredModel_DeleteAFromFrames(FrameCtrl *frames);
+LayeredModel *LayeredModel_DestructAFromFrames(FrameCtrl *frames);
+LayeredModel *LayeredModel_DeleteAFromRamp(LayeredModelRamp *ramp);
+LayeredModel *LayeredModel_DestructAFromRamp(LayeredModelRamp *ramp);
+LayeredModel *LayeredModel_DeleteBFromFrames(FrameCtrl *frames);
+LayeredModel *LayeredModel_DestructBFromFrames(FrameCtrl *frames);
+LayeredModel *LayeredModel_DeleteBFromRamp(LayeredModelRamp *ramp);
+LayeredModel *LayeredModel_DestructBFromRamp(LayeredModelRamp *ramp);
 
 #endif

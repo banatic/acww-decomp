@@ -472,3 +472,50 @@ AnimatedModel *AnimatedModel_DeleteFromFrames(FrameCtrl *frames)
     return AnimatedModel_Delete((AnimatedModel *) ((uintptr_t) frames - offsetof(AnimatedModel, frames)));
 }
 CLEAN_AS(_ZThn156_N12Obj_020dd05cD0Ev, AnimatedModel_DeleteFromFrames)
+
+/* The destructors reached through the vtables of the frame control part (at 0x9c) and the Ramp
+ * part (at 0xb8), with the part's address. */
+static AnimatedModel *from_frames(FrameCtrl *frames)
+{
+    return (AnimatedModel *) ((uintptr_t) frames - offsetof(AnimatedModel, frames));
+}
+
+static AnimatedModel *from_ramp(AnimatedModelRamp *ramp)
+{
+    return (AnimatedModel *) ((uintptr_t) ramp - offsetof(AnimatedModel, ramp));
+}
+
+/* _ZThn156_N12Obj_020dd05cD1Ev (func_020557e0): the animated model's complete destructor. */
+AnimatedModel *AnimatedModel_DestructCompleteFromFrames(FrameCtrl *frames)
+{
+    return AnimatedModel_DestructComplete(from_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd05cD1Ev, AnimatedModel_DestructCompleteFromFrames)
+
+/* _ZThn156_N12Obj_020dd0dcD0Ev (func_020557fc): the blended model's deleting destructor. */
+AnimatedModel *AnimatedModel_DeleteBlendedFromFrames(FrameCtrl *frames)
+{
+    return AnimatedModel_DeleteBlended(from_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd0dcD0Ev, AnimatedModel_DeleteBlendedFromFrames)
+
+/* _ZThn156_N12Obj_020dd0dcD1Ev (func_02055818): the blended model's complete destructor. */
+AnimatedModel *AnimatedModel_DestructBlendedFromFrames(FrameCtrl *frames)
+{
+    return AnimatedModel_DestructBlendedComplete(from_frames(frames));
+}
+CLEAN_AS(_ZThn156_N12Obj_020dd0dcD1Ev, AnimatedModel_DestructBlendedFromFrames)
+
+/* _ZThn184_N12Obj_020dd0dcD0Ev (func_02055834): the blended model's deleting destructor. */
+AnimatedModel *AnimatedModel_DeleteBlendedFromRamp(AnimatedModelRamp *ramp)
+{
+    return AnimatedModel_DeleteBlended(from_ramp(ramp));
+}
+CLEAN_AS(_ZThn184_N12Obj_020dd0dcD0Ev, AnimatedModel_DeleteBlendedFromRamp)
+
+/* _ZThn184_N12Obj_020dd0dcD1Ev (func_02055850): the blended model's complete destructor. */
+AnimatedModel *AnimatedModel_DestructBlendedFromRamp(AnimatedModelRamp *ramp)
+{
+    return AnimatedModel_DestructBlendedComplete(from_ramp(ramp));
+}
+CLEAN_AS(_ZThn184_N12Obj_020dd0dcD1Ev, AnimatedModel_DestructBlendedFromRamp)

@@ -380,3 +380,342 @@ ModelObject *ModelObject_ConstructBase(ModelObject *object)
     return object;
 }
 CLEAN_AS(func_020557a0, ModelObject_ConstructBase)
+
+/* The render object's parts: the class the holder extends (vtable data_020dd13c) and its own
+ * base class (vtable data_020dd11c, constructor func_020563c0, destructor func_02056390). */
+extern const u8 data_020dd13c[];
+extern void func_020563c0(ModelObject *object);
+extern void func_02056390(ModelObject *object);
+
+/* NitroSystem's G3D global state (NNS_G3dGlb, data_027e0148): word 0x1f its flags; its base
+ * rotation at 0x3c (data_027e0184). */
+extern u32 data_027e0148[];
+extern u8 data_027e0184[];
+/* The flags of NNS_G3dGlb cleared when its base rotation changes (the matrices made from it
+ * are out of date). */
+#define MODEL_OBJECT_GLB_BASE_CHANGED 0xa4u
+
+/* ModelRenderObject.flags (NitroSystem's NNS_G3D_RENDEROBJ_FLAG_NOGECMD): drawing computes
+ * the matrices but sends no geometry commands. */
+#define MODEL_RENDER_NO_COMMANDS 0x02
+
+/* The model's shape binary commands (SBC) read by ModelObject_DrawShapes. */
+#define MODEL_SBC_OP_MASK 0x1f
+#define MODEL_SBC_RET 1 /* the end */
+#define MODEL_SBC_MAT 4 /* byte 1: the material of the shapes that follow */
+#define MODEL_SBC_SHP 5 /* byte 1: a shape to draw */
+
+/* The materials' polygon attributes (GX's POLYGON_ATTR): the lights used, the alpha and the
+ * polygon ID. */
+#define MODEL_MATERIAL_LIGHTS 0x0000000fu
+#define MODEL_MATERIAL_ALPHA_SHIFT 16
+#define MODEL_MATERIAL_ALPHA_KEEP 0xffe0ffffu
+#define MODEL_MATERIAL_ID_SHIFT 24
+#define MODEL_MATERIAL_ID_KEEP 0xc0ffffffu
+
+/* NitroSystem's material flag that the emission color is sent (NNS_G3D_MATFLAG_EMISSION). */
+#define MODEL_MATERIAL_FLAG_EMISSION 0x400
+
+/* The joint results' matrix of node `joint` (NNS_G3dGetResultMtx: no normal matrix wanted). */
+extern int NNS_G3dGetResultMtx(ModelRenderObject *render, Mtx43 *out, void *normal, int joint);
+extern const Mtx43 *NNS_G3dGlbGetInvV(void);
+extern void MTX_Concat43(const Mtx43 *a, const Mtx43 *b, Mtx43 *product);
+extern void MTX_Identity43_(Mtx43 *mtx);
+extern void MI_Copy36B(const void *src, void *dst);
+extern fx32 FX_MulFunc(fx32 a, fx32 b);
+/* The render object set up for `model` (NNS_G3dRenderObjInit), its hook run before a draw
+ * (NNS_G3dRenderObjSetInitFunc) and drawn (NNS_G3dDraw). */
+extern void func_021054e4(ModelRenderObject *render, u8 *model);
+extern void func_02105294(ModelRenderObject *render, void *hook);
+extern void func_01ff8ad4(ModelRenderObject *render);
+extern void NNS_G3dRenderObjSetCallBack(ModelRenderObject *render, void *callback, void *at, int command, int timing);
+/* NNS_G3dGlb's base translation and scale (NNS_G3dGlbSetBaseTrans, NNS_G3dGlbSetBaseScale). */
+extern void func_0210581c(const Vec3 *translation);
+extern void func_021057f4(const Vec3 *scale);
+extern void NNS_G3dGlbFlushP(void);
+extern void NNS_G3dDraw1Mat1Shp(u8 *model, u32 material, u32 shape, int send_material);
+extern u32 NNS_G3dGetSbcCmdLen(const u8 *command);
+extern void NNSi_G3dModifyMatFlag(u8 *model, int on, int flag);
+/* The lights a lit material uses in the current scene. */
+extern u32 func_020658c4(void);
+
+/* The render object's pointer handed to its hooks (NNSG3dRenderObj.ptrUser, at 0x2c). */
+static void **render_user(ModelObject *object)
+{
+    return (void **) (void *) (object->render.unk_1c + 0x10);
+}
+
+/* The base transform the holder is drawn at: a rotation, then a translation (Mtx43). */
+static Mtx43 *base_transform(ModelObject *object)
+{
+    return (Mtx43 *) (void *) object->unk_64;
+}
+
+static const Vec3 *base_translation(ModelObject *object)
+{
+    return (const Vec3 *) (const void *) (object->unk_64 + 0x24);
+}
+
+/* The model's material count, and the polygon attributes of material `index` (its word 0x0c);
+ * the materials are a block at the model's word 0x08 with a dictionary at 4. */
+static u32 material_count(const u8 *model)
+{
+    return model[0x18];
+}
+
+static u32 *material_attributes(u8 *model, u32 index)
+{
+    u8 *materials = model + read_u32(model + 0x08);
+    const u8 *entries = materials + 4 + read_u16(materials + 0x0a);
+    u8 *material = materials + read_u32(entries + read_u16(entries) * index + 4);
+    return (u32 *) (void *) (material + 0x0c);
+}
+
+/* func_02055d0c: the world matrix of joint `joint` as last drawn (the result matrix times the
+ * inverse view), in `out`. 0 when the model keeps no results for it. */
+int ModelObject_JointMatrix(ModelObject *object, Mtx43 *out, int joint)
+{
+    if (!NNS_G3dGetResultMtx(&object->render, out, NULL, joint)) {
+        return 0;
+    }
+    MTX_Concat43(out, NNS_G3dGlbGetInvV(), out);
+    return 1;
+}
+CLEAN_AS(func_02055d0c, ModelObject_JointMatrix)
+
+/* func_02055d38: every material of the model takes `alpha` (0-31).
+ * QUIRK: `alpha` is not masked: a larger one sets bits above the alpha. */
+void ModelObject_SetAlpha(ModelObject *object, int alpha)
+{
+    u32 value = (u32) alpha << MODEL_MATERIAL_ALPHA_SHIFT;
+    for (u32 i = 0; i < material_count(object->model); i++) {
+        u32 *attributes = material_attributes(object->model, i);
+        *attributes &= MODEL_MATERIAL_ALPHA_KEEP;
+        *attributes |= value;
+    }
+}
+CLEAN_AS(func_02055d38, ModelObject_SetAlpha)
+
+/* func_02055d80: every material of the model takes polygon ID `id` (0-63).
+ * QUIRK: `id` is not masked: a larger one sets the top bits. */
+void ModelObject_SetPolygonId(ModelObject *object, int id)
+{
+    u32 value = (u32) id << MODEL_MATERIAL_ID_SHIFT;
+    for (u32 i = 0; i < material_count(object->model); i++) {
+        u32 *attributes = material_attributes(object->model, i);
+        *attributes &= MODEL_MATERIAL_ID_KEEP;
+        *attributes |= value;
+    }
+}
+CLEAN_AS(func_02055d80, ModelObject_SetPolygonId)
+
+/* func_02055dc8: `hook` (the game's function) runs before each draw, given `user`. */
+void ModelObject_SetInitHook(ModelObject *object, void *hook, void *user)
+{
+    func_02105294(&object->render, hook);
+    *render_user(object) = user;
+}
+CLEAN_AS(func_02055dc8, ModelObject_SetInitHook)
+
+/* func_02055de0: `callback` (the game's function) runs at `timing` of each shape binary command
+ * `command` from `at` (NULL: the start), given `user`. */
+void ModelObject_SetNodeCallback(ModelObject *object, void *callback, int command, int timing, void *user, void *at)
+{
+    NNS_G3dRenderObjSetCallBack(&object->render, callback, at, command, timing);
+    *render_user(object) = user;
+}
+CLEAN_AS(func_02055de0, ModelObject_SetNodeCallback)
+
+/* func_02055e00: the render object. */
+ModelRenderObject *ModelObject_RenderObject(ModelObject *object)
+{
+    return &object->render;
+}
+CLEAN_AS(func_02055e00, ModelObject_RenderObject)
+
+/* func_02055e04: the render object drawn (at the transform already set). */
+void ModelObject_DrawRender(ModelObject *object)
+{
+    func_01ff8ad4(&object->render);
+}
+CLEAN_AS(func_02055e04, ModelObject_DrawRender)
+
+/* func_02055e10: the holder's base transform made G3D's base, with `scale` (NULL: 1.0), and
+ * sent to the geometry engine. */
+void ModelObject_SetBaseTransform(ModelObject *object, const Vec3 *scale)
+{
+    MI_Copy36B(base_transform(object), data_027e0184);
+    data_027e0148[0x1f] &= ~MODEL_OBJECT_GLB_BASE_CHANGED;
+    func_0210581c(base_translation(object));
+    if (scale == NULL) {
+        Vec3 one = {0x1000, 0x1000, 0x1000};
+        func_021057f4(&one);
+    } else {
+        func_021057f4(scale);
+    }
+    NNS_G3dGlbFlushP();
+}
+CLEAN_AS(func_02055e10, ModelObject_SetBaseTransform)
+
+/* func_02055e64: the render object drawn without geometry commands (the matrices only); the
+ * flag stays set. */
+void ModelObject_DrawWithoutCommands(ModelObject *object)
+{
+    object->render.flags |= MODEL_RENDER_NO_COMMANDS;
+    func_01ff8ad4(&object->render);
+}
+CLEAN_AS(func_02055e64, ModelObject_DrawWithoutCommands)
+
+/* func_02055e7c: the holder drawn at its base transform with `scale` (NULL: 1.0). */
+void ModelObject_Draw(ModelObject *object, const Vec3 *scale)
+{
+    ModelObject_SetBaseTransform(object, scale);
+    ModelObject_DrawRender(object);
+}
+CLEAN_AS(func_02055e7c, ModelObject_Draw)
+
+/* func_02055e90: each shape of the model drawn with its material at the base transform, with
+ * `scale` (NULL: 1.0) times the model's position scale, ignoring the nodes' matrices: the shape
+ * binary commands are walked for their materials and shapes only.
+ * REQUIRES: a material command comes before the first shape command (the original then draws
+ * with whatever material number its register held). */
+void ModelObject_DrawShapes(ModelObject *object, const Vec3 *scale)
+{
+    u8 *model = object->model;
+    const u8 *command = model + read_u32(model + 0x04);
+    fx32 position_scale = (fx32) read_u32(model + 0x1c);
+
+    if (position_scale == 0x1000) {
+        ModelObject_SetBaseTransform(object, scale);
+    } else {
+        Vec3 scaled;
+        if (scale == NULL) {
+            scaled.x = position_scale;
+            scaled.y = position_scale;
+            scaled.z = position_scale;
+        } else {
+            scaled.x = FX_MulFunc(scale->x, position_scale);
+            scaled.y = FX_MulFunc(scale->y, position_scale);
+            scaled.z = FX_MulFunc(scale->z, position_scale);
+        }
+        ModelObject_SetBaseTransform(object, &scaled);
+    }
+
+    u32 material = 0;
+    for (;;) {
+        switch (*command & MODEL_SBC_OP_MASK) {
+            case MODEL_SBC_RET:
+                return;
+            case MODEL_SBC_MAT:
+                material = command[1];
+                break;
+            case MODEL_SBC_SHP:
+                NNS_G3dDraw1Mat1Shp(object->model, material, command[1], 1);
+                break;
+            default:
+                break;
+        }
+        command += NNS_G3dGetSbcCmdLen(command);
+    }
+}
+CLEAN_AS(func_02055e90, ModelObject_DrawShapes)
+
+/* func_02055f1c: the render object released (ModelObject_ResetRender). 1. */
+int ModelObject_ReleaseRender(ModelObject *object)
+{
+    ModelObject_ResetRender(object);
+    return 1;
+}
+CLEAN_AS(func_02055f1c, ModelObject_ReleaseRender)
+
+/* func_02055f2c: the holder draws `model`, keeping `texture` with it (not bound). 1. */
+int ModelObject_SetModel(ModelObject *object, u8 *model, void *texture)
+{
+    object->model = model;
+    object->texture = texture;
+    ModelObject_SetupRender(object);
+    return 1;
+}
+CLEAN_AS(func_02055f2c, ModelObject_SetModel)
+
+/* func_02055f40: the holder draws `model`, with `texture`'s textures and palettes bound to it
+ * when there is one. 1. */
+int ModelObject_SetModelTexture(ModelObject *object, u8 *model, void *texture)
+{
+    object->model = model;
+    object->texture = texture;
+    if (object->texture != NULL) {
+        NNS_G3dBindMdlTex(object->model, object->texture);
+        NNS_G3dBindMdlPltt(object->model, object->texture);
+    }
+    ModelObject_SetupRender(object);
+    return 1;
+}
+CLEAN_AS(func_02055f40, ModelObject_SetModelTexture)
+
+/* func_02055f6c: the render object set up for the model; each lit material takes the lights of
+ * the current scene (func_020658c4), and no material sends its emission color. */
+void ModelObject_SetupRender(ModelObject *object)
+{
+    func_021054e4(&object->render, object->model);
+    for (u32 i = 0; i < material_count(object->model); i++) {
+        u32 *attributes = material_attributes(object->model, i);
+        if ((*attributes & MODEL_MATERIAL_LIGHTS) != 0) {
+            *attributes &= ~MODEL_MATERIAL_LIGHTS;
+            *attributes |= func_020658c4();
+        }
+    }
+    NNSi_G3dModifyMatFlag(object->model, 0, MODEL_MATERIAL_FLAG_EMISSION);
+}
+CLEAN_AS(func_02055f6c, ModelObject_SetupRender)
+
+/* func_02055fcc: no model: the render object emptied, the base transform the identity, the
+ * derived classes' flags (layered_model.h) and the VRAM region cleared. */
+void ModelObject_ResetRender(ModelObject *object)
+{
+    func_021054e4(&object->render, NULL);
+    object->model = NULL;
+    object->texture = NULL;
+    MTX_Identity43_(base_transform(object));
+    *(u16 *) (void *) object->unk_04 = 0;
+    object->vram = NULL;
+}
+CLEAN_AS(func_02055fcc, ModelObject_ResetRender)
+
+/* func_02055ff4: the render object part's destructor (the holder's ends with it). */
+ModelObject *ModelObject_BaseDestruct(ModelObject *object)
+{
+    object->vtable = data_020dd13c;
+    func_02056390(object);
+    return object;
+}
+CLEAN_AS(func_02055ff4, ModelObject_BaseDestruct)
+
+/* func_0205600c: its deleting destructor. */
+ModelObject *ModelObject_BaseDelete(ModelObject *object)
+{
+    object->vtable = data_020dd13c;
+    func_02056390(object);
+    Heap_OperatorDeleteB(object);
+    return object;
+}
+CLEAN_AS(func_0205600c, ModelObject_BaseDelete)
+
+/* func_0205602c: its complete destructor, the same as ModelObject_BaseDestruct. */
+ModelObject *ModelObject_BaseDestructComplete(ModelObject *object)
+{
+    object->vtable = data_020dd13c;
+    func_02056390(object);
+    return object;
+}
+CLEAN_AS(func_0205602c, ModelObject_BaseDestructComplete)
+
+/* func_02056044: its constructor: no model (ModelObject_ResetRender). */
+ModelObject *ModelObject_BaseConstruct(ModelObject *object)
+{
+    func_020563c0(object);
+    object->vtable = data_020dd13c;
+    ModelObject_ResetRender(object);
+    return object;
+}
+CLEAN_AS(func_02056044, ModelObject_BaseConstruct)

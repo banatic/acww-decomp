@@ -1,0 +1,185 @@
+/* The node callbacks of a scene object's model (scene_object_nodes.h). */
+#include "scene_object_nodes.h"
+
+#include "clean.h"
+#include "layered_model.h"
+#include "model_matrix.h"
+#include "scene_look.h"
+
+static_assert(offsetof(SceneObjectNodeState, callbacks) == 0x0c, "SceneObjectNodeState layout");
+static_assert(offsetof(SceneObjectNodeState, timings) == 0x8c, "SceneObjectNodeState layout");
+static_assert(offsetof(SceneObjectNodeState, joint) == 0xb4, "SceneObjectNodeState layout");
+static_assert(offsetof(SceneObjectNodeState, node_info) == 0xd4, "SceneObjectNodeState layout");
+
+/* The command whose callback these are, and NitroSystem's timings. */
+#define SCENE_OBJECT_NODES_COMMAND 6 /* NODEDESC */
+#define SCENE_OBJECT_NODES_BEFORE 1
+#define SCENE_OBJECT_NODES_JOINT 2
+#define SCENE_OBJECT_NODES_AFTER 3
+
+/* The render object's user data (NNSG3dRenderObj's at 0x2c): the scene object, or null. */
+#define SCENE_OBJECT_NODES_USER 0x2c
+
+/* The object's parts read here (scene_object.h). */
+#define SCENE_OBJECT_NODES_PERSON 0xea /* u16 */
+#define SCENE_OBJECT_NODES_MODEL 0xec
+#define SCENE_OBJECT_NODES_LOOK 0x3b0
+
+/* The persons treated apart: 0xd011 keeps its animation's translations but node 16's, 0xd016
+ * has its root bent onto the curved ground. */
+#define SCENE_OBJECT_NODES_PERSON_D011 0xd011
+#define SCENE_OBJECT_NODES_PERSON_D016 0xd016
+#define SCENE_OBJECT_NODES_ROOT 0
+#define SCENE_OBJECT_NODES_NODE_16 16
+/* What AnimatedModel_RestoreNodeTranslation is given as the root's height. */
+#define SCENE_OBJECT_NODES_HEIGHT 0x800
+
+/* The head joint's number (15), turned by the look. */
+extern const s32 data_020c8150;
+extern const fx16 FX_SinCosTable_[4096 * 2];
+
+extern void MTX_RotY33_(Mtx33 *mtx, fx32 sine, fx32 cosine);
+extern void MTX_RotX33_(Mtx33 *mtx, fx32 sine, fx32 cosine);
+extern void MTX_Concat33(const Mtx33 *a, const Mtx33 *b, Mtx33 *ab);
+/* Whether a code has a variant (item_code.h), and its item without the variant. */
+extern int func_0204bcdc(u16 *code);
+extern int func_0204bc64(u16 *code);
+/* The two tests that, together, keep person 0xd011's translations from being kept. */
+extern int func_020b66d8(void);
+extern int func_020b6708(void);
+/* A point onto the curved ground drawn, from `in` into `out`; the angle it tilts by. */
+extern int func_0203f844(Vec3 *out, Vec3 *in);
+/* The curved ground's radius (0x1f576). */
+extern int func_0203f758(void);
+/* The callbacks themselves, handed on by their addresses. */
+extern void func_0201c48c(void *state);
+extern void func_0201c49c(void *state);
+extern void func_0201c6a8(void *state);
+
+static u8 *scene_object_nodes_object(const SceneObjectNodeState *state)
+{
+    return *(u8 *const *) (const void *) ((const u8 *) state->state.object + SCENE_OBJECT_NODES_USER);
+}
+
+static LayeredModel *scene_object_nodes_model(u8 *object)
+{
+    return (LayeredModel *) (void *) (object + SCENE_OBJECT_NODES_MODEL);
+}
+
+static void scene_object_nodes_hand_on(SceneObjectNodeState *state, void (*next)(void *), u8 timing)
+{
+    state->callbacks[SCENE_OBJECT_NODES_COMMAND] = (u32) (uintptr_t) next;
+    state->timings[SCENE_OBJECT_NODES_COMMAND] = timing;
+}
+
+/* Whether the object is person `code`, the variant of a code with one left out. */
+static int scene_object_nodes_is_person(u8 *object, u16 code)
+{
+    u16 *person = (u16 *) (void *) (object + SCENE_OBJECT_NODES_PERSON);
+    if (func_0204bcdc(person) != 0) {
+        u16 wanted = code;
+        int own = func_0204bc64(person);
+        return own == func_0204bc64(&wanted);
+    }
+    return *person == code;
+}
+
+/* The joint's rotation turned by `angle` (its low 16 bits; rotate_y: about its y axis, else its
+ * x axis), when the angle is not 0. */
+static void scene_object_nodes_turn(Mtx33 *rotation, int angle, int rotate_y)
+{
+    if (angle == 0) {
+        return;
+    }
+    int index = (u16) angle >> 4;
+    Mtx33 turn;
+    if (rotate_y) {
+        MTX_RotY33_(&turn, FX_SinCosTable_[index * 2], FX_SinCosTable_[index * 2 + 1]);
+    } else {
+        MTX_RotX33_(&turn, FX_SinCosTable_[index * 2], FX_SinCosTable_[index * 2 + 1]);
+    }
+    MTX_Concat33(rotation, &turn, rotation);
+}
+
+/* The model's own translation of `node` (its entry in the node information). */
+static const s32 *scene_object_nodes_rest_translation(const u8 *node_info, int node)
+{
+    const u8 *entries = node_info + *(const u16 *) (const void *) (node_info + 6);
+    const u8 *entry = entries + *(const u16 *) (const void *) entries * node;
+    return (const s32 *) (const void *) (node_info + *(const u32 *) (const void *) (entry + 4) + 4);
+}
+
+/* func_0201c48c: after a node: the command's callback is SceneObjectNodes_Before again. */
+void SceneObjectNodes_After(SceneObjectNodeState *state)
+{
+    scene_object_nodes_hand_on(state, func_0201c6a8, SCENE_OBJECT_NODES_BEFORE);
+}
+CLEAN_AS(func_0201c48c, SceneObjectNodes_After)
+
+/* func_0201c49c: once the node's joint is computed, with the scene object:
+ * - its animation's translation is replaced by the model's own (from node 2 on; the root is
+ *   lowered to a height of 0x800), unless the object is person 0xd011 and func_020b66d8 and
+ *   func_020b6708 do not both agree, when only node 16's is;
+ * - the head joint (data_020c8150) is turned by the look's angles (scene_look.h) while its kind
+ *   is a valid one: about its y axis by the pitch, its x axis by the yaw;
+ * - the root of person 0xd016 is put onto the curved ground: its translation's y and z moved
+ *   and the joint tilted about its x axis by the ground's angle there;
+ * - the node is blended by its layer (LayeredModel_ApplyNodeB).
+ * Then the command's callback is SceneObjectNodes_After. */
+void SceneObjectNodes_Joint(SceneObjectNodeState *state)
+{
+    int node = state->state.command[1];
+    u8 *object = scene_object_nodes_object(state);
+
+    if (object != NULL) {
+        if (!scene_object_nodes_is_person(object, SCENE_OBJECT_NODES_PERSON_D011) ||
+            (func_020b66d8() != 0 && func_020b6708() == 1)) {
+            AnimatedModel_RestoreNodeTranslation((AnimatedModelNodeState *) (void *) state, SCENE_OBJECT_NODES_HEIGHT);
+        } else if (node == SCENE_OBJECT_NODES_NODE_16) {
+            const s32 *rest = scene_object_nodes_rest_translation(state->node_info, node);
+            Vec3 *translation = &state->joint->translation;
+            translation->x = rest[0];
+            translation->y = rest[1];
+            translation->z = rest[2];
+        }
+    }
+
+    if (node == data_020c8150 && object != NULL) {
+        const SceneLook *look = (const SceneLook *) (const void *) (object + SCENE_OBJECT_NODES_LOOK);
+        if (look->kind < SCENE_LOOK_KINDS) {
+            Mtx33 *rotation = &state->joint->rotation;
+            scene_object_nodes_turn(rotation, look->pitch, 1);
+            scene_object_nodes_turn(rotation, look->yaw, 0);
+        }
+    }
+
+    if (node == SCENE_OBJECT_NODES_ROOT && object != NULL &&
+        scene_object_nodes_is_person(object, SCENE_OBJECT_NODES_PERSON_D016)) {
+        AnimatedModelJoint *joint = state->joint;
+        Vec3 bent = joint->translation;
+        Vec3 from = joint->translation;
+        int tilt = func_0203f844(&bent, &from);
+        joint->translation.z = bent.z;
+        joint->translation.y = (s32) ((u32) bent.y - (u32) func_0203f758());
+        scene_object_nodes_turn(&joint->rotation, tilt, 0);
+    }
+
+    if (object != NULL) {
+        LayeredModel_ApplyNodeB(scene_object_nodes_model(object), (LayeredModelNodeState *) (void *) state);
+    }
+    scene_object_nodes_hand_on(state, func_0201c48c, SCENE_OBJECT_NODES_AFTER);
+}
+CLEAN_AS(func_0201c49c, SceneObjectNodes_Joint)
+
+/* func_0201c6a8: before a node: the joints take the animation of the node's layer
+ * (LayeredModel_PrepareNodeB), with the scene object; then the command's callback is
+ * SceneObjectNodes_Joint. */
+void SceneObjectNodes_Before(SceneObjectNodeState *state)
+{
+    u8 *object = scene_object_nodes_object(state);
+    if (object != NULL) {
+        LayeredModel_PrepareNodeB(scene_object_nodes_model(object), (LayeredModelNodeState *) (void *) state);
+    }
+    scene_object_nodes_hand_on(state, func_0201c49c, SCENE_OBJECT_NODES_JOINT);
+}
+CLEAN_AS(func_0201c6a8, SceneObjectNodes_Before)

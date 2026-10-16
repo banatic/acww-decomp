@@ -59,4 +59,16 @@ void *SceneObject_YawToActor(u8 *object, int actor);
 int SceneObject_YawTo(u8 *object, u8 *target);
 int SceneObject_IsNearActor(u8 *object, int distance, int actor);
 
+int SceneObject_IsNear(u8 *object, u8 *other, int distance);
+int SceneObject_DistanceToActor(u8 *object, int actor);
+int SceneObject_DistanceTo(u8 *object, u8 *other);
+int SceneObject_FacesPoint(u8 *object, s16 *yaw, const Vec3 *point);
+int SceneObject_IsWithinQuarterTurn(int angle);
+void SceneObject_SetColliderSize(u8 *object, int size);
+void SceneObject_SetPerson(u8 *object, u16 *code);
+void SceneObject_SetPersonIndex(u8 *object, u16 index);
+u16 SceneObject_PersonIndex(u8 *object);
+int SceneObject_ReleaseModel(u8 *object);
+int SceneObject_LoadModel(u8 *object);
+
 #endif

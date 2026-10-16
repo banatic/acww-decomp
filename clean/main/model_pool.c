@@ -228,3 +228,73 @@ void ModelPool_Init(ModelPool *pool)
     pool->released = MODEL_POOL_NO_SLOT;
 }
 CLEAN_AS(func_0209d2b8, ModelPool_Init)
+
+/* ---- An entry and a model's slot */
+
+/* What sets up an entry's VRAM (`vram` at 0x08): `texture_size` bytes of texture VRAM and
+ * `palette_size` of palette VRAM; nonzero when it got them. And the VRAM's constructor. */
+extern int func_02055c80(void *vram, int texture_size, int unused, int palette_size);
+extern void *func_02055cf4(void *vram);
+
+/* func_0209d2d0: the entry emptied: not taken, no heap (the heap itself is left alone). Always
+ * 1. */
+int ModelPoolEntry_Empty(ModelPoolEntry *entry)
+{
+    entry->taken = 0;
+    entry->heap = NULL;
+    return 1;
+}
+CLEAN_AS(func_0209d2d0, ModelPoolEntry_Empty)
+
+/* func_0209d2dc: the entry set up: a frame heap of `heap_size` bytes (rounded up to 4) inside
+ * `parent` when `heap_size` is nonzero, then its VRAM when either size is nonzero; 0 when the
+ * VRAM could not be had, else 1. */
+int ModelPoolEntry_Setup(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent)
+{
+    if (heap_size != 0) {
+        entry->heap = FrameHeap_Create((int) (((u32) heap_size + 3) & ~3u), (Heap *) (uintptr_t) parent);
+    }
+    if (texture_size != 0 || palette_size != 0) {
+        return func_02055c80(entry->vram, texture_size, 0, palette_size) != 0;
+    }
+    return 1;
+}
+CLEAN_AS(func_0209d2dc, ModelPoolEntry_Setup)
+
+/* func_0209d320: the address of the entry's VRAM. */
+int ModelPoolEntry_Vram(ModelPoolEntry *entry)
+{
+    return (int) (uintptr_t) entry->vram;
+}
+CLEAN_AS(func_0209d320, ModelPoolEntry_Vram)
+
+/* func_0209d324: the entry's heap. */
+int ModelPoolEntry_Heap(ModelPoolEntry *entry)
+{
+    return (int) (uintptr_t) entry->heap;
+}
+CLEAN_AS(func_0209d324, ModelPoolEntry_Heap)
+
+/* func_0209d328: the entry's constructor: its VRAM constructed, then not taken and no heap. */
+ModelPoolEntry *ModelPoolEntry_Construct(ModelPoolEntry *entry)
+{
+    func_02055cf4(entry->vram);
+    entry->taken = 0;
+    entry->heap = NULL;
+    return entry;
+}
+CLEAN_AS(func_0209d328, ModelPoolEntry_Construct)
+
+/* func_0209d340: a model's slot's destructor: set to none. */
+void ModelPoolSlot_Destruct(unsigned short *slot)
+{
+    *slot = MODEL_POOL_NO_SLOT;
+}
+CLEAN_AS(func_0209d340, ModelPoolSlot_Destruct)
+
+/* func_0209d34c: a model's slot's constructor: none. */
+void ModelPoolSlot_Construct(unsigned short *slot)
+{
+    *slot = MODEL_POOL_NO_SLOT;
+}
+CLEAN_AS(func_0209d34c, ModelPoolSlot_Construct)

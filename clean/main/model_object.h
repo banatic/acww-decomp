@@ -76,4 +76,31 @@ ModelObject *ModelObject_DestructComplete(ModelObject *object);
 ModelObject *ModelObject_Construct(ModelObject *object);
 ModelObject *ModelObject_ConstructBase(ModelObject *object);
 
+/* The render object's parts (vtable data_020dd13c, the class the holder extends): drawing,
+ * the base transform, the materials' alpha and polygon ID, node callbacks and joint
+ * matrices. */
+#include "autoload_2/matrix.h"
+#include "autoload_2/vector.h"
+
+int ModelObject_JointMatrix(ModelObject *object, Mtx43 *out, int joint);
+void ModelObject_SetAlpha(ModelObject *object, int alpha);
+void ModelObject_SetPolygonId(ModelObject *object, int id);
+void ModelObject_SetInitHook(ModelObject *object, void *hook, void *user);
+void ModelObject_SetNodeCallback(ModelObject *object, void *callback, int command, int timing, void *user, void *at);
+ModelRenderObject *ModelObject_RenderObject(ModelObject *object);
+void ModelObject_DrawRender(ModelObject *object);
+void ModelObject_SetBaseTransform(ModelObject *object, const Vec3 *scale);
+void ModelObject_DrawWithoutCommands(ModelObject *object);
+void ModelObject_Draw(ModelObject *object, const Vec3 *scale);
+void ModelObject_DrawShapes(ModelObject *object, const Vec3 *scale);
+int ModelObject_ReleaseRender(ModelObject *object);
+int ModelObject_SetModel(ModelObject *object, u8 *model, void *texture);
+int ModelObject_SetModelTexture(ModelObject *object, u8 *model, void *texture);
+void ModelObject_SetupRender(ModelObject *object);
+void ModelObject_ResetRender(ModelObject *object);
+ModelObject *ModelObject_BaseDestruct(ModelObject *object);
+ModelObject *ModelObject_BaseDelete(ModelObject *object);
+ModelObject *ModelObject_BaseDestructComplete(ModelObject *object);
+ModelObject *ModelObject_BaseConstruct(ModelObject *object);
+
 #endif

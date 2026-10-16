@@ -342,3 +342,87 @@ int MessageReader_LoadNickname(void *text, void *context, unsigned char *message
     return loaded;
 }
 CLEAN_AS(func_020b4448, MessageReader_LoadNickname)
+
+/* The general messages' numbers in "st_general", by index, and that group's name. */
+extern const u8 data_020d2084[];
+extern const char data_020e52f4[]; /* "st_general" */
+extern const char data_020e5308[]; /* "2d_menu" */
+/* The reader's parts (data_021f4dac's at 0x14fc). */
+extern u8 data_021f62a8[MESSAGE_READER_PARTS][0x5c];
+
+/* func_020b44d4: general message `index` (data_020d2084) of "st_general" read into `text`,
+ * through MessageReader_LoadDecoded when `decoded`, else MessageReader_LoadMessage. */
+void MessageReader_LoadGeneral(void *text, int index, int decoded)
+{
+    u8 message = data_020d2084[index];
+
+    if (decoded != 0) {
+        MessageReader_LoadDecoded(text, &message, data_020e52f4);
+    } else {
+        MessageReader_LoadMessage((int) (uintptr_t) text, &message, (int) (uintptr_t) data_020e52f4);
+    }
+}
+CLEAN_AS(func_020b44d4, MessageReader_LoadGeneral)
+
+/* func_020b496c: the reader's part `index` set from the text `source` (func_020a8bb8). */
+void *MessageReader_SetPart(int index, int source)
+{
+    return func_020a8bb8(data_021f62a8[index], (void *) (uintptr_t) source);
+}
+CLEAN_AS(func_020b496c, MessageReader_SetPart)
+
+/* func_020b4980: message *message of the file `name` ("2d_menu" for NULL) in
+ * "/script/KOR/2d" read into `text` by the global reader; whether it worked. */
+int MessageReader_LoadMenuMessage(int text, unsigned char *message, const char *name)
+{
+    MessageRequest request;
+
+    if (name == NULL) {
+        name = data_020e5308;
+    }
+    MessageRequest_Construct(&request);
+    request.folder = 1;
+    func_020a8164(&request, name);
+    request.message = *message;
+    request.text = (void *) (uintptr_t) text;
+    MessageReader_Clear(&data_021f4dac);
+    int loaded = MessageReader_Load(&data_021f4dac, &request);
+    MessageRequest_Destruct(&request);
+    return loaded;
+}
+CLEAN_AS(func_020b4980, MessageReader_LoadMenuMessage)
+
+/* func_020b49d4: as MessageReader_LoadMessage with the decoder's first byte 1, so that the
+ * message's 0xff/2 tags are decoded into the text rather than kept (MessageDecoder_CopyTag). */
+void *MessageReader_LoadDecoded(void *text, unsigned char *message, const char *name)
+{
+    MessageRequest request;
+
+    MessageRequest_Construct(&request);
+    func_020a8164(&request, name);
+    request.message = *message;
+    request.text = text;
+    request.decode_a = 1;
+    MessageReader_Clear(&data_021f4dac);
+    int loaded = MessageReader_Load(&data_021f4dac, &request);
+    MessageRequest_Destruct(&request);
+    return (void *) (uintptr_t) loaded;
+}
+CLEAN_AS(func_020b49d4, MessageReader_LoadDecoded)
+
+/* func_020b4a20: message *message of the file `name` in "/script/KOR/string" read into
+ * `text` by the global reader; whether it worked. */
+int MessageReader_LoadMessage(int text, unsigned char *message, int name)
+{
+    MessageRequest request;
+
+    MessageRequest_Construct(&request);
+    func_020a8164(&request, (const char *) (uintptr_t) name);
+    request.message = *message;
+    request.text = (void *) (uintptr_t) text;
+    MessageReader_Clear(&data_021f4dac);
+    int loaded = MessageReader_Load(&data_021f4dac, &request);
+    MessageRequest_Destruct(&request);
+    return loaded;
+}
+CLEAN_AS(func_020b4a20, MessageReader_LoadMessage)

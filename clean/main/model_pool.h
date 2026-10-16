@@ -56,4 +56,12 @@ ModelPoolEntry *ModelPool_Take(ModelPool *pool, unsigned short *slot);
 void ModelPool_Destruct(void *pool);
 void ModelPool_Init(ModelPool *pool);
 
+int ModelPoolEntry_Empty(ModelPoolEntry *entry);
+int ModelPoolEntry_Setup(ModelPoolEntry *entry, int texture_size, int palette_size, int heap_size, int parent);
+int ModelPoolEntry_Vram(ModelPoolEntry *entry);
+int ModelPoolEntry_Heap(ModelPoolEntry *entry);
+ModelPoolEntry *ModelPoolEntry_Construct(ModelPoolEntry *entry);
+void ModelPoolSlot_Destruct(unsigned short *slot);
+void ModelPoolSlot_Construct(unsigned short *slot);
+
 #endif

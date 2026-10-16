@@ -736,3 +736,121 @@ int SceneObject_IsNearActor(u8 *object, int distance, int actor)
     return func_0201c350(object, func_02096190(actor), distance);
 }
 CLEAN_AS(func_0201c330, SceneObject_IsNearActor)
+
+/* ---- Distances, facing, the person and the model */
+
+#include "model_object.h"
+
+#define SCENE_OBJECT_PERSON_INDEX 0x632 /* u16: the person code without its top 4 bits */
+#define SCENE_OBJECT_PERSON_MASK 0x0fff
+#define SCENE_OBJECT_SLOT_MODEL_PATH 0x70 /* gives the model's file */
+#define SCENE_OBJECT_QUARTER_TURN 0x4000
+
+/* The unit heap models are loaded from (resource_pools.h). */
+extern Heap *data_021c9ab8;
+/* Sets the word at 0xdc of the object (Base_0203f080) to `value` with its half at 0x0c above. */
+extern void func_0203efb0(void *object, unsigned int value);
+
+/* Whether `value` is nearer 0 than `limit` either way.
+ * QUIRK: as the ROM's negation, the most negative value stays negative and counts as near. */
+static int scene_object_is_within(s32 value, s32 limit)
+{
+    u32 magnitude = value < 0 ? 0u - (u32) value : (u32) value;
+    return (s32) magnitude < limit;
+}
+
+/* func_0201c350: whether `other` (an object, or null) is nearer the object than `distance`. */
+int SceneObject_IsNear(u8 *object, u8 *other, int distance)
+{
+    if (other == NULL) {
+        return 0;
+    }
+    return scene_object_is_within(SceneObject_DistanceTo(object, other), distance);
+}
+CLEAN_AS(func_0201c350, SceneObject_IsNear)
+
+/* func_0201c378: the distance to field actor `actor`'s object (0 without one). */
+int SceneObject_DistanceToActor(u8 *object, int actor)
+{
+    return SceneObject_DistanceTo(object, (u8 *) (uintptr_t) func_02096190(actor));
+}
+CLEAN_AS(func_0201c378, SceneObject_DistanceToActor)
+
+/* func_0201c390: the distance between the positions of `other` and the object, 0 without
+ * `other`. */
+int SceneObject_DistanceTo(u8 *object, u8 *other)
+{
+    if (other == NULL) {
+        return 0;
+    }
+    return Vec_Distance(scene_object_position(other), scene_object_position(object));
+}
+CLEAN_AS(func_0201c390, SceneObject_DistanceTo)
+
+/* func_0201c3b0: the angle from the object to `point` into `yaw`; whether it is less than a
+ * quarter turn from where the object faces. */
+int SceneObject_FacesPoint(u8 *object, s16 *yaw, const Vec3 *point)
+{
+    *yaw = Vec_YawTo(scene_object_position(object), point);
+    return SceneObject_IsWithinQuarterTurn((s16) (*yaw - scene_object_angle(object)));
+}
+CLEAN_AS(func_0201c3b0, SceneObject_FacesPoint)
+
+/* func_0201c3dc: whether a turn of `angle` is less than a quarter turn either way. */
+int SceneObject_IsWithinQuarterTurn(int angle)
+{
+    return scene_object_is_within(angle, SCENE_OBJECT_QUARTER_TURN);
+}
+CLEAN_AS(func_0201c3dc, SceneObject_IsWithinQuarterTurn)
+
+/* func_0201c3f4 */
+void SceneObject_SetColliderSize(u8 *object, int size)
+{
+    *(s32 *) scene_object_at(object, SCENE_OBJECT_COLLIDER_SIZE) = size;
+}
+CLEAN_AS(func_0201c3f4, SceneObject_SetColliderSize)
+
+/* func_0201c400: the person code (0xea) from `code`, its index (the low 12 bits, read back
+ * from 0xea) and the object's word at 0xdc from the index. */
+void SceneObject_SetPerson(u8 *object, u16 *code)
+{
+    u16 *person = (u16 *) scene_object_at(object, SCENE_OBJECT_PERSON);
+    *person = *code;
+    SceneObject_SetPersonIndex(object, (u16) (*person & SCENE_OBJECT_PERSON_MASK));
+    func_0203efb0(object, SceneObject_PersonIndex(object));
+}
+CLEAN_AS(func_0201c400, SceneObject_SetPerson)
+
+/* func_0201c438 */
+void SceneObject_SetPersonIndex(u8 *object, u16 index)
+{
+    *(u16 *) scene_object_at(object, SCENE_OBJECT_PERSON_INDEX) = index;
+}
+CLEAN_AS(func_0201c438, SceneObject_SetPersonIndex)
+
+/* func_0201c444 */
+u16 SceneObject_PersonIndex(u8 *object)
+{
+    return *(const u16 *) scene_object_at(object, SCENE_OBJECT_PERSON_INDEX);
+}
+CLEAN_AS(func_0201c444, SceneObject_PersonIndex)
+
+/* func_0201c450: the model (0xec) let go; the model's answer. */
+int SceneObject_ReleaseModel(u8 *object)
+{
+    return ModelObject_Release((ModelObject *) scene_object_at(object, SCENE_OBJECT_MODEL));
+}
+CLEAN_AS(func_0201c450, SceneObject_ReleaseModel)
+
+/* func_0201c45c: the model (0xec) loaded from the file vtable slot 0x70 gives, from the unit
+ * heap data_021c9ab8; whether it was. */
+int SceneObject_LoadModel(u8 *object)
+{
+    int path = ((int (*)(void *))(uintptr_t) scene_object_slot(object, SCENE_OBJECT_SLOT_MODEL_PATH))(object);
+    if (ModelObject_Load((ModelObject *) scene_object_at(object, SCENE_OBJECT_MODEL), (const char *) (uintptr_t) path,
+                         data_021c9ab8) != 0) {
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_0201c45c, SceneObject_LoadModel)
