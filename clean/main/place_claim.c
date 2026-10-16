@@ -174,3 +174,121 @@ void PlaceClaim_ReceiveRequest(const PlaceClaimRequest *request, int slot)
     Session_EndMessage(session, given ? PLACE_CLAIM_MSG_GIVEN : PLACE_CLAIM_MSG_REFUSED, (u32) slot);
 }
 CLEAN_AS(func_020528fc, PlaceClaim_ReceiveRequest)
+
+#include "itcm/vector.h"
+
+/* A claim keeps the others away within this squared distance (Vec_DistanceSquared). */
+#define PLACE_CLAIM_MIN_DISTANCE_SQUARED 0x2400
+
+extern void func_02053498(void *claim); /* a claim's destructor, handed to __cxa_vec_cleanup */
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+
+/* func_02053380: gives `slot` the claim of `point` in `scene` unless another slot holds one too
+ * near (PlaceClaim_IsFree); whether it did. */
+int PlaceClaim_Claim(PlaceClaim *claims, int slot, int scene, const Vec3 *point)
+{
+    if (!PlaceClaim_IsFree(claims, slot, (u8) scene, point)) {
+        return 0;
+    }
+    return PlaceClaim_Set(claims, slot, scene, point);
+}
+CLEAN_AS(func_02053380, PlaceClaim_Claim)
+
+/* func_020533ac: whether no slot but `slot` holds a point in `scene` at a squared distance below
+ * PLACE_CLAIM_MIN_DISTANCE_SQUARED from `point`; 0 for a slot of 4 or more. */
+int PlaceClaim_IsFree(PlaceClaim *claims, int slot, u8 scene, const Vec3 *point)
+{
+    if (slot >= PLACE_CLAIM_SLOTS) {
+        return 0;
+    }
+    for (int i = 0; i < PLACE_CLAIM_SLOTS; i++) {
+        const PlaceClaim *claim = &claims[i];
+        if (i == slot || !claim->held || claim->scene != scene) {
+            continue;
+        }
+        if (Vec_DistanceSquared(&claim->point, point) < PLACE_CLAIM_MIN_DISTANCE_SQUARED) {
+            return 0;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_020533ac, PlaceClaim_IsFree)
+
+/* func_0205340c: lets `slot`'s claim go; 0 (and nothing done) for a slot of 4 or more.
+ * REQUIRES: slot is not negative (the ROM would clear a byte before the claims). */
+int PlaceClaim_Free(PlaceClaim *claims, int slot)
+{
+    if (slot >= PLACE_CLAIM_SLOTS) {
+        return 0;
+    }
+    return PlaceClaim_Drop(&claims[slot]);
+}
+CLEAN_AS(func_0205340c, PlaceClaim_Free)
+
+/* func_02053428: `slot` holds `point` in `scene`.
+ * QUIRK: a slot of 4 or more is not stored but still answers 1.
+ * REQUIRES: slot is not negative (the ROM would write before the claims). */
+int PlaceClaim_Set(PlaceClaim *claims, int slot, int scene, const Vec3 *point)
+{
+    if (slot >= PLACE_CLAIM_SLOTS) {
+        return 1;
+    }
+    return PlaceClaim_Hold(&claims[slot], (u8) scene, point);
+}
+CLEAN_AS(func_02053428, PlaceClaim_Set)
+
+/* func_02053448: the claim is no longer held (the point and scene stay); 1. */
+int PlaceClaim_Drop(PlaceClaim *claim)
+{
+    claim->held = 0;
+    return 1;
+}
+CLEAN_AS(func_02053448, PlaceClaim_Drop)
+
+/* func_02053450: the claim is held, of `point` in `scene`; 1. The point is copied one
+ * coordinate at a time after `held` is set, as the original does. */
+int PlaceClaim_Hold(PlaceClaim *claim, u8 scene, const Vec3 *point)
+{
+    claim->held = 1;
+    claim->point.x = point->x;
+    claim->point.y = point->y;
+    claim->point.z = point->z;
+    claim->scene = scene;
+    return 1;
+}
+CLEAN_AS(func_02053450, PlaceClaim_Hold)
+
+/* func_0205346c: not held, at (0, 0, 0) in scene 0 (the padding is left alone). */
+void PlaceClaim_Clear(PlaceClaim *claim)
+{
+    claim->held = 0;
+    claim->point.x = 0;
+    claim->point.y = 0;
+    claim->point.z = 0;
+    claim->scene = 0;
+}
+CLEAN_AS(func_0205346c, PlaceClaim_Clear)
+
+/* func_0205347c: the destructor of the slots' claims: each claim's (func_02053498, handed to
+ * __cxa_vec_cleanup). */
+PlaceClaim *PlaceClaim_DestructAll(PlaceClaim *claims)
+{
+    __cxa_vec_cleanup(claims, PLACE_CLAIM_SLOTS, sizeof(PlaceClaim), func_02053498);
+    return claims;
+}
+CLEAN_AS(func_0205347c, PlaceClaim_DestructAll)
+
+/* func_02053498: nothing to take down. */
+void PlaceClaim_Destruct(PlaceClaim *claim)
+{
+    (void) claim;
+}
+CLEAN_AS(func_02053498, PlaceClaim_Destruct)
+
+/* func_0205349c: a claim starts cleared. */
+PlaceClaim *PlaceClaim_Construct(PlaceClaim *claim)
+{
+    PlaceClaim_Clear(claim);
+    return claim;
+}
+CLEAN_AS(func_0205349c, PlaceClaim_Construct)

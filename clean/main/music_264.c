@@ -24,28 +24,9 @@ extern const u32 data_020da304[];
 extern const u32 data_020da2e4[];
 extern const u32 data_020da324[];
 
-/* The part at 0x04's functions that this file does not hold: its construct, destruct, create,
- * delete, frame, reset and scene start. */
-extern void func_020372f8(HourMusic *self, Obj021c526c *owner);
-extern void func_020372ec(HourMusic *self);
-extern void func_020372bc(HourMusic *self);
-extern void func_020372b4(HourMusic *self);
-extern void func_02037298(HourMusic *self);
-extern void func_02037278(HourMusic *self);
-extern void func_02037260(HourMusic *self);
-
 /* The current scene is 0; the current scene is 0x31. */
 extern int func_020b6660(void);
 extern int func_020b6640(void);
-
-/* The clock (the object's member at 0x24c): whether it reads from h1:m1:s1 (included) to
- * h2:m2:s2 (excluded), across midnight when the second is earlier; the same with minutes and
- * seconds only; whether its date and time of day are *date (day, month) and *time (minute,
- * hour); whether its year changed since the frame before. */
-extern u32 func_0203736c(void *clock, u32 h1, u32 m1, u32 s1, u32 h2, u32 m2, u32 s2);
-extern int func_020373c8(void *clock, u32 m1, u32 s1, u32 m2, u32 s2);
-extern int func_02037404(void *clock, const u16 *date, const u16 *time);
-extern int func_0203734c(void *clock);
 
 /* The number of an event (data_020db6dc, set to 0x12 by func_02041644), and whether an event is
  * on at a date (3 for event 0x12 in the part func_02041644 waits for). */
@@ -117,7 +98,7 @@ CLEAN_AS(func_020368c0, Music264_OnSceneEnd)
 void Music264_OnSceneStart(Music264 *self)
 {
     if (func_020b6660() != 0 || func_020b6640() != 0) {
-        func_02037260(&self->hour);
+        HourMusic_OnSceneStart(&self->hour);
         Music27c_OnSceneStart(&self->part_18);
         EventMusic_OnSceneStart(&self->event);
     }
@@ -127,7 +108,7 @@ CLEAN_AS(func_020368f0, Music264_OnSceneStart)
 /* func_02036920: every part reset (Music_Reset). */
 void Music264_Reset(Music264 *self)
 {
-    func_02037278(&self->hour);
+    HourMusic_Reset(&self->hour);
     Music27c_Reset(&self->part_18);
     EventMusic_Reset(&self->event);
 }
@@ -136,7 +117,7 @@ CLEAN_AS(func_02036920, Music264_Reset)
 /* func_02036940: the frame. */
 void Music264_Execute(Music264 *self)
 {
-    func_02037298(&self->hour);
+    HourMusic_Execute(&self->hour);
     Music27c_Execute(&self->part_18);
     EventMusic_Execute(&self->event);
 }
@@ -147,14 +128,14 @@ void Music264_Delete(Music264 *self)
 {
     EventMusic_Delete(&self->event);
     Music27c_Delete(&self->part_18);
-    func_020372b4(&self->hour);
+    HourMusic_Delete(&self->hour);
 }
 CLEAN_AS(func_02036960, Music264_Delete)
 
 /* func_02036980: the creation. */
 void Music264_Create(Music264 *self)
 {
-    func_020372bc(&self->hour);
+    HourMusic_Create(&self->hour);
     Music27c_Create(&self->part_18);
     EventMusic_Create(&self->event);
 }
@@ -166,7 +147,7 @@ Music264 *Music264_DestructDelete(Music264 *self)
     self->vtable = data_020da304;
     EventMusic_Destruct(&self->event);
     Music27c_Destruct(&self->part_18);
-    func_020372ec(&self->hour);
+    HourMusic_Destruct(&self->hour);
     Heap_OperatorDeleteB(self);
     return self;
 }
@@ -178,7 +159,7 @@ Music264 *Music264_Destruct(Music264 *self)
     self->vtable = data_020da304;
     EventMusic_Destruct(&self->event);
     Music27c_Destruct(&self->part_18);
-    func_020372ec(&self->hour);
+    HourMusic_Destruct(&self->hour);
     return self;
 }
 CLEAN_AS(func_020369d0, Music264_Destruct)
@@ -187,7 +168,7 @@ CLEAN_AS(func_020369d0, Music264_Destruct)
 Music264 *Music264_Construct(Music264 *self, Obj021c526c *owner)
 {
     self->vtable = data_020da304;
-    func_020372f8(&self->hour, owner);
+    HourMusic_Construct(&self->hour, owner);
     Music27c_Construct(&self->part_18, owner);
     EventMusic_Construct(&self->event, owner);
     return self;
@@ -200,7 +181,7 @@ CLEAN_AS(func_020369fc, Music264_Construct)
  * reset clears it); whether it is noted. */
 int EventMusic_NoteYearChange(EventMusic *self)
 {
-    int changed = func_0203734c(SceneMusic_Clock());
+    int changed = MusicClock_YearChanged(SceneMusic_Clock());
     int noted = (self->year_changed | changed) != 0;
 
     self->year_changed = (u8) noted;
@@ -351,10 +332,10 @@ void EventMusic_UpdateEvent12(EventMusic *self, int on)
     }
 
     clock = SceneMusic_Clock();
-    part1 = func_0203736c(clock, 23, 0, 0, 23, 30, 0) != 0;
-    part2 = func_0203736c(clock, 23, 30, 0, 23, 50, 0) != 0;
-    part3 = func_0203736c(clock, 23, 50, 0, 23, 55, 0) != 0;
-    part4 = func_0203736c(clock, 23, 55, 0, 0, 0, 0) != 0;
+    part1 = MusicClock_IsBetween(clock, 23, 0, 0, 23, 30, 0) != 0;
+    part2 = MusicClock_IsBetween(clock, 23, 30, 0, 23, 50, 0) != 0;
+    part3 = MusicClock_IsBetween(clock, 23, 50, 0, 23, 55, 0) != 0;
+    part4 = MusicClock_IsBetween(clock, 23, 55, 0, 0, 0, 0) != 0;
     if (part1) {
         music = 0x31;
     } else if (part2) {
@@ -374,10 +355,10 @@ void EventMusic_UpdateEvent12(EventMusic *self, int on)
         EventMusic_Stop22(self);
     }
 
-    end1 = func_0203736c(clock, 23, 29, 50, 23, 30, 0) != 0;
-    end2 = func_0203736c(clock, 23, 49, 50, 23, 50, 0) != 0;
-    end3 = func_0203736c(clock, 23, 54, 50, 23, 55, 0) != 0;
-    end4 = func_0203736c(clock, 23, 58, 50, 0, 0, 0) != 0;
+    end1 = MusicClock_IsBetween(clock, 23, 29, 50, 23, 30, 0) != 0;
+    end2 = MusicClock_IsBetween(clock, 23, 49, 50, 23, 50, 0) != 0;
+    end3 = MusicClock_IsBetween(clock, 23, 54, 50, 23, 55, 0) != 0;
+    end4 = MusicClock_IsBetween(clock, 23, 58, 50, 0, 0, 0) != 0;
     if (end1 || end2 || end3 || end4) {
         EventMusic_AddFade(self, MUSIC_264_FADE_VALUE);
     } else {
@@ -402,8 +383,8 @@ void EventMusic_UpdateEvent13(EventMusic *self, int on)
     }
 
     clock = SceneMusic_Clock();
-    early = func_0203736c(clock, 0, 0, 0, 2, 0, 0) != 0;
-    late = func_0203736c(clock, 2, 0, 0, 0, 0, 0) != 0;
+    early = MusicClock_IsBetween(clock, 0, 0, 0, 2, 0, 0) != 0;
+    late = MusicClock_IsBetween(clock, 2, 0, 0, 0, 0, 0) != 0;
     if (early) {
         if (self->year_changed != 0) {
             if (self->music_1f != 0x35) {
@@ -715,7 +696,7 @@ CLEAN_AS(func_020370f0, Music27c_Construct)
 void HourMusic_UpdateFade(HourMusic *self)
 {
     void *clock = SceneMusic_Clock();
-    int fade = func_020373c8(clock, 59, 50, 0, 16);
+    int fade = MusicClock_IsBetweenInHour(clock, 59, 50, 0, 16);
     u16 dates[2];
     u16 times[2];
 
@@ -723,7 +704,7 @@ void HourMusic_UpdateFade(HourMusic *self)
     dates[1] = data_020da248;
     times[0] = data_020da250;
     func_02137550(&times[1], sizeof(times[1]));
-    if (func_02037404(clock, &dates[0], &times[0]) != 0 || func_02037404(clock, &dates[1], &times[1]) != 0) {
+    if (MusicClock_IsAt(clock, &dates[0], &times[0]) != 0 || MusicClock_IsAt(clock, &dates[1], &times[1]) != 0) {
         fade = 0;
     }
     if (fade != 0) {
@@ -810,3 +791,214 @@ int HourMusic_OnSceneEnd(HourMusic *self)
     return 0;
 }
 CLEAN_AS(func_0203723c, HourMusic_OnSceneEnd)
+
+/* The vtable of the part at 0x04. */
+extern const u32 data_020da2c4[];
+
+/* func_02037260: the scene's start: active, the music of the hour asked for and the request of
+ * priority 0x1b updated. */
+void HourMusic_OnSceneStart(HourMusic *self)
+{
+    self->active = 1;
+    HourMusic_UpdateHour(self);
+    HourMusic_UpdateFade(self);
+}
+CLEAN_AS(func_02037260, HourMusic_OnSceneStart)
+
+/* func_02037278: the music and the request of priority 0x1b dropped, the hour forgotten and
+ * the marks cleared. */
+void HourMusic_Reset(HourMusic *self)
+{
+    HourMusic_Stop(self);
+    self->hour = HOUR_MUSIC_NO_HOUR;
+    HourMusic_DropFade(self);
+    self->keep_music = 0;
+    self->active = 0;
+}
+CLEAN_AS(func_02037278, HourMusic_Reset)
+
+/* func_02037298: the frame: while active, the music of the hour and the request of priority
+ * 0x1b updated. */
+void HourMusic_Execute(HourMusic *self)
+{
+    if (self->active != 0) {
+        HourMusic_UpdateHour(self);
+        HourMusic_UpdateFade(self);
+    }
+}
+CLEAN_AS(func_02037298, HourMusic_Execute)
+
+/* func_020372b4: the deletion: the reset. */
+void HourMusic_Delete(HourMusic *self)
+{
+    HourMusic_Reset(self);
+}
+CLEAN_AS(func_020372b4, HourMusic_Delete)
+
+/* func_020372bc: the creation: no music, no hour, no mark. */
+void HourMusic_Create(HourMusic *self)
+{
+    self->music = MUSIC_NONE;
+    self->hour = HOUR_MUSIC_NO_HOUR;
+    self->fade_added = 0;
+    self->keep_music = 0;
+    self->active = 0;
+}
+CLEAN_AS(func_020372bc, HourMusic_Create)
+
+/* func_020372d4: the destructor that also frees it (vtable slot 1). */
+HourMusic *HourMusic_DestructDelete(HourMusic *self)
+{
+    self->vtable = data_020da2c4;
+    Heap_OperatorDeleteB(self);
+    return self;
+}
+CLEAN_AS(func_020372d4, HourMusic_DestructDelete)
+
+/* func_020372ec: its destructor (vtable slot 0). */
+void HourMusic_Destruct(HourMusic *self)
+{
+    self->vtable = data_020da2c4;
+}
+CLEAN_AS(func_020372ec, HourMusic_Destruct)
+
+/* func_020372f8: its constructor: the owner kept, no music, no hour, no mark. */
+void HourMusic_Construct(HourMusic *self, Obj021c526c *owner)
+{
+    self->vtable = data_020da2c4;
+    self->owner = owner;
+    self->hour = HOUR_MUSIC_NO_HOUR;
+    self->music = MUSIC_NONE;
+    self->fade_added = 0;
+    self->keep_music = 0;
+    self->active = 0;
+}
+CLEAN_AS(func_020372f8, HourMusic_Construct)
+
+/* ---- The clock at the object's 0x24c */
+
+/* The RTC's year (RtcDate.year), its day and month (two bytes), its minute and hour (two
+ * bytes) and its second.
+ * QUIRK: the second's reader is named CARDi_GetTargetMode in the symbols; it returns the word at
+ * 0x18 of data_021dc744, RtcTime.second. */
+extern u32 func_0209dee8(void);
+extern void func_0209df94(u8 *day_month);
+extern void func_0209def4(u8 *minute_hour);
+extern u32 CARDi_GetTargetMode(void);
+
+/* A time of day in seconds. */
+static u32 seconds_of_day(u32 hour, u32 minute, u32 second)
+{
+    return second + (hour * 3600 + minute * 60);
+}
+
+/* Whether `t` is from `start` (included) to `end` (excluded), across the wrap when `end` is
+ * earlier. */
+static int in_span(u32 t, u32 start, u32 end)
+{
+    if (start <= end) {
+        return t >= start && t < end;
+    }
+    return t >= start || t < end;
+}
+
+/* func_02037318: the reading kept as the one before, and the clock read again. */
+void MusicClock_Read(MusicClock *self)
+{
+    self->before = self->now;
+    self->now.year = func_0209dee8();
+    func_0209df94(&self->now.day);
+    func_0209def4(&self->now.minute);
+    self->now.second = CARDi_GetTargetMode();
+}
+CLEAN_AS(func_02037318, MusicClock_Read)
+
+/* func_0203734c: whether the year changed between the two readings. */
+int MusicClock_YearChanged(const MusicClock *self)
+{
+    return self->before.year != self->now.year;
+}
+CLEAN_AS(func_0203734c, MusicClock_YearChanged)
+
+/* func_0203735c: whether the hour changed between the two readings. */
+int MusicClock_HourChanged(const MusicClock *self)
+{
+    return self->before.hour != self->now.hour;
+}
+CLEAN_AS(func_0203735c, MusicClock_HourChanged)
+
+/* func_0203736c: whether the clock reads from h1:m1:s1 (included) to h2:m2:s2 (excluded),
+ * across midnight when the second time is earlier.
+ * QUIRK: the times are summed as unsigned words, so values out of their ranges wrap. */
+u32 MusicClock_IsBetween(const MusicClock *self, u32 h1, u32 m1, u32 s1, u32 h2, u32 m2, u32 s2)
+{
+    u32 now = seconds_of_day(self->now.hour, self->now.minute, self->now.second);
+
+    return (u32) in_span(now, seconds_of_day(h1, m1, s1), seconds_of_day(h2, m2, s2));
+}
+CLEAN_AS(func_0203736c, MusicClock_IsBetween)
+
+/* func_020373c8: the same within any hour: whether the clock's minute and second are from m1:s1
+ * (included) to m2:s2 (excluded), across the hour's end when the second is earlier. */
+int MusicClock_IsBetweenInHour(const MusicClock *self, u32 m1, u32 s1, u32 m2, u32 s2)
+{
+    u32 now = seconds_of_day(0, self->now.minute, self->now.second);
+
+    return in_span(now, seconds_of_day(0, m1, s1), seconds_of_day(0, m2, s2));
+}
+CLEAN_AS(func_020373c8, MusicClock_IsBetweenInHour)
+
+/* func_02037404: whether the clock reads the date *date (day, month as two bytes) and the time
+ * *time (minute, hour as two bytes). */
+int MusicClock_IsAt(const MusicClock *self, const u16 *date, const u16 *time)
+{
+    u16 day_month = (u16) (self->now.day | self->now.month << 8);
+    u16 minute_hour = (u16) (self->now.minute | self->now.hour << 8);
+
+    return day_month == *date && minute_hour == *time;
+}
+CLEAN_AS(func_02037404, MusicClock_IsAt)
+
+/* func_0203741c: the reset: the clock read twice, so that both readings agree. */
+void MusicClock_Reset(MusicClock *self)
+{
+    MusicClock_Read(self);
+    MusicClock_Read(self);
+}
+CLEAN_AS(func_0203741c, MusicClock_Reset)
+
+/* func_02037430: the frame: the clock read. */
+void MusicClock_Execute(MusicClock *self)
+{
+    MusicClock_Read(self);
+}
+CLEAN_AS(func_02037430, MusicClock_Execute)
+
+/* func_02037438: the deletion: nothing. */
+void MusicClock_Delete(MusicClock *self)
+{
+    (void) self;
+}
+CLEAN_AS(func_02037438, MusicClock_Delete)
+
+/* func_0203743c: the creation: the clock read twice, so that both readings agree. */
+void MusicClock_Create(MusicClock *self)
+{
+    MusicClock_Read(self);
+    MusicClock_Read(self);
+}
+CLEAN_AS(func_0203743c, MusicClock_Create)
+
+/* func_02037450: its destructor: nothing. */
+void MusicClock_Destruct(MusicClock *self)
+{
+    (void) self;
+}
+CLEAN_AS(func_02037450, MusicClock_Destruct)
+
+/* func_02037454: its constructor: nothing (the readings are left as they are). */
+void MusicClock_Construct(MusicClock *self)
+{
+    (void) self;
+}
+CLEAN_AS(func_02037454, MusicClock_Construct)

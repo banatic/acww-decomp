@@ -143,5 +143,27 @@ void HourMusic_Stop(HourMusic *self);
 void HourMusic_Start(HourMusic *self);
 void HourMusic_SetKeep(HourMusic *self, int keep);
 int HourMusic_OnSceneEnd(HourMusic *self);
+void HourMusic_OnSceneStart(HourMusic *self);
+void HourMusic_Reset(HourMusic *self);
+void HourMusic_Execute(HourMusic *self);
+void HourMusic_Delete(HourMusic *self);
+void HourMusic_Create(HourMusic *self);
+HourMusic *HourMusic_DestructDelete(HourMusic *self);
+void HourMusic_Destruct(HourMusic *self);
+void HourMusic_Construct(HourMusic *self, Obj021c526c *owner);
+
+/* The clock at the object's 0x24c: read once a frame, and compared with times of day. */
+void MusicClock_Read(MusicClock *self);
+int MusicClock_YearChanged(const MusicClock *self);
+int MusicClock_HourChanged(const MusicClock *self);
+u32 MusicClock_IsBetween(const MusicClock *self, u32 h1, u32 m1, u32 s1, u32 h2, u32 m2, u32 s2);
+int MusicClock_IsBetweenInHour(const MusicClock *self, u32 m1, u32 s1, u32 m2, u32 s2);
+int MusicClock_IsAt(const MusicClock *self, const u16 *date, const u16 *time);
+void MusicClock_Reset(MusicClock *self);
+void MusicClock_Execute(MusicClock *self);
+void MusicClock_Delete(MusicClock *self);
+void MusicClock_Create(MusicClock *self);
+void MusicClock_Destruct(MusicClock *self);
+void MusicClock_Construct(MusicClock *self);
 
 #endif

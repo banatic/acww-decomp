@@ -62,4 +62,15 @@ void *PlaceClaim_ReceiveRelease(int slot);
 void PlaceClaim_ReceiveAnswer(int given);
 void PlaceClaim_ReceiveRequest(const PlaceClaimRequest *request, int slot);
 
+int PlaceClaim_Claim(PlaceClaim *claims, int slot, int scene, const Vec3 *point);
+int PlaceClaim_IsFree(PlaceClaim *claims, int slot, u8 scene, const Vec3 *point);
+int PlaceClaim_Free(PlaceClaim *claims, int slot);
+int PlaceClaim_Set(PlaceClaim *claims, int slot, int scene, const Vec3 *point);
+int PlaceClaim_Drop(PlaceClaim *claim);
+int PlaceClaim_Hold(PlaceClaim *claim, u8 scene, const Vec3 *point);
+void PlaceClaim_Clear(PlaceClaim *claim);
+PlaceClaim *PlaceClaim_DestructAll(PlaceClaim *claims);
+void PlaceClaim_Destruct(PlaceClaim *claim);
+PlaceClaim *PlaceClaim_Construct(PlaceClaim *claim);
+
 #endif

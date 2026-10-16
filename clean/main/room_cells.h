@@ -52,4 +52,19 @@ int RoomCells_GetSwitchIn(RoomCells *cells, int x, int y, int layer);
 void RoomCells_Reset(RoomCells *cells);
 RoomCells *RoomCells_Destruct(RoomCells *cells);
 
+RoomCells *RoomCells_Construct(RoomCells *cells);
+int RoomCellSteps_Set(RoomCellSteps *steps, int x, int y, unsigned int step);
+int RoomCellSteps_Clear(RoomCellSteps *steps, int x, int y);
+int RoomCellSteps_Get(RoomCellSteps *steps, int x, int y);
+void RoomCellSteps_Reset(RoomCellSteps *steps);
+void RoomCellSteps_Destruct(RoomCellSteps *steps);
+RoomCellSteps *RoomCellSteps_Construct(RoomCellSteps *steps);
+void RoomSwitchGrid_Set(u16 *grid, int x, int y, int on);
+int RoomSwitchGrid_Get(u16 *grid, int x, int y);
+void RoomSwitchGrid_SetAll(u16 *grid);
+void RoomSwitchGrid_Destruct(void *grid);
+u16 *RoomSwitchGrid_Construct(u16 *grid);
+void RoomCells_DestructNookRecords(void);
+void RoomCells_Destruct17To24Records(void);
+
 #endif

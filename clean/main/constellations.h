@@ -66,4 +66,44 @@ void Constellations_MarkColumn(int column);
 void Constellations_ClearColumns(void);
 const u8 *Constellations_PieceStars(unsigned int piece);
 
+/* The two text classes of a constellation's name, on the game's text base (text_label.h): a
+ * wide text of 6 characters (vtable data_020e4278, 0x1c bytes) and a label of 14 8-bit
+ * characters (vtable data_020e4290, 0x20 bytes). */
+#include "main/text_label.h"
+
+#define CONSTELLATIONS_LABEL_CAPACITY 14
+
+typedef struct ConstellationsWideName {
+    const TextVtable *vtable; /* data_020e4278 */
+    u8 base_04[0xa];          /* the text base's */
+    u16 text[CONSTELLATIONS_NAME_LENGTH];
+} ConstellationsWideName;
+
+typedef struct ConstellationsLabel {
+    const TextVtable *vtable; /* data_020e4290 */
+    u8 base_04[0xe];          /* the text base's */
+    char text[CONSTELLATIONS_LABEL_CAPACITY];
+} ConstellationsLabel;
+
+int ConstellationsWideName_Buffer(int text);
+int ConstellationsWideName_Capacity(void);
+ConstellationsWideName *ConstellationsWideName_DestructDelete(ConstellationsWideName *text);
+ConstellationsWideName *ConstellationsWideName_Destruct(ConstellationsWideName *text);
+ConstellationsWideName *ConstellationsWideName_Construct(ConstellationsWideName *text);
+int ConstellationsLabel_Buffer(int label);
+int ConstellationsLabel_Capacity(void);
+ConstellationsLabel *ConstellationsLabel_DestructDelete(ConstellationsLabel *label);
+ConstellationsLabel *ConstellationsLabel_Destruct(ConstellationsLabel *label);
+ConstellationsLabel *ConstellationsLabel_Construct(ConstellationsLabel *label);
+int Constellations_IsKept(const ConstellationStore *store, int number);
+void Constellations_ClearKept(ConstellationStore *store, int number);
+void Constellations_SetKept(ConstellationStore *store, int number);
+void Constellations_ResetStore(ConstellationStore *store);
+ConstellationStore *Constellations_DestructList(ConstellationStore *store);
+int Constellations_ConstructList(int store);
+Constellation *Constellations_Copy(Constellation *dst, const Constellation *src);
+void Constellations_Clear(Constellation *constellation);
+Constellation *Constellations_DestructOne(Constellation *constellation);
+int Constellations_ConstructOne(int constellation);
+
 #endif

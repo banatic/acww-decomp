@@ -619,3 +619,204 @@ const u8 *Constellations_PieceStars(unsigned int piece)
     return (const u8 *) (uintptr_t) ((u32) (uintptr_t) data_020e42a0 + piece * 8u);
 }
 CLEAN_AS(func_020b1768, Constellations_PieceStars)
+
+/* ---- The name's two text classes */
+
+static_assert(offsetof(ConstellationsWideName, text) == 0xe, "wide name characters");
+static_assert(sizeof(ConstellationsWideName) == 0x1c, "wide name");
+static_assert(offsetof(ConstellationsLabel, text) == 0x12, "label characters");
+static_assert(sizeof(ConstellationsLabel) == 0x20, "label");
+
+extern const TextVtable data_020e4278; /* the wide name's vtable */
+extern const TextVtable data_020e4290; /* the label's vtable */
+
+/* The text base's constructors and destructors (text_label.c), and operator delete. */
+extern void *func_020a88ec(void *text);  /* base of a wide text */
+extern void *func_020a887c(void *text);  /* its destructor */
+extern void *func_020a8cac(void *label); /* base of a label */
+extern void func_020a8c1c(void *label);  /* empty a label's text */
+extern void *func_020a8c38(void *label); /* its destructor */
+extern void Heap_OperatorDeleteB(void *block);
+
+/* The maker's constructor, destructor and emptying (design.h). */
+extern void *func_0209529c(DesignCreator *creator);
+extern int func_0209526c(DesignCreator *creator);
+extern void func_02095238(DesignCreator *creator);
+
+/* The vector helpers are handed the game's own constructor and destructor of a
+ * constellation, declared as the helpers call them (their results are not used). */
+extern void func_020b1a64(void *constellation);
+extern void func_020b1a54(void *constellation);
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+
+extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
+
+/* func_020b18bc (vtable entry 3): the address of the characters. */
+int ConstellationsWideName_Buffer(int text)
+{
+    return (int) ((u32) text + offsetof(ConstellationsWideName, text));
+}
+CLEAN_AS(func_020b18bc, ConstellationsWideName_Buffer)
+
+/* func_020b18c0 (vtable entry 2) */
+int ConstellationsWideName_Capacity(void)
+{
+    return CONSTELLATIONS_NAME_LENGTH;
+}
+CLEAN_AS(func_020b18c0, ConstellationsWideName_Capacity)
+
+/* func_020b18c4 (vtable entry 1) */
+ConstellationsWideName *ConstellationsWideName_DestructDelete(ConstellationsWideName *text)
+{
+    text->vtable = &data_020e4278;
+    func_020a887c(text);
+    Heap_OperatorDeleteB(text);
+    return text;
+}
+CLEAN_AS(func_020b18c4, ConstellationsWideName_DestructDelete)
+
+/* func_020b18e4 (vtable entry 0) */
+ConstellationsWideName *ConstellationsWideName_Destruct(ConstellationsWideName *text)
+{
+    text->vtable = &data_020e4278;
+    func_020a887c(text);
+    return text;
+}
+CLEAN_AS(func_020b18e4, ConstellationsWideName_Destruct)
+
+/* func_020b18fc */
+ConstellationsWideName *ConstellationsWideName_Construct(ConstellationsWideName *text)
+{
+    func_020a88ec(text);
+    text->vtable = &data_020e4278;
+    return text;
+}
+CLEAN_AS(func_020b18fc, ConstellationsWideName_Construct)
+
+/* func_020b1914 (vtable entry 3): the address of the characters. */
+int ConstellationsLabel_Buffer(int label)
+{
+    return (int) ((u32) label + offsetof(ConstellationsLabel, text));
+}
+CLEAN_AS(func_020b1914, ConstellationsLabel_Buffer)
+
+/* func_020b1918 (vtable entry 2) */
+int ConstellationsLabel_Capacity(void)
+{
+    return CONSTELLATIONS_LABEL_CAPACITY;
+}
+CLEAN_AS(func_020b1918, ConstellationsLabel_Capacity)
+
+/* func_020b191c (vtable entry 1) */
+ConstellationsLabel *ConstellationsLabel_DestructDelete(ConstellationsLabel *label)
+{
+    label->vtable = &data_020e4290;
+    func_020a8c38(label);
+    Heap_OperatorDeleteB(label);
+    return label;
+}
+CLEAN_AS(func_020b191c, ConstellationsLabel_DestructDelete)
+
+/* func_020b193c (vtable entry 0) */
+ConstellationsLabel *ConstellationsLabel_Destruct(ConstellationsLabel *label)
+{
+    label->vtable = &data_020e4290;
+    func_020a8c38(label);
+    return label;
+}
+CLEAN_AS(func_020b193c, ConstellationsLabel_Destruct)
+
+/* func_020b1954: an empty label. */
+ConstellationsLabel *ConstellationsLabel_Construct(ConstellationsLabel *label)
+{
+    func_020a8cac(label);
+    label->vtable = &data_020e4290;
+    func_020a8c1c(label);
+    return label;
+}
+CLEAN_AS(func_020b1954, ConstellationsLabel_Construct)
+
+/* ---- The store */
+
+/* func_020b1974: whether constellation `number` is kept. */
+int Constellations_IsKept(const ConstellationStore *store, int number)
+{
+    return (store->kept & constellations_bit(number)) != 0;
+}
+CLEAN_AS(func_020b1974, Constellations_IsKept)
+
+/* func_020b198c */
+void Constellations_ClearKept(ConstellationStore *store, int number)
+{
+    store->kept = (u16) (store->kept & ~constellations_bit(number));
+}
+CLEAN_AS(func_020b198c, Constellations_ClearKept)
+
+/* func_020b19a0 */
+void Constellations_SetKept(ConstellationStore *store, int number)
+{
+    store->kept = (u16) (store->kept | constellations_bit(number));
+}
+CLEAN_AS(func_020b19a0, Constellations_SetKept)
+
+/* func_020b19b4: none kept and none new (the state block's setting up, func_0209ef7c). */
+void Constellations_ResetStore(ConstellationStore *store)
+{
+    store->kept = 0;
+    store->unseen = 0;
+}
+CLEAN_AS(func_020b19b4, Constellations_ResetStore)
+
+/* func_020b19c8: the list's destructor, each constellation destructed by the game's
+ * func_020b1a54. */
+ConstellationStore *Constellations_DestructList(ConstellationStore *store)
+{
+    __cxa_vec_cleanup(store->list, CONSTELLATIONS_COUNT, sizeof(Constellation), func_020b1a54);
+    return store;
+}
+CLEAN_AS(func_020b19c8, Constellations_DestructList)
+
+/* func_020b19e4: the list's constructor, with the game's func_020b1a64 and func_020b1a54. */
+int Constellations_ConstructList(int store)
+{
+    __cxa_vec_ctor((void *) (uintptr_t) (u32) store, CONSTELLATIONS_COUNT, sizeof(Constellation), func_020b1a64,
+                   func_020b1a54);
+    return store;
+}
+CLEAN_AS(func_020b19e4, Constellations_ConstructList)
+
+/* func_020b1a0c: `src` copied over `dst`. */
+Constellation *Constellations_Copy(Constellation *dst, const Constellation *src)
+{
+    MI_CpuCopy8(src, dst, sizeof(Constellation));
+    return dst;
+}
+CLEAN_AS(func_020b1a0c, Constellations_Copy)
+
+/* func_020b1a24: no pieces, no name and no maker. */
+void Constellations_Clear(Constellation *constellation)
+{
+    for (int i = 0; i < CONSTELLATIONS_PIECES; i++) {
+        constellation->pieces[i] = CONSTELLATIONS_NO_PIECE;
+    }
+    TextString_ClearChars(constellation->name, CONSTELLATIONS_NAME_LENGTH);
+    func_02095238(&constellation->creator);
+}
+CLEAN_AS(func_020b1a24, Constellations_Clear)
+
+/* func_020b1a54: a constellation's destructor (its maker's). */
+Constellation *Constellations_DestructOne(Constellation *constellation)
+{
+    func_0209526c(&constellation->creator);
+    return constellation;
+}
+CLEAN_AS(func_020b1a54, Constellations_DestructOne)
+
+/* func_020b1a64: a constellation's constructor (its maker's). */
+int Constellations_ConstructOne(int constellation)
+{
+    func_0209529c((DesignCreator *) (uintptr_t) (u32) constellation);
+    return constellation;
+}
+CLEAN_AS(func_020b1a64, Constellations_ConstructOne)

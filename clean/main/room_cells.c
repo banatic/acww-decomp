@@ -210,3 +210,186 @@ RoomCells *RoomCells_Destruct(RoomCells *cells)
     return cells;
 }
 CLEAN_AS(func_020530b0, RoomCells_Destruct)
+
+/* The game's constructor and destructors handed to __cxa_vec_ctor and __cxa_vec_cleanup. */
+extern void func_02053370(void *grid);  /* a grid's constructor */
+extern void func_020530b0(void *cells); /* a record's destructor */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+
+/* func_020530d4: the record's constructor: each grid's (func_02053370, handed to
+ * __cxa_vec_ctor), the steps', then a reset. */
+RoomCells *RoomCells_Construct(RoomCells *cells)
+{
+    __cxa_vec_ctor(cells->switches, ROOM_CELLS_LAYERS, sizeof(cells->switches[0]), func_02053370, func_0205336c);
+    RoomCellSteps_Construct(&cells->steps);
+    RoomCells_Reset(cells);
+    return cells;
+}
+CLEAN_AS(func_020530d4, RoomCells_Construct)
+
+/* Whether entry `i` of the steps is in use. */
+static int step_entry_used(const RoomCellSteps *steps, u32 i)
+{
+    return (steps->used >> i) & 1;
+}
+
+/* Whether entry `i` is for cell (x, y). */
+static int step_entry_is(const RoomCellSteps *steps, u32 i, int x, int y)
+{
+    return x == (steps->cells[i] & 0xf) && y == (steps->cells[i] >> 4);
+}
+
+/* The bit position of entry `i`'s step within its byte. */
+static int step_shift(u32 i)
+{
+    return (int) (i & 1) * 4;
+}
+
+/* Stores `step` (below 16) as entry `i`'s step. */
+static void step_entry_store(RoomCellSteps *steps, u32 i, u32 step)
+{
+    int shift = step_shift(i);
+    steps->steps[i / 2] = (u8) ((steps->steps[i / 2] & ~(0xf << shift)) | (step << shift));
+}
+
+/* func_02053108: keeps `step` at cell (x, y): in the cell's entry when it has one, else in the
+ * first free entry, which then takes x and y (each cut to 4 bits). 0 for a step of 16 or more
+ * or when all four entries are in use by other cells. */
+int RoomCellSteps_Set(RoomCellSteps *steps, int x, int y, unsigned int step)
+{
+    if (step >= 16) {
+        return 0;
+    }
+    if (RoomCellSteps_Get(steps, x, y) == -1) {
+        for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
+            if (!step_entry_used(steps, i)) {
+                steps->cells[i] = (u8) ((x & 0xf) | (y & 0xf) << 4);
+                step_entry_store(steps, i, step);
+                steps->used |= (u8) (1 << i);
+                return 1;
+            }
+        }
+    } else {
+        for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
+            if (step_entry_used(steps, i) && step_entry_is(steps, i, x, y)) {
+                step_entry_store(steps, i, step);
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_02053108, RoomCellSteps_Set)
+
+/* func_020531fc: forgets the step of cell (x, y) and frees its entry; whether it had one. */
+int RoomCellSteps_Clear(RoomCellSteps *steps, int x, int y)
+{
+    for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
+        if (step_entry_used(steps, i) && step_entry_is(steps, i, x, y)) {
+            steps->cells[i] = 0;
+            steps->used &= (u8) ~(1 << i);
+            steps->steps[i / 2] &= (u8) ~(0xf << step_shift(i));
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_020531fc, RoomCellSteps_Clear)
+
+/* func_02053278: the step of cell (x, y), or -1 when it keeps none. */
+int RoomCellSteps_Get(RoomCellSteps *steps, int x, int y)
+{
+    for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
+        if (step_entry_used(steps, i) && step_entry_is(steps, i, x, y)) {
+            return (steps->steps[i / 2] >> step_shift(i)) & 0xf;
+        }
+    }
+    return -1;
+}
+CLEAN_AS(func_02053278, RoomCellSteps_Get)
+
+/* func_020532d0: no entry in use and no step (unk_07 is left alone). */
+void RoomCellSteps_Reset(RoomCellSteps *steps)
+{
+    for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS; i++) {
+        steps->cells[i] = 0;
+    }
+    steps->used = 0;
+    for (u32 i = 0; i < ROOM_CELLS_STEP_CELLS / 2; i++) {
+        steps->steps[i] = 0;
+    }
+}
+CLEAN_AS(func_020532d0, RoomCellSteps_Reset)
+
+/* func_02053300: nothing to take down. */
+void RoomCellSteps_Destruct(RoomCellSteps *steps)
+{
+    (void) steps;
+}
+CLEAN_AS(func_02053300, RoomCellSteps_Destruct)
+
+/* func_02053304 */
+RoomCellSteps *RoomCellSteps_Construct(RoomCellSteps *steps)
+{
+    RoomCellSteps_Reset(steps);
+    return steps;
+}
+CLEAN_AS(func_02053304, RoomCellSteps_Construct)
+
+/* func_02053314: sets (`on` not 0) or clears the bit of cell (x, y) of a switch grid; x and y
+ * are cut to 4 bits. */
+void RoomSwitchGrid_Set(u16 *grid, int x, int y, int on)
+{
+    u16 bit = (u16) (1 << (x & 0xf));
+    if (on) {
+        grid[y & 0xf] |= bit;
+    } else {
+        grid[y & 0xf] &= (u16) ~bit;
+    }
+}
+CLEAN_AS(func_02053314, RoomSwitchGrid_Set)
+
+/* func_02053340: the bit of cell (x, y), x and y cut to 4 bits. */
+int RoomSwitchGrid_Get(u16 *grid, int x, int y)
+{
+    return (grid[y & 0xf] >> (x & 0xf)) & 1;
+}
+CLEAN_AS(func_02053340, RoomSwitchGrid_Get)
+
+/* func_02053358: every bit set. */
+void RoomSwitchGrid_SetAll(u16 *grid)
+{
+    for (u32 row = 0; row < ROOM_CELLS_ROWS; row++) {
+        grid[row] = 0xffff;
+    }
+}
+CLEAN_AS(func_02053358, RoomSwitchGrid_SetAll)
+
+/* func_0205336c: nothing to take down. */
+void RoomSwitchGrid_Destruct(void *grid)
+{
+    (void) grid;
+}
+CLEAN_AS(func_0205336c, RoomSwitchGrid_Destruct)
+
+/* func_02053370: a grid starts with every bit set. */
+u16 *RoomSwitchGrid_Construct(u16 *grid)
+{
+    RoomSwitchGrid_SetAll(grid);
+    return grid;
+}
+CLEAN_AS(func_02053370, RoomSwitchGrid_Construct)
+
+/* func_020534ac: the destructor registered for Nook's scenes' records at start-up. */
+void RoomCells_DestructNookRecords(void)
+{
+    __cxa_vec_cleanup(data_021c884c, SCENES_NOOK, sizeof(RoomCells), func_020530b0);
+}
+CLEAN_AS(func_020534ac, RoomCells_DestructNookRecords)
+
+/* func_020534cc: the destructor registered for the records of scenes 17-24 at start-up. */
+void RoomCells_Destruct17To24Records(void)
+{
+    __cxa_vec_cleanup(data_021c89fc, SCENES_17_24, sizeof(RoomCells), func_020530b0);
+}
+CLEAN_AS(func_020534cc, RoomCells_Destruct17To24Records)
