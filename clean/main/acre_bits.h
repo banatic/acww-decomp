@@ -17,5 +17,7 @@ int AcreBits_Set(AcreBits *bits, unsigned int x, unsigned int z);
 int AcreBits_ClearInRow(int unused, u16 *row, int x);
 int AcreBits_SetInRow(int unused, u16 *row, int x);
 void AcreBits_ClearAll(AcreBits *bits);
+void AcreBits_Destruct(AcreBits *bits);
+void AcreBits_Construct(AcreBits *bits);
 
 #endif

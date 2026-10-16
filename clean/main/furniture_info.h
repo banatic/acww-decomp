@@ -94,4 +94,42 @@ int FurnitureInfo_Unk02(int number);
 int FurnitureInfo_Unk01(int number);
 int FurnitureInfo_DmaUnk1E(int number);
 
+/* How many records each file is opened with room for. */
+#define FURNITURE_FILE_RECORDS 0x800
+
+/* One record file (0x1c bytes). */
+typedef struct FurnitureRecordFile {
+    u8 file_id[8];   /* 0x00: NitroSDK's FSFileID of the file */
+    u32 record_size; /* 0x08 */
+    u32 records;     /* 0x0c: FURNITURE_FILE_RECORDS */
+    void *whole;     /* 0x10: the whole file, when it is read into memory */
+    s32 cached;      /* 0x14: -1 when nothing is cached */
+    void *cache;     /* 0x18: room for eight records */
+} FurnitureRecordFile;
+
+/* The three files at data_021c8c48 (0x54 bytes). */
+typedef struct FurnitureRecordFiles {
+    FurnitureRecordFile always; /* 0x00 */
+    FurnitureRecordFile indoor; /* 0x1c */
+    FurnitureRecordFile dma;    /* 0x38 */
+} FurnitureRecordFiles;
+
+int FurnitureInfo_DmaUnk1D(int number);
+int FurnitureInfo_NoneA(int number);
+int FurnitureInfo_NoneB(int number);
+int FurnitureInfo_NoneC(int number);
+int FurnitureInfo_DmaUnk19(int number);
+u8 FurnitureInfo_DmaUnk18(int number);
+u16 FurnitureInfo_DmaUnk16(int number);
+void FurnitureFiles_FreeIndoor(FurnitureRecordFiles *files);
+int FurnitureFiles_LoadIndoor(FurnitureRecordFiles *files, int stream);
+void FurnitureFiles_Close(FurnitureRecordFiles *files);
+int FurnitureFiles_Open(FurnitureRecordFiles *files);
+FurnitureRecordFiles *FurnitureFiles_Destruct(FurnitureRecordFiles *files);
+FurnitureRecordFiles *FurnitureFiles_Construct(FurnitureRecordFiles *files);
+void FurnitureInfo_FreeIndoor(void);
+void *FurnitureInfo_LoadIndoor(void *stream);
+void FurnitureInfo_Close(void);
+void FurnitureInfo_Open(void);
+
 #endif

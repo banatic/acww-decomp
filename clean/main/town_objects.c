@@ -599,3 +599,185 @@ void TownObjects_KeepAtKeptTile(void)
     data_021f4b50 = (u32) TownObjects_AtKeptTile();
 }
 CLEAN_AS(func_020b2980, TownObjects_KeepAtKeptTile)
+
+/* func_020b2998: whether the object on the kept tile was found (TownObjects_KeepAtKeptTile);
+ * always 1 where func_020b6660 says 0. */
+int TownObjects_HasKeptObject(void)
+{
+    if (func_020b6660() == 0) {
+        return 1;
+    }
+    return data_021f4b50 != 0;
+}
+CLEAN_AS(func_020b2998, TownObjects_HasKeptObject)
+
+/* The scene actor near a position (searched on the map being played on, up to 5 tiles back
+ * in z and 3 to each side in x), or 0; byte 2 of an actor's record. */
+extern void *func_ov003_02220294(const Vec3 *position);
+extern int func_ov009_02264c90(void *actor);
+
+/* A scene actor's vtable slot 0x64, which gives a structure with a halfword at 4, or 0. */
+#define TOWN_OBJECTS_VALUE_SLOT 0x64
+#define TOWN_OBJECTS_VALUE_OFFSET 4
+
+typedef void *TownObjectsValueOf(void *actor);
+
+static TownObjectsValueOf *town_objects_value_of(const void *actor)
+{
+    u32 vtable = *(const u32 *) actor;
+    u32 function = *(const u32 *) (uintptr_t) (vtable + TOWN_OBJECTS_VALUE_SLOT);
+    return (TownObjectsValueOf *) (uintptr_t) function;
+}
+
+/* func_020b29c0: in mode 0, for the scene actor near `position` whose record's byte 2 is 1,
+ * the halfword at 4 of what its vtable's slot 0x64 gives; 1 otherwise (in mode 1, without
+ * such an actor, or when the slot gives 0). Overlay 3's player state 0x3b takes it as a
+ * count. */
+int TownObjects_NearbyActorValue(const Vec3 *position)
+{
+    if (data_020e54a8 != 0) {
+        return 1;
+    }
+    void *actor = func_ov003_02220294(position);
+    if (actor == NULL || func_ov009_02264c90(actor) != 1) {
+        return 1;
+    }
+    const u8 *value = town_objects_value_of(actor)(actor);
+    if (value == NULL) {
+        return 1;
+    }
+    return *(const u16 *) (const void *) (value + TOWN_OBJECTS_VALUE_OFFSET);
+}
+CLEAN_AS(func_020b29c0, TownObjects_NearbyActorValue)
+
+/* func_020b2a10: an object's code with a tile's x and z packed below it: the code in bits
+ * 16-31, z's low byte in bits 8-15, x's in bits 0-7. */
+u32 TownObjects_PackTile(u32 code, u32 x, u32 z)
+{
+    return (code << 16) | ((z & 0xff) << 8) | (x & 0xff);
+}
+CLEAN_AS(func_020b2a10, TownObjects_PackTile)
+
+/* func_020b2a20: the record's code with a tile packed below it (TownObjects_PackTile). */
+u32 TownObjects_PackRecordTile(const SceneActorRecord *record, int x, int z)
+{
+    int code = TownObjects_RecordCode(record);
+    return TownObjects_PackTile((u32) code, (u32) x, (u32) z);
+}
+CLEAN_AS(func_020b2a20, TownObjects_PackRecordTile)
+
+/* func_020b2a3c: byte 9, the most players the object lets visit at once. */
+int TownObjects_RecordMaxVisitors(const SceneActorRecord *record)
+{
+    return record->bytes[7];
+}
+CLEAN_AS(func_020b2a3c, TownObjects_RecordMaxVisitors)
+
+/* func_020b2a40: byte 8, a length in tiles (overlay 9 takes it times 0x2000). */
+int TownObjects_RecordLength8(const SceneActorRecord *record)
+{
+    return record->bytes[6];
+}
+CLEAN_AS(func_020b2a40, TownObjects_RecordLength8)
+
+/* func_020b2a44: byte 7, a length in tiles (overlay 9 takes it times 0x2000). */
+int TownObjects_RecordLength7(const SceneActorRecord *record)
+{
+    return record->bytes[5];
+}
+CLEAN_AS(func_020b2a44, TownObjects_RecordLength7)
+
+/* func_020b2a48: byte 6, a length in tiles (overlay 9 takes it times 0x2000). */
+int TownObjects_RecordLength6(const SceneActorRecord *record)
+{
+    return record->bytes[4];
+}
+CLEAN_AS(func_020b2a48, TownObjects_RecordLength6)
+
+/* func_020b2a4c: byte 5. */
+int TownObjects_RecordByte5(const SceneActorRecord *record)
+{
+    return record->bytes[3];
+}
+CLEAN_AS(func_020b2a4c, TownObjects_RecordByte5)
+
+/* func_020b2a50: byte 4, signed: the object's id in main's table at data_021f69d0. */
+int TownObjects_RecordId(const SceneActorRecord *record)
+{
+    return (s8) record->bytes[2];
+}
+CLEAN_AS(func_020b2a50, TownObjects_RecordId)
+
+/* func_020b2a58: byte 3 (overlay 3 counts the objects where it is 1 and, while
+ * Block020b220c_Flag4b18 or Block020b220c_Flag4b1c is set, leaves out those where it is 2). */
+int TownObjects_RecordByte3(const SceneActorRecord *record)
+{
+    return record->bytes[1];
+}
+CLEAN_AS(func_020b2a58, TownObjects_RecordByte3)
+
+/* func_020b2a5c: byte 2 (1 and 2 are told apart by overlay 9's scene actors). */
+int TownObjects_RecordByte2(const SceneActorRecord *record)
+{
+    return record->bytes[0];
+}
+CLEAN_AS(func_020b2a5c, TownObjects_RecordByte2)
+
+/* func_020b2a60: the object's code. */
+int TownObjects_RecordCode(const SceneActorRecord *record)
+{
+    return record->code;
+}
+CLEAN_AS(func_020b2a60, TownObjects_RecordCode)
+
+/* func_020b2a64: a record's copy destroyed; nothing to do. */
+void TownObjects_DestroyRecord(SceneActorRecord *record)
+{
+    (void) record;
+}
+CLEAN_AS(func_020b2a64, TownObjects_DestroyRecord)
+
+/* func_020b2a68: a record copied, the code first and then each byte in turn. */
+void TownObjects_CopyRecord(SceneActorRecord *dst, const SceneActorRecord *src)
+{
+    dst->code = src->code;
+    for (unsigned int i = 0; i < sizeof(src->bytes); i++) {
+        dst->bytes[i] = src->bytes[i];
+    }
+}
+CLEAN_AS(func_020b2a68, TownObjects_CopyRecord)
+
+/* The mode recorded for each object, by index. */
+extern u8 data_021f4bd0[TOWN_OBJECTS_COUNT];
+
+/* func_020b30e8: `mode` recorded for object `code`; whether it is one (the whole word is
+ * checked, not its low 16 bits). */
+int TownObjects_SetRecordedMode(u32 code, u8 mode)
+{
+    if (code < TOWN_OBJECTS_FIRST || code > TOWN_OBJECTS_LAST) {
+        return 0;
+    }
+    data_021f4bd0[code & 0xfff] = mode;
+    return 1;
+}
+CLEAN_AS(func_020b30e8, TownObjects_SetRecordedMode)
+
+/* func_020b312c: the mode recorded for object `code`, 0 for a code outside the objects. */
+int TownObjects_RecordedMode(u32 code)
+{
+    if (code < TOWN_OBJECTS_FIRST || code > TOWN_OBJECTS_LAST) {
+        return 0;
+    }
+    return data_021f4bd0[code & 0xfff];
+}
+CLEAN_AS(func_020b312c, TownObjects_RecordedMode)
+
+/* func_020b316c: every recorded mode set to 0, and data_021f4b14 too. */
+void TownObjects_ResetRecordedModes(void)
+{
+    for (unsigned int i = 0; i < TOWN_OBJECTS_COUNT; i++) {
+        data_021f4bd0[i] = 0;
+    }
+    data_021f4b14 = 0;
+}
+CLEAN_AS(func_020b316c, TownObjects_ResetRecordedModes)

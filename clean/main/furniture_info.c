@@ -421,3 +421,164 @@ int FurnitureInfo_DmaUnk1E(int number)
     return value == 0xff ? -1 : value;
 }
 CLEAN_AS(func_02053d24, FurnitureInfo_DmaUnk1E)
+
+/* func_02053d60: FurnitureDma.unk_1d. */
+int FurnitureInfo_DmaUnk1D(int number)
+{
+    const FurnitureDma *record = dma_record(number);
+    return record != NULL ? record->unk_1d : 0;
+}
+CLEAN_AS(func_02053d60, FurnitureInfo_DmaUnk1D)
+
+/* func_02053d94: -1 for every number. Read with FurnitureInfo_NoneB and FurnitureInfo_NoneC
+ * where an item has no dma.bin record to read (func_02062ea4). */
+int FurnitureInfo_NoneA(int number)
+{
+    (void) number;
+    return -1;
+}
+CLEAN_AS(func_02053d94, FurnitureInfo_NoneA)
+
+/* func_02053d9c: -1 for every number. */
+int FurnitureInfo_NoneB(int number)
+{
+    (void) number;
+    return -1;
+}
+CLEAN_AS(func_02053d9c, FurnitureInfo_NoneB)
+
+/* func_02053da4: -1 for every number. */
+int FurnitureInfo_NoneC(int number)
+{
+    (void) number;
+    return -1;
+}
+CLEAN_AS(func_02053da4, FurnitureInfo_NoneC)
+
+/* func_02053dac: FurnitureDma.unk_19 in sixteenths, as 20.12 fixed point. */
+int FurnitureInfo_DmaUnk19(int number)
+{
+    const FurnitureDma *record = dma_record(number);
+    int value = record != NULL ? record->unk_19 : 0;
+    return value << 8;
+}
+CLEAN_AS(func_02053dac, FurnitureInfo_DmaUnk19)
+
+/* func_02053de4: FurnitureDma.unk_18. */
+u8 FurnitureInfo_DmaUnk18(int number)
+{
+    const FurnitureDma *record = dma_record(number);
+    return record != NULL ? record->unk_18 : 0;
+}
+CLEAN_AS(func_02053de4, FurnitureInfo_DmaUnk18)
+
+/* func_02053e18: the halfword at 0x16 of the dma.bin record (little-endian, as the DS keeps
+ * it; the records are 0x20 bytes, so it is aligned). */
+u16 FurnitureInfo_DmaUnk16(int number)
+{
+    const FurnitureDma *record = dma_record(number);
+    if (record == NULL) {
+        return 0;
+    }
+    return (u16) (record->unk_00[0x16] | record->unk_00[0x17] << 8);
+}
+CLEAN_AS(func_02053e18, FurnitureInfo_DmaUnk16)
+
+/* The record files' own functions (main's record file code, func_0206e6f0 and on). */
+extern int func_0206e6f0(FurnitureRecordFiles *files);             /* free indoor.bin's whole copy */
+extern int func_0206e704(FurnitureRecordFiles *files, int stream); /* unless `stream`, load it whole */
+extern void func_0206e71c(FurnitureRecordFiles *files);            /* close the three */
+extern int func_0206e73c(FurnitureRecordFiles *files, const char *path0, u32 size0, const char *path1, u32 size1,
+                         const char *path2, u32 size2, u32 records);  /* open the three */
+extern FurnitureRecordFile *func_0206e8b4(FurnitureRecordFile *file); /* a record file's destructor */
+extern void func_0206e8c4(FurnitureRecordFile *file);                 /* a record file's constructor */
+
+extern const char data_020dcfec[]; /* "/ftr_info/always.bin" */
+extern const char data_020dd004[]; /* "/ftr_info/indoor.bin" */
+extern const char data_020dd01c[]; /* "/ftr_info/dma.bin" */
+
+/* func_02053e8c: free the copy of indoor.bin kept in memory. */
+void FurnitureFiles_FreeIndoor(FurnitureRecordFiles *files)
+{
+    func_0206e6f0(files);
+}
+CLEAN_AS(func_02053e8c, FurnitureFiles_FreeIndoor)
+
+/* func_02053e94: unless `stream`, read the whole of indoor.bin into memory. Always 1. */
+int FurnitureFiles_LoadIndoor(FurnitureRecordFiles *files, int stream)
+{
+    return func_0206e704(files, stream);
+}
+CLEAN_AS(func_02053e94, FurnitureFiles_LoadIndoor)
+
+/* func_02053e9c: close the three files, freeing what was read of them. */
+void FurnitureFiles_Close(FurnitureRecordFiles *files)
+{
+    func_0206e71c(files);
+}
+CLEAN_AS(func_02053e9c, FurnitureFiles_Close)
+
+/* func_02053ea4: open the three files with their record sizes, room for
+ * FURNITURE_FILE_RECORDS records each, and read always.bin whole. Always 1. */
+int FurnitureFiles_Open(FurnitureRecordFiles *files)
+{
+    return func_0206e73c(files, data_020dcfec, sizeof(FurnitureAlways), data_020dd004, sizeof(FurnitureIndoor), data_020dd01c,
+                         sizeof(FurnitureDma), FURNITURE_FILE_RECORDS);
+}
+CLEAN_AS(func_02053ea4, FurnitureFiles_Open)
+
+/* func_02053ed8: the destructor (__sinit_020c5404 registers it for data_021c8c48): close the
+ * three, then destruct each, last first. */
+FurnitureRecordFiles *FurnitureFiles_Destruct(FurnitureRecordFiles *files)
+{
+    func_0206e71c(files);
+    func_0206e8b4(&files->dma);
+    func_0206e8b4(&files->indoor);
+    func_0206e8b4(&files->always);
+    return files;
+}
+CLEAN_AS(func_02053ed8, FurnitureFiles_Destruct)
+
+/* func_02053f00: the constructor. */
+FurnitureRecordFiles *FurnitureFiles_Construct(FurnitureRecordFiles *files)
+{
+    func_0206e8c4(&files->always);
+    func_0206e8c4(&files->indoor);
+    func_0206e8c4(&files->dma);
+    return files;
+}
+CLEAN_AS(func_02053f00, FurnitureFiles_Construct)
+
+/* func_02053e4c: FurnitureFiles_FreeIndoor on the game's files. */
+void FurnitureInfo_FreeIndoor(void)
+{
+    FurnitureFiles_FreeIndoor((FurnitureRecordFiles *) data_021c8c48);
+}
+CLEAN_AS(func_02053e4c, FurnitureInfo_FreeIndoor)
+
+/* func_02053e5c: FurnitureFiles_LoadIndoor on the game's files; `stream` is a flag passed in a
+ * pointer, and the result (1) comes back the same way. */
+void *FurnitureInfo_LoadIndoor(void *stream)
+{
+    int result = FurnitureFiles_LoadIndoor((FurnitureRecordFiles *) data_021c8c48, (int) (uintptr_t) stream);
+    return (void *) (uintptr_t) result;
+}
+CLEAN_AS(func_02053e5c, FurnitureInfo_LoadIndoor)
+
+/* func_02053e6c: FurnitureFiles_Close on the game's files. */
+void FurnitureInfo_Close(void)
+{
+    FurnitureFiles_Close((FurnitureRecordFiles *) data_021c8c48);
+}
+CLEAN_AS(func_02053e6c, FurnitureInfo_Close)
+
+/* func_02053e7c: FurnitureFiles_Open on the game's files. */
+void FurnitureInfo_Open(void)
+{
+    FurnitureFiles_Open((FurnitureRecordFiles *) data_021c8c48);
+}
+CLEAN_AS(func_02053e7c, FurnitureInfo_Open)
+
+static_assert(sizeof(FurnitureRecordFile) == 0x1c, "FurnitureRecordFile size");
+static_assert(sizeof(FurnitureRecordFiles) == 0x54 && offsetof(FurnitureRecordFiles, dma) == 0x38,
+              "FurnitureRecordFiles layout");

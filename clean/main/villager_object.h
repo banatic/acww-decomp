@@ -65,5 +65,14 @@ DesignCreator *VillagerObject_Player(VillagerObject *object);
 void VillagerObject_SetStep(VillagerObject *object, u8 step);
 u8 VillagerObject_Step(VillagerObject *object);
 u8 *VillagerObject_Base(VillagerObject *object);
+void VillagerObject_NextStep(VillagerObject *object);
+void VillagerObject_SetLow5From1To2(VillagerObject *object);
+void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const DesignCreator *player, u8 fresh);
+void VillagerObject_ClearItem(VillagerObject *object);
+int VillagerObject_Start(VillagerObject *object, int type, const u16 *item);
+void VillagerObject_SetObject(VillagerObject *object, int type, const u16 *item);
+void VillagerObject_Clear(VillagerObject *object);
+VillagerObject *VillagerObject_Destruct(VillagerObject *object);
+VillagerObject *VillagerObject_Construct(VillagerObject *object);
 
 #endif

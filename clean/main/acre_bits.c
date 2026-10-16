@@ -58,3 +58,17 @@ void AcreBits_ClearAll(AcreBits *bits)
     MI_CpuFill8(bits, 0, sizeof(*bits));
 }
 CLEAN_AS(func_02037d00, AcreBits_ClearAll)
+
+/* func_02037d0c: the destructor of the town layout's records (town_layout.h): nothing. */
+void AcreBits_Destruct(AcreBits *bits)
+{
+    (void) bits;
+}
+CLEAN_AS(func_02037d0c, AcreBits_Destruct)
+
+/* func_02037d10: their constructor: nothing. */
+void AcreBits_Construct(AcreBits *bits)
+{
+    (void) bits;
+}
+CLEAN_AS(func_02037d10, AcreBits_Construct)

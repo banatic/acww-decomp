@@ -2,6 +2,9 @@
 #include "villager_object.h"
 
 #include "clean.h"
+#include "furniture_info.h"
+#include "item_attributes.h"
+#include "item_object.h"
 
 static_assert(sizeof(VillagerModeRecord) == 0x24, "mode record");
 static_assert(offsetof(VillagerObject, player) == 0x0c, "player");
@@ -222,3 +225,150 @@ u8 *VillagerObject_Base(VillagerObject *object)
     return object->object;
 }
 CLEAN_AS(func_0209b91c, VillagerObject_Base)
+
+/* The type and step at which an item given to the object also sets its kind (an item
+ * 0x450c-0x45db), and the step VillagerObject_Clear leaves. */
+#define VILLAGER_OBJECT_KIND_TYPE 2
+#define VILLAGER_OBJECT_KIND_STEP 2
+#define VILLAGER_OBJECT_STEP_CLEARED 7
+#define VILLAGER_OBJECT_NO_ITEM 0xfff1
+
+/* A player's id: copied, cleared, destroyed and constructed. */
+extern void func_0209525c(DesignCreator *dst, const DesignCreator *src);
+extern void func_02095238(DesignCreator *player);
+extern int func_0209526c(DesignCreator *player);
+extern void *func_0209529c(DesignCreator *player);
+extern void func_0209e474(DateTime *date); /* the date set to now */
+
+/* The object at the start of the villager's object, as an ItemObject. */
+static ItemObject *villager_object_held(VillagerObject *object)
+{
+    return (ItemObject *) VillagerObject_Base(object);
+}
+
+/* func_0209b920: a group 0 type in the object goes on a step: the item is taken
+ * (VillagerObject_ClearItem), and the step goes up by one unless the type is 4 and its count has
+ * not reached the step's figure. Nothing for an empty object, a type of another group, or the
+ * last step of the type. */
+void VillagerObject_NextStep(VillagerObject *object)
+{
+    ItemObject *held = villager_object_held(object);
+    if (ItemObject_IsInUse(held) == 0 || ItemObject_Group(held) != 0) {
+        return;
+    }
+    int steps = VillagerObject_StepsForType(ItemObject_Type(held));
+    int step = VillagerObject_Step(object);
+    if (step >= steps - 1) {
+        return;
+    }
+    int advance = 1;
+    if (ItemObject_Type(held) == VILLAGER_OBJECT_COUNTED_TYPE) {
+        advance = VillagerObject_IsCountReached(object);
+    }
+    VillagerObject_ClearItem(object);
+    if (advance != 0) {
+        VillagerObject_SetStep(object, (u8) (step + 1));
+    }
+}
+CLEAN_AS(func_0209b920, VillagerObject_NextStep)
+
+/* func_0209b998: a group 0 type whose low five bits of byte 0x0b are 1 gets 2 there. */
+void VillagerObject_SetLow5From1To2(VillagerObject *object)
+{
+    ItemObject *held = villager_object_held(object);
+    if (ItemObject_IsInUse(held) != 0 && ItemObject_Group(held) == 0 && ItemObject_Low5(held) == 1) {
+        ItemObject_SetLow5(held, 2);
+    }
+}
+CLEAN_AS(func_0209b998, VillagerObject_SetLow5From1To2)
+
+/* func_0209b9cc: an item given to the object. With `fresh` set, the object starts over with type
+ * `type` and the item (VillagerObject_Start); otherwise the low five bits of byte 0x0b are
+ * cleared and the item kept, and at step 2 of type 2 an item 0x450c-0x45db also sets the kind
+ * (its museum kind, the flags cleared). Then, with a player, the player is copied, the date set
+ * to now and bits 5-7 of byte 0x0b cleared; without one the player is cleared. */
+void VillagerObject_Set(VillagerObject *object, u32 type, const u16 *item, const DesignCreator *player, u8 fresh)
+{
+    if (fresh != 0) {
+        VillagerObject_Start(object, (int) type, item);
+    } else {
+        ItemObject_SetLow5(villager_object_held(object), 0);
+        ItemObject_SetItem(villager_object_held(object), item);
+        if (ItemObject_Type(villager_object_held(object)) == VILLAGER_OBJECT_KIND_TYPE &&
+            VillagerObject_Step(object) == VILLAGER_OBJECT_KIND_STEP && *item >= ITEM_ATTRIBUTES_KIND_ITEM_FIRST &&
+            *item <= ITEM_ATTRIBUTES_KIND_ITEM_LAST) {
+            VillagerObject_SetKind(object, (u8) FurnitureInfo_MuseumKind(item));
+        }
+    }
+    if (player != NULL) {
+        func_0209525c(VillagerObject_Player(object), player);
+        func_0209e474(ItemObject_Date(villager_object_held(object)));
+        ItemObject_SetHigh3(villager_object_held(object), 0);
+    } else {
+        func_02095238(VillagerObject_Player(object));
+    }
+}
+CLEAN_AS(func_0209b9cc, VillagerObject_Set)
+
+/* func_0209ba7c: the item taken: the low five bits of byte 0x0b cleared, no item in the object,
+ * the player cleared and no item at 0x2c either. */
+void VillagerObject_ClearItem(VillagerObject *object)
+{
+    ItemObject_SetLow5(villager_object_held(object), 0);
+    u16 none = VILLAGER_OBJECT_NO_ITEM;
+    ItemObject_SetItem(villager_object_held(object), &none);
+    func_02095238(VillagerObject_Player(object));
+    *VillagerObject_Item(object) = VILLAGER_OBJECT_NO_ITEM;
+}
+CLEAN_AS(func_0209ba7c, VillagerObject_ClearItem)
+
+/* func_0209bac0: the object emptied, then set to type `type` with the item, at step 0. Gives 0. */
+int VillagerObject_Start(VillagerObject *object, int type, const u16 *item)
+{
+    VillagerObject_Clear(object);
+    VillagerObject_SetObject(object, type, item);
+    object->step = 0;
+    return 0;
+}
+CLEAN_AS(func_0209bac0, VillagerObject_Start)
+
+/* func_0209bae4: the object's type and item set, the low five bits of byte 0x0b cleared. */
+void VillagerObject_SetObject(VillagerObject *object, int type, const u16 *item)
+{
+    ItemObject_Set(villager_object_held(object), (u8) type, item, 0);
+}
+CLEAN_AS(func_0209bae4, VillagerObject_SetObject)
+
+/* func_0209baf4: emptied: no type or item, no player, step 7, no item at 0x2c, the count 0, no
+ * kind and the flags cleared. */
+void VillagerObject_Clear(VillagerObject *object)
+{
+    ItemObject_Clear(villager_object_held(object));
+    func_02095238(&object->player);
+    object->step = VILLAGER_OBJECT_STEP_CLEARED;
+    object->item = VILLAGER_OBJECT_NO_ITEM;
+    object->count = 0;
+    object->kind = VILLAGER_OBJECT_KIND_NONE;
+    object->flags = 0;
+}
+CLEAN_AS(func_0209baf4, VillagerObject_Clear)
+
+/* func_0209bb30: the destructor. */
+VillagerObject *VillagerObject_Destruct(VillagerObject *object)
+{
+    func_0209526c(&object->player);
+    ItemObject_Destruct(villager_object_held(object));
+    return object;
+}
+CLEAN_AS(func_0209bb30, VillagerObject_Destruct)
+
+/* func_0209bb48: the constructor: the object constructed (date zeroed, no item or type), the
+ * player constructed, and no item at 0x2c. */
+VillagerObject *VillagerObject_Construct(VillagerObject *object)
+{
+    ItemObject_Construct(villager_object_held(object));
+    func_0209529c(&object->player);
+    object->item = VILLAGER_OBJECT_NO_ITEM;
+    return object;
+}
+CLEAN_AS(func_0209bb48, VillagerObject_Construct)

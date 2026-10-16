@@ -50,4 +50,26 @@ int TownObjects_SetActorMode(SceneActor *actor, unsigned int mode);
 int TownObjects_AtKeptTile(void);
 void TownObjects_KeepAtKeptTile(void);
 
+/* The objects' records (data_020d1f24) read through a copy, and their codes with a tile. */
+int TownObjects_HasKeptObject(void);
+int TownObjects_NearbyActorValue(const Vec3 *position);
+u32 TownObjects_PackTile(u32 code, u32 x, u32 z);
+u32 TownObjects_PackRecordTile(const SceneActorRecord *record, int x, int z);
+int TownObjects_RecordMaxVisitors(const SceneActorRecord *record);
+int TownObjects_RecordLength8(const SceneActorRecord *record);
+int TownObjects_RecordLength7(const SceneActorRecord *record);
+int TownObjects_RecordLength6(const SceneActorRecord *record);
+int TownObjects_RecordByte5(const SceneActorRecord *record);
+int TownObjects_RecordId(const SceneActorRecord *record);
+int TownObjects_RecordByte3(const SceneActorRecord *record);
+int TownObjects_RecordByte2(const SceneActorRecord *record);
+int TownObjects_RecordCode(const SceneActorRecord *record);
+void TownObjects_DestroyRecord(SceneActorRecord *record);
+void TownObjects_CopyRecord(SceneActorRecord *dst, const SceneActorRecord *src);
+
+/* The mode recorded for each object (data_021f4bd0). */
+int TownObjects_SetRecordedMode(u32 code, u8 mode);
+int TownObjects_RecordedMode(u32 code);
+void TownObjects_ResetRecordedModes(void);
+
 #endif
