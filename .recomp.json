@@ -10,6 +10,5 @@
   "toolchain": ["ds-decomp", "Objdiff"],
   "approach": "Matching C/C++ for mwccarm, one source per function; readable Clean rewrites checked against the original code",
   "maintainers": [{ "name": "banatic", "link": "https://github.com/banatic" }],
-  "help": ["Linking the whole program with the original linker", "Regrouping functions into their original source files", "Naming and documenting subsystems"],
   "notes": "Every one of the 25,247 game functions of the ARM9 code compiles with the original compiler to the exact original bytes. Next: linking the whole program with the original linker and regrouping the functions into their original files. Readable Clean rewrites are checked differentially against the original code. No game assets or code are included."
 }
