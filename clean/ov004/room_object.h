@@ -36,17 +36,39 @@ typedef struct RoomSound {
     Vec3 position;
 } RoomSound;
 
+struct NodeHookState;
+
 /* The vtable slots used here; derived classes override them. */
 typedef struct RoomObjectVtable {
-    const void *unk_00[30];
-    int (*vfunc_78)(struct RoomObject *object); /* RoomObject_Unk77C in the base */
-    const void *unk_7c[5];
+    const void *unk_00[24];
+    /* The model's hooks (room_object_methods.c): for a material, a node, and before and after a
+     * node's description; each is given byte 1 of the model's command and the render state. */
+    int (*material_hook)(struct RoomObject *object, int material, struct NodeHookState *state);
+    int (*node_hook)(struct RoomObject *object, int node, struct NodeHookState *state);
+    int (*node_desc_hook)(struct RoomObject *object, int node, struct NodeHookState *state);
+    int (*node_desc_after_hook)(struct RoomObject *object, int node, struct NodeHookState *state);
+    int (*vfunc_70)(struct RoomObject *object, int a1, int a2); /* RoomObject_SetUnk77C in the base */
+    const void *unk_74;
+    int (*vfunc_78)(struct RoomObject *object);             /* RoomObject_Unk77C in the base */
+    int (*on_model_bound)(struct RoomObject *object);       /* after RoomObject_Init binds the model: whether it is done */
+    int (*update_settled)(struct RoomObject *object);       /* each frame, when neither appearing nor vanishing */
+    int (*update_unsettled)(struct RoomObject *object);     /* each frame, when appearing or vanishing */
+    int (*can_draw)(struct RoomObject *object);             /* RoomObject_Vfunc88 in the base */
+    int (*keeps_texture_copy)(struct RoomObject *object);   /* given to FurnitureModel_Load */
     void (*vfunc_90)(struct RoomObject *object);            /* when it starts to vanish */
     void (*vfunc_94)(struct RoomObject *object, int ahead); /* when a move starts: 1 in state 3, 0 in 4 */
     void (*vfunc_98)(struct RoomObject *object, int down);  /* when a turn starts: 1 towards a lower angle */
     void (*vfunc_9c)(struct RoomObject *object, int down);  /* each frame of a turn */
     int (*is_idle)(struct RoomObject *object);              /* RoomObject_IsIdle in the base */
 } RoomObjectVtable;
+
+/* The link a room object's receiver part is attached to (set by the code that opens it), as
+ * the scene objects' receivers have it (clean/ov003/etc_board.h). */
+typedef struct RoomLink {
+    u8 unk_00[4];
+    s32 open;      /* an object that talks waits for it to open, then to close */
+    s32 requested; /* set to 1 when the object starts talking */
+} RoomLink;
 
 typedef struct RoomObject {
     const RoomObjectVtable *vtable;
@@ -57,7 +79,14 @@ typedef struct RoomObject {
     Vec3 position;
     u8 unk_068[0x26];
     s16 angle;
-    u8 unk_090[0xa2];
+    u8 unk_090[0x5c];
+    /* The message-receiver base (Base_02066994), at 0xec. */
+    const void *receiver_vtable;
+    u8 unk_0f0[0x1a];
+    u8 receiver_state; /* the receiver's state byte */
+    u8 unk_10b[0x21];
+    RoomLink *link;
+    u8 unk_130[2];
     u16 slot; /* its entry in the pool data_ov004_02259698 (func_0209d238), 0xffff for none */
     u8 unk_134[0x10];
     Vec3 pivot;  /* where its model turns about, in its space (func_ov004_0220dbac) */

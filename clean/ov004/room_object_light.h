@@ -16,5 +16,7 @@ void RoomObject_UpdateLight(RoomObject *object);
 void RoomObject_StartLight(RoomObject *object);
 int Area_CurrentIs1To5(void);
 int Area_Is1To5(unsigned int area);
+void RoomLight_TurnOn(int light_kind);
+int LightKind_Flashes(int light_kind);
 
 #endif

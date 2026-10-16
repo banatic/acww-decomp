@@ -1,11 +1,11 @@
 /* Overlay 3's part of the field actor (class vtable 0x020d82b4, include/cpp/main/Obj_020d82b4.h):
  * the checks the actor's frame update runs while overlay 3 is loaded (func_020058e4), the
- * choice of what to do with the held tool, and states of its state machine (0x5e to 0x6e, 0x71
+ * choice of what to do with the held tool, and states of its state machine (0x58 to 0x6e, 0x71
  * to 0x75, 0x78, 0x80 to 0x82, 0x89 and 0x8f).
  *
  * The state machine: each state has an update, a message handler and an entry function, picked
  * by the state number at 0x7f0 from tables in main; some also have one run when the actor leaves
- * them (from another table in main: states 0x66, 0x63, 0x62, 0x5f and 0x5e here). A state is asked for by queueing a
+ * them (from another table in main: states 0x66, 0x63, 0x62, 0x5f, 0x5e, 0x5d and 0x58 here). A state is asked for by queueing a
  * StateRequest on the actor (func_0200e894); the helpers that build one pass a priority (6 for
  * all of them here) and an argument (-1 here unless passed on).
  *
@@ -115,12 +115,59 @@ typedef struct State5FWork {
     u8 kind;
 } State5FWork;
 
-/* State 0x5e's work: a flag that picks animation 0x4e over 0x4b after 0x49, and a point. */
+/* State 0x5e's work: a flag that picks animation 0x4e over 0x4b after 0x49, and a point. A
+ * request for state 0x5e carries the same. */
 typedef struct State5EWork {
     u8 flag;
     u8 unk_01[3];
     Vec3 point;
 } State5EWork;
+
+/* A tile and a flag: what a request for state 0x5d carries and its work (the flag: the tile goes
+ * to func_ov003_022241a4 at frame 5), and what a request for state 0x59 carries (the flag: the
+ * point to walk to is the tile's middle, not where the actor's slide ends). */
+typedef struct TileFlagArgs {
+    u8 x;
+    u8 z;
+    u8 flag;
+} TileFlagArgs;
+
+/* State 0x5d's arguments as saved at 0x8f0, with the verdict of FieldActor_CheckOther. */
+typedef struct State5DSaved {
+    u8 flag;
+    u8 x;
+    u8 z;
+    u8 other_result;
+} State5DSaved;
+
+/* State 0x5a's work: the request's tile and whether a target was known (FieldActor.target). */
+typedef struct State5AWork {
+    u8 x;
+    u8 z;
+    u8 has_target;
+} State5AWork;
+
+/* State 0x59's work: the point the actor walks to, the yaw towards it and whether the point is
+ * fixed (until it is, the update takes the tile ahead once the actor stops). */
+typedef struct State59Work {
+    Vec3 point;
+    s16 yaw;
+    u8 fixed;
+    u8 unk_0F; /* set to 0 */
+} State59Work;
+
+/* State 0x58's arguments (a request carries the first two) and work: a kind (the item code
+ * 0x12b0 + kind) and a step (0 to 2). The saved copy at 0x8f0 also holds an angle, packed. */
+typedef struct State58Args {
+    u8 kind;
+    u8 step;
+} State58Args;
+
+typedef struct State58Saved {
+    u8 kind;
+    u8 step;
+    u8 angle[2]; /* func_02077910 writes it, func_020778f8 reads it */
+} State58Saved;
 
 /* State 0x69's work: the yaw to turn to and the tile of the request's point. */
 typedef struct State69Work {
@@ -205,6 +252,10 @@ typedef union FieldActorWork {
     TileStepArgs s60; /* state 0x60: the request's tile and the step */
     State5FWork s5f;
     State5EWork s5e;
+    TileFlagArgs s5d;
+    State5AWork s5a;
+    State59Work s59;
+    State58Args s58;
     u8 bytes[0x1c];
 } FieldActorWork;
 
@@ -242,15 +293,17 @@ typedef struct FieldActor {
     u8 unk_141[3];
     int unk_144;
     u8 unk_148;
-    u8 unk_149[0x158 - 0x149];
+    u8 unk_149[3];
+    Vec3 unk_14C;   /* the point a request for state 0x59 aims at when unk_148 is 0 */
     Vec3 aim_point; /* the point tools act on when aim_mode is not 1 */
     u8 unk_164[4];
     void *other;     /* the object FieldActor_CheckOther found */
     u8 other_result; /* FieldActor_CheckOther's verdict: 0-4 */
     u8 unk_16D[3];
     int aim_mode; /* 1: tools act on a point ahead of the actor; otherwise on aim_point (some only with 2) */
-    u8 unk_174[0x1d2 - 0x174];
-    u8 other_kind; /* the kind of object met: 2 and 3 in main's tables, 0x11 and 0x12 here */
+    u8 unk_174[0x1c4 - 0x174];
+    u8 unk_1C4[0x1d2 - 0x1c4]; /* func_02089fc8 runs on it after func_02010d88 */
+    u8 other_kind;             /* the kind of object met: 2 and 3 in main's tables, 0x11 and 0x12 here */
     u8 other_id;
     u8 unk_1D4[0x200 - 0x1d4];
     u8 has_other; /* nonzero when other_kind and other_id name an object */
@@ -289,7 +342,7 @@ typedef struct FieldActor {
     u8 unk_810[4];
     int unk_814;
     int unk_818;
-    int unk_81C; /* a progress states 0x60 and 0x5f wait on (5, 6, 0xf and up) */
+    int unk_81C; /* a progress states 0x60, 0x5f and 0x58 wait on (5, 6, 0xf and up) */
     u16 item;    /* the item states 0x61, 0x60 and 0x5f act with (ITEM_NONE 0xfff1 for none) */
     u16 unk_822; /* state 0x5f writes the item here and copies it to `item` */
     Vec3 unk_824;
@@ -306,6 +359,9 @@ typedef struct FieldActor {
         SavedItemTile item_tile; /* states 0x61 and 0x5f */
         TileStepArgs tile_step;  /* state 0x60 */
         u8 left_early;           /* state 0x63: the actor of this console left it before its end */
+        State5DSaved s5d;
+        TileFlagArgs s59;
+        State58Saved s58;
         /* Points packed by func_02077950 (x, y and z, state 0x6a) or func_020779b8 (x and z,
          * state 0x68, with the request's flags in byte 5). */
         u8 packed[8];
@@ -565,5 +621,71 @@ void FieldActor_UpdateState5E(FieldActor *actor);
 void FieldActor_EndState5E(FieldActor *actor);
 void FieldActor_AnimateState5E(FieldActor *actor);
 void FieldActor_ExitState5E(FieldActor *actor);
+void FieldActor_State5EMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState5E(FieldActor *actor, const StateRequest *request, int previous);
+State5EWork *State5EWork_Set(State5EWork *work, char flag, const Vec3 *point);
+int FieldActor_RequestState5E(FieldActor *actor, int flag, const Vec3 *point, int priority, s16 arg);
+void State5EArgs_Set(State5EWork *args, char flag, const Vec3 *point);
+
+void FieldActor_UpdateState5D(FieldActor *actor);
+void FieldActor_EndState5D(FieldActor *actor);
+void FieldActor_AnimateState5D(FieldActor *actor);
+void FieldActor_ExitState5D(FieldActor *actor);
+void FieldActor_State5DMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState5D(FieldActor *actor, const StateRequest *request, int previous);
+void State5DSaved_Get(const State5DSaved *saved, u8 *flag, u8 *x, u8 *z, u8 *other_result);
+void State5DSaved_Set(State5DSaved *saved, u8 flag, u8 x, u8 z, u8 other_result);
+void State5DWork_Set(TileFlagArgs *work, const u32 *tile, u8 flag);
+int FieldActor_RequestState5D(FieldActor *actor, int flag, const int *tile, int priority, s16 arg);
+void State5DArgs_Set(TileFlagArgs *args, const u32 *tile, u8 flag);
+
+void FieldActor_UpdateState5C(FieldActor *actor);
+void FieldActor_EndState5C(FieldActor *actor);
+void FieldActor_State5CMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState5C(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_RequestState5C(FieldActor *actor, int priority, int arg);
+
+void FieldActor_UpdateState5B(FieldActor *actor);
+void FieldActor_EndState5B(FieldActor *actor);
+void FieldActor_AnimateState5B(FieldActor *actor);
+void FieldActor_State5BMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState5B(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_RequestState5B(FieldActor *actor, int priority, int arg);
+
+void FieldActor_UpdateState5A(FieldActor *actor);
+int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point);
+void FieldActor_FaceState5ATile(FieldActor *actor);
+void FieldActor_State5AMessage(FieldActor *actor, int arg);
+void FieldActor_EnterState5A(FieldActor *actor, const StateRequest *request, int previous);
+void State5ASaved_Get(const TileArgs *saved, int *tile);
+void State5ASaved_Set(TileArgs *saved, const int *tile);
+void State5AWork_SetTile(State5AWork *work, const int *tile);
+void *FieldActor_RequestState5A(FieldActor *actor, const int *tile, int priority, int arg);
+void State5AArgs_Set(TileArgs *args, const int *tile);
+
+void FieldActor_UpdateState59(FieldActor *actor);
+void FieldActor_EndState59Remote(FieldActor *actor);
+void FieldActor_RunState59(FieldActor *actor);
+void FieldActor_FaceState59Point(FieldActor *actor);
+void FieldActor_TurnState59(FieldActor *actor);
+void FieldActor_State59Message(FieldActor *actor, int arg);
+void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int previous);
+void State59Saved_Get(const TileFlagArgs *saved, u8 *x, u8 *z, u8 *fixed);
+void State59Saved_Set(TileFlagArgs *saved, int x, int z, int fixed);
+void State59Work_Set(State59Work *work, const Vec3 *point, s16 yaw, char fixed);
+int FieldActor_RequestState59(FieldActor *actor, const u8 *x, const u8 *z, const u8 *fixed, int priority, s16 arg);
+int FieldActor_RequestState59AtAim(FieldActor *actor, int priority, int arg);
+void State59Args_Set(TileFlagArgs *args, int x, int z, int fixed);
+
+void FieldActor_UpdateState58(FieldActor *actor);
+void FieldActor_RunState58(FieldActor *actor);
+void FieldActor_ExitState58(FieldActor *actor);
+void FieldActor_State58Message(FieldActor *actor, int arg);
+void FieldActor_EnterState58(FieldActor *actor, const StateRequest *request, int previous);
+int State58Saved_Angle(const State58Saved *saved);
+int State58Saved_Step(const State58Saved *saved);
+void State58Saved_Get(const State58Saved *saved, u8 *kind, u8 *step, u16 *angle);
+void State58Saved_SetAngle(State58Saved *saved, int angle);
+void State58Saved_SetStep(State58Saved *saved, int step);
 
 #endif

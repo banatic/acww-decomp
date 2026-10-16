@@ -324,3 +324,155 @@ void SoundSys_Call020f1c00(int value)
     func_020f1c00(data_021fd1bc, value);
 }
 CLEAN_AS(func_02004260, SoundSys_Call020f1c00)
+
+extern void func_020f1c6c(void *sys, u32 music);
+extern void func_020f0e34(void *sys);
+extern void func_020f0e48(void *sys);
+extern void *func_020f0e60(void *sys);
+extern void func_020f0e74(void *sys, int index);
+extern void func_020f0ea8(void *sys, int index);
+extern int func_020f0f34(void *sys, void *unused);
+extern void func_020f0f48(void *sys, int value);
+extern void func_020f0edc(void *sys, int level);
+extern void func_020f1ecc(void *sys, int mode);
+/* The keys are passed as the full words the caller has: the callee compares them whole. */
+extern void func_020efc74(void *sys, int action, int layout, int key, int previous_key);
+extern void func_020f2354(void *sys, int effect);
+extern void func_020f1ed4(void *sys, int number, int fade_frames);
+extern void func_020f1f24(void *sys, int number);
+extern void func_020f0df0(void *sys, int index, int value);
+extern void func_020f1fb4(void *sys, int number);
+extern void func_020f2368(void);
+extern void func_020f2378(void *sys);
+
+/* func_02004270: switch the music to `music`. 0 and 1 work the stream player instead, and some
+ * numbers (0xb0 to 0xf5) start silent. */
+void SoundSys_ChangeMusic(u32 music)
+{
+    func_020f1c6c(data_021fd1bc, music);
+}
+CLEAN_AS(func_02004270, SoundSys_ChangeMusic)
+
+/* func_0200452c: stop sound 0x2d, fading over one frame. */
+void SoundSys_StopSound2d(void)
+{
+    func_020f0e34(data_021fd1bc);
+}
+CLEAN_AS(func_0200452c, SoundSys_StopSound2d)
+
+/* func_0200453c: start sound 0x2d on the handle at 0x38. */
+void SoundSys_StartSound2d(void)
+{
+    func_020f0e48(data_021fd1bc);
+}
+CLEAN_AS(func_0200453c, SoundSys_StartSound2d)
+
+/* func_0200454c: stop what the handle at 0x40 plays, at once. */
+void SoundSys_StopHandle40(void)
+{
+    func_020f0e60(data_021fd1bc);
+}
+CLEAN_AS(func_0200454c, SoundSys_StopHandle40)
+
+/* func_0200455c: start entry `index` of sequence archive 0 on the handle at 0x40 (player 10). */
+void SoundSys_StartOnHandle40(int index)
+{
+    func_020f0e74(data_021fd1bc, index);
+}
+CLEAN_AS(func_0200455c, SoundSys_StartOnHandle40)
+
+/* func_0200456c: the same through a second copy of the callee. */
+void SoundSys_StartOnHandle40B(int index)
+{
+    func_020f0ea8(data_021fd1bc, index);
+}
+CLEAN_AS(func_0200456c, SoundSys_StartOnHandle40B)
+
+/* func_0200457c: play sound 0x2c on the shared handle; the result of starting it. */
+int SoundSys_PlaySound2c(void *unused)
+{
+    return func_020f0f34(data_021fd1bc, unused);
+}
+CLEAN_AS(func_0200457c, SoundSys_PlaySound2c)
+
+/* func_0200458c: the byte at 0x71 becomes 1 for 1, else 0. */
+void SoundSys_SetByte71(int value)
+{
+    func_020f0f48(data_021fd1bc, value);
+}
+CLEAN_AS(func_0200458c, SoundSys_SetByte71)
+
+/* func_0200459c: the volumes of the handles at 0x38 (2 * level + 16) and 0x40 (level + 80),
+ * each at most 0x7f; a negative level counts as 0. */
+void SoundSys_SetHandleLevel(int level)
+{
+    func_020f0edc(data_021fd1bc, level);
+}
+CLEAN_AS(func_0200459c, SoundSys_SetHandleLevel)
+
+/* func_020045cc: the keyboard's mode at 0x44, which SoundSys_PlayKeyboardSound reads. */
+void SoundSys_SetKeyboardMode(int mode)
+{
+    func_020f1ecc(data_021fd1bc, mode);
+}
+CLEAN_AS(func_020045cc, SoundSys_SetKeyboardMode)
+
+/* func_020045f4: the click of a key of the on-screen keyboard. */
+void SoundSys_PlayKeyboardSound(int action, int layout, int key, int previous_key)
+{
+    func_020efc74(data_021fd1bc, action, layout, key, previous_key);
+}
+CLEAN_AS(func_020045f4, SoundSys_PlayKeyboardSound)
+
+/* func_02004634: keep `effect` at 0x50 and hand it to the sound capture. */
+void SoundSys_SetCaptureEffect(int effect)
+{
+    func_020f2354(data_021fd1bc, effect);
+}
+CLEAN_AS(func_02004634, SoundSys_SetCaptureEffect)
+
+/* func_02004644: stop every player of sound `number`, fading over `fade_frames`. */
+void SoundSys_StopSound(int number, int fade_frames)
+{
+    func_020f1ed4(data_021fd1bc, number, fade_frames);
+}
+CLEAN_AS(func_02004644, SoundSys_StopSound)
+
+/* func_02004658: start sound `number` on the handle at 0x38 (0x862 silenced). */
+void SoundSys_StartOnHandle38(int number)
+{
+    func_020f1f24(data_021fd1bc, number);
+}
+CLEAN_AS(func_02004658, SoundSys_StartOnHandle38)
+
+/* func_02004668: start entry `index` of sequence archive 0 on the handle at 0x38, then hand
+ * `value` to the handle's player with the parameter at data_0213e858. */
+void SoundSys_StartIndexOnHandle38(int index, int value)
+{
+    func_020f0df0(data_021fd1bc, index, value);
+}
+CLEAN_AS(func_02004668, SoundSys_StartIndexOnHandle38)
+
+/* RtcSendPxiCommand: play sound effect `number` (some on the handles at 0x38 and 0x40, the
+ * others on the shared handle). Nothing plays while the byte at 0x4d is set. The symbol's
+ * name is not what the function does. */
+void SoundSys_PlaySe(int number)
+{
+    func_020f1fb4(data_021fd1bc, number);
+}
+CLEAN_AS(RtcSendPxiCommand, SoundSys_PlaySe)
+
+/* func_020046a4: the master volume to 0x7f. The callee takes no argument (the original still
+ * hands it the sound state). */
+void SoundSys_MasterVolumeFull(void)
+{
+    func_020f2368();
+}
+CLEAN_AS(func_020046a4, SoundSys_MasterVolumeFull)
+
+/* func_020046b4: the master volume to 0. */
+void SoundSys_MasterVolumeOff(void)
+{
+    func_020f2378(data_021fd1bc);
+}
+CLEAN_AS(func_020046b4, SoundSys_MasterVolumeOff)

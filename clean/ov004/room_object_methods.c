@@ -7,8 +7,12 @@
 #include "cells.h"
 #include "clean.h"
 #include "main/item_code.h"
+#include "room_object_body.h"
 
 static_assert(offsetof(NodeHookState, unk_B8) == 0xb8, "node hook state");
+static_assert(offsetof(NodeHookState, hooks) == 0x0c, "hooks");
+static_assert(offsetof(NodeHookState, hook_timings) == 0x8c, "hook timings");
+static_assert(offsetof(G3dRenderObject, user) == 0x2c, "render object's user");
 
 #define PLAYER 4             /* the actor func_02095794 is asked for */
 #define KIND_NO_ITEM 0x1c    /* unk_780 of an object that is no item of the map */
@@ -276,3 +280,188 @@ u16 RoomObject_Reference(RoomObject *object, Vec3 *offset, int turn)
     return 0;
 }
 CLEAN_AS(func_ov004_0220e808, RoomObject_Reference)
+
+/* The kinds (RoomObject.unk_780 and unk_00C) the questions below ask about. */
+#define KIND_780_10 0x10
+#define KIND_780_11 0x11
+#define KIND_780_18 0x18
+#define KIND_780_2B 0x2b
+#define KIND_00C_36 0x36
+#define KIND_00C_37 0x37
+#define KIND_00C_3A 0x3a
+#define KIND_00C_3B 0x3b
+#define KIND_00C_3C 0x3c
+
+/* The value func_ov004_0223a730 gives for none (0xffff). */
+extern const u16 data_ov004_0224fd38;
+extern int func_ov004_0223a730(int number);
+extern int func_02053818(int number);
+
+/* Whether the object is neither appearing nor vanishing. */
+static int is_settled(const RoomObject *object)
+{
+    return !RoomObject_IsInState(object, ROOM_OBJECT_APPEAR) && !RoomObject_IsInState(object, ROOM_OBJECT_VANISH);
+}
+
+/* func_ov004_022111f0: for an object neither appearing nor vanishing, whether its unk_780 is
+ * 0x10, or is 0x11 or 0x2b and func_ov004_0223a730 has a value for its furniture's number.
+ * func_ov004_0223bf40 looks for the nearest such object to the player. */
+int RoomObject_Check022111f0(RoomObject *object)
+{
+    if (!is_settled(object)) {
+        return 0;
+    }
+    switch (object->unk_780) {
+        case KIND_780_10:
+            return 1;
+        case KIND_780_11:
+        case KIND_780_2B:
+            return func_ov004_0223a730(RoomObject_Number(object)) != data_ov004_0224fd38;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_022111f0, RoomObject_Check022111f0)
+
+/* func_ov004_0221124c: for an object neither appearing nor vanishing, whether its unk_780 is
+ * 0x10. */
+int RoomObject_SettledUnk780Is10(RoomObject *object)
+{
+    return is_settled(object) && object->unk_780 == KIND_780_10;
+}
+CLEAN_AS(func_ov004_0221124c, RoomObject_SettledUnk780Is10)
+
+/* func_ov004_02211280: whether unk_780 is 0x18 (RoomObject_Unk780Is18 asks through it). */
+int RoomObject_TestUnk780Is18(const RoomObject *object)
+{
+    return object->unk_780 == KIND_780_18;
+}
+CLEAN_AS(func_ov004_02211280, RoomObject_TestUnk780Is18)
+
+/* func_ov004_02211294: whether unk_00C is 0x36 or 0x37 (RoomObject_Unk00CIs36Or37 asks through
+ * it). */
+int RoomObject_TestUnk00CIs36Or37(const RoomObject *object)
+{
+    return object->unk_00C == KIND_00C_36 || object->unk_00C == KIND_00C_37;
+}
+CLEAN_AS(func_ov004_02211294, RoomObject_TestUnk00CIs36Or37)
+
+/* func_ov004_022112c4: whether unk_00C is 0x3b or 0x3c and the switch is on (wanted on).
+ * func_ov004_0223bdac looks for the nearest such object to the player. */
+int RoomObject_Unk00CIs3BOr3CAndOn(RoomObject *object)
+{
+    if (object->unk_00C != KIND_00C_3B && object->unk_00C != KIND_00C_3C) {
+        return 0;
+    }
+    return Switch_Value(&object->light_switch) != 0;
+}
+CLEAN_AS(func_ov004_022112c4, RoomObject_Unk00CIs3BOr3CAndOn)
+
+/* func_ov004_02211308: whether unk_00C is 0x3a (RoomObject_TestUnk00CIs3A) and then the
+ * switch's wanted value. */
+int RoomObject_Unk00CIs3AAndOn(RoomObject *object)
+{
+    if (RoomObject_TestUnk00CIs3A(object)) {
+        return Switch_Value(&object->light_switch);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_02211308, RoomObject_Unk00CIs3AAndOn)
+
+/* func_ov004_0221132c: whether `object` (or NULL) has unk_00C 0x3a (RoomObject_Unk00CIs3A asks
+ * through it). */
+int RoomObject_TestUnk00CIs3A(const RoomObject *object)
+{
+    return object != NULL && object->unk_00C == KIND_00C_3A;
+}
+CLEAN_AS(func_ov004_0221132c, RoomObject_TestUnk00CIs3A)
+
+/* func_ov004_0221134c: whether `object` (or NULL) is a light: func_02053818 accepts its
+ * furniture's number and it is not a preview (RoomObject_Unk76CIs2). The lights' code
+ * (room_object_light.c) hands this function to func_ov004_0223c264 to count the lights. */
+int RoomObject_IsLight(RoomObject *object)
+{
+    if (object == NULL) {
+        return 0;
+    }
+    return func_02053818(RoomObject_Number(object)) != 0 && !RoomObject_Unk76CIs2(object);
+}
+CLEAN_AS(func_ov004_0221134c, RoomObject_IsLight)
+
+/* The hooks a room object's model runs while it is drawn (set up by RoomObject_SetModelHooks).
+ * Each passes byte 1 of the command (the node or material) and the render state to a slot of
+ * the room object's vtable; nothing without a room object. */
+static RoomObject *hooked_object(const NodeHookState *state)
+{
+    return state->render_object->user;
+}
+
+extern int func_ov004_02211480(NodeHookState *state);
+extern void func_ov004_022114a0(NodeHookState *state);
+extern void func_ov004_022114cc(NodeHookState *state);
+extern int func_ov004_022114f8(NodeHookState *state);
+
+/* The hooks are the game's functions: their addresses go into the render state. */
+#define HOOK(function) ((u32) (uintptr_t) (function))
+
+static void set_hook(NodeHookState *state, int command, u32 hook, u8 timing)
+{
+    state->hooks[command] = hook;
+    state->hook_timings[command] = timing;
+}
+
+/* func_ov004_02211450 (the hook func_02055dc8 is given, run before the model is drawn): sets the
+ * hooks for materials (after), nodes (after) and nodes' descriptions (before). */
+void RoomObject_SetModelHooks(NodeHookState *state)
+{
+    set_hook(state, G3D_COMMAND_MATERIAL, HOOK(func_ov004_022114f8), G3D_TIMING_AFTER);
+    set_hook(state, G3D_COMMAND_NODE, HOOK(func_ov004_02211480), G3D_TIMING_AFTER);
+    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114cc), G3D_TIMING_BEFORE);
+}
+CLEAN_AS(func_ov004_02211450, RoomObject_SetModelHooks)
+
+/* func_ov004_02211480: a node's hook (vtable slot 0x64); its result, or 0 without an object. */
+int RoomObject_RunNodeHook(NodeHookState *state)
+{
+    RoomObject *object = hooked_object(state);
+    if (object == NULL) {
+        return 0;
+    }
+    return object->vtable->node_hook(object, state->command[1], state);
+}
+CLEAN_AS(func_ov004_02211480, RoomObject_RunNodeHook)
+
+/* func_ov004_022114a0: after a node's description, its hook (vtable slot 0x6c); then the hook
+ * before the next description is set back. */
+void RoomObject_RunNodeDescAfterHook(NodeHookState *state)
+{
+    RoomObject *object = hooked_object(state);
+    if (object != NULL) {
+        object->vtable->node_desc_after_hook(object, state->command[1], state);
+    }
+    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114cc), G3D_TIMING_BEFORE);
+}
+CLEAN_AS(func_ov004_022114a0, RoomObject_RunNodeDescAfterHook)
+
+/* func_ov004_022114cc: before a node's description, its hook (vtable slot 0x68); then the hook
+ * after it is set. */
+void RoomObject_RunNodeDescHook(NodeHookState *state)
+{
+    RoomObject *object = hooked_object(state);
+    if (object != NULL) {
+        object->vtable->node_desc_hook(object, state->command[1], state);
+    }
+    set_hook(state, G3D_COMMAND_NODE_DESC, HOOK(func_ov004_022114a0), G3D_TIMING_AFTER);
+}
+CLEAN_AS(func_ov004_022114cc, RoomObject_RunNodeDescHook)
+
+/* func_ov004_022114f8: a material's hook (vtable slot 0x60); its result, or 0 without an
+ * object. */
+int RoomObject_RunMaterialHook(NodeHookState *state)
+{
+    RoomObject *object = hooked_object(state);
+    if (object == NULL) {
+        return 0;
+    }
+    return object->vtable->material_hook(object, state->command[1], state);
+}
+CLEAN_AS(func_ov004_022114f8, RoomObject_RunMaterialHook)

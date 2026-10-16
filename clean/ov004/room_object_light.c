@@ -96,3 +96,28 @@ int Area_Is1To5(unsigned int area)
     return func_020b67e8(area);
 }
 CLEAN_AS(func_ov004_0220ee88, Area_Is1To5)
+
+/* The room's lighting (index 0 of func_02064db8) for a light of kind 2, and for the others. */
+#define LIGHTING_KIND_2 8
+#define LIGHTING_OTHER 0xc
+
+/* func_ov004_02211414: the room's lighting for the first light switched on, by its kind: 8 for
+ * kind 2, else 0xc, flashing for the kind that flashes; then func_02052038 with 1. */
+void RoomLight_TurnOn(int light_kind)
+{
+    int flashes = LightKind_Flashes(light_kind);
+    if (light_kind == 2) {
+        func_02064db8(0, LIGHTING_KIND_2, flashes);
+    } else {
+        func_02064db8(0, LIGHTING_OTHER, flashes);
+    }
+    func_02052038(func_020b65c4(), 1);
+}
+CLEAN_AS(func_ov004_02211414, RoomLight_TurnOn)
+
+/* func_ov004_02211444: whether a light of this kind flashes as it comes on (kind 1). */
+int LightKind_Flashes(int light_kind)
+{
+    return light_kind == LIGHT_FLASHES;
+}
+CLEAN_AS(func_ov004_02211444, LightKind_Flashes)

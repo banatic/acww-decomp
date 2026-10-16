@@ -43,5 +43,8 @@ int RoomObject_Vfunc88(void);
 int RoomObject_Vfunc8C(void);
 void RoomObject_Vfunc14(RoomObject *object, int mode);
 int RoomObject_Vfunc10(RoomObject *object);
+unsigned int Placement_Mode(unsigned int placement);
+unsigned int Placement_Number(unsigned int placement);
+int Placement_Make(int x, int y, int number, int side, u8 on_top, int mode);
 
 #endif

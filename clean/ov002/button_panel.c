@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <limits.h>
 #include <stddef.h>
+#include <stdint.h>
 
 #include "clean.h"
 
@@ -26,9 +27,9 @@ extern void func_ov002_0220b150(PanelSprite *sprite); /* clear flag 2 */
 extern void func_ov002_0220b15c(PanelSprite *sprite); /* set flag 2 */
 extern int func_ov002_0220b168(PanelSprite *sprite);  /* step the press */
 extern int func_ov002_0220b280(PanelSprite *sprite);  /* the press's frame */
-extern void func_0208aa70(u8 *window);                /* byte 0x5b = 1 */
-extern void func_0208aa90(u8 *window);                /* byte 0x58 = 0 */
-extern void func_0208aa98(u8 *window);                /* byte 0x58 = 1 */
+extern void func_0208aa70(MessageWindow *window);     /* byte 0x5b = 1 */
+extern void func_0208aa90(MessageWindow *window);     /* byte 0x58 = 0 */
+extern void func_0208aa98(MessageWindow *window);     /* byte 0x58 = 1 */
 
 #define SELECTED (-1)
 
@@ -90,7 +91,7 @@ CLEAN_AS(func_ov002_0220a674, ButtonPanel_SpriteOf)
 /* func_ov002_0220a690: clears the window's byte 0x58 and flag 2 of both sprites. */
 void ButtonPanel_ClearFlag2(ButtonPanel *panel)
 {
-    func_0208aa90(panel->window);
+    func_0208aa90(&panel->window);
     for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
         func_ov002_0220b150(&panel->sprites[i]);
     }
@@ -100,7 +101,7 @@ CLEAN_AS(func_ov002_0220a690, ButtonPanel_ClearFlag2)
 /* func_ov002_0220a6b8: sets the window's byte 0x58 and flag 2 of both sprites. */
 void ButtonPanel_SetFlag2(ButtonPanel *panel)
 {
-    func_0208aa98(panel->window);
+    func_0208aa98(&panel->window);
     for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
         func_ov002_0220b15c(&panel->sprites[i]);
     }
@@ -186,6 +187,364 @@ CLEAN_AS(func_ov002_0220a7c0, ButtonPanel_HitTest)
 /* func_ov002_0220a8dc: sets the window's byte 0x5b. */
 void ButtonPanel_SetWindowFlag5b(ButtonPanel *panel)
 {
-    func_0208aa70(panel->window);
+    func_0208aa70(&panel->window);
 }
 CLEAN_AS(func_ov002_0220a8dc, ButtonPanel_SetWindowFlag5b)
+
+/* The panel's class. */
+extern const u8 data_ov002_0220bd08[];  /* the panel's vtable */
+extern const u16 data_ov002_0220ba58[]; /* the two text colours, 14 and 15 */
+extern void func_020edb3c(void *block); /* operator delete */
+extern void GXS_LoadOBJPltt(const void *src, u32 offset, u32 size);
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void *func_ov002_0220b3a4(void *sprite);                 /* PanelSprite_Destroy, for the array */
+extern void *func_ov002_0220b3c4(void *sprite);                 /* PanelSprite_Construct, for the array */
+extern void func_0208aa68(MessageWindow *window);               /* byte 0x5b = 0 */
+extern void func_0208aa60(MessageWindow *window, int x, int y); /* words 0x3c and 0x40: an offset */
+
+/* The cells the layouts give the sprites, with the text's width and the shadow's cell each
+ * is given. */
+extern const PanelCell data_ov002_0220bd20[]; /* 4 wide, shadow 1 */
+extern const PanelCell data_ov002_0220bd38[]; /* 4 wide, shadow 1 */
+extern const PanelCell data_ov002_0220bdc0[]; /* 6 wide, shadow 1 */
+extern const PanelCell data_ov002_0220bde0[]; /* 8 wide, shadow 2 */
+extern const PanelCell data_ov002_0220be08[]; /* 6 wide, shadow 2 */
+extern const PanelCell data_ov002_0220be38[]; /* 6 wide, shadow 2 */
+extern const PanelCell data_ov002_0220be68[]; /* 12 wide, shadow 3 */
+
+/* The window's draw, its vtable slot 2. */
+#define WINDOW_SLOT_DRAW 2
+
+/* The sprites' priority argument, -1 in every layout. */
+#define SPRITE_PRIORITY (-1)
+
+/* The x at which the window opens. */
+#define WINDOW_X 0x80
+
+/* QUIRK: the layout functions return 0x1c8, the offset of `layout`, which the callers
+ * ignore. */
+#define LAYOUT_RESULT 0x1c8
+
+typedef void WindowMethod(MessageWindow *window);
+
+/* Sprite `index` shows `message` in `cells`. */
+static void show_sprite(ButtonPanel *panel, int index, const PanelCell *cells, u8 text_cells, u8 shadow_cell, int message)
+{
+    PanelSprite_SetCells(&panel->sprites[index], cells, text_cells, shadow_cell);
+    PanelSprite_Show(&panel->sprites[index], message);
+}
+
+/* Closes the window and opens it again with `message` at height `y`. */
+static void reopen_window(ButtonPanel *panel, int message, int y)
+{
+    MessageWindow_Close(&panel->window);
+    MessageWindow_Open(&panel->window, message, WINDOW_X, y);
+}
+
+static int set_layout(ButtonPanel *panel, u8 layout)
+{
+    panel->layout = layout;
+    return LAYOUT_RESULT;
+}
+
+/* func_ov002_0220a8e8: the window with `message` at height 0x12 and its second layer
+ * (func_0208aa70), messages 4 and 0x13 on the sprites. */
+int ButtonPanel_SetLayout13(ButtonPanel *panel, int message)
+{
+    reopen_window(panel, message, 0x12);
+    func_0208aa70(&panel->window);
+    ButtonPanel_ShowMessages4And13(panel);
+    return set_layout(panel, 13);
+}
+CLEAN_AS(func_ov002_0220a8e8, ButtonPanel_SetLayout13)
+
+/* func_ov002_0220a924: as layout 13 with the window at 0x2a. */
+int ButtonPanel_SetLayout12(ButtonPanel *panel, int message)
+{
+    reopen_window(panel, message, 0x2a);
+    func_0208aa70(&panel->window);
+    ButtonPanel_ShowMessages4And13(panel);
+    return set_layout(panel, 12);
+}
+CLEAN_AS(func_ov002_0220a924, ButtonPanel_SetLayout12)
+
+/* func_ov002_0220a960: the window at 0x22 without its second layer (func_0208aa68). */
+int ButtonPanel_SetLayout11(ButtonPanel *panel, int message)
+{
+    reopen_window(panel, message, 0x22);
+    func_0208aa68(&panel->window);
+    ButtonPanel_ShowMessages4And13(panel);
+    return set_layout(panel, 11);
+}
+CLEAN_AS(func_ov002_0220a960, ButtonPanel_SetLayout11)
+
+/* func_ov002_0220a99c: the window left as it is, messages 0x15 and 0x19 on the sprites. */
+int ButtonPanel_SetLayout10(ButtonPanel *panel)
+{
+    show_sprite(panel, 0, data_ov002_0220be08, 6, 2, 0x15);
+    show_sprite(panel, 1, data_ov002_0220be38, 6, 2, 0x19);
+    return set_layout(panel, 10);
+}
+CLEAN_AS(func_ov002_0220a99c, ButtonPanel_SetLayout10)
+
+/* func_ov002_0220a9e4: the window at 4 without its second layer. */
+int ButtonPanel_SetLayout9(ButtonPanel *panel, int message)
+{
+    reopen_window(panel, message, 4);
+    func_0208aa68(&panel->window);
+    ButtonPanel_ShowMessages4And13(panel);
+    return set_layout(panel, 9);
+}
+CLEAN_AS(func_ov002_0220a9e4, ButtonPanel_SetLayout9)
+
+/* func_ov002_0220aa20: messages 4 and 0x13 on the sprites, in 6-cell buttons. */
+void ButtonPanel_ShowMessages4And13(ButtonPanel *panel)
+{
+    show_sprite(panel, 0, data_ov002_0220be08, 6, 2, 4);
+    show_sprite(panel, 1, data_ov002_0220be38, 6, 2, 0x13);
+}
+CLEAN_AS(func_ov002_0220aa20, ButtonPanel_ShowMessages4And13)
+
+/* Messages 4 and 0x13 on the sprites, in 4-cell buttons. */
+static void show_small_4_and_13(ButtonPanel *panel)
+{
+    show_sprite(panel, 0, data_ov002_0220bd38, 4, 1, 4);
+    show_sprite(panel, 1, data_ov002_0220bd20, 4, 1, 0x13);
+}
+
+/* func_ov002_0220aa60: the window at 0x11 without its second layer, messages 4 and 0x13 in
+ * 4-cell buttons. */
+int ButtonPanel_SetLayout8(ButtonPanel *panel, int message)
+{
+    reopen_window(panel, message, 0x11);
+    func_0208aa68(&panel->window);
+    show_small_4_and_13(panel);
+    return set_layout(panel, 8);
+}
+CLEAN_AS(func_ov002_0220aa60, ButtonPanel_SetLayout8)
+
+/* func_ov002_0220aacc: as layout 8 with the window at 4. */
+int ButtonPanel_SetLayout7(ButtonPanel *panel, int message)
+{
+    reopen_window(panel, message, 4);
+    func_0208aa68(&panel->window);
+    show_small_4_and_13(panel);
+    return set_layout(panel, 7);
+}
+CLEAN_AS(func_ov002_0220aacc, ButtonPanel_SetLayout7)
+
+/* func_ov002_0220ab38: message 0x21 on sprite 1, `message` on sprite 0. */
+int ButtonPanel_SetLayout6(ButtonPanel *panel, int message)
+{
+    show_sprite(panel, 1, data_ov002_0220be08, 6, 2, 0x21);
+    show_sprite(panel, 0, data_ov002_0220be38, 6, 2, message);
+    return set_layout(panel, 6);
+}
+CLEAN_AS(func_ov002_0220ab38, ButtonPanel_SetLayout6)
+
+/* func_ov002_0220ab84: `message` on sprite 1 only. QUIRK: the message is cut to a byte before
+ * it is passed on, where layout 6 passes it whole (PanelSprite_SetMessage keeps a byte either
+ * way). */
+int ButtonPanel_SetLayout5(ButtonPanel *panel, int message)
+{
+    show_sprite(panel, 1, data_ov002_0220be08, 6, 2, (u8) message);
+    return set_layout(panel, 5);
+}
+CLEAN_AS(func_ov002_0220ab84, ButtonPanel_SetLayout5)
+
+/* func_ov002_0220abbc: message 0x21 on sprite 1, 0x65 on sprite 0. */
+int ButtonPanel_SetLayout4(ButtonPanel *panel)
+{
+    show_sprite(panel, 1, data_ov002_0220be08, 6, 2, 0x21);
+    show_sprite(panel, 0, data_ov002_0220be38, 6, 2, 0x65);
+    return set_layout(panel, 4);
+}
+CLEAN_AS(func_ov002_0220abbc, ButtonPanel_SetLayout4)
+
+/* func_ov002_0220ac04: the sprites of layout 4, which layout 3 draws elsewhere. */
+int ButtonPanel_SetLayout3(ButtonPanel *panel)
+{
+    show_sprite(panel, 1, data_ov002_0220be08, 6, 2, 0x21);
+    show_sprite(panel, 0, data_ov002_0220be38, 6, 2, 0x65);
+    return set_layout(panel, 3);
+}
+CLEAN_AS(func_ov002_0220ac04, ButtonPanel_SetLayout3)
+
+/* func_ov002_0220ac4c: message 0x21 on sprite 1 only. */
+int ButtonPanel_SetLayout1(ButtonPanel *panel)
+{
+    show_sprite(panel, 1, data_ov002_0220bdc0, 6, 1, 0x21);
+    return set_layout(panel, 1);
+}
+CLEAN_AS(func_ov002_0220ac4c, ButtonPanel_SetLayout1)
+
+/* func_ov002_0220ac7c: message 0x20 on sprite 0 in a 12-cell button, 0x21 on sprite 1. */
+int ButtonPanel_SetLayout2Wide(ButtonPanel *panel)
+{
+    show_sprite(panel, 0, data_ov002_0220be68, 0xc, 3, 0x20);
+    show_sprite(panel, 1, data_ov002_0220bdc0, 6, 1, 0x21);
+    return set_layout(panel, 2);
+}
+CLEAN_AS(func_ov002_0220ac7c, ButtonPanel_SetLayout2Wide)
+
+/* func_ov002_0220acc4: message 2 on sprite 0 in an 8-cell button, 0x21 on sprite 1. */
+int ButtonPanel_SetLayout2(ButtonPanel *panel)
+{
+    show_sprite(panel, 0, data_ov002_0220bde0, 8, 2, 2);
+    show_sprite(panel, 1, data_ov002_0220bdc0, 6, 1, 0x21);
+    return set_layout(panel, 2);
+}
+CLEAN_AS(func_ov002_0220acc4, ButtonPanel_SetLayout2)
+
+/* func_ov002_0220ad0c: layout 0, in which ButtonPanel_Draw draws nothing. */
+ButtonPanel *ButtonPanel_ClearLayout(ButtonPanel *panel)
+{
+    panel->layout = 0;
+    return panel;
+}
+CLEAN_AS(func_ov002_0220ad0c, ButtonPanel_ClearLayout)
+
+/* The window moved by (0, dy) from its place and drawn. */
+static void draw_window(ButtonPanel *panel, int dy)
+{
+    func_0208aa60(&panel->window, 0, dy);
+    const u32 *vtable = panel->window.vtable;
+    ((WindowMethod *) (uintptr_t) vtable[WINDOW_SLOT_DRAW])(&panel->window);
+}
+
+static void draw_sprite(ButtonPanel *panel, int index, int x, int y)
+{
+    PanelSprite_Draw(&panel->sprites[index], x, y, SPRITE_PRIORITY);
+}
+
+/* func_ov002_0220ad18: draws the panel in its layout. `wipe_offset` is the scene's wipe's
+ * vertical displacement (MenuScene_WipeOffsetY): the panel moves with it, by all, half or a
+ * quarter of it depending on the layout. */
+void ButtonPanel_Draw(ButtonPanel *panel, int wipe_offset)
+{
+    int layout = panel->layout;
+    int half = wipe_offset >> 1;
+    int quarter = wipe_offset >> 2;
+
+    switch (layout) {
+        case 1:
+            draw_sprite(panel, 1, 0, wipe_offset + 0xac);
+            break;
+        case 2:
+            draw_sprite(panel, 0, 0, wipe_offset + 0xac);
+            draw_sprite(panel, 1, 0, wipe_offset + 0xac);
+            break;
+        case 3:
+            draw_sprite(panel, 1, 0x3c, wipe_offset + 0x35);
+            draw_sprite(panel, 0, 0x3c, wipe_offset + 0x48);
+            break;
+        case 4:
+            draw_sprite(panel, 1, 0x3c, wipe_offset + 0x4c);
+            draw_sprite(panel, 0, -0x7c, wipe_offset + 0x4c);
+            break;
+        case 5:
+            draw_sprite(panel, 1, 0x3c, wipe_offset + 0x4c);
+            break;
+        case 6:
+            draw_sprite(panel, 1, 0x3c, wipe_offset + 0x4c);
+            draw_sprite(panel, 0, -0xc, wipe_offset + 0x4c);
+            break;
+        case 7:
+        case 9:
+        case 10:
+            /* Layout 10 does not draw the window. */
+            if (layout != 10) {
+                draw_window(panel, -quarter);
+            }
+            /* The layout is read again after the window's draw, as the original does. */
+            if (panel->layout == 7) {
+                draw_sprite(panel, 0, 0, quarter);
+                draw_sprite(panel, 1, 0, quarter);
+            } else {
+                draw_sprite(panel, 0, -0x50, quarter + 0x44);
+                draw_sprite(panel, 1, 0x10, quarter + 0x44);
+            }
+            break;
+        case 8:
+            draw_window(panel, -quarter - 8);
+            draw_sprite(panel, 0, 0, half - 0x1e);
+            draw_sprite(panel, 1, 0, half - 0x1e);
+            break;
+        case 11:
+            draw_window(panel, -half);
+            draw_sprite(panel, 0, -0x50, half + 0x44);
+            draw_sprite(panel, 1, 0x10, half + 0x44);
+            break;
+        case 12:
+            draw_window(panel, -half);
+            draw_sprite(panel, 0, -0x50, half + 0x24);
+            draw_sprite(panel, 1, 0x10, half + 0x24);
+            break;
+        case 13:
+            draw_window(panel, -half);
+            draw_sprite(panel, 0, -0x50, half + 0x36);
+            draw_sprite(panel, 1, 0x10, half + 0x36);
+            break;
+        default: /* layout 0 and any other */
+            break;
+    }
+}
+CLEAN_AS(func_ov002_0220ad18, ButtonPanel_Draw)
+
+/* func_ov002_0220af74: frees both sprites' text boxes. */
+void ButtonPanel_CloseTexts(ButtonPanel *panel)
+{
+    for (int i = 0; i < BUTTON_PANEL_SPRITES; i++) {
+        PanelSprite_CloseText(&panel->sprites[i]);
+    }
+}
+CLEAN_AS(func_ov002_0220af74, ButtonPanel_CloseTexts)
+
+/* func_ov002_0220af94: loads the sprites' two text colours into entries 14 and 15 of the sub
+ * screen's first sprite palette. The panel is not read. */
+void ButtonPanel_LoadTextColors(ButtonPanel *panel)
+{
+    (void) panel;
+    GXS_LoadOBJPltt(data_ov002_0220ba58, PANEL_TEXT_COLOR_PRESSED * sizeof(u16), 2 * sizeof(u16));
+}
+CLEAN_AS(func_ov002_0220af94, ButtonPanel_LoadTextColors)
+
+/* The destructor's body: the window, then the sprites from the last. */
+static void destroy(ButtonPanel *panel)
+{
+    panel->vtable = data_ov002_0220bd08;
+    MessageWindow_Destroy(&panel->window);
+    __cxa_vec_cleanup(panel->sprites, BUTTON_PANEL_SPRITES, sizeof(PanelSprite),
+                      (void (*)(void *))(uintptr_t) func_ov002_0220b3a4);
+}
+
+/* func_ov002_0220afa8 (vtable entry 1): destructs and frees the panel. */
+ButtonPanel *ButtonPanel_Delete(ButtonPanel *panel)
+{
+    destroy(panel);
+    func_020edb3c(panel);
+    return panel;
+}
+CLEAN_AS(func_ov002_0220afa8, ButtonPanel_Delete)
+
+/* func_ov002_0220afdc (vtable entry 0) */
+ButtonPanel *ButtonPanel_Destroy(ButtonPanel *panel)
+{
+    destroy(panel);
+    return panel;
+}
+CLEAN_AS(func_ov002_0220afdc, ButtonPanel_Destroy)
+
+/* func_ov002_0220b008: the sprites and the window constructed, in layout 0; `selected` is left
+ * as it was. */
+ButtonPanel *ButtonPanel_Construct(ButtonPanel *panel)
+{
+    panel->vtable = data_ov002_0220bd08;
+    __cxa_vec_ctor(panel->sprites, BUTTON_PANEL_SPRITES, sizeof(PanelSprite),
+                   (void (*)(void *))(uintptr_t) func_ov002_0220b3c4, (void (*)(void *))(uintptr_t) func_ov002_0220b3a4);
+    MessageWindow_Construct(&panel->window);
+    panel->layout = 0;
+    return panel;
+}
+CLEAN_AS(func_ov002_0220b008, ButtonPanel_Construct)

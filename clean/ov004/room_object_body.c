@@ -650,3 +650,29 @@ int RoomObject_Vfunc10(RoomObject *object)
     return func_0203efdc(object) != 0;
 }
 CLEAN_AS(func_ov004_022109cc, RoomObject_Vfunc10)
+
+/* func_ov004_0221137c: the mode of a placement word (bits 26-27, RoomObject.unk_76C). */
+unsigned int Placement_Mode(unsigned int placement)
+{
+    return (placement >> 26) & 3;
+}
+CLEAN_AS(func_ov004_0221137c, Placement_Mode)
+
+/* func_ov004_02211388: the furniture's number in a placement word (bits 8-23). */
+unsigned int Placement_Number(unsigned int placement)
+{
+    return PLACE_NUMBER(placement);
+}
+CLEAN_AS(func_ov004_02211388, Placement_Number)
+
+/* func_ov004_02211394: a placement word from its fields, each cut to its width.
+ * BUG: the word is built in an uninitialised stack word and bits 29-31 are never set, so the
+ * ROM returns whatever they held; here they are 0. Nothing reads them (room_object_body.h).
+ * The ROM also sets a 5-bit field to 1 in the following stack word, which is not returned. */
+int Placement_Make(int x, int y, int number, int side, u8 on_top, int mode)
+{
+    u32 word = ((u32) x & 0xf) | ((u32) y & 0xf) << 4 | ((u32) number & 0xffff) << 8 | ((u32) side & 3) << 24 |
+               ((u32) mode & 3) << 26 | ((u32) on_top & 1) << 28;
+    return (int) word;
+}
+CLEAN_AS(func_ov004_02211394, Placement_Make)

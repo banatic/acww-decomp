@@ -4719,3 +4719,1091 @@ void FieldActor_ExitState5E(FieldActor *actor)
     func_0200f268(actor, 0x1c);
 }
 CLEAN_AS(func_ov003_02211c20, FieldActor_ExitState5E)
+
+/* func_ov003_02211cbc: state 0x5e's message handler: nothing. */
+void FieldActor_State5EMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_ov003_02211cbc, FieldActor_State5EMessage)
+
+/* func_ov003_02211cc0: entering state 0x5e: the request's flag and point become the work.
+ * Coming from animation 0x49 or 0x4a, animation 0x4e (with the flag) or 0x4b follows at once;
+ * otherwise animation 0x49 starts. Flag 0x1c is set. */
+void FieldActor_EnterState5E(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const State5EWork *args = (const State5EWork *) (const void *) request->payload;
+    Vec3 point = args->point;
+
+    State5EWork_Set(&actor->work.s5e, (char) args->flag, &point);
+    if (actor->animation == 0x49 || actor->animation == 0x4a) {
+        if (actor->work.s5e.flag != 0) {
+            func_020109a0(actor, 0x4e, 3, 0);
+        } else {
+            func_020109a0(actor, 0x4b, 3, 0);
+        }
+    } else {
+        func_020109a0(actor, 0x49, 3, 0);
+    }
+    func_0200f27c(actor, 0x1c);
+}
+CLEAN_AS(func_ov003_02211cc0, FieldActor_EnterState5E)
+
+/* func_ov003_02211d3c: returns `work`. */
+State5EWork *State5EWork_Set(State5EWork *work, char flag, const Vec3 *point)
+{
+    work->flag = (u8) flag;
+    copy_point(&work->point, point);
+    return work;
+}
+CLEAN_AS(func_ov003_02211d3c, State5EWork_Set)
+
+/* func_ov003_02211d4c: asks for state 0x5e with a flag and a point; whether it was queued. */
+int FieldActor_RequestState5E(FieldActor *actor, int flag, const Vec3 *point, int priority, s16 arg)
+{
+    StateRequest request;
+
+    open_request(&request, 0x5e, priority, arg);
+    Vec3 copy = *point;
+    State5EArgs_Set((State5EWork *) (void *) request.payload, (char) flag, &copy);
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02211d4c, FieldActor_RequestState5E)
+
+/* func_ov003_02211da0 */
+void State5EArgs_Set(State5EWork *args, char flag, const Vec3 *point)
+{
+    args->flag = (u8) flag;
+    copy_point(&args->point, point);
+}
+CLEAN_AS(func_ov003_02211da0, State5EArgs_Set)
+
+/* ---- State 0x5d: animation 0x4c at a tile, with what was met there */
+
+static_assert(offsetof(FieldActor, unk_14C) == 0x14c, "0x14c");
+static_assert(offsetof(FieldActor, unk_1C4) == 0x1c4, "0x1c4");
+static_assert(offsetof(FieldActor, work.s59.yaw) == 0x7e0, "state 0x59 yaw");
+static_assert(offsetof(FieldActor, work.s59.fixed) == 0x7e2, "state 0x59 fixed");
+static_assert(offsetof(FieldActor, work.s5a.has_target) == 0x7d6, "state 0x5a target");
+static_assert(offsetof(FieldActor, saved.s5d.other_result) == 0x8f3, "state 0x5d saved");
+static_assert(offsetof(FieldActor, saved.s58.angle) == 0x8f2, "state 0x58 angle");
+static_assert(sizeof(State59Work) == 0x10, "state 0x59 work");
+static_assert(sizeof(State5EWork) <= sizeof(((StateRequest *) 0)->payload), "state 0x5e payload");
+
+/* max(value - 0x9c, min) */
+extern int func_02011398(int value, int min);
+extern void func_ov003_022241a4(int *tile);
+extern int func_ov003_0221abf8(void *object, int flag);
+/* Turns the actor towards a point. */
+extern void func_02010d88(FieldActor *actor, const Vec3 *point, int a, int b);
+extern void func_02089fc8(void *p);
+extern int func_0203f8d0(Vec3 *out, Vec3 *in);
+extern int func_0206f728(int item);
+extern int func_0206fbc0(void);
+extern int func_0206fc6c(void);
+extern int func_020644cc(int range);
+extern void func_ov003_0222e6c4(u8 player, int a);
+extern void func_ov003_0222eabc(u8 player, int angle);
+extern int func_ov003_0222ea84(u8 player);
+extern Vec3 *func_ov003_0222e970(u8 player);
+extern void func_ov003_02219668(FieldActorBlock48 *block, int a);
+extern int func_ov003_0222d83c(u8 player, s16 *angles, FieldActorBlock48 *block, int a);
+/* A halfword packed into two bytes, and read back. */
+extern void func_02077910(u8 *packed, int value);
+extern s16 func_020778f8(const u8 *packed);
+extern int func_ov003_022131c8(FieldActor *actor, char kind, char step, int priority, s16 arg);
+extern void func_ov003_022131a8(State58Saved *saved, u8 kind, int step, int angle);
+
+/* The absolute value as the ARM computes it (-0x80000000 stays itself). */
+static int abs32(int value)
+{
+    return value < 0 ? sub32(0, value) : value;
+}
+
+/* func_ov003_02211db0: state 0x5d's update. The speed at 0x98 slows by 0x9c a frame, towards 0,
+ * and is stored negated. */
+void FieldActor_UpdateState5D(FieldActor *actor)
+{
+    FieldActor_AnimateState5D(actor);
+    func_0201100c(actor);
+    func_02010d64(actor);
+    int speed = sub32(0, func_02011398(abs32(actor->unk_098), 0));
+    func_0201107c(actor, &speed);
+    FieldActor_EndState5D(actor);
+}
+CLEAN_AS(func_ov003_02211db0, FieldActor_UpdateState5D)
+
+/* func_ov003_02211df8: at the animation's end the actor moves on. */
+void FieldActor_EndState5D(FieldActor *actor)
+{
+    if (func_02056f94(&actor->anim)) {
+        move_on(actor);
+    }
+}
+CLEAN_AS(func_ov003_02211df8, FieldActor_EndState5D)
+
+/* func_ov003_02211e38: on reaching frame 5: with the work's flag, the tile goes to
+ * func_ov003_022241a4 and flags 0x12 and 0x1c are cleared; the speed becomes -0x333; on a map
+ * object of a growth line ahead the tile ahead goes to func_ov003_02224384 (1); flag 9 is set.
+ * Then a sound by what was met (other_result): nothing met (0) gives sound 0x7df when the map
+ * object ahead is of kind 0 to 4 (outside 0xe3-0xfb and the growth lines) or of kind 10, 13 or
+ * 14, else sound 0x844 and effect 5 0.8 ahead and 0.5 to the side of the actor; an object of
+ * main's tables (2) is told the held item (its vtable slot 24) after sound 0x7df; an object of
+ * overlay 3 (3) gets func_ov003_0221abf8 for the actor of this console, sound 0x7df when that
+ * fails or for another player's actor; 1 gives sound 0x7df. What was met is forgotten. */
+void FieldActor_AnimateState5D(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    if (!func_02056f28(&actor->anim, 5)) {
+        return;
+    }
+    const TileFlagArgs *work = &actor->work.s5d;
+    if (work->flag != 0) {
+        int tile[2] = {work->x, work->z};
+        func_ov003_022241a4(tile);
+        func_0200f268(actor, 0x12);
+        func_0200f268(actor, 0x1c);
+    }
+    int speed = -0x333;
+    func_0201107c(actor, &speed);
+
+    Vec3 ahead;
+    int x = 0;
+    int z = 0;
+    func_0200fa8c(&ahead, actor);
+    func_0204f818(&x, &z, &ahead);
+    u16 *object = map_object_at(x, z);
+    if (object != NULL && is_growth_object(*object)) {
+        int tile[2] = {x, z};
+        func_ov003_02224384(actor->player, tile, 1);
+    }
+    func_0200f27c(actor, 9);
+
+    int object_kind = object != NULL ? (*object & 0xf000) >> 12 : 0xf;
+    switch (actor->other_result) {
+        case 0: {
+            BOOL plain = FALSE;
+            if (object != NULL) {
+                if (object_kind <= 4 && !in_range(*object, 0xe3, 0xfb) && !is_growth_object(*object)) {
+                    plain = TRUE;
+                } else if (object_kind == 10 || object_kind == 13 || object_kind == 14) {
+                    plain = TRUE;
+                }
+            }
+            if (plain) {
+                func_0200f328(actor, 0x7df);
+                break;
+            }
+            func_0200f328(actor, 0x844);
+            Vec3 at = actor->position;
+            s16 angle = actor->yaw;
+            int index = ((u16) angle >> 4) * 2;
+            fx32 sine = FX_SinCosTable_[index];
+            fx32 cosine = FX_SinCosTable_[index + 1];
+            fx32 forward_z = FX_MulFunc(cosine, 0xccd);
+            fx32 side_z = FX_MulFunc(sine, 0x800);
+            fx32 dz = sub32(forward_z, side_z);
+            fx32 forward_x = FX_MulFunc(sine, 0xccd);
+            fx32 side_x = FX_MulFunc(cosine, 0x800);
+            fx32 dx = add32(forward_x, side_x);
+            at.x = add32(at.x, dx);
+            at.z = add32(at.z, dz);
+            angle = (s16) (angle - 0x2000);
+            func_020912d4(5, &at, &angle, 0);
+            break;
+        }
+        case 1:
+            func_0200f328(actor, 0x7df);
+            break;
+        case 2:
+            func_0200f328(actor, 0x7df);
+            if (actor->other != NULL) {
+                u16 item;
+                func_020110c4(&item, actor);
+                GameObject *other = (GameObject *) actor->other;
+                ItemQuery query = (ItemQuery) (uintptr_t) other->vtable[24];
+                query(other, &item);
+            }
+            break;
+        case 3:
+            if (is_local_player(actor) && func_ov003_0221abf8(actor->other, 1)) {
+                break;
+            }
+            func_0200f328(actor, 0x7df);
+            break;
+        default:
+            break;
+    }
+    actor->other = NULL;
+    actor->other_result = 0;
+}
+CLEAN_AS(func_ov003_02211e38, FieldActor_AnimateState5D)
+
+/* func_ov003_02212158: leaving state 0x5d: another player's actor with flag 0x1c still set does
+ * what frame 5 would have (with the work's flag, the tile to func_ov003_022241a4 and flags 0x12
+ * and 0x1c cleared). */
+void FieldActor_ExitState5D(FieldActor *actor)
+{
+    if (is_local_player(actor)) {
+        return;
+    }
+    if (!func_0200f290(actor, 0x1c)) {
+        return;
+    }
+    const TileFlagArgs *work = &actor->work.s5d;
+    if (work->flag != 0) {
+        int tile[2] = {work->x, work->z};
+        func_ov003_022241a4(tile);
+        func_0200f268(actor, 0x12);
+        func_0200f268(actor, 0x1c);
+    }
+}
+CLEAN_AS(func_ov003_02212158, FieldActor_ExitState5D)
+
+/* func_ov003_022121b8: state 0x5d's message handler: the saved verdict on what was met comes
+ * back, and without the flag the state is asked for again at the saved tile. */
+void FieldActor_State5DMessage(FieldActor *actor, int arg)
+{
+    u8 flag;
+    u8 x;
+    u8 z;
+    u8 other_result;
+
+    State5DSaved_Get(&actor->saved.s5d, &flag, &x, &z, &other_result);
+    actor->other_result = other_result;
+    if (flag == 0) {
+        int tile[2] = {x, z};
+        FieldActor_RequestState5D(actor, 0, tile, 6, (s16) arg);
+    }
+}
+CLEAN_AS(func_ov003_022121b8, FieldActor_State5DMessage)
+
+/* func_ov003_0221220c: entering state 0x5d: the request's tile and flag become the work and
+ * are saved with the verdict on what was met; animation 0x4c starts; with the flag, flag 0x1c
+ * is set. */
+void FieldActor_EnterState5D(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const TileFlagArgs *args = (const TileFlagArgs *) (const void *) request->payload;
+    u8 flag = args->flag;
+    u8 x = args->x;
+    u8 z = args->z;
+    u32 tile[2] = {x, z};
+
+    State5DWork_Set(&actor->work.s5d, tile, flag);
+    State5DSaved_Set(&actor->saved.s5d, flag, x, z, actor->other_result);
+    func_020109a0(actor, 0x4c, 3, 0);
+    if (flag != 0) {
+        func_0200f27c(actor, 0x1c);
+    }
+}
+CLEAN_AS(func_ov003_0221220c, FieldActor_EnterState5D)
+
+/* func_ov003_02212270 */
+void State5DSaved_Get(const State5DSaved *saved, u8 *flag, u8 *x, u8 *z, u8 *other_result)
+{
+    *flag = saved->flag;
+    *x = saved->x;
+    *z = saved->z;
+    *other_result = saved->other_result;
+}
+CLEAN_AS(func_ov003_02212270, State5DSaved_Get)
+
+/* func_ov003_0221228c */
+void State5DSaved_Set(State5DSaved *saved, u8 flag, u8 x, u8 z, u8 other_result)
+{
+    saved->flag = flag;
+    saved->x = x;
+    saved->z = z;
+    saved->other_result = other_result;
+}
+CLEAN_AS(func_ov003_0221228c, State5DSaved_Set)
+
+/* func_ov003_022122a0 */
+void State5DWork_Set(TileFlagArgs *work, const u32 *tile, u8 flag)
+{
+    work->x = (u8) tile[0];
+    work->z = (u8) tile[1];
+    work->flag = flag;
+}
+CLEAN_AS(func_ov003_022122a0, State5DWork_Set)
+
+/* func_ov003_022122ac: asks for state 0x5d with a flag and a tile; whether it was queued. */
+int FieldActor_RequestState5D(FieldActor *actor, int flag, const int *tile, int priority, s16 arg)
+{
+    StateRequest request;
+
+    open_request(&request, 0x5d, priority, arg);
+    u32 copy[2] = {(u32) tile[0], (u32) tile[1]};
+    State5DArgs_Set((TileFlagArgs *) (void *) request.payload, copy, (u8) flag);
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_022122ac, FieldActor_RequestState5D)
+
+/* func_ov003_022122fc */
+void State5DArgs_Set(TileFlagArgs *args, const u32 *tile, u8 flag)
+{
+    args->x = (u8) tile[0];
+    args->z = (u8) tile[1];
+    args->flag = flag;
+}
+CLEAN_AS(func_ov003_022122fc, State5DArgs_Set)
+
+/* ---- State 0x5c: animation 0x5e while the actor slows down */
+
+/* func_ov003_02212308: state 0x5c's update: the speed at 0x98 slows by 0x171 a frame. */
+void FieldActor_UpdateState5C(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_0201100c(actor);
+    func_02010d64(actor);
+    int speed = func_020113a4(actor->unk_098, 0, 0x171);
+    func_0201107c(actor, &speed);
+    FieldActor_EndState5C(actor);
+}
+CLEAN_AS(func_ov003_02212308, FieldActor_UpdateState5C)
+
+/* func_ov003_02212348: at the animation's end the actor moves on. */
+void FieldActor_EndState5C(FieldActor *actor)
+{
+    if (func_02056f94(&actor->anim)) {
+        move_on(actor);
+    }
+}
+CLEAN_AS(func_ov003_02212348, FieldActor_EndState5C)
+
+/* func_ov003_02212388: state 0x5c's message handler: the state is asked for again. */
+void FieldActor_State5CMessage(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState5C(actor, 6, arg);
+}
+CLEAN_AS(func_ov003_02212388, FieldActor_State5CMessage)
+
+/* func_ov003_02212394: entering state 0x5c: animation 0x5e. */
+void FieldActor_EnterState5C(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    func_020109a0(actor, 0x5e, 3, 0);
+}
+CLEAN_AS(func_ov003_02212394, FieldActor_EnterState5C)
+
+/* func_ov003_022123a8: asks for state 0x5c; whether it was queued. */
+int FieldActor_RequestState5C(FieldActor *actor, int priority, int arg)
+{
+    return request_state(actor, 0x5c, priority, arg, NULL, 0);
+}
+CLEAN_AS(func_ov003_022123a8, FieldActor_RequestState5C)
+
+/* ---- State 0x5b: animation 0x4d with sound 0x842 */
+
+/* func_ov003_022123e0: state 0x5b's update. */
+void FieldActor_UpdateState5B(FieldActor *actor)
+{
+    FieldActor_AnimateState5B(actor);
+    func_02010d64(actor);
+    FieldActor_EndState5B(actor);
+}
+CLEAN_AS(func_ov003_022123e0, FieldActor_UpdateState5B)
+
+/* func_ov003_022123fc: at the animation's end the actor moves on. */
+void FieldActor_EndState5B(FieldActor *actor)
+{
+    if (func_02056f94(&actor->anim)) {
+        move_on(actor);
+    }
+}
+CLEAN_AS(func_ov003_022123fc, FieldActor_EndState5B)
+
+/* func_ov003_0221243c: sound 0x842 on reaching frame 5. */
+void FieldActor_AnimateState5B(FieldActor *actor)
+{
+    if (func_02056f28(&actor->anim, 5)) {
+        func_0200f328(actor, 0x842);
+    }
+    func_02010f5c(actor);
+}
+CLEAN_AS(func_ov003_0221243c, FieldActor_AnimateState5B)
+
+/* func_ov003_0221246c: state 0x5b's message handler: the state is asked for again. */
+void FieldActor_State5BMessage(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState5B(actor, 6, arg);
+}
+CLEAN_AS(func_ov003_0221246c, FieldActor_State5BMessage)
+
+/* func_ov003_02212478: entering state 0x5b: animation 0x4d. */
+void FieldActor_EnterState5B(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    func_020109a0(actor, 0x4d, 3, 0);
+}
+CLEAN_AS(func_ov003_02212478, FieldActor_EnterState5B)
+
+/* func_ov003_0221248c: asks for state 0x5b; whether it was queued. */
+int FieldActor_RequestState5B(FieldActor *actor, int priority, int arg)
+{
+    return request_state(actor, 0x5b, priority, arg, NULL, 0);
+}
+CLEAN_AS(func_ov003_0221248c, FieldActor_RequestState5B)
+
+/* ---- State 0x5a: the actor faces a tile and acts on it */
+
+/* func_ov003_022124c4: state 0x5a's update: the speed at 0x98 slows by 0x9c a frame; the actor
+ * of this console acts on the work's tile (FieldActor_ActAt), another player's actor notes the
+ * state after this one. The actor turns to the tile, and effect 0x2a marks the frame it stops. */
+void FieldActor_UpdateState5A(FieldActor *actor)
+{
+    int speed_before = actor->unk_098;
+    int speed = func_02011398(speed_before, 0);
+    func_0201107c(actor, &speed);
+    func_02010f5c(actor);
+    if (is_local_player(actor)) {
+        func_0201100c(actor);
+        func_02010d64(actor);
+        Vec3 zero = {0, 0, 0};
+        FieldActor_ActAt(actor, &zero, 0);
+    } else {
+        if (func_0200f554(actor)) {
+            func_0201100c(actor);
+        }
+        func_02010d64(actor);
+        actor->next_state = func_02008258(actor, actor->state);
+    }
+    FieldActor_FaceState5ATile(actor);
+    if (speed_before != 0 && actor->unk_098 == 0) {
+        func_020912d4(0x2a, &actor->position, &actor->yaw, 0);
+    }
+}
+CLEAN_AS(func_ov003_022124c4, FieldActor_UpdateState5A)
+
+/* func_ov003_02212574: once the actor has stopped (the speed at 0x98 is 0; else -1), asks for
+ * the state FieldActor_ClassifyAt picks for a point and returns that verdict: 1 state 0x5b, 2
+ * state 0x5d at the point's tile, 3 and 4 state 0x5e at the point (flag 0 and 1), 5 and 9 state
+ * 0x5f at the point (kind 0 and 1), 6 state 0x62 at the tile with no item, 7 state 0x5c, 8
+ * state 0x5d with the flag; 0 nothing.
+ * With `use_point` the point is `*point` and objects met are checked. Without it (state 0x5a)
+ * the point is the middle of the work's tile, and objects met are checked only while no target
+ * was known; a target found then is remembered in the work. */
+int FieldActor_ActAt(FieldActor *actor, Vec3 *point, u8 use_point)
+{
+    if (actor->unk_098 != 0) {
+        return -1;
+    }
+
+    State5AWork *work = &actor->work.s5a;
+    BOOL first_look = FALSE;
+    Vec3 at;
+    if (use_point) {
+        copy_point(&at, point);
+    } else {
+        func_0204f794(&at, work->x, work->z);
+        if (work->has_target == 0) {
+            first_look = TRUE;
+            use_point = 1;
+        }
+    }
+
+    int verdict = FieldActor_ClassifyAt(actor, &at, &use_point);
+    int tile[2] = {0, 0};
+    func_0204f818(&tile[0], &tile[1], &at);
+    if (first_look && actor->target != -1) {
+        work->has_target = 1;
+    }
+
+    switch (verdict) {
+        case 1:
+            FieldActor_RequestState5B(actor, 6, -1);
+            break;
+        case 2:
+        case 8: {
+            int copy[2] = {tile[0], tile[1]};
+            FieldActor_RequestState5D(actor, verdict == 8, copy, 6, -1);
+            break;
+        }
+        case 3:
+        case 4: {
+            Vec3 copy = at;
+            FieldActor_RequestState5E(actor, verdict == 4, &copy, 6, -1);
+            break;
+        }
+        case 5:
+        case 9: {
+            Vec3 copy = at;
+            FieldActor_RequestState5FNoItem(actor, &copy, verdict == 9, 6, -1);
+            break;
+        }
+        case 6: {
+            int x = 0;
+            int z = 0;
+            func_0204f818(&x, &z, &at);
+            u32 copy[2] = {(u32) x, (u32) z};
+            FieldActor_RequestState62(actor, 0, copy, ITEM_NONE, 6, -1);
+            break;
+        }
+        case 7:
+            FieldActor_RequestState5C(actor, 6, -1);
+            break;
+        default:
+            break;
+    }
+    return verdict;
+}
+CLEAN_AS(func_ov003_02212574, FieldActor_ActAt)
+
+/* func_ov003_02212728: the actor turns towards the middle of the work's tile. */
+void FieldActor_FaceState5ATile(FieldActor *actor)
+{
+    Vec3 middle;
+    func_0204f794(&middle, actor->work.s5a.x, actor->work.s5a.z);
+    func_02010d88(actor, &middle, 0xf33, 0x1000);
+    func_02089fc8(actor->unk_1C4);
+}
+CLEAN_AS(func_ov003_02212728, FieldActor_FaceState5ATile)
+
+/* func_ov003_02212768: state 0x5a's message handler: the state is asked for again at the saved
+ * tile. */
+void FieldActor_State5AMessage(FieldActor *actor, int arg)
+{
+    int tile[2] = {0, 0};
+    State5ASaved_Get(&actor->saved.tile, tile);
+    int copy[2] = {tile[0], tile[1]};
+    FieldActor_RequestState5A(actor, copy, 6, arg);
+}
+CLEAN_AS(func_ov003_02212768, FieldActor_State5AMessage)
+
+/* func_ov003_022127a0: entering state 0x5a: the request's tile becomes the work's and is saved;
+ * whether a target is known goes to the work; during animation 0x4a it is set again
+ * (func_020109fc). */
+void FieldActor_EnterState5A(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const TileArgs *args = (const TileArgs *) (const void *) request->payload;
+    int x = args->x;
+    int z = args->z;
+
+    int tile[2] = {x, z};
+    State5AWork_SetTile(&actor->work.s5a, tile);
+    actor->work.s5a.has_target = actor->target != -1;
+    int copy[2] = {x, z};
+    State5ASaved_Set(&actor->saved.tile, copy);
+    if (actor->animation == 0x4a) {
+        func_020109fc(actor, 0x4a, 3, 0);
+    }
+}
+CLEAN_AS(func_ov003_022127a0, FieldActor_EnterState5A)
+
+/* func_ov003_0221280c */
+void State5ASaved_Get(const TileArgs *saved, int *tile)
+{
+    tile[0] = saved->x;
+    tile[1] = saved->z;
+}
+CLEAN_AS(func_ov003_0221280c, State5ASaved_Get)
+
+/* func_ov003_02212818 */
+void State5ASaved_Set(TileArgs *saved, const int *tile)
+{
+    saved->x = (u8) tile[0];
+    saved->z = (u8) tile[1];
+}
+CLEAN_AS(func_ov003_02212818, State5ASaved_Set)
+
+/* func_ov003_02212824 */
+void State5AWork_SetTile(State5AWork *work, const int *tile)
+{
+    work->x = (u8) tile[0];
+    work->z = (u8) tile[1];
+}
+CLEAN_AS(func_ov003_02212824, State5AWork_SetTile)
+
+/* func_ov003_02212830: asks for state 0x5a at a tile; whether it was queued. */
+void *FieldActor_RequestState5A(FieldActor *actor, const int *tile, int priority, int arg)
+{
+    StateRequest request;
+
+    open_request(&request, 0x5a, priority, arg);
+    int copy[2] = {tile[0], tile[1]};
+    State5AArgs_Set((TileArgs *) (void *) request.payload, copy);
+    return (void *) (intptr_t) send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02212830, FieldActor_RequestState5A)
+
+/* func_ov003_02212878 */
+void State5AArgs_Set(TileArgs *args, const int *tile)
+{
+    args->x = (u8) tile[0];
+    args->z = (u8) tile[1];
+}
+CLEAN_AS(func_ov003_02212878, State5AArgs_Set)
+
+/* ---- State 0x59: animation 0x49 then 0x4a while the actor slides to a point */
+
+/* func_ov003_02212884: state 0x59's update: the speed at 0x98 slows by 0x171 a frame. The actor
+ * of this console turns to the point (FieldActor_TurnState59) and acts there once stopped
+ * (FieldActor_RunState59); another player's actor follows the state it is told
+ * (FieldActor_EndState59Remote). Effect 0x2a marks the frame the actor stops. */
+void FieldActor_UpdateState59(FieldActor *actor)
+{
+    int speed_before = actor->unk_098;
+    int speed = func_020113a4(speed_before, 0, 0x171);
+    func_0201107c(actor, &speed);
+    if (is_local_player(actor)) {
+        FieldActor_TurnState59(actor);
+        func_02010f5c(actor);
+        func_0201100c(actor);
+        func_02010d64(actor);
+        FieldActor_RunState59(actor);
+        FieldActor_FaceState59Point(actor);
+    } else {
+        func_02010f5c(actor);
+        if (func_0200f554(actor)) {
+            func_0201100c(actor);
+        }
+        func_02010d64(actor);
+        FieldActor_EndState59Remote(actor);
+    }
+    if (speed_before != 0 && actor->unk_098 == 0) {
+        func_020912d4(0x2a, &actor->position, &actor->yaw, 0);
+    }
+}
+CLEAN_AS(func_ov003_02212884, FieldActor_UpdateState59)
+
+/* func_ov003_0221292c: another player's actor notes the state after this one; at the
+ * animation's end animation 0x4a is set (func_020109fc). */
+void FieldActor_EndState59Remote(FieldActor *actor)
+{
+    actor->next_state = func_02008258(actor, actor->state);
+    if (func_02056f94(&actor->anim)) {
+        func_020109fc(actor, 0x4a, 3, 0);
+    }
+}
+CLEAN_AS(func_ov003_0221292c, FieldActor_EndState59Remote)
+
+/* func_ov003_02212968: once animation 0x49 is over (it gives way to 0x4a) or during 0x4a: when
+ * the actor has stopped and faces the work's yaw, it acts at the work's point
+ * (FieldActor_ActAt); with nothing to do there, state 0x5a follows at the point's tile. */
+void FieldActor_RunState59(FieldActor *actor)
+{
+    State59Work *work = &actor->work.s59;
+
+    if (!func_02056f94(&actor->anim) && actor->animation != 0x4a) {
+        return;
+    }
+    if (actor->animation == 0x49) {
+        func_020109fc(actor, 0x4a, 3, 0);
+    }
+    if (actor->unk_098 != 0) {
+        return;
+    }
+    if (work->yaw != actor->yaw) {
+        return;
+    }
+    Vec3 point = work->point;
+    Vec3 copy = point;
+    if (FieldActor_ActAt(actor, &copy, 1) != 0) {
+        return;
+    }
+    int tile[2] = {0, 0};
+    func_0204f818(&tile[0], &tile[1], &point);
+    int tile_copy[2] = {tile[0], tile[1]};
+    FieldActor_RequestState5A(actor, tile_copy, 6, -1);
+}
+CLEAN_AS(func_ov003_02212968, FieldActor_RunState59)
+
+/* func_ov003_02212a14: the actor turns towards the work's point. */
+void FieldActor_FaceState59Point(FieldActor *actor)
+{
+    Vec3 point = actor->work.s59.point;
+    func_02010d88(actor, &point, 0xf33, 0x1000);
+    func_02089fc8(actor->unk_1C4);
+}
+CLEAN_AS(func_ov003_02212a14, FieldActor_FaceState59Point)
+
+/* func_ov003_02212a54: the actor turns towards the work's yaw. Once it has stopped while the
+ * point is not fixed, the point becomes the tile ahead and the yaw the direction to it from the
+ * frame's start position, and the point is fixed. */
+void FieldActor_TurnState59(FieldActor *actor)
+{
+    State59Work *work = &actor->work.s59;
+    s16 yaw;
+
+    if (actor->unk_098 == 0 && work->fixed == 0) {
+        Vec3 ahead;
+        func_0200fa8c(&ahead, actor);
+        yaw = Math_Atan2(sub32(ahead.x, actor->start_position.x), sub32(ahead.z, actor->start_position.z));
+        work->yaw = yaw;
+        work->fixed = 1;
+        work->point = ahead;
+    } else {
+        yaw = work->yaw;
+    }
+    func_0200fb34(actor, yaw);
+}
+CLEAN_AS(func_ov003_02212a54, FieldActor_TurnState59)
+
+/* func_ov003_02212ac0: state 0x59's message handler: the state is asked for again with the
+ * saved tile and flag. */
+void FieldActor_State59Message(FieldActor *actor, int arg)
+{
+    u8 x;
+    u8 z;
+    u8 fixed;
+
+    State59Saved_Get(&actor->saved.s59, &x, &z, &fixed);
+    FieldActor_RequestState59(actor, &x, &z, &fixed, 6, (s16) arg);
+}
+CLEAN_AS(func_ov003_02212ac0, FieldActor_State59Message)
+
+/* func_ov003_02212afc: entering state 0x59: the request is saved and animation 0x49 starts. The
+ * point is the middle of the request's tile when its flag is set; otherwise it is where the
+ * actor's slide ends (0x2000 ahead plus each frame's speed as it slows by 0x171 a frame), at
+ * the middle of that tile. The work gets the point, the direction to it from the frame's start
+ * position and the flag. */
+void FieldActor_EnterState59(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const TileFlagArgs *args = (const TileFlagArgs *) (const void *) request->payload;
+    int x = args->x;
+    int z = args->z;
+    int fixed = args->flag;
+
+    State59Saved_Set(&actor->saved.s59, x, z, fixed);
+    func_020109a0(actor, 0x49, 3, 0);
+    Vec3 point;
+    func_0204f794(&point, (u32) x, (u32) z);
+    if (fixed == 0) {
+        /* QUIRK: the speed is taken as it is: a negative one adds nothing, and one within 0x171
+         * of -0x80000000 wraps round to a large positive one. */
+        int speed = actor->unk_098;
+        fx32 distance = 0x2000;
+        while (speed != 0) {
+            speed = sub32(speed, 0x171);
+            if (speed > 0) {
+                distance = add32(distance, speed);
+            } else {
+                speed = 0;
+            }
+        }
+        Vec3 end;
+        func_0200fa1c(&end, actor, &actor->position, &actor->yaw, &distance);
+        point = end;
+        func_0204f7e0(&point, &point);
+    }
+    s16 yaw = Math_Atan2(sub32(point.x, actor->start_position.x), sub32(point.z, actor->start_position.z));
+    Vec3 copy = point;
+    State59Work_Set(&actor->work.s59, &copy, yaw, (char) fixed);
+}
+CLEAN_AS(func_ov003_02212afc, FieldActor_EnterState59)
+
+/* func_ov003_02212bd8 */
+void State59Saved_Get(const TileFlagArgs *saved, u8 *x, u8 *z, u8 *fixed)
+{
+    *x = saved->x;
+    *z = saved->z;
+    *fixed = saved->flag;
+}
+CLEAN_AS(func_ov003_02212bd8, State59Saved_Get)
+
+/* func_ov003_02212bec */
+void State59Saved_Set(TileFlagArgs *saved, int x, int z, int fixed)
+{
+    saved->x = (u8) x;
+    saved->z = (u8) z;
+    saved->flag = (u8) fixed;
+}
+CLEAN_AS(func_ov003_02212bec, State59Saved_Set)
+
+/* func_ov003_02212bf4 */
+void State59Work_Set(State59Work *work, const Vec3 *point, s16 yaw, char fixed)
+{
+    copy_point(&work->point, point);
+    work->yaw = yaw;
+    work->fixed = (u8) fixed;
+    work->unk_0F = 0;
+}
+CLEAN_AS(func_ov003_02212bf4, State59Work_Set)
+
+/* func_ov003_02212c10: asks for state 0x59 with a tile and a flag; whether it was queued. */
+int FieldActor_RequestState59(FieldActor *actor, const u8 *x, const u8 *z, const u8 *fixed, int priority, s16 arg)
+{
+    StateRequest request;
+
+    open_request(&request, 0x59, priority, arg);
+    State59Args_Set((TileFlagArgs *) (void *) request.payload, *x, *z, *fixed);
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02212c10, FieldActor_RequestState59)
+
+/* func_ov003_02212c58: asks for state 0x59 at the tile of the point the actor aims at:
+ * aim_point with the flag when unk_148 is set, else the point at 0x14c with the flag when
+ * unk_144 is nonzero (both at height 0). Whether it was queued. */
+int FieldActor_RequestState59AtAim(FieldActor *actor, int priority, int arg)
+{
+    StateRequest request;
+    Vec3 point;
+    int fixed;
+
+    open_request(&request, 0x59, priority, arg);
+    if (actor->unk_148 != 0) {
+        point.x = actor->aim_point.x;
+        point.y = 0;
+        point.z = actor->aim_point.z;
+        fixed = 1;
+    } else {
+        point.x = actor->unk_14C.x;
+        point.y = 0;
+        point.z = actor->unk_14C.z;
+        fixed = actor->unk_144 != 0;
+    }
+    int x = 0;
+    int z = 0;
+    func_0204f818(&x, &z, &point);
+    State59Args_Set((TileFlagArgs *) (void *) request.payload, (u8) x, (u8) z, fixed);
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02212c58, FieldActor_RequestState59AtAim)
+
+/* func_ov003_02212d04 */
+void State59Args_Set(TileFlagArgs *args, int x, int z, int fixed)
+{
+    args->x = (u8) x;
+    args->z = (u8) z;
+    args->flag = (u8) fixed;
+}
+CLEAN_AS(func_ov003_02212d04, State59Args_Set)
+
+/* ---- State 0x58: animation 0x5d with pose 6, then 0x6c, then the head follows a point */
+
+/* func_ov003_02212d0c: state 0x58's update. */
+void FieldActor_UpdateState58(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    FieldActor_RunState58(actor);
+}
+CLEAN_AS(func_ov003_02212d0c, FieldActor_UpdateState58)
+
+/* Ends state 0x58: the state after it is noted and func_0200d4e8 (6) moves on. */
+static void leave_state58(FieldActor *actor)
+{
+    actor->next_state = func_02008258(actor, actor->state);
+    func_0200d4e8(actor, 6, 1, -1);
+}
+
+/* func_ov003_02212d2c: state 0x58 by the work's step. Each frame a block (a copy of the one at
+ * 0x698) goes through func_ov003_02219668, and unless the frame ends early, to
+ * func_ov003_0222d83c with three equal angles (100 falling by 16 a frame over the first six
+ * frames of animation 0x5d, else 0) and a flag.
+ *   Step 0: at the animation's end func_ov003_0222e6c4 (1), the actor moves on (6), the actor
+ *     of this console gives the item 0x12b0 + kind to func_0209a110; the flag is 1.
+ *   Step 1: during animation 0x5d, at its end animation 0x6c starts with pose 0 in hand. The
+ *     block's point is a point by the actor. The actor of this console waits on the word at
+ *     0x81c: at 5 it becomes 6 once func_0206f728 accepts the item; at 6 it becomes 0xf once
+ *     func_0206fbc0 says so, and when func_0206fc6c then says so the receiver is released and
+ *     the actor moves on (6); from 0xf an angle is drawn (-0x1555 to 0x1554) for
+ *     func_ov003_0222eabc and saved, the receiver is released, and step 2 starts with animation
+ *     0 (func_020109fc). Another player's actor notes the state after this one and goes to step
+ *     2 when the saved step is 2, with the saved angle.
+ *   Step 2: while func_ov003_0222ea84 is 3 the head turns to the point func_ov003_0222e970
+ *     gives (the pitch at most 0x1800); otherwise the head turns back to 0 and once there the
+ *     actor moves on (6). */
+void FieldActor_RunState58(FieldActor *actor)
+{
+    int flag = 0;
+    Vec3 beside = actor->position;
+    int player = actor->player;
+
+    s16 angle = 0;
+    if (actor->animation == 0x5d) {
+        u32 frame = (u32) anim_frame(actor);
+        if (frame < 6) {
+            angle = (s16) (0x64 - (frame << 4));
+        }
+    }
+    s16 angles[3] = {angle, angle, angle};
+
+    FieldActorBlock48 block = actor->unk_698;
+    func_ov003_02219668(&block, 0);
+
+    State58Args *work = &actor->work.s58;
+    State58Saved *saved = &actor->saved.s58;
+    int item = (u16) (work->kind + 0x12b0);
+    switch (work->step) {
+        case 0:
+            if (!func_02056f94(&actor->anim)) {
+                break;
+            }
+            func_ov003_0222e6c4((u8) actor->player, 1);
+            leave_state58(actor);
+            if (is_local_player(actor)) {
+                u16 code = (u16) item;
+                func_0209a110(&code);
+            }
+            flag = 1;
+            break;
+        case 1:
+            if (actor->animation == 0x5d) {
+                if (!func_02056f94(&actor->anim)) {
+                    break;
+                }
+                func_020109fc(actor, 0x6c, 3, 3);
+                func_0205eae0(actor->held, 0, 3, 0);
+            }
+            beside.x = sub32(beside.x, 0x400);
+            beside.y = add32(beside.y, 0x1b34);
+            beside.z = add32(beside.z, 0x1400);
+            func_0203f8d0(&beside, &beside);
+            /* The block's last three words are its point. */
+            block.words[9] = (u32) beside.x;
+            block.words[10] = (u32) beside.y;
+            block.words[11] = (u32) beside.z;
+            if (is_local_player(actor)) {
+                if (actor->unk_81C == 5) {
+                    if (func_0206f728(item)) {
+                        actor->unk_81C = 6;
+                    }
+                    break;
+                }
+                if (actor->unk_81C == 6) {
+                    if (!func_0206fbc0()) {
+                        break;
+                    }
+                    actor->unk_81C = 0xf;
+                    if (func_0206fc6c()) {
+                        release_receiver(actor);
+                        func_0203e19c();
+                        leave_state58(actor);
+                        return;
+                    }
+                } else if (actor->unk_81C < 0xf) {
+                    break;
+                }
+                int drawn = (s16) sub32(func_020644cc(0x2aaa), 0x1555);
+                func_ov003_0222eabc((u8) player, drawn);
+                State58Saved_SetAngle(saved, drawn);
+                release_receiver(actor);
+                func_0203e19c();
+                work->step = 2;
+                State58Saved_SetStep(saved, 2);
+                func_020109fc(actor, 0, 4, 4);
+                return;
+            }
+            actor->next_state = func_02008258(actor, actor->state);
+            if (State58Saved_Step(saved) != 2) {
+                return;
+            }
+            func_ov003_0222eabc((u8) player, State58Saved_Angle(saved));
+            work->step = 2;
+            func_020109fc(actor, 0, 4, 4);
+            return;
+        case 2: {
+            if (func_ov003_0222ea84((u8) player) != 3) {
+                if (actor->head_pitch == 0 && actor->head_yaw == 0) {
+                    leave_state58(actor);
+                    return;
+                }
+                func_02011404(&actor->head_pitch, 0, 0x400, 0x1770000, 0xc0000);
+                func_02011404(&actor->head_yaw, 0, 0x400, 0x1770000, 0xc0000);
+                return;
+            }
+            const Vec3 *target = func_ov003_0222e970((u8) player);
+            Vec3 eye = actor->position;
+            eye.y = add32(eye.y, 0x1b33);
+            int yaw = Math_Atan2(sub32(target->x, eye.x), sub32(target->z, eye.z));
+            int pitch = Math_Atan2(sub32(target->y, eye.y), Vec_DistanceXZ(target, &eye));
+            actor->head_yaw = (s16) yaw;
+            if (pitch >= 0x1800) {
+                pitch = 0x1800;
+            }
+            actor->head_pitch = (s16) pitch;
+            return;
+        }
+        default:
+            break;
+    }
+    func_ov003_0222d83c((u8) player, angles, &block, flag);
+}
+CLEAN_AS(func_ov003_02212d2c, FieldActor_RunState58)
+
+/* func_ov003_022130c8: leaving state 0x58: the head faces ahead. */
+void FieldActor_ExitState58(FieldActor *actor)
+{
+    actor->head_pitch = 0;
+    actor->head_yaw = 0;
+}
+CLEAN_AS(func_ov003_022130c8, FieldActor_ExitState58)
+
+/* func_ov003_022130dc: state 0x58's message handler: the state is asked for again with the
+ * saved kind and step (func_ov003_022131c8). */
+void FieldActor_State58Message(FieldActor *actor, int arg)
+{
+    u8 kind;
+    u8 step;
+    /* QUIRK: the original reads the saved angle into a one-byte local, its second byte landing
+     * past it in the stack frame; it is not used. */
+    u16 angle;
+
+    State58Saved_Get(&actor->saved.s58, &kind, &step, &angle);
+    func_ov003_022131c8(actor, (char) kind, (char) step, 6, (s16) arg);
+}
+CLEAN_AS(func_ov003_022130dc, FieldActor_State58Message)
+
+/* func_ov003_02213114: entering state 0x58: the request's kind and step become the work and are
+ * saved with angle 0; animation 0x5d starts with pose 6 in hand, and sound 0x4f. */
+void FieldActor_EnterState58(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const State58Args *args = (const State58Args *) (const void *) request->payload;
+    u8 kind = args->kind;
+    u8 step = args->step;
+
+    actor->work.s58.kind = kind;
+    actor->work.s58.step = step;
+    func_ov003_022131a8(&actor->saved.s58, kind, step, 0);
+    func_020109a0(actor, 0x5d, 3, 0);
+    func_0205eae0(actor->held, 6, 3, 1);
+    func_0200f328(actor, 0x4f);
+}
+CLEAN_AS(func_ov003_02213114, FieldActor_EnterState58)
+
+/* func_ov003_02213168 */
+int State58Saved_Angle(const State58Saved *saved)
+{
+    return func_020778f8(saved->angle);
+}
+CLEAN_AS(func_ov003_02213168, State58Saved_Angle)
+
+/* func_ov003_02213174 */
+int State58Saved_Step(const State58Saved *saved)
+{
+    return saved->step;
+}
+CLEAN_AS(func_ov003_02213174, State58Saved_Step)
+
+/* func_ov003_02213178 */
+void State58Saved_Get(const State58Saved *saved, u8 *kind, u8 *step, u16 *angle)
+{
+    *kind = saved->kind;
+    *step = (u8) State58Saved_Step(saved);
+    *angle = (u16) State58Saved_Angle(saved);
+}
+CLEAN_AS(func_ov003_02213178, State58Saved_Get)
+
+/* func_ov003_02213198 */
+void State58Saved_SetAngle(State58Saved *saved, int angle)
+{
+    func_02077910(saved->angle, angle);
+}
+CLEAN_AS(func_ov003_02213198, State58Saved_SetAngle)
+
+/* func_ov003_022131a4 */
+void State58Saved_SetStep(State58Saved *saved, int step)
+{
+    saved->step = (u8) step;
+}
+CLEAN_AS(func_ov003_022131a4, State58Saved_SetStep)
