@@ -6,14 +6,22 @@
 #include "clean.h"
 #include "furniture_model.h"
 #include "room_object_anims.h"
+#include "room_object_life.h"
 #include "room_object_parts.h"
 
+static_assert(sizeof(RoomObject02250c04) == 0x844, "the size RoomObject02250c04_Create allocates");
+
+#define ROOM_OBJECT_02250C04_SIZE 0x844
 #define ONE 0x1000       /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0 /* start again at the end */
 #define ANIM_MODE_ONCE 1 /* stop at the end */
 #define ANIM_MODE_3 3    /* the animations' mode 3 */
 #define NO_SOUND 0xffff  /* from RoomObject_MoveSound: none */
 #define KIND_16 0x16     /* RoomObject.unk_780 of the kind whose entry states are 0 and 2 */
+
+/* The class's vtables, and its receiver part's. */
+extern const u8 data_ov004_02250c04[];
+extern const u8 data_ov004_02250cb0[];
 
 /* The two entries at data_ov004_02259784 (0x40 bytes each), the one of `object` among them
  * (NULL for none), and an entry's state (its word at 0x3c). */
@@ -97,3 +105,47 @@ int RoomObject02250c04_Start(RoomObject02250c04 *object)
     return 1;
 }
 CLEAN_AS(func_ov004_022156b0, RoomObject02250c04_Start)
+
+static void RoomObject02250c04_set_vtables(RoomObject02250c04 *object)
+{
+    object->base.vtable = (const RoomObjectVtable *) data_ov004_02250c04;
+    object->base.receiver_vtable = data_ov004_02250cb0;
+}
+
+/* func_ov004_022156c8 (the deleting destructor, vtable slot 0x44) */
+RoomObject02250c04 *RoomObject02250c04_Delete(RoomObject02250c04 *object)
+{
+    RoomObject02250c04_set_vtables(object);
+    RoomObject_DestructBase(&object->base);
+    RoomObject_Free(object);
+    return object;
+}
+CLEAN_AS(func_ov004_022156c8, RoomObject02250c04_Delete)
+
+/* func_ov004_022156f4 (the destructor, vtable slot 0x40) */
+RoomObject02250c04 *RoomObject02250c04_Destroy(RoomObject02250c04 *object)
+{
+    RoomObject02250c04_set_vtables(object);
+    RoomObject_DestructBase(&object->base);
+    return object;
+}
+CLEAN_AS(func_ov004_022156f4, RoomObject02250c04_Destroy)
+
+/* func_ov004_02215718 (the constructor): the base, then this class's vtables. */
+RoomObject02250c04 *RoomObject02250c04_Construct(RoomObject02250c04 *object)
+{
+    RoomObject_ConstructBase(&object->base);
+    RoomObject02250c04_set_vtables(object);
+    return object;
+}
+CLEAN_AS(func_ov004_02215718, RoomObject02250c04_Construct)
+
+/* func_ov004_0221573c: a new one from the room's heap; nothing when it has no room. */
+void RoomObject02250c04_Create(void)
+{
+    RoomObject02250c04 *object = RoomObject_Alloc(ROOM_OBJECT_02250C04_SIZE);
+    if (object != NULL) {
+        RoomObject02250c04_Construct(object);
+    }
+}
+CLEAN_AS(func_ov004_0221573c, RoomObject02250c04_Create)

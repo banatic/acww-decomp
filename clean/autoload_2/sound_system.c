@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "sound_position.h"
 
 static_assert(offsetof(SoundSystem, fader) == 0x04, "the music's fader");
 static_assert(offsetof(SoundSystem, volume_b) == 0x1c, "the second group's fader");
@@ -70,9 +71,6 @@ extern void func_0210fe08(int unk, unsigned int heap);
 /* The second of the sound archive's three loaders before NNS_SndArcLoadGroup (their order in
  * the SDK: sequence, sequence archive, bank); whether `seq_arc` was loaded into `heap`. */
 extern int func_0210e198(int seq_arc, unsigned int heap);
-/* An object of the sound code (data_021fd248) and a value handed to it each frame. */
-extern void *func_020f5a4c(void);
-extern void func_020f5b04(void *object, int value);
 /* The compiler's soft-float helpers: an unsigned int to double, a product, a double to int. */
 extern double _dfltu(int value);
 extern double _dmul(double a, double b);
@@ -190,14 +188,14 @@ void SoundSystem_ChangePan(SoundSystem *sys, unsigned char pan)
 CLEAN_AS(func_020f0f7c, SoundSystem_ChangePan)
 
 /* func_020f0fb0: the frame's update of the scene (its slot 4): `value` handed on to
- * data_021fd248 once the delay has run out; while it runs, it is counted down instead. */
+ * the distance curve as its knee once the delay has run out; while it runs, it is counted down instead. */
 void SoundSystem_Tick(SoundSystem *sys, int value)
 {
     if (sys->delay != 0) {
         sys->delay--;
         return;
     }
-    func_020f5b04(func_020f5a4c(), value);
+    SoundPosition_SetKnee(SoundPosition_Curve(), value);
 }
 CLEAN_AS(func_020f0fb0, SoundSystem_Tick)
 

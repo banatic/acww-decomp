@@ -6,6 +6,8 @@
 
 #include "clean.h"
 #include "heap.h"
+#include "sound_melody.h"
+#include "sound_position.h"
 
 /* The classes' vtables. */
 extern const SoundSceneVtable data_0213ef4c; /* kind 99 */
@@ -48,11 +50,7 @@ extern int NNS_SndPlayerCreateHeap(int player_no, void *heap, int size);
 extern void NNS_SndPlayerSetPlayerVolume(int player_no, int volume);
 /* Loads item 9 of the sound archive into the heap (one of the SDK's archive loads). */
 extern int func_0210e160(int item, void *heap);
-/* A sound set's sequence stopped. */
-extern void func_020f6700(void *set);
 
-/* Sets the byte at data_021fd238. */
-extern void func_020f5a3c(char value);
 /* Class 41's part (SoundScenePart): its constructor, destructor, set-up and switch. */
 extern SoundScenePart *func_020f9624(SoundScenePart *part);
 extern SoundScenePart *func_020f95f8(SoundScenePart *part);
@@ -239,7 +237,7 @@ CLEAN_AS(func_020f2720, SoundScene52_Construct)
  * returned. */
 void SoundScene51_Stop(SoundScene *scene)
 {
-    func_020f6700(data_021fd1bc.sound_set);
+    MelodySet_StopB(data_021fd1bc.sound_set);
     data_021fd1bc.muted = 1;
     SoundScene_StopPlayers(scene, 0x11);
 }
@@ -321,7 +319,7 @@ SoundScene *SoundScene50_Construct(SoundScene *scene)
     SoundSceneBase_Construct(scene);
     scene->vtable = &data_0213ee7c;
     scene->kind = KIND_50;
-    func_020f5a3c(1);
+    SoundPosition_SetUnusedFlag(1);
     return scene;
 }
 CLEAN_AS(func_020f28d8, SoundScene50_Construct)
@@ -1342,10 +1340,8 @@ SoundScene *SoundScene3_Destruct(SoundScene *scene)
 }
 CLEAN_AS(func_020f3cb0, SoundScene3_Destruct)
 
-/* Sets the sound set's halfword at 0x08 (func_020f6f80). */
-extern void func_020f65bc(void *set, unsigned short value);
-
-/* The value class 1's constructors (and those of classes 3 and 2) give the current sound set. */
+/* The sequence archive class 1's constructors (and those of classes 3 and 2) give the current
+ * sound set's first melody player. */
 #define SOUND_SET_VALUE_1 0xd1
 
 /* func_020f3cd4: class 1's constructor, then the sound set given the same value again. */
@@ -1354,7 +1350,7 @@ SoundScene *SoundScene3_Construct(SoundScene *scene)
     SoundScene1_ConstructBase(scene);
     scene->vtable = &data_0213ec40;
     if (data_021fd1bc.sound_set != NULL) {
-        func_020f65bc(data_021fd1bc.sound_set, SOUND_SET_VALUE_1);
+        MelodySet_SetSeqArcA(data_021fd1bc.sound_set, SOUND_SET_VALUE_1);
     }
     scene->kind = KIND_3;
     return scene;
@@ -1399,7 +1395,7 @@ SoundScene *SoundScene2_Construct(SoundScene *scene)
     SoundScene1_ConstructBase(scene);
     scene->vtable = &data_0213e99c;
     if (data_021fd1bc.sound_set != NULL) {
-        func_020f65bc(data_021fd1bc.sound_set, SOUND_SET_VALUE_1);
+        MelodySet_SetSeqArcA(data_021fd1bc.sound_set, SOUND_SET_VALUE_1);
     }
     scene->kind = KIND_2;
     return scene;
@@ -1487,10 +1483,10 @@ static void construct_kind_1(SoundScene *scene)
     SoundSceneBase_Construct(scene);
     scene->vtable = &data_0213ef80;
     if (data_021fd1bc.sound_set != NULL) {
-        func_020f65bc(data_021fd1bc.sound_set, SOUND_SET_VALUE_1);
+        MelodySet_SetSeqArcA(data_021fd1bc.sound_set, SOUND_SET_VALUE_1);
     }
     scene->kind = KIND_1;
-    func_020f5a3c(1);
+    SoundPosition_SetUnusedFlag(1);
     data_021fd1bc.arrangement = 0;
 }
 
@@ -1575,12 +1571,6 @@ extern SoundGroup data_021fd054;
 extern const SoundGroupKey data_0213e990;
 extern void NNS_SndHeapLoadState(void *heap, int level);
 extern void NNS_SndPlayerStopSeqByPlayerNo(int player_no, int fade_frames);
-/* The sound slots' three hooks set to none (Sound_SetUnk10Hook, Sound_SetVolumeHook and
- * Sound_SetPanHook given NULL). */
-extern void func_020f5988(void);
-/* The sound slots' three hooks set to the game's own (func_020f5e3c, func_020f5e14 and
- * func_020f5c50). */
-extern void func_020f59b4(void);
 
 /* The players a stopping scene stops (SoundScene_StopPlayers), in the order they are
  * stopped. */
@@ -1591,7 +1581,7 @@ static const u8 scene_players[] = {11, 2, 4, 5, 6, 7, 8, 9, 10, 12, 15, 16, 17, 
 #define SEQ_ARC_KEYBOARD_B 0x86 /* modes 1 and 3 */
 #define SEQ_ARC_KEYBOARD_C 0x87 /* mode 2 */
 
-/* The value the base constructor gives the current sound set. */
+/* The sequence archive the base constructor gives the current sound set's first melody player. */
 #define SOUND_SET_VALUE_BASE 0xd2
 
 /* func_020f4178: player 5's heap of 0x31ac bytes. */
@@ -1642,7 +1632,7 @@ void SoundScene_LoadGroup(SoundScene *scene, int player_heap, unsigned char grou
     key.group = group;
     data_021fd054.key = key;
     SoundGroup_Open(&data_021fd054, NULL, 0, key);
-    func_020f59b4();
+    SoundPosition_InstallHooks();
     NNS_SndHeapSaveState(heap);
 }
 CLEAN_AS(func_020f4220, SoundScene_LoadGroup)
@@ -1705,7 +1695,7 @@ void SoundSceneBase_Unload(SoundScene *scene)
     void *heap;
 
     (void) scene;
-    func_020f5988();
+    SoundPosition_ClearHooks();
     heap = (void *) (uintptr_t) Sound_GetHeap();
     SoundGroup_Close(&data_021fd054, 1);
     if (data_021fd1bc.unk_62 != 0) {
@@ -1730,7 +1720,7 @@ CLEAN_AS(func_020f43f8, SoundScene_StopPlayers)
  * the players stopped over 15 frames; the scene marked stopped. Returns 1. */
 int SoundSceneBase_Stop(SoundScene *scene)
 {
-    func_020f6700(data_021fd1bc.sound_set);
+    MelodySet_StopB(data_021fd1bc.sound_set);
     data_021fd1bc.muted = 1;
     SoundScene_StopPlayers(scene, 15);
     scene->stopped = 1;
@@ -1811,14 +1801,14 @@ SoundScene *SoundSceneBase_Construct(SoundScene *scene)
     ((u8 *) data_021fd1bc.sound_set)[0x3c] = 0;
 #endif
     if (data_021fd1bc.sound_set != NULL) {
-        func_020f65bc(data_021fd1bc.sound_set, SOUND_SET_VALUE_BASE);
+        MelodySet_SetSeqArcA(data_021fd1bc.sound_set, SOUND_SET_VALUE_BASE);
     }
     SoundSystem_SetVolumes(&data_021fd1bc, 0x7f, 0x7f);
     NNS_SndPlayerSetPlayerVolume(15, 100);
     scene->kind = -1;
     scene->stopped = 0;
     scene->started = 0;
-    func_020f5a3c(0);
+    SoundPosition_SetUnusedFlag(0);
     return scene;
 }
 CLEAN_AS(func_020f45c4, SoundSceneBase_Construct)

@@ -24,7 +24,6 @@ extern const u8 data_020d8414[];
 /* The alignment of the objects (4). */
 extern int func_020952e0(void);
 
-extern int func_0200e42c(struct FieldActor *actor);
 extern int func_020051b4(struct FieldActor *actor);
 extern void func_02005338(struct FieldActor *actor);
 extern void func_020058e4(struct FieldActor *actor);
@@ -169,11 +168,11 @@ int FieldActor_Update(struct FieldActor *actor)
 }
 CLEAN_AS(func_02004c0c, FieldActor_Update)
 
-/* func_02004c1c: vtable slot 0x00, the set-up once the actor is made (func_0200e42c). QUIRK:
+/* func_02004c1c: vtable slot 0x00, the set-up once the actor is made (FieldActor_Init). QUIRK:
  * as FieldActor_Teardown, the original gives back the callee's result and this none. */
 void FieldActor_Setup(struct FieldActor *actor)
 {
-    func_0200e42c(actor);
+    FieldActor_Init(actor);
 }
 CLEAN_AS(func_02004c1c, FieldActor_Setup)
 
@@ -345,3 +344,175 @@ int FieldActor_Shutdown(struct FieldActor *actor)
     return 1;
 }
 CLEAN_AS(func_020051b4, FieldActor_Shutdown)
+
+/* ---- The set-up once the actor is made (FieldActor_Setup): its player and looks from the
+ * word it was made with, its models, and state 0 queued with the state it starts in. */
+
+/* The player's looks by the player's index (func_020961d0): the member at 0x7a0, the parts at
+ * 0x70f, 0x70e and 0x70d, the held item, the parts B and C, the looks at 0x389 and 0x774. */
+extern const u8 data_020c75c4[];
+extern const u8 data_020c75d4[];
+extern const u8 data_020c75dc[];
+extern const u8 data_020c75cc[];
+extern const u8 data_020c75e0[];
+extern const u8 data_020c75c8[];
+extern const u8 data_020c75e4[];
+extern const u8 data_020c75d8[];
+extern const u8 data_020c75d0[];
+/* Handed by address to func_020100d0 and func_020100b8. */
+extern int data_020d83e8;
+extern int data_020d83f0;
+/* The scene: 0 outdoors (overlay 3), else indoors. */
+extern u8 data_020e54a8;
+
+extern int func_02096188(u32 made_with);
+extern int func_02096180(u32 made_with);
+extern void func_0203efb0(struct FieldActor *actor, u16 player);
+extern void func_020962c8(int player, struct FieldActor *actor);
+extern int func_020961d0(int player);
+extern void func_0205f8cc(void *member, int value);
+extern int func_020112d0(struct FieldActor *actor);
+extern u8 func_02011150(struct FieldActor *actor, int flag);
+extern void func_020106a8(struct FieldActor *actor, int a, int b);
+extern void func_0205db4c(void *part, int value);
+extern void func_0205d8c4(void *part, int value);
+extern void func_0205dccc(void *part, int value);
+extern int func_020110e8(struct FieldActor *actor);
+extern int func_0205dc94(void *part, int value);
+extern void func_020110c4(u16 *item, struct FieldActor *actor);
+extern void *func_02011368(struct FieldActor *actor);
+extern void func_0205ec50(void *held, int value, struct FieldActor *actor, u16 *item, void *record, int a);
+extern void func_02060500(void *line, int player);
+extern u32 *func_0200f27c(struct FieldActor *actor, int bit);
+extern void func_0205df14(void *part, u8 value);
+extern void func_02011138(u16 *item, struct FieldActor *actor);
+extern int func_020103c0(struct FieldActor *actor, u16 *item);
+extern void func_02010424(struct FieldActor *actor);
+extern void func_0205e4e8(void *part, u8 value);
+extern void func_020112f8(u16 *item, struct FieldActor *actor);
+extern int func_020112e4(struct FieldActor *actor);
+extern int func_020100e8(struct FieldActor *actor, u16 *item, int a, int b, int c);
+extern void func_0205d0b8(void *look, u8 value);
+extern int func_02011340(struct FieldActor *actor);
+extern void func_0205d058(void *look, int value);
+extern void func_0205d4f0(void *look, u8 value);
+extern void func_0201131c(u16 *item, struct FieldActor *actor);
+extern void func_02010680(struct FieldActor *actor, u16 *item);
+extern int func_0205cfd4(void *look);
+extern int func_0205d25c(void *look);
+extern int func_0205f8b4(void *member);
+extern int func_021077e8(int value);
+extern void func_020100d0(struct FieldActor *actor, int a, int b, void *c, void *d);
+extern void func_020100b8(struct FieldActor *actor, int a, int b, void *c, void *d);
+extern void func_0205d034(void *look);
+
+/* func_0200e42c: the set-up; returns 1. The player is bits 30 and 31 of the word at 8
+ * (func_02096188); it is noted at 0xdc (func_0203efb0) and with the session's players
+ * (func_020962c8). The looks and models are set up from the player's tables, with the
+ * player record's items (FieldActor_SetupLooks, FieldActor_SetupPartB, FieldActor_SetupPartC),
+ * and the held item (func_0205ec50). Gravity is -5.0 a step, the vertical speed at least -10.0;
+ * state 0 is asked for with the start state (bits 22 to 29, func_02096180; priority 9) and the
+ * requests are taken at once. The flags are 1 (and 0 outdoors); the start position is the
+ * position; the target and the words at 0x804 and 0x810 are -1, those at 0x808, 0x814 and
+ * 0x818 0, and 0x81c 0xf; the byte at 0x8e9 is 0x1f, the counter at 0x8e8 0, and no object is
+ * met. */
+int FieldActor_Init(struct FieldActor *actor)
+{
+    Actor *base = FieldActor_Base(actor);
+    u32 made_with = FIELD_ACTOR_FIELD(actor, u32, 8);
+    actor->player = func_02096188(made_with);
+    func_0203efb0(actor, (u16) actor->player);
+    func_020962c8(actor->player, actor);
+    func_0205f8cc(at(actor, 0x7a0), data_020c75c4[func_020961d0(actor->player)]);
+    int index = func_020112d0(actor);
+    func_020106a8(actor, index, func_02011150(actor, 1));
+    FieldActor_SetupLooks(actor);
+    func_0205db4c(at(actor, 0x70f), data_020c75d4[func_020961d0(actor->player)]);
+    func_0205d8c4(at(actor, 0x70e), data_020c75dc[func_020961d0(actor->player)]);
+    func_0205dccc(at(actor, 0x70d), data_020c75cc[func_020961d0(actor->player)]);
+    func_0205dc94(at(actor, 0x70d), func_020110e8(actor));
+    FieldActor_SetupPartB(actor);
+    FieldActor_SetupPartC(actor);
+    index = func_020961d0(actor->player);
+    u16 item;
+    func_020110c4(&item, actor);
+    func_0205ec50(actor->held, data_020c75e0[index], actor, &item, func_02011368(actor), 0);
+    func_02060500(at(actor, 0x5c8), actor->player);
+    base->gravity = -0x5000;
+    base->min_y_velocity = -0xa000;
+    FieldActor_RequestState0(actor, func_02096180(made_with), 9, -1);
+    FIELD_ACTOR_PENDING_BITS(actor) &= (u8) ~PENDING_ACTION_SET;
+    FieldActor_TakeRequests(actor);
+    actor->flags = 0;
+    func_0200f27c(actor, 1);
+    if (data_020e54a8 == 0) {
+        func_0200f27c(actor, 0);
+    }
+    actor->start_position = actor->position;
+    actor->target = -1;
+    actor->unk_810 = -1;
+    FIELD_ACTOR_FIELD(actor, int, 0x804) = -1;
+    FIELD_ACTOR_FIELD(actor, int, 0x808) = 0;
+    actor->unk_814 = 0;
+    actor->unk_818 = 0;
+    actor->unk_81C = 0xf;
+    FIELD_ACTOR_BODY_ARG(actor) = 0x1f;
+    actor->unk_8E8 = 0;
+    actor->other = NULL;
+    actor->other_result = 0;
+    return 1;
+}
+CLEAN_AS(func_0200e42c, FieldActor_Init)
+
+/* func_0200e654: part C (0x59c) from the player's table data_020c75c8, then its item from the
+ * player's record (func_02011138) goes to func_020103c0, and func_02010424. */
+void FieldActor_SetupPartC(struct FieldActor *actor)
+{
+    u16 item;
+    func_0205df14(at(actor, FIELD_ACTOR_PART_C), data_020c75c8[func_020961d0(actor->player)]);
+    func_02011138(&item, actor);
+    u16 copy = item;
+    func_020103c0(actor, &copy);
+    func_02010424(actor);
+}
+CLEAN_AS(func_0200e654, FieldActor_SetupPartC)
+
+/* func_0200e6a4: part B (0x428) from the player's table data_020c75e4, then its item from the
+ * player's record (func_020112f8, 0xfff1 without a record) goes to func_020100e8 with
+ * func_020112e4's and func_020112d0's values. */
+void FieldActor_SetupPartB(struct FieldActor *actor)
+{
+    u16 item;
+    func_0205e4e8(at(actor, FIELD_ACTOR_PART_B), data_020c75e4[func_020961d0(actor->player)]);
+    func_020112f8(&item, actor);
+    u16 copy = item;
+    int a = func_020112e4(actor);
+    int b = func_020112d0(actor);
+    func_020100e8(actor, &copy, a, b, 1);
+}
+CLEAN_AS(func_0200e6a4, FieldActor_SetupPartB)
+
+/* func_0200e704: the looks at 0x389 (from data_020c75d8, then func_02011340's flag) and 0x774
+ * (from data_020c75d0), the record's item at func_0201131c to func_02010680, and the pairs of
+ * func_021077e8 of the looks handed to func_020100d0 and func_020100b8 (0x774 with 0x389, with
+ * data_020d83e8) and to func_020100b8 (0x7a0 with 0x389, with data_020d83f0); then
+ * func_0205d034 on 0x389. */
+void FieldActor_SetupLooks(struct FieldActor *actor)
+{
+    u16 item;
+    func_0205d0b8(at(actor, 0x389), data_020c75d8[func_020961d0(actor->player)]);
+    func_0205d058(at(actor, 0x389), func_02011340(actor) != 0);
+    func_0205d4f0(at(actor, 0x774), data_020c75d0[func_020961d0(actor->player)]);
+    func_0201131c(&item, actor);
+    func_02010680(actor, &item);
+
+    int look_389 = func_021077e8(func_0205cfd4(at(actor, 0x389)));
+    int look_774 = func_021077e8(func_0205d25c(at(actor, 0x774)));
+    func_020100d0(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
+    func_020100b8(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
+    int look_7a0 = func_021077e8(func_0205f8b4(at(actor, 0x7a0)));
+    look_389 = func_021077e8(func_0205cfd4(at(actor, 0x389)));
+    func_020100b8(actor, look_7a0, look_389, &data_020d83f0, &data_020d83f0);
+    func_0205d034(at(actor, 0x389));
+}
+CLEAN_AS(func_0200e704, FieldActor_SetupLooks)

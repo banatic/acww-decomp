@@ -17,14 +17,12 @@ static_assert(sizeof(SoundEmitterObject) == 0x44, "SoundEmitterObject size");
 extern const u8 data_0213f090[]; /* kind 2 */
 extern const u8 data_0213f058[]; /* kind 99 */
 extern const u8 data_020d8414[]; /* kind 1 */
+extern const u8 data_0213f074[]; /* the base class */
 
 extern SoundSystem data_021fd1bc;
 
 extern void NNS_SndPlayerSetVolume(SoundHandle *handle, int volume);
 extern void NNS_SndPlayerStopSeqBySeqArcIdx(int seq_arc, int index, int fade_frames);
-/* The base class's constructor (its vtable, kind 0) and destructor (its vtable). */
-extern void func_020f5970(SoundEmitterObject *emitter);
-extern void func_020f5914(SoundEmitterObject *emitter);
 /* The slots' update callback of kind 1's class (SoundEmitterClass_ApplyLowered); the game
  * stores this symbol. */
 extern void func_020f555c(SoundSlots *slots, int index, int priority);
@@ -54,7 +52,7 @@ static SoundSlots *slots_of(SoundEmitterObject *emitter)
 /* func_020f539c: kind 2's constructor. */
 SoundEmitterObject *SoundEmitterClass_Construct2(SoundEmitterObject *emitter)
 {
-    func_020f5970(emitter);
+    SoundEmitterClass_ConstructBase(emitter);
     emitter->vtable = data_0213f090;
     emitter->kind = EMITTER_KIND_2;
     return emitter;
@@ -67,7 +65,7 @@ static void destruct_99(SoundEmitterObject *emitter)
 {
     emitter->vtable = data_0213f058;
     emitter->vtable = data_020d8414;
-    func_020f5914(emitter);
+    SoundEmitterClass_DestructBase(emitter);
 }
 
 /* func_020f53c8: kind 99's destructor that also frees the object. */
@@ -160,7 +158,7 @@ CLEAN_AS(func_020f555c, SoundEmitterClass_ApplyLowered)
  * 1 and no alternation. */
 static void construct_1(SoundEmitterObject *emitter)
 {
-    func_020f5970(emitter);
+    SoundEmitterClass_ConstructBase(emitter);
     emitter->vtable = data_020d8414;
     emitter->slots.update = func_020f555c;
     emitter->kind = EMITTER_KIND_1;
@@ -267,3 +265,66 @@ void SoundEmitterClass_Reset(SoundEmitterObject *emitter)
     emitter->last_number = 0;
 }
 CLEAN_AS(func_020f58e0, SoundEmitterClass_Reset)
+
+/* func_020f5914: the base class's destructor: its vtable put back. The slots are left as they
+ * are (slot 4, SoundEmitterClass_Finish, lets go of them first). */
+void SoundEmitterClass_DestructBase(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f074;
+}
+CLEAN_AS(func_020f5914, SoundEmitterClass_DestructBase)
+
+/* func_020f5924: the base class's destructor that also frees the object (its vtable slot 1). */
+SoundEmitterObject *SoundEmitterClass_DestructBaseDelete(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f074;
+    Heap_OperatorDeleteB(emitter);
+    return emitter;
+}
+CLEAN_AS(func_020f5924, SoundEmitterClass_DestructBaseDelete)
+
+/* func_020f5948: the base class's destructor as its vtable slot 0 holds it; the same as
+ * func_020f5914. */
+void SoundEmitterClass_DestructBaseB(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f074;
+}
+CLEAN_AS(func_020f5948, SoundEmitterClass_DestructBaseB)
+
+/* func_020f5958: the base class's constructor, a second copy of func_020f5970 (overlay 4's
+ * shop design object calls this one). */
+void SoundEmitterClass_ConstructBaseB(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f074;
+    emitter->kind = EMITTER_KIND_BASE;
+}
+CLEAN_AS(func_020f5958, SoundEmitterClass_ConstructBaseB)
+
+/* func_020f5970: the base class's constructor: its vtable and kind 0. The slots are set up by
+ * slot 2 (SoundEmitterClass_Reset), not here. */
+void SoundEmitterClass_ConstructBase(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f074;
+    emitter->kind = EMITTER_KIND_BASE;
+}
+CLEAN_AS(func_020f5970, SoundEmitterClass_ConstructBase)
+
+/* func_020f59ec: kind 2's destructor (its vtable slot 0): its vtable, then the base class's
+ * destructor. */
+SoundEmitterObject *SoundEmitterClass_Destruct2(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f090;
+    SoundEmitterClass_DestructBase(emitter);
+    return emitter;
+}
+CLEAN_AS(func_020f59ec, SoundEmitterClass_Destruct2)
+
+/* func_020f5a10: kind 2's destructor that also frees the object (its vtable slot 1). */
+SoundEmitterObject *SoundEmitterClass_Destruct2Delete(SoundEmitterObject *emitter)
+{
+    emitter->vtable = data_0213f090;
+    SoundEmitterClass_DestructBase(emitter);
+    Heap_OperatorDeleteB(emitter);
+    return emitter;
+}
+CLEAN_AS(func_020f5a10, SoundEmitterClass_Destruct2Delete)

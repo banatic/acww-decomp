@@ -1,7 +1,8 @@
 /* Overlay 3's part of the field actor (class vtable 0x020d82b4, include/cpp/main/Obj_020d82b4.h):
  * the checks the actor's frame update runs while overlay 3 is loaded (func_020058e4), the
- * choice of what to do with the held tool, and states of its state machine (0x16, 0x17, 0x38 to
- * 0x3e, 0x45 to 0x6e, 0x71 to 0x75, 0x78, 0x80 to 0x82, 0x89 and 0x8f).
+ * choice of what to do with the held tool, states of its state machine (6, 0x11, 0x16, 0x17, 0x38
+ * to 0x3e, 0x45 to 0x6e, 0x71 to 0x75, 0x78, 0x80 to 0x82, 0x89 and 0x8f), and what other code
+ * asks of a player's actor or for it (FieldActor_Player*; player 4 is the one at this console).
  *
  * States 0x58 to 0x56 catch an insect and 0x55 to 0x51 a fish: 0x56 is a swing that sweeps a
  * line with the held item and asks for 0x57 when it catches something; 0x57 shows the insect
@@ -35,6 +36,11 @@
  * 0x36 first); 0x3b ends one of four ways by its kind (FieldActor_EndState3B). State 0x16 waits
  * on a tile and goes on to state 0x17, which walks to the tile and acts on its map object at
  * frame 10.
+ *
+ * State 6 holds up an insect or a fish (FieldActor_PlayerShowItem asks for it with the item):
+ * animation 0x9f or 0x9e, then it waits until FieldActor_PlayerPutAwayShown lets the actor of
+ * this console put it away (animation 0xa0); another console's actor follows the progress its
+ * console saves. State 0x11 plays animation 0x9a once, then animation 0.
  *
  * The state machine: each state has an update, a message handler and an entry function, picked
  * by the state number at 0x7f0 from tables in main; some also have one run when the actor leaves
@@ -414,6 +420,32 @@ typedef struct State17Work {
     u8 unk_0C; /* set to 0 */
 } State17Work;
 
+/* State 6's work: the item held up (an insect, item 0x12b0 + kind, or a fish, 0x12e8 + kind) and
+ * what shows it. */
+typedef struct State6Work {
+    u16 item;
+    u8 unk_02[2];
+    int effect; /* effect 0x5a's handle (func_0209120c) for the insects 0x18, 0x30, 0x32 and
+                  * 0x33; -1 before the first frame, -2 for none */
+    int model;  /* the fish's model (func_0204fea4) */
+    u8 is_fish; /* the item is 0x12e8-0x131f */
+    u8 step;    /* 0 to 3 */
+} State6Work;
+
+/* State 6's arguments as saved at 0x8f0: the item packed by func_020778b0 and how far the actor
+ * of this console got (0 up, 1 shown, 2 put away), which another console's actor follows. */
+typedef struct State6Saved {
+    u8 item[2];
+    u8 progress;
+} State6Saved;
+
+/* What FieldActor_PlayerLook is given: callers pass an int in its first register, whose low byte
+ * is read. */
+typedef struct FieldActorLookFlag {
+    u8 track; /* nonzero: state 0x8f with LookArgs.track pointing here; zero: state 0x57 */
+    u8 unk_01[11];
+} FieldActorLookFlag;
+
 /* State 0x16's work: a tile and how the state ends (0: not yet; 1: state 0x17 on the tile;
  * 2: the usual way). */
 typedef struct State16Work {
@@ -476,6 +508,7 @@ typedef union FieldActorWork {
     State38Work s38;
     State17Work s17;
     State16Work s16;
+    State6Work s6;
     u8 bytes[0x1c];
 } FieldActorWork;
 
@@ -589,7 +622,7 @@ typedef struct FieldActor {
     u8 unk_8E9[0x8f0 - 0x8e9];
     union {
         LookArgs look;           /* state 0x8f */
-        TileArgs tile;           /* states 0x73 and 0x66 */
+        TileArgs tile;           /* states 0x73, 0x66 and 0x16 */
         SavedItemTile item_tile; /* states 0x61 and 0x5f */
         TileStepArgs tile_step;  /* state 0x60 */
         u8 left_early;           /* state 0x63: the actor of this console left it before its end */
@@ -609,6 +642,7 @@ typedef struct FieldActor {
         State3ESaved s39;
         State3ESaved s38;
         State3BArgs s3b;
+        State6Saved s6;
         /* Points packed by func_02077950 (x, y and z, states 0x6a and 0x4f, with a mode for
          * 0x4f) or func_020779b8 (x and z, states 0x68 and 0x4d; for 0x68 with the request's
          * flags in byte 5). */
@@ -1204,5 +1238,59 @@ int FieldActor_RequestState17(FieldActor *actor, const u32 *tile, int priority, 
 void FieldActor_UpdateState16(FieldActor *actor);
 void FieldActor_EndState16(FieldActor *actor);
 void FieldActor_RunState16Local(FieldActor *actor);
+void FieldActor_State16Message(FieldActor *actor, int arg);
+void FieldActor_EnterState16(FieldActor *actor, const StateRequest *request, int previous);
+void FieldActor_GetState16Saved(const TileArgs *saved, int *tile);
+void FieldActor_SetState16Saved(TileArgs *saved, const int *tile);
+int FieldActor_RequestState16(FieldActor *actor, const int *tile, int priority, int arg);
+void FieldActor_SetState16Args(TileArgs *args, const int *tile);
+
+void FieldActor_UpdateState11(FieldActor *actor);
+void FieldActor_RunState11(FieldActor *actor);
+void FieldActor_State11Message(FieldActor *actor, int arg);
+void FieldActor_EnterState11(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_RequestState11(FieldActor *actor, int mode, int priority, int arg);
+void FieldActor_SetState11Args(u16 *args, int mode);
+
+void FieldActor_UpdateState6(FieldActor *actor);
+void FieldActor_RunState6(FieldActor *actor);
+void FieldActor_PlaceState6(FieldActor *actor);
+void FieldActor_ExitState6(FieldActor *actor);
+void FieldActor_State6Message(FieldActor *actor, int arg);
+void FieldActor_EnterState6(FieldActor *actor, const StateRequest *request, int previous);
+int FieldActor_GetState6Progress(const State6Saved *saved);
+void FieldActor_SetState6Progress(State6Saved *saved, int progress);
+void FieldActor_GetState6SavedItem(const State6Saved *saved, u16 *item);
+void FieldActor_SetState6SavedItem(State6Saved *saved, int item);
+int FieldActor_RequestState6(FieldActor *actor, u16 item, int priority, int arg);
+
+/* A player's actor (player 4: the one at this console), for other code. */
+int FieldActor_PlayerHolds1376(void);
+void FieldActor_PlayerAnimation99(void);
+void FieldActor_OffsetMatrix(FieldActorBlock48 *matrix, const Vec3 *offset);
+Vec3 *FieldActor_PlayerFocus(int player);
+int FieldActor_PlayerPutAwayShown(void);
+int FieldActor_PlayerShowItem(int item);
+int FieldActor_PlayerStop(void);
+int FieldActor_PlayerEndState(int how, int player);
+int FieldActor_PlayerRequestState89(void);
+int FieldActor_PlayerRequestState11(void);
+int FieldActor_PlayerRequestState78(void);
+int FieldActor_PlayerFacePoint(const Vec3 *point);
+int FieldActor_PlayerRequestState6D(int kind);
+int FieldActor_PlayerRequestState6BOr6C(int which);
+int FieldActor_PlayerRequestState6A(Vec3 *point);
+int FieldActor_PlayerRequestState3B(void);
+int FieldActor_PlayerRequestState39(u32 kind, int *x, int *z, int yaw);
+int FieldActor_PlayerRequestState38(int *x, int *z, short *yaw);
+int FieldActor_PlayerLook(FieldActorLookFlag args);
+int FieldActor_PlayerRequestState61(const Vec3 *point, u16 *item);
+u32 FieldActor_PlayerShownItem(void);
+int FieldActor_PlayerShowing(void);
+int FieldActor_PlayerStrikesTile(const Vec3 *point);
+int FieldActor_PlayerFramesToActOnTile(const Vec3 *point, int player);
+int FieldActor_PlayerFramesToState5E(const Vec3 *point, int player);
+int FieldActor_SameTile(const Vec3 *a, const Vec3 *b);
+int FieldActor_PlayerFlag9(int player);
 
 #endif

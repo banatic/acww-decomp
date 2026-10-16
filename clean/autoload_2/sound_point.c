@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "sound_position.h"
 #include "sound_system.h"
 
 static_assert(offsetof(SoundPoint, handle) == 0x08, "SoundPoint.handle");
@@ -33,12 +34,6 @@ extern int NNS_SndPlayerWriteVariable(SoundHandle *handle, int index, short valu
 extern void NNS_SndPlayerStopSeqBySeqArcIdx(int seq_arc, int index, int fade_frames);
 /* The pan of the tracks in `track_mask`. */
 extern void func_0210b634(SoundHandle *handle, u16 track_mask, int pan);
-/* How far `pos` is from the listener, in whole units (`mode` 0: in all three axes). */
-extern int func_020f5e50(const Vec3 *pos, int mode);
-/* The volume a sound has at a distance. */
-extern int func_020f5e24(int distance);
-/* The pan a sound at `pos` has (`mode` 0: from X). */
-extern int func_020f5c64(const Vec3 *pos, int mode);
 
 /* The sequence archive point sounds start from, whatever their number says. */
 #define POINT_SEQ_ARC 1
@@ -74,8 +69,8 @@ void SoundPointList_StartSeq(SoundPointList *list, int number, const Vec3 *pos)
     int pan;
 
     Sound_StartSeqArc((u16) (number % 1000), POINT_SEQ_ARC, &list->handle);
-    volume = func_020f5e24(func_020f5e50(pos, 0));
-    pan = func_020f5c64(pos, 0);
+    volume = SoundPosition_VolumeAt(SoundPosition_Distance(pos, 0));
+    pan = SoundPosition_Pan(pos, 0);
     NNS_SndPlayerSetVolume(&list->handle, volume);
     func_0210b634(&list->handle, 0xff, pan);
 }
@@ -197,8 +192,8 @@ void SoundPoint_UpdateMusicVolume(int unused, const Vec3 *pos)
     if (music->player == NULL) {
         return;
     }
-    volume = func_020f5e24(func_020f5e50(pos, 0));
-    pan = func_020f5c64(pos, 0);
+    volume = SoundPosition_VolumeAt(SoundPosition_Distance(pos, 0));
+    pan = SoundPosition_Pan(pos, 0);
     if (volume < POINT_MUSIC_VOLUME_MIN) {
         volume = POINT_MUSIC_VOLUME_MIN;
     }
@@ -236,8 +231,8 @@ CLEAN_AS(func_020f5054, SoundPoint_PlayAt)
 /* func_020f50e4: the point's volume and pan set from its position. */
 void SoundPoint_ApplyVolume(SoundPoint *point)
 {
-    int volume = func_020f5e24(func_020f5e50(&point->pos, 0));
-    int pan = func_020f5c64(&point->pos, 0);
+    int volume = SoundPosition_VolumeAt(SoundPosition_Distance(&point->pos, 0));
+    int pan = SoundPosition_Pan(&point->pos, 0);
 
     NNS_SndPlayerSetVolume(&point->handle, volume);
     func_0210b634(&point->handle, 0xff, pan);

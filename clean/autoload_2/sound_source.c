@@ -4,6 +4,7 @@
 #include <stddef.h>
 
 #include "clean.h"
+#include "sound_position.h"
 #include "sound_system.h"
 
 static_assert(offsetof(SoundSourceObject, number) == 0x08, "SoundSourceObject.number");
@@ -33,17 +34,6 @@ extern void NNS_SndPlayerSetTrackVolume(SoundHandle *handle, int track_mask, int
 extern void func_0210b734(SoundHandle *handle, int priority);
 /* The pan of the tracks in `track_mask`. */
 extern void func_0210b634(SoundHandle *handle, u16 track_mask, int pan);
-/* How far `pos` is from the listener, in whole units, measured three ways (`mode` 0 to 2);
- * 0 without a position. */
-extern int func_020f5e50(const Vec3 *pos, int mode);
-/* The volume a sound has at a distance. */
-extern int func_020f5e24(int distance);
-/* The pan a sound at `pos` has, measured three ways (`mode` 0 to 2); 0 without a position. */
-extern int func_020f5c64(const Vec3 *pos, int mode);
-/* The volumes of the two parts of a sound (tracks 3 and 12) at depth `z`. */
-extern void func_020f5cf8(int z, int *volume_a, int *volume_b);
-/* The distance curve; its word 4 is the farthest a sound is heard, in 20.12 fixed point. */
-extern int *func_020f5a4c(void);
 
 /* Numbers with a way of their own (seq_arc * 1000 + index). */
 #define SOURCE_SPLIT_A 0x4ce   /* volume split between tracks 3 and 12 */
@@ -71,14 +61,14 @@ static int source_distance(unsigned int number, const Vec3 *pos)
 {
     switch (number) {
         case SOURCE_VERTICAL:
-            return func_020f5e50(pos, 1);
+            return SoundPosition_Distance(pos, 1);
         case 0x7f7:
         case 0x7f8:
         case 0x7fb:
         case 0x7fc:
         case 0x7fe:
         case 0x7ff:
-            return func_020f5e50(pos, 2);
+            return SoundPosition_Distance(pos, 2);
         case SOURCE_SPLIT_A:
         case 0x7f9:
         case 0x7fa:
@@ -92,7 +82,7 @@ static int source_distance(unsigned int number, const Vec3 *pos)
         case SOURCE_SPLIT_B:
             return 0;
         default:
-            return func_020f5e50(pos, 0);
+            return SoundPosition_Distance(pos, 0);
     }
 }
 
@@ -101,15 +91,15 @@ static int source_pan(unsigned int number, const Vec3 *pos)
 {
     switch (number) {
         case SOURCE_PAN_SIGN:
-            return func_020f5c64(pos, 1);
+            return SoundPosition_Pan(pos, 1);
         case 0x805:
         case SOURCE_VERTICAL:
             return 0;
         default:
             if (number >= 0x7f7 && number <= 0x804) {
-                return func_020f5c64(pos, 2);
+                return SoundPosition_Pan(pos, 2);
             }
-            return func_020f5c64(pos, 0);
+            return SoundPosition_Pan(pos, 0);
     }
 }
 
@@ -177,12 +167,12 @@ void SoundSourceClass_Update(SoundSourceObject *source, const Vec3 *pos)
     if (source->flags & SOURCE_ASKED) {
         number = source->number;
         volume = source_distance(number, pos);
-        if (volume > (func_020f5a4c()[4] >> 12)) {
+        if (volume > (SoundPosition_Curve()->far >> 12)) {
             stop_if_playing(source);
             source->flags &= (u8) ~SOURCE_ASKED;
             return;
         }
-        volume = func_020f5e24(volume);
+        volume = SoundPosition_VolumeAt(volume);
         if (volume == 0) {
             stop_if_playing(source);
             source->flags &= (u8) ~SOURCE_ASKED;
@@ -213,7 +203,7 @@ void SoundSourceClass_Update(SoundSourceObject *source, const Vec3 *pos)
                 int volume_a;
                 int volume_b;
 
-                func_020f5cf8(pos->z, &volume_a, &volume_b);
+                SoundPosition_SplitVolumes(pos->z, &volume_a, &volume_b);
                 NNS_SndPlayerSetTrackVolume(&source->handle, 3, volume_a);
                 NNS_SndPlayerSetTrackVolume(&source->handle, 12, volume_b);
             } else {

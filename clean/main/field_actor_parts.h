@@ -81,6 +81,18 @@ static inline Actor *FieldActor_Base(FieldActor *actor)
 #define FIELD_ACTOR_PENDING_BITS(actor) FIELD_ACTOR_FIELD(actor, u8, 0x904)   /* PENDING_ACTION_... */
 #define FIELD_ACTOR_ENTERED_STATE(actor) FIELD_ACTOR_FIELD(actor, int, 0xc88) /* with FieldActor.unk_C84 */
 
+/* The control of this console's actor (FieldActor_ReadControl, field_actor_control.c): how far it
+ * is pushed (0 to 1.0) and towards which angle, whether it runs, the act of this frame (A
+ * pressed or an object picked with the pen, with func_020b7524's value), whether A is held (or
+ * the pen is on the actor), and the extra byte of what the pen picked (0xff for none). */
+#define FIELD_ACTOR_PUSH(actor) FIELD_ACTOR_FIELD(actor, fx32, 0x134)
+#define FIELD_ACTOR_PUSH_ANGLE(actor) FIELD_ACTOR_FIELD(actor, s16, 0x138)
+#define FIELD_ACTOR_RUN(actor) FIELD_ACTOR_FIELD(actor, u8, 0x13a)
+#define FIELD_ACTOR_ACT(actor) FIELD_ACTOR_FIELD(actor, u8, 0x13b)
+#define FIELD_ACTOR_ACT_VALUE(actor) FIELD_ACTOR_FIELD(actor, int, 0x13c)
+#define FIELD_ACTOR_HOLD(actor) FIELD_ACTOR_FIELD(actor, u8, 0x141)
+#define FIELD_ACTOR_PICK_EXTRA(actor) FIELD_ACTOR_FIELD(actor, u8, 0x16d)
+
 /* The bits at 0x904: a remote action (FieldActor_TakeRemoteAction) put off to a later frame. */
 #define PENDING_ACTION_TYPE 0x1f
 #define PENDING_ACTION_SUB_SHIFT 5

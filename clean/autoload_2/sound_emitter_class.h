@@ -56,5 +56,12 @@ int SoundEmitterClass_PlayHeld(SoundEmitterObject *emitter, int number, int volu
 int SoundEmitterClass_Play(SoundEmitterObject *emitter, int number, int volume, int pitch);
 void SoundEmitterClass_Update(SoundEmitterObject *emitter, void *source);
 void SoundEmitterClass_Reset(SoundEmitterObject *emitter);
+void SoundEmitterClass_DestructBase(SoundEmitterObject *emitter);
+SoundEmitterObject *SoundEmitterClass_DestructBaseDelete(SoundEmitterObject *emitter);
+void SoundEmitterClass_DestructBaseB(SoundEmitterObject *emitter);
+void SoundEmitterClass_ConstructBaseB(SoundEmitterObject *emitter);
+void SoundEmitterClass_ConstructBase(SoundEmitterObject *emitter);
+SoundEmitterObject *SoundEmitterClass_Destruct2(SoundEmitterObject *emitter);
+SoundEmitterObject *SoundEmitterClass_Destruct2Delete(SoundEmitterObject *emitter);
 
 #endif

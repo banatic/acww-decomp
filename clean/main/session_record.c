@@ -11,10 +11,23 @@ extern NetSession *data_020ccf94;                  /* the session */
 extern SessionRecordWriter *const data_020cd2f4[]; /* the writers, by record id */
 
 extern void *func_02077afc(int size, int align);                  /* from the network heap (data_021c9b30) */
-extern u8 func_0207762c(u32 id);                                  /* a record's size */
-extern void func_02077598(int id);                                /* fills a record from data_020cd1dc */
 extern int func_02064344(const void *a, const void *b, u32 size); /* whether the bytes differ */
 extern void func_0208520c(u8 *record, int id);                    /* the record from its entry at data_021d232c */
+extern SessionRecordFiller *const data_020cd1dc[];                /* the fillers, by record id */
+extern const u16 data_020cd050[];                                 /* each record's offset in the table */
+extern const u8 data_020ccfa8[];                                  /* each record's size */
+
+/* What the writers of records 8-31 hand their record to. */
+extern void func_0209649c(u8 *record, int id);                     /* records 8-11 */
+extern void func_02085310(u8 *record, int id);                     /* records 12-19: their entry at data_021d213c */
+extern void *func_02039128(u8 *record, int id, void *object);      /* records 20-23 */
+extern void func_ov003_02235c94(u8 *record, int id, void *object); /* records 24-31: data_ov003_02262aa8 */
+/* What fills records 12-19 when the table is made: func_02085310, then byte 0x18 and halfword
+ * 0x1a of the matching entry of data_021d13e4 (func_0207b9d0(id - 12)) cleared. */
+extern void func_02085350(u8 *record, int id);
+/* The packers of records 0-7 (the actors' saved states use them too). */
+extern void func_020779b8(u8 *packed, fx32 x, fx32 z); /* x and z in 5 bytes */
+extern void func_02077910(u8 *packed, int value);      /* a 16-bit value in 2 bytes */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -29,7 +42,7 @@ void SessionRecord_Init(void)
         MI_CpuFill8(table, 0, RECORD_TABLE_SIZE);
     }
     for (int id = 0; id < SESSION_RECORDS; id++) {
-        func_02077598(id);
+        SessionRecord_Fill(id);
     }
 }
 CLEAN_AS(func_0207718c, SessionRecord_Init)
@@ -42,7 +55,7 @@ void SessionRecord_Update(int id, void *object, int mode, int force)
 {
     NetSession *session = data_020ccf94;
     int flagged = Session_GetRecordFlag(session, id);
-    u32 size = func_0207762c((u32) id);
+    u32 size = SessionRecord_GetSize((u32) id);
     u8 *record = Session_GetRecord(session, id);
 
     if (!flagged && !force) {
@@ -292,3 +305,471 @@ void SessionRecord_Write44(u8 *record, void *object, int mode)
     func_0208520c(record, 44);
 }
 CLEAN_AS(func_02077380, SessionRecord_Write44)
+
+/* func_0207738c: the writer of record 43. */
+void SessionRecord_Write43(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 43);
+}
+CLEAN_AS(func_0207738c, SessionRecord_Write43)
+
+/* func_02077398: the writer of record 42. */
+void SessionRecord_Write42(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 42);
+}
+CLEAN_AS(func_02077398, SessionRecord_Write42)
+
+/* func_020773a4: the writer of record 41. */
+void SessionRecord_Write41(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 41);
+}
+CLEAN_AS(func_020773a4, SessionRecord_Write41)
+
+/* func_020773b0: the writer of record 40. */
+void SessionRecord_Write40(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 40);
+}
+CLEAN_AS(func_020773b0, SessionRecord_Write40)
+
+/* func_020773bc: the writer of record 39. */
+void SessionRecord_Write39(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 39);
+}
+CLEAN_AS(func_020773bc, SessionRecord_Write39)
+
+/* func_020773c8: the writer of record 38. */
+void SessionRecord_Write38(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 38);
+}
+CLEAN_AS(func_020773c8, SessionRecord_Write38)
+
+/* func_020773d4: the writer of record 37. */
+void SessionRecord_Write37(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 37);
+}
+CLEAN_AS(func_020773d4, SessionRecord_Write37)
+
+/* func_020773e0: the writer of record 36. */
+void SessionRecord_Write36(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 36);
+}
+CLEAN_AS(func_020773e0, SessionRecord_Write36)
+
+/* func_020773ec: the writer of record 35. */
+void SessionRecord_Write35(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 35);
+}
+CLEAN_AS(func_020773ec, SessionRecord_Write35)
+
+/* func_020773f8: the writer of record 34. */
+void SessionRecord_Write34(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 34);
+}
+CLEAN_AS(func_020773f8, SessionRecord_Write34)
+
+/* func_02077404: the writer of record 33. */
+void SessionRecord_Write33(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 33);
+}
+CLEAN_AS(func_02077404, SessionRecord_Write33)
+
+/* func_02077410: the writer of record 32. */
+void SessionRecord_Write32(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0208520c(record, 32);
+}
+CLEAN_AS(func_02077410, SessionRecord_Write32)
+
+/* func_0207741c: the writer of record 31. */
+void SessionRecord_Write31(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 31, object);
+}
+CLEAN_AS(func_0207741c, SessionRecord_Write31)
+
+/* func_02077428: the writer of record 30. */
+void SessionRecord_Write30(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 30, object);
+}
+CLEAN_AS(func_02077428, SessionRecord_Write30)
+
+/* func_02077434: the writer of record 29. */
+void SessionRecord_Write29(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 29, object);
+}
+CLEAN_AS(func_02077434, SessionRecord_Write29)
+
+/* func_02077440: the writer of record 28. */
+void SessionRecord_Write28(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 28, object);
+}
+CLEAN_AS(func_02077440, SessionRecord_Write28)
+
+/* func_0207744c: the writer of record 27. */
+void SessionRecord_Write27(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 27, object);
+}
+CLEAN_AS(func_0207744c, SessionRecord_Write27)
+
+/* func_02077458: the writer of record 26. */
+void SessionRecord_Write26(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 26, object);
+}
+CLEAN_AS(func_02077458, SessionRecord_Write26)
+
+/* func_02077464: the writer of record 25. */
+void SessionRecord_Write25(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 25, object);
+}
+CLEAN_AS(func_02077464, SessionRecord_Write25)
+
+/* func_02077470: the writer of record 24. */
+void SessionRecord_Write24(u8 *record, void *object)
+{
+    func_ov003_02235c94(record, 24, object);
+}
+CLEAN_AS(func_02077470, SessionRecord_Write24)
+
+/* func_0207747c: the writer of record 23. */
+void SessionRecord_Write23(u8 *record, void *object, int mode)
+{
+    (void) mode;
+    func_02039128(record, 23, object);
+}
+CLEAN_AS(func_0207747c, SessionRecord_Write23)
+
+/* func_02077488: the writer of record 22. */
+void SessionRecord_Write22(u8 *record, void *object, int mode)
+{
+    (void) mode;
+    func_02039128(record, 22, object);
+}
+CLEAN_AS(func_02077488, SessionRecord_Write22)
+
+/* func_02077494: the writer of record 21. */
+void SessionRecord_Write21(u8 *record, void *object, int mode)
+{
+    (void) mode;
+    func_02039128(record, 21, object);
+}
+CLEAN_AS(func_02077494, SessionRecord_Write21)
+
+/* func_020774a0: the writer of record 20. */
+void SessionRecord_Write20(u8 *record, void *object, int mode)
+{
+    (void) mode;
+    func_02039128(record, 20, object);
+}
+CLEAN_AS(func_020774a0, SessionRecord_Write20)
+
+/* func_020774ac: the writer of record 19. */
+void SessionRecord_Write19(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 19);
+}
+CLEAN_AS(func_020774ac, SessionRecord_Write19)
+
+/* func_020774b8: the writer of record 18. */
+void SessionRecord_Write18(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 18);
+}
+CLEAN_AS(func_020774b8, SessionRecord_Write18)
+
+/* func_020774c4: the writer of record 17. */
+void SessionRecord_Write17(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 17);
+}
+CLEAN_AS(func_020774c4, SessionRecord_Write17)
+
+/* func_020774d0: the writer of record 16. */
+void SessionRecord_Write16(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 16);
+}
+CLEAN_AS(func_020774d0, SessionRecord_Write16)
+
+/* func_020774dc: the writer of record 15. */
+void SessionRecord_Write15(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 15);
+}
+CLEAN_AS(func_020774dc, SessionRecord_Write15)
+
+/* func_020774e8: the writer of record 14. */
+void SessionRecord_Write14(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 14);
+}
+CLEAN_AS(func_020774e8, SessionRecord_Write14)
+
+/* func_020774f4: the writer of record 13. */
+void SessionRecord_Write13(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 13);
+}
+CLEAN_AS(func_020774f4, SessionRecord_Write13)
+
+/* func_02077500: the writer of record 12. */
+void SessionRecord_Write12(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_02085310(record, 12);
+}
+CLEAN_AS(func_02077500, SessionRecord_Write12)
+
+/* func_0207750c: the writer of record 11. */
+void SessionRecord_Write11(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0209649c(record, 11);
+}
+CLEAN_AS(func_0207750c, SessionRecord_Write11)
+
+/* func_02077518: the writer of record 10. */
+void SessionRecord_Write10(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0209649c(record, 10);
+}
+CLEAN_AS(func_02077518, SessionRecord_Write10)
+
+/* func_02077524: the writer of record 9. */
+void SessionRecord_Write9(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0209649c(record, 9);
+}
+CLEAN_AS(func_02077524, SessionRecord_Write9)
+
+/* func_02077530: the writer of record 8. */
+void SessionRecord_Write8(u8 *record, void *object, int mode)
+{
+    (void) object;
+    (void) mode;
+    func_0209649c(record, 8);
+}
+CLEAN_AS(func_02077530, SessionRecord_Write8)
+
+/* func_0207753c: the writer of record 7: `*value` packed. */
+void SessionRecord_Write7(u8 *record, const s16 *value, int mode)
+{
+    (void) mode;
+    SessionRecord_PackValue(record, value);
+}
+CLEAN_AS(func_0207753c, SessionRecord_Write7)
+
+/* func_02077544: the writer of record 6: `*value` packed. */
+void SessionRecord_Write6(u8 *record, const s16 *value, int mode)
+{
+    (void) mode;
+    SessionRecord_PackValue(record, value);
+}
+CLEAN_AS(func_02077544, SessionRecord_Write6)
+
+/* func_0207754c: the writer of record 5: `*value` packed. */
+void SessionRecord_Write5(u8 *record, const s16 *value, int mode)
+{
+    (void) mode;
+    SessionRecord_PackValue(record, value);
+}
+CLEAN_AS(func_0207754c, SessionRecord_Write5)
+
+/* func_02077554: the writer of record 4: `*value` packed. */
+void SessionRecord_Write4(u8 *record, const s16 *value, int mode)
+{
+    (void) mode;
+    SessionRecord_PackValue(record, value);
+}
+CLEAN_AS(func_02077554, SessionRecord_Write4)
+
+/* func_0207755c: `*value` packed into 2 bytes (func_02077910). */
+void SessionRecord_PackValue(u8 *record, const s16 *value)
+{
+    func_02077910(record, *value);
+}
+CLEAN_AS(func_0207755c, SessionRecord_PackValue)
+
+/* func_02077568: the writer of record 3: `point` packed. */
+void SessionRecord_Write3(u8 *record, const SessionRecordPoint *point, int mode)
+{
+    (void) mode;
+    SessionRecord_PackPoint(record, point);
+}
+CLEAN_AS(func_02077568, SessionRecord_Write3)
+
+/* func_02077570: the writer of record 2: `point` packed. */
+void SessionRecord_Write2(u8 *record, const SessionRecordPoint *point, int mode)
+{
+    (void) mode;
+    SessionRecord_PackPoint(record, point);
+}
+CLEAN_AS(func_02077570, SessionRecord_Write2)
+
+/* func_02077578: the writer of record 1: `point` packed. */
+void SessionRecord_Write1(u8 *record, const SessionRecordPoint *point, int mode)
+{
+    (void) mode;
+    SessionRecord_PackPoint(record, point);
+}
+CLEAN_AS(func_02077578, SessionRecord_Write1)
+
+/* func_02077580: the writer of record 0: `point` packed. */
+void SessionRecord_Write0(u8 *record, const SessionRecordPoint *point, int mode)
+{
+    (void) mode;
+    SessionRecord_PackPoint(record, point);
+}
+CLEAN_AS(func_02077580, SessionRecord_Write0)
+
+/* func_02077588: the x and z of `point` packed into 5 bytes (func_020779b8); y is left out. */
+void SessionRecord_PackPoint(u8 *record, const SessionRecordPoint *point)
+{
+    func_020779b8(record, point->x, point->z);
+}
+CLEAN_AS(func_02077588, SessionRecord_PackPoint)
+
+/* func_02077598: record `id` filled by its filler in data_020cd1dc, when it has one (records
+ * 12-19).
+ * QUIRK: the filler is handed NULL while the session has no record table (SessionRecord_Init
+ * fills the records even then).
+ * REQUIRES: 0 <= id < SESSION_RECORDS. */
+void SessionRecord_Fill(int id)
+{
+    SessionRecordFiller *fill = data_020cd1dc[id];
+    if (fill != NULL) {
+        fill(Session_GetRecord(data_020ccf94, id));
+    }
+}
+CLEAN_AS(func_02077598, SessionRecord_Fill)
+
+/* func_020775c0: the filler of record 19. */
+void SessionRecord_Fill19(u8 *record)
+{
+    func_02085350(record, 19);
+}
+CLEAN_AS(func_020775c0, SessionRecord_Fill19)
+
+/* func_020775cc: the filler of record 18. */
+void SessionRecord_Fill18(u8 *record)
+{
+    func_02085350(record, 18);
+}
+CLEAN_AS(func_020775cc, SessionRecord_Fill18)
+
+/* func_020775d8: the filler of record 17. */
+void SessionRecord_Fill17(u8 *record)
+{
+    func_02085350(record, 17);
+}
+CLEAN_AS(func_020775d8, SessionRecord_Fill17)
+
+/* func_020775e4: the filler of record 16. */
+void SessionRecord_Fill16(u8 *record)
+{
+    func_02085350(record, 16);
+}
+CLEAN_AS(func_020775e4, SessionRecord_Fill16)
+
+/* func_020775f0: the filler of record 15. */
+void SessionRecord_Fill15(u8 *record)
+{
+    func_02085350(record, 15);
+}
+CLEAN_AS(func_020775f0, SessionRecord_Fill15)
+
+/* func_020775fc: the filler of record 14. */
+void SessionRecord_Fill14(u8 *record)
+{
+    func_02085350(record, 14);
+}
+CLEAN_AS(func_020775fc, SessionRecord_Fill14)
+
+/* func_02077608: the filler of record 13. */
+void SessionRecord_Fill13(u8 *record)
+{
+    func_02085350(record, 13);
+}
+CLEAN_AS(func_02077608, SessionRecord_Fill13)
+
+/* func_02077614: the filler of record 12. */
+void SessionRecord_Fill12(u8 *record)
+{
+    func_02085350(record, 12);
+}
+CLEAN_AS(func_02077614, SessionRecord_Fill12)
+
+/* func_02077620: a record's offset in the record table.
+ * REQUIRES: id < SESSION_RECORDS. */
+u16 SessionRecord_GetOffset(u16 id)
+{
+    return data_020cd050[id];
+}
+CLEAN_AS(func_02077620, SessionRecord_GetOffset)
+
+/* func_0207762c: a record's size in bytes.
+ * REQUIRES: id < SESSION_RECORDS. */
+u8 SessionRecord_GetSize(u32 id)
+{
+    return data_020ccfa8[id];
+}
+CLEAN_AS(func_0207762c, SessionRecord_GetSize)
