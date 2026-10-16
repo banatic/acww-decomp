@@ -9,7 +9,10 @@
  *   frame), it talks over its receiver while the link is open, closes (its switch turns off,
  *   one frame) and lets the scene go on (func_0203e020); event 8 makes it idle;
  * - its switch (Telephone.switch_state), entered through vtable slot 0x70: off, turning on (one
- *   frame, with sound 1), on, and turning off (one frame, with sound 1). */
+ *   frame, with sound 1), on, and turning off (one frame, with sound 1).
+ *
+ * Once its model is bound it shows its switch as the town's map record left it and is idle;
+ * each frame it runs the call, then the switch. */
 #ifndef CLEAN_OV004_TELEPHONE_H
 #define CLEAN_OV004_TELEPHONE_H
 
@@ -40,7 +43,8 @@ enum TelephoneSwitch {
     TELEPHONE_SWITCH_OFF = 0,
     TELEPHONE_SWITCH_TURNING_ON = 1,
     TELEPHONE_SWITCH_ON = 2,
-    TELEPHONE_SWITCH_TURNING_OFF = 3
+    TELEPHONE_SWITCH_TURNING_OFF = 3,
+    TELEPHONE_SWITCH_STATE_COUNT = 4
 };
 
 void Telephone_UpdateClose(Telephone *phone);
@@ -61,5 +65,18 @@ void Telephone_UpdateSwitchOn(Telephone *phone);
 int Telephone_EnterSwitchOn(Telephone *phone);
 void Telephone_UpdateSwitchTurningOn(Telephone *phone);
 int Telephone_EnterSwitchTurningOn(Telephone *phone);
+void Telephone_UpdateSwitchOff(Telephone *phone);
+int Telephone_EnterSwitchOff(Telephone *phone);
+void Telephone_UpdateSwitch(Telephone *phone);
+int Telephone_EnterSwitch(Telephone *phone, unsigned int state, int value);
+u8 Telephone_SwitchStateIsOn(Telephone *phone, unsigned int state);
+void Telephone_OnSceneEvent(Telephone *phone, int event);
+int Telephone_Vfunc0C(void);
+int Telephone_Update(Telephone *phone);
+int Telephone_Start(Telephone *phone);
+Telephone *Telephone_Delete(Telephone *phone);
+Telephone *Telephone_Destroy(Telephone *phone);
+Telephone *Telephone_Construct(Telephone *phone);
+void Telephone_Create(void);
 
 #endif

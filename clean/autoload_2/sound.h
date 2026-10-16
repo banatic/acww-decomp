@@ -12,8 +12,8 @@
  *   three hooks give (Sound_Set*Hook); a "held" one is stopped by the first update after a frame
  *   it was not asked for again.
  * - SoundFader: a level moved to a target over a number of frames, in 1/4096ths.
- * - SoundSystem (data_021fd1bc): the game's sound state; it plays the sound effects and the
- *   speaking voice (voice.h). */
+ * - SoundSystem (data_021fd1bc): the game's sound state; it plays the music, the sound effects
+ *   and the speaking voice (sound_system.h, voice.h). */
 #ifndef CLEAN_AUTOLOAD_2_SOUND_H
 #define CLEAN_AUTOLOAD_2_SOUND_H
 
@@ -117,13 +117,50 @@ typedef struct SoundFader {
     fx32 step;  /* 0x08: added each frame */
 } SoundFader;
 
-/* The game's sound state (data_021fd1bc), as far as these files use it. */
+/* NNSSndStrmHandle: the stream a handle plays, NULL when none. */
+typedef struct SoundStreamHandle {
+    void *stream;
+} SoundStreamHandle;
+
+struct SoundScene;
+
+/* The game's sound state (data_021fd1bc); sound_system.h says more. */
 typedef struct SoundSystem {
-    u8 unk_00[0x38];
-    SoundHandle effect; /* 0x38: the sound effects' handle */
-    u8 unk_3c[8];
-    s32 voice_type;    /* 0x44: the speaking voice's kind, 0 to 4 */
-    SoundHandle voice; /* 0x48: the speaking voice's handle */
+    void *owner;              /* 0x00: an object that puts itself here when built (func_020f9624) */
+    SoundFader fader;         /* 0x04: the music's own fades and its tracks' cross-fades */
+    SoundFader volume_a;      /* 0x10: the first group of players' volume */
+    SoundFader volume_b;      /* 0x1c: the second group of players' volume */
+    void *scene_heap;         /* 0x28: a small sound heap of its own, emptied for each scene */
+    struct SoundScene *scene; /* 0x2c: the current scene's sound object, NULL when none */
+    void *sound_set;          /* 0x30: the current sound set (func_020f697c) */
+    SoundStreamHandle stream; /* 0x34: the music when it is a stream */
+    SoundHandle effect;       /* 0x38: the sound effects' handle */
+    SoundHandle music;        /* 0x3c: the music's handle */
+    SoundHandle effect_b;     /* 0x40: a second effects' handle, on player 10 */
+    s32 voice_type;           /* 0x44: the speaking voice's kind, 0 to 4 */
+    SoundHandle voice;        /* 0x48: the speaking voice's handle */
+    u8 unk_4c;
+    u8 muted; /* 0x4d: no sound effect starts while set (the scene is stopping) */
+    u8 pad_4e[2];
+    s32 output_effect; /* 0x50: the sound capture's output effect */
+    u32 random;        /* 0x54: the random generator's state */
+    u32 random_mul;    /* 0x58 */
+    u32 random_add;    /* 0x5c */
+    u8 lowered;        /* 0x60: both groups of players are turned down */
+    u8 b_lowered;      /* 0x61: the second group is turned down */
+    u8 unk_62;         /* 0x62: while set, starting a scene keeps the players' heaps */
+    u8 pad_63;
+    u16 tracks_in; /* 0x64: the music's tracks faded in, or the tracks a set leaves on */
+    u8 pad_66[2];
+    s32 stream_length; /* 0x68: the length of stream 0 */
+    s16 cross_delay;   /* 0x6c: frames before a cross-fade of tracks starts; -1 none */
+    u16 tracks_out;    /* 0x6e: the music's tracks faded out by the cross-fade */
+    u8 pan;            /* 0x70: the effects' pan, 0x80 the middle */
+    u8 unk_71;         /* 0x71: 1 or 0 (SoundSystem_SetUnk71) */
+    u8 delay;          /* 0x72: frames before the scene's frame update goes on */
+    u8 arrangement;    /* 0x73: the music's arrangement (SoundSystem_SetArrangement) */
+    u8 arrange_step;   /* 0x74: the change of arrangement to make */
+    u8 arrange_due;    /* 0x75: the change still has to be made */
 } SoundSystem;
 
 void Sound_InitHandle(SoundHandle *handle);

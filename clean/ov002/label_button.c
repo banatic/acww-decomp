@@ -15,9 +15,12 @@ extern const u8 data_ov002_0220bd58[];  /* LabelButton1's vtable */
 extern const u8 data_ov002_0220bd74[];  /* LabelButton0's */
 extern void func_020edb3c(void *block); /* operator delete */
 
-/* ov002's base class */
-extern void *func_ov002_0220b698(LabelButton *button, char kind, int param); /* constructor */
-extern void *func_ov002_0220b648(LabelButton *button);                       /* destructor */
+extern const u8 data_ov002_0220bd90[]; /* the base class's vtable */
+
+/* main's labelled sprite class */
+extern void *func_0208f58c(LabelButton *button, char kind, int param); /* constructor */
+extern void *func_0208f46c(LabelButton *button);                       /* destructor */
+extern void func_0208aef4(LabelButton *button, int x, int y);          /* its place, from the screen's centre */
 
 /* main's labelled sprite */
 extern int func_0208aef0(LabelButton *button);                    /* x */
@@ -43,6 +46,10 @@ extern u8 data_021f6c5c; /* the touch's y */
 #define ANIM_SHOWN 1
 #define ANIM_PRESSED 2
 
+/* The screen's centre, (0, 0) of main's places. */
+#define CENTER_X 0x80
+#define CENTER_Y 0x60
+
 /* The vtable's entries called here. */
 #define SLOT_STEP 3
 #define SLOT_SET_PLACE 4
@@ -65,7 +72,7 @@ static void step(LabelButton *button)
 LabelButton *LabelButton1_Delete(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd58;
-    func_ov002_0220b648(button);
+    LabelButtonBase_Destruct(button);
     func_020edb3c(button);
     return button;
 }
@@ -75,7 +82,7 @@ CLEAN_AS(func_ov002_0220b3f0, LabelButton1_Delete)
 LabelButton *LabelButton1_Destroy(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd58;
-    func_ov002_0220b648(button);
+    LabelButtonBase_Destruct(button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b410, LabelButton1_Destroy)
@@ -83,7 +90,7 @@ CLEAN_AS(func_ov002_0220b410, LabelButton1_Destroy)
 /* func_ov002_0220b428 */
 LabelButton *LabelButton1_Construct(LabelButton *button)
 {
-    func_ov002_0220b698(button, 1, 0);
+    LabelButtonBase_Construct(button, 1, 0);
     button->vtable = data_ov002_0220bd58;
     return button;
 }
@@ -93,7 +100,7 @@ CLEAN_AS(func_ov002_0220b428, LabelButton1_Construct)
 LabelButton *LabelButton0_Delete(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd74;
-    func_ov002_0220b648(button);
+    LabelButtonBase_Destruct(button);
     func_020edb3c(button);
     return button;
 }
@@ -103,7 +110,7 @@ CLEAN_AS(func_ov002_0220b444, LabelButton0_Delete)
 LabelButton *LabelButton0_Destroy(LabelButton *button)
 {
     button->vtable = data_ov002_0220bd74;
-    func_ov002_0220b648(button);
+    LabelButtonBase_Destruct(button);
     return button;
 }
 CLEAN_AS(func_ov002_0220b464, LabelButton0_Destroy)
@@ -111,7 +118,7 @@ CLEAN_AS(func_ov002_0220b464, LabelButton0_Destroy)
 /* func_ov002_0220b47c */
 LabelButton *LabelButton0_Construct(LabelButton *button)
 {
-    func_ov002_0220b698(button, 0, 0);
+    LabelButtonBase_Construct(button, 0, 0);
     button->vtable = data_ov002_0220bd74;
     return button;
 }
@@ -178,7 +185,7 @@ CLEAN_AS(func_ov002_0220b57c, LabelButton_StepAnimation)
 
 /* func_ov002_0220b59c: the y of anchor point `anchor` of the button: its place, moved as far
  * as the pressed animation has moved its frame from the first, plus 8 for anchors 0, 1 and 3
- * (and nothing for 2 or any other). func_ov002_0220b5ec gives the x. */
+ * (and nothing for 2 or any other). LabelButton_AnchorX gives the x. */
 int LabelButton_AnchorY(LabelButton *button, int anchor)
 {
     int y = func_0208aeec(button);
@@ -200,3 +207,79 @@ int LabelButton_AnchorY(LabelButton *button, int anchor)
     return y;
 }
 CLEAN_AS(func_ov002_0220b59c, LabelButton_AnchorY)
+
+/* func_ov002_0220b5ec: the x of anchor point `anchor` of the button: its place, moved as far
+ * as the pressed animation has moved its frame from the first, plus 0x10 for anchors 0 and 2,
+ * 0x20 for 1 and 3 (and nothing for any other). */
+int LabelButton_AnchorX(LabelButton *button, int anchor)
+{
+    int x = func_0208aef0(button);
+    if (func_0208f0c0(button) == ANIM_PRESSED) {
+        int dx;
+        int dy;
+        func_0208f184(button, &dx, &dy);
+        x += dx;
+    }
+    switch (anchor) {
+        case 0:
+        case 2:
+            x += 0x10;
+            break;
+        case 1:
+        case 3:
+            x += 0x20;
+            break;
+        default:
+            break;
+    }
+    return x;
+}
+CLEAN_AS(func_ov002_0220b5ec, LabelButton_AnchorX)
+
+/* func_ov002_0220b63c (vtable slot 4 of all three classes): places the button at (x, y) on
+ * the screen. */
+void LabelButton_SetPlace(LabelButton *button, int x, int y)
+{
+    func_0208aef4(button, x - CENTER_X, y - CENTER_Y);
+}
+CLEAN_AS(func_ov002_0220b63c, LabelButton_SetPlace)
+
+/* func_ov002_0220b648: the base class's destructor, as the derived classes' destructors call
+ * it. */
+LabelButton *LabelButtonBase_Destruct(LabelButton *button)
+{
+    button->vtable = data_ov002_0220bd90;
+    func_0208f46c(button);
+    return button;
+}
+CLEAN_AS(func_ov002_0220b648, LabelButtonBase_Destruct)
+
+/* func_ov002_0220b660 (vtable entry 1): destructs and frees a base class button. */
+LabelButton *LabelButtonBase_Delete(LabelButton *button)
+{
+    button->vtable = data_ov002_0220bd90;
+    func_0208f46c(button);
+    func_020edb3c(button);
+    return button;
+}
+CLEAN_AS(func_ov002_0220b660, LabelButtonBase_Delete)
+
+/* func_ov002_0220b680 (vtable entry 0).
+ * QUIRK: the same code as LabelButtonBase_Destruct, a second copy in the ROM. */
+LabelButton *LabelButtonBase_Destroy(LabelButton *button)
+{
+    button->vtable = data_ov002_0220bd90;
+    func_0208f46c(button);
+    return button;
+}
+CLEAN_AS(func_ov002_0220b680, LabelButtonBase_Destroy)
+
+/* func_ov002_0220b698: constructs main's labelled sprite with `kind` and `param`, then makes
+ * it a base class button. */
+LabelButton *LabelButtonBase_Construct(LabelButton *button, char kind, int param)
+{
+    func_0208f58c(button, kind, param);
+    button->vtable = data_ov002_0220bd90;
+    return button;
+}
+CLEAN_AS(func_ov002_0220b698, LabelButtonBase_Construct)

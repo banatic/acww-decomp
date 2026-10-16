@@ -64,6 +64,7 @@ int SoundEmitter_PlayEx(SoundEmitter *emitter, int number, int arg2, int arg3);
 int SoundEmitter_PlayB(SoundEmitter *emitter, int number, int volume, int arg);
 void SoundEmitter_UpdateAtB(SoundEmitter *emitter, const Vec3 *pos);
 void SoundEmitter_StopB(SoundEmitter *emitter);
+void *SoundEmitter_Destruct(SoundEmitter *emitter);
 
 int PointSound_CanStartList(void);
 void PointSound_SetVariable(void *sound, s16 value);

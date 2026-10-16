@@ -1,9 +1,9 @@
 /* A sprite with a text of "2d_menu" on it that the menu scenes use as a button (at 0x3bc in
  * ov091's scene; overlays 091 and 096-106 keep one, and the paged choice one as its page
  * label): an object of main's labelled sprite class (vtable 0x020e23a0, constructor
- * func_0208f58c, destructor func_0208f46c) under ov002's class (vtable 0x0220bd90, constructor
- * func_ov002_0220b698, destructor func_ov002_0220b648), whose own vtable slot 4 places it by
- * screen coordinates (func_ov002_0220b63c). Slot 2 is main's draw (func_0208f288), slot 3
+ * func_0208f58c, destructor func_0208f46c) under ov002's base class (vtable 0x0220bd90,
+ * constructor LabelButtonBase_Construct, destructor LabelButtonBase_Destruct), whose own vtable
+ * slot 4 places it by screen coordinates (LabelButton_SetPlace). Slot 2 is main's draw (func_0208f288), slot 3
  * main's step of its two animation layers (func_0208f268).
  *
  * Two classes derive from it, differing only in the byte func_0208f58c is given: LabelButton1
@@ -17,7 +17,7 @@
 #include "types.h"
 
 typedef struct LabelButton {
-    const void *vtable; /* data_ov002_0220bd58 or data_ov002_0220bd74 */
+    const void *vtable; /* data_ov002_0220bd58, data_ov002_0220bd74 or data_ov002_0220bd90 */
     /* main's labelled sprite */
     s32 x;           /* 0x04: its place (func_0208aef0) */
     s32 y;           /* 0x08: (func_0208aeec) */
@@ -47,5 +47,11 @@ void LabelButton_ShowLowerRight(LabelButton *button, int message);
 int LabelButton_SetMessage(LabelButton *button, int message);
 int LabelButton_StepAnimation(LabelButton *button);
 int LabelButton_AnchorY(LabelButton *button, int anchor);
+int LabelButton_AnchorX(LabelButton *button, int anchor);
+void LabelButton_SetPlace(LabelButton *button, int x, int y);
+LabelButton *LabelButtonBase_Destruct(LabelButton *button);
+LabelButton *LabelButtonBase_Delete(LabelButton *button);
+LabelButton *LabelButtonBase_Destroy(LabelButton *button);
+LabelButton *LabelButtonBase_Construct(LabelButton *button, char kind, int param);
 
 #endif

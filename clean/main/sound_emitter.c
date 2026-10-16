@@ -16,6 +16,10 @@ static_assert(sizeof(SoundEmitter) == 0x44, "SoundEmitter size");
 extern void *data_021c67a4;
 extern Vec3 data_021c67b8;
 
+/* The vtable of class 0x020d8414 and the base class's destructor (0x0213f074). */
+extern const SoundEmitterVtable data_020d8414;
+extern void func_020f5914(SoundEmitter *emitter);
+
 extern int func_020f5748(SoundEmitter *emitter, int number, int volume, int arg);
 extern int func_020f545c(SoundEmitter *emitter, u32 number, u32 flag);
 extern int func_020f56a4(SoundEmitter *emitter, int number, int arg2, int arg3);
@@ -256,3 +260,13 @@ void SoundEmitter_StopB(SoundEmitter *emitter)
     emitter->vtable->stop(emitter);
 }
 CLEAN_AS(func_0200451c, SoundEmitter_StopB)
+
+/* func_02005198: the destructor of class 0x020d8414 (the field actor's emitter at 0x880): its
+ * vtable, then the base's destructor. Returns the emitter. */
+void *SoundEmitter_Destruct(SoundEmitter *emitter)
+{
+    emitter->vtable = &data_020d8414;
+    func_020f5914(emitter);
+    return emitter;
+}
+CLEAN_AS(func_02005198, SoundEmitter_Destruct)

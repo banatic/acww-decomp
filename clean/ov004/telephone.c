@@ -4,15 +4,18 @@
 #include "clean.h"
 #include "member_pointer.h"
 #include "room_object_anims.h"
+#include "room_object_body.h"
+#include "room_object_life.h"
 #include "room_object_parts.h"
 
 static_assert(offsetof(Telephone, entry_words) == 0x844, "entry words");
 static_assert(offsetof(Telephone, wait) == 0x852, "wait");
 static_assert(offsetof(Telephone, switch_state) == 0x854, "switch state");
 static_assert(offsetof(Telephone, state) == 0x858, "state");
-static_assert(sizeof(Telephone) == 0x85c, "the size func_ov004_02211c64 allocates");
+static_assert(sizeof(Telephone) == 0x85c, "the size Telephone_Create allocates");
 
 #define RECEIVER_OFFSET 0xec
+#define TELEPHONE_SIZE 0x85c
 #define SLOT_70_VALUE 0xff /* the second argument the telephone gives vtable slot 0x70 */
 
 /* "obj_etc_tel", the receiver's name. */
@@ -27,6 +30,21 @@ extern u32 data_ov004_02256ff8;
 extern MemberPointer data_ov004_0225755c[TELEPHONE_STATE_COUNT];
 extern const MemberPointer data_ov004_02250428, data_ov004_02250108, data_ov004_022503e0, data_ov004_022503d0,
     data_ov004_022503b0;
+
+/* The switch's state tables. */
+extern u32 data_ov004_022570a0;
+extern MemberPointer data_ov004_0225736c[TELEPHONE_SWITCH_STATE_COUNT];
+extern const MemberPointer data_ov004_02250098, data_ov004_022504c8, data_ov004_022500b0, data_ov004_02250140;
+extern u32 data_ov004_02256ff0;
+extern MemberPointer data_ov004_0225734c[TELEPHONE_SWITCH_STATE_COUNT];
+extern const MemberPointer data_ov004_02250040, data_ov004_022501c0, data_ov004_02250060, data_ov004_02250068;
+
+/* Whether each state of the switch shows it on (for vtable slot 0x74). */
+extern const u8 data_ov004_02247684[TELEPHONE_SWITCH_STATE_COUNT];
+
+/* The class's vtables, and its receiver part's. */
+extern const u8 data_ov004_02252950[];
+extern const u8 data_ov004_022529fc[];
 
 /* The two entries a telephone's values come from, and their parts. */
 extern void *func_ov004_0223cb10(void);
@@ -252,3 +270,163 @@ int Telephone_EnterSwitchTurningOn(Telephone *phone)
     return 1;
 }
 CLEAN_AS(func_ov004_022119d0, Telephone_EnterSwitchTurningOn)
+
+/* func_ov004_022119f4 (update of TELEPHONE_SWITCH_OFF) */
+void Telephone_UpdateSwitchOff(Telephone *phone)
+{
+    (void) phone;
+}
+CLEAN_AS(func_ov004_022119f4, Telephone_UpdateSwitchOff)
+
+/* func_ov004_022119f8 (entry of TELEPHONE_SWITCH_OFF): the switch off, shown at once. */
+int Telephone_EnterSwitchOff(Telephone *phone)
+{
+    Switch_Set(&phone->base.light_switch, 0, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_022119f8, Telephone_EnterSwitchOff)
+
+/* _ZN18Obj_ov004_0225295019func_ov004_02211a14Ev: the switch's update, through its table. */
+void Telephone_UpdateSwitch(Telephone *phone)
+{
+    static const MemberPointer *const updates[TELEPHONE_SWITCH_STATE_COUNT] = {
+        &data_ov004_02250098, /* Telephone_UpdateSwitchOff */
+        &data_ov004_022504c8, /* Telephone_UpdateSwitchTurningOn */
+        &data_ov004_022500b0, /* Telephone_UpdateSwitchOn */
+        &data_ov004_02250140, /* Telephone_UpdateSwitchTurningOff */
+    };
+    MemberTable_InitOnce(&data_ov004_022570a0, data_ov004_0225736c, updates, TELEPHONE_SWITCH_STATE_COUNT);
+    if (phone->switch_state < TELEPHONE_SWITCH_STATE_COUNT) {
+        MemberPointer_CallVoid(&data_ov004_0225736c[phone->switch_state], phone);
+    }
+}
+CLEAN_AS(_ZN18Obj_ov004_0225295019func_ov004_02211a14Ev, Telephone_UpdateSwitch)
+
+/* func_ov004_02211aa0 (vtable slot 0x70): the base class's (RoomObject_SetUnk77C, given `state`
+ * and `value`), then enters `state` of the switch if its entry (through a table) agrees;
+ * whether it did. States 4 and above do not exist. */
+int Telephone_EnterSwitch(Telephone *phone, unsigned int state, int value)
+{
+    static const MemberPointer *const entries[TELEPHONE_SWITCH_STATE_COUNT] = {
+        &data_ov004_02250040, /* Telephone_EnterSwitchOff */
+        &data_ov004_022501c0, /* Telephone_EnterSwitchTurningOn */
+        &data_ov004_02250060, /* Telephone_EnterSwitchOn */
+        &data_ov004_02250068, /* Telephone_EnterSwitchTurningOff */
+    };
+    RoomObject_SetUnk77C(&phone->base, (int) state, value);
+    MemberTable_InitOnce(&data_ov004_02256ff0, data_ov004_0225734c, entries, TELEPHONE_SWITCH_STATE_COUNT);
+    if (state < TELEPHONE_SWITCH_STATE_COUNT && MemberPointer_CallInt(&data_ov004_0225734c[state], phone) != 0) {
+        phone->switch_state = (u8) state;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_02211aa0, Telephone_EnterSwitch)
+
+/* func_ov004_02211b40 (vtable slot 0x74): whether `state` of the switch shows it on (turning on
+ * and on do); 0 for a state that does not exist. */
+u8 Telephone_SwitchStateIsOn(Telephone *phone, unsigned int state)
+{
+    (void) phone;
+    if (state < TELEPHONE_SWITCH_STATE_COUNT) {
+        return data_ov004_02247684[state];
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_02211b40, Telephone_SwitchStateIsOn)
+
+/* func_ov004_02211b54 (vtable slot 0x4c): the scene's answer to func_0203e0a8; events 0 and 1
+ * open the telephone, event 8 makes it idle, others do nothing. */
+void Telephone_OnSceneEvent(Telephone *phone, int event)
+{
+    switch (event) {
+        case 0:
+        case 1:
+            Telephone_EnterState(phone, TELEPHONE_OPEN);
+            break;
+        case 8:
+            Telephone_EnterState(phone, TELEPHONE_IDLE);
+            break;
+    }
+}
+CLEAN_AS(func_ov004_02211b54, Telephone_OnSceneEvent)
+
+/* func_ov004_02211b7c (vtable slot 0x0c) */
+int Telephone_Vfunc0C(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_02211b7c, Telephone_Vfunc0C)
+
+/* _ZN18Obj_ov004_0225295019func_ov004_02211b80Ev (vtable slot 0x80, each frame while neither
+ * appearing nor vanishing): the call, then the switch. */
+int Telephone_Update(Telephone *phone)
+{
+    Telephone_UpdateState(phone);
+    Telephone_UpdateSwitch(phone);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_0225295019func_ov004_02211b80Ev, Telephone_Update)
+
+/* func_ov004_02211b98 (vtable slot 0x7c, once the model is bound): in mode 1 (unk_76C) the
+ * switch is set off first; the switch then enters on or off as its value says, and the
+ * telephone is idle; done at once. */
+int Telephone_Start(Telephone *phone)
+{
+    if (phone->base.unk_76C == 1) {
+        Switch_Set(&phone->base.light_switch, 0, 0);
+    }
+    if (Switch_Value(&phone->base.light_switch) != 0) {
+        switch_to(phone, TELEPHONE_SWITCH_ON);
+    } else {
+        switch_to(phone, TELEPHONE_SWITCH_OFF);
+    }
+    Telephone_EnterState(phone, TELEPHONE_IDLE);
+    return 1;
+}
+CLEAN_AS(func_ov004_02211b98, Telephone_Start)
+
+static void set_vtables(Telephone *phone)
+{
+    phone->base.vtable = (const RoomObjectVtable *) data_ov004_02252950;
+    phone->base.receiver_vtable = data_ov004_022529fc;
+}
+
+/* func_ov004_02211bf0 (the deleting destructor, vtable slot 0x44) */
+Telephone *Telephone_Delete(Telephone *phone)
+{
+    set_vtables(phone);
+    RoomObject_DestructBase(&phone->base);
+    RoomObject_Free(phone);
+    return phone;
+}
+CLEAN_AS(func_ov004_02211bf0, Telephone_Delete)
+
+/* func_ov004_02211c1c (the destructor, vtable slot 0x40) */
+Telephone *Telephone_Destroy(Telephone *phone)
+{
+    set_vtables(phone);
+    RoomObject_DestructBase(&phone->base);
+    return phone;
+}
+CLEAN_AS(func_ov004_02211c1c, Telephone_Destroy)
+
+/* func_ov004_02211c40 (the constructor). Its own fields are left as the allocation zeroed
+ * them. */
+Telephone *Telephone_Construct(Telephone *phone)
+{
+    RoomObject_ConstructBase(&phone->base);
+    set_vtables(phone);
+    return phone;
+}
+CLEAN_AS(func_ov004_02211c40, Telephone_Construct)
+
+/* func_ov004_02211c64: a new telephone from the room's heap; nothing when it has no room. */
+void Telephone_Create(void)
+{
+    Telephone *phone = RoomObject_Alloc(TELEPHONE_SIZE);
+    if (phone != NULL) {
+        Telephone_Construct(phone);
+    }
+}
+CLEAN_AS(func_ov004_02211c64, Telephone_Create)

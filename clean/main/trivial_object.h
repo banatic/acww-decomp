@@ -8,5 +8,7 @@
 void TrivialObject_Destruct(void *object);
 void WordPair_Construct(s32 *pair);
 void TrivialObject_Construct(void *object);
+void TrivialObject_DestructItemCode(void *item);
+void TrivialObject_DestructByte(void *object);
 
 #endif

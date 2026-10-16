@@ -201,8 +201,9 @@ extern int func_ov003_0222c214(int player);
 
 /* What func_02034270 tells of the ground at a point; func_0203423c releases it. */
 typedef struct GroundInfo {
-    u8 unk_00[0x34];
-    int kind; /* 0x13 makes the splash effects of states 0x73 and 0x75 the other ones */
+    u8 unk_00[0x30];
+    int unk_30; /* state 0x56 takes the swing's base as its end where this is 0 */
+    int kind;   /* 0x13 makes the splash effects of states 0x73 and 0x75 the other ones */
     u8 unk_38[8];
 } GroundInfo;
 
@@ -4808,13 +4809,12 @@ extern void func_ov003_0222e6c4(u8 player, int a);
 extern void func_ov003_0222eabc(u8 player, int angle);
 extern int func_ov003_0222ea84(u8 player);
 extern Vec3 *func_ov003_0222e970(u8 player);
-extern void func_ov003_02219668(FieldActorBlock48 *block, int a);
+/* Moves the block's point (its last three words) by `offset` (none: NULL) along the block. */
+extern void func_ov003_02219668(FieldActorBlock48 *block, const Vec3 *offset);
 extern int func_ov003_0222d83c(u8 player, s16 *angles, FieldActorBlock48 *block, int a);
 /* A halfword packed into two bytes, and read back. */
 extern void func_02077910(u8 *packed, int value);
 extern s16 func_020778f8(const u8 *packed);
-extern int func_ov003_022131c8(FieldActor *actor, char kind, char step, int priority, s16 arg);
-extern void func_ov003_022131a8(State58Saved *saved, u8 kind, int step, int angle);
 
 /* The absolute value as the ARM computes it (-0x80000000 stays itself). */
 static int abs32(int value)
@@ -5628,7 +5628,7 @@ void FieldActor_RunState58(FieldActor *actor)
     s16 angles[3] = {angle, angle, angle};
 
     FieldActorBlock48 block = actor->unk_698;
-    func_ov003_02219668(&block, 0);
+    func_ov003_02219668(&block, NULL);
 
     State58Args *work = &actor->work.s58;
     State58Saved *saved = &actor->saved.s58;
@@ -5749,7 +5749,7 @@ void FieldActor_State58Message(FieldActor *actor, int arg)
     u16 angle;
 
     State58Saved_Get(&actor->saved.s58, &kind, &step, &angle);
-    func_ov003_022131c8(actor, (char) kind, (char) step, 6, (s16) arg);
+    FieldActor_RequestState58(actor, (char) kind, (char) step, 6, (s16) arg);
 }
 CLEAN_AS(func_ov003_022130dc, FieldActor_State58Message)
 
@@ -5764,7 +5764,7 @@ void FieldActor_EnterState58(FieldActor *actor, const StateRequest *request, int
 
     actor->work.s58.kind = kind;
     actor->work.s58.step = step;
-    func_ov003_022131a8(&actor->saved.s58, kind, step, 0);
+    State58Saved_Set(&actor->saved.s58, kind, step, 0);
     func_020109a0(actor, 0x5d, 3, 0);
     func_0205eae0(actor->held, 6, 3, 1);
     func_0200f328(actor, 0x4f);
@@ -5807,3 +5807,1740 @@ void State58Saved_SetStep(State58Saved *saved, int step)
     saved->step = (u8) step;
 }
 CLEAN_AS(func_ov003_022131a4, State58Saved_SetStep)
+
+/* func_ov003_022131a8 */
+void State58Saved_Set(State58Saved *saved, u8 kind, int step, int angle)
+{
+    saved->kind = kind;
+    State58Saved_SetStep(saved, step);
+    State58Saved_SetAngle(saved, angle);
+}
+CLEAN_AS(func_ov003_022131a8, State58Saved_Set)
+
+/* func_ov003_022131c8: asks for state 0x58 with a kind and a step; whether it was queued. */
+int FieldActor_RequestState58(FieldActor *actor, char kind, char step, int priority, s16 arg)
+{
+    StateRequest request;
+    open_request(&request, 0x58, priority, arg);
+    State58Args *args = (State58Args *) (void *) request.payload;
+    args->kind = (u8) kind;
+    args->step = (u8) step;
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_022131c8, FieldActor_RequestState58)
+
+/* ---- States 0x57 to 0x51: an insect or a fish caught */
+
+static_assert(offsetof(FieldActor, unk_5D0) == 0x5d0, "0x5d0");
+static_assert(offsetof(FieldActor, unk_810) == 0x810, "0x810");
+static_assert(offsetof(FieldActor, unk_8C4) == 0x8c4, "0x8c4");
+static_assert(offsetof(FieldActor, unk_1C4) == 0x1c4, "0x1c4");
+static_assert(offsetof(FieldActor, unk_14C) == 0x14c, "0x14c");
+static_assert(offsetof(FieldActor, work.s57.unk_04) == 0x7d8, "state 0x57 0x04");
+static_assert(offsetof(FieldActor, work.s57.step) == 0x7dd, "state 0x57 step");
+static_assert(offsetof(FieldActor, work.s57.unk_0A) == 0x7de, "state 0x57 0x0a");
+static_assert(offsetof(FieldActor, work.s56.yaw) == 0x7d6, "state 0x56 yaw");
+static_assert(offsetof(FieldActor, work.s56.slot) == 0x7d8, "state 0x56 slot");
+static_assert(offsetof(FieldActor, work.s56.tip) == 0x7dc, "state 0x56 tip");
+static_assert(offsetof(FieldActor, work.s54.unk_05) == 0x7d9, "state 0x54 0x05");
+static_assert(offsetof(FieldActor, saved.s57.angle) == 0x8f4, "state 0x57 angle");
+static_assert(offsetof(GroundInfo, unk_30) == 0x30, "ground 0x30");
+static_assert(offsetof(GroundInfo, kind) == 0x34, "ground kind");
+
+/* What func_02032adc makes for func_020311bc to test a segment against the scenery, with the
+ * ground found at its start (func_02034270); func_02032acc ends it. */
+typedef struct SegmentTest {
+    u8 unk_00[0x14];
+    GroundInfo ground;
+} SegmentTest;
+
+static_assert(sizeof(SegmentTest) == 0x54, "segment test");
+
+/* The fish hanging from what the actor holds (func_020604f8). */
+typedef struct HookedFish {
+    u8 unk_00[0x7e];
+    s8 kind; /* the item is 0x12e8 + kind */
+    u8 unk_7F[0x1ff - 0x7f];
+    u8 size; /* a row of the table at 0x0223c024 */
+} HookedFish;
+
+/* Rows of 0x14 bytes; the byte at 2 of each is a size in percent. */
+extern const u8 data_ov003_0223c026[];
+/* The receivers' names: "obj_etc_getinsect" and "obj_etc_getfish". */
+extern const char data_ov003_02238144[];
+extern const char data_ov003_02238158[];
+/* Distances ahead of the actor (20.12) for func_0200fa1c in state 0x56: 2.85 (a stop at frame 4,
+ * twice) and 2.0 (frame 3). */
+extern const fx32 data_ov003_02238114;
+extern const fx32 data_ov003_0223811c;
+extern const fx32 data_ov003_02238120;
+/* The `track` byte (1) of the requests for state 0x8f that states 0x55 and 0x54 end with. */
+extern const u8 data_ov003_02238100;
+extern const u8 data_ov003_02238104;
+extern const u8 data_ov003_02238108;
+/* The speed (-1049) state 0x52 starts with. */
+extern int data_ov003_0223812c;
+
+extern int func_0203cbd0(u16 *item);
+extern int func_0203cc1c(void);
+extern int func_0203cc38(void);
+extern int func_02043368(int a, int *point, u8 *result);
+extern void *func_020094a0(FieldActor *actor, u8 a, u8 kind, u8 slot, u32 priority, s16 arg);
+extern int func_02043554(int player, int item);
+extern int func_0206f6f8(int item, HookedFish *fish);
+extern u16 func_0206f6a4(void);
+extern HookedFish *func_020604f8(void *line);
+extern void func_02060460(void *line);
+extern void func_020604fc(void *line, int a);
+extern int func_02060474(void *line);
+extern void func_02060448(void *line);
+extern void func_02079774(Vec3 *position);
+extern void func_02079798(Vec3 *position);
+extern void func_0208d07c(void *object);
+extern void func_0208d09c(void *object);
+extern int func_0208b500(void);
+extern void func_ov003_0222e898(int kind, int player);
+extern int func_020899a8(const Vec3 *from, const Vec3 *to, int radius, u8 *slot, int a);
+extern int func_020311bc(SegmentTest *test, Vec3 *a, Vec3 *b, int flags);
+extern void *func_02032adc(SegmentTest *test);
+extern int func_02032acc(SegmentTest *test);
+extern void func_0204489c(int *tile);
+extern u8 func_ov003_0222e538(int slot, u8 player);
+extern int func_ov003_0222e5fc(u8 slot);
+extern int func_ov003_0222e3a4(u8 slot);
+extern int func_ov003_0222f458(Vec3 *out, int slot);
+extern int func_ov003_0222f490(int slot);
+extern int func_ov003_0222aa50(HookedFish *fish, Vec3 *at, Vec3 *scale);
+extern void func_ov003_0222aaa0(Vec3 *scale, int kind);
+extern int func_ov003_0222a8a8(int player);
+extern int func_02008c40(FieldActor *actor, int priority, int arg);
+extern void *func_ov003_02215624(FieldActor *actor, u32 flag, int priority, int arg);
+extern void func_ov003_02215620(u8 *work, int flag);
+extern void func_ov003_0221561c(u8 *saved, int flag);
+
+/* The ROM's signed division (_s32_div_f): a divisor of 0 gives the numerator back, and
+ * -0x80000000 / -1 gives -0x80000000. */
+static int div_s32(int numerator, int divisor)
+{
+    if (divisor == 0) {
+        return numerator;
+    }
+    if (divisor == -1) {
+        return sub32(0, numerator);
+    }
+    return numerator / divisor;
+}
+
+/* What hangs from the held item: the last word of `held`. */
+static void *held_line(FieldActor *actor)
+{
+    return &actor->held[0x28];
+}
+
+/* Animation frame `frame` was reached (func_02056f28). */
+static BOOL anim_passed(FieldActor *actor, int frame)
+{
+    return func_02056f28(&actor->anim, frame) != 0;
+}
+
+static BOOL anim_done(FieldActor *actor)
+{
+    return func_02056f94(&actor->anim) != 0;
+}
+
+/* The point of a block (its last three words). */
+static Vec3 block_point(const FieldActorBlock48 *block)
+{
+    Vec3 point = {(fx32) block->words[9], (fx32) block->words[10], (fx32) block->words[11]};
+    return point;
+}
+
+/* Whether the link of the receiver is up and what it opened is closed. */
+static BOOL link_closed(const FieldActor *actor)
+{
+    return actor->link != NULL && actor->link->open == 0;
+}
+
+/* Releases the receiver without testing flag 0x11 first. */
+static void close_receiver(FieldActor *actor)
+{
+    func_0203ee08(actor, actor->receiver);
+    func_0200f268(actor, 0x11);
+}
+
+/* The items 0x1320 to 0x1322: kinds 0x38 to 0x3a past the fish of 0x12e8 to 0x131f. */
+static BOOL is_item_1320(u16 item)
+{
+    return item >= 0x1320 && item <= 0x1322;
+}
+
+/* The work of states 0x57 and 0x54 that func_0200ee40 would rewrite. */
+typedef struct KeptAcrossEE40 {
+    Vec3 unk_0C4;
+    s16 unk_0D0;
+    FieldActorBlock48 unk_298;
+    FieldActorBlock48 unk_698;
+} KeptAcrossEE40;
+
+static void keep_across_ee40(const FieldActor *actor, KeptAcrossEE40 *kept)
+{
+    kept->unk_0C4 = actor->unk_0C4;
+    kept->unk_0D0 = actor->unk_0D0;
+    kept->unk_298 = actor->unk_298;
+    kept->unk_698 = actor->unk_698;
+}
+
+static void restore_after_ee40(FieldActor *actor, const KeptAcrossEE40 *kept)
+{
+    actor->unk_0C4 = kept->unk_0C4;
+    actor->unk_0D0 = kept->unk_0D0;
+    actor->unk_298 = kept->unk_298;
+    actor->unk_698 = kept->unk_698;
+}
+
+/* ---- State 0x57: the insect caught is shown */
+
+/* func_ov003_0221320c: state 0x57's update: func_0200ee40 runs between func_02010f5c and the
+ * others, with the points and blocks it would change kept. */
+void FieldActor_UpdateState57(FieldActor *actor)
+{
+    KeptAcrossEE40 kept;
+
+    func_02010f5c(actor);
+    keep_across_ee40(actor, &kept);
+    func_0200ee40(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    FieldActor_RunState57(actor);
+    restore_after_ee40(actor, &kept);
+}
+CLEAN_AS(func_ov003_0221320c, FieldActor_UpdateState57)
+
+/* func_ov003_022132bc: state 0x57 by the work's step. In mode 0 the actor holds still
+ * (func_0200faf0). On the first frame the actor of this console goes to step 1 and another
+ * player's to step 9 (telling func_ov003_0222e5fc the slot); kinds 0x18, 0x30, 0x32 and 0x33
+ * get effect 0x25 at the block's point; func_ov003_0222e898 learns the kind.
+ * Each frame the block at 0x698 is moved by an offset that grows over the end of animation 0x5c
+ * (from frame 0x24) and the effect follows its point. Unless the frame ends early, the block
+ * goes to func_ov003_0222d83c with three equal values: 0 before frame 0x17 of animation 0x5c,
+ * then rising by 10 a frame to 100.
+ *   Another player's actor notes the state after this one, and when its step is below 6 or 9
+ *   and the saved step is 6, takes the saved angle (func_ov003_0222eabc), starts animation 0
+ *   and goes to step 7.
+ *   Step 1: once func_0203e1c4 says so the receiver is registered under "obj_etc_getinsect"
+ *     with the item 0x12b0 + kind, its link is asked for, and the sounds are set; step 2.
+ *   Step 2: once the link is open: step 8 (0x81c = 0xd) when func_0203cc1c says so and it did
+ *     not on entering, else step 3 (0x81c = 8).
+ *   Step 3: with func_02099fe8 at -1, step 4 (0x81c = 0) when func_02043368 accepts, else step
+ *     5 (0x81c = 1). Otherwise once the link closes the receiver is released and state 0x58
+ *     is asked for at step 0.
+ *   Step 4: from 0x81c = 0xf on step 5; otherwise once the link closes the receiver is
+ *     released and state 0x58 is asked for at step 1.
+ *   Step 5: once the link closes the effect ends, an angle is drawn (-0x1555 to 0x1554) for
+ *     func_ov003_0222eabc and saved, the receiver is released, animation 0 starts and the
+ *     step (6) is saved.
+ *   Step 6: while func_ov003_0222ea84 is 3 the head turns to the point func_ov003_0222e970
+ *     gives (the pitch at most 0x1800); otherwise the head turns back to 0, and once there the
+ *     actor moves on by its mode (in mode 2 the actor of this console first releases the
+ *     receiver).
+ *   Step 7: waits for func_ov003_0222ea84 to be 3 or 0, then step 6.
+ *   Step 8: once the link closes the receiver is released and func_020094a0 runs. */
+void FieldActor_RunState57(FieldActor *actor)
+{
+    State57Work *work = &actor->work.s57;
+    State57Saved *saved = &actor->saved.s57;
+    int mode = work->mode;
+    int kind = work->kind;
+
+    if (mode == 0) {
+        func_0200faf0(actor, 0x400);
+    }
+    int player = actor->player;
+    if (work->step == 0) {
+        if (func_02073908(data_020ccf94, player)) {
+            work->step = 1;
+        } else {
+            work->step = 9;
+            if (work->slot != 0xff) {
+                func_ov003_0222e5fc(work->slot);
+            }
+        }
+        if (kind == 0x18 || kind == 0x30 || kind == 0x32 || kind == 0x33) {
+            FieldActorBlock48 start = actor->unk_698;
+            func_ov003_02219668(&start, NULL);
+            Vec3 at = block_point(&start);
+            func_0203f7d0(&at, &at);
+            work->effect = func_020912d4(0x25, &at, NULL, 0);
+        }
+        func_ov003_0222e898(kind, (u8) player);
+    }
+
+    FieldActorBlock48 block = actor->unk_698;
+    Vec3 offset = {0x4cd, 0, 0};
+    if (actor->animation != 0x5c) {
+        offset.x = 0x800;
+        offset.y = 0x19a;
+        offset.z = -0x19a;
+    } else {
+        int frame = anim_frame(actor);
+        if (frame >= 0x24) {
+            /* QUIRK: on the last frame of a 0x24-frame animation the divisor is 0, which the
+             * ROM's division answers with the numerator. */
+            int d = div_s32((frame - 0x23) * 0x19a, (int) anim_frames(actor) - 0x24);
+            offset.x = add32(offset.x, d * 2);
+            offset.y = add32(offset.y, d);
+            offset.z = sub32(offset.z, d);
+        }
+    }
+    func_ov003_02219668(&block, &offset);
+    if (work->effect != -1) {
+        Vec3 at = block_point(&block);
+        func_0203f7d0(&at, &at);
+        func_02091278(work->effect, &at, NULL, 0);
+    }
+
+    s16 values[3] = {0, 0, 0};
+    if (anim_frame(actor) < 0x17 && actor->animation == 0x5c) {
+        func_ov003_0222d83c((u8) player, values, &block, 0);
+        return;
+    }
+    if (!is_local_player(actor)) {
+        actor->next_state = func_02008258(actor, actor->state);
+        if (work->step < 6 || work->step == 9) {
+            if (State57Saved_Step(saved) == 6) {
+                func_ov003_0222eabc((u8) player, State57Saved_Angle(saved));
+                func_020109fc(actor, 0, 3, 3);
+                work->step = 7;
+            }
+        }
+    }
+    s16 value = 100;
+    if (actor->animation == 0x5c) {
+        u32 frame = (u32) anim_frame(actor);
+        if (frame <= 0x21) {
+            value = (s16) ((frame - 0x17) * 10);
+            if (value >= 100) {
+                value = 100;
+            }
+        }
+    }
+    values[0] = values[1] = values[2] = value;
+
+    switch (work->step) {
+        case 1: {
+            if (!func_0203e1c4()) {
+                break;
+            }
+            work->step = 2;
+            func_0203ee14(actor, actor->receiver);
+            func_0200f27c(actor, 0x11);
+            func_020a8164(actor->receiver, data_ov003_02238144);
+            actor->receiver_unk_1E = (u8) kind;
+            u16 item = (u16) (kind + 0x12b0);
+            func_0203cbd0(&item);
+            actor->link->requested = 1;
+            func_0203ae98();
+            if (func_0200f290(actor, 0x1a)) {
+                func_02035638(0x3f);
+                func_0200f268(actor, 0x1a);
+            }
+            func_02035624(0x12);
+            func_02035684(0xc, 0, 0xe);
+            func_020356c4(0xd, 0x39, 0x7f, 1);
+            break;
+        }
+        case 2:
+            if (actor->link == NULL || actor->link->open == 0) {
+                break;
+            }
+            if (func_0203cc1c() && work->unk_0A == 0) {
+                work->step = 8;
+                actor->unk_81C = 0xd;
+            } else {
+                work->step = 3;
+                actor->unk_81C = 8;
+            }
+            break;
+        case 3:
+            if (func_02099fe8() == -1) {
+                int point[2] = {0, 0};
+                if (func_02043368(0x10, point, NULL)) {
+                    work->step = 4;
+                    actor->unk_81C = 0;
+                } else {
+                    work->step = 5;
+                    actor->unk_81C = 1;
+                }
+                return;
+            }
+            if (!link_closed(actor)) {
+                break;
+            }
+            close_receiver(actor);
+            func_0203e19c();
+            FieldActor_RequestState58(actor, (char) kind, 0, 6, -1);
+            func_0203b144();
+            break;
+        case 4:
+            if (actor->unk_81C >= 0xf) {
+                work->step = 5;
+                break;
+            }
+            if (!link_closed(actor)) {
+                break;
+            }
+            close_receiver(actor);
+            FieldActor_RequestState58(actor, (char) kind, 1, 6, -1);
+            func_0203b144();
+            break;
+        case 5: {
+            if (!link_closed(actor)) {
+                break;
+            }
+            if (work->effect != -1) {
+                func_0209129c(work->effect);
+            }
+            int angle = (s16) sub32(func_020644cc(0x2aaa), 0x1555);
+            func_ov003_0222eabc((u8) player, angle);
+            State57Saved_SetAngle(saved, angle);
+            close_receiver(actor);
+            func_0203e19c();
+            func_020109fc(actor, 0, 3, 3);
+            work->step = 6;
+            State57Saved_SetStep(saved, 6);
+            func_0203b144();
+            return;
+        }
+        case 6: {
+            if (func_ov003_0222ea84((u8) player) != 3) {
+                if (actor->head_pitch != 0 || actor->head_yaw != 0) {
+                    func_02011404(&actor->head_pitch, 0, 0x400, 0x1770000, 0xc0000);
+                    func_02011404(&actor->head_yaw, 0, 0x400, 0x1770000, 0xc0000);
+                    return;
+                }
+                actor->next_state = func_02008258(actor, actor->state);
+                switch (mode) {
+                    case 2:
+                        if (is_local_player(actor)) {
+                            release_receiver(actor);
+                            func_0203e19c();
+                        }
+                        func_0200d4e8(actor, 3, 1, -1);
+                        return;
+                    case 0:
+                    case 3:
+                        func_0200d4e8(actor, 3, 1, -1);
+                        return;
+                    case 1:
+                        func_0200c9a8(actor, 3, 5, -1);
+                        return;
+                    default:
+                        return;
+                }
+            }
+            const Vec3 *target = func_ov003_0222e970((u8) player);
+            Vec3 eye = actor->position;
+            eye.y = add32(eye.y, 0x1b33);
+            int yaw = Math_Atan2(sub32(target->x, eye.x), sub32(target->z, eye.z));
+            int pitch = Math_Atan2(sub32(target->y, eye.y), func_020ea990(target, &eye));
+            if (pitch >= 0x1800) {
+                pitch = 0x1800;
+            }
+            yaw = (s16) (yaw - actor->yaw);
+            func_02011404(&actor->head_pitch, pitch, 0x400, 0x1770000, 0xc0000);
+            func_02011404(&actor->head_yaw, yaw, 0x400, 0x1770000, 0xc0000);
+            return;
+        }
+        case 7: {
+            int ready = func_ov003_0222ea84((u8) player);
+            if (ready == 3 || ready == 0) {
+                work->step = 6;
+            }
+            return;
+        }
+        case 8:
+            if (!link_closed(actor)) {
+                break;
+            }
+            close_receiver(actor);
+            func_0203e19c();
+            func_020094a0(actor, 0, (u8) kind, work->slot, 6, -1);
+            return;
+        default:
+            break;
+    }
+    func_ov003_0222d83c((u8) player, values, &block, 0);
+}
+CLEAN_AS(func_ov003_022132bc, FieldActor_RunState57)
+
+/* func_ov003_02213914: leaving state 0x57: the effect ends and the head faces ahead. */
+void FieldActor_ExitState57(FieldActor *actor)
+{
+    if (actor->work.s57.effect != -1) {
+        func_0209129c(actor->work.s57.effect);
+    }
+    actor->head_pitch = 0;
+    actor->head_yaw = 0;
+}
+CLEAN_AS(func_ov003_02213914, FieldActor_ExitState57)
+
+/* func_ov003_02213944: state 0x57's message handler: the state is asked for again with the
+ * saved mode, slot and kind. */
+void FieldActor_State57Message(FieldActor *actor, int arg)
+{
+    u8 step;
+    u8 slot;
+    u8 kind;
+    u8 mode;
+    /* QUIRK: the original reads the saved angle into a one-byte local, its second byte landing
+     * past it in the stack frame; it is not used. */
+    u16 angle;
+
+    State57Saved_Get(&actor->saved.s57, &step, &slot, &kind, &mode, &angle);
+    FieldActor_RequestState57(actor, mode, slot, kind, 6, (s16) arg);
+}
+CLEAN_AS(func_ov003_02213944, FieldActor_State57Message)
+
+/* func_ov003_02213988: entering state 0x57 with the request's slot, kind and mode. Mode 0 (the
+ * insect is caught here) starts animation 0x5c with pose 5 in hand at step 0; for the actor of
+ * this console sound 0x12 starts and func_0208d07c and func_02079774 note the catch. Mode 3
+ * waits at step 3 (0x81c = 8); the others wait at step 7, mode 2 taken for any mode while
+ * animation 0x6c plays (which then gives way to animation 0). The actor of this console saves
+ * the step, slot, kind and mode (as requested) with angle 0. */
+void FieldActor_EnterState57(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    u8 slot = request->payload[0];
+    u8 kind = request->payload[1];
+    u8 mode = request->payload[2];
+    State57Work *work = &actor->work.s57;
+
+    if (mode == 0) {
+        func_020109a0(actor, 0x5c, 3, 0);
+        func_0205eae0(actor->held, 5, 3, 1);
+    }
+    work->slot = slot;
+    work->kind = kind;
+    work->mode = mode;
+    work->unk_04 = 0x39;
+    work->unk_0A = (u8) func_0203cc1c();
+    if (mode == 0) {
+        if (is_local_player(actor)) {
+            func_02035684(0x12, 0, 0);
+            func_0208d07c((void *) (uintptr_t) func_0208b500());
+            func_02079774(&actor->position);
+        }
+        work->step = 0;
+    } else if (mode == 3) {
+        work->step = 3;
+        work->unk_04 = 0x3b;
+        actor->unk_81C = 8;
+    } else {
+        if (actor->animation == 0x6c) {
+            work->mode = 2;
+            func_020109fc(actor, 0, 3, 3);
+        }
+        work->step = 7;
+    }
+    work->effect = -1;
+    if (is_local_player(actor)) {
+        State57Saved_Set(&actor->saved.s57, work->step, slot, kind, mode, 0);
+    }
+}
+CLEAN_AS(func_ov003_02213988, FieldActor_EnterState57)
+
+/* func_ov003_02213a80 */
+int State57Saved_Angle(const State57Saved *saved)
+{
+    return func_020778f8(saved->angle);
+}
+CLEAN_AS(func_ov003_02213a80, State57Saved_Angle)
+
+/* func_ov003_02213a8c */
+int State57Saved_Step(const State57Saved *saved)
+{
+    return saved->step;
+}
+CLEAN_AS(func_ov003_02213a8c, State57Saved_Step)
+
+/* func_ov003_02213a90 */
+void State57Saved_Get(const State57Saved *saved, u8 *step, u8 *slot, u8 *kind, u8 *mode, u16 *angle)
+{
+    *step = saved->step;
+    *slot = saved->slot;
+    *kind = saved->kind;
+    *mode = saved->mode;
+    *angle = (u16) State57Saved_Angle(saved);
+}
+CLEAN_AS(func_ov003_02213a90, State57Saved_Get)
+
+/* func_ov003_02213ab4 */
+void State57Saved_SetAngle(State57Saved *saved, int angle)
+{
+    func_02077910(saved->angle, angle);
+}
+CLEAN_AS(func_ov003_02213ab4, State57Saved_SetAngle)
+
+/* func_ov003_02213ac0 */
+void State57Saved_SetStep(State57Saved *saved, int step)
+{
+    saved->step = (u8) step;
+}
+CLEAN_AS(func_ov003_02213ac0, State57Saved_SetStep)
+
+/* func_ov003_02213ac4 */
+void State57Saved_Set(State57Saved *saved, u8 step, u8 slot, u8 kind, u8 mode, s16 angle)
+{
+    saved->step = step;
+    saved->slot = slot;
+    saved->kind = kind;
+    saved->mode = mode;
+    State57Saved_SetAngle(saved, angle);
+}
+CLEAN_AS(func_ov003_02213ac4, State57Saved_Set)
+
+/* func_ov003_02213ae4: asks for state 0x57 with a mode, a slot and a kind; whether it was
+ * queued. */
+void *FieldActor_RequestState57(FieldActor *actor, u8 mode, u8 slot, u8 kind, u32 priority, s16 arg)
+{
+    StateRequest request;
+    open_request(&request, 0x57, (int) priority, arg);
+    request.payload[0] = slot;
+    request.payload[1] = kind;
+    request.payload[2] = mode;
+    return (void *) (intptr_t) send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02213ae4, FieldActor_RequestState57)
+
+/* ---- State 0x56: a swing of the held item, animation 0x5b */
+
+/* func_ov003_02213b28: state 0x56's update. The actor of this console faces the request's yaw
+ * and sweeps; another player's actor only checks what the swing hits. Then both slow down,
+ * end the swing when it is over and turn towards the point ahead, and the tip of what the actor
+ * holds is noted. */
+void FieldActor_UpdateState56(FieldActor *actor)
+{
+    if (is_local_player(actor)) {
+        FieldActor_FaceState56(actor);
+        FieldActor_SweepState56(actor);
+        FieldActor_AnimateState56(actor);
+        func_0201100c(actor);
+    } else {
+        FieldActor_SweepState56Remote(actor);
+        FieldActor_AnimateState56(actor);
+        if (func_0200f554(actor)) {
+            func_0201100c(actor);
+        }
+    }
+    func_02010d64(actor);
+    FieldActor_SlowState56(actor);
+    FieldActor_EndState56(actor);
+    FieldActor_TurnState56(actor);
+
+    Vec3 tip = actor->unk_62C;
+    Vec3 out;
+    func_0203f7d0(&out, &tip);
+    actor->work.s56.tip = out;
+}
+CLEAN_AS(func_ov003_02213b28, FieldActor_UpdateState56)
+
+/* func_ov003_02213bf0: once the animation is over or stopped: with something caught, state 0x57
+ * is asked for (mode 0) with the slot and the kind func_ov003_0222e5fc gives for it when
+ * func_ov003_0222e538 answers 0, or forgotten when it answers 1; slot 0xff asks with kind 0x30.
+ * With nothing caught, once the held item's animation (at 0x9c in it) is over the state after
+ * this one is noted and the actor of this console moves on (9). */
+void FieldActor_EndState56(FieldActor *actor)
+{
+    if (!anim_done(actor) && actor->anim.speed != 0) {
+        return;
+    }
+    State56Work *work = &actor->work.s56;
+    if (work->caught) {
+        u8 slot = work->slot;
+        if (slot == 0xff) {
+            FieldActor_RequestState57(actor, 0, slot, 0x30, 6, -1);
+            return;
+        }
+        u8 answer = func_ov003_0222e538(slot, (u8) actor->player);
+        if (answer == 0) {
+            u8 kind = (u8) func_ov003_0222e5fc(slot);
+            FieldActor_RequestState57(actor, 0, slot, kind, 6, -1);
+        } else if (answer == 1) {
+            work->caught = 0;
+        }
+        return;
+    }
+    const FrameCtrl *held_anim = (const FrameCtrl *) (const void *) (func_0205e8e4(actor->held) + 0x9c);
+    if (func_02056f94(held_anim)) {
+        actor->next_state = func_02008258(actor, actor->state);
+        if (is_local_player(actor)) {
+            func_0200d4e8(actor, 9, 1, -1);
+        }
+    }
+}
+CLEAN_AS(func_ov003_02213bf0, FieldActor_EndState56)
+
+/* func_ov003_02213cd0: the speed at 0x98 slows by 0x171 a frame towards 0; effect 0x2b marks the
+ * actor's stop. */
+void FieldActor_SlowState56(FieldActor *actor)
+{
+    if (actor->unk_098 == 0) {
+        return;
+    }
+    int speed = func_020113a4(actor->unk_098, 0, 0x171);
+    func_0201107c(actor, &speed);
+    if (actor->unk_098 != 0) {
+        return;
+    }
+    func_020912d4(0x2b, &actor->position, &actor->yaw, 0);
+}
+CLEAN_AS(func_ov003_02213cd0, FieldActor_SlowState56)
+
+/* func_ov003_02213d18: another player's swing, from frame 3 while it moves: unless it hits at
+ * frame 4, the line from the swing's base to its tip is traced. */
+void FieldActor_SweepState56Remote(FieldActor *actor)
+{
+    if (actor->anim.speed == 0) {
+        return;
+    }
+    if (anim_frame(actor) < 3) {
+        return;
+    }
+    if (FieldActor_HitState56(actor)) {
+        return;
+    }
+    Vec3 at = actor->unk_68C;
+    func_0203f7d0(&at, &at);
+    Vec3 sweep = at;
+    Vec3 base;
+    Vec3 tip;
+    FieldActor_State56Points(actor, &sweep, &base, &tip);
+    Vec3 from = at;
+    FieldActor_TraceState56(actor, &from, &base, &tip);
+}
+CLEAN_AS(func_ov003_02213d18, FieldActor_SweepState56Remote)
+
+/* Stops the swing: flag 9, sound 0x846, the animation stops and the held item takes pose 4. */
+static void stop_state56(FieldActor *actor)
+{
+    func_0200f27c(actor, 9);
+    func_0200f328(actor, 0x846);
+    actor->anim.speed = 0;
+    func_0205eae0(actor->held, 4, 3, 1);
+}
+
+/* func_ov003_02213da0: tests the segment between `to` and `at` (func_020311bc). When it hits, the
+ * swing stops, and at frame 5 the tile at `to` goes to func_0204489c; that counts as a hit
+ * before frame 5. Otherwise at frame 5 another player's actor takes `from` as `to` and stops
+ * when the ground there (func_02034270) has 0 at 0x30; failing that, and always for the actor
+ * of this console, effect 0xb marks `from`, flag 9 is set and the held item takes pose 4
+ * without the stop. Whether a hit counted. */
+int FieldActor_TraceState56(FieldActor *actor, Vec3 *at, Vec3 *from, Vec3 *to)
+{
+    SegmentTest test;
+    BOOL hit;
+
+    func_02032adc(&test);
+    if (func_020311bc(&test, to, at, 0x1b)) {
+        hit = TRUE;
+    } else {
+        if (!anim_passed(actor, 5)) {
+            func_02032acc(&test);
+            return 0;
+        }
+        hit = FALSE;
+        if (!is_local_player(actor)) {
+            func_02034270(&test.ground, from, 0, 0);
+            if (test.ground.unk_30 == 0) {
+                copy_point(to, from);
+                hit = TRUE;
+            }
+            func_0203423c(&test.ground);
+        }
+    }
+    if (hit) {
+        stop_state56(actor);
+        if (anim_passed(actor, 5)) {
+            int x = 0;
+            int z = 0;
+            func_0204f818(&x, &z, to);
+            int tile[2] = {x, z};
+            func_0204489c(tile);
+        }
+        if (anim_frame(actor) <= 4) {
+            func_02032acc(&test);
+            return 1;
+        }
+    } else {
+        func_020912d4(0xb, from, NULL, 0);
+        func_0200f27c(actor, 9);
+        func_0205eae0(actor->held, 4, 3, 1);
+    }
+    func_02032acc(&test);
+    return 0;
+}
+CLEAN_AS(func_ov003_02213da0, FieldActor_TraceState56)
+
+/* func_ov003_02213ec0: at frame 4 the swing stops when FieldActor_CheckOther meets an object or
+ * the ground 2.85 ahead is high (func_020310d0 at least 0x400); whether it stopped. */
+int FieldActor_HitState56(FieldActor *actor)
+{
+    if (!anim_passed(actor, 4)) {
+        return 0;
+    }
+    if (!FieldActor_CheckOther(actor)) {
+        Vec3 ahead;
+        int surface;
+        func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_02238114);
+        if (func_020310d0(&ahead, &surface, 0x19) < 0x400) {
+            return 0;
+        }
+    }
+    stop_state56(actor);
+    return 1;
+}
+CLEAN_AS(func_ov003_02213ec0, FieldActor_HitState56)
+
+/* func_ov003_02213f74: whether a swing stopped at `hit` still reaches the insect at `insect`.
+ * Always on map objects 0x1b and 0x89 at `hit`. With the insect's flag set, when the insect's z
+ * lies between the actor's and `hit`'s (the actor's side included). Otherwise by the directions
+ * from the actor, each folded to 0-0x8000 (func_020e8b4c): equal ones compare by z as above;
+ * the insect's above 0x4000 with `hit`'s beyond it, or `hit`'s below 0x4000 and not beyond the
+ * insect's, reach; else the insect is reached when the squared distance to `hit` less its part
+ * along the insect's direction is at least 0x900000. */
+int FieldActor_State56Reaches(FieldActor *actor, const Vec3 *hit, const Vec3 *insect, const u8 *insect_flag)
+{
+    Vec3 here = actor->position;
+
+    const u16 *object = func_0204f5a8(data_021c80bc, hit, 0);
+    if (object != NULL && (*object == 0x1b || *object == 0x89)) {
+        return 1;
+    }
+    if (*insect_flag == 0) {
+        int a1 = Math_Atan2(sub32(insect->x, here.x), sub32(insect->z, here.z));
+        int a2 = Math_Atan2(sub32(hit->x, here.x), sub32(hit->z, here.z));
+        /* QUIRK: a fold of 0x8000 is kept as an s16, -0x8000. */
+        a1 = (s16) Math_AbsDiff16(a1, 0);
+        a2 = (s16) Math_AbsDiff16(a2, 0);
+        if (a1 != a2) {
+            if ((a1 >= 0x4000 && a2 > a1) || (a2 < 0x4000 && a2 <= a1)) {
+                return 1;
+            }
+            int dx = sub32(hit->x, here.x);
+            int dz = sub32(hit->z, here.z);
+            int d = (int) ((u32) dx * (u32) dx + (u32) dz * (u32) dz);
+            s16 c = FX_SinCosTable_[((u16) (a1 - a2) >> 4) * 2 + 1];
+            int t = FX_MulFunc(d, c);
+            t = FX_MulFunc(t, c);
+            return sub32(d, t) >= 0x900000;
+        }
+    }
+    int z = insect->z;
+    return (here.z >= z && z > hit->z) || (here.z <= z && z < hit->z);
+}
+CLEAN_AS(func_ov003_02213f74, FieldActor_State56Reaches)
+
+/* func_ov003_022140a8: what the swing meets. At frame 4: an object FieldActor_CheckOther meets
+ * stops the swing and gives 3 for verdict 4, else 1 with an insect and 2 without; high ground
+ * (func_020310d0 at least 0x400) at the tile of the point 2.85 ahead stops it and gives 1 when
+ * there is an insect the swing still reaches, else 2. At frame 3, with an insect, high ground
+ * at the tile 2.0 ahead gives the same 1 or 2 without stopping. Otherwise 0. */
+int FieldActor_ClassifyState56(FieldActor *actor, const u8 *has_insect, const Vec3 *insect, const u8 *insect_flag)
+{
+    Vec3 ahead;
+    int surface;
+
+    if (anim_passed(actor, 4)) {
+        if (FieldActor_CheckOther(actor)) {
+            stop_state56(actor);
+            if (actor->other_result == 4) {
+                return 3;
+            }
+            return *has_insect ? 1 : 2;
+        }
+        func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_0223811c);
+        func_0204f7e0(&ahead, &ahead);
+        if (func_020310d0(&ahead, &surface, 0x19) >= 0x400) {
+            stop_state56(actor);
+            if (*has_insect && FieldActor_State56Reaches(actor, &ahead, insect, insect_flag)) {
+                return 1;
+            }
+            return 2;
+        }
+    } else if (anim_passed(actor, 3)) {
+        if (*has_insect) {
+            func_0200fa1c(&ahead, actor, &actor->position, &actor->yaw, &data_ov003_02238120);
+            func_0204f7e0(&ahead, &ahead);
+            if (func_020310d0(&ahead, &surface, 0x19) >= 0x400) {
+                return FieldActor_State56Reaches(actor, &ahead, insect, insect_flag) ? 1 : 2;
+            }
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_022140a8, FieldActor_ClassifyState56)
+
+/* func_ov003_02214200: the points of the swing by the frame, from the actor's position and yaw:
+ * `base` starts at the position and `sweep` is the caller's. Frame 3 plays sound 0x845, raises
+ * `sweep` by 1.87 and puts `base` 1.9 ahead and 2.3 up; frame 4 puts `sweep` there and `base`
+ * 2.65 ahead; frame 5 puts `sweep` 2.65 ahead and `base` 2.5 ahead and 0.4 down. `tip` is the
+ * tip of what the actor holds (func_0203f7d0). */
+void FieldActor_State56Points(FieldActor *actor, Vec3 *sweep, Vec3 *base, Vec3 *tip)
+{
+    const Vec3 *position = &actor->position;
+    copy_point(base, position);
+
+    int index = ((u16) actor->yaw >> 4) * 2;
+    fx32 sin = FX_SinCosTable_[index];
+    fx32 cos = FX_SinCosTable_[index + 1];
+
+    switch (anim_frame(actor)) {
+        case 3:
+            func_0200f328(actor, 0x845);
+            sweep->y = add32(sweep->y, 0x1dd3);
+            base->x = add32(base->x, FX_MulFunc(sin, 0x1e66));
+            base->y = add32(base->y, 0x24cd);
+            base->z = add32(base->z, FX_MulFunc(cos, 0x1e66));
+            break;
+        case 4:
+            copy_point(sweep, position);
+            sweep->x = add32(sweep->x, FX_MulFunc(sin, 0x1e66));
+            sweep->y = add32(sweep->y, 0x24cd);
+            sweep->z = add32(sweep->z, FX_MulFunc(cos, 0x1e66));
+            base->x = add32(base->x, FX_MulFunc(sin, 0x2a66));
+            base->z = add32(base->z, FX_MulFunc(cos, 0x2a66));
+            break;
+        case 5:
+            copy_point(sweep, position);
+            sweep->x = add32(sweep->x, FX_MulFunc(sin, 0x2a66));
+            sweep->z = add32(sweep->z, FX_MulFunc(cos, 0x2a66));
+            base->x = add32(base->x, FX_MulFunc(sin, 0x2800));
+            base->y = sub32(base->y, 0x666);
+            base->z = add32(base->z, FX_MulFunc(cos, 0x2800));
+            break;
+        default:
+            break;
+    }
+    Vec3 at = actor->unk_62C;
+    func_0203f7d0(&at, &at);
+    copy_point(tip, &at);
+}
+CLEAN_AS(func_ov003_02214200, FieldActor_State56Points)
+
+/* func_ov003_02214384: the swing of the actor of this console, from frame 3 while it moves and
+ * until it is over. Before frame 6, until something is caught, func_020899a8 looks for an
+ * insect along the sweep (radius 0xa00 with the held item 0x1376, else 0xd1f) and gives its
+ * slot; its point (func_ov003_0222f458) moves 0x100 in z when func_ov003_0222f490 flags it.
+ * Then by FieldActor_ClassifyState56: 1 catches the insect if func_ov003_0222e3a4 lets it, 2
+ * ends here, 3 catches slot 0xff unless something is caught; 0 traces the line, and with an
+ * insect found catches it as above when the line hit nothing or the insect lies more than a
+ * quarter turn from the tip's direction (func_020e8b4c). A catch plays sound 0x847. */
+void FieldActor_SweepState56(FieldActor *actor)
+{
+    if (actor->anim.speed == 0) {
+        return;
+    }
+    if (anim_done(actor)) {
+        return;
+    }
+    if (anim_frame(actor) < 3) {
+        return;
+    }
+
+    u8 has_insect = 0;
+    u8 insect_flag = 0;
+    u8 slot = 0;
+    Vec3 insect = {0, 0, 0};
+
+    Vec3 at = actor->unk_68C;
+    func_0203f7d0(&at, &at);
+    Vec3 sweep = at;
+    Vec3 base;
+    Vec3 tip;
+    FieldActor_State56Points(actor, &sweep, &base, &tip);
+
+    State56Work *work = &actor->work.s56;
+    if (work->caught == 0 && anim_frame(actor) < 6) {
+        u16 item;
+        func_020110c4(&item, actor);
+        int radius = item == 0x1376 ? 0xa00 : 0xd1f;
+        if (func_020899a8(&sweep, &base, radius, &slot, 0)) {
+            has_insect = 1;
+            func_ov003_0222f458(&insect, slot);
+            insect_flag = (u8) func_ov003_0222f490(slot);
+            if (insect_flag) {
+                insect.z = add32(insect.z, 0x100);
+            }
+        }
+    }
+
+    switch (FieldActor_ClassifyState56(actor, &has_insect, &insect, &insect_flag)) {
+        case 1:
+            break;
+        case 2:
+            return;
+        case 3:
+            if (work->caught) {
+                return;
+            }
+            work->caught = 1;
+            work->slot = 0xff;
+            func_0200f328(actor, 0x847);
+            return;
+        default: {
+            Vec3 from = at;
+            int traced = FieldActor_TraceState56(actor, &from, &base, &tip);
+            if (!has_insect) {
+                return;
+            }
+            int angle = 0x7fff;
+            if (traced) {
+                angle = Math_Atan2(sub32(insect.x, tip.x), sub32(insect.z, tip.z));
+            }
+            if (Math_AbsDiff16(angle, 0) <= 0x4000) {
+                return;
+            }
+            break;
+        }
+    }
+    if (func_ov003_0222e3a4(slot)) {
+        work->caught = 1;
+        work->slot = slot;
+        func_0200f328(actor, 0x847);
+    }
+}
+CLEAN_AS(func_ov003_02214384, FieldActor_SweepState56)
+
+/* func_ov003_02214568: the actor turns towards the point ahead of it. */
+void FieldActor_TurnState56(FieldActor *actor)
+{
+    Vec3 ahead;
+    func_0200fa6c(&ahead, actor);
+    func_02010d88(actor, &ahead, 0x99a, 0x1000);
+    func_02089fc8(actor->unk_1C4);
+}
+CLEAN_AS(func_ov003_02214568, FieldActor_TurnState56)
+
+/* func_ov003_022145a0: the actor faces the request's yaw. */
+void FieldActor_FaceState56(FieldActor *actor)
+{
+    func_0200fb34(actor, actor->work.s56.yaw);
+}
+CLEAN_AS(func_ov003_022145a0, FieldActor_FaceState56)
+
+/* func_ov003_022145b0: the animation steps; sound 0x848 when it has just ended. */
+void FieldActor_AnimateState56(FieldActor *actor)
+{
+    BOOL was_done = anim_done(actor);
+    func_02010f5c(actor);
+    if (!was_done && anim_done(actor)) {
+        func_0200f328(actor, 0x848);
+    }
+}
+CLEAN_AS(func_ov003_022145b0, FieldActor_AnimateState56)
+
+/* func_ov003_022145f8: state 0x56's message handler: the state is asked for again. */
+void FieldActor_State56Message(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState56(actor, 6, arg);
+}
+CLEAN_AS(func_ov003_022145f8, FieldActor_State56Message)
+
+/* func_ov003_02214604: entering state 0x56 with the request's yaw: nothing caught, animation
+ * 0x5b with pose 3 in hand. */
+void FieldActor_EnterState56(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    State56Work *work = &actor->work.s56;
+    s16 yaw;
+    memcpy(&yaw, request->payload, sizeof(yaw));
+
+    work->caught = 0;
+    work->yaw = yaw;
+    work->slot = 0xff;
+    func_020109a0(actor, 0x5b, 3, 0);
+    func_0205eae0(actor->held, 3, 3, 0);
+}
+CLEAN_AS(func_ov003_02214604, FieldActor_EnterState56)
+
+/* func_ov003_02214644: asks for state 0x56 with a yaw: towards unk_14C from where the frame
+ * began when unk_144 is 2, else the actor's own; whether it was queued. */
+int FieldActor_RequestState56(FieldActor *actor, int priority, int arg)
+{
+    StateRequest request;
+    s16 yaw;
+
+    open_request(&request, 0x56, priority, arg);
+    if (actor->unk_144 == 2) {
+        yaw = Math_Atan2(sub32(actor->unk_14C.x, actor->start_position.x), sub32(actor->unk_14C.z, actor->start_position.z));
+    } else {
+        yaw = actor->yaw;
+    }
+    memcpy(request.payload, &yaw, sizeof(yaw));
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02214644, FieldActor_RequestState56)
+
+/* ---- State 0x55: the fish caught is put away (animation 0x5a) */
+
+/* func_ov003_022146bc: state 0x55's update. */
+void FieldActor_UpdateState55(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    if (is_local_player(actor)) {
+        FieldActor_RunState55(actor);
+    } else {
+        FieldActor_EndState55Remote(actor);
+    }
+}
+CLEAN_AS(func_ov003_022146bc, FieldActor_UpdateState55)
+
+/* func_ov003_022146fc: another player's actor: at the animation's end the state after this one
+ * is noted and animation 0x6c starts with pose 0x13 in hand. */
+void FieldActor_EndState55Remote(FieldActor *actor)
+{
+    if (anim_done(actor)) {
+        actor->next_state = func_02008258(actor, actor->state);
+        func_020109fc(actor, 0x6c, 6, 6);
+        func_0205eae0(actor->held, 0x13, 6, 0);
+    }
+}
+CLEAN_AS(func_ov003_022146fc, FieldActor_EndState55Remote)
+
+/* The fish placed at the hand point with its own scale (func_ov003_0222aaa0). */
+static void place_fish_default(HookedFish *fish, const Vec3 *hand, Vec3 *scale)
+{
+    func_ov003_0222aaa0(scale, fish->kind);
+    Vec3 at = *hand;
+    Vec3 sized = *scale;
+    func_ov003_0222aa50(fish, &at, &sized);
+}
+
+/* func_ov003_0221474c: state 0x55 for the actor of this console, by the work's step. The fish
+ * hangs at the block's point; during the first six frames of animation 0x5a it shrinks from its
+ * size (the table's percent of the fish's row, or 1.0 with no fish) to 0, when
+ * func_ov003_0222a8a8 runs.
+ *   Step 0: at the animation's end the actor moves on (6), gives the fish's item to
+ *     func_0209a110, and func_02060460 lets the fish go.
+ *   Step 1: after animation 0x5a, animation 0x6c with pose 0x13. The word at 0x81c: at 5 it
+ *     becomes 6 once func_0206f6f8 accepts the item; at 6 it becomes 0xf once func_0206fbc0
+ *     says so, and when func_0206fc6c then says so the fish is let go (func_020604fc), the
+ *     receiver is released and the actor moves on: to state 0x8f when func_0206f6a4 gives a
+ *     fish item (0x12e8-0x131f), else (6) at step 2. From 0xf the items 0x1320-0x1322 go to
+ *     step 3; others get their own scale back and state 0x8f with step 2 saved. Then
+ *     func_02060448 and the receiver is released.
+ *   Step 2: the actor moves on (6).
+ *   Step 3: waits for func_02043554 to give a value other than -1, then step 2. */
+void FieldActor_RunState55(FieldActor *actor)
+{
+    HookedFish *fish = func_020604f8(held_line(actor));
+    int size = 0;
+    if (actor->animation == 0x5a) {
+        int frame = anim_frame(actor);
+        if (frame < 6) {
+            if (fish != NULL) {
+                int full = (data_ov003_0223c026[fish->size * 0x14] << 12) / 100;
+                size = (s16) (full - full * frame / 6);
+            } else {
+                size = (s16) (0x1000 - 0x2ab * frame);
+            }
+        }
+    }
+    Vec3 scale = {size, size, size};
+    FieldActorBlock48 block = actor->unk_698;
+    func_ov003_02219668(&block, NULL);
+    Vec3 hand = block_point(&block);
+
+    u16 item = ITEM_NONE;
+    if (fish != NULL) {
+        func_0203f7d0(&hand, &hand);
+        Vec3 at = hand;
+        Vec3 sized = scale;
+        func_ov003_0222aa50(fish, &at, &sized);
+        item = (u16) (fish->kind + 0x12e8);
+        if (size == 0) {
+            func_ov003_0222a8a8(actor->player);
+        }
+    }
+
+    u8 *step = &actor->work.step;
+    switch (*step) {
+        case 0:
+            if (!anim_done(actor)) {
+                break;
+            }
+            actor->next_state = func_02008258(actor, actor->state);
+            func_0200d4e8(actor, 6, 1, -1);
+            if (is_local_player(actor)) {
+                u16 code = item;
+                func_0209a110(&code);
+            }
+            func_02060460(held_line(actor));
+            break;
+        case 1:
+            if (actor->animation == 0x5a) {
+                if (!anim_done(actor)) {
+                    break;
+                }
+                func_020109fc(actor, 0x6c, 6, 6);
+                func_0205eae0(actor->held, 0x13, 6, 0);
+            }
+            if (is_local_player(actor)) {
+                if (actor->unk_81C == 5) {
+                    if (func_0206f6f8(item, fish)) {
+                        actor->unk_81C = 6;
+                    }
+                    break;
+                }
+                if (actor->unk_81C == 6) {
+                    if (!func_0206fbc0()) {
+                        break;
+                    }
+                    actor->unk_81C = 0xf;
+                    if (func_0206fc6c()) {
+                        func_020604fc(held_line(actor), 0);
+                        release_receiver(actor);
+                        func_0203e19c();
+                        u16 got = func_0206f6a4();
+                        actor->next_state = func_02008258(actor, actor->state);
+                        if (got >= 0x12e8 && got <= 0x131f) {
+                            FieldActor_RequestLook(actor, &data_ov003_02238104, 0, 6, -1);
+                            break;
+                        }
+                        func_0200d4e8(actor, 6, 1, -1);
+                        *step = 2;
+                        break;
+                    }
+                } else if (actor->unk_81C < 0xf) {
+                    break;
+                }
+                if (is_item_1320(item)) {
+                    *step = 3;
+                    if (actor->unk_810 == -1) {
+                        actor->unk_810 = func_02043554(actor->player, item);
+                        if (actor->unk_810 != -1) {
+                            *step = 2;
+                        }
+                    }
+                } else {
+                    if (fish != NULL) {
+                        place_fish_default(fish, &hand, &scale);
+                    }
+                    FieldActor_RequestLook(actor, &data_ov003_02238108, 0, 6, -1);
+                    State55Saved_SetStep(&actor->saved.step55, 2);
+                }
+                func_02060448(held_line(actor));
+                release_receiver(actor);
+                func_0203e19c();
+                break;
+            }
+            actor->next_state = func_02008258(actor, actor->state);
+            if (State55Saved_Step(&actor->saved.step55) == 2) {
+                if (fish != NULL) {
+                    place_fish_default(fish, &hand, &scale);
+                }
+                func_02060448(held_line(actor));
+                *step = 2;
+                func_020109fc(actor, 0, 6, 6);
+            }
+            break;
+        case 2:
+            actor->next_state = func_02008258(actor, actor->state);
+            func_0200d4e8(actor, 6, 1, -1);
+            break;
+        case 3:
+            if (actor->unk_810 == -1) {
+                actor->unk_810 = func_02043554(actor->player, item);
+                if (actor->unk_810 != -1) {
+                    *step = 2;
+                }
+            }
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov003_0221474c, FieldActor_RunState55)
+
+/* func_ov003_02214ba0: state 0x55's message handler: the state is asked for again at the saved
+ * step. */
+void FieldActor_State55Message(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState55(actor, (char) State55Saved_Step(&actor->saved.step55), 6, arg);
+}
+CLEAN_AS(func_ov003_02214ba0, FieldActor_State55Message)
+
+/* func_ov003_02214bc8: entering state 0x55 at the request's step (saved too): animation 0x5a and
+ * sound 0x4f. */
+void FieldActor_EnterState55(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    u8 step = request->payload[0];
+    actor->work.step = step;
+    State55Saved_SetStep(&actor->saved.step55, step);
+    func_020109a0(actor, 0x5a, 3, 3);
+    func_0200f328(actor, 0x4f);
+}
+CLEAN_AS(func_ov003_02214bc8, FieldActor_EnterState55)
+
+/* func_ov003_02214bfc */
+int State55Saved_Step(const u8 *saved)
+{
+    return *saved;
+}
+CLEAN_AS(func_ov003_02214bfc, State55Saved_Step)
+
+/* func_ov003_02214c00 */
+void State55Saved_SetStep(u8 *saved, int step)
+{
+    *saved = (u8) step;
+}
+CLEAN_AS(func_ov003_02214c00, State55Saved_SetStep)
+
+/* func_ov003_02214c04: asks for state 0x55 at a step; whether it was queued. */
+int FieldActor_RequestState55(FieldActor *actor, char step, int priority, int arg)
+{
+    StateRequest request;
+    open_request(&request, 0x55, priority, arg);
+    request.payload[0] = (u8) step;
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02214c04, FieldActor_RequestState55)
+
+/* ---- State 0x54: the fish caught is shown (animation 0x59) */
+
+/* func_ov003_02214c40: state 0x54's update: func_0200ee40 runs between func_02010f5c and the
+ * others, with the points and blocks it would change kept. Another player's actor notes the
+ * state after this one and holds still. */
+void FieldActor_UpdateState54(FieldActor *actor)
+{
+    KeptAcrossEE40 kept;
+
+    func_02010f5c(actor);
+    keep_across_ee40(actor, &kept);
+    func_0200ee40(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    if (is_local_player(actor)) {
+        FieldActor_RunState54(actor);
+    } else {
+        actor->next_state = func_02008258(actor, actor->state);
+        func_0200faf0(actor, 0x400);
+    }
+    restore_after_ee40(actor, &kept);
+}
+CLEAN_AS(func_ov003_02214c40, FieldActor_UpdateState54)
+
+/* func_ov003_02214d2c: state 0x54 for the actor of this console. The actor holds still; the
+ * fish hangs, at its own scale, at the block's point moved by an offset that grows over the end
+ * of the animation (from frame 0x10; fixed when the mode is not 0). Frame 3 of animation 0x59
+ * plays func_0203ae98. Before frame 0x11, in mode 0, steps below 5 wait.
+ *   Step 0: once func_0203e1c4 says so the receiver is registered under "obj_etc_getfish" with
+ *     the item 0x12e8 + kind (what func_0203cbd0 leaves of it becomes `item`), its link is
+ *     asked for, the sounds are set, and step 1 follows at once.
+ *   Step 1: once the link is open: step 5 (0x81c = 0xe) when func_0203cc38 says so and it did
+ *     not on entering, else step 2 (0x81c = 8).
+ *   Step 2: with func_02099fe8 at -1, step 3 when func_02043368 accepts (0x81c = 4 for the items
+ *     0x1320-0x1322, else 0), else step 4 (0x81c = 1). Otherwise once the link closes the
+ *     receiver is released and state 0x55 is asked for at step 0.
+ *   Step 3: from 0x81c = 0xf on: the items 0x1320-0x1322 go to step 6 and on as there, others to
+ *     step 4. Before, once the link closes the receiver is released and state 0x55 is asked for
+ *     at step 1.
+ *   Step 4: once the link closes func_02060448 runs, the receiver is released, the state after
+ *     this one is noted and state 0x8f asked for.
+ *   Step 5: once the link closes the receiver is released and func_020094a0 runs.
+ *   Step 6: waits for func_02043554 to give a value other than -1, then step 4. */
+void FieldActor_RunState54(FieldActor *actor)
+{
+    State54Work *work = &actor->work.s54;
+
+    func_0200faf0(actor, 0x400);
+    HookedFish *fish = func_020604f8(held_line(actor));
+    if (fish != NULL) {
+        FieldActorBlock48 block = actor->unk_698;
+        Vec3 scale;
+        func_ov003_0222aaa0(&scale, fish->kind);
+        Vec3 offset = {0x4cd, 0, 0};
+        int frame = anim_frame(actor);
+        if (work->mode != 0) {
+            offset.x = 0x800;
+            offset.y = 0x19a;
+            offset.z = -0x19a;
+        } else if (frame >= 0x10) {
+            /* QUIRK: on the last frame of a 0x10-frame animation the divisor is 0, which the
+             * ROM's division answers with the numerator. */
+            int d = div_s32((frame - 0xf) * 0x19a, (int) anim_frames(actor) - 0x10);
+            offset.x = add32(offset.x, d * 2);
+            offset.y = add32(offset.y, d);
+            offset.z = sub32(offset.z, d);
+        }
+        func_ov003_02219668(&block, &offset);
+        Vec3 at = block_point(&block);
+        func_0203f7d0(&at, &at);
+        Vec3 sized = scale;
+        func_ov003_0222aa50(fish, &at, &sized);
+    }
+
+    if (actor->animation == 0x59 && anim_passed(actor, 3)) {
+        func_0203ae98();
+    }
+    if (anim_frame(actor) < 0x11 && work->step < 5 && work->mode == 0) {
+        return;
+    }
+
+    switch (work->step) {
+        case 0:
+            if (func_0203e1c4()) {
+                work->step = 1;
+                func_0203ee14(actor, actor->receiver);
+                func_0200f27c(actor, 0x11);
+                func_020a8164(actor->receiver, data_ov003_02238158);
+                u8 kind = work->kind;
+                actor->receiver_unk_1E = kind;
+                u16 code = (u16) (kind + 0x12e8);
+                func_0203cbd0(&code);
+                actor->unk_822 = code;
+                actor->item = actor->unk_822;
+                actor->link->requested = 1;
+                func_02035624(0x12);
+                func_02035684(0xc, 0, 4);
+                func_020356c4(0xd, 0x39, 0x7f, 1);
+            }
+            /* fall through */
+        case 1:
+            if (actor->link == NULL || actor->link->open == 0) {
+                break;
+            }
+            if (func_0203cc38() && work->unk_05 == 0) {
+                work->step = 5;
+                actor->unk_81C = 0xe;
+                break;
+            }
+            work->step = 2;
+            actor->unk_81C = 8;
+            break;
+        case 2:
+            if (func_02099fe8() == -1) {
+                int point[2] = {0, 0};
+                if (func_02043368(0x10, point, NULL)) {
+                    work->step = 3;
+                    actor->unk_81C = is_item_1320(actor->item) ? 4 : 0;
+                    break;
+                }
+                work->step = 4;
+                actor->unk_81C = 1;
+                break;
+            }
+            if (!link_closed(actor)) {
+                break;
+            }
+            close_receiver(actor);
+            func_0203e19c();
+            FieldActor_RequestState55(actor, 0, 6, -1);
+            func_0203b144();
+            break;
+        case 3:
+            if (actor->unk_81C >= 0xf) {
+                if (!is_item_1320(actor->item)) {
+                    work->step = 4;
+                    break;
+                }
+                work->step = 6;
+                if (actor->unk_810 != -1) {
+                    break;
+                }
+                actor->unk_810 = func_02043554(actor->player, actor->item);
+                if (actor->unk_810 != -1) {
+                    work->step = 4;
+                }
+                break;
+            }
+            if (!link_closed(actor)) {
+                break;
+            }
+            close_receiver(actor);
+            FieldActor_RequestState55(actor, 1, 6, -1);
+            func_0203b144();
+            break;
+        case 4:
+            if (!link_closed(actor)) {
+                break;
+            }
+            func_02060448(held_line(actor));
+            close_receiver(actor);
+            func_0203e19c();
+            actor->next_state = func_02008258(actor, actor->state);
+            FieldActor_RequestLook(actor, &data_ov003_02238100, 0, 6, -1);
+            func_0203b144();
+            break;
+        case 5:
+            if (!link_closed(actor)) {
+                break;
+            }
+            close_receiver(actor);
+            func_0203e19c();
+            func_020094a0(actor, 1, work->kind, 0, 6, -1);
+            break;
+        case 6:
+            if (actor->unk_810 != -1) {
+                break;
+            }
+            actor->unk_810 = func_02043554(actor->player, actor->item);
+            if (actor->unk_810 != -1) {
+                work->step = 4;
+            }
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov003_02214d2c, FieldActor_RunState54)
+
+/* func_ov003_02215164: state 0x54's message handler: the state is asked for again with the saved
+ * mode. */
+void FieldActor_State54Message(FieldActor *actor, int arg)
+{
+    u8 mode;
+    State54Saved_Get(&actor->saved.mode54, &mode);
+    FieldActor_RequestState54(actor, (char) mode, 6, arg);
+}
+CLEAN_AS(func_ov003_02215164, FieldActor_State54Message)
+
+/* func_ov003_02215190: entering state 0x54 with the request's mode (saved too). Mode 0 starts at
+ * step 0 with animation 0x59 and pose 0x1c in hand; the actor of this console takes the hooked
+ * fish's kind, and for kinds below 0x38 func_02079798 and func_0208d09c note the catch. Other
+ * modes start at step 2 (0x81c = 8).
+ * REQUIRES: in mode 0 a fish hangs from the held item for the actor of this console (the
+ * original reads its kind without a check). */
+void FieldActor_EnterState54(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    u8 mode = request->payload[0];
+    State54Work *work = &actor->work.s54;
+
+    work->mode = mode;
+    work->unk_00 = 0x39;
+    work->unk_05 = (u8) func_0203cc38();
+    if (mode == 0) {
+        if (is_local_player(actor)) {
+            s8 kind = func_020604f8(held_line(actor))->kind;
+            work->kind = (u8) kind;
+            if (kind < 0x38) {
+                func_02079798(&actor->position);
+                func_0208d09c((void *) (uintptr_t) func_0208b500());
+            }
+        }
+        work->step = 0;
+        func_020109a0(actor, 0x59, 3, 0);
+        func_0205eae0(actor->held, 0x1c, 3, 1);
+    } else {
+        work->step = 2;
+        work->unk_00 = 0x3a;
+        actor->unk_81C = 8;
+    }
+    State54Saved_Set(&actor->saved.mode54, mode);
+}
+CLEAN_AS(func_ov003_02215190, FieldActor_EnterState54)
+
+/* func_ov003_02215234 */
+void State54Saved_Get(const u8 *saved, u8 *mode)
+{
+    *mode = *saved;
+}
+CLEAN_AS(func_ov003_02215234, State54Saved_Get)
+
+/* func_ov003_0221523c */
+void State54Saved_Set(u8 *saved, int mode)
+{
+    *saved = (u8) mode;
+}
+CLEAN_AS(func_ov003_0221523c, State54Saved_Set)
+
+/* func_ov003_02215240: asks for state 0x54 with a mode; whether it was queued. */
+int FieldActor_RequestState54(FieldActor *actor, char mode, int priority, int arg)
+{
+    StateRequest request;
+    open_request(&request, 0x54, priority, arg);
+    request.payload[0] = (u8) mode;
+    return send_request(actor, &request);
+}
+CLEAN_AS(func_ov003_02215240, FieldActor_RequestState54)
+
+/* ---- State 0x53: animation 0x58 */
+
+/* func_ov003_0221527c: state 0x53's update. */
+void FieldActor_UpdateState53(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    if (is_local_player(actor)) {
+        FieldActor_EndState53(actor);
+    }
+}
+CLEAN_AS(func_ov003_0221527c, FieldActor_UpdateState53)
+
+/* func_ov003_022152b4: at the animation's end, once func_02060474 says so of what hangs from the
+ * held item, state 0x54 is asked for (mode 0). */
+void FieldActor_EndState53(FieldActor *actor)
+{
+    if (anim_done(actor) && func_02060474(held_line(actor))) {
+        FieldActor_RequestState54(actor, 0, 6, -1);
+    }
+}
+CLEAN_AS(func_ov003_022152b4, FieldActor_EndState53)
+
+/* func_ov003_022152ec: state 0x53's message handler: the state is asked for again. */
+void FieldActor_State53Message(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState53(actor, 6, arg);
+}
+CLEAN_AS(func_ov003_022152ec, FieldActor_State53Message)
+
+/* func_ov003_022152f8: entering state 0x53: animation 0x58 with pose 0x1b in hand, sounds 0x84c
+ * and 0x84e, and unk_5D0 kept at unk_8C4. */
+void FieldActor_EnterState53(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    func_020109a0(actor, 0x58, 3, 0);
+    func_0205eae0(actor->held, 0x1b, 3, 1);
+    func_0200f328(actor, 0x84c);
+    func_0200f328(actor, 0x84e);
+    copy_point(&actor->unk_8C4, &actor->unk_5D0);
+}
+CLEAN_AS(func_ov003_022152f8, FieldActor_EnterState53)
+
+/* func_ov003_0221535c: asks for state 0x53; whether it was queued. */
+void *FieldActor_RequestState53(FieldActor *actor, int priority, int arg)
+{
+    return (void *) (intptr_t) request_state(actor, 0x53, priority, arg, NULL, 0);
+}
+CLEAN_AS(func_ov003_0221535c, FieldActor_RequestState53)
+
+/* ---- State 0x52: animation 0x57 */
+
+/* func_ov003_02215394: state 0x52's update. The speed at 0x98 slows by 0xc5 a frame towards 0,
+ * as a magnitude, and is stored negated. */
+void FieldActor_UpdateState52(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    if (func_0200f554(actor)) {
+        func_0201100c(actor);
+    }
+    func_02010d64(actor);
+    int speed = sub32(0, func_020113a4(abs32(actor->unk_098), 0, 0xc5));
+    func_0201107c(actor, &speed);
+    FieldActor_EndState52(actor);
+}
+CLEAN_AS(func_ov003_02215394, FieldActor_UpdateState52)
+
+/* func_ov003_022153e8: at the animation's end the actor of this console runs func_0203b144, the
+ * actor moves on and the held item takes pose 0x13. */
+void FieldActor_EndState52(FieldActor *actor)
+{
+    if (!anim_done(actor)) {
+        return;
+    }
+    if (is_local_player(actor)) {
+        func_0203b144();
+    }
+    move_on(actor);
+    func_0205eae0(actor->held, 0x13, 3, 0);
+}
+CLEAN_AS(func_ov003_022153e8, FieldActor_EndState52)
+
+/* func_ov003_02215454: state 0x52's message handler: the state is asked for again. */
+void FieldActor_State52Message(FieldActor *actor, int arg)
+{
+    FieldActor_RequestState52(actor, 6, arg);
+}
+CLEAN_AS(func_ov003_02215454, FieldActor_State52Message)
+
+/* func_ov003_02215460: entering state 0x52: the speed at 0x98 starts at -1049 (the word at
+ * 0x0223812c), animation 0x57 with pose 0x1a in hand. */
+void FieldActor_EnterState52(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    func_0201107c(actor, &data_ov003_0223812c);
+    func_020109a0(actor, 0x57, 3, 0);
+    func_0205eae0(actor->held, 0x1a, 3, 0);
+}
+CLEAN_AS(func_ov003_02215460, FieldActor_EnterState52)
+
+/* func_ov003_02215494: asks for state 0x52; whether it was queued. */
+void *FieldActor_RequestState52(FieldActor *actor, int priority, int arg)
+{
+    return (void *) (intptr_t) request_state(actor, 0x52, priority, arg, NULL, 0);
+}
+CLEAN_AS(func_ov003_02215494, FieldActor_RequestState52)
+
+/* ---- State 0x51: animation 0x56 */
+
+/* func_ov003_022154cc: state 0x51's update. */
+void FieldActor_UpdateState51(FieldActor *actor)
+{
+    func_02010f5c(actor);
+    func_0200f554(actor);
+    func_02010d64(actor);
+    FieldActor_EndState51(actor);
+}
+CLEAN_AS(func_ov003_022154cc, FieldActor_UpdateState51)
+
+/* func_ov003_022154ec: at the animation's end the state after this one is noted and the actor
+ * moves on: func_02008c40 (5) with the request's byte, else func_0200d4e8 (3). The result is
+ * theirs, 0 before the end. */
+int FieldActor_EndState51(FieldActor *actor)
+{
+    int done = func_02056f94(&actor->anim);
+    if (done == 0) {
+        return done;
+    }
+    actor->next_state = func_02008258(actor, actor->state);
+    if (actor->work.s51_flag != 0) {
+        return func_02008c40(actor, 5, -1);
+    }
+    return func_0200d4e8(actor, 3, 1, -1);
+}
+CLEAN_AS(func_ov003_022154ec, FieldActor_EndState51)
+
+/* func_ov003_02215544: state 0x51's message handler: the state is asked for again with the saved
+ * byte (func_ov003_02215624). */
+void FieldActor_State51Message(FieldActor *actor, int arg)
+{
+    u8 flag;
+    State51Saved_Get(&actor->saved.flag51, &flag);
+    func_ov003_02215624(actor, flag, 6, arg);
+}
+CLEAN_AS(func_ov003_02215544, FieldActor_State51Message)
+
+/* func_ov003_02215570: entering state 0x51 with the request's byte (kept in the work and saved):
+ * animation 0x56 with pose 0x19 in hand, sounds 0x84c and 0x84e, unk_5D0 kept at unk_8C4; the
+ * actor of this console runs func_0203b144. */
+void FieldActor_EnterState51(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    u8 flag = request->payload[0];
+
+    func_ov003_02215620(&actor->work.s51_flag, flag);
+    func_ov003_0221561c(&actor->saved.flag51, flag);
+    func_020109a0(actor, 0x56, 3, 0);
+    func_0205eae0(actor->held, 0x19, 3, 0);
+    func_0200f328(actor, 0x84c);
+    func_0200f328(actor, 0x84e);
+    copy_point(&actor->unk_8C4, &actor->unk_5D0);
+    if (is_local_player(actor)) {
+        func_0203b144();
+    }
+}
+CLEAN_AS(func_ov003_02215570, FieldActor_EnterState51)
+
+/* func_ov003_02215614 */
+void State51Saved_Get(const u8 *saved, u8 *flag)
+{
+    *flag = *saved;
+}
+CLEAN_AS(func_ov003_02215614, State51Saved_Get)
