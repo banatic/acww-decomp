@@ -144,5 +144,117 @@ SoundScene *SoundScene32_Construct(SoundScene *scene);
 
 void SoundScene31_Start(SoundScene *scene);
 SoundScene *SoundScene31_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene31_Destruct(SoundScene *scene);
+SoundScene *SoundScene31_Construct(SoundScene *scene);
+
+/* The classes of scenes 6 to 0x1a, named by their kind as the classes above:
+ *
+ *   kind 30: scene 0x1a         kind 22: scenes 0xb to 0xe and 0x2f
+ *   kind 24: scene 0x10         kind 21: scene 0xa
+ *   kind 23: scene 0xf          kind 20: scene 9
+ *                               kind 19: scenes 6, 7 and 8
+ *
+ * and the classes clean/main/scene_sound.c picks for the other scenes:
+ *
+ *   kind 10: when data_020e54a8 is set (0x20 bytes, SoundScene10);
+ *   kind 2: when func_020b22b8 or func_020b22dc says so;
+ *   kind 3: on the days of events 0xf and 0x12, and of event 0x13 before 2:00;
+ *   kind 1: otherwise. Classes 60, 3 and 2 derive from it; it has its own slots 7, 8 and 9,
+ *   which reload sequence archive 0x8f after the keyboard's sounds are dropped.
+ *
+ * Also here: the base class's helpers that make the heaps of players 6, 12, 13, 17, 18 and
+ * 19. */
+
+/* The part class 10 owns at 0x08 (vtable 0x0213f25c), the base of class 41's part: built by
+ * func_020f9888, destroyed by func_020f9868 (which clears the sound system's owner) and set up
+ * by func_020f97dc. */
+typedef struct SoundScene10Part {
+    const SoundScenePartVtable *vtable; /* 0x00 */
+    u8 unk_04[0x10];
+} SoundScene10Part;
+
+typedef struct SoundScene10 {
+    SoundScene base;       /* 0x00 */
+    SoundScene10Part part; /* 0x08 */
+    /* 0x1c: 0 when built, 1 once the scene's sounds are loaded (start or slot 8), 2 once the
+     * keyboard's sounds replace them (slot 7) */
+    u8 stage;
+    u8 heap_level; /* 0x1d: the sound heap's level before sequence archive 0x90 */
+    u8 pad_1e[2];
+} SoundScene10;
+
+static_assert(offsetof(SoundScene10, part) == 0x08, "SoundScene10.part");
+static_assert(offsetof(SoundScene10, stage) == 0x1c, "SoundScene10.stage");
+static_assert(sizeof(SoundScene10) == 0x20, "SoundScene10 size");
+
+void SoundScene30_Start(SoundScene *scene);
+SoundScene *SoundScene30_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene30_Destruct(SoundScene *scene);
+SoundScene *SoundScene30_Construct(SoundScene *scene);
+
+void SoundScene24_Start(SoundScene *scene);
+SoundScene *SoundScene24_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene24_Destruct(SoundScene *scene);
+SoundScene *SoundScene24_Construct(SoundScene *scene);
+
+void SoundScene23_Start(SoundScene *scene);
+SoundScene *SoundScene23_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene23_Destruct(SoundScene *scene);
+SoundScene *SoundScene23_Construct(SoundScene *scene);
+
+void SoundScene22_Start(SoundScene *scene);
+SoundScene *SoundScene22_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene22_Destruct(SoundScene *scene);
+SoundScene *SoundScene22_Construct(SoundScene *scene);
+
+void SoundScene21_Start(SoundScene *scene);
+SoundScene *SoundScene21_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene21_Destruct(SoundScene *scene);
+SoundScene *SoundScene21_Construct(SoundScene *scene);
+
+void SoundScene20_Start(SoundScene *scene);
+SoundScene *SoundScene20_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene20_Destruct(SoundScene *scene);
+SoundScene *SoundScene20_Construct(SoundScene *scene);
+
+void SoundScene19_Start(SoundScene *scene);
+SoundScene *SoundScene19_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene19_Destruct(SoundScene *scene);
+SoundScene *SoundScene19_Construct(SoundScene *scene);
+
+void SoundScene10_ReloadSounds(SoundScene10 *scene);
+void SoundScene10_SetKeyboardMode(SoundScene10 *scene, int mode);
+void SoundScene10_OnMusic(SoundScene10 *scene, unsigned char stopped);
+void SoundScene10_Update(SoundScene10 *scene, int value);
+void SoundScene10_Start(SoundScene10 *scene);
+SoundScene10 *SoundScene10_DestructDelete(SoundScene10 *scene);
+SoundScene10 *SoundScene10_Destruct(SoundScene10 *scene);
+SoundScene10 *SoundScene10_Construct(SoundScene10 *scene);
+
+void SoundScene3_Start(SoundScene *scene);
+SoundScene *SoundScene3_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene3_Destruct(SoundScene *scene);
+SoundScene *SoundScene3_Construct(SoundScene *scene);
+
+void SoundScene2_Start(SoundScene *scene);
+SoundScene *SoundScene2_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene2_Destruct(SoundScene *scene);
+SoundScene *SoundScene2_Construct(SoundScene *scene);
+
+void SoundScene1_Vfunc24(SoundScene *scene, int value);
+void SoundScene1_Vfunc20(SoundScene *scene);
+int SoundScene1_SetKeyboardMode(SoundScene *scene, int mode);
+void SoundScene1_Start(SoundScene *scene);
+SoundScene *SoundScene1_DestructBase(SoundScene *scene);
+SoundScene *SoundScene1_DestructDelete(SoundScene *scene);
+SoundScene *SoundScene1_Destruct(SoundScene *scene);
+SoundScene *SoundScene1_Construct(SoundScene *scene);
+SoundScene *SoundScene1_ConstructBase(SoundScene *scene);
+
+int SoundScene_CreatePlayer12Heaps(SoundScene *scene);
+void SoundScene_CreatePlayer13Heap(SoundScene *scene);
+void SoundScene_CreatePlayer18And19Heaps(SoundScene *scene);
+void SoundScene_CreatePlayer17Heaps(SoundScene *scene);
+void SoundScene_CreatePlayer6Heaps(SoundScene *scene);
 
 #endif

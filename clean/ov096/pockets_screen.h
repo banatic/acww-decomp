@@ -12,7 +12,13 @@
  *
  * Picking a place opens a choice (ov002/paged_choice.h) whose rows carry an action: the action
  * is kept at 0xbb and run through a table of member functions (PocketsScreen_RunAction). The
- * scene's sub states (MenuScene_SetSubState) are run by func_ov096_022a1a0c. */
+ * scene's sub states (MenuScene_SetSubState) are run by func_ov096_022a1a0c.
+ *
+ * An item or a letter can be picked up from its place and held (PocketsHeldKind) until it is
+ * put down, swapped or sent back to the place it came from (`held_place`). The bells' place
+ * is the wallet: a bell bag put there adds its bells, one taken from it removes them. Items
+ * put on the player's place go to slots of the player's record (PocketsScreen_HeldRecordSlot,
+ * PocketsScreen_SwapRecordSlot). */
 #ifndef CLEAN_OV096_POCKETS_SCREEN_H
 #define CLEAN_OV096_POCKETS_SCREEN_H
 
@@ -28,6 +34,7 @@ enum PocketsScreenFlag {
     POCKETS_FLAG_08 = 0x08,            /* cleared and tested by PocketsScreen_AddLetterEntries */
     POCKETS_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor over the left edge */
     POCKETS_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it over the right edge */
+    POCKETS_FLAG_40 = 0x40,            /* the held thing is not drawn */
     POCKETS_FLAG_80 = 0x80,
     POCKETS_FLAG_200 = 0x200,
     POCKETS_FLAG_SWITCH_ON = 0x400,      /* see PocketsScreen_ApplySwitch */
@@ -58,6 +65,14 @@ enum PocketsScreenPlace {
     POCKETS_NO_PLACE = 0x26  /* func_ov096_0229f55c: no free pocket slot */
 };
 
+/* What the scene holds (`held_kind`): a thing picked up from a place moves with the stylus or
+ * the cursor until it is put down. */
+enum PocketsHeldKind {
+    POCKETS_HELD_NONE = 0,
+    POCKETS_HELD_LETTER = 1, /* a copy of the letter is at `held_letter` */
+    POCKETS_HELD_ITEM = 2    /* `item` and `held_state` */
+};
+
 #define POCKETS_GRID_COLUMNS 5
 #define POCKETS_GRID_ROWS 3
 #define POCKETS_LETTER_ROWS 5
@@ -67,30 +82,33 @@ enum PocketsScreenPlace {
 #define POCKETS_ACTION_CANCEL 0x22 /* the value of every row added without one */
 
 typedef struct PocketsScreen {
-    MenuScene base;  /* 0x00 */
-    u32 flags;       /* 0x94: PocketsScreenFlag */
-    u8 unk_98[0x0c]; /* 0x98 */
-    s32 menu_x;      /* 0xa4 */
-    s32 menu_y;      /* 0xa8 */
-    u16 item;        /* 0xac: an item code */
-    u16 place_item;  /* 0xae: the item code of places 0x22-0x25 (func_ov096_0229f0dc) */
-    u8 unk_b0;       /* 0xb0 */
-    u8 unk_b1;       /* 0xb1 */
-    u8 unk_b2;       /* 0xb2 */
-    u8 unk_b3;       /* 0xb3 */
-    u8 free_slot;    /* 0xb4: a free pocket slot (func_ov096_0229f55c) */
-    u8 cursor;       /* 0xb5: PocketsScreenPlace */
-    u8 slot;         /* 0xb6: the place picked */
-    u8 unk_b7;       /* 0xb7 */
-    u8 prev_slot;    /* 0xb8 */
-    u8 unk_b9;       /* 0xb9 */
-    u8 unk_ba;       /* 0xba: a sub state kept by PocketsScreen_BeginSubState15 */
-    u8 action;       /* 0xbb: see POCKETS_ACTION_COUNT */
-    u8 unk_bc;       /* 0xbc */
-    u8 choice_page;  /* 0xbd */
-    u8 choice_code;  /* 0xbe: the code given to PagedChoice_Apply */
-    u8 unk_bf;       /* 0xbf */
-    u8 record_slot;  /* 0xc0: 3-5, of func_ov096_0229e4a4 */
+    MenuScene base; /* 0x00 */
+    u32 flags;      /* 0x94: PocketsScreenFlag */
+    u32 unk_98;     /* 0x98 */
+    s32 grab_dx;    /* 0x9c: from the touch to the held thing (PocketsScreen_FollowTouch) */
+    s32 grab_dy;    /* 0xa0 */
+    s32 menu_x;     /* 0xa4: where the held thing (or the menu) is drawn */
+    s32 menu_y;     /* 0xa8 */
+    u16 item;       /* 0xac: the held item's code */
+    u16 place_item; /* 0xae: the item code of places 0x22-0x25 (PocketsScreen_PlaceItem) */
+    u8 held_state;  /* 0xb0: the held item's state (PocketsScreen_PlaceItemState) */
+    u8 held_kind;   /* 0xb1: PocketsHeldKind */
+    u8 unk_b2;      /* 0xb2 */
+    u8 popup_place; /* 0xb3: the place the popup tells of (PocketsScreen_UpdatePopup) */
+    u8 held_place;  /* 0xb4: the place the held thing goes back to; a free pocket slot when
+                      * taken from the record or the wallet (func_ov096_0229f55c) */
+    u8 cursor;      /* 0xb5: PocketsScreenPlace */
+    u8 slot;        /* 0xb6: the place picked */
+    u8 unk_b7;      /* 0xb7 */
+    u8 prev_slot;   /* 0xb8 */
+    u8 unk_b9;      /* 0xb9 */
+    u8 unk_ba;      /* 0xba: a sub state kept by PocketsScreen_BeginSubState15 */
+    u8 action;      /* 0xbb: see POCKETS_ACTION_COUNT */
+    u8 choice_row;  /* 0xbc: the choice row the cursor sprite points at */
+    u8 choice_page; /* 0xbd */
+    u8 choice_code; /* 0xbe: the code given to PagedChoice_Apply */
+    u8 unk_bf;      /* 0xbf */
+    u8 record_slot; /* 0xc0: 3-5, of func_ov096_0229e4a4 */
     u8 unk_c1[3];
     s32 unk_c4;            /* 0xc4: func_020435fc's result */
     u8 unk_c8[0x20];       /* 0xc8 */
@@ -109,8 +127,9 @@ typedef struct PocketsScreen {
     u8 unk_2a74[0x328];    /* 0x2a74: destructor func_0206e35c */
     LabelButton button;    /* 0x2d9c: a LabelButton0 */
     u8 pad_2e14[0x14];     /* 0x2e14 */
-    u8 unk_2e28[0x100];    /* 0x2e28: vtable reset by func_02066688 */
-    u8 unk_2f28[4];        /* 0x2f28: vtable reset by func_02066688 */
+    u8 held_letter[0x100]; /* 0x2e28: the held letter's copy; vtable reset by func_02066688 */
+    u8 unk_2f28[4];        /* 0x2f28: a second letter copy (0x100 bytes, func_02066830); vtable
+                            * reset by func_02066688 */
 } PocketsScreen;
 
 PocketsScreen *PocketsScreen_Destroy(PocketsScreen *self);
@@ -173,5 +192,66 @@ void PocketsScreen_BeginSubState11(PocketsScreen *self);
 void PocketsScreen_BeginSubState10(PocketsScreen *self);
 void PocketsScreen_ShowCursorFirstOfSet(PocketsScreen *self);
 void PocketsScreen_PlaceCursorSprite(PocketsScreen *self);
+
+void PocketsScreen_PointAtDefaultRow(PocketsScreen *self);
+void PocketsScreen_PointAtCancelRow(PocketsScreen *self);
+void PocketsScreen_GlideToRow(PocketsScreen *self);
+void PocketsScreen_GlideToCursor(PocketsScreen *self);
+void PocketsScreen_HideCursorSprite(PocketsScreen *self);
+int PocketsScreen_CursorSpriteY(PocketsScreen *self);
+int PocketsScreen_CursorSpriteX(PocketsScreen *self);
+void PocketsScreen_PointAtLastRow(PocketsScreen *self);
+void PocketsScreen_ShowCursorSprite(PocketsScreen *self);
+int PocketsScreen_MergeItems(PocketsScreen *self, u16 *onto, int held_state, u16 *other, u8 other_state);
+int PocketsScreen_AddBagToWallet(PocketsScreen *self, u16 bag);
+void PocketsScreen_TakeBagFromWallet(PocketsScreen *self, u16 bag);
+void PocketsScreen_SetWallet(PocketsScreen *self, int bells);
+int PocketsScreen_Wallet(PocketsScreen *self);
+int PocketsScreen_HoldsBellBag(PocketsScreen *self, int fits_wallet);
+int PocketsScreen_PutBagInWallet(PocketsScreen *self);
+void PocketsScreen_PublishHeldBells(PocketsScreen *self);
+void PocketsScreen_RefuseRecordSlot(PocketsScreen *self);
+int PocketsScreen_ActorReadyForSlot(PocketsScreen *self, int record_slot);
+int PocketsScreen_ActorTakeSlotItem(PocketsScreen *self, unsigned int record_slot, u16 item);
+int PocketsScreen_SwapRecordSlot(PocketsScreen *self, int record_slot, int item);
+int PocketsScreen_RecordSlotItem(PocketsScreen *self, int record_slot);
+int PocketsScreen_HeldRecordSlot(PocketsScreen *self);
+void PocketsScreen_BeginSubState25(PocketsScreen *self);
+void PocketsScreen_DropHeld(PocketsScreen *self);
+int PocketsScreen_CanUseHeld(PocketsScreen *self);
+int PocketsScreen_UseHeld(PocketsScreen *self);
+int PocketsScreen_PutHeldAt(PocketsScreen *self, int place);
+void PocketsScreen_SwapHeldWith(PocketsScreen *self, int place);
+void PocketsScreen_ReturnHeld(PocketsScreen *self, int drop);
+void PocketsScreen_PlaceHeldAt(PocketsScreen *self, int place, int drop);
+void PocketsScreen_PickUpItemAt(PocketsScreen *self, int place);
+void PocketsScreen_PickUpAt(PocketsScreen *self, int place);
+void PocketsScreen_PickUpLetter(PocketsScreen *self, unsigned int place);
+void PocketsScreen_PickUpItem(PocketsScreen *self, int place);
+void PocketsScreen_HoldItem(PocketsScreen *self, u16 item, u8 state);
+void PocketsScreen_FollowGlide(PocketsScreen *self);
+int PocketsScreen_FollowCursorSprite(PocketsScreen *self);
+void PocketsScreen_FollowTouch(PocketsScreen *self);
+void PocketsScreen_DrawHeld(PocketsScreen *self);
+void PocketsScreen_UpdatePopup(PocketsScreen *self);
+void PocketsScreen_PlacePopup(PocketsScreen *self);
+int PocketsScreen_Byte6c30AtLeast(PocketsScreen *self, int value);
+int PocketsScreen_TouchMoved(PocketsScreen *self);
+void PocketsScreen_HighlightPlace(PocketsScreen *self, unsigned int place);
+void PocketsScreen_ClearHighlights(PocketsScreen *self);
+void PocketsScreen_SelectPlace(PocketsScreen *self, int place);
+void PocketsScreen_ClearSelection(PocketsScreen *self);
+int PocketsScreen_CanReachBells(PocketsScreen *self, int mode);
+int PocketsScreen_CanReachPlace22(PocketsScreen *self, int mode);
+int PocketsScreen_CanReachPlayer(PocketsScreen *self, int mode);
+int PocketsScreen_CheckReturnHeld(PocketsScreen *self, int place);
+int PocketsScreen_CheckSwap(PocketsScreen *self, int place, int to);
+int PocketsScreen_CheckDrop(PocketsScreen *self, int place, int item, int state);
+int PocketsScreen_PlaceLetter(PocketsScreen *self, int place);
+int PocketsScreen_PlaceItemState(PocketsScreen *self, int place);
+u16 PocketsScreen_PlaceItem(PocketsScreen *self, int place);
+int PocketsScreen_PlaceIsEmpty(PocketsScreen *self, int place);
+int PocketsScreen_PlaceIsTaken(PocketsScreen *self, int place);
+int PocketsScreen_PlaceY(PocketsScreen *self, int place);
 
 #endif
