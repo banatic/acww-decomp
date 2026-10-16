@@ -11,7 +11,8 @@
  * - SWITCHING_OFF (3): the switch off, the animations of variant 0 from their end in mode 3 and
  *   sound 2 of its row; then OFF.
  *
- * SWITCHING_ON and ON show it on (vtable slot 0x74). */
+ * SWITCHING_ON and ON show it on (vtable slot 0x74). Once its model is bound it enters ON when
+ * its switch is on and func_ov004_0223c10c says no, else OFF. */
 #ifndef CLEAN_OV004_ROOM_OBJECT_02252248_H
 #define CLEAN_OV004_ROOM_OBJECT_02252248_H
 
@@ -44,5 +45,12 @@ int RoomObject02252248_EnterOff(RoomObject02252248 *object);
 void RoomObject02252248_UpdateState(RoomObject02252248 *object);
 int RoomObject02252248_EnterState(RoomObject02252248 *object, unsigned int state, int value);
 u8 RoomObject02252248_StateIsOn(RoomObject02252248 *object, unsigned int state);
+int RoomObject02252248_Vfunc0C(void);
+int RoomObject02252248_Update(RoomObject02252248 *object);
+int RoomObject02252248_Start(RoomObject02252248 *object);
+RoomObject02252248 *RoomObject02252248_Delete(RoomObject02252248 *object);
+RoomObject02252248 *RoomObject02252248_Destroy(RoomObject02252248 *object);
+RoomObject02252248 *RoomObject02252248_Construct(RoomObject02252248 *object);
+void RoomObject02252248_Create(void);
 
 #endif

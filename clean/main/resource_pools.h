@@ -13,7 +13,11 @@
  * pool's size, which names no entry. The slots of the heap pools sit in the entries of the
  * tables at data_021d1e64 (heap4) and data_021d1ebc (heap8), those of the block pool at
  * data_021d1e8c. A model takes its heap from a heap slot (func_0202ee10, func_0202e318), and
- * func_0201a304 reads a file into the block of a block slot. */
+ * func_0201a304 reads a file into the block of a block slot.
+ *
+ * ResourcePools_Startup makes, from the heap data_021fbe94, the unit heap data_021c9ab8
+ * (func_0205c200) and then the block, heap8 and heap4 pools; ResourcePools_Shutdown destroys
+ * the unit heap (func_0205c1e0) and then takes the pools down in the same order. */
 #ifndef CLEAN_MAIN_RESOURCE_POOLS_H
 #define CLEAN_MAIN_RESOURCE_POOLS_H
 
@@ -69,5 +73,9 @@ void ResourcePools_BlockDestruct(u8 **blocks);
 void ResourcePools_BlockConstruct(u8 **blocks);
 
 int ResourcePools_UnitSize31EC(void);
+int ResourcePools_UnitSize2BCC(void);
+
+void ResourcePools_Shutdown(void);
+void ResourcePools_Startup(void);
 
 #endif

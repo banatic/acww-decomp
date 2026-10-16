@@ -7,6 +7,7 @@
 
 #include "types.h"
 
+void *Obj020d8c64_Destruct(void *object);
 void *Obj020d8c64_DestructDelete(void *object);
 
 #endif

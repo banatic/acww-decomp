@@ -29,6 +29,14 @@ extern u8 func_020b5df8(unsigned int);                                    /* a s
 extern u8 func_020b5e04(unsigned int);                                    /* a scene's second count */
 extern int func_02064af4(const void *path, const void *buffer, int size); /* reads a file */
 
+/* Create, and destroy, the unit heap data_021c9ab8: as many units of
+ * ResourcePools_UnitSize2BCC bytes as blocks are counted, and as many of
+ * ResourcePools_UnitSize31EC bytes as func_02085f08 counts. */
+extern unsigned int func_0205c200(int parent);
+extern void func_0205c1e0(void);
+
+extern Heap *data_021fbe94; /* the heap all the pools are made from */
+
 /* ---- Slots */
 
 /* func_02078a1c: the heap of the heap4 entry the slot names. */
@@ -352,9 +360,38 @@ void ResourcePools_BlockConstruct(u8 **blocks)
 CLEAN_AS(func_02078d68, ResourcePools_BlockConstruct)
 
 /* func_02078d78: 12780 (0x31ec), the bytes func_0205c200 reserves for each of the units
- * func_02085f08 counts (next to func_02078d80's 11212 for the others). */
+ * func_02085f08 counts (next to ResourcePools_UnitSize2BCC's 11212 for the others). */
 int ResourcePools_UnitSize31EC(void)
 {
     return 0x31ec;
 }
 CLEAN_AS(func_02078d78, ResourcePools_UnitSize31EC)
+
+/* func_02078d80: 11212 (0x2bcc), the bytes func_0205c200 reserves for each block counted. */
+int ResourcePools_UnitSize2BCC(void)
+{
+    return 0x2bcc;
+}
+CLEAN_AS(func_02078d80, ResourcePools_UnitSize2BCC)
+
+/* ---- All of them */
+
+/* func_02078d88: the unit heap destroyed, then the pools taken down in the order they were made. */
+void ResourcePools_Shutdown(void)
+{
+    func_0205c1e0();
+    ResourcePools_BlockShutdown();
+    ResourcePools_Heap8Shutdown();
+    ResourcePools_Heap4Shutdown();
+}
+CLEAN_AS(func_02078d88, ResourcePools_Shutdown)
+
+/* func_02078da4: the unit heap and the three pools made from the heap data_021fbe94. */
+void ResourcePools_Startup(void)
+{
+    func_0205c200((int) (uintptr_t) data_021fbe94);
+    ResourcePools_BlockStartup(data_021fbe94);
+    ResourcePools_Heap8Startup(data_021fbe94);
+    ResourcePools_Heap4Startup(data_021fbe94);
+}
+CLEAN_AS(func_02078da4, ResourcePools_Startup)

@@ -7,13 +7,15 @@
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"
+#include "room_object_life.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
 
 static_assert(offsetof(RoomObject, light_switch) == 0x740, "switch");
 static_assert(offsetof(RoomObject02252248, state) == 0x844, "state");
-static_assert(sizeof(RoomObject02252248) == 0x848, "the size of the class");
+static_assert(sizeof(RoomObject02252248) == 0x848, "the size RoomObject02252248_Create allocates");
 
+#define ROOM_OBJECT_02252248_SIZE 0x848
 #define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1   /* the animations stop at the end */
 #define ANIM_MODE_3 3      /* the animations' mode 3 */
@@ -29,6 +31,13 @@ extern const MemberPointer data_ov004_02250348, data_ov004_02250408, data_ov004_
 
 /* Whether each state shows the object on (for vtable slot 0x74). */
 extern const u8 data_ov004_0224768c[ROOM_OBJECT_02252248_STATE_COUNT];
+
+/* The class's vtables, and its receiver part's. */
+extern const u8 data_ov004_02252248[];
+extern const u8 data_ov004_022522f4[];
+
+/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
+extern int func_ov004_0223c10c(void);
 
 /* Request a state for the object at the object's cell (only when data_020e54a8 is 1). */
 extern int func_0205265c(unsigned int object, int state, int a2, int a3);
@@ -176,3 +185,79 @@ u8 RoomObject02252248_StateIsOn(RoomObject02252248 *object, unsigned int state)
     return 0;
 }
 CLEAN_AS(func_ov004_02219640, RoomObject02252248_StateIsOn)
+
+/* func_ov004_02219654 (vtable slot 0x0c) */
+int RoomObject02252248_Vfunc0C(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_02219654, RoomObject02252248_Vfunc0C)
+
+/* _ZN18Obj_ov004_0225224819func_ov004_02219658Ev (vtable slot 0x80, each frame while neither
+ * appearing nor vanishing): the state's update. */
+int RoomObject02252248_Update(RoomObject02252248 *object)
+{
+    RoomObject02252248_UpdateState(object);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_0225224819func_ov004_02219658Ev, RoomObject02252248_Update)
+
+/* func_ov004_02219668 (vtable slot 0x7c, once the model is bound): binds the animations of
+ * variant 0 (once, from the start), then enters ON when the switch is on and
+ * func_ov004_0223c10c says no, OFF otherwise; done at once. */
+int RoomObject02252248_Start(RoomObject02252248 *object)
+{
+    RoomObject_LoadAnims(&object->base, 0, ANIM_MODE_ONCE, ONE, 0);
+    if (Switch_Value(&object->base.light_switch) != 0 && func_ov004_0223c10c() == 0) {
+        RoomObject02252248_switch_to(object, ROOM_OBJECT_02252248_ON);
+    } else {
+        RoomObject02252248_switch_to(object, ROOM_OBJECT_02252248_OFF);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02219668, RoomObject02252248_Start)
+
+static void RoomObject02252248_set_vtables(RoomObject02252248 *object)
+{
+    object->base.vtable = (const RoomObjectVtable *) data_ov004_02252248;
+    object->base.receiver_vtable = data_ov004_022522f4;
+}
+
+/* func_ov004_022196bc (the deleting destructor, vtable slot 0x44) */
+RoomObject02252248 *RoomObject02252248_Delete(RoomObject02252248 *object)
+{
+    RoomObject02252248_set_vtables(object);
+    RoomObject_DestructBase(&object->base);
+    RoomObject_Free(object);
+    return object;
+}
+CLEAN_AS(func_ov004_022196bc, RoomObject02252248_Delete)
+
+/* func_ov004_022196e8 (the destructor, vtable slot 0x40) */
+RoomObject02252248 *RoomObject02252248_Destroy(RoomObject02252248 *object)
+{
+    RoomObject02252248_set_vtables(object);
+    RoomObject_DestructBase(&object->base);
+    return object;
+}
+CLEAN_AS(func_ov004_022196e8, RoomObject02252248_Destroy)
+
+/* func_ov004_0221970c (the constructor): the base and the vtables. The state is left as the
+ * allocation zeroed it. */
+RoomObject02252248 *RoomObject02252248_Construct(RoomObject02252248 *object)
+{
+    RoomObject_ConstructBase(&object->base);
+    RoomObject02252248_set_vtables(object);
+    return object;
+}
+CLEAN_AS(func_ov004_0221970c, RoomObject02252248_Construct)
+
+/* func_ov004_02219730: a new one from the room's heap; nothing when it has no room. */
+void RoomObject02252248_Create(void)
+{
+    RoomObject02252248 *object = RoomObject_Alloc(ROOM_OBJECT_02252248_SIZE);
+    if (object != NULL) {
+        RoomObject02252248_Construct(object);
+    }
+}
+CLEAN_AS(func_ov004_02219730, RoomObject02252248_Create)
