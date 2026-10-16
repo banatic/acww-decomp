@@ -90,4 +90,26 @@ int NookStore_NextLevel(NookStore *store);
 u32 NookStore_Cap(NookStore *store, int level);
 int NookStore_UpgradeIfDue(void);
 
+int NookStore_IsClosedTomorrow(NookStore *store);
+int NookStore_IsClosedNextDay(NookStore *store, DateTime *when);
+int NookStore_IsClosedToday(NookStore *store);
+int NookStore_IsClosedOn(NookStore *store, const DateTime *when);
+int NookStore_IsUpgradeDue(NookStore *store);
+int NookStore_IsUpgradeDueAt(NookStore *store, const DateTime *now);
+Date NookStore_ClosedDay(NookStore *store);
+NookUpgrade *NookStore_Upgrade(NookStore *store);
+int NookStore_HasKind4Item(NookStore *store);
+int NookStore_IsBonusDayToday(NookStore *store);
+int NookStore_IsBonusDay(NookStore *store, const DateTime *when);
+int NookStore_IsTimeSale(NookStore *store);
+void NookStore_Initialize(NookStore *store);
+NookStore *NookStore_Destruct(NookStore *store);
+NookStore *NookStore_Construct(NookStore *store);
+int NookStore_UpgradeDay(DateTime *when);
+void NookStore_PostNewStoreNotice(void);
+int NookStore_PostUpgradeNotice(int month, int day);
+void NookStore_PostSwapNotice(u16 *item);
+void NookStore_PostTimeSaleNotice(u32 hour);
+void NookStore_PostBonusDayNotice(int month, int day);
+
 #endif

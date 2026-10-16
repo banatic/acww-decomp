@@ -44,5 +44,6 @@ TextBoxBase *TextBoxBase_Construct(TextBoxBase *box, int unk_1c, int cells, int 
 void TextBoxBase_Destruct(unsigned int *box);
 void TextBoxBase_DestructSlot(char **box);
 void *TextBoxBase_DestructDelete(void *box);
+TextBoxBase *TextBoxBase_ConstructInVram(TextBoxBase *box, u32 first_tile, u32 cells, u32 rows);
 
 #endif

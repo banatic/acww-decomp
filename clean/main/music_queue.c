@@ -1247,3 +1247,90 @@ void *Music_Object264(void)
     return data_021c526c->unk_264;
 }
 CLEAN_AS(func_02035e68, Music_Object264)
+
+/* ---- The member at 0x2f0's address, and the member at 0x2d0's start, destructors and
+ * constructor */
+
+#include "scene_music.h"
+
+/* The member at 0x2d0's vtable. */
+extern const u32 data_020da2d4[];
+
+/* func_02035e7c: the member at 0x2f0 of the object. */
+Music2f0 *Music_Object2f0(void)
+{
+    return member_2f0(data_021c526c);
+}
+CLEAN_AS(func_02035e7c, Music_Object2f0)
+
+/* func_02035e90: (from func_02041d14, when the state it starts has a function) unless
+ * data_021f42f4's halfword 0x0c is 5: a byte 0x0b of 1 adds a request of priority 8 with word
+ * 0x0f (and becomes 2), one of 3 drops it (and becomes 0); the byte 0x09 says whether the scene
+ * being gone to has the current scene's music, and the member at 0x2a0 keeps its music then.
+ * With none of the bytes 0x08-0x0a set, the delay is set below 0 (for Music2d0_Finish) and the
+ * request of priority 7 is made again with word 0x0f, dropped first when the delay or the timer
+ * was running; else the member at 0x264 is handed 1 and, when the music is kept, the tracks
+ * are set for the scene change.
+ * QUIRK: the address of the member at 0x2f0 (func_02035e7c) is asked for and not used. */
+void Music2d0_Start(Music2d0 *self)
+{
+    if (data_021f42f4->unk_0c == 5) {
+        return;
+    }
+    if (self->unk_0b == 1) {
+        Music_AddValue(8, 0x0f, 0);
+        self->unk_0b = 2;
+    } else if (self->unk_0b == 3) {
+        Music_DropPriority(8);
+        self->unk_0b = 0;
+    }
+
+    self->unk_09 = (u8) SceneMusic_SameForNext();
+    SceneMusic_SetKeep(Music_Object2a0(), self->unk_09);
+
+    if (self->unk_08 == 0 && self->unk_09 == 0 && self->unk_0a == 0) {
+        if (self->delay != 0 || self->timer != 0) {
+            Music_DropPriority(7);
+        }
+        self->delay = -1;
+        self->timer = 0;
+        Music_AddValue(7, 0x0f, 0);
+    } else {
+        func_02036894(Music_Object264(), (void *) 1);
+        if (self->unk_09 != 0) {
+            Music_Object2f0();
+            Music_SetTracksForSceneChange();
+        }
+    }
+}
+CLEAN_AS(func_02035e90, Music2d0_Start)
+
+/* func_02035f2c: the destructor that also frees it (vtable slot 1). */
+void *Music2d0_DestructDelete(Music2d0 *self)
+{
+    self->vtable = data_020da2d4;
+    Heap_OperatorDeleteB(self);
+    return self;
+}
+CLEAN_AS(func_02035f2c, Music2d0_DestructDelete)
+
+/* func_02035f44: its destructor (vtable slot 0). */
+void Music2d0_Destruct(Music2d0 *self)
+{
+    self->vtable = data_020da2d4;
+}
+CLEAN_AS(func_02035f44, Music2d0_Destruct)
+
+/* func_02035f50: its constructor: the owner kept, the flags, the delay and the timer cleared. */
+void Music2d0_Construct(Music2d0 *self, Obj021c526c *owner)
+{
+    self->vtable = data_020da2d4;
+    self->owner = owner;
+    self->unk_08 = 0;
+    self->unk_09 = 0;
+    self->unk_0a = 0;
+    self->unk_0b = 0;
+    self->delay = 0;
+    self->timer = 0;
+}
+CLEAN_AS(func_02035f50, Music2d0_Construct)

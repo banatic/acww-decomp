@@ -42,4 +42,18 @@ void SpeakerAnim_SetKeepSpeed(SpeakerAnim *anim, int keep);
 void SpeakerAnim_StopTalk(SpeakerAnim *anim, u8 *object);
 void SpeakerAnim_StartTalk(SpeakerAnim *anim, u8 *object, int first, int last);
 
+/* Loading and playing the animations of the member's entry (slot 0 the body, 1 the pose of a
+ * held item, 2 the talking animation) on the object's model (its member at 0xec). */
+int SpeakerAnim_TalkResource(SpeakerAnim *anim);
+void SpeakerAnim_LoadTalk(SpeakerAnim *anim);
+int SpeakerAnim_HasTalk(SpeakerAnim *anim);
+void SpeakerAnim_PlayItemPose(SpeakerAnim *anim, u8 *object, u16 *item, int pose, u16 arg);
+void SpeakerAnim_Play(SpeakerAnim *anim, u8 *object, int number, int arg, int mode, int speed, u16 frame, int slot);
+int SpeakerAnim_IsBody(SpeakerAnim *anim, int number, void *standard);
+int SpeakerAnim_Resolve(SpeakerAnim *anim, int number, void *standard);
+int SpeakerAnim_Load(SpeakerAnim *anim, int number, int slot);
+int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale);
+SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim);
+SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim);
+
 #endif

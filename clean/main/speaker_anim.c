@@ -253,3 +253,268 @@ void SpeakerAnim_StartTalk(SpeakerAnim *anim, u8 *object, int first, int last)
     }
 }
 CLEAN_AS(func_02016530, SpeakerAnim_StartTalk)
+
+/* ---- Loading and playing animations on the object's model */
+
+/* The object's parts used by the functions below: its three standard animation numbers (words
+ * 0, 1 and 2 of its member at 0x2a0, func_0201b380, func_0201b37c and func_0201b378), and the
+ * member at 0x2ac that is told of each new body animation (func_0201a090). */
+#define SPEAKER_ANIM_OBJECT_STANDARD 0x2a0
+#define SPEAKER_ANIM_OBJECT_FOLLOWER 0x2ac
+
+/* The animation slots of the member's entry: the body (0), the item pose (1) and the talking
+ * animation (2). */
+#define SPEAKER_ANIM_SLOT_ITEM 1
+#define SPEAKER_ANIM_SLOT_TALK 2
+#define SPEAKER_ANIM_SLOTS 3
+
+/* The play modes in which frame 0 asks for the last frame. */
+#define SPEAKER_ANIM_MODE_2 2
+#define SPEAKER_ANIM_MODE_3 3
+#define SPEAKER_ANIM_LAST_FRAME 0xffff
+
+/* The item with a pose of its own (animation 0x13f on joints 0x0c to 0x0e), and what
+ * func_0205ceb0 gives for a pose that stops the item animation. */
+#define SPEAKER_ANIM_ITEM_OWN_POSE 0x1369
+#define SPEAKER_ANIM_OWN_POSE 0x13f
+#define SPEAKER_ANIM_OWN_POSE_FIRST_JOINT 0x0c
+#define SPEAKER_ANIM_OWN_POSE_LAST_JOINT 0x0e
+#define SPEAKER_ANIM_POSE_NONE 3
+
+extern void func_0205cc1c(void *animation, int number, int a, int b);
+extern int func_0205cb94(void *animation);
+extern int NNS_G3dGetJntAnmSet(int resource);
+extern int func_02107b44(int set, int index);
+extern int func_0204c4e8(u16 *item);
+extern u8 func_0205ceb0(unsigned int pose);
+extern unsigned int func_0205f670(u16 *item);
+extern void func_02054768(void *model, int a, int b);
+extern void func_020547b0(void *model, int animation, int arg, int mode, int speed, u16 frame, u16 b, int c);
+extern void func_02054188(void *model, unsigned int first, unsigned int last);
+extern void func_020542c0(void *model, int animation, int arg, int mode, int speed, u16 frame, u16 b);
+extern int func_0201b380(void *standard);
+extern int func_0201b37c(void *standard);
+extern int func_0201b378(void *standard);
+extern void func_0201a090(void *follower, int number, int mode, int style);
+extern void *func_02083038(SpeakerAnim *anim);
+extern void *func_02083050(SpeakerAnim *anim);
+extern int func_0208308c(SpeakerAnim *anim);
+extern void func_02055050(void *model);
+extern void func_02055de0(void *model, int callback, int a, int b, void *object, int c);
+extern void func_0201c6a8(void *object);
+
+/* An animation's resource: the first entry of its joint animation set. */
+static int speaker_anim_resource(int animation)
+{
+    return func_02107b44(NNS_G3dGetJntAnmSet(func_0205cb94((void *) (uintptr_t) animation)), 0);
+}
+
+/* func_020165bc: the talking animation's resource, or 0 when slot 2 does not hold the talking
+ * animation or the entry has no slot 2. */
+int SpeakerAnim_TalkResource(SpeakerAnim *anim)
+{
+    if (SpeakerAnim_HasTalk(anim) == 0) {
+        return 0;
+    }
+    int animation = func_02082fec(anim, SPEAKER_ANIM_SLOT_TALK);
+    if (animation == 0) {
+        return 0;
+    }
+    return speaker_anim_resource(animation);
+}
+CLEAN_AS(func_020165bc, SpeakerAnim_TalkResource)
+
+/* func_020165f4: puts the talking animation (0x143) into slot 2, when the entry has one. */
+void SpeakerAnim_LoadTalk(SpeakerAnim *anim)
+{
+    int animation = func_02082fec(anim, SPEAKER_ANIM_SLOT_TALK);
+    if (animation != 0) {
+        func_0205cc1c((void *) (uintptr_t) animation, SPEAKER_ANIM_TALK, 0, 0);
+    }
+}
+CLEAN_AS(func_020165f4, SpeakerAnim_LoadTalk)
+
+/* func_02016618: whether slot 2 holds the talking animation. */
+int SpeakerAnim_HasTalk(SpeakerAnim *anim)
+{
+    return SpeakerAnim_Number(anim, SPEAKER_ANIM_SLOT_TALK) == SPEAKER_ANIM_TALK;
+}
+CLEAN_AS(func_02016618, SpeakerAnim_HasTalk)
+
+/* func_02016638: the pose of holding `item` on the object's model, in slot 1 (`arg` is
+ * func_020547b0's third argument): animation 0x13f on joints 0x0c to 0x0e for item 0x1369, else
+ * the item's own pose (func_0205f670) on the joint ranges listed for it. The model's item
+ * animation stops (func_02054768) for no item (func_0204c4e8 gives 0), for a `pose` func_0205ceb0
+ * gives 3 for, for an item without a pose (0x144) and for a pose without joint ranges (a set of
+ * 4 or more; the animation was set already). Nothing happens when the entry has no slot 1. */
+void SpeakerAnim_PlayItemPose(SpeakerAnim *anim, u8 *object, u16 *item, int pose, u16 arg)
+{
+    u8 *model = object + SPEAKER_ANIM_OBJECT_MODEL;
+
+    if (func_0204c4e8(item) == 0 || func_0205ceb0((unsigned int) pose) == SPEAKER_ANIM_POSE_NONE) {
+        func_02054768(model, 0, 0);
+        return;
+    }
+    if (*item == SPEAKER_ANIM_ITEM_OWN_POSE) {
+        int animation = SpeakerAnim_Load(anim, SPEAKER_ANIM_OWN_POSE, SPEAKER_ANIM_SLOT_ITEM);
+        if (animation == 0) {
+            return;
+        }
+        func_020547b0(model, animation, arg, 0, SPEAKER_ANIM_ONE, 0, 0, 0);
+        func_02054188(model, SPEAKER_ANIM_OWN_POSE_FIRST_JOINT, SPEAKER_ANIM_OWN_POSE_LAST_JOINT);
+        return;
+    }
+
+    unsigned int number = func_0205f670(item);
+    if (number == SPEAKER_ANIM_NONE) {
+        func_02054768(model, 0, 0);
+        return;
+    }
+    int animation = SpeakerAnim_Load(anim, (int) number, SPEAKER_ANIM_SLOT_ITEM);
+    if (animation == 0) {
+        return;
+    }
+    func_020547b0(model, animation, arg, 0, SPEAKER_ANIM_ONE, 0, 0, 0);
+    int set = func_0205cebc(number);
+    if (set >= SPEAKER_ANIM_JOINT_SETS) {
+        func_02054768(model, 0, 0);
+        return;
+    }
+    unsigned int count = func_0205cf10((unsigned int) set);
+    for (unsigned int i = 0; i < count; i++) {
+        unsigned int from = func_0205ceec(set, (int) i);
+        unsigned int to = func_0205cec8(set, (int) i);
+        func_02054188(model, from, to);
+    }
+}
+CLEAN_AS(func_02016638, SpeakerAnim_PlayItemPose)
+
+/* func_02016764: plays animation `number` in slot `slot` (0 to 2, else nothing) on the object's
+ * model, in play mode `mode` at `speed` from frame `frame` (in modes 2 and 3 frame 0 means the
+ * last frame, 0xffff); `arg` is the model call's third argument.
+ *
+ * In slot 0 (the body), `number` 0 to 2 names one of the object's standard animations
+ * (SpeakerAnim_Resolve); the animation is (re)started unless it is the object's first standard
+ * animation and already the body's. Then the talking style follows the body animation, and the
+ * member at 0x2ac is told the body's number, the mode and the talking style. Slot 1 plays with
+ * func_020547b0, slot 2 with func_02054240. */
+void SpeakerAnim_Play(SpeakerAnim *anim, u8 *object, int number, int arg, int mode, int speed, u16 frame, int slot)
+{
+    void *model = object + SPEAKER_ANIM_OBJECT_MODEL;
+    void *standard = object + SPEAKER_ANIM_OBJECT_STANDARD;
+    unsigned int start = frame;
+
+    if (frame == 0 && (mode == SPEAKER_ANIM_MODE_2 || mode == SPEAKER_ANIM_MODE_3)) {
+        start = SPEAKER_ANIM_LAST_FRAME;
+    }
+    if (slot < 0 || slot >= SPEAKER_ANIM_SLOTS) {
+        return;
+    }
+
+    if (slot == SPEAKER_ANIM_SLOT_BODY) {
+        int resolved = SpeakerAnim_Resolve(anim, number, standard);
+        if (resolved != func_0201b380(standard) || SpeakerAnim_IsBody(anim, resolved, standard) == 0) {
+            int animation = SpeakerAnim_Load(anim, resolved, slot);
+            if (animation != 0) {
+                func_020542c0(model, animation, arg, mode, speed, (u16) start, 0);
+            }
+        }
+        SpeakerAnim_SetTalkStyle(anim, object);
+        int body = SpeakerAnim_Number(anim, SPEAKER_ANIM_SLOT_BODY);
+        int style = func_0201a7b4(object + SPEAKER_ANIM_OBJECT_TALKING);
+        func_0201a090(object + SPEAKER_ANIM_OBJECT_FOLLOWER, body, mode, style);
+    } else if (slot == SPEAKER_ANIM_SLOT_ITEM) {
+        int animation = SpeakerAnim_Load(anim, number, slot);
+        if (animation != 0) {
+            func_020547b0(model, animation, arg, mode, speed, (u16) start, 0, 0);
+        }
+    } else {
+        int animation = SpeakerAnim_Load(anim, number, slot);
+        if (animation != 0) {
+            func_02054240(model, animation, arg, mode, speed, (u16) start, 0, 0);
+        }
+    }
+}
+CLEAN_AS(func_02016764, SpeakerAnim_Play)
+
+/* func_02016884: whether animation `number` (resolved as SpeakerAnim_Resolve does) is the
+ * body's. */
+int SpeakerAnim_IsBody(SpeakerAnim *anim, int number, void *standard)
+{
+    int resolved = SpeakerAnim_Resolve(anim, number, standard);
+    return resolved == SpeakerAnim_Number(anim, SPEAKER_ANIM_SLOT_BODY);
+}
+CLEAN_AS(func_02016884, SpeakerAnim_IsBody)
+
+/* func_020168ac: `number` 0, 1 or 2 is the object's standard animation of that number (a word
+ * of `standard`, its member at 0x2a0); any other number is itself. */
+int SpeakerAnim_Resolve(SpeakerAnim *anim, int number, void *standard)
+{
+    (void) anim;
+    switch (number) {
+        case 0:
+            return func_0201b380(standard);
+        case 1:
+            return func_0201b37c(standard);
+        case 2:
+            return func_0201b378(standard);
+        default:
+            return number;
+    }
+}
+CLEAN_AS(func_020168ac, SpeakerAnim_Resolve)
+
+/* func_020168e4: puts animation `number` into slot `slot` (func_0205cc1c) and gives its
+ * resource, or 0 when the entry has no such slot. */
+int SpeakerAnim_Load(SpeakerAnim *anim, int number, int slot)
+{
+    int animation = func_02082fec(anim, slot);
+    if (animation == 0) {
+        return 0;
+    }
+    func_0205cc1c((void *) (uintptr_t) animation, number, 0, 0);
+    return speaker_anim_resource(animation);
+}
+CLEAN_AS(func_020168e4, SpeakerAnim_Load)
+
+/* func_0201691c: sets the member up for `object` with the speed scale `speed_scale`: the body
+ * speed follows the object again and, once func_0208308c gives the entry, the object's first
+ * standard animation plays, the model is reset (func_02055050) and given func_0201c6a8 as its
+ * callback with the object, the variant is 2, slot 2 gets the talking animation unless it has
+ * it, and no talking animation plays. Returns 0 without an entry, else 1. */
+int SpeakerAnim_Init(SpeakerAnim *anim, u8 *object, s32 speed_scale)
+{
+    u8 *model = object + SPEAKER_ANIM_OBJECT_MODEL;
+
+    SpeakerAnim_SetKeepSpeed(anim, 0);
+    anim->speed_scale = speed_scale;
+    if (func_0208308c(anim) == 0) {
+        return 0;
+    }
+    SpeakerAnim_Play(anim, object, 0, 0, 0, SPEAKER_ANIM_ONE, 0, SPEAKER_ANIM_SLOT_BODY);
+    func_02055050(model);
+    func_02055de0(model, (int) (uintptr_t) func_0201c6a8, 6, 1, object, 0);
+    anim->variant = 2;
+    if (SpeakerAnim_HasTalk(anim) == 0) {
+        SpeakerAnim_LoadTalk(anim);
+    }
+    anim->playing = 0;
+    return 1;
+}
+CLEAN_AS(func_0201691c, SpeakerAnim_Init)
+
+/* func_02016998: the constructor: the holder's (func_02083038). Returns the member. */
+SpeakerAnim *SpeakerAnim_Construct(SpeakerAnim *anim)
+{
+    func_02083038(anim);
+    return anim;
+}
+CLEAN_AS(func_02016998, SpeakerAnim_Construct)
+
+/* func_020169a8: the destructor: the holder's (func_02083050). Returns the member. */
+SpeakerAnim *SpeakerAnim_Destruct(SpeakerAnim *anim)
+{
+    func_02083050(anim);
+    return anim;
+}
+CLEAN_AS(func_020169a8, SpeakerAnim_Destruct)

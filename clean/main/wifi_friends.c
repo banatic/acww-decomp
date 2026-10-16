@@ -333,3 +333,8 @@ void WifiFriendData_Construct(WifiFriendData *friend_data)
     (void) friend_data;
 }
 CLEAN_AS(func_02077ec0, WifiFriendData_Construct)
+
+/* func_02099e78: the callback the Wi-Fi library calls when a friend is deleted
+ * (Session_Start hands it to Wfc_Setup): does nothing. */
+void WifiFriendList_OnFriendDeleted(void) {}
+CLEAN_AS(func_02099e78, WifiFriendList_OnFriendDeleted)

@@ -88,3 +88,51 @@ void *TextBoxBase_DestructDelete(void *box)
     return box;
 }
 CLEAN_AS(func_02050c90, TextBoxBase_DestructDelete)
+
+/* func_02050d6c: the constructor of a box drawn into VRAM: `rows` tiles high and `cells` wide,
+ * from tile `first_tile` of BG2's tiles on the sub screen (style 2, 0x50 = 1), with no RAM
+ * destination; otherwise as TextBoxBase_Construct. */
+TextBoxBase *TextBoxBase_ConstructInVram(TextBoxBase *box, u32 first_tile, u32 cells, u32 rows)
+{
+    u32 cleared[2];
+
+    box->vtable = data_020dcf28;
+    box->unk_04 = 0;
+    const u32 *zero = func_02137550(cleared, sizeof(cleared));
+    box->unk_08[0] = zero[0];
+    box->unk_08[1] = zero[1];
+    box->text = NULL;
+    box->unk_18 = (s32) first_tile;
+    box->unk_1c = 0;
+    box->cells = (s32) cells;
+    box->unk_24 = (s32) rows;
+    box->font = data_021c8230;
+    box->style = 2;
+    box->offset = 0;
+    box->unk_34 = 1;
+    box->color_38 = 1;
+    box->color_39 = 0xf;
+    for (int i = 0; i < 4; i++) {
+        box->unk_3a[i] = 0;
+    }
+    for (int i = 0; i < 4; i++) {
+        box->unk_40[i] = 0;
+    }
+    box->unk_40[4] = 1;
+    box->pending = 0;
+    box->unk_55 = 0;
+    box->unk_56 = 0;
+    box->unk_57 = 0;
+    box->update_mode = 0;
+    box->unk_5c = -1;
+    box->cell_bytes = cells << 5;
+    box->unk_64 = -1;
+    for (int i = 0; i < 3; i++) {
+        box->unk_68[i] = 0;
+    }
+    box->unk_74 = 1;
+    box->unk_75 = 0;
+    box->unk_78 = 0;
+    return box;
+}
+CLEAN_AS(func_02050d6c, TextBoxBase_ConstructInVram)

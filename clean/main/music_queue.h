@@ -167,4 +167,10 @@ void Music2d0_Finish(Music2d0 *self);
 void *Music_Object2a0(void);
 void *Music_Object264(void);
 
+Music2f0 *Music_Object2f0(void);
+void Music2d0_Start(Music2d0 *self);
+void *Music2d0_DestructDelete(Music2d0 *self);
+void Music2d0_Destruct(Music2d0 *self);
+void Music2d0_Construct(Music2d0 *self, Obj021c526c *owner);
+
 #endif

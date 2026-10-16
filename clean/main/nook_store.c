@@ -3,8 +3,10 @@
 
 #include "clean.h"
 #include "main/acre_map.h"
+#include "main/bbs.h"
 #include "main/session.h"
 #include "main/shop_list_a.h"
+#include "main/shop_stock.h"
 #include "main/shops.h"
 #include "main/state_block.h"
 
@@ -127,25 +129,6 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void __register_global_object(void *object, void *destruct, void *record);
 extern void func_020051b0(void *object); /* a destructor that does nothing */
 
-/* `count` codes drawn from `first` up to first + range - 1, at items[*next], *next moved on. */
-extern void func_020b00fc(u16 *items, u32 *next, int first, int range, u32 count, int size, u8 convert);
-/* `count` items of the lot (kind, group), at items[*next], *next moved on. */
-extern void func_020b0164(u16 *items, u32 *next, int kind, int group, u32 count, int size, u8 convert);
-extern u16 *func_020b0038(u32 place, u16 *items, u8 *sold, u32 count, u16 *out);
-extern int func_020aff84(u16 *item, u16 *items, u8 *sold, u32 count);
-extern int func_020b00a8(int place, int count, u8 *sold);
-extern void func_020b00c8(u16 *items, u8 *sold, u32 count);
-extern void func_020afbcc(NookStore *store);
-extern NookUpgrade *func_020afad4(NookStore *store);
-extern int func_020afb48(NookStore *store, const DateTime *when); /* whether it is the bonus day */
-extern int func_020afc84(DateTime *when);                         /* the upgrade's day at 6:00, if planned */
-extern int func_020af9f0(NookStore *store);                       /* whether the upgrade is due */
-extern void func_020afcd4(void);                                  /* posts the notice of the new store */
-extern int func_020afcf4(int month, int day);                     /* posts the notice of the upgrade */
-extern void func_020afd24(u16 *item);                             /* posts the notice of a swapped item */
-extern void func_020afd58(u8 hour);                               /* posts the notice of the hour */
-extern void func_020afd9c(int month, int day);                    /* posts the notice of the bonus day */
-
 extern u32 func_02063cd4(void *random, u32 range); /* a random number below `range` */
 extern void func_02063ce0(void *random, u8 year, u8 month, u8 day);
 extern void func_02063ccc(NookItemLot *lot, int kind, int group);
@@ -217,14 +200,14 @@ static void nook_draw(u16 *item, const NookItemLot *lot)
 /* func_020aeb6c: the item 0x155e. */
 void NookStore_StockFixed155e(NookStore *store, u32 *next)
 {
-    func_020b00fc(store->items, next, 0x155e, 1, (u32) NookStore_Count155e(), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0x155e, 1, (u32) NookStore_Count155e(), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aeb6c, NookStore_StockFixed155e)
 
 /* func_020aeb9c: the item 0x151f, from level 1 on. */
 void NookStore_Stock151f(NookStore *store, u32 *next)
 {
-    func_020b00fc(store->items, next, NOOK_KEEP_ITEM, 1, (u32) NookStore_Count151f(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, NOOK_KEEP_ITEM, 1, (u32) NookStore_Count151f(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aeb9c, NookStore_Stock151f)
 
@@ -243,28 +226,28 @@ CLEAN_AS(func_020aebcc, NookStore_StockSeries)
 /* func_020aec40: items of the lot (1, 0). */
 void NookStore_StockKind1(NookStore *store, u32 *next)
 {
-    func_020b0164(store->items, next, 1, 0, (u32) NookStore_CountKind1(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawLot(store->items, next, 1, 0, (u32) NookStore_CountKind1(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aec40, NookStore_StockKind1)
 
 /* func_020aec68: items of the lot (3, 0). */
 void NookStore_StockKind3(NookStore *store, u32 *next)
 {
-    func_020b0164(store->items, next, 3, 0, NookStore_CountKind3(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawLot(store->items, next, 3, 0, NookStore_CountKind3(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aec68, NookStore_StockKind3)
 
 /* func_020aec90: items of the lot (4, 0). */
 void NookStore_StockKind4(NookStore *store, u32 *next)
 {
-    func_020b0164(store->items, next, 4, 0, NookStore_CountKind4(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawLot(store->items, next, 4, 0, NookStore_CountKind4(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aec90, NookStore_StockKind4)
 
 /* func_020aecb8: the items 0x151d and 0x151e (shops.c treats them as a pair). */
 void NookStore_StockPair(NookStore *store, u32 *next)
 {
-    func_020b00fc(store->items, next, 0x151d, 2, (u32) NookStore_CountPair(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0x151d, 2, (u32) NookStore_CountPair(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aecb8, NookStore_StockPair)
 
@@ -272,7 +255,7 @@ CLEAN_AS(func_020aecb8, NookStore_StockPair)
 void NookStore_StockTwelve(NookStore *store, u32 *next)
 {
     u32 start = *next;
-    func_020b00fc(store->items, next, 0, 12, NookStore_CountTwelve(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0, 12, NookStore_CountTwelve(store), NOOK_SECTION_SIZE, 0);
     for (u32 i = start; i < start + NookStore_CountTwelve(store); i++) {
         store->items[i] = data_020d1e5c[store->items[i]];
     }
@@ -282,7 +265,7 @@ CLEAN_AS(func_020aece8, NookStore_StockTwelve)
 /* func_020aed38: items of the lot (0, 0). */
 void NookStore_StockKind0(NookStore *store, u32 *next)
 {
-    func_020b0164(store->items, next, 0, 0, (u32) NookStore_CountKind0(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawLot(store->items, next, 0, 0, (u32) NookStore_CountKind0(store), NOOK_SECTION_SIZE, 0);
 }
 CLEAN_AS(func_020aed38, NookStore_StockKind0)
 
@@ -305,7 +288,7 @@ void NookStore_StockSeven(NookStore *store, u32 *next)
 
     int range = NookStore_Level(store) == 0 ? 4 : 7;
     u32 start = *next;
-    func_020b00fc(store->items, next, 0, range, (u32) NookStore_CountSeven(store), NOOK_SECTION_SIZE, 0);
+    ShopStock_DrawCodes(store->items, next, 0, range, (u32) NookStore_CountSeven(store), NOOK_SECTION_SIZE, 0);
 
     if (NookStore_Level(store) == 0) {
         int marks = 0;
@@ -512,7 +495,7 @@ void NookStore_PlanBonusDay(NookStore *store, const DateTime *now)
     func_0209e140(&notice_from, NOOK_NOTICE_DAYS);
     if (func_0209e3ac(&notice_from, &at, NOOK_COMPARE_DATE) == -1 && func_0209e3ac(&at, &bonus, NOOK_COMPARE_DATE) == -1) {
         if (StateBlock_TestFlag(data_021dc7a8, NOOK_FLAG_BONUS_NOTICE) == 0) {
-            func_020afd9c(store->bonus_day.month, store->bonus_day.day);
+            NookStore_PostBonusDayNotice(store->bonus_day.month, store->bonus_day.day);
             StateBlock_SetFlag(data_021dc7a8, NOOK_FLAG_BONUS_NOTICE);
         }
     }
@@ -601,10 +584,10 @@ static void nook_plan_extras(NookStore *store, const DateTime *now, int after_si
     if (func_02063cd4(data_021f4a80, NOOK_HOUR_CHANCE) == 0) {
         nook_set_hour(store, func_02063cd4(data_021f4a80, NOOK_HOURS) + NOOK_FIRST_HOUR);
         if (after_six) {
-            func_020afd58((u8) nook_hour(store));
+            NookStore_PostTimeSaleNotice((u8) nook_hour(store));
         }
     }
-    if (nook_hour(store) != 0 || func_020afb48(store, now) != 0) {
+    if (nook_hour(store) != 0 || NookStore_IsBonusDay(store, now) != 0) {
         return;
     }
     if ((data_021f4a08 & 1) == 0) {
@@ -620,7 +603,7 @@ static void nook_plan_extras(NookStore *store, const DateTime *now, int after_si
         if (func_0204bcdc(item) != 0) {
             nook_draw(item, &data_021f4a0c);
             if (after_six) {
-                func_020afd24(item);
+                NookStore_PostSwapNotice(item);
             }
             break;
         }
@@ -696,7 +679,7 @@ void NookStore_Refresh(NookStore *store, int force)
     NookStore_SetStockDate(store, &now);
     NookStore_Restock(store, now.year, now.month, now.day);
 
-    if (!nook_players_have_flag1() && func_020afad4(store)->pending == 0) {
+    if (!nook_players_have_flag1() && NookStore_Upgrade(store)->pending == 0) {
         nook_plan_extras(store, &now, after_six);
     }
     nook_december(store, &now);
@@ -779,7 +762,7 @@ void NookStore_PlanUpgrade(NookStore *store)
     if ((int) NookStore_Level(store) >= next) {
         return;
     }
-    if (func_020afad4(store)->pending != 0) {
+    if (NookStore_Upgrade(store)->pending != 0) {
         return;
     }
 
@@ -789,24 +772,24 @@ void NookStore_PlanUpgrade(NookStore *store)
     DateTime closed;
     MI_CpuCopy8(&day, &closed, sizeof closed);
     func_0209e140(&closed, 1);
-    if (func_020afb48(store, &closed) != 0) {
+    if (NookStore_IsBonusDay(store, &closed) != 0) {
         func_0209e29c(&day, 1);
     }
 
-    func_020afad4(store)->pending = 1;
-    func_020afad4(store)->year = day.year;
-    func_020afad4(store)->month = day.month;
-    func_020afad4(store)->day = day.day;
+    NookStore_Upgrade(store)->pending = 1;
+    NookStore_Upgrade(store)->year = day.year;
+    NookStore_Upgrade(store)->month = day.month;
+    NookStore_Upgrade(store)->day = day.day;
 
     func_0209e140(&day, 1);
-    func_020afcf4(day.month, day.day);
+    NookStore_PostUpgradeNotice(day.month, day.day);
 }
 CLEAN_AS(func_020af788, NookStore_PlanUpgrade)
 
 /* func_020af83c: the place of `item`, or -1. */
 int NookStore_FindItem(NookStore *store, u16 *item)
 {
-    return func_020aff84(item, store->items, store->sold, NOOK_STORE_PLACES);
+    return ShopStock_Find(item, store->items, store->sold, NOOK_STORE_PLACES);
 }
 CLEAN_AS(func_020af83c, NookStore_FindItem)
 
@@ -814,28 +797,28 @@ CLEAN_AS(func_020af83c, NookStore_FindItem)
  * unless NULL. */
 u16 *NookStore_Item(NookStore *store, u32 place, u16 *out)
 {
-    return func_020b0038(place, store->items, store->sold, NOOK_STORE_PLACES, out);
+    return ShopStock_Item(place, store->items, store->sold, NOOK_STORE_PLACES, out);
 }
 CLEAN_AS(func_020af854, NookStore_Item)
 
 /* func_020af870 */
 int NookStore_IsSold(NookStore *store, int place)
 {
-    return func_020b00a8(place, NOOK_STORE_PLACES, store->sold);
+    return ShopStock_IsSold((u32) place, NOOK_STORE_PLACES, store->sold);
 }
 CLEAN_AS(func_020af870, NookStore_IsSold)
 
 /* func_020af880: no items, none sold. */
 void NookStore_ClearStock(NookStore *store)
 {
-    func_020b00c8(store->items, store->sold, NOOK_STORE_PLACES);
+    ShopStock_Clear(store->items, store->sold, NOOK_STORE_PLACES);
 }
 CLEAN_AS(func_020af880, NookStore_ClearStock)
 
 /* func_020af890 */
 void NookStore_Reset(NookStore *store)
 {
-    func_020afbcc(store);
+    NookStore_Initialize(store);
 }
 CLEAN_AS(func_020af890, NookStore_Reset)
 
@@ -883,7 +866,7 @@ int NookStore_UpgradeIfDue(void)
     if (Shops_PendingState() == 1) {
         return 0;
     }
-    if (func_020af9f0(&data_021f395c) == 0) {
+    if (NookStore_IsUpgradeDue(&data_021f395c) == 0) {
         return 0;
     }
     int level = NookStore_NextLevel(&data_021f395c);
@@ -906,14 +889,14 @@ int NookStore_UpgradeIfDue(void)
             NookStore_SetLevel(&data_021f395c, (u16) level);
 
             DateTime due = {0};
-            if (func_020afc84(&due) != 0) {
+            if (NookStore_UpgradeDay(&due) != 0) {
                 DateTime now = {0};
                 func_0209e474(&now);
                 if (now.year == due.year && now.month == due.month && now.day == due.day) {
-                    func_020afcd4();
+                    NookStore_PostNewStoreNotice();
                 }
             }
-            func_020afad4(&data_021f395c)->pending = 0;
+            NookStore_Upgrade(&data_021f395c)->pending = 0;
             NookStore_Refresh(&data_021f395c, 1);
             return 1;
         }
@@ -921,3 +904,280 @@ int NookStore_UpgradeIfDue(void)
     return 0;
 }
 CLEAN_AS(func_020aea84, NookStore_UpgradeIfDue)
+
+/* The day the store is closed for its upgrade is the day before the upgrade's. Notices go to
+ * the town's board: Tom Nook's ("bbs_raccoon": the upgrade by the level it leaves, the new
+ * store by 3 + the new level) and the store's ("bbs_shopinfo": the bonus day, the time sale
+ * and a swapped item, two wordings each, picked at random). */
+#define NOOK_NOTICE_NEW_STORE 3
+#define NOOK_NOTICE_BONUS_DAY 0
+#define NOOK_NOTICE_TIME_SALE 2
+#define NOOK_NOTICE_SWAP 4
+#define NOOK_NOTICE_WORDINGS 2
+/* The time sale lasts until this hour. */
+#define NOOK_TIME_SALE_END 23
+/* DateTime_Compare's fields with the hour (see NOOK_COMPARE_DATE). */
+#define NOOK_COMPARE_DATE_HOUR 0x3c
+/* What func_0206300c answers for the items NookStore_HasKind4Item looks for. */
+#define NOOK_ITEM_KIND_4 4
+/* The code an empty place reads as. */
+#define NOOK_NO_ITEM 0xfff1
+
+/* "bbs_raccoon" and "bbs_shopinfo". */
+extern const char data_020e41b8[];
+extern const char data_020e41c4[];
+
+extern int func_0206300c(u16 *item, int a);
+extern int func_0203d7b0(int index, int value);                              /* message argument `index`: a number */
+extern int func_0203d79c(int index, int value);                              /* the same */
+extern int func_0203d7c4(int index, void *text);                             /* message argument `index`: a text */
+extern void *func_02062f90(void *text, u16 *item);                           /* builds the item's name */
+extern void *func_02062f4c(void *text);                                      /* destroys it */
+extern void *func_020b5630(void *text);                                      /* builds an empty text */
+extern void *func_020b5618(void *text);                                      /* destroys it */
+extern int func_020b45d0(void *text, u32 value, int a, int b, int c, int d); /* the value's digits */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern void func_02034ce0(void *object); /* constructs an item code */
+
+/* func_020af90c: whether the store is closed for its upgrade tomorrow. */
+int NookStore_IsClosedTomorrow(NookStore *store)
+{
+    DateTime now = {0};
+    func_0209e474(&now);
+    return NookStore_IsClosedNextDay(store, &now);
+}
+CLEAN_AS(func_020af90c, NookStore_IsClosedTomorrow)
+
+/* func_020af930: whether the store is closed for its upgrade the day after `when`.
+ * QUIRK: `when` itself is moved on a day. */
+int NookStore_IsClosedNextDay(NookStore *store, DateTime *when)
+{
+    func_0209e29c(when, 1);
+    return NookStore_IsClosedOn(store, when);
+}
+CLEAN_AS(func_020af930, NookStore_IsClosedNextDay)
+
+/* func_020af950: whether the store is closed for its upgrade today. */
+int NookStore_IsClosedToday(NookStore *store)
+{
+    DateTime now = {0};
+    func_0209e474(&now);
+    return NookStore_IsClosedOn(store, &now);
+}
+CLEAN_AS(func_020af950, NookStore_IsClosedToday)
+
+/* The day before the planned upgrade's, at 6:00. */
+static void nook_closed_day(NookStore *store, DateTime *closed)
+{
+    *closed = (DateTime){0};
+    closed->year = NookStore_Upgrade(store)->year;
+    closed->month = NookStore_Upgrade(store)->month;
+    closed->day = NookStore_Upgrade(store)->day;
+    closed->hour = NOOK_DAY_START_HOUR;
+    func_0209e140(closed, 1);
+}
+
+/* func_020af974: whether `when`'s date is the day the store is closed for a planned upgrade. */
+int NookStore_IsClosedOn(NookStore *store, const DateTime *when)
+{
+    if (NookStore_Upgrade(store)->pending == 0) {
+        return 0;
+    }
+    DateTime closed;
+    nook_closed_day(store, &closed);
+    return closed.year == when->year && closed.month == when->month && closed.day == when->day;
+}
+CLEAN_AS(func_020af974, NookStore_IsClosedOn)
+
+/* func_020af9f0: whether the planned upgrade is due now. */
+int NookStore_IsUpgradeDue(NookStore *store)
+{
+    DateTime now = {0};
+    func_0209e474(&now);
+    return NookStore_IsUpgradeDueAt(store, &now);
+}
+CLEAN_AS(func_020af9f0, NookStore_IsUpgradeDue)
+
+/* func_020afa14: whether an upgrade is planned and its day at 6:00 is not after `now`.
+ * QUIRK: the upgrade looked at is data_021f395c's, whatever `store` is. */
+int NookStore_IsUpgradeDueAt(NookStore *store, const DateTime *now)
+{
+    (void) store;
+    DateTime due = {0};
+    if (NookStore_UpgradeDay(&due) == 0) {
+        return 0;
+    }
+    int order = func_0209e3ac(&due, now, NOOK_COMPARE_DATE_HOUR);
+    return order == -1 || order == 0;
+}
+CLEAN_AS(func_020afa14, NookStore_IsUpgradeDueAt)
+
+/* func_020afa48: the day the store is closed for a planned upgrade; all zero when none is. */
+Date NookStore_ClosedDay(NookStore *store)
+{
+    Date day = {0};
+    if (NookStore_Upgrade(store)->pending != 0) {
+        DateTime closed;
+        nook_closed_day(store, &closed);
+        day.year = closed.year;
+        day.month = closed.month;
+        day.day = closed.day;
+    }
+    return day;
+}
+CLEAN_AS(func_020afa48, NookStore_ClosedDay)
+
+/* func_020afad4 */
+NookUpgrade *NookStore_Upgrade(NookStore *store)
+{
+    return &store->upgrade;
+}
+CLEAN_AS(func_020afad4, NookStore_Upgrade)
+
+/* func_020afad8: whether a place holds an item that func_0204bcdc accepts and func_0206300c
+ * answers 4 for (a sold place reads as the sold marker). */
+int NookStore_HasKind4Item(NookStore *store)
+{
+    for (u32 place = 0; place < NOOK_STORE_PLACES; place++) {
+        u16 code = NOOK_NO_ITEM;
+        u16 *item = NookStore_Item(store, place, &code);
+        if (func_0204bcdc(item) != 0 && func_0206300c(item, 0) == NOOK_ITEM_KIND_4) {
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_020afad8, NookStore_HasKind4Item)
+
+/* func_020afb24: whether today is the bonus day. */
+int NookStore_IsBonusDayToday(NookStore *store)
+{
+    DateTime now = {0};
+    func_0209e474(&now);
+    return NookStore_IsBonusDay(store, &now);
+}
+CLEAN_AS(func_020afb24, NookStore_IsBonusDayToday)
+
+/* func_020afb48: whether a bonus day is planned and `when`'s date is it. */
+int NookStore_IsBonusDay(NookStore *store, const DateTime *when)
+{
+    if (StateBlock_TestFlag(data_021dc7a8, NOOK_FLAG_BONUS_DAY) == 0) {
+        return 0;
+    }
+    return store->bonus_day.year == when->year && store->bonus_day.month == when->month && store->bonus_day.day == when->day;
+}
+CLEAN_AS(func_020afb48, NookStore_IsBonusDay)
+
+/* func_020afb90: whether a time sale is on: today has a sale hour and the clock is from it to
+ * 22:59 (prices are halved then, func_0204c788). */
+int NookStore_IsTimeSale(NookStore *store)
+{
+    DateTime now = {0};
+    func_0209e474(&now);
+    u32 hour = nook_hour(store);
+    if (hour == 0) {
+        return 0;
+    }
+    return now.hour >= hour && now.hour < NOOK_TIME_SALE_END;
+}
+CLEAN_AS(func_020afb90, NookStore_IsTimeSale)
+
+/* func_020afbcc: an empty store at level 0 with nothing spent, no time sale and no upgrade
+ * planned, asking for a restock. */
+void NookStore_Initialize(NookStore *store)
+{
+    NookStore_ClearStock(store);
+    store->bits = (u16) (store->bits & ~(NOOK_LEVEL_MASK << NOOK_LEVEL_SHIFT));
+    store->spent = 0;
+    store->bits = (u16) (store->bits & ~NOOK_HOUR_MASK);
+    store->stocked.unused = 1;
+    store->upgrade.pending = 0;
+}
+CLEAN_AS(func_020afbcc, NookStore_Initialize)
+
+/* func_020afc10: the destructor: the item codes are destroyed (their destructor does nothing). */
+NookStore *NookStore_Destruct(NookStore *store)
+{
+    __cxa_vec_cleanup(store->items, NOOK_STORE_PLACES, sizeof store->items[0], func_020051b0);
+    return store;
+}
+CLEAN_AS(func_020afc10, NookStore_Destruct)
+
+/* func_020afc2c: the constructor: the item codes are constructed, then the store initialized. */
+NookStore *NookStore_Construct(NookStore *store)
+{
+    __cxa_vec_ctor(store->items, NOOK_STORE_PLACES, sizeof store->items[0], func_02034ce0, func_020051b0);
+    NookStore_Initialize(store);
+    return store;
+}
+CLEAN_AS(func_020afc2c, NookStore_Construct)
+
+/* func_020afc84: the planned upgrade's day at 6:00 (of data_021f395c) in `when`; whether one
+ * is planned (`when` is left alone otherwise). */
+int NookStore_UpgradeDay(DateTime *when)
+{
+    NookUpgrade *upgrade = NookStore_Upgrade(&data_021f395c);
+    if (upgrade->pending == 0) {
+        return 0;
+    }
+    when->year = upgrade->year;
+    when->month = upgrade->month;
+    when->day = upgrade->day;
+    when->hour = NOOK_DAY_START_HOUR;
+    when->minute = 0;
+    when->second = 0;
+    when->unused[0] = 0;
+    when->unused[1] = 0;
+    return 1;
+}
+CLEAN_AS(func_020afc84, NookStore_UpgradeDay)
+
+/* func_020afcd4: Tom Nook's notice of the new store, by its level. */
+void NookStore_PostNewStoreNotice(void)
+{
+    Bbs_PostMessage((int) NookStore_Level(&data_021f395c) + NOOK_NOTICE_NEW_STORE, data_020e41b8);
+}
+CLEAN_AS(func_020afcd4, NookStore_PostNewStoreNotice)
+
+/* func_020afcf4: Tom Nook's notice that the store closes on `month`/`day` for its upgrade, by
+ * the level it has. */
+int NookStore_PostUpgradeNotice(int month, int day)
+{
+    func_0203d7b0(2, month);
+    func_0203d79c(3, day);
+    return (int) (uintptr_t) Bbs_PostMessage((int) NookStore_Level(&data_021f395c), data_020e41b8);
+}
+CLEAN_AS(func_020afcf4, NookStore_PostUpgradeNotice)
+
+/* func_020afd24: the store's notice of the item swapped in today. */
+void NookStore_PostSwapNotice(u16 *item)
+{
+    u8 name[0x2c];
+    func_02062f90(name, item);
+    func_0203d7c4(3, name);
+    Bbs_PostMessage((int) func_020644cc(NOOK_NOTICE_WORDINGS) + NOOK_NOTICE_SWAP, data_020e41c4);
+    func_02062f4c(name);
+}
+CLEAN_AS(func_020afd24, NookStore_PostSwapNotice)
+
+/* func_020afd58: the store's notice of today's time sale from `hour`. */
+void NookStore_PostTimeSaleNotice(u32 hour)
+{
+    u8 text[0x40];
+    func_020b5630(text);
+    func_020b45d0(text, hour, 10, 0, 0, 0);
+    func_0203d7c4(2, text);
+    Bbs_PostMessage((int) func_020644cc(NOOK_NOTICE_WORDINGS) + NOOK_NOTICE_TIME_SALE, data_020e41c4);
+    func_020b5618(text);
+}
+CLEAN_AS(func_020afd58, NookStore_PostTimeSaleNotice)
+
+/* func_020afd9c: the store's notice of the bonus day on `month`/`day`. */
+void NookStore_PostBonusDayNotice(int month, int day)
+{
+    func_0203d7b0(0, month);
+    func_0203d79c(1, day);
+    Bbs_PostMessage((int) func_020644cc(NOOK_NOTICE_WORDINGS) + NOOK_NOTICE_BONUS_DAY, data_020e41c4);
+}
+CLEAN_AS(func_020afd9c, NookStore_PostBonusDayNotice)

@@ -1,0 +1,431 @@
+/* A villager's impression of a player (villager_impression.h). */
+#include "villager_impression.h"
+
+#include "calendar.h"
+#include "clean.h"
+#include "npc_id.h"
+#include "player_pockets.h"
+#include "player_records.h"
+#include "villager_state.h"
+
+static_assert(sizeof(VillagerImpressionRule) == 8, "rule");
+
+/* The months of the seasons. */
+#define VILLAGER_IMPRESSION_SUMMER_FIRST 6
+#define VILLAGER_IMPRESSION_SUMMER_LAST 8
+#define VILLAGER_IMPRESSION_AUTUMN_FIRST 9
+#define VILLAGER_IMPRESSION_AUTUMN_LAST 11
+#define VILLAGER_IMPRESSION_DECEMBER 12
+#define VILLAGER_IMPRESSION_WINTER_LAST 2
+/* What func_02094ffc gives for a player of this town. */
+#define VILLAGER_IMPRESSION_THIS_TOWN 0
+/* The head kinds come in two sets of eight (bits 4-7 of the record's byte 0x243c): kind n of the
+ * second set is n + 8. */
+#define VILLAGER_IMPRESSION_HEAD_SET 8
+/* The items part C (slot 3) is tested against. */
+#define VILLAGER_IMPRESSION_PART_C_FIRST 0x1431
+#define VILLAGER_IMPRESSION_PART_C_LAST 0x1470
+/* The fondness the tests look for. */
+#define VILLAGER_IMPRESSION_VERY_FOND 110
+#define VILLAGER_IMPRESSION_FOND 70
+#define VILLAGER_IMPRESSION_DISLIKED (-30)
+
+extern const VillagerImpressionRule data_020cd5c4[VILLAGER_IMPRESSION_COUNT];
+extern char data_020e195c[]; /* "st_impress" */
+extern u8 data_021dc7bc[];   /* the four players' records */
+
+extern NpcId *func_0208150c(const void *villager);         /* the villager's NpcId, at 0x7a0 */
+extern VillagerState *func_0207f270(const void *villager); /* its entry of the state table */
+extern u8 *func_02099870(u8 *record);                      /* the player's id (town and name), at 0x247e */
+extern int func_020950c0(const u8 *player);                /* the signed byte 28 of a player's id: its kind */
+/* 0 for a player of this town, 1 for one of another town, 2 for an id not set. */
+extern int func_02094ffc(const u8 *player);
+/* The villager's memory of the player (0x80 bytes), or NULL when it does not know the player. */
+extern s8 *func_020807a8(const void *villager, const u8 *player);
+extern int func_02081d20(const s8 *memory);                       /* how fond the villager is (signed byte 0x6c) */
+extern u8 func_02081a88(const s8 *memory);                        /* its impression (byte 0x6d) */
+extern void func_02081a80(s8 *memory, u8 impression);             /* sets it */
+extern int func_020b4a20(int label, char *number, char *archive); /* loads a message into the label */
+extern void func_0209e474(DateTime *now);                         /* the clock's date and time */
+extern u32 func_02099824(const u8 *record);                       /* the head's kind (bits 4-7 of byte 0x243c) */
+extern u16 *func_020996e0(u8 *record);                            /* part C's item (slot 3, 0x240c) */
+extern PlayerPockets *func_02099734(u8 *record);                  /* the player's pockets, at 0x11a8 */
+/* How many of the 56 items from 0x12e8 (the fish, fish_disp.h) and from 0x12b0 the current
+ * player has collected (func_0203cc54), out of how many there are. */
+extern int func_0203cc04(void);
+extern u32 func_0203cc18(void);
+extern int func_0203cc38(void); /* whether all from 0x12e8 */
+extern int func_0203cbf4(void);
+extern u32 func_0203cc14(void);
+extern int func_0203cc1c(void); /* whether all from 0x12b0 */
+
+/* func_0207e008: the villager's impression of the player of `record` (the current player's when
+ * NULL) loaded into the text label, when the villager knows the player and has one. */
+void VillagerImpression_LoadText(u8 *villager, int label, u8 *record)
+{
+    if (record == NULL) {
+        record = PlayerRecords_Current();
+    }
+    s8 *memory = NULL;
+    if (record != NULL) {
+        memory = func_020807a8(villager, func_02099870(record));
+    }
+    if (memory == NULL) {
+        return;
+    }
+    u32 impression = func_02081a88(memory);
+    if (impression < VILLAGER_IMPRESSION_COUNT) {
+        char number = (char) impression;
+        func_020b4a20(label, &number, data_020e195c);
+    }
+}
+CLEAN_AS(func_0207e008, VillagerImpression_LoadText)
+
+/* func_0207e054: the villager's impression of the player picked afresh and kept in its memory
+ * of the player (found from `record`, the current player's when NULL, unless given). Gives it,
+ * or 0x58 when there is no villager or memory.
+ * QUIRK: a memory given without a record (and no current player) is picked for with a NULL
+ * record. */
+int VillagerImpression_Choose(u8 *villager, s8 *memory, u8 *record)
+{
+    int impression = VILLAGER_IMPRESSION_COUNT;
+    if (!NpcId_IsValid(func_0208150c(villager))) {
+        return impression;
+    }
+    if (record == NULL) {
+        record = PlayerRecords_Current();
+    }
+    if (record != NULL && memory == NULL) {
+        memory = func_020807a8(villager, func_02099870(record));
+    }
+    if (memory != NULL) {
+        int fondness = func_02081d20(memory);
+        impression = VillagerImpression_Pick(record, fondness, VillagerState_GetByte18(func_0207f270(villager)));
+        func_02081a80(memory, (u8) impression);
+    }
+    return impression;
+}
+CLEAN_AS(func_0207e054, VillagerImpression_Choose)
+
+/* func_0207e0c4: the first rule for the player's kind whose test passes, or 0x58. */
+int VillagerImpression_Pick(u8 *record, int fondness, int byte_18)
+{
+    int kind = func_020950c0(func_02099870(record));
+    for (int i = 0; i < VILLAGER_IMPRESSION_COUNT; i++) {
+        const VillagerImpressionRule *rule = &data_020cd5c4[i];
+        if (rule->kind != VILLAGER_IMPRESSION_ANY_KIND && rule->kind != kind) {
+            continue;
+        }
+        if (rule->test(record, fondness, byte_18) != 0) {
+            return i;
+        }
+    }
+    return VILLAGER_IMPRESSION_COUNT;
+}
+CLEAN_AS(func_0207e0c4, VillagerImpression_Pick)
+
+/* ---- The tests */
+
+/* func_0207e118 */
+int VillagerImpression_Always(void)
+{
+    return 1;
+}
+CLEAN_AS(func_0207e118, VillagerImpression_Always)
+
+static int this_month(void)
+{
+    DateTime now = {0};
+    func_0209e474(&now);
+    return now.month;
+}
+
+/* func_0207e11c: June to August. */
+int VillagerImpression_IsSummer(void)
+{
+    int month = this_month();
+    return month >= VILLAGER_IMPRESSION_SUMMER_FIRST && month <= VILLAGER_IMPRESSION_SUMMER_LAST;
+}
+CLEAN_AS(func_0207e11c, VillagerImpression_IsSummer)
+
+/* func_0207e144: September to November. */
+int VillagerImpression_IsAutumn(void)
+{
+    int month = this_month();
+    return month >= VILLAGER_IMPRESSION_AUTUMN_FIRST && month <= VILLAGER_IMPRESSION_AUTUMN_LAST;
+}
+CLEAN_AS(func_0207e144, VillagerImpression_IsAutumn)
+
+/* func_0207e16c: December to February. */
+int VillagerImpression_IsWinter(void)
+{
+    int month = this_month();
+    return month == VILLAGER_IMPRESSION_DECEMBER || (month >= 1 && month <= VILLAGER_IMPRESSION_WINTER_LAST);
+}
+CLEAN_AS(func_0207e16c, VillagerImpression_IsWinter)
+
+/* func_0207e198: a player of this town, which has two or more players. */
+int VillagerImpression_IsLocalAmongTwoOrMore(u8 *record)
+{
+    return func_02094ffc(func_02099870(record)) == VILLAGER_IMPRESSION_THIS_TOWN &&
+           PlayerRecords_CountTown(data_021dc7bc) >= 2;
+}
+CLEAN_AS(func_0207e198, VillagerImpression_IsLocalAmongTwoOrMore)
+
+/* func_0207e1c4: a player of this town, which has all four players. */
+int VillagerImpression_IsLocalAmongFour(u8 *record)
+{
+    return func_02094ffc(func_02099870(record)) == VILLAGER_IMPRESSION_THIS_TOWN &&
+           PlayerRecords_CountTown(data_021dc7bc) == PLAYER_RECORDS_TOWN;
+}
+CLEAN_AS(func_0207e1c4, VillagerImpression_IsLocalAmongFour)
+
+/* Whether the head's kind is `kind` of either set; the kind is read once for each set. */
+static int head_kind_is(u8 *record, u32 kind)
+{
+    return func_02099824(record) == kind || func_02099824(record) == kind + VILLAGER_IMPRESSION_HEAD_SET;
+}
+
+/* func_0207e1f0 */
+int VillagerImpression_HeadKind7(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 7);
+}
+CLEAN_AS(func_0207e1f0, VillagerImpression_HeadKind7)
+
+/* func_0207e214 */
+int VillagerImpression_HeadKind6(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 6);
+}
+CLEAN_AS(func_0207e214, VillagerImpression_HeadKind6)
+
+/* func_0207e238 */
+int VillagerImpression_HeadKind5(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 5);
+}
+CLEAN_AS(func_0207e238, VillagerImpression_HeadKind5)
+
+/* func_0207e25c */
+int VillagerImpression_HeadKind4(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 4);
+}
+CLEAN_AS(func_0207e25c, VillagerImpression_HeadKind4)
+
+/* func_0207e280 */
+int VillagerImpression_HeadKind3(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 3);
+}
+CLEAN_AS(func_0207e280, VillagerImpression_HeadKind3)
+
+/* func_0207e2a4 */
+int VillagerImpression_HeadKind2(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 2);
+}
+CLEAN_AS(func_0207e2a4, VillagerImpression_HeadKind2)
+
+/* func_0207e2c8 */
+int VillagerImpression_HeadKind1(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 1);
+}
+CLEAN_AS(func_0207e2c8, VillagerImpression_HeadKind1)
+
+/* func_0207e2ec */
+int VillagerImpression_HeadKind0(u8 *record, int fondness, int byte_18)
+{
+    (void) fondness;
+    (void) byte_18;
+    return head_kind_is(record, 0);
+}
+CLEAN_AS(func_0207e2ec, VillagerImpression_HeadKind0)
+
+static int part_c_in_range(u8 *record)
+{
+    u16 item = *func_020996e0(record);
+    return item >= VILLAGER_IMPRESSION_PART_C_FIRST && item <= VILLAGER_IMPRESSION_PART_C_LAST;
+}
+
+/* func_0207e310: part C's item is one of 0x1431-0x1470 and the head's kind 0, 1, 3, 5 or 7. */
+int VillagerImpression_PartCWithHeadKind01357(u8 *record, int fondness, int byte_18)
+{
+    if (!part_c_in_range(record)) {
+        return 0;
+    }
+    return VillagerImpression_HeadKind0(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind1(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind3(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind5(record, fondness, byte_18) || VillagerImpression_HeadKind7(record, fondness, byte_18);
+}
+CLEAN_AS(func_0207e310, VillagerImpression_PartCWithHeadKind01357)
+
+/* func_0207e390: the same with head kind 2, 4 or 6. */
+int VillagerImpression_PartCWithHeadKind246(u8 *record, int fondness, int byte_18)
+{
+    if (!part_c_in_range(record)) {
+        return 0;
+    }
+    return VillagerImpression_HeadKind2(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind4(record, fondness, byte_18) || VillagerImpression_HeadKind6(record, fondness, byte_18);
+}
+CLEAN_AS(func_0207e390, VillagerImpression_PartCWithHeadKind246)
+
+/* func_0207e3f4: the same with head kind 2, 3 or 6. */
+int VillagerImpression_PartCWithHeadKind236(u8 *record, int fondness, int byte_18)
+{
+    if (!part_c_in_range(record)) {
+        return 0;
+    }
+    return VillagerImpression_HeadKind2(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind3(record, fondness, byte_18) || VillagerImpression_HeadKind6(record, fondness, byte_18);
+}
+CLEAN_AS(func_0207e3f4, VillagerImpression_PartCWithHeadKind236)
+
+/* func_0207e458: the same with head kind 0, 1, 4, 5 or 7. */
+int VillagerImpression_PartCWithHeadKind01457(u8 *record, int fondness, int byte_18)
+{
+    if (!part_c_in_range(record)) {
+        return 0;
+    }
+    return VillagerImpression_HeadKind0(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind1(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind4(record, fondness, byte_18) ||
+           VillagerImpression_HeadKind5(record, fondness, byte_18) || VillagerImpression_HeadKind7(record, fondness, byte_18);
+}
+CLEAN_AS(func_0207e458, VillagerImpression_PartCWithHeadKind01457)
+
+/* The player's bells, those in bell bags included. */
+static int bells_of(u8 *record)
+{
+    return PlayerPockets_Bells(func_02099734(record), PLAYER_POCKETS_USE_BAGS);
+}
+
+/* func_0207e4d8: 60,000 bells or more. */
+int VillagerImpression_Bells60000(u8 *record)
+{
+    return bells_of(record) >= 60000;
+}
+CLEAN_AS(func_0207e4d8, VillagerImpression_Bells60000)
+
+/* func_0207e4fc: 40,000 to 59,999 bells. */
+int VillagerImpression_Bells40000(u8 *record)
+{
+    int bells = bells_of(record);
+    return bells >= 40000 && bells < 60000;
+}
+CLEAN_AS(func_0207e4fc, VillagerImpression_Bells40000)
+
+/* func_0207e52c: 20,000 to 39,999 bells. */
+int VillagerImpression_Bells20000(u8 *record)
+{
+    int bells = bells_of(record);
+    return bells >= 20000 && bells < 40000;
+}
+CLEAN_AS(func_0207e52c, VillagerImpression_Bells20000)
+
+/* func_0207e55c: 10,000 to 19,999 bells. */
+int VillagerImpression_Bells10000(u8 *record)
+{
+    int bells = bells_of(record);
+    return bells >= 10000 && bells < 20000;
+}
+CLEAN_AS(func_0207e55c, VillagerImpression_Bells10000)
+
+/* func_0207e58c: 1,000 bells or fewer. */
+int VillagerImpression_BellsAtMost1000(u8 *record)
+{
+    return bells_of(record) <= 1000;
+}
+CLEAN_AS(func_0207e58c, VillagerImpression_BellsAtMost1000)
+
+/* func_0207e5b0: 300 bells or fewer. */
+int VillagerImpression_BellsAtMost300(u8 *record)
+{
+    return bells_of(record) <= 300;
+}
+CLEAN_AS(func_0207e5b0, VillagerImpression_BellsAtMost300)
+
+/* func_0207e5d4: the current player has collected all the fish. */
+int VillagerImpression_CollectedAllFish(u8 *record, int fondness, int byte_18)
+{
+    (void) record;
+    (void) fondness;
+    (void) byte_18;
+    return func_0203cc38();
+}
+CLEAN_AS(func_0207e5d4, VillagerImpression_CollectedAllFish)
+
+/* func_0207e5dc: not all the fish, but at least half of them. */
+int VillagerImpression_CollectedHalfFish(u8 *record, int fondness, int byte_18)
+{
+    if (VillagerImpression_CollectedAllFish(record, fondness, byte_18) != 0) {
+        return 0;
+    }
+    int half = (int) (func_0203cc18() >> 1);
+    return func_0203cc04() >= half;
+}
+CLEAN_AS(func_0207e5dc, VillagerImpression_CollectedHalfFish)
+
+/* func_0207e604: the current player has collected all the items from 0x12b0. */
+int VillagerImpression_CollectedAll12B0(void)
+{
+    return func_0203cc1c();
+}
+CLEAN_AS(func_0207e604, VillagerImpression_CollectedAll12B0)
+
+/* func_0207e60c: not all the items from 0x12b0, but at least half of them.
+ * QUIRK: also not when all the fish are collected. */
+int VillagerImpression_CollectedHalf12B0(u8 *record, int fondness, int byte_18)
+{
+    if (VillagerImpression_CollectedAll12B0() != 0) {
+        return 0;
+    }
+    if (VillagerImpression_CollectedAllFish(record, fondness, byte_18) != 0) {
+        return 0;
+    }
+    int half = (int) (func_0203cc14() >> 1);
+    return func_0203cbf4() >= half;
+}
+CLEAN_AS(func_0207e60c, VillagerImpression_CollectedHalf12B0)
+
+/* func_0207e648: the villager is very fond of the player (110 or more). */
+int VillagerImpression_VeryFond(u8 *record, int fondness)
+{
+    (void) record;
+    return fondness >= VILLAGER_IMPRESSION_VERY_FOND;
+}
+CLEAN_AS(func_0207e648, VillagerImpression_VeryFond)
+
+/* func_0207e654: fond of the player (70 to 109). */
+int VillagerImpression_Fond(u8 *record, int fondness)
+{
+    (void) record;
+    return fondness >= VILLAGER_IMPRESSION_FOND && fondness < VILLAGER_IMPRESSION_VERY_FOND;
+}
+CLEAN_AS(func_0207e654, VillagerImpression_Fond)
+
+/* func_0207e664: the villager dislikes the player (-30 or less). */
+int VillagerImpression_Disliked(u8 *record, int fondness)
+{
+    (void) record;
+    return fondness <= VILLAGER_IMPRESSION_DISLIKED;
+}
+CLEAN_AS(func_0207e664, VillagerImpression_Disliked)
