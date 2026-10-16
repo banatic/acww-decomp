@@ -19,12 +19,7 @@ static_assert(sizeof(WifiAccount) == 0x50, "account size");
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 extern void func_02051bf8(u16 *dst, int units); /* clears `units` 16-bit units */
 
-/* The friend data's own functions, after this code in the ROM. */
-extern int func_02077e38(WifiFriendData *friend_data);  /* whether its type is a friend key */
-extern int func_02077e50(WifiFriendData *friend_data);  /* whether it holds a friend (type not 0) */
-extern void func_02077e68(WifiFriendData *friend_data); /* clears its 12 bytes */
-extern void func_02077ebc(WifiFriendData *friend_data); /* its destructor: does nothing */
-extern void func_02077ec0(WifiFriendData *friend_data); /* its constructor: does nothing */
+extern void MI_CpuFill8(void *dst, int value, u32 size);
 
 /* WifiFriend_Construct and WifiFriend_Destruct at the game's addresses, declared as the vector
  * helpers take them (their results are not used). */
@@ -95,7 +90,7 @@ CLEAN_AS(func_02077be8, WifiAccount_Init)
 /* func_02077c0c: the destructor. */
 WifiAccount *WifiAccount_Destruct(WifiAccount *account)
 {
-    func_02077ebc(&account->friend_data);
+    WifiFriendData_Destruct(&account->friend_data);
     return account;
 }
 CLEAN_AS(func_02077c0c, WifiAccount_Destruct)
@@ -103,7 +98,7 @@ CLEAN_AS(func_02077c0c, WifiAccount_Destruct)
 /* func_02077c20: the constructor. */
 WifiAccount *WifiAccount_Construct(WifiAccount *account)
 {
-    func_02077ec0(&account->friend_data);
+    WifiFriendData_Construct(&account->friend_data);
     return account;
 }
 CLEAN_AS(func_02077c20, WifiAccount_Construct)
@@ -134,7 +129,7 @@ CLEAN_AS(func_02077c3c, WifiFriend_GetFriendData)
 /* func_02077c40: empties the entry. */
 void WifiFriend_Clear(WifiFriend *entry)
 {
-    func_02077e68(&entry->friend_data);
+    WifiFriendData_Clear(&entry->friend_data);
     func_02051bf8(entry->text_0c, WIFI_FRIEND_TEXT_LENGTH);
     func_02051bf8(entry->text_18, WIFI_FRIEND_TEXT_LENGTH);
 }
@@ -151,7 +146,7 @@ CLEAN_AS(func_02077c64, WifiFriend_Copy)
 /* func_02077c7c: the destructor. */
 WifiFriend *WifiFriend_Destruct(WifiFriend *entry)
 {
-    func_02077ebc(&entry->friend_data);
+    WifiFriendData_Destruct(&entry->friend_data);
     return entry;
 }
 CLEAN_AS(func_02077c7c, WifiFriend_Destruct)
@@ -159,7 +154,7 @@ CLEAN_AS(func_02077c7c, WifiFriend_Destruct)
 /* func_02077c8c: the constructor. */
 WifiFriend *WifiFriend_Construct(WifiFriend *entry)
 {
-    func_02077ec0(&entry->friend_data);
+    WifiFriendData_Construct(&entry->friend_data);
     return entry;
 }
 CLEAN_AS(func_02077c8c, WifiFriend_Construct)
@@ -189,7 +184,7 @@ void WifiFriendList_Compact(WifiFriendList *list)
 
     for (int i = 0; i < WIFI_FRIENDS; i++) {
         WifiFriend *entry = &entries[i];
-        if (func_02077e50(WifiFriend_GetFriendData(entry)) == 0) {
+        if (WifiFriendData_IsSet(WifiFriend_GetFriendData(entry)) == 0) {
             continue;
         }
         if (i != kept) {
@@ -245,7 +240,7 @@ CLEAN_AS(func_02077d68, WifiFriendData_GetData)
 /* func_02077d6c: 1 unless the friend data is a friend key not yet exchanged. */
 int WifiFriendData_IsNotFriendKey(WifiFriendData *friend_data)
 {
-    return func_02077e38(friend_data) == 0;
+    return WifiFriendData_IsFriendKey(friend_data) == 0;
 }
 CLEAN_AS(func_02077d6c, WifiFriendData_IsNotFriendKey)
 
@@ -265,3 +260,76 @@ int WifiFriendData_GetKeyDigits(WifiFriendData *friend_data, char *digits)
     return 1;
 }
 CLEAN_AS(func_02077d84, WifiFriendData_GetKeyDigits)
+
+/* func_02077dd4: the friend data made from a friend key given as its 12 decimal digits (the
+ * values 0-9, most significant first) for the user's data `user_data`; 1, or 0 with nothing
+ * written when the key is not valid (Wfc_FriendDataFromKey). */
+int WifiFriendData_SetFromKeyDigits(WifiFriendData *friend_data, const u8 *digits, const void *user_data)
+{
+    u64 key = 0;
+    for (int i = 0; i < WIFI_FRIEND_KEY_DIGITS; i++) {
+        key = key * 10 + digits[i];
+    }
+    WifiFriendData made;
+    if (Wfc_FriendDataFromKey(user_data, &made, (int) (u32) key, (int) (u32) (key >> 32)) == 0) {
+        return 0;
+    }
+    MI_CpuCopy8(&made, friend_data, sizeof(WifiFriendData));
+    return 1;
+}
+CLEAN_AS(func_02077dd4, WifiFriendData_SetFromKeyDigits)
+
+/* func_02077e38: whether the friend data is a friend key not yet exchanged. */
+int WifiFriendData_IsFriendKey(WifiFriendData *friend_data)
+{
+    return Wfc_GetFriendDataType(friend_data) == FRIEND_DATA_KEY;
+}
+CLEAN_AS(func_02077e38, WifiFriendData_IsFriendKey)
+
+/* func_02077e50: whether the friend data holds a friend (its type is not 0). */
+int WifiFriendData_IsSet(WifiFriendData *friend_data)
+{
+    return Wfc_GetFriendDataType(friend_data) != 0;
+}
+CLEAN_AS(func_02077e50, WifiFriendData_IsSet)
+
+/* func_02077e68 */
+void WifiFriendData_Clear(WifiFriendData *friend_data)
+{
+    MI_CpuFill8(friend_data, 0, sizeof(WifiFriendData));
+}
+CLEAN_AS(func_02077e68, WifiFriendData_Clear)
+
+/* func_02077e74: NitroDWC's func_0210101c on `friend_data` and a copy of `other` (passed by
+ * value, so the copy is destructed after). Its callers take nonzero as `friend_data` being a
+ * friend already in the roster. */
+u32 WifiFriendData_Matches(const void *friend_data, WifiFriendData *other)
+{
+    WifiFriendData copy = *other;
+    u32 result = (u32) Wfc_Call0210101c(friend_data, &copy);
+    WifiFriendData_Destruct(&copy);
+    return result;
+}
+CLEAN_AS(func_02077e74, WifiFriendData_Matches)
+
+/* func_02077ea4: `src` copied into `dst`; returns `dst`. */
+WifiFriendData *WifiFriendData_Copy(WifiFriendData *dst, const WifiFriendData *src)
+{
+    MI_CpuCopy8(src, dst, sizeof(WifiFriendData));
+    return dst;
+}
+CLEAN_AS(func_02077ea4, WifiFriendData_Copy)
+
+/* func_02077ebc: the destructor: does nothing. */
+void WifiFriendData_Destruct(WifiFriendData *friend_data)
+{
+    (void) friend_data;
+}
+CLEAN_AS(func_02077ebc, WifiFriendData_Destruct)
+
+/* func_02077ec0: the constructor: does nothing. */
+void WifiFriendData_Construct(WifiFriendData *friend_data)
+{
+    (void) friend_data;
+}
+CLEAN_AS(func_02077ec0, WifiFriendData_Construct)

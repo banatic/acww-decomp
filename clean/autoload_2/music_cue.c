@@ -36,8 +36,8 @@ extern int NNS_SndPlayerWriteVariable(SoundHandle *handle, int index, int value)
 extern void func_0210b634(SoundHandle *handle, u16 track_mask, int pan);
 /* The player's tempo, it seems, as a ratio (256: as written). */
 extern void func_0210b604(SoundHandle *handle, int ratio);
-/* The cue's mode set: 0 off (stopped), 1 playing (its sequence started), 2 waiting. */
-extern void func_020f9fcc(MusicCue *cue, int mode);
+extern int NNS_SndArcPlayerStartSeq(SoundHandle *handle, int seq_no);
+extern void NNS_SndHandleReleaseSeq(SoundHandle *handle);
 
 /* The music whose beat counts double: the position in the beat is halved for it. */
 #define MUSIC_HALF_TEMPO 0xf0
@@ -329,7 +329,7 @@ int MusicCue_Update(MusicCue *cue, const Vec3 *pos)
             NNS_SndPlayerReadGlobalVariable(2, &beat_no);
             data_021fd26c = beat_no;
             if (beat_no == cue->target) {
-                func_020f9fcc(cue, 1);
+                MusicCue_SetMode(cue, 1);
             }
             break;
     }
@@ -357,3 +357,59 @@ void MusicCue_SetTarget(MusicCue *cue, int value)
     cue->target = target < 0 ? 15 : target;
 }
 CLEAN_AS(func_020f9f74, MusicCue_SetTarget)
+
+/* func_020f9f98: the sound library's global variable 2, the beat number, read and kept (in
+ * data_021fd26c); its low byte.
+ * REQUIRES: the variable can be read (it always can): the ROM's result is otherwise what its
+ * stack held, this one's 0. */
+u8 MusicCue_ReadBeat(void)
+{
+    s16 beat_no = 0;
+
+    NNS_SndPlayerReadGlobalVariable(2, &beat_no);
+    data_021fd26c = beat_no;
+    return (u8) beat_no;
+}
+CLEAN_AS(func_020f9f98, MusicCue_ReadBeat)
+
+/* func_020f9fcc: the cue's mode set: 0 off (its sequence stopped at once, and its start not
+ * told yet), 1 playing (its sequence started), 2 waiting. Other modes change nothing. */
+void MusicCue_SetMode(MusicCue *cue, int mode)
+{
+    switch (mode) {
+        case 0:
+            cue->mode = 0;
+            cue->started = 0;
+            Sound_StopSequence(&cue->handle, 0);
+            break;
+        case 1:
+            cue->mode = 1;
+            NNS_SndArcPlayerStartSeq(&cue->handle, cue->seq_no);
+            break;
+        case 2:
+            cue->mode = 2;
+            break;
+    }
+}
+CLEAN_AS(func_020f9fcc, MusicCue_SetMode)
+
+/* func_020fa034: the cue's sequence stopped at once and its handle let go. */
+void MusicCue_Release(MusicCue *cue)
+{
+    Sound_StopSequence(&cue->handle, 0);
+    NNS_SndHandleReleaseSeq(&cue->handle);
+}
+CLEAN_AS(func_020fa034, MusicCue_Release)
+
+/* func_020fa054: the cue made afresh for sequence `seq_no`: an empty handle, no marks, no
+ * next step, and neither its start told nor its end reached. */
+void MusicCue_Init(MusicCue *cue, u16 seq_no)
+{
+    Sound_InitHandle(&cue->handle);
+    cue->seq_no = seq_no;
+    cue->marks = 0;
+    cue->next = -1;
+    cue->started = 0;
+    cue->reached = 0;
+}
+CLEAN_AS(func_020fa054, MusicCue_Init)

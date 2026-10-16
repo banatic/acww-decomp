@@ -8,6 +8,7 @@
 #include "main/player_messages.h"
 #include "main/session.h"
 #include "main/session_link.h"
+#include "main/session_villager.h"
 
 /* The scene (func_020b65c4) the activity handlers act in. */
 #define SCENE_2E 46
@@ -85,10 +86,7 @@ extern void func_0209d484(const u8 *request, int slot);
 extern u8 *func_0207cec0(u8 *villagers, int index); /* a villager, NULL when there is none */
 extern u8 *func_020807c0(u8 *villager, int index);  /* villager + 0x80 * index, or NULL */
 extern void func_020789f4(int *villager, int *entry, const u8 *byte);
-extern u32 func_02078448(u32 *villager, u16 *item, const u8 *bytes);
-extern void func_0207835c(u32 *villager, u16 *items, const u8 *bytes);
 extern void func_020786d8(u32 *villager, u8 *operation, u8 *value, const u8 *bytes);
-extern void func_020785a4(int *villager, u8 *kind, u16 *item, int *slot, u8 *flag, const u8 *bytes);
 extern void func_02078794(u32 *villager, u32 *entry, u16 *item, const u8 *bytes);
 extern void func_02080cd8(u8 *villager, const u16 *item); /* its item 0x7d2 */
 extern u16 *func_0207dfd4(u8 *villager, u32 index);       /* its item 0x7b0 + 2 * index, NULL from 4 */
@@ -538,7 +536,7 @@ void SessionMessage_SetVillagerEntryByte6C(int size, int kind, u8 scene, u32 slo
 CLEAN_AS(func_02076900, SessionMessage_SetVillagerEntryByte6C)
 
 /* func_020765cc: an item (2 bytes) and a villager (byte 2): the villager's item 0x7d2 becomes
- * it when it is one of 0x11a8-0x12a7 (func_020783e0 sends only those). */
+ * it when it is one of 0x11a8-0x12a7 (SessionVillager_SendItem7D2ByIndex sends only those). */
 void SessionMessage_SetVillagerItem7D2(int size, int kind, u8 scene, u32 slot)
 {
     (void) size;
@@ -549,7 +547,7 @@ void SessionMessage_SetVillagerItem7D2(int size, int kind, u8 scene, u32 slot)
     u8 bytes[3];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 3);
-    func_02078448(&index, &item, bytes);
+    SessionVillager_UnpackItem(&index, &item, bytes);
     u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
     if (villager != NULL && item >= VILLAGER_ITEM_FIRST && item <= VILLAGER_ITEM_LAST) {
         func_02080cd8(villager, &item);
@@ -569,7 +567,7 @@ void SessionMessage_SetVillagerItems7B0(int size, int kind, u8 scene, u32 slot)
     u8 bytes[9];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 9);
-    func_0207835c(&index, items, bytes);
+    SessionVillager_UnpackItems(&index, items, bytes);
     u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
@@ -657,7 +655,7 @@ void SessionMessage_SetVillagerObject(int size, int kind, u8 scene, u32 slot)
     u8 bytes[4];
     int index;
     Session_ReadMessage(data_020ccf94, bytes, 4);
-    func_020785a4(&index, &object_kind, &item, &player_slot, &flag, bytes);
+    SessionVillager_UnpackObject(&index, &object_kind, &item, &player_slot, &flag, bytes);
     u8 *villager = func_0207cec0(data_021e5a2c, index);
     if (villager == NULL) {
         return;
@@ -714,7 +712,7 @@ void SessionMessage_SetVillagerObjectItem(int size, int kind, u8 scene, u32 slot
     u8 bytes[4];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 4);
-    func_02078448(&index, &item, bytes);
+    SessionVillager_UnpackItem(&index, &item, bytes);
     u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;

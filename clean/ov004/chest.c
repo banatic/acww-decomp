@@ -11,6 +11,7 @@
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"
+#include "room_object_life.h"
 #include "room_object_map.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
@@ -19,8 +20,11 @@ static_assert(offsetof(Chest, lid) == 0x860, "lid");
 static_assert(offsetof(Chest, talk_step) == 0x864, "talk step");
 static_assert(offsetof(RoomObject, angle) == 0x8e, "angle");
 static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
+static_assert(offsetof(Chest, unk_844) == 0x844, "glow");
+static_assert(sizeof(Chest) == 0x868, "the size Chest_Create allocates");
 
 #define RECEIVER_OFFSET 0xec
+#define CHEST_SIZE 0x868
 #define ONE 0x1000         /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_ONCE 1   /* stop at the end */
 #define ANIM_MODE_3 3      /* the animations' mode 3 */
@@ -39,6 +43,16 @@ static_assert(offsetof(RoomObject, node_set) == 0x764, "node set");
 extern const char data_ov004_02253200[];
 /* The kinds (RoomObject.unk_780) of chests 0 to 2. */
 extern const s32 data_ov004_022476a4[CHEST_COUNT];
+
+/* Whether each lid state shows the switch on (for vtable slot 0x74). */
+extern const u8 data_ov004_02247680[CHEST_LID_STATE_COUNT];
+
+/* The class's vtable, and its receiver part's. */
+extern const u8 data_ov004_0225211c[];
+extern const u8 data_ov004_022521c8[];
+
+/* Whether the lid starts closed whatever the switch: func_020b6730, or scene 0xa or 0xf. */
+extern int func_ov004_0223c10c(void);
 
 /* The talk's tables (member_pointer.h): their guards, the tables and their constants. */
 extern u32 data_ov004_02257024;
@@ -671,3 +685,114 @@ int Chest_EnterLid(Chest *chest, unsigned int state, int value)
     return 0;
 }
 CLEAN_AS(func_ov004_0221760c, Chest_EnterLid)
+
+/* func_ov004_022176ac (vtable slot 0x74): whether lid state `state` shows the switch on (closed
+ * and closing do); 0 for a state that does not exist. */
+u8 Chest_LidStateIsOn(Chest *chest, unsigned int state)
+{
+    (void) chest;
+    if (state < CHEST_LID_STATE_COUNT) {
+        return data_ov004_02247680[state];
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_022176ac, Chest_LidStateIsOn)
+
+/* func_ov004_022176c0 (vtable slot 0xa0): idle as the base class tells, and not talking. */
+int Chest_IsIdle(Chest *chest)
+{
+    return RoomObject_IsIdle(&chest->base) && chest->talk_step == CHEST_TALK_NONE;
+}
+CLEAN_AS(func_ov004_022176c0, Chest_IsIdle)
+
+/* func_ov004_022176e4 (vtable slot 0x0c) */
+int Chest_Vfunc0C(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_022176e4, Chest_Vfunc0C)
+
+/* _ZN18Obj_ov004_0225211c19func_ov004_022176e8Ev (vtable slot 0x80, each frame while neither
+ * appearing nor vanishing): the talk, then the lid. */
+int Chest_Update(Chest *chest)
+{
+    Chest_UpdateTalkStep(chest);
+    Chest_UpdateLid(chest);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_0225211c19func_ov004_022176e8Ev, Chest_Update)
+
+/* func_ov004_02217700 (vtable slot 0x7c, once the model is bound): the node set's value 0; in
+ * mode 1 (unk_76C) the switch is set on first. The animations of variant 0 are bound (kind 0xf
+ * to play once, the others in mode 3); the lid starts closed when the switch is on or
+ * func_ov004_0223c10c says so, else open; and the chest is not talking. Done at once. */
+int Chest_Start(Chest *chest)
+{
+    RoomObject *base = &chest->base;
+    ByteSet_SetValue(&base->node_set, 0);
+    if (base->unk_76C == 1) {
+        Switch_Set(&base->light_switch, 1, 0);
+    }
+    if (base->unk_780 == KIND_0F) {
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_ONCE, ONE, 0);
+    } else {
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_3, ONE, 0);
+    }
+    if (Switch_Value(&base->light_switch) != 0 || func_ov004_0223c10c() != 0) {
+        Chest_switch_to(chest, CHEST_LID_CLOSED);
+    } else {
+        Chest_switch_to(chest, CHEST_LID_OPEN);
+    }
+    Chest_EnterTalkStep(chest, CHEST_TALK_NONE);
+    return 1;
+}
+CLEAN_AS(func_ov004_02217700, Chest_Start)
+
+static void Chest_set_vtables(Chest *chest)
+{
+    chest->base.vtable = (const RoomObjectVtable *) data_ov004_0225211c;
+    chest->base.receiver_vtable = data_ov004_022521c8;
+}
+
+/* func_ov004_022177a0 (the deleting destructor, vtable slot 0x44) */
+Chest *Chest_Delete(Chest *chest)
+{
+    Chest_set_vtables(chest);
+    Glow_Destruct(&chest->unk_844);
+    RoomObject_DestructBase(&chest->base);
+    RoomObject_Free(chest);
+    return chest;
+}
+CLEAN_AS(func_ov004_022177a0, Chest_Delete)
+
+/* func_ov004_022177d8 (the destructor, vtable slot 0x40) */
+Chest *Chest_Destroy(Chest *chest)
+{
+    Chest_set_vtables(chest);
+    Glow_Destruct(&chest->unk_844);
+    RoomObject_DestructBase(&chest->base);
+    return chest;
+}
+CLEAN_AS(func_ov004_022177d8, Chest_Destroy)
+
+/* func_ov004_0221780c (the constructor): the lid closed; the talk step is left as the
+ * allocation zeroed it (CHEST_TALK_NONE). */
+Chest *Chest_Construct(Chest *chest)
+{
+    RoomObject_ConstructBase(&chest->base);
+    Chest_set_vtables(chest);
+    Glow_Construct(&chest->unk_844);
+    chest->lid = CHEST_LID_CLOSED;
+    return chest;
+}
+CLEAN_AS(func_ov004_0221780c, Chest_Construct)
+
+/* func_ov004_02217848: a new chest from the room's heap; nothing when it has no room. */
+void Chest_Create(void)
+{
+    Chest *chest = RoomObject_Alloc(CHEST_SIZE);
+    if (chest != NULL) {
+        Chest_Construct(chest);
+    }
+}
+CLEAN_AS(func_ov004_02217848, Chest_Create)

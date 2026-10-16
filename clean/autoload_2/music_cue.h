@@ -37,5 +37,9 @@ void MusicCue_PickNext(MusicCue *cue);
 int MusicCue_Update(MusicCue *cue, const Vec3 *pos);
 int MusicCue_TakeStart(MusicCue *cue);
 void MusicCue_SetTarget(MusicCue *cue, int value);
+u8 MusicCue_ReadBeat(void);
+void MusicCue_SetMode(MusicCue *cue, int mode);
+void MusicCue_Release(MusicCue *cue);
+void MusicCue_Init(MusicCue *cue, u16 seq_no);
 
 #endif

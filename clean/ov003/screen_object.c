@@ -238,3 +238,11 @@ ScreenObject *ScreenObject_ReceiverDestroyAndFree(void *receiver)
     return ScreenObject_DestroyAndFree((ScreenObject *) (void *) ((u8 *) receiver - 0xec));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov003_02238434D0Ev, ScreenObject_ReceiverDestroyAndFree)
+
+/* _ZThn236_N18Obj_ov003_02238434D1Ev (the receiver vtable's destructor): ScreenObject_Destroy
+ * on the object around `receiver`. */
+ScreenObject *ScreenObject_ReceiverDestroy(void *receiver)
+{
+    return ScreenObject_Destroy((ScreenObject *) (void *) ((u8 *) receiver - 0xec));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238434D1Ev, ScreenObject_ReceiverDestroy)

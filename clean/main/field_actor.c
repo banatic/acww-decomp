@@ -357,7 +357,7 @@ extern const u8 data_020c75c8[];
 extern const u8 data_020c75e4[];
 extern const u8 data_020c75d8[];
 extern const u8 data_020c75d0[];
-/* Handed by address to func_020100d0 and func_020100b8. */
+/* Handed by address to FieldActor_CopyTexture and FieldActor_CopyPalette. */
 extern int data_020d83e8;
 extern int data_020d83f0;
 /* The scene: 0 outdoors (overlay 3), else indoors. */
@@ -369,38 +369,22 @@ extern void func_0203efb0(struct FieldActor *actor, u16 player);
 extern void func_020962c8(int player, struct FieldActor *actor);
 extern int func_020961d0(int player);
 extern void func_0205f8cc(void *member, int value);
-extern int func_020112d0(struct FieldActor *actor);
-extern u8 func_02011150(struct FieldActor *actor, int flag);
-extern void func_020106a8(struct FieldActor *actor, int a, int b);
 extern void func_0205db4c(void *part, int value);
 extern void func_0205d8c4(void *part, int value);
 extern void func_0205dccc(void *part, int value);
-extern int func_020110e8(struct FieldActor *actor);
 extern int func_0205dc94(void *part, int value);
-extern void func_020110c4(u16 *item, struct FieldActor *actor);
 extern void *func_02011368(struct FieldActor *actor);
 extern void func_0205ec50(void *held, int value, struct FieldActor *actor, u16 *item, void *record, int a);
 extern void func_02060500(void *line, int player);
 extern void func_0205df14(void *part, u8 value);
-extern void func_02011138(u16 *item, struct FieldActor *actor);
-extern int func_020103c0(struct FieldActor *actor, u16 *item);
-extern void func_02010424(struct FieldActor *actor);
 extern void func_0205e4e8(void *part, u8 value);
-extern void func_020112f8(u16 *item, struct FieldActor *actor);
-extern int func_020112e4(struct FieldActor *actor);
-extern int func_020100e8(struct FieldActor *actor, u16 *item, int a, int b, int c);
 extern void func_0205d0b8(void *look, u8 value);
-extern int func_02011340(struct FieldActor *actor);
 extern void func_0205d058(void *look, int value);
 extern void func_0205d4f0(void *look, u8 value);
-extern void func_0201131c(u16 *item, struct FieldActor *actor);
-extern void func_02010680(struct FieldActor *actor, u16 *item);
 extern int func_0205cfd4(void *look);
 extern int func_0205d25c(void *look);
 extern int func_0205f8b4(void *member);
 extern int func_021077e8(int value);
-extern void func_020100d0(struct FieldActor *actor, int a, int b, void *c, void *d);
-extern void func_020100b8(struct FieldActor *actor, int a, int b, void *c, void *d);
 extern void func_0205d034(void *look);
 
 /* func_0200e42c: the set-up; returns 1. The player is bits 30 and 31 of the word at 8
@@ -421,18 +405,18 @@ int FieldActor_Init(struct FieldActor *actor)
     func_0203efb0(actor, (u16) actor->player);
     func_020962c8(actor->player, actor);
     func_0205f8cc(at(actor, 0x7a0), data_020c75c4[func_020961d0(actor->player)]);
-    int index = func_020112d0(actor);
-    func_020106a8(actor, index, func_02011150(actor, 1));
+    int index = FieldActor_RecordHairColor(actor);
+    FieldActor_SetPalettes(actor, index, FieldActor_SunLevel(actor, 1));
     FieldActor_SetupLooks(actor);
     func_0205db4c(at(actor, 0x70f), data_020c75d4[func_020961d0(actor->player)]);
     func_0205d8c4(at(actor, 0x70e), data_020c75dc[func_020961d0(actor->player)]);
     func_0205dccc(at(actor, 0x70d), data_020c75cc[func_020961d0(actor->player)]);
-    func_0205dc94(at(actor, 0x70d), func_020110e8(actor));
+    func_0205dc94(at(actor, 0x70d), FieldActor_RecordFace(actor));
     FieldActor_SetupPartB(actor);
     FieldActor_SetupPartC(actor);
     index = func_020961d0(actor->player);
     u16 item;
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
     func_0205ec50(actor->held, data_020c75e0[index], actor, &item, func_02011368(actor), 0);
     func_02060500(at(actor, 0x5c8), actor->player);
     base->gravity = -0x5000;
@@ -462,54 +446,54 @@ int FieldActor_Init(struct FieldActor *actor)
 CLEAN_AS(func_0200e42c, FieldActor_Init)
 
 /* func_0200e654: part C (0x59c) from the player's table data_020c75c8, then its item from the
- * player's record (func_02011138) goes to func_020103c0, and func_02010424. */
+ * player's record (FieldActor_RecordPartCItem) goes to FieldActor_RequestPartC, and FieldActor_ApplyPartC. */
 void FieldActor_SetupPartC(struct FieldActor *actor)
 {
     u16 item;
     func_0205df14(at(actor, FIELD_ACTOR_PART_C), data_020c75c8[func_020961d0(actor->player)]);
-    func_02011138(&item, actor);
+    FieldActor_RecordPartCItem(&item, actor);
     u16 copy = item;
-    func_020103c0(actor, &copy);
-    func_02010424(actor);
+    FieldActor_RequestPartC(actor, &copy);
+    FieldActor_ApplyPartC(actor);
 }
 CLEAN_AS(func_0200e654, FieldActor_SetupPartC)
 
 /* func_0200e6a4: part B (0x428) from the player's table data_020c75e4, then its item from the
- * player's record (func_020112f8, 0xfff1 without a record) goes to func_020100e8 with
- * func_020112e4's and func_020112d0's values. */
+ * player's record (FieldActor_RecordHeadItem, 0xfff1 without a record) goes to FieldActor_RequestHead with
+ * FieldActor_RecordHeadKind's and FieldActor_RecordHairColor's values. */
 void FieldActor_SetupPartB(struct FieldActor *actor)
 {
     u16 item;
     func_0205e4e8(at(actor, FIELD_ACTOR_PART_B), data_020c75e4[func_020961d0(actor->player)]);
-    func_020112f8(&item, actor);
+    FieldActor_RecordHeadItem(&item, actor);
     u16 copy = item;
-    int a = func_020112e4(actor);
-    int b = func_020112d0(actor);
-    func_020100e8(actor, &copy, a, b, 1);
+    int a = FieldActor_RecordHeadKind(actor);
+    int b = FieldActor_RecordHairColor(actor);
+    FieldActor_RequestHead(actor, &copy, a, b, 1);
 }
 CLEAN_AS(func_0200e6a4, FieldActor_SetupPartB)
 
-/* func_0200e704: the looks at 0x389 (from data_020c75d8, then func_02011340's flag) and 0x774
- * (from data_020c75d0), the record's item at func_0201131c to func_02010680, and the pairs of
- * func_021077e8 of the looks handed to func_020100d0 and func_020100b8 (0x774 with 0x389, with
- * data_020d83e8) and to func_020100b8 (0x7a0 with 0x389, with data_020d83f0); then
+/* func_0200e704: the looks at 0x389 (from data_020c75d8, then FieldActor_RecordFlag249A's flag) and 0x774
+ * (from data_020c75d0), the record's item at FieldActor_RecordCloth to FieldActor_SetCloth, and the pairs of
+ * func_021077e8 of the looks handed to FieldActor_CopyTexture and FieldActor_CopyPalette (0x774 with 0x389, with
+ * data_020d83e8) and to FieldActor_CopyPalette (0x7a0 with 0x389, with data_020d83f0); then
  * func_0205d034 on 0x389. */
 void FieldActor_SetupLooks(struct FieldActor *actor)
 {
     u16 item;
     func_0205d0b8(at(actor, 0x389), data_020c75d8[func_020961d0(actor->player)]);
-    func_0205d058(at(actor, 0x389), func_02011340(actor) != 0);
+    func_0205d058(at(actor, 0x389), FieldActor_RecordFlag249A(actor) != 0);
     func_0205d4f0(at(actor, 0x774), data_020c75d0[func_020961d0(actor->player)]);
-    func_0201131c(&item, actor);
-    func_02010680(actor, &item);
+    FieldActor_RecordCloth(&item, actor);
+    FieldActor_SetCloth(actor, &item);
 
     int look_389 = func_021077e8(func_0205cfd4(at(actor, 0x389)));
     int look_774 = func_021077e8(func_0205d25c(at(actor, 0x774)));
-    func_020100d0(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
-    func_020100b8(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
+    FieldActor_CopyTexture(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
+    FieldActor_CopyPalette(actor, look_774, look_389, &data_020d83e8, &data_020d83e8);
     int look_7a0 = func_021077e8(func_0205f8b4(at(actor, 0x7a0)));
     look_389 = func_021077e8(func_0205cfd4(at(actor, 0x389)));
-    func_020100b8(actor, look_7a0, look_389, &data_020d83f0, &data_020d83f0);
+    FieldActor_CopyPalette(actor, look_7a0, look_389, &data_020d83f0, &data_020d83f0);
     func_0205d034(at(actor, 0x389));
 }
 CLEAN_AS(func_0200e704, FieldActor_SetupLooks)

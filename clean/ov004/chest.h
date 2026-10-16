@@ -1,5 +1,5 @@
-/* The chests: a class of overlay 4's room objects (vtable 0x0225211c, receiver part 0x022521c8)
- * whose receiver part is named "obj_etc_nchest". Kinds 0xb, 0xc and 0xd (RoomObject.unk_780) are
+/* The chests: a class of overlay 4's room objects (vtable 0x0225211c, receiver part 0x022521c8,
+ * 0x868 bytes) whose receiver part is named "obj_etc_nchest". Kinds 0xb, 0xc and 0xd (RoomObject.unk_780) are
  * the chests 0 to 2 (Chest_Index); kind 0xf has other animations. It runs two state machines
  * besides the base class's (room_object.h), each through tables of member pointers
  * (member_pointer.h):
@@ -15,7 +15,11 @@
  *   (func_ov004_0222c030) and wait for func_ov004_0222c2b0, then open the lid; the menu opens
  *   group 9 in mode 0x22, the talk takes the receiver and sets its state byte to one of 16
  *   values. Both end by sending actor 4 message 0x2f with the index (func_ov004_0222c00c) and
- *   closing the lid, after which the scene goes on (func_0203e020). */
+ *   closing the lid, after which the scene goes on (func_0203e020).
+ *
+ * Once its model is bound it binds the animations of variant 0, its lid starts closed when its
+ * switch is on (or func_ov004_0223c10c says so), else open, and it does not talk; each frame it
+ * runs the talk, then the lid. It is idle when the base class says so and it does not talk. */
 #ifndef CLEAN_OV004_CHEST_H
 #define CLEAN_OV004_CHEST_H
 
@@ -26,7 +30,7 @@
 
 typedef struct Chest {
     RoomObject base;
-    Glow unk_844; /* a member taken down by Glow_Destruct */
+    Glow unk_844; /* built by Glow_Construct and taken down by Glow_Destruct, otherwise unused here */
     u8 lid;       /* ChestLid */
     u8 unk_861[3];
     s32 talk_step; /* ChestTalkStep */
@@ -94,5 +98,14 @@ void Chest_UpdateLidClosed(Chest *chest);
 int Chest_EnterLidClosed(Chest *chest);
 void Chest_UpdateLid(Chest *chest);
 int Chest_EnterLid(Chest *chest, unsigned int state, int value);
+u8 Chest_LidStateIsOn(Chest *chest, unsigned int state);
+int Chest_IsIdle(Chest *chest);
+int Chest_Vfunc0C(void);
+int Chest_Update(Chest *chest);
+int Chest_Start(Chest *chest);
+Chest *Chest_Delete(Chest *chest);
+Chest *Chest_Destroy(Chest *chest);
+Chest *Chest_Construct(Chest *chest);
+void Chest_Create(void);
 
 #endif

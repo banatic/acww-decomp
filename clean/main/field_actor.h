@@ -5,7 +5,9 @@
  * (field_actor_model.c), its control by the buttons and the pen (field_actor_control.c), and
  * its state machine with the states 0 to 5, 7, 0x10, 0x13 to 0x15, 0x18 to 0x1b, 0x30 to 0x35,
  * 0x3f, 0x6f, 0x70, 0x76, 0x77, 0x79, 0x83 to 0x86 and 0x90 to 0x92 and its queue of requests
- * (field_actor_states.c; field_actor_parts.h has what they share). Overlay 3's part is in
+ * (field_actor_states.c; field_actor_parts.h has what they share), its looks
+ * (field_actor_looks.c), its animations (field_actor_anim.c), and its moves and contact bodies
+ * (field_actor_motion.c). Overlay 3's part is in
  * ov003/field_actor.h.
  *
  * Its objects come from the heap at data_021c9ab4, zeroed and aligned to 4. */
@@ -426,5 +428,74 @@ int FieldActor_PollTarget(struct FieldActor *actor);
 void FieldActor_PollRequest810(struct FieldActor *actor);
 int FieldActor_FindTarget(struct FieldActor *actor, const Vec3 *point, int mode, int tool);
 int FieldActor_TargetKind(struct FieldActor *actor);
+
+/* field_actor_looks.c: the looks, from the player's record: the palettes, the clothes, the
+ * head (part B), part C, and the sun level. */
+void FieldActor_CopyPalette(struct FieldActor *actor, int from, int to, const void *from_name, const void *to_name);
+void FieldActor_CopyTexture(struct FieldActor *actor, int from, int to, const void *from_name, const void *to_name);
+int FieldActor_RequestHead(struct FieldActor *actor, const u16 *item, u8 kind, u8 hair_color, u8 with_face);
+void FieldActor_PollHead(struct FieldActor *actor);
+void FieldActor_ApplyHead(struct FieldActor *actor);
+int FieldActor_RequestPartC(struct FieldActor *actor, const u16 *item);
+void FieldActor_PollPartC(struct FieldActor *actor);
+void FieldActor_ApplyPartC(struct FieldActor *actor);
+int FieldActor_BindCloth(struct FieldActor *actor);
+void FieldActor_SetCloth(struct FieldActor *actor, u16 *item);
+void FieldActor_SetPalettes(struct FieldActor *actor, int hair_color, int sun_level);
+void FieldActor_RecordHeldItem(u16 *item, struct FieldActor *actor);
+int FieldActor_RecordFace(struct FieldActor *actor);
+int FieldActor_RecordFlag0(struct FieldActor *actor);
+void FieldActor_RecordPartCItem(u16 *item, struct FieldActor *actor);
+u8 FieldActor_SunLevel(struct FieldActor *actor, int store);
+unsigned int FieldActor_RecordSunLevel(struct FieldActor *actor);
+unsigned int FieldActor_RecordHairColor(struct FieldActor *actor);
+unsigned int FieldActor_RecordHeadKind(struct FieldActor *actor);
+void FieldActor_RecordHeadItem(u16 *item, struct FieldActor *actor);
+void FieldActor_RecordCloth(u16 *item, struct FieldActor *actor);
+int FieldActor_RecordFlag249A(struct FieldActor *actor);
+
+/* field_actor_anim.c: the body's animations, the held item's and the face's. */
+void FieldActor_PlayHeldAnimation(struct FieldActor *actor, u16 *item, int animation, int frames);
+void FieldActor_AnimateHeldItem(struct FieldActor *actor, int animation, int frames);
+void FieldActor_RestartAnimation(struct FieldActor *actor);
+void FieldActor_PlayAnimationOnce(struct FieldActor *actor, int animation, int blend, u16 held_blend);
+void FieldActor_SwitchAnimation(struct FieldActor *actor, int animation, int blend, int held_blend);
+void FieldActor_PlayAnimationLoop(struct FieldActor *actor, int animation, int blend, int held_blend);
+void FieldActor_PlayAnimation(struct FieldActor *actor, int animation, int blend, u8 flags, int speed, u16 start,
+                              u16 held_blend, int resource);
+unsigned short FieldActor_AnimationResource(struct FieldActor *actor, const unsigned int *animation);
+void FieldActor_UpdateBody(struct FieldActor *actor);
+void FieldActor_PlayFaceAnimB(struct FieldActor *actor, const int *number, const u8 *flags);
+void FieldActor_PlayFaceAnimA(struct FieldActor *actor, const int *number, const u8 *flags);
+void FieldActor_MatchFaceAnimB(struct FieldActor *actor, const int *animation, const u8 *flags);
+void FieldActor_MatchFaceAnimA(struct FieldActor *actor, const int *animation, const u8 *flags);
+void FieldActor_BindFaceAnims(struct FieldActor *actor);
+void FieldActor_StepFaceAnimB(struct FieldActor *actor);
+void FieldActor_StepFaceAnimA(struct FieldActor *actor);
+void FieldActor_StepFaceAnims(struct FieldActor *actor);
+
+/* field_actor_motion.c: acting with the tool, speed, lean and yaw, moving, the shadow and the
+ * contact bodies. */
+int FieldActor_TryTargetInScene(struct FieldActor *actor, int tool);
+int FieldActor_TryToolInScene(struct FieldActor *actor);
+int FieldActor_InToolReach(struct FieldActor *actor, const Vec3 *point, int tool);
+int FieldActor_TryAct(struct FieldActor *actor);
+int FieldActor_WalkSpeed(struct FieldActor *actor);
+void FieldActor_SetSpeed(struct FieldActor *actor, const int *speed);
+void FieldActor_LeanTowards(struct FieldActor *actor, int target);
+void FieldActor_SetLean(struct FieldActor *actor, u16 lean);
+void FieldActor_SetYaw(struct FieldActor *actor, const s16 *yaw);
+int FieldActor_StepTowardReported(struct FieldActor *actor);
+int FieldActor_MoveFree(struct FieldActor *actor);
+int FieldActor_MoveWithCollision(struct FieldActor *actor);
+int FieldActor_PlaceShadow(struct FieldActor *actor);
+int FieldActor_ContactFlags(struct FieldActor *actor, const int *state);
+void FieldActor_SetContactAt(struct FieldActor *actor, const Vec3 *point, const int *state);
+void FieldActor_SetContact(struct FieldActor *actor, const int *state);
+void FieldActor_SetContactOnGround(struct FieldActor *actor, const int *state);
+void FieldActor_EnterContact(struct FieldActor *actor);
+void FieldActor_EnterContacts(struct FieldActor *actor, const Vec3 *point);
+void FieldActor_SetContactBSized(struct FieldActor *actor, const Vec3 *point, int size, int height);
+void FieldActor_SetContactB(struct FieldActor *actor, const Vec3 *point);
 
 #endif

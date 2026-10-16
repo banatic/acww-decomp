@@ -32,7 +32,10 @@
 020ef874 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; callers pass 0 (func_020ef840) or 1 (func_020ef498)
 020f5e50 a mode other than 0-2 leaves ret unset (the ROM returns p, the PC anything); every caller passes 0, 1 or 2
 020f6d78 a state byte (+0x10) other than 0-3 leaves result unset (the ROM returns the caller's r5, the PC anything); the state is sequence variable 2 (func_020f6eb4), which the player reads only as 0-3 (func_020f6a80, func_020f6ba0)
+020ff1d8 halfword loads from odd addresses read the aligned halfword on ARM and the unaligned one on x86; the colour animation is part of an SPL particle resource, whose blocks the format keeps aligned
+020ff8ec word accesses at misaligned addresses read the aligned word on ARM and the unaligned one on x86; list members are SPL particles and emitters, allocated word-aligned
 02211394 bits 29-31 of the returned word are padding neither version writes (each returns what its stack slot held); the readers take fields from bits 8-27 (func_ov004_02211388, func_ov004_0221137c)
+022179e8 (ov004) halfword accesses at odd addresses read the aligned halfword on ARM and the unaligned one on x86; the object is a room object the game allocates word-aligned
 0222daf0 no return value when data_ov004_02258310 is null (the ROM returns self, the PC 0xef7); the only caller, func_ov068_022748f0, ignores it
 02261f94 index of 5 or more reads past the static table of five member-function pointers (the PC's copy is elsewhere); the only callers, func_ov047_02261f74 and func_ov047_02261f84, pass their callers' constants 0-4
 02278f4c index idx of 8 or more reads past the static table (the PC's copy is elsewhere); the only caller, func_ov073_02278ca4, passes 0

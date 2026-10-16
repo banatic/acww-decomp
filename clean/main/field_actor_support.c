@@ -53,7 +53,6 @@ extern void MTX_MultVec43(const Vec3 *vector, const Mtx43 *mtx, Vec3 *out);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* Items. */
-extern void func_020110c4(u16 *item, FieldActor *actor);
 extern int func_0204bcdc(const u16 *item);
 extern int func_0204bc64(const u16 *item);
 extern u32 func_02062148(const u16 *item);
@@ -84,12 +83,10 @@ extern void func_02055d38(void *model, int value);
 extern void func_02054848(void *model, int a);
 extern int func_02055d0c(void *model, void *out, int joint);
 extern void func_0205eae0(void *held, int pose, int a, int b);
-extern void func_02010d64(FieldActor *actor);
 
 /* Turning and easing. */
 extern int func_02011404(s16 *angle, int target, int rate, int max_step, int min_step);
 extern int func_020113e0(s16 *angle, int target);
-extern void func_020110a0(FieldActor *actor, s16 *yaw);
 extern void func_02011490(fx32 *value, int target);
 extern void func_020114b0(fx32 *value, int target, fx32 rate, int max_step, int min_step);
 extern int func_02064558(int angle);
@@ -104,7 +101,6 @@ extern int func_0202f188(void);
 extern int func_0208ffac(void);
 extern int func_0208ff98(void);
 extern void *func_02011368(FieldActor *actor);
-extern u32 func_020112bc(FieldActor *actor);
 extern s16 func_020997a8(void *record);
 extern void func_02099794(int record, u16 date);
 extern u16 *func_0209d358(int a, int b);
@@ -310,7 +306,7 @@ void FieldActor_TalkClosing(FieldActor *actor)
             u16 value = field_actor_support_work_halfword(actor);
             u16 item;
             func_02035638(value);
-            func_020110c4(&item, actor);
+            FieldActor_RecordHeldItem(&item, actor);
             if (!field_actor_support_item_is_nothing(&item) && FieldActor_HeldToolNumber(actor) == 0 && data_020e54a8 == 0) {
                 start += 0x15;
             }
@@ -543,7 +539,7 @@ void FieldActor_PoseHeldTool(FieldActor *actor)
 }
 CLEAN_AS(func_0200eebc, FieldActor_PoseHeldTool)
 
-/* func_0200ef1c: func_02010d64 (the actor's checks) with the position moved aside for a
+/* func_0200ef1c: FieldActor_EnterContact (the actor's checks) with the position moved aside for a
  * moment. When the object at 0x174 met (0x1b0) a player's actor (kind 0x15 at 0x182, its player
  * at 0x183) that is this console's and stands (state 2 for player 4, func_020960f8), and the
  * point reported for this actor lies in the same direction (within 0x400) and not nearer than
@@ -576,7 +572,7 @@ void FieldActor_RunChecksAside(FieldActor *actor)
             }
         }
     }
-    func_02010d64(actor);
+    FieldActor_EnterContact(actor);
     actor->position = saved;
 }
 CLEAN_AS(func_0200ef1c, FieldActor_RunChecksAside)
@@ -617,14 +613,14 @@ CLEAN_AS(func_0200f098, FieldActor_TurnHeadBack)
 
 /* ---- Messages to the session */
 
-/* func_0200f11c: while linked, the sun level (func_020112bc, a byte) goes to the session as
+/* func_0200f11c: while linked, the sun level (FieldActor_RecordSunLevel, a byte) goes to the session as
  * message 0x2e. */
 void FieldActor_SendSunLevel(FieldActor *actor)
 {
     if (!Session_IsLinked(data_020ccf94)) {
         return;
     }
-    u8 level = (u8) func_020112bc(actor);
+    u8 level = (u8) FieldActor_RecordSunLevel(actor);
     NetSession *session = data_020ccf94;
     Session_BeginMessage(session);
     Session_AppendMessage(session, &level, 1);
@@ -949,7 +945,7 @@ void FieldActor_StoreSunDate(FieldActor *actor, int record, const u16 *date)
 {
     func_02099794(record, *date);
     u16 *summary = func_0209d358(0, 0x50);
-    *summary = (u16) (func_020112bc(actor) + PACKED_MONTH(*date) * 1000 + PACKED_DAY(*date) * 10);
+    *summary = (u16) (FieldActor_RecordSunLevel(actor) + PACKED_MONTH(*date) * 1000 + PACKED_DAY(*date) * 10);
     if (FieldActor_LinkedNotPlayer0(actor) == 0) {
         *func_0209627c() = *date;
     }
@@ -1070,7 +1066,7 @@ static int field_actor_support_turn_to(FieldActor *actor, int target, int rate)
 {
     s16 yaw = actor->yaw;
     int arrived = func_02011404(&yaw, target, rate, 0x1770000, 0xc0000) == 0;
-    func_020110a0(actor, &yaw);
+    FieldActor_SetYaw(actor, &yaw);
     return arrived;
 }
 
@@ -1093,7 +1089,7 @@ void FieldActor_TurnTowards(FieldActor *actor, int yaw)
 {
     s16 turned = actor->yaw;
     func_020113e0(&turned, yaw);
-    func_020110a0(actor, &turned);
+    FieldActor_SetYaw(actor, &turned);
 }
 CLEAN_AS(func_0200fb34, FieldActor_TurnTowards)
 
@@ -1170,12 +1166,12 @@ int FieldActor_HeldTool(FieldActor *actor)
 }
 CLEAN_AS(func_0200fbe0, FieldActor_HeldTool)
 
-/* func_0200fc90: with flag 0 and an item held (func_020110c4), one more than func_02062148 gives
+/* func_0200fc90: with flag 0 and an item held (FieldActor_RecordHeldItem), one more than func_02062148 gives
  * for it; else 0. */
 int FieldActor_HeldToolNumber(FieldActor *actor)
 {
     u16 item;
-    func_020110c4(&item, actor);
+    FieldActor_RecordHeldItem(&item, actor);
     if (FieldActor_TestFlag(actor, 0) && !field_actor_support_item_is_nothing(&item)) {
         return (int) (func_02062148(&item) + 1);
     }

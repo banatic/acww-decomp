@@ -72,5 +72,13 @@ WifiFriendList *WifiFriendList_Construct(WifiFriendList *list);
 WifiFriendData *WifiFriendData_GetData(WifiFriendData *friend_data);
 int WifiFriendData_IsNotFriendKey(WifiFriendData *friend_data);
 int WifiFriendData_GetKeyDigits(WifiFriendData *friend_data, char *digits);
+int WifiFriendData_SetFromKeyDigits(WifiFriendData *friend_data, const u8 *digits, const void *user_data);
+int WifiFriendData_IsFriendKey(WifiFriendData *friend_data);
+int WifiFriendData_IsSet(WifiFriendData *friend_data);
+void WifiFriendData_Clear(WifiFriendData *friend_data);
+u32 WifiFriendData_Matches(const void *friend_data, WifiFriendData *other);
+WifiFriendData *WifiFriendData_Copy(WifiFriendData *dst, const WifiFriendData *src);
+void WifiFriendData_Destruct(WifiFriendData *friend_data);
+void WifiFriendData_Construct(WifiFriendData *friend_data);
 
 #endif

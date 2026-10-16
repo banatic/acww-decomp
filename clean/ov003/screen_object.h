@@ -55,5 +55,6 @@ ScreenObject *ScreenObject_Destroy(ScreenObject *object);
 ScreenObject *ScreenObject_Construct(ScreenObject *object);
 void ScreenObject_New(void);
 ScreenObject *ScreenObject_ReceiverDestroyAndFree(void *receiver);
+ScreenObject *ScreenObject_ReceiverDestroy(void *receiver);
 
 #endif
