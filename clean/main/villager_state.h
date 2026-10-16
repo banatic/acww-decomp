@@ -119,5 +119,7 @@ int VillagerState_LinkedByte01(const VillagerState *entry);
 void VillagerState_SettleState(VillagerState *entry);
 void VillagerState_SetState(VillagerState *entry, int state);
 int VillagerState_LinkedState(const VillagerState *entry);
+VillagerState *VillagerState_Destruct(VillagerState *entry);
+VillagerState *VillagerState_Construct(VillagerState *entry);
 
 #endif

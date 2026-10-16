@@ -11,6 +11,10 @@ extern NetSession *data_020ccf94; /* the game's session */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void func_0209bd5c(void *object); /* no item (0xfff1), 0x16 at 0x0a, byte 0x0b cleared */
 extern void func_0209c52c(void *bytes);  /* eight bytes cleared */
+extern void func_0209bd80(void *object); /* both words cleared, no item (0xfff1), 0x16 at 0x0a */
+extern void *func_0209c53c(void *bytes); /* func_0209c52c, then the bytes */
+extern void func_0209bd7c(void *object); /* the object's destructor: does nothing */
+extern void func_0209c538(void *bytes);  /* the bytes' destructor: does nothing */
 /* Whether func_020b6694 accepts the current scene (func_020b65c4). */
 extern int func_020b6680(void);
 
@@ -476,3 +480,26 @@ void VillagerState_Init(VillagerState *entry)
     VillagerState_ClearItem(entry);
 }
 CLEAN_AS(func_0207956c, VillagerState_Init)
+
+/* func_020795a8: the destructor: the tally, the bytes at 0x10 and the object at 0x04 are
+ * destroyed, in that order. */
+VillagerState *VillagerState_Destruct(VillagerState *entry)
+{
+    VillagerTally_Destruct(&entry->tally);
+    func_0209c538(entry->bytes_10);
+    func_0209bd7c(entry->object);
+    return entry;
+}
+CLEAN_AS(func_020795a8, VillagerState_Destruct)
+
+/* func_020795c8: the constructor: the object at 0x04 and the bytes at 0x10 are built, the item
+ * is none and the tally is built. The other fields are left as they are. */
+VillagerState *VillagerState_Construct(VillagerState *entry)
+{
+    func_0209bd80(entry->object);
+    func_0209c53c(entry->bytes_10);
+    entry->item = 0xfff1;
+    VillagerTally_Construct(&entry->tally);
+    return entry;
+}
+CLEAN_AS(func_020795c8, VillagerState_Construct)

@@ -115,4 +115,22 @@ int PathWalker_FindJunctionAlong(PathWalker *self, PathWalkerTile *out, PathWalk
 int PathWalker_StepIndex(int self, int direction);
 int PathWalker_Arrived(PathWalker *self, const Vec3 *position);
 
+/* The kinds of walk (`status`: the row of data_021c1914, a table of seven PathWalkerTable
+ * filled at start-up, whose `unk_08` picks the goal tile); 7 for none. */
+#define PATH_WALKER_KINDS 7
+
+int PathWalker_FindWayToPath(PathWalker *self, u32 *stop, const Vec3 *position);
+int PathWalker_StepToClearNeighbour(PathWalker *self, Vec3 *position, PathWalkerMap *map);
+int PathWalker_SearchLine(PathWalker *self, Vec3 *point, const PathWalkerTile *from, const PathWalkerTile *step, int count,
+                          const PathWalkerTile *limit, int check_ground, PathWalkerMap *map);
+int PathWalker_IsWalking(const PathWalker *self);
+void PathWalker_SetState(PathWalker *self, int state);
+void PathWalker_ReplanIfMoved(PathWalker *self, Vec3 *position);
+void PathWalker_MarkTileUnknown(PathWalker *self);
+void PathWalker_KeepTile(PathWalker *self, const Vec3 *position);
+void PathWalker_Start(PathWalker *self, Vec3 *position, u32 kind, int state, void *owner);
+void PathWalker_Init(PathWalker *self);
+void PathWalker_Destruct(PathWalker *self);
+int PathWalker_Construct(PathWalker *self);
+
 #endif

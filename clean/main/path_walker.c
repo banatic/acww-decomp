@@ -290,7 +290,7 @@ int PathWalker_PlaceNearGoal(PathWalker *self, Vec3 *position)
     } else {
         PathWalker_PlaceAtRandom(self, position);
     }
-    func_02013910(self);
+    PathWalker_MarkTileUnknown(self);
     return path_walker_finish(self, position);
 }
 CLEAN_AS(func_020127ac, PathWalker_PlaceNearGoal)
@@ -471,7 +471,7 @@ int PathWalker_PlaceAtRandom(PathWalker *self, Vec3 *position)
         }
     }
 
-    func_02013910(self);
+    PathWalker_MarkTileUnknown(self);
     return path_walker_finish(self, position);
 }
 CLEAN_AS(func_02012a98, PathWalker_PlaceAtRandom)
@@ -498,7 +498,7 @@ CLEAN_AS(func_02012bcc, PathWalker_StepToNeighbour)
 /* func_02012c20: func_02013738 moves the position to a neighbouring tile; the answer is 0. */
 int PathWalker_StepToNeighbourOn(PathWalker *self, Vec3 *position, PathWalkerMap *map)
 {
-    func_02013738((int) (uintptr_t) self, (int) (uintptr_t) position, (int) (uintptr_t) map);
+    PathWalker_StepToClearNeighbour(self, position, map);
     return 0;
 }
 CLEAN_AS(func_02012c20, PathWalker_StepToNeighbourOn)
@@ -524,7 +524,7 @@ CLEAN_AS(func_02012c30, PathWalker_StepAlong)
  * steps (index 4). */
 int PathWalker_StepAlongOn(PathWalker *self, Vec3 *position, PathWalkerMap *map)
 {
-    func_020138a8(self, position);
+    PathWalker_ReplanIfMoved(self, position);
 
     if (self->heading == 0) {
         path_walker_forget(self);
@@ -575,7 +575,7 @@ CLEAN_AS(func_02012d40, PathWalker_StepToPath)
  * its way and chooses a route. The answer is 0. */
 int PathWalker_StepToPathOn(PathWalker *self, Vec3 *position, PathWalkerTile *limit, PathWalkerMap *map)
 {
-    func_020138a8(self, position);
+    PathWalker_ReplanIfMoved(self, position);
 
     if (self->return_dir >= PATH_WALKER_NO_STEP) {
         path_walker_forget(self);
@@ -682,7 +682,7 @@ void PathWalker_ChooseRoute(PathWalker *self, const Vec3 *position)
     }
     int open = func_0204ed30((int) (uintptr_t) map, (int) (uintptr_t) position);
     if (open == 0) {
-        self->return_dir = (u32) func_0201354c(self, (u32 *) &self->stop_x, position);
+        self->return_dir = (u32) PathWalker_FindWayToPath(self, (u32 *) &self->stop_x, position);
         self->phase = 0;
         path_walker_forget(self);
         return;
@@ -814,7 +814,7 @@ int PathWalker_Step(PathWalker *self, Vec3 *position)
     void *object = MemberPointer_Object(step, self);
     int result = ((int (*)(void *, Vec3 *))(uintptr_t) MemberPointer_Code(step, object))(object, position);
     if (self->state == 1) {
-        func_02013934((char *) self, (int) (uintptr_t) position);
+        PathWalker_KeepTile(self, position);
     }
     return result;
 }
@@ -959,3 +959,320 @@ int PathWalker_Arrived(PathWalker *self, const Vec3 *position)
     return ((int (*)(void *, const Vec3 *))(uintptr_t) MemberPointer_Code(&table->arrived, object))(object, position);
 }
 CLEAN_AS(func_02013518, PathWalker_Arrived)
+
+/* ---- Finding the paths again, and the walker's life */
+
+static_assert(sizeof(PathWalker) == 0x9c, "PathWalker layout");
+
+/* The walker's table by kind of walk (filled at start-up). */
+extern const PathWalkerTable data_021c1914[];
+
+/* The ground at a tile (func_02034240 asks about the tile's centre, func_0203423c releases the
+ * answer): PathWalker_SearchLine counts the tiles whose word at 0x30 is set. */
+typedef struct PathWalkerGround {
+    u8 unk_00[0x30];
+    s32 unk_30;
+    u8 unk_34[0x10];
+} PathWalkerGround;
+
+/* The bits of an acre's flags (func_0204f658) that make PathWalker_SearchLine look at the
+ * ground. */
+#define PATH_WALKER_ACRE_GROUND_FLAGS 0x7f000
+/* Tiles in a row with the ground's word at 0x30 set that end a search. */
+#define PATH_WALKER_GROUND_RUN 4
+/* `state` before a walk starts: neither row of steps. */
+#define PATH_WALKER_STATE_NONE 2
+/* `last_x` and `last_z` once PathWalker_MarkTileUnknown marked them. */
+#define PATH_WALKER_TILE_UNKNOWN 0xff
+
+extern void *func_02034240(PathWalkerGround *ground, u32 x, u32 z, int a, int b);
+extern void func_0203423c(PathWalkerGround *ground);
+extern u32 func_0204f658(PathWalkerMap *map, u32 acre_x, u32 acre_z);
+extern void func_0204f828(int *acre, int *tile, const Vec3 *position);
+extern void func_0204f7ac(Vec3 *position, int acre_x, int acre_z, int tile_x, int tile_z);
+extern int TownTile_IsClear(int x, int z, void *map);
+
+/* The step of index `index` as a tile (the words are added as they are, without sign). */
+static const PathWalkerTile *path_walker_step_tile(int index)
+{
+    return (const PathWalkerTile *) &data_021c172c[index];
+}
+
+/* func_0201354c: the way from a position off the paths back to them. Within the position's acre,
+ * each of the four directions is searched (PathWalker_SearchLine, in the order 0, 2, 1, 3) up to
+ * the acre's edge for a tile on the paths; of those found, the nearest the position
+ * (Vec_DistanceXZ, the first on equal distances) is taken. Without any, the position moves to a
+ * clear neighbouring tile (PathWalker_StepToClearNeighbour) instead. The tile reached goes to
+ * `stop` (x and z); the answer is the step index taken, 4 for none (also without a map, or
+ * when the position is on the paths already: then `stop` is not written).
+ * The ground is looked at in the search when the acre has one of the flags 0x7f000. */
+int PathWalker_FindWayToPath(PathWalker *self, u32 *stop, const Vec3 *position)
+{
+    PathWalkerMap *map = data_021c80bc;
+    Vec3 reached = *position;
+    int result = PATH_WALKER_NO_STEP;
+
+    if (map == NULL) {
+        return PATH_WALKER_NO_STEP;
+    }
+    int x = 0;
+    int z = 0;
+    Position_Tile(&x, &z, (const Position *) position);
+    PathWalkerTile limit = {map->tiles_wide, map->tiles_high};
+    if (func_0204ed30((int) (uintptr_t) map, (int) (uintptr_t) position) != 0) {
+        return PATH_WALKER_NO_STEP;
+    }
+
+    Vec3 found[4];
+    for (int i = 0; i < 4; i++) {
+        found[i] = *position;
+    }
+    Position_Tile(&x, &z, (const Position *) position);
+    PathWalkerTile here = {(u32) x, (u32) z};
+    u32 flags = func_0204f658(map, (u32) path_walker_acre_of(position->x), (u32) path_walker_acre_of(position->z));
+    int check_ground = (flags & PATH_WALKER_ACRE_GROUND_FLAGS) != 0;
+
+    /* The acre's first tile on each axis, and the first past it. */
+    u32 first_x = here.x & 0xfff0;
+    u32 first_z = here.z & 0xfff0;
+    u32 past_x = first_x + PATH_WALKER_ACRE_TILES;
+    u32 past_z = first_z + PATH_WALKER_ACRE_TILES;
+
+    u8 open = 0;
+    if (PathWalker_SearchLine(self, &found[0], &here, path_walker_step_tile(0), (int) (here.z - first_z), &limit, check_ground,
+                              map) != 0) {
+        open |= 1;
+    }
+    if (PathWalker_SearchLine(self, &found[2], &here, path_walker_step_tile(2), (int) (past_z - here.z), &limit, check_ground,
+                              map) != 0) {
+        open |= 4;
+    }
+    if (PathWalker_SearchLine(self, &found[1], &here, path_walker_step_tile(1), (int) (here.x - first_x), &limit, check_ground,
+                              map) != 0) {
+        open |= 2;
+    }
+    if (PathWalker_SearchLine(self, &found[3], &here, path_walker_step_tile(3), (int) (past_x - here.x), &limit, check_ground,
+                              map) != 0) {
+        open |= 8;
+    }
+
+    if (open != 0) {
+        fx32 best = -0x1000;
+        for (int i = 0; i < 4; i++) {
+            fx32 distance = Vec_DistanceXZ(position, &found[i]);
+            if (((open >> i) & 1) != 0 && (best < 0 || distance < best)) {
+                reached = found[i];
+                best = distance;
+                result = i;
+            }
+        }
+    } else {
+        int step = PathWalker_StepToClearNeighbour(self, &reached, map);
+        if ((u32) step < 4) {
+            result = step;
+        }
+    }
+
+    int stop_x;
+    int stop_z;
+    Position_Tile(&stop_x, &stop_z, (const Position *) &reached);
+    stop[0] = (u32) stop_x;
+    stop[1] = (u32) stop_z;
+    return result;
+}
+CLEAN_AS(func_0201354c, PathWalker_FindWayToPath)
+
+/* func_02013738: the position moves to the centre of a neighbouring tile in its acre (one of the
+ * four steps, picked at random among those TownTile_IsClear accepts, func_0207cc54); the
+ * answer is the step index, 4 when none is clear (the position is kept). `self` is not used. */
+int PathWalker_StepToClearNeighbour(PathWalker *self, Vec3 *position, PathWalkerMap *map)
+{
+    int acre[2] = {0, 0};
+    int tile[2] = {0, 0};
+    u8 candidates = 0;
+    int count = 0;
+    (void) self;
+
+    func_0204f828(acre, tile, position);
+    for (int i = 0; i < 4; i++) {
+        u32 x = (u32) tile[0] + (u32) data_021c172c[i].x;
+        u32 z = (u32) tile[1] + (u32) data_021c172c[i].z;
+        if (x < PATH_WALKER_ACRE_TILES && z < PATH_WALKER_ACRE_TILES) {
+            int map_x = 0;
+            int map_z = 0;
+            func_0204f800(&map_x, &map_z, acre[0], acre[1], (int) x, (int) z);
+            if (TownTile_IsClear(map_x, map_z, map) != 0) {
+                candidates = (u8) (candidates | (1u << i));
+                count++;
+            }
+        }
+    }
+
+    int pick = func_0207cc54(candidates, count, 4);
+    if ((u32) pick < 4) {
+        func_0204f7ac(position, acre[0], acre[1], path_walker_add(tile[0], data_021c172c[pick].x),
+                      path_walker_add(tile[1], data_021c172c[pick].z));
+        return pick;
+    }
+    return PATH_WALKER_NO_STEP;
+}
+CLEAN_AS(func_02013738, PathWalker_StepToClearNeighbour)
+
+/* func_020137ec: from `from`, up to `count` tiles along `step` are looked at; the first on the
+ * paths gives `point` its centre (func_0204f794) and the answer 1. Tiles outside `limit` are
+ * skipped. With `check_ground`, the ground of each tile within `limit` is asked about first, and
+ * four in a row with its word at 0x30 set end the search. 0 when nothing is found. `self` is
+ * not used. */
+int PathWalker_SearchLine(PathWalker *self, Vec3 *point, const PathWalkerTile *from, const PathWalkerTile *step, int count,
+                          const PathWalkerTile *limit, int check_ground, PathWalkerMap *map)
+{
+    u32 x = from->x;
+    u32 z = from->z;
+    int covered = 0;
+    (void) self;
+
+    for (int i = 0; i < count; i++) {
+        x += step->x;
+        z += step->z;
+        if (x >= limit->x || z >= limit->z) {
+            continue;
+        }
+        if (check_ground != 0) {
+            PathWalkerGround ground;
+            func_02034240(&ground, x, z, 0, 0);
+            covered = ground.unk_30 != 0 ? covered + 1 : 0;
+            func_0203423c(&ground);
+            if (covered >= PATH_WALKER_GROUND_RUN) {
+                return 0;
+            }
+        }
+        if (func_0204ed58((int) (uintptr_t) map, (int) x, (int) z) != 0) {
+            func_0204f794(point, x, z);
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_020137ec, PathWalker_SearchLine)
+
+/* func_02013894: whether a walk is under way (its kind is one of the seven). */
+int PathWalker_IsWalking(const PathWalker *self)
+{
+    return self->status < PATH_WALKER_KINDS;
+}
+CLEAN_AS(func_02013894, PathWalker_IsWalking)
+
+/* func_020138a4 */
+void PathWalker_SetState(PathWalker *self, int state)
+{
+    self->state = (u32) state;
+}
+CLEAN_AS(func_020138a4, PathWalker_SetState)
+
+/* func_020138a8: when the walker keeps a tile (`last_x` and `last_z` both nonzero) and the
+ * position is on another one (it was moved), it forgets its way and chooses a route from there;
+ * the phase is 3 before that and the way back to the paths none (4) after.
+ * QUIRK: a route that keeps the phase (no map, or only the way back open) leaves phase 3, where
+ * PathWalker_Step does nothing; and the way back to the paths that PathWalker_ChooseRoute finds
+ * off them is dropped (4), to be found again by the next step. */
+void PathWalker_ReplanIfMoved(PathWalker *self, Vec3 *position)
+{
+    int x = 0;
+    int z = 0;
+    Position_Tile(&x, &z, (const Position *) position);
+    if (self->last_x != 0 && self->last_z != 0 && (self->last_x != x || self->last_z != z)) {
+        self->phase = 3;
+        path_walker_forget(self);
+        PathWalker_ChooseRoute(self, position);
+        self->return_dir = PATH_WALKER_NO_STEP;
+    }
+}
+CLEAN_AS(func_020138a8, PathWalker_ReplanIfMoved)
+
+/* func_02013910: a tile not kept yet (0, 0) becomes 0xff, 0xff, which no position is on, so
+ * that the next PathWalker_ReplanIfMoved chooses a route. */
+void PathWalker_MarkTileUnknown(PathWalker *self)
+{
+    if (self->last_x == 0 && self->last_z == 0) {
+        self->last_x = PATH_WALKER_TILE_UNKNOWN;
+        self->last_z = PATH_WALKER_TILE_UNKNOWN;
+    }
+}
+CLEAN_AS(func_02013910, PathWalker_MarkTileUnknown)
+
+/* func_02013934: the tile the position is on is kept. */
+void PathWalker_KeepTile(PathWalker *self, const Vec3 *position)
+{
+    int x;
+    int z;
+    Position_Tile(&x, &z, (const Position *) position);
+    self->last_x = x;
+    self->last_z = z;
+}
+CLEAN_AS(func_02013934, PathWalker_KeepTile)
+
+/* func_02013948: starts a walk of kind `kind` (none from 7 on) in state `state`: the walker is
+ * set up afresh with the kind's table, whose goal picker (when it has one) gives the goal tile
+ * for the position and `owner`; the goal acre follows (the tile over 16, rounded down), and a
+ * route is chosen. Without a picker the walker keeps no goal. */
+void PathWalker_Start(PathWalker *self, Vec3 *position, u32 kind, int state, void *owner)
+{
+    typedef void (*PathWalkerPicker)(PathWalkerTile *out, void *walker, Vec3 *position, void *owner);
+
+    if (kind >= PATH_WALKER_KINDS) {
+        return;
+    }
+    PathWalker_Init(self);
+    self->status = kind;
+    self->state = (u32) state;
+    self->table = &data_021c1914[kind];
+    const MemberPointer *pick = &self->table->unk_08;
+    if (pick->function == 0) {
+        return;
+    }
+    PathWalkerTile goal;
+    void *object = MemberPointer_Object(pick, self);
+    ((PathWalkerPicker) (uintptr_t) MemberPointer_Code(pick, object))(&goal, object, position, owner);
+    self->goal_x = (s32) goal.x;
+    self->goal_z = (s32) goal.z;
+    self->goal_acre_x = path_walker_asr(self->goal_x, 4);
+    self->goal_acre_z = path_walker_asr(self->goal_z, 4);
+    PathWalker_ChooseRoute(self, position);
+}
+CLEAN_AS(func_02013948, PathWalker_Start)
+
+/* func_020139bc: all zero, then no walk (state 2, kind 7), the halves of `unk_24` 0xffff,
+ * neither walking on nor back, and no way back to the paths. */
+void PathWalker_Init(PathWalker *self)
+{
+    MI_CpuFill8(self, 0, sizeof(*self));
+    self->state = PATH_WALKER_STATE_NONE;
+    self->status = PATH_WALKER_KINDS;
+    self->unk_24 = 0xffffffffu;
+    self->mode = PATH_WALKER_NONE;
+    self->return_dir = PATH_WALKER_NO_STEP;
+}
+CLEAN_AS(func_020139bc, PathWalker_Init)
+
+/* func_020139ec: the destructor; nothing to release. */
+void PathWalker_Destruct(PathWalker *self)
+{
+    (void) self;
+}
+CLEAN_AS(func_020139ec, PathWalker_Destruct)
+
+/* func_020139f0: the constructor: the goal, the goal acre, the junction walked to and the tile
+ * kept are zero. Returns the walker. */
+int PathWalker_Construct(PathWalker *self)
+{
+    self->goal_x = 0;
+    self->goal_z = 0;
+    self->goal_acre_x = 0;
+    self->goal_acre_z = 0;
+    self->stop_x = 0;
+    self->stop_z = 0;
+    self->last_x = 0;
+    self->last_z = 0;
+    return (int) (uintptr_t) self;
+}
+CLEAN_AS(func_020139f0, PathWalker_Construct)
