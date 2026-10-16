@@ -256,3 +256,457 @@ void SkyObjects_SetBlend(SkyObjects *objects)
     }
 }
 CLEAN_AS(func_020bc548, SkyObjects_SetBlend)
+
+/* ---- The entries, the resource slots and the clock */
+
+#include <string.h>
+
+#include "calendar.h"
+#include "clock.h"
+#include "sky_events.h"
+#include "sky_object_sounds.h"
+
+static_assert(sizeof(SkyObjectSlot) == 12, "a slot");
+static_assert(sizeof(SkyResource) == 16, "a resource");
+static_assert(offsetof(SkyObjects, files) == 0x1b6c, "the files");
+static_assert(offsetof(SkyObjects, unk_2f24) == 0x2f24, "the events' bytes");
+static_assert(offsetof(SkyObjects, unk_2f50) == 0x2f50, "0x2f50");
+static_assert(offsetof(SkyObjects, unk_2f54) == 0x2f54, "0x2f54");
+static_assert(offsetof(SkyObjects, unk_2f58) == 0x2f58, "the shots' requests");
+
+#define SKY_OBJECTS_EVENT_BYTES 6 /* unk_2f24 to 0x2f29, cleared by the constructor */
+#define SKY_OBJECTS_NOON 12
+#define SKY_OBJECTS_MOON_FIRST 3      /* the moon's first resource, of 28 */
+#define SKY_OBJECTS_MOON_LAST 27      /* its last, from the first */
+#define SKY_OBJECTS_MOON_DAYS 0x1d87b /* the cycle: 29.53 days (fx32) */
+#define SKY_OBJECTS_MOON_HUNDREDTHS 2953
+#define SKY_OBJECTS_MOON_OFFSET 2420 /* hundredths of a day into the cycle on 2000-01-01 */
+
+extern const s32 data_020d266c[];                        /* per kind: its resource */
+extern const SkyResource data_020d2bb4[];                /* per resource */
+extern void func_020bf948(SkyObject *object);            /* the object's fields reset */
+extern void func_020bf810(SkyObject *object, int param); /* set up by its kind */
+extern void func_020bee74(SkyObjectSlot *slot, int resource, void *palettes);
+extern int func_020bf064(void *files, int resource);                  /* a resource's files read */
+extern void func_020bee9c(SkyObjectSlot *slot, void *files);          /* its cells loaded */
+extern int func_020bec70(void *palettes, int resource);               /* its palette is loaded */
+extern void func_020bed64(void *palettes, void *files, int resource); /* and loaded */
+extern void func_020bf9ac(void *object);                              /* an object's constructor */
+extern void func_020be554(void *object);                              /* and destructor (SkyObject_Destruct) */
+extern void func_020bef78(SkyObjectSlot *slot);
+extern void func_020bedf4(void *palettes);
+extern void func_020bec04(void *request); /* a shot's request's constructor (sky_shots.h) */
+extern void func_020be550(void *request); /* and destructor */
+extern void func_020bebc8(void *hit);     /* the hit's constructor (sky_shots.h) */
+extern void func_020bf1b8(void *files);
+extern void func_0208a1f4(CellAnim *anim); /* an animation's destructor */
+extern fx32 FX_Div(fx32 numerator, fx32 denominator);
+extern u32 func_020644cc(int bound); /* a random number below `bound` */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+
+/* An entry or a slot by an index the game computes, at the address the ARM would use. */
+static SkyObject *sky_objects_entry_at(SkyObjects *objects, int index)
+{
+    return (SkyObject *) ((uintptr_t) objects->entries + (u32) index * (u32) sizeof(SkyObject));
+}
+
+static SkyObjectSlot *sky_objects_slot_at(SkyObjects *objects, int index)
+{
+    return (SkyObjectSlot *) ((uintptr_t) objects->slots + (u32) index * (u32) sizeof(SkyObjectSlot));
+}
+
+/* The objects drawing from a slot's resource (its word at 0x04, counted up by func_020bee74). */
+static s32 sky_objects_slot_users(const SkyObjectSlot *slot)
+{
+    s32 users;
+    memcpy(&users, slot->unk_04, sizeof(users));
+    return users;
+}
+
+/* func_020bdbe0: every object taken down (func_020bf5f0), its entry no longer counted. */
+void SkyObjects_RemoveAll(SkyObjects *objects)
+{
+    for (SkyObject *object = objects->entries; object < objects->entries + SKY_OBJECT_COUNT; object++) {
+        if (object->kind != SKY_OBJECT_UNDRAWN) {
+            func_020bf5f0(object);
+            objects->count--;
+        }
+    }
+}
+CLEAN_AS(func_020bdbe0, SkyObjects_RemoveAll)
+
+/* func_020bdc14: every object of `kind` taken down. */
+void SkyObjects_RemoveKind(SkyObjects *objects, int kind)
+{
+    for (SkyObject *object = objects->entries; object < objects->entries + SKY_OBJECT_COUNT; object++) {
+        if (object->kind == kind) {
+            func_020bf5f0(object);
+            objects->count--;
+        }
+    }
+}
+CLEAN_AS(func_020bdc14, SkyObjects_RemoveKind)
+
+/* func_020bdc50: an object of `kind` added in `entry` (SKY_ENTRY_ANY: the first free one its
+ * kind may take), at `position` when given, set up by its kind with `param`; NULL when its
+ * resource cannot be shown now or there is no free entry. Its resource's slot is taken (the
+ * slots it overlaps released) and the object starts at the next frame (SKY_OBJECT_NEW). */
+SkyObject *SkyObjects_Add(SkyObjects *objects, int kind, int entry, const Vec3 *position, int param)
+{
+    int resource = SkyObjects_ResourceFor(objects, kind, param);
+    int slot = SkyObjects_SlotFor(objects, resource);
+    if (slot == SKY_SLOT_BUSY) {
+        return NULL;
+    }
+    int index = SkyObjects_FreeEntry(objects, kind, entry);
+    if (index == SKY_OBJECT_COUNT) {
+        return NULL;
+    }
+    if (slot != SKY_OBJECT_NO_SLOT) {
+        func_020bee74(sky_objects_slot_at(objects, slot), resource, objects->unk_2eb8);
+        SkyObjects_ReleaseOverlapping(objects, slot);
+    }
+    SkyObject *object = sky_objects_entry_at(objects, index);
+    func_020bf948(object);
+    object->kind = kind;
+    object->state = SKY_OBJECT_NEW;
+    object->slot = slot;
+    object->resource = resource;
+    object->palette = data_020d2bb4[resource].palette;
+    if (position != NULL) {
+        object->position.x = position->x;
+        object->position.y = position->y;
+        object->position.z = position->z;
+    }
+    func_020bf810(object, param);
+    objects->count++;
+    return object;
+}
+CLEAN_AS(func_020bdc50, SkyObjects_Add)
+
+/* func_020bdd10: the resource an object of `kind` draws from: the kind's own (data_020d266c),
+ * but the moon's picture of the day; for kind 7 resource 40 half the time; for kind 5
+ * resource 33 when bit 0 of `param` is set; the show's by its look (param bits 0-3: 45 for
+ * looks 0 and 1, 43 for 4, 7, 10 and 13, else 44); kind 2's by its look (47 for 0, 49 for 1,
+ * else 48). */
+int SkyObjects_ResourceFor(SkyObjects *objects, int kind, int param)
+{
+    (void) objects;
+    int look = param & 0xf;
+    switch (kind) {
+        case SKY_OBJECT_MOON:
+            return SkyObjects_MoonResource();
+        case SKY_OBJECT_KIND_7:
+            if (func_020644cc(2) != 0) {
+                return 40;
+            }
+            return data_020d266c[kind];
+        case SKY_OBJECT_KIND_5:
+            return (param & 1) != 0 ? 33 : data_020d266c[kind];
+        case SKY_OBJECT_SHOW:
+            if (look <= 1) {
+                return 45;
+            }
+            if (look == 4 || look == 7 || look == 10 || look == 13) {
+                return 43;
+            }
+            return 44;
+        case SKY_OBJECT_KIND_2:
+            return look == 0 ? 47 : look == 1 ? 49 : 48;
+        default:
+            return data_020d266c[kind];
+    }
+}
+CLEAN_AS(func_020bdd10, SkyObjects_ResourceFor)
+
+/* func_020bdd9c: the moon's resource for now, 3 to 30: its picture through a cycle of 29.53
+ * days counted from 2000-01-01, 24.2 days into a cycle that day; a day counts from noon.
+ * QUIRK: in the first 1/56 of the cycle the rounding gives the last picture, not the first. */
+int SkyObjects_MoonResource(void)
+{
+    Date origin = {1, 1, 0, 0};
+    Date today;
+    Time now;
+    Calendar_Today(&today);
+    Calendar_Now(&now);
+    int days = Calendar_DaysFrom(&today, &origin);
+    if (now.hour < SKY_OBJECTS_NOON) {
+        days--;
+    }
+    if (days < 0) {
+        days = 0;
+    }
+    int hundredths = (days * 100 + SKY_OBJECTS_MOON_OFFSET) % SKY_OBJECTS_MOON_HUNDREDTHS;
+    fx32 cycle = FX_Div((hundredths << 12) / 100, SKY_OBJECTS_MOON_DAYS);
+    int picture = (cycle * (SKY_OBJECTS_MOON_LAST + 1) - 0x800) >> 12;
+    if (picture < 0 || picture > SKY_OBJECTS_MOON_LAST) {
+        picture = SKY_OBJECTS_MOON_LAST;
+    }
+    return picture + SKY_OBJECTS_MOON_FIRST;
+}
+CLEAN_AS(func_020bdd9c, SkyObjects_MoonResource)
+
+/* func_020bde24: the clock taken for this frame (time and second), the last frame's kept. */
+void SkyObjects_TakeTime(SkyObjects *objects)
+{
+    objects->last_time = objects->time;
+    objects->unk_2f20 = objects->unk_2f1c;
+    Calendar_Now(&objects->time);
+    objects->unk_2f1c = (u32) Clock_Second();
+}
+CLEAN_AS(func_020bde24, SkyObjects_TakeTime)
+
+/* func_020bde5c: the clock taken, as this frame's and the last frame's. */
+void SkyObjects_ResetTime(SkyObjects *objects)
+{
+    Calendar_Now(&objects->time);
+    objects->unk_2f1c = (u32) Clock_Second();
+    objects->last_time = objects->time;
+    objects->unk_2f20 = objects->unk_2f1c;
+}
+CLEAN_AS(func_020bde5c, SkyObjects_ResetTime)
+
+/* func_020be0a0: every object taken down. */
+void SkyObjects_DeleteObjects(SkyObjects *objects)
+{
+    SkyObjects_RemoveAll(objects);
+}
+CLEAN_AS(func_020be0a0, SkyObjects_DeleteObjects)
+
+/* func_020be0a8: the objects of the moment added: the calendar's events read, the rain or snow
+ * already falling, the moon and kind 10; kind 5's odds to be drawn again. */
+void SkyObjects_StartObjects(SkyObjects *objects)
+{
+    SkyEvents_ReadCalendar(objects);
+    SkyEvents_StartFalling(objects);
+    SkyEvents_UpdateMoon(objects);
+    SkyEvents_UpdateKind10(objects);
+    objects->unk_2f24[SKY_EVENT_ODDS_5] = 0;
+}
+CLEAN_AS(func_020be0a8, SkyObjects_StartObjects)
+
+/* func_020be0d4: the first entry of `kind`, SKY_OBJECT_COUNT when there is none. */
+int SkyObjects_FindKind(SkyObjects *objects, int kind)
+{
+    for (int i = 0; i < SKY_OBJECT_COUNT; i++) {
+        if (objects->entries[i].kind == kind) {
+            return i;
+        }
+    }
+    return SKY_OBJECT_COUNT;
+}
+CLEAN_AS(func_020be0d4, SkyObjects_FindKind)
+
+/* func_020be0f8: the entry a new object of `kind` takes: `entry` when it is free, else (for
+ * SKY_ENTRY_ANY) the show's first free one of entries 46 to 58, another kind's first free one
+ * of entries 0 to 29 while fewer than 30 are in use; SKY_OBJECT_COUNT when there is none.
+ * A given entry is looked at where the ARM would, whatever its index. */
+int SkyObjects_FreeEntry(SkyObjects *objects, int kind, int entry)
+{
+    if (entry != SKY_ENTRY_ANY) {
+        return sky_objects_entry_at(objects, entry)->kind == SKY_OBJECT_UNDRAWN ? entry : SKY_OBJECT_COUNT;
+    }
+    if (kind == SKY_OBJECT_SHOW) {
+        for (int i = SKY_ENTRY_SHOW_FIRST; i <= SKY_ENTRY_SHOW_LAST; i++) {
+            if (objects->entries[i].kind == SKY_OBJECT_UNDRAWN) {
+                return i;
+            }
+        }
+    } else if (objects->count < SKY_ENTRY_OTHERS) {
+        for (int i = 0; i < SKY_ENTRY_OTHERS; i++) {
+            if (objects->entries[i].kind == SKY_OBJECT_UNDRAWN) {
+                return i;
+            }
+        }
+    }
+    return SKY_OBJECT_COUNT;
+}
+CLEAN_AS(func_020be0f8, SkyObjects_FreeEntry)
+
+/* func_020be160: the slots `slot` overlaps emptied: 0 overlaps 3; 1 overlaps 4; 2 overlaps 3
+ * and 4; 3 overlaps 0, 2 and 4; 4 overlaps 1, 2 and 3. */
+void SkyObjects_ReleaseOverlapping(SkyObjects *objects, int slot)
+{
+    SkyObjectSlot *slots = objects->slots;
+    switch (slot) {
+        case 0:
+            slots[3].kind = SKY_OBJECT_NO_RESOURCE;
+            break;
+        case 1:
+            slots[4].kind = SKY_OBJECT_NO_RESOURCE;
+            break;
+        case 2:
+            slots[3].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[4].kind = SKY_OBJECT_NO_RESOURCE;
+            break;
+        case 3:
+            slots[0].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[2].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[4].kind = SKY_OBJECT_NO_RESOURCE;
+            break;
+        case 4:
+            slots[1].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[2].kind = SKY_OBJECT_NO_RESOURCE;
+            slots[3].kind = SKY_OBJECT_NO_RESOURCE;
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_020be160, SkyObjects_ReleaseOverlapping)
+
+/* func_020be1c4: the slot `resource` is shown from: its own (SKY_OBJECT_NO_SLOT when it needs
+ * none) when that slot holds it already, or when neither it nor a slot it overlaps is in use;
+ * else SKY_SLOT_BUSY. A slot other than 0 to 4 and SKY_OBJECT_NO_SLOT is busy unless it holds
+ * the resource (read where the ARM would). */
+int SkyObjects_SlotFor(SkyObjects *objects, int resource)
+{
+    int slot = data_020d2bb4[resource].slot;
+    if (slot == SKY_OBJECT_NO_SLOT || sky_objects_slot_at(objects, slot)->kind == resource) {
+        return slot;
+    }
+    int used[SKY_SLOTS];
+    for (int i = 0; i < SKY_SLOTS; i++) {
+        used[i] = sky_objects_slot_users(&objects->slots[i]) > 0;
+    }
+    int free;
+    switch (slot) {
+        case 0:
+            free = !used[0] && !used[3];
+            break;
+        case 1:
+            free = !used[1] && !used[4];
+            break;
+        case 2:
+            free = !used[2] && !used[3] && !used[4];
+            break;
+        case 3:
+            free = !used[3] && !used[0] && !used[2] && !used[4];
+            break;
+        case 4:
+            free = !used[4] && !used[1] && !used[2] && !used[3];
+            break;
+        default:
+            free = 0;
+            break;
+    }
+    return free ? slot : SKY_SLOT_BUSY;
+}
+CLEAN_AS(func_020be1c4, SkyObjects_SlotFor)
+
+/* A slot's resource shown: with `read_files` its files read first; its cells loaded unless
+ * they are (then marked loaded, and with `read_files` no longer changed), its palette loaded
+ * unless it is. */
+static void sky_objects_show_slot(SkyObjects *objects, SkyObjectSlot *slot, int read_files)
+{
+    int resource = slot->kind;
+    int loaded = slot->loaded;
+    int palette_loaded = func_020bec70(objects->unk_2eb8, resource);
+    if (!loaded) {
+        if (read_files) {
+            func_020bf064(objects->files, resource);
+        }
+        func_020bee9c(slot, objects->files);
+        slot->loaded = 1;
+        if (read_files) {
+            slot->changed = 0;
+        }
+    }
+    if (!palette_loaded) {
+        func_020bed64(objects->unk_2eb8, objects->files, resource);
+    }
+}
+
+/* func_020be2d4: each changed slot's resource shown (its files read before,
+ * SkyObjects_ReadSlotFiles), and the slot no longer changed. */
+void SkyObjects_ReloadChangedSlots(SkyObjects *objects, void *unused)
+{
+    (void) unused;
+    for (SkyObjectSlot *slot = objects->slots; slot < objects->slots + SKY_SLOTS; slot++) {
+        if (slot->changed == 0) {
+            continue;
+        }
+        if (slot->kind != SKY_OBJECT_NO_RESOURCE) {
+            sky_objects_show_slot(objects, slot, 0);
+        }
+        slot->changed = 0;
+    }
+}
+CLEAN_AS(func_020be2d4, SkyObjects_ReloadChangedSlots)
+
+/* func_020be348: the files of each changed slot not loaded yet read; an empty changed slot no
+ * longer changed. */
+void SkyObjects_ReadSlotFiles(SkyObjects *objects)
+{
+    for (SkyObjectSlot *slot = objects->slots; slot < objects->slots + SKY_SLOTS; slot++) {
+        if (slot->changed == 0) {
+            continue;
+        }
+        if (slot->kind == SKY_OBJECT_NO_RESOURCE) {
+            slot->changed = 0;
+        } else if (slot->loaded == 0) {
+            func_020bf064(objects->files, slot->kind);
+        }
+    }
+}
+CLEAN_AS(func_020be348, SkyObjects_ReadSlotFiles)
+
+/* func_020be388: each slot's resource shown at once: its files read and its cells loaded
+ * unless they are (the slot then no longer changed), its palette loaded unless it is. */
+void SkyObjects_LoadSlots(SkyObjects *objects)
+{
+    for (SkyObjectSlot *slot = objects->slots; slot < objects->slots + SKY_SLOTS; slot++) {
+        if (slot->kind != SKY_OBJECT_NO_RESOURCE) {
+            sky_objects_show_slot(objects, slot, 1);
+        }
+    }
+}
+CLEAN_AS(func_020be388, SkyObjects_LoadSlots)
+
+/* func_020be400: the constructor: the 60 entries, the slots, the palettes (0x2eb8), the shots'
+ * requests and their hit (sky_shots.h), the sounds (sky_object_sounds.h), the counters and
+ * flags cleared and the files' buffers (0x1b6c) set up. The clock is left alone. */
+SkyObjects *SkyObjects_Construct(SkyObjects *objects)
+{
+    __cxa_vec_ctor(objects->entries, SKY_OBJECT_COUNT, sizeof(SkyObject), func_020bf9ac, func_020be554);
+    for (SkyObjectSlot *slot = objects->slots; slot != objects->slots + SKY_SLOTS; slot++) {
+        func_020bef78(slot);
+    }
+    func_020bedf4(objects->unk_2eb8);
+    __cxa_vec_ctor(objects->unk_2f58, 4, 0x14, func_020bec04, func_020be550);
+    func_020bebc8(objects->unk_2fa8);
+    SkyObjectSounds_Construct((SkyObjectSounds *) (void *) objects->unk_2fcc);
+
+    objects->unk_2f00 = 0;
+    objects->unk_2f04 = 0;
+    objects->unk_2f08 = 0;
+    objects->unk_2f0c = 0;
+    objects->thunder_timer = 0;
+    objects->count = 0;
+    for (int i = 0; i < SKY_OBJECTS_EVENT_BYTES; i++) {
+        objects->unk_2f24[i] = 0;
+    }
+    objects->program = 0;
+    objects->program_timer = 0;
+    objects->countdown = 0;
+    for (int i = 0; i < 4; i++) {
+        objects->launch_timers[i] = 0;
+    }
+    objects->launch_delay = 0;
+    objects->unk_2f4c = 0;
+    objects->unk_2f50 = 0;
+    objects->blend_alpha = 0;
+    objects->unk_2f54 = 0;
+
+    func_020bf1b8(objects->files);
+    return objects;
+}
+CLEAN_AS(func_020be400, SkyObjects_Construct)
+
+/* func_020be554: an entry's destructor: its animation's. */
+SkyObject *SkyObject_Destruct(SkyObject *object)
+{
+    func_0208a1f4(&object->anim);
+    return object;
+}
+CLEAN_AS(func_020be554, SkyObject_Destruct)

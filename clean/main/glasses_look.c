@@ -2,6 +2,7 @@
 #include "glasses_look.h"
 
 #include "clean.h"
+#include "scene_heaps.h"
 #include "session.h"
 #include "vram_copy_task.h"
 
@@ -296,3 +297,39 @@ int GlassesLook_FileSize(void)
     return GLASSES_LOOK_FILE_SIZE;
 }
 CLEAN_AS(func_0205e0b0, GlassesLook_FileSize)
+
+/* The path buffer of GlassesLook_Path, "/PGls/%d/%d.nsbmd" (the kind / 32, then the kind). */
+extern char data_021c9e54[];
+extern const char data_020dd718[];
+
+extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
+
+/* func_0205e0b8: the path of part C kind `kind`'s model file, written into one shared buffer
+ * (each call overwrites the last one's path). */
+char *GlassesLook_Path(unsigned int kind)
+{
+    func_02064328(data_021c9e54, data_020dd718, kind >> 5, kind);
+    return data_021c9e54;
+}
+CLEAN_AS(func_0205e0b8, GlassesLook_Path)
+
+/* func_0205e0d8: when the scene ends, the table cleared and the buffers' heap destroyed. */
+void GlassesLook_EndScene(void)
+{
+    GlassesLook_Clear(&data_021c9e68);
+    SceneHeaps_Destroy021c9adc();
+}
+CLEAN_AS(func_0205e0d8, GlassesLook_EndScene)
+
+/* func_0205e0f0: when the scene starts, the buffers' heap made from `parent`, the entries
+ * allocated, and the heap, if made, shrunk to them. */
+void GlassesLook_StartScene(Heap *parent)
+{
+    SceneHeaps_Create021c9adc(parent);
+    GlassesLook_AllocEntries(&data_021c9e68);
+    Heap *heap = data_021c9adc;
+    if (heap != NULL) {
+        Heap_Adjust(heap);
+    }
+}
+CLEAN_AS(func_0205e0f0, GlassesLook_StartScene)

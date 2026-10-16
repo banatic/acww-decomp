@@ -59,5 +59,7 @@ void SkyShow_LaunchLarge(SkyObjects *objects);
 void SkyShow_NextLaunchTime(SkyObjects *objects, s32 *timer);
 void SkyShow_Launch(SkyObjects *objects, int place, int large, int marked);
 int SkyShow_PlaceFree(SkyObjects *objects, int place);
+int SkyShow_PlaceFreeForLarge(SkyObjects *objects, int place);
+void SkyShow_Run(SkyObjects *objects);
 
 #endif

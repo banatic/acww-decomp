@@ -84,4 +84,15 @@ void FieldBody_Clear(FieldBody *body);
 void FieldBody_Set(FieldBody *body, fx32 radius, fx32 height, int flags, int touches, int kind, u8 index, fx32 weight);
 int FieldBody_TouchedActor(FieldBody *body);
 
+int FieldBody_TouchedAhead(FieldBody *body, int yaw);
+void FieldBody_IgnoreTouch(void);
+void FieldBody_Destruct(FieldBody *body);
+FieldBody *FieldBody_Construct(FieldBody *body);
+void FieldBody_EmptyList(void);
+void FieldBody_Reset(void);
+const Vec3 *FieldOwnedPointBody_Position(FieldOwnedPointBody *body);
+void FieldOwnedPointBody_Identity(FieldOwnedPointBody *body);
+const Vec3 *FieldPointBody_Position(FieldPointBody *body);
+int FieldPointBody_Identity(void);
+
 #endif

@@ -92,3 +92,27 @@ void VillagerSceneObject_SetWord644(u32 *object, u32 value)
     *villager_scene_object_word_644(object) = value;
 }
 CLEAN_AS(func_0201ce5c, VillagerSceneObject_SetWord644)
+
+/* The byte at 0x838, which overlay 68's actions set while they hold the villager. */
+#define VILLAGER_SCENE_OBJECT_BYTE_838 0x838
+
+/* func_0202e174: whether the byte at 0x838 is set. */
+int VillagerSceneObject_HasByte838(u8 *object)
+{
+    return object[VILLAGER_SCENE_OBJECT_BYTE_838] != 0;
+}
+CLEAN_AS(func_0202e174, VillagerSceneObject_HasByte838)
+
+/* func_0202e188 */
+void VillagerSceneObject_ClearByte838(u8 *object)
+{
+    object[VILLAGER_SCENE_OBJECT_BYTE_838] = 0;
+}
+CLEAN_AS(func_0202e188, VillagerSceneObject_ClearByte838)
+
+/* func_0202e194 */
+void VillagerSceneObject_SetByte838(u8 *object)
+{
+    object[VILLAGER_SCENE_OBJECT_BYTE_838] = 1;
+}
+CLEAN_AS(func_0202e194, VillagerSceneObject_SetByte838)

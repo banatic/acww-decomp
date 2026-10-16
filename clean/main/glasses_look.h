@@ -58,5 +58,8 @@ int GlassesLook_TextureSize(void);
 unsigned char GlassesLook_SecondKind(unsigned int index);
 unsigned char GlassesLook_FirstKind(unsigned int index);
 int GlassesLook_FileSize(void);
+char *GlassesLook_Path(unsigned int kind);
+void GlassesLook_EndScene(void);
+void GlassesLook_StartScene(Heap *parent);
 
 #endif

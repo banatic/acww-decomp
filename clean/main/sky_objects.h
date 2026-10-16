@@ -103,4 +103,83 @@ void SkyObjects_Start(SkyObjects *objects);
 void SkyObjects_Add2Mark3(SkyObjects *objects);
 void SkyObjects_SetBlend(SkyObjects *objects);
 
+/* ---- The entries, the resource slots and the clock (SkyObjects_Add and the others).
+ *
+ * An entry whose kind is SKY_OBJECT_UNDRAWN (0xd) is free. SkyObjects_Add takes one for a new
+ * object: a given entry, or for the show's objects the first free one of entries 46 to 58, for
+ * the others the first free one of entries 0 to 29 while fewer than 30 entries are in use.
+ *
+ * Each object draws its cells from a resource (data_020d2bb4, 16 bytes each) that needs one of
+ * the five slots (SkyObjectSlot, sky.h; 6: none). A slot holds one resource at a time and some
+ * slots overlap others (SkyObjects_SlotFor, SkyObjects_ReleaseOverlapping): a resource whose
+ * slot or an overlapping one is in use by another resource cannot be shown. A slot's files are
+ * read (func_020bf064) and its cells and palette loaded (func_020bee9c, func_020bed64) by
+ * SkyObjects_LoadSlots, SkyObjects_ReadSlotFiles and SkyObjects_ReloadChangedSlots. */
+
+/* SkyObject.kind: the others these functions add. */
+enum SkyObjectKindAdded {
+    SKY_OBJECT_RAIN = 0,     /* SkyEvents_Rain */
+    SKY_OBJECT_SNOW = 1,     /* SkyEvents_Snow */
+    SKY_OBJECT_MOON = 4,     /* shown at night; its picture follows a cycle of 29.53 days */
+    SKY_OBJECT_KIND_5 = 5,   /* SkyEvents_AddKind5 */
+    SKY_OBJECT_KIND_6 = 6,   /* SkyEvents_AddKind6 */
+    SKY_OBJECT_KIND_7 = 7,   /* SkyEvents_AddKind7 */
+    SKY_OBJECT_KIND_8 = 8,   /* sometimes, with the thunder of heavy rain */
+    SKY_OBJECT_KIND_10 = 10, /* with the clouds' blending, SkyEvents_UpdateKind10 */
+    SKY_OBJECT_SHOT = 11,    /* sky_shots.h */
+    SKY_OBJECT_KIND_12 = 12, /* SkyEvents_AddKind12 */
+};
+
+/* SkyObjects_Add's entry: SKY_ENTRY_ANY, or the one entry an object of a kind always takes. */
+#define SKY_ENTRY_ANY SKY_OBJECT_COUNT
+#define SKY_ENTRY_KIND_3 30
+#define SKY_ENTRY_MOON 31
+#define SKY_ENTRY_KIND_10 32
+#define SKY_ENTRY_SHOTS 33   /* three for each of the four players */
+#define SKY_ENTRY_VISITOR 45 /* kinds 5, 6 and 7 */
+#define SKY_ENTRY_SHOW_FIRST 46
+#define SKY_ENTRY_SHOW_LAST 58
+#define SKY_ENTRY_KIND_8 59
+#define SKY_ENTRY_OTHERS 30 /* the entries any other object takes, while fewer are in use */
+
+#define SKY_SLOTS 5
+#define SKY_SLOT_BUSY 5 /* SkyObjects_SlotFor: the resource cannot be shown now */
+
+/* SkyObjects.unk_2f24: bytes of the events that add objects (sky_events.h). */
+enum SkyObjectsEventByte {
+    SKY_EVENT_ODDS_5 = 0,      /* 0x2f24: SkyEvents_AddKind5's odds, 0: not drawn yet */
+    SKY_EVENT_ODDS_6 = 1,      /* 0x2f25: SkyEvents_AddKind6's */
+    SKY_EVENT_44 = 2,          /* 0x2f26: calendar event 0x44 is on (SkyEvents_ReadCalendar) */
+    SKY_EVENT_45 = 3,          /* 0x2f27: event 0x45 is */
+    SKY_EVENT_SHOW = 4,        /* 0x2f28: event 0x13 or 0xf is */
+    SKY_EVENT_KIND_12_DUE = 5, /* 0x2f29: SkyEvents_AddKind12 is to run once */
+};
+
+/* An entry of data_020d2bb4: a resource of the objects. */
+typedef struct SkyResource {
+    s32 slot;   /* 0x00: the SkyObjectSlot it needs, SKY_OBJECT_NO_SLOT for none */
+    u8 unk_04;  /* 0x04 */
+    s8 palette; /* 0x05: SkyObject.palette */
+    u8 unk_06[10];
+} SkyResource;
+
+void SkyObjects_RemoveAll(SkyObjects *objects);
+void SkyObjects_RemoveKind(SkyObjects *objects, int kind);
+SkyObject *SkyObjects_Add(SkyObjects *objects, int kind, int entry, const Vec3 *position, int param);
+int SkyObjects_ResourceFor(SkyObjects *objects, int kind, int param);
+int SkyObjects_MoonResource(void);
+void SkyObjects_TakeTime(SkyObjects *objects);
+void SkyObjects_ResetTime(SkyObjects *objects);
+void SkyObjects_DeleteObjects(SkyObjects *objects);
+void SkyObjects_StartObjects(SkyObjects *objects);
+int SkyObjects_FindKind(SkyObjects *objects, int kind);
+int SkyObjects_FreeEntry(SkyObjects *objects, int kind, int entry);
+void SkyObjects_ReleaseOverlapping(SkyObjects *objects, int slot);
+int SkyObjects_SlotFor(SkyObjects *objects, int resource);
+void SkyObjects_ReloadChangedSlots(SkyObjects *objects, void *unused);
+void SkyObjects_ReadSlotFiles(SkyObjects *objects);
+void SkyObjects_LoadSlots(SkyObjects *objects);
+SkyObjects *SkyObjects_Construct(SkyObjects *objects);
+SkyObject *SkyObject_Destruct(SkyObject *object);
+
 #endif

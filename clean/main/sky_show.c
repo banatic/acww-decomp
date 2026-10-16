@@ -386,3 +386,121 @@ int SkyShow_PlaceFree(SkyObjects *objects, int place)
     return 1;
 }
 CLEAN_AS(func_020bcdf8, SkyShow_PlaceFree)
+
+/* ---- When the show runs, and its programs */
+
+#include "date_time.h"
+#include "event_calendar.h"
+#include "ov004/member_pointer.h"
+#include "scene_query.h"
+#include "session.h"
+
+#define SKY_SHOW_PROGRAMS 20
+#define SKY_SHOW_EVENT 0x13 /* the calendar event of the show */
+#define SKY_SHOW_EVENT_F 0xf
+#define SKY_SHOW_UNTIL_HOUR 2 /* with event 0x13 the show runs until 1:59 */
+#define SKY_SHOW_SCENE_2C 0x2c
+#define SKY_SHOW_MIDNIGHT_PROGRAM 18
+#define SKY_SHOW_FIRST_PROGRAM 14 /* or SKY_SHOW_SECOND_FIRST_PROGRAM, at random */
+#define SKY_SHOW_SECOND_FIRST_PROGRAM 16
+
+extern NetSession *data_020ccf94;
+extern u32 func_02041614(void); /* the number of an event (data_020db6dc) */
+extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
+extern u32 data_021f6ccc; /* the programs' table was filled */
+extern MemberPointer data_021f6ed0[SKY_SHOW_PROGRAMS];
+extern const MemberPointer __ptmf_null;
+extern const MemberPointer data_020e5a20, data_020e5ad0, data_020e59d0, data_020e5c20, data_020e59e8, data_020e5cf0,
+    data_020e59f0, data_020e59e0, data_020e5b18, data_020e5b20, data_020e5d80, data_020e5b10, data_020e5b08, data_020e5a08,
+    data_020e5cd0, data_020e5b40, data_020e5a88, data_020e5a10, data_020e5a40;
+
+/* The programs, 1 to 19 (SkyShow_LargeDelay20 to SkyShow_LargeMarkedThen16). */
+static const MemberPointer *const sky_show_program_constants[SKY_SHOW_PROGRAMS] = {
+    &__ptmf_null,   &data_020e5a20, &data_020e5ad0, &data_020e59d0, &data_020e5c20, &data_020e59e8, &data_020e5cf0,
+    &data_020e59f0, &data_020e59e0, &data_020e5b18, &data_020e5b20, &data_020e5d80, &data_020e5b10, &data_020e5b08,
+    &data_020e5a08, &data_020e5cd0, &data_020e5b40, &data_020e5a88, &data_020e5a10, &data_020e5a40,
+};
+
+/* func_020bce60: 1 when `place` may launch a large object: none of entries 46 to 58 is an
+ * object of the show launched from it, nor one whose bit 29 is clear. */
+int SkyShow_PlaceFreeForLarge(SkyObjects *objects, int place)
+{
+    for (int i = SKY_SHOW_FIRST_ENTRY; i < SKY_SHOW_LAST_ENTRY; i++) {
+        const SkyObject *object = &objects->entries[i];
+        if (object->kind != SKY_OBJECT_SHOW) {
+            continue;
+        }
+        u32 param = object->param;
+        if ((int) ((param & SKY_SHOW_PARAM_PLACE) >> 8) == place || (param & SKY_SHOW_PARAM_BIT29) == 0) {
+            return 0;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_020bce60, SkyShow_PlaceFreeForLarge)
+
+/* Whether the show runs now: while calendar event 0x13 is on, until 1:59 (`midnight` set at
+ * 0:00:00 exactly); else while the event of func_02041614 is 0xf: in scene 0x31 or in a
+ * session while calendar event 0xf is on, otherwise always; else in scene 0x2c while event 0xf
+ * is running. */
+static int sky_show_is_on(SkyObjects *objects, int *midnight)
+{
+    u32 event = func_02041614();
+    DateTime now = {0};
+    DateTime when;
+    DateTime_Now(&now);
+    MI_CpuCopy8(&now, &when, sizeof(DateTime));
+    if (EventCalendar_State(SKY_SHOW_EVENT, &when, 1) != EVENT_CALENDAR_OFF) {
+        int hour = objects->time.hour;
+        if (hour >= SKY_SHOW_UNTIL_HOUR) {
+            return 0;
+        }
+        *midnight = hour == 0 && objects->time.minute == 0 && objects->unk_2f1c == 0;
+        return 1;
+    }
+    if (event == SKY_SHOW_EVENT_F) {
+        if (SceneQuery_CurrentIs31() || Session_IsLinked(data_020ccf94)) {
+            MI_CpuCopy8(&now, &when, sizeof(DateTime));
+            return EventCalendar_State(SKY_SHOW_EVENT_F, &when, 0) != EVENT_CALENDAR_OFF;
+        }
+        return 1;
+    }
+    if (SceneQuery_Current() != SKY_SHOW_SCENE_2C) {
+        return 0;
+    }
+    MI_CpuCopy8(&now, &when, sizeof(DateTime));
+    return EventCalendar_State(SKY_SHOW_EVENT_F, &when, 1) == EVENT_CALENDAR_ON;
+}
+
+/* func_020bd3b4: a frame of the show. While it runs: without a program one is set (18 when it
+ * starts at midnight, else 14 or 16 at random) with its timer at 0; the timer counts down and
+ * the program's function runs (from the table of members data_021f6ed0, filled once). While it
+ * does not run, the program, its timers and the delay are cleared.
+ * REQUIRES: SkyObjects.program is 0 to 19. */
+void SkyShow_Run(SkyObjects *objects)
+{
+    int midnight = 0;
+    if (!sky_show_is_on(objects, &midnight)) {
+        objects->program = 0;
+        objects->program_timer = 0;
+        objects->countdown = 0;
+        for (int place = 0; place < SKY_SHOW_PLACES; place++) {
+            objects->launch_timers[place] = 0;
+        }
+        objects->launch_delay = 0;
+        return;
+    }
+    MemberTable_InitOnce(&data_021f6ccc, data_021f6ed0, sky_show_program_constants, SKY_SHOW_PROGRAMS);
+    if (objects->program == 0) {
+        int program = SKY_SHOW_MIDNIGHT_PROGRAM;
+        if (!midnight) {
+            program = func_020644cc(2) == 0 ? SKY_SHOW_FIRST_PROGRAM : SKY_SHOW_SECOND_FIRST_PROGRAM;
+        }
+        SkyShow_SetProgram(objects, program);
+        objects->program_timer = 0;
+    }
+    objects->program_timer--;
+    MemberPointer member = data_021f6ed0[objects->program];
+    MemberPointer_CallVoid(&member, objects);
+}
+CLEAN_AS(func_020bd3b4, SkyShow_Run)

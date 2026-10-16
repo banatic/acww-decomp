@@ -22,5 +22,8 @@ u8 VillagerSceneObject_Byte648(u8 *object);
 void VillagerSceneObject_SetByte648(u8 *object, u8 value);
 u32 VillagerSceneObject_Word644(u32 *object);
 void VillagerSceneObject_SetWord644(u32 *object, u32 value);
+int VillagerSceneObject_HasByte838(u8 *object);
+void VillagerSceneObject_ClearByte838(u8 *object);
+void VillagerSceneObject_SetByte838(u8 *object);
 
 #endif

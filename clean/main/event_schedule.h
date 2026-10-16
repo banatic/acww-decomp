@@ -80,5 +80,11 @@ void EventSchedule_Clear(EventSchedule *schedule);
 int EventSchedule_PickEvent(EventSchedule *unused, const u8 *previous);
 int EventSchedule_Holds(EventSchedule *unused, const u8 *events, u8 event);
 int EventSchedule_PickFreeDay(EventSchedule *unused, int *free_days, int free_count);
+int EventSchedule_CountFreeDays(EventSchedule *unused, int *free_days, DateTime *week);
+void EventSchedule_FinishStart(EventSchedule *schedule);
+void EventSchedule_Construct(EventSchedule *schedule);
+void EventSchedule_Reset(EventSchedule *schedule);
+void EventSchedule_Destruct(EventSchedule *schedule);
+void EventSchedule_ClearWeek(EventSchedule *schedule);
 
 #endif

@@ -12,6 +12,7 @@
 02015578 word accesses at misaligned addresses use the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)
 02015760 word accesses at misaligned addresses use the aligned word on ARM and the unaligned one on x86; the talk object at scene+0x40 is allocated word-aligned (aligning the pointer makes every case agree)
 0201c828 byte and halfword accesses through a misaligned mood pointer use the aligned address on ARM and the unaligned one on x86; the mood is a member of a villager scene object, which the game allocates word-aligned (aligning the pointer makes every case agree)
+0202db48 word accesses through a misaligned talk pointer use the aligned word on ARM and the unaligned one on x86; the talk object is allocated word-aligned (aligning the pointer makes every case agree)
 020360d0 word loads from misaligned addresses rotate the aligned word on ARM and read the unaligned one on x86; the owner is the music object at data_021c526c, allocated word-aligned (emulating the rotated load makes every case agree)
 02054548 shift 1 << (index - 32) for index 64 or more gives 0 on ARM and wraps on x86; index is the node ID byte of an NNS G3D render command (func_02054394), below the library's 64-node limit
 02054580 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; func_02054188 passes ranges 9-14 and those of data_020dd414 (9-17)
@@ -33,6 +34,7 @@
 020a238c index +0xa0 of 4 or more reads past the static table of four member-function pointers (the PC's copy is elsewhere and laid out otherwise); its handlers take +0xa0 from 0 to 3 and it puts 0 back after the last, and the states 4-6 that func_020a1e08 and func_020a1d54 set are func_020a2120's, which ends them at 0
 020a5bd0 accesses through a misaligned self use the aligned address on ARM and the unaligned one on x86; self is the link state at data_021f4320, which is word-aligned (aligning the pointer makes every case agree)
 020a5c00 accesses through a misaligned self use the aligned address on ARM and the unaligned one on x86; self is the link state at data_021f4320, which is word-aligned (aligning the pointer makes every case agree)
+020a7b34 word stores through a misaligned self write the aligned word on ARM and the unaligned one on x86; self is the text query object (the global at data_021f4548), which is word-aligned (aligning the pointer makes every case agree)
 020b1730 shift 1 << (bit - 32) for bit 64 or more gives 0 on ARM and wraps on x86; the only caller, func_020b15b8, passes bytes of data_020e42a0, which are 0-63 (0xff is skipped)
 020b1974 shift 1 << bit by 32 or more gives 0 on ARM and wraps on x86; bit is a slot of the 16 records of 0x4a bytes before the mask at 0x4a0, and every caller passes 0-15
 020b198c shift 1 << param1 by 32 or more gives 0 on ARM and wraps on x86; param1 is a slot of the 16 records before the mask at 0x4a0 (func_020b14c0)

@@ -357,3 +357,84 @@ int FieldBody_TouchedActor(FieldBody *body)
     return Actor_FindBySerial(body->touch_id);
 }
 CLEAN_AS(func_0208a020, FieldBody_TouchedActor)
+
+#include "autoload_2/approach.h" /* Math_AbsDiff16 */
+#include "autoload_2/fx_math.h"  /* Math_Atan2 */
+
+extern const u32 data_020e201c[]; /* FieldBody's vtable */
+
+/* func_0208a038: whether the body touched something this frame that lies ahead of `yaw`: the
+ * push it was given points within 45 degrees (0x2000) of straight behind. */
+int FieldBody_TouchedAhead(FieldBody *body, int yaw)
+{
+    if (body->touched == 0) {
+        return 0;
+    }
+    s16 push_angle = Math_Atan2(body->push.x, body->push.z);
+    return Math_AbsDiff16(push_angle, (s16) (yaw + 0x8000)) <= 0x2000;
+}
+CLEAN_AS(func_0208a038, FieldBody_TouchedAhead)
+
+/* func_0208a078: vtable slot 2 of the classes here: a touch does nothing. */
+void FieldBody_IgnoreTouch(void) {}
+CLEAN_AS(func_0208a078, FieldBody_IgnoreTouch)
+
+/* func_0208a07c: the base class's destructor. */
+void FieldBody_Destruct(FieldBody *body)
+{
+    body->vtable = data_020e201c;
+}
+CLEAN_AS(func_0208a07c, FieldBody_Destruct)
+
+/* func_0208a088: the base class's constructor: nothing entered, nothing touched. */
+FieldBody *FieldBody_Construct(FieldBody *body)
+{
+    body->vtable = data_020e201c;
+    FieldBody_Clear(body);
+    return body;
+}
+CLEAN_AS(func_0208a088, FieldBody_Construct)
+
+/* func_0208a0a0: the list of the bodies entered this frame emptied. */
+void FieldBody_EmptyList(void)
+{
+    data_021d3120 = NULL;
+}
+CLEAN_AS(func_0208a0a0, FieldBody_EmptyList)
+
+/* func_0208a0ac: the same, as the scene processes call it. */
+void FieldBody_Reset(void)
+{
+    FieldBody_EmptyList();
+}
+CLEAN_AS(func_0208a0ac, FieldBody_Reset)
+
+/* func_0208a0b4: vtable slot 0, the position: the body's own point. */
+const Vec3 *FieldOwnedPointBody_Position(FieldOwnedPointBody *body)
+{
+    return &body->point;
+}
+CLEAN_AS(func_0208a0b4, FieldOwnedPointBody_Position)
+
+/* func_0208a0b8: vtable slot 1, the identity: the owner's serial number (FieldOwnedBody_Identity).
+ * QUIRK: declared without a result; in the ROM the serial number is still in r0 when it
+ * returns, which is what the caller of the slot reads. */
+void FieldOwnedPointBody_Identity(FieldOwnedPointBody *body)
+{
+    (void) FieldOwnedBody_Identity(&body->base);
+}
+CLEAN_AS(func_0208a0b8, FieldOwnedPointBody_Identity)
+
+/* func_0208a0c0: vtable slot 0, the position: the body's own point. */
+const Vec3 *FieldPointBody_Position(FieldPointBody *body)
+{
+    return &body->point;
+}
+CLEAN_AS(func_0208a0c0, FieldPointBody_Position)
+
+/* func_0208a0c4: vtable slot 1, the identity: none, so it touches every body. */
+int FieldPointBody_Identity(void)
+{
+    return 0;
+}
+CLEAN_AS(func_0208a0c4, FieldPointBody_Identity)

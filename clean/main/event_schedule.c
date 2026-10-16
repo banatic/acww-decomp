@@ -4,6 +4,7 @@
 #include "calendar.h"
 #include "clean.h"
 #include "date_time.h"
+#include "event_announce.h"
 #include "event_calendar.h"
 #include "fox_shop.h"
 #include "player_records.h"
@@ -589,3 +590,105 @@ int EventSchedule_PickFreeDay(EventSchedule *unused, int *free_days, int free_co
     return -1;
 }
 CLEAN_AS(func_02041110, EventSchedule_PickFreeDay)
+
+/* func_02041140: the days Monday to Friday of the week from `week` (its Sunday, which is moved
+ * on to the Saturday) the calendar lists nothing for at noon: 1 in `free_days` for each free
+ * day, else 0; their count. */
+int EventSchedule_CountFreeDays(EventSchedule *unused, int *free_days, DateTime *week)
+{
+    (void) unused;
+    int count = 0;
+
+    DateTime_AddDays(week, 1);
+    for (int i = 0; i < EVENT_SCHEDULE_DAYS; i++) {
+        DateTime day;
+        EventCalendarEvent listed[EVENT_CALENDAR_DAY_EVENTS];
+        MI_CpuCopy8(week, &day, sizeof(day));
+        if (EventCalendar_ListAtNoon(listed, EVENT_CALENDAR_DAY_EVENTS, &day) <= 0) {
+            free_days[i] = 1;
+            count++;
+        } else {
+            free_days[i] = 0;
+        }
+        DateTime_AddDays(week, 1);
+    }
+    return count;
+}
+CLEAN_AS(func_02041140, EventSchedule_CountFreeDays)
+
+/* The date no_3c_from and no_fox_from hold when nothing is barred: 1 January 2000. */
+static void event_schedule_clear_bar(Date *from)
+{
+    from->day = 1;
+    from->month = 1;
+    from->year = 0;
+    from->unused = 0;
+}
+
+/* func_02041194: when the game is started: a bar on event 0x3c or the fox 7 or more days old
+ * lifted, the week drawn if it is a new one, the calendar's list of today's events made again
+ * and the announcements reset (event_announce.h). */
+void EventSchedule_FinishStart(EventSchedule *schedule)
+{
+    Date today;
+
+    Calendar_Today(&today);
+    if (Calendar_DaysFrom(&today, &schedule->no_3c_from) >= 7) {
+        event_schedule_clear_bar(&schedule->no_3c_from);
+    }
+    Calendar_Today(&today);
+    if (Calendar_DaysFrom(&today, &schedule->no_fox_from) >= 7) {
+        event_schedule_clear_bar(&schedule->no_fox_from);
+    }
+    EventSchedule_Update(schedule, 0);
+    EventCalendar_Refresh(1);
+    EventAnnounce_ResetAndCheck();
+}
+CLEAN_AS(func_02041194, EventSchedule_FinishStart)
+
+/* func_020411f4: the constructor: the schedule reset. */
+void EventSchedule_Construct(EventSchedule *schedule)
+{
+    EventSchedule_Reset(schedule);
+}
+CLEAN_AS(func_020411f4, EventSchedule_Construct)
+
+/* func_020411fc: a new town's schedule: today's date twice in the first bytes, nothing barred,
+ * the fox's day drawn (1-5), no event kept for the announcements, no week; then cleared and the
+ * week drawn. */
+void EventSchedule_Reset(EventSchedule *schedule)
+{
+    Date today;
+
+    Calendar_Today(&today);
+    schedule->unk_00[0] = today.day;
+    schedule->unk_00[1] = today.month;
+    schedule->unk_00[2] = today.year;
+    schedule->unk_00[3] = today.unused;
+    schedule->unk_00[4] = today.day;
+    schedule->unk_00[5] = today.month;
+    schedule->unk_00[6] = today.year;
+    schedule->unk_00[7] = today.unused;
+    event_schedule_clear_bar(&schedule->no_3c_from);
+    event_schedule_clear_bar(&schedule->no_fox_from);
+    schedule->fox_day = (u8) (func_020644cc(EVENT_SCHEDULE_DAYS) + 1);
+    schedule->unk_11 = EVENT_CALENDAR_NONE;
+    schedule->week = (DateTime){0};
+    EventSchedule_Clear(schedule);
+    EventSchedule_Update(schedule, 1);
+}
+CLEAN_AS(func_020411fc, EventSchedule_Reset)
+
+/* func_02041294: the destructor; nothing to undo. */
+void EventSchedule_Destruct(EventSchedule *schedule)
+{
+    (void) schedule;
+}
+CLEAN_AS(func_02041294, EventSchedule_Destruct)
+
+/* func_02041298 (from the state block's static initialiser): no week drawn. */
+void EventSchedule_ClearWeek(EventSchedule *schedule)
+{
+    schedule->week = (DateTime){0};
+}
+CLEAN_AS(func_02041298, EventSchedule_ClearWeek)
