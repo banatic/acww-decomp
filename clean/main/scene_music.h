@@ -44,5 +44,8 @@ void SceneMusic_Reset(SceneMusic *self);
 void SceneMusic_Execute(SceneMusic *self);
 void SceneMusic_Delete(SceneMusic *self);
 void SceneMusic_Create(SceneMusic *self);
+SceneMusic *SceneMusic_DestructDelete(SceneMusic *self);
+void SceneMusic_Destruct(SceneMusic *self);
+void SceneMusic_Construct(SceneMusic *self, Obj021c526c *owner);
 
 #endif

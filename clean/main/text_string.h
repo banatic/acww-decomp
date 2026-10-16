@@ -42,5 +42,6 @@ int TextString_FindEndFrom(u16 *text, int max, int unused, int start);
 int TextString_TrimmedLength(u16 *text, int max);
 int TextString_LineLength(u16 *text, int max, int newline_extra);
 int TextString_Width(u16 *text, int count);
+int TextString_CharWidth(int c);
 
 #endif

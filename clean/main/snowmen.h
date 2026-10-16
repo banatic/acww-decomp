@@ -54,4 +54,19 @@ void Snowmen_Melt(SnowmenRecord *records);
 int Snowmen_RemoveObject(int number);
 int Snowmen_FindObject(int *x, int *z, int number);
 
+int Snowmen_DestructRecords(SnowmenRecord *records);
+SnowmenRecord *Snowmen_ConstructRecords(SnowmenRecord *records);
+int Snowmen_RecordAge(SnowmenRecord *record);
+int Snowmen_RecordFace(SnowmenRecord *record);
+int Snowmen_RecordBody(SnowmenRecord *record);
+int Snowmen_RecordHead(SnowmenRecord *record);
+void Snowmen_Record(SnowmenRecord *record, u16 head_size, u16 body_size, int face);
+int Snowmen_IsRecorded(SnowmenRecord *record);
+void Snowmen_ClearRecord(SnowmenRecord *record);
+void Snowmen_DestructRecord(void *record);
+void Snowmen_ConstructRecord(void *record);
+SnowmenLooseBall *Snowmen_DestructLooseBalls(SnowmenLooseBall *balls);
+void Snowmen_DestructLooseBall(void *ball);
+void Snowmen_ConstructLooseBall(SnowmenLooseBall *ball);
+
 #endif

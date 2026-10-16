@@ -304,3 +304,14 @@ int TextString_Width(u16 *text, int count)
     return width;
 }
 CLEAN_AS(func_02051d08, TextString_Width)
+
+/* func_02051d30: the width of character `c` in pixels: 0 for the newline and the 0 that ends a
+ * text, else 10. */
+int TextString_CharWidth(int c)
+{
+    if (c == TEXT_STRING_NEWLINE || c == 0) {
+        return 0;
+    }
+    return 10;
+}
+CLEAN_AS(func_02051d30, TextString_CharWidth)

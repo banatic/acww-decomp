@@ -4,6 +4,7 @@
 #include "clean.h"
 #include "main/acre_map.h"
 #include "main/acre_tile.h"
+#include "main/calendar.h"
 #include "main/mail.h"
 #include "main/player_records.h"
 
@@ -349,3 +350,174 @@ int Snowmen_FindObject(int *x, int *z, int number)
     return 0;
 }
 CLEAN_AS(func_020b076c, Snowmen_FindObject)
+
+/* The record arrays' element functions and the C++ array helpers that run them. The element
+ * functions are handed to the game, so they go by their symbols. */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern void func_020b0a80(void *record); /* a record's destructor */
+extern void func_020b0a84(void *record); /* a record's constructor */
+extern void func_020b0aa4(void *ball);   /* a loose ball's destructor */
+/* The clock's date and time, a date moved back by days, and the days from one date to another. */
+extern void func_0209e474(DateTime *now);
+extern void func_0209e140(DateTime *when, int days);
+extern int func_0209dcdc(const Date *date, const Date *origin);
+extern fx32 FX_Div(fx32 numerator, fx32 denominator);
+extern fx32 FX_MulFunc(fx32 a, fx32 b);
+
+/* The snowmen's day starts at 6:00: before it, it is still the day before. */
+#define SNOWMEN_DAY_START_HOUR 6
+/* One in 20.12 fixed point: a snowman's sizes are kept in steps of 0x80 of it. */
+#define SNOWMEN_FX_ONE 0x1000
+#define SNOWMEN_SIZE_STEP 0x80
+
+/* Today's date and time for the snowmen, the day starting at 6:00. */
+static void snowmen_today(DateTime *now)
+{
+    *now = (DateTime){0};
+    func_0209e474(now);
+    if (now->hour < SNOWMEN_DAY_START_HOUR) {
+        func_0209e140(now, 1);
+    }
+}
+
+/* A recorded size as fx32, the empty size counting as one, shrunk by the snowman's age: whole
+ * on the day it was built, three quarters the day after, half the day after that. */
+static fx32 snowmen_melted_size(u32 steps, u8 age)
+{
+    fx32 size = (fx32) (steps * SNOWMEN_SIZE_STEP);
+    if (size == 0) {
+        size = SNOWMEN_FX_ONE;
+    }
+    fx32 scale = SNOWMEN_FX_ONE;
+    if (age == 1) {
+        scale = FX_Div(3 * SNOWMEN_FX_ONE, 4 * SNOWMEN_FX_ONE);
+    } else if (age == 2) {
+        scale = FX_Div(SNOWMEN_FX_ONE, 2 * SNOWMEN_FX_ONE);
+    }
+    if (scale > SNOWMEN_FX_ONE) {
+        scale = SNOWMEN_FX_ONE;
+    }
+    return FX_MulFunc(size, scale);
+}
+
+/* func_020b081c: the destructor of the three records (registered for data_021f3b56); returns
+ * them. */
+int Snowmen_DestructRecords(SnowmenRecord *records)
+{
+    __cxa_vec_cleanup(records, SNOWMEN_COUNT, sizeof(SnowmenRecord), func_020b0a80);
+    return (int) (uintptr_t) records;
+}
+CLEAN_AS(func_020b081c, Snowmen_DestructRecords)
+
+/* func_020b0838: the constructor of the three records. */
+SnowmenRecord *Snowmen_ConstructRecords(SnowmenRecord *records)
+{
+    __cxa_vec_ctor(records, SNOWMEN_COUNT, sizeof(SnowmenRecord), func_020b0a84, func_020b0a80);
+    return records;
+}
+CLEAN_AS(func_020b0838, Snowmen_ConstructRecords)
+
+/* func_020b0860: the days from the day the snowman was built to today (negative when built on a
+ * later day). */
+int Snowmen_RecordAge(SnowmenRecord *record)
+{
+    DateTime now;
+    snowmen_today(&now);
+    Date today = {now.day, now.month, now.year, 0};
+    Date built = {(u8) SNOWMEN_DAY(record->built), (u8) SNOWMEN_MONTH(record->built), (u8) SNOWMEN_YEAR(record->built), 0};
+    return func_0209dcdc(&today, &built);
+}
+CLEAN_AS(func_020b0860, Snowmen_RecordAge)
+
+/* func_020b08b8 */
+int Snowmen_RecordFace(SnowmenRecord *record)
+{
+    return (int) SNOWMEN_FACE(record->sizes);
+}
+CLEAN_AS(func_020b08b8, Snowmen_RecordFace)
+
+/* func_020b08c0: the body's size in fx32, melted by the snowman's age. */
+int Snowmen_RecordBody(SnowmenRecord *record)
+{
+    return snowmen_melted_size(SNOWMEN_BODY(record->sizes), record->age);
+}
+CLEAN_AS(func_020b08c0, Snowmen_RecordBody)
+
+/* func_020b0918: the head's size in fx32, melted by the snowman's age. */
+int Snowmen_RecordHead(SnowmenRecord *record)
+{
+    return snowmen_melted_size(SNOWMEN_HEAD(record->sizes), record->age);
+}
+CLEAN_AS(func_020b0918, Snowmen_RecordHead)
+
+/* func_020b0970: records a snowman built today with sizes in fx32 (kept in steps of 0x80) and
+ * its face; not aged, standing on the map. */
+void Snowmen_Record(SnowmenRecord *record, u16 head_size, u16 body_size, int face)
+{
+    record->sizes = (u16) (((head_size / SNOWMEN_SIZE_STEP) & 0x7fu) | (((body_size / SNOWMEN_SIZE_STEP) & 0x7fu) << 7) |
+                           (((u32) face & 3u) << 14));
+    record->age = 0;
+    DateTime now;
+    snowmen_today(&now);
+    record->built = (u16) ((now.year & 0x7fu) | ((now.month & 0xfu) << 7) | ((now.day & 0x1fu) << 11));
+    record->on_map = 1;
+}
+CLEAN_AS(func_020b0970, Snowmen_Record)
+
+/* func_020b0a20: whether the record holds a snowman (both sizes nonzero). */
+int Snowmen_IsRecorded(SnowmenRecord *record)
+{
+    return SNOWMEN_HEAD(record->sizes) != 0 && SNOWMEN_BODY(record->sizes) != 0;
+}
+CLEAN_AS(func_020b0a20, Snowmen_IsRecorded)
+
+/* func_020b0a3c: the record emptied.
+ * QUIRK: the age stays. */
+void Snowmen_ClearRecord(SnowmenRecord *record)
+{
+    record->built = 0;
+    record->sizes = 0;
+    record->on_map = 0;
+}
+CLEAN_AS(func_020b0a3c, Snowmen_ClearRecord)
+
+/* func_020b0a80: a record's destructor, which does nothing. */
+void Snowmen_DestructRecord(void *record)
+{
+    (void) record;
+}
+CLEAN_AS(func_020b0a80, Snowmen_DestructRecord)
+
+/* func_020b0a84: a record's constructor, which does nothing. */
+void Snowmen_ConstructRecord(void *record)
+{
+    (void) record;
+}
+CLEAN_AS(func_020b0a84, Snowmen_ConstructRecord)
+
+/* func_020b0a88: the destructor of the two loose balls (registered for data_021f4ae8); returns
+ * them. */
+SnowmenLooseBall *Snowmen_DestructLooseBalls(SnowmenLooseBall *balls)
+{
+    __cxa_vec_cleanup(balls, SNOWMEN_LOOSE_BALLS, sizeof(SnowmenLooseBall), func_020b0aa4);
+    return balls;
+}
+CLEAN_AS(func_020b0a88, Snowmen_DestructLooseBalls)
+
+/* func_020b0aa4: a loose ball's destructor, which does nothing. */
+void Snowmen_DestructLooseBall(void *ball)
+{
+    (void) ball;
+}
+CLEAN_AS(func_020b0aa4, Snowmen_DestructLooseBall)
+
+/* func_020b0aa8: a loose ball's constructor: at the origin, of the starting size. */
+void Snowmen_ConstructLooseBall(SnowmenLooseBall *ball)
+{
+    ball->position.x = 0;
+    ball->position.y = 0;
+    ball->position.z = 0;
+    ball->size = SNOWMEN_BALL_SIZE;
+}
+CLEAN_AS(func_020b0aa8, Snowmen_ConstructLooseBall)

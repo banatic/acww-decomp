@@ -244,3 +244,42 @@ void SceneMusic_Create(SceneMusic *self)
     self->keep_music = 0;
 }
 CLEAN_AS(func_02036830, SceneMusic_Create)
+
+/* ---- Its destructors and constructor */
+
+#include "autoload_2/heap.h"
+
+/* Its vtable. */
+extern const u32 data_020da2f4[];
+
+/* func_0203684c: the destructor that also frees it (vtable slot 1). */
+SceneMusic *SceneMusic_DestructDelete(SceneMusic *self)
+{
+    self->vtable = data_020da2f4;
+    Heap_OperatorDeleteB(self);
+    return self;
+}
+CLEAN_AS(func_0203684c, SceneMusic_DestructDelete)
+
+/* func_02036864: its destructor (vtable slot 0). */
+void SceneMusic_Destruct(SceneMusic *self)
+{
+    self->vtable = data_020da2f4;
+}
+CLEAN_AS(func_02036864, SceneMusic_Destruct)
+
+/* func_02036870: its constructor: the owner kept, no scene, no music, no mark (the byte 0x09
+ * is left). */
+void SceneMusic_Construct(SceneMusic *self, Obj021c526c *owner)
+{
+    self->vtable = data_020da2f4;
+    self->owner = owner;
+    self->scene = SCENE_MUSIC_NO_SCENE;
+    self->music = MUSIC_NONE;
+    self->late_value_added = 0;
+    self->late_music_added = 0;
+    self->late_music_forced = 0;
+    self->active = 0;
+    self->keep_music = 0;
+}
+CLEAN_AS(func_02036870, SceneMusic_Construct)
