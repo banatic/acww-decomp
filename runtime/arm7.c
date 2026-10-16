@@ -28,8 +28,9 @@
 #define SHARED_FIFO_READY_ARM7 0x027fff8cu /* PXI_IsCallbackReady(tag, PXI_PROC_ARM7) */
 #define SHARED_LOCK_INIT 0x027ffff0u       /* OSLockWord: flag, u16 owner, u16 extension */
 #define SHARED_ARM7_VRAM_LOCK 0x027fffb8u  /* written by the ARM7's OS_InitLock */
-#define SHARED_RTC_TIME 0x027ffde8u
-#define SHARED_RTC_DATE 0x027ffdecu
+/* RTCRawData (NitroSDK): the date first, then the time */
+#define SHARED_RTC_DATE 0x027ffde8u
+#define SHARED_RTC_TIME 0x027ffdecu
 #define SHARED_TOUCH 0x027fffaau
 #define SHARED_BUTTON_XY 0x027fffa8u
 
