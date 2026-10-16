@@ -27,3 +27,64 @@ Process *Process020daae4_DestructFree(Process *process)
     return process;
 }
 CLEAN_AS(func_0203de9c, Process020daae4_DestructFree)
+
+/* ---- Its execute and draw (vtable slots 6, 8 and 9) ---- */
+
+#include "event_queue.h"
+#include "itcm/process_phases.h"
+
+/* The events waiting (event_queue.h). */
+extern List data_021c72c4;
+/* The scene's process, or NULL. */
+extern Process *data_021f42f4;
+
+/* Whether there is a current event. */
+extern int func_0203ec98(void);
+/* Every event of the list taken out and freed. */
+extern void func_0203f568(List *list);
+extern void func_020a6d24(void);
+extern void func_020a6ce4(void);
+/* A function of the scene's process (it reads the game-stop latch, game_stop.h). */
+extern void func_020a529c(Process *scene);
+
+/* func_0203e514 (slot 6): the current event stepped (running, then ending); without one, the
+ * next queued one taken; a current one stepped while starting; then every event still queued
+ * is dropped. Done at once (1).
+ * QUIRK: an event asked for and not taken in the frame it was asked for is freed. */
+int Process020daae4_Execute(Process *process)
+{
+    if (func_0203ec98()) {
+        EventQueue_StepRunning(process);
+        EventQueue_StepEnding(process);
+    }
+    if (!func_0203ec98()) {
+        EventQueue_TakeNext(process);
+    }
+    if (func_0203ec98()) {
+        EventQueue_StepStarting(process);
+    }
+    func_0203f568(&data_021c72c4);
+    return 1;
+}
+CLEAN_AS(func_0203e514, Process020daae4_Execute)
+
+/* func_0203e4e0 (slot 8): func_020a6d24, func_020a6ce4, the scene's process given to
+ * func_020a529c when there is one, then the base class's after-execute. */
+void Process020daae4_AfterExecute(Process *process, int outcome)
+{
+    (void) outcome;
+    func_020a6d24();
+    func_020a6ce4();
+    if (data_021f42f4 != NULL) {
+        func_020a529c(data_021f42f4);
+    }
+    Process_AfterExecute(process);
+}
+CLEAN_AS(func_0203e4e0, Process020daae4_AfterExecute)
+
+/* func_0203e510 (slot 9): nothing to draw; done at once. */
+int Process020daae4_Draw(void)
+{
+    return 1;
+}
+CLEAN_AS(func_0203e510, Process020daae4_Draw)

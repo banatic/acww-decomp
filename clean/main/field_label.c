@@ -8,6 +8,14 @@
 #include "main/camera_view.h"
 #include "main/message_reader.h"
 
+#include <string.h>
+
+#include "autoload_2/heap.h"
+#include "main/caution_window.h"
+#include "main/field_label_window.h"
+#include "main/overlay_groups.h"
+#include "main/scene_query.h"
+
 static_assert(offsetof(FieldLabel, item) == 0xf4, "FieldLabel");
 static_assert(offsetof(FieldLabel, notice_renewed) == 0x10d, "FieldLabel");
 
@@ -333,3 +341,313 @@ void FieldLabel_PlaceOverPlayer(FieldLabel *label)
     }
 }
 CLEAN_AS(func_020b8a5c, FieldLabel_PlaceOverPlayer)
+
+/* The field's label, the vtable of its class and the messages chosen by index
+ * (FieldLabel_ShowTableMessage). */
+extern FieldLabel data_021f6b20;
+extern const u32 data_020e5848[];
+extern const int data_020d2288[];
+
+/* Player `player`'s session state is `state` (func_020960f8), and the item under player 4. */
+extern int func_020960f8(int state, int player);
+extern const u16 *func_020953e4(void);
+extern u8 data_020e54a8; /* 0 outdoors, 1 in a room */
+/* The window's byte at 0x5c set. */
+extern void func_0208aa40(FieldLabelWindow *window);
+/* Conditions FieldLabel_ChooseMessage tests, and talk 0 (whose second word is its state). */
+extern int func_0203dff0(void);
+extern int func_0203e21c(void);
+extern int func_0203e190(void);
+extern int func_0206f53c(void);
+typedef struct FieldLabelTalk {
+    u32 unk_00;
+    s32 state;
+} FieldLabelTalk;
+extern FieldLabelTalk *func_020682e0(int index);
+
+/* The kind of an item (the code's top four bits). */
+#define FIELD_LABEL_ITEM_KIND(code) (((code) & 0xf000) >> 12)
+/* The session state player 4 must be in for its item to show. */
+#define FIELD_LABEL_PLAYER 4
+#define FIELD_LABEL_PLAYER_STATE 2
+/* The messages FieldLabel_ShowMessage9 and 10 start; 10 is not replaced by
+ * FieldLabel_ChooseMessage. */
+#define FIELD_LABEL_MESSAGE_9 9
+#define FIELD_LABEL_MESSAGE_10 10
+/* FieldLabel_ChooseMessage's own messages, and the size of the table it reads by index. */
+#define FIELD_LABEL_MESSAGE_1 1
+#define FIELD_LABEL_MESSAGE_2 2
+#define FIELD_LABEL_TABLE_MESSAGES 4
+
+/* The window's vtable slots called here. */
+#define FIELD_LABEL_WINDOW_SLOT_DRAW 2
+#define FIELD_LABEL_WINDOW_SLOT_UPDATE 3
+
+typedef void FieldLabelWindowMethod(FieldLabelWindow *window);
+
+static FieldLabelWindow *label_window(FieldLabel *label)
+{
+    return (FieldLabelWindow *) (void *) label->window;
+}
+
+static void call_window(FieldLabel *label, int slot)
+{
+    FieldLabelWindow *window = label_window(label);
+
+    ((FieldLabelWindowMethod *) (uintptr_t) window->vtable[slot])(window);
+}
+
+/* The object's first word: its vtable. */
+static void set_vtable(FieldLabel *label)
+{
+    u32 vtable = (u32) (uintptr_t) data_020e5848;
+
+    memcpy(label->unk_00, &vtable, sizeof vtable);
+}
+
+/* Scenes 12-14, 46 and 47 show no notice and no chosen message. */
+static int scene_without_label(void)
+{
+    u8 scene = SceneQuery_Current();
+
+    return (scene >= 12 && scene <= 14) || scene == 46 || scene == 47;
+}
+
+/* func_020b8af0: the item whose name shows this frame: the one under player 4 while that player
+ * is in session state 2 and the item is of a kind shown there (outdoors kinds 1, 3 and 4, in a
+ * room only kind 1). The item code shown the frame before goes to `previous_item` (NO_ITEM
+ * when there was none). */
+void FieldLabel_PickItem(FieldLabel *label)
+{
+    const u16 *item = NULL;
+
+    if (func_020960f8(FIELD_LABEL_PLAYER_STATE, FIELD_LABEL_PLAYER) != 0) {
+        item = func_020953e4();
+    }
+    if (item != NULL) {
+        int kind = FIELD_LABEL_ITEM_KIND(*item);
+        int shown = data_020e54a8 == 0 ? kind == 1 || kind == 3 || kind == 4 : kind == 1;
+        if (!shown) {
+            item = NULL;
+        }
+    }
+    label->previous_item = label->item != NULL ? *label->item : FIELD_LABEL_NO_ITEM;
+    label->item = item;
+}
+CLEAN_AS(func_020b8af0, FieldLabel_PickItem)
+
+/* func_020b8b74: the window drawn (its vtable slot 2). */
+void FieldLabel_Draw(FieldLabel *label)
+{
+    call_window(label, FIELD_LABEL_WINDOW_SLOT_DRAW);
+}
+CLEAN_AS(func_020b8b74, FieldLabel_Draw)
+
+/* func_020b8b88: one frame: the item picked, the state's handler run, the notice's renewal
+ * forgotten, and the window updated (its vtable slot 3).
+ * REQUIRES: `state` is a FieldLabelState (the original calls through a table of four). */
+void FieldLabel_Update(FieldLabel *label)
+{
+    FieldLabel_PickItem(label);
+    switch (label->state) {
+        case FIELD_LABEL_CLOSED:
+            FieldLabel_UpdateClosed(label);
+            break;
+        case FIELD_LABEL_ITEM:
+            FieldLabel_UpdateItem(label);
+            break;
+        case FIELD_LABEL_NOTICE:
+            FieldLabel_UpdateNotice(label);
+            break;
+        case FIELD_LABEL_MESSAGE:
+            FieldLabel_UpdateMessage(label);
+            break;
+    }
+    label->notice_renewed = 0;
+    call_window(label, FIELD_LABEL_WINDOW_SLOT_UPDATE);
+}
+CLEAN_AS(func_020b8b88, FieldLabel_Update)
+
+/* func_020b8c24 */
+void FieldLabel_ResetWindow(FieldLabel *label)
+{
+    FieldLabelWindow_Reset(label_window(label));
+}
+CLEAN_AS(func_020b8c24, FieldLabel_ResetWindow)
+
+/* func_020b8c30: closed, with nothing to show; the window's byte at 0x5c set
+ * (func_0208aa40). */
+void FieldLabel_Reset(FieldLabel *label)
+{
+    label->state = FIELD_LABEL_CLOSED;
+    func_0208aa40(label_window(label));
+    label->item = NULL;
+    label->previous_item = FIELD_LABEL_NO_ITEM;
+    label->message = 0;
+    label->notice = 0;
+    label->alternate = 0;
+    label->timer = 0;
+    label->message_started = 0;
+    label->notice_renewed = 0;
+}
+CLEAN_AS(func_020b8c30, FieldLabel_Reset)
+
+/* func_020b8c88 */
+void FieldLabel_DrawGlobal(void)
+{
+    FieldLabel_Draw(&data_021f6b20);
+}
+CLEAN_AS(func_020b8c88, FieldLabel_DrawGlobal)
+
+/* func_020b8c98 */
+void FieldLabel_UpdateGlobal(void)
+{
+    FieldLabel_Update(&data_021f6b20);
+}
+CLEAN_AS(func_020b8c98, FieldLabel_UpdateGlobal)
+
+/* func_020b8ca8 */
+void FieldLabel_ResetGlobalWindow(void)
+{
+    FieldLabel_ResetWindow(&data_021f6b20);
+}
+CLEAN_AS(func_020b8ca8, FieldLabel_ResetGlobalWindow)
+
+/* func_020b8cb8 */
+void FieldLabel_ResetGlobal(void)
+{
+    FieldLabel_Reset(&data_021f6b20);
+}
+CLEAN_AS(func_020b8cb8, FieldLabel_ResetGlobal)
+
+/* func_020b8cc8 (vtable slot 1): destroyed and freed. */
+FieldLabel *FieldLabel_Delete(FieldLabel *label)
+{
+    set_vtable(label);
+    FieldLabelWindow_Destroy(label_window(label));
+    Heap_OperatorDeleteB(label);
+    return label;
+}
+CLEAN_AS(func_020b8cc8, FieldLabel_Delete)
+
+/* func_020b8cec (vtable slot 0): the destructor. */
+FieldLabel *FieldLabel_Destroy(FieldLabel *label)
+{
+    set_vtable(label);
+    FieldLabelWindow_Destroy(label_window(label));
+    return label;
+}
+CLEAN_AS(func_020b8cec, FieldLabel_Destroy)
+
+/* func_020b8d08: the constructor (the field's label is built at start-up). */
+FieldLabel *FieldLabel_Construct(FieldLabel *label)
+{
+    set_vtable(label);
+    label->state = FIELD_LABEL_CLOSED;
+    FieldLabelWindow_Construct(label_window(label));
+    label->item = NULL;
+    label->previous_item = FIELD_LABEL_NO_ITEM;
+    label->message = 0;
+    label->notice = 0;
+    label->alternate = 0;
+    label->timer = 0;
+    label->message_started = 0;
+    label->notice_renewed = 0;
+    return label;
+}
+CLEAN_AS(func_020b8d08, FieldLabel_Construct)
+
+/* func_020b8d6c: called when the network library could not end; raises the session's error
+ * flag for it (CautionWindow_RaiseEndFailure). */
+void FieldLabel_RaiseEndFailure(void)
+{
+    CautionWindow_RaiseEndFailure();
+}
+CLEAN_AS(func_020b8d6c, FieldLabel_RaiseEndFailure)
+
+/* func_020b8d74: notice `notice` shown in the field's label (renewed for 60 frames), except in
+ * scenes 12-14, 46 and 47. */
+void FieldLabel_ShowNotice(int notice)
+{
+    if (!scene_without_label()) {
+        data_021f6b20.notice = (u32) notice;
+        FieldLabel_RenewNotice(&data_021f6b20);
+    }
+}
+CLEAN_AS(func_020b8d74, FieldLabel_ShowNotice)
+
+/* func_020b8db4: the field's label's message cleared (its timer is left). */
+void FieldLabel_ClearMessage(void)
+{
+    data_021f6b20.message = 0;
+}
+CLEAN_AS(func_020b8db4, FieldLabel_ClearMessage)
+
+/* func_020b8dc0 */
+void FieldLabel_ShowMessage10(void)
+{
+    data_021f6b20.message = FIELD_LABEL_MESSAGE_10;
+    FieldLabel_StartMessage(&data_021f6b20);
+}
+CLEAN_AS(func_020b8dc0, FieldLabel_ShowMessage10)
+
+/* func_020b8dd8 */
+void FieldLabel_ShowMessage9(void)
+{
+    data_021f6b20.message = FIELD_LABEL_MESSAGE_9;
+    FieldLabel_StartMessage(&data_021f6b20);
+}
+CLEAN_AS(func_020b8dd8, FieldLabel_ShowMessage9)
+
+/* func_020b8df0: message `index` of data_020d2288 (5 to 8 for indexes 0 to 3) started in the
+ * field's label. */
+void FieldLabel_ShowTableMessage(int index)
+{
+    data_021f6b20.message = (u32) data_020d2288[index];
+    FieldLabel_StartMessage(&data_021f6b20);
+}
+CLEAN_AS(func_020b8df0, FieldLabel_ShowTableMessage)
+
+/* func_020b8e10: the field's label's message chosen from the game's state, unless message 10
+ * is set; a message other than none is started. Outside scenes 12-14, 46 and 47:
+ * - when func_0203dff0, func_0203e21c or func_0203e190 holds: with an overlay group owner,
+ *   message `index` of data_020d2288 when func_0206f53c holds (none for an index of 4 or more),
+ *   else message 1; without one, message 2 while talk 0 is open;
+ * - else message `index` of data_020d2288 with an owner and func_0206f53c holding (none for an
+ *   index of 4 or more). */
+void FieldLabel_ChooseMessage(int index)
+{
+    u32 message = 0;
+
+    if (!scene_without_label()) {
+        BOOL busy = func_0203dff0() != 0 || func_0203e21c() != 0 || func_0203e190() != 0;
+        BOOL from_table = FALSE;
+
+        if (busy) {
+            FieldLabelTalk *talk = func_020682e0(0);
+            BOOL talking = talk != NULL && talk->state != 0;
+
+            if (OverlayGroups_HasOwner()) {
+                if (func_0206f53c() != 0) {
+                    from_table = TRUE;
+                } else {
+                    message = FIELD_LABEL_MESSAGE_1;
+                }
+            } else if (talking) {
+                message = FIELD_LABEL_MESSAGE_2;
+            }
+        } else if (OverlayGroups_HasOwner() && func_0206f53c() != 0) {
+            from_table = TRUE;
+        }
+        if (from_table && index < FIELD_LABEL_TABLE_MESSAGES) {
+            message = (u32) data_020d2288[index];
+        }
+    }
+    if (data_021f6b20.message != FIELD_LABEL_MESSAGE_10) {
+        data_021f6b20.message = message;
+        if (message != 0) {
+            FieldLabel_StartMessage(&data_021f6b20);
+        }
+    }
+}
+CLEAN_AS(func_020b8e10, FieldLabel_ChooseMessage)

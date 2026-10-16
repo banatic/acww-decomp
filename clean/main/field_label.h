@@ -61,4 +61,26 @@ void FieldLabel_PlaceForMessage(FieldLabel *label);
 void FieldLabel_PlaceForNotice(FieldLabel *label);
 void FieldLabel_PlaceOverPlayer(FieldLabel *label);
 
+/* The object (field_label_window.h for its window), its frame, the field's label
+ * (data_021f6b20) and what the rest of the game shows in it. */
+void FieldLabel_PickItem(FieldLabel *label);
+void FieldLabel_Draw(FieldLabel *label);
+void FieldLabel_Update(FieldLabel *label);
+void FieldLabel_ResetWindow(FieldLabel *label);
+void FieldLabel_Reset(FieldLabel *label);
+void FieldLabel_DrawGlobal(void);
+void FieldLabel_UpdateGlobal(void);
+void FieldLabel_ResetGlobalWindow(void);
+void FieldLabel_ResetGlobal(void);
+FieldLabel *FieldLabel_Delete(FieldLabel *label);
+FieldLabel *FieldLabel_Destroy(FieldLabel *label);
+FieldLabel *FieldLabel_Construct(FieldLabel *label);
+void FieldLabel_RaiseEndFailure(void);
+void FieldLabel_ShowNotice(int notice);
+void FieldLabel_ClearMessage(void);
+void FieldLabel_ShowMessage10(void);
+void FieldLabel_ShowMessage9(void);
+void FieldLabel_ShowTableMessage(int index);
+void FieldLabel_ChooseMessage(int index);
+
 #endif

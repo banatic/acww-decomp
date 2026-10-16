@@ -8,4 +8,10 @@
 Process *Process020daae4_Destruct(Process *process);
 Process *Process020daae4_DestructFree(Process *process);
 
+/* Its vtable's own execute (slot 6), after-execute (slot 8) and draw (slot 9): it runs main's
+ * queue of events (event_queue.h). */
+int Process020daae4_Execute(Process *process);
+void Process020daae4_AfterExecute(Process *process, int outcome);
+int Process020daae4_Draw(void);
+
 #endif

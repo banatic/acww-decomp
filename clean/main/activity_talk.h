@@ -32,4 +32,14 @@ int ActivityTalk_Show(Activity *activity, const char *name, char message);
 void ActivityReceiver_OnAnswer(void);
 void ActivityReceiver_OnMessage(ActivityReceiver *receiver);
 
+/* The receiver's life, and talk 0 as the activity's jobs drive it. */
+void ActivityReceiver_SetOwner(ActivityReceiver *receiver, Activity *owner);
+ActivityReceiver *ActivityReceiver_DestructFree(ActivityReceiver *receiver);
+ActivityReceiver *ActivityReceiver_Destruct(ActivityReceiver *receiver);
+ActivityReceiver *ActivityReceiver_Construct(ActivityReceiver *receiver);
+int ActivityTalk_FinishWaiting(Activity *activity, int value);
+void ActivityTalk_Close(Activity *activity);
+void ActivityTalk_QueueMessage11(Activity *activity);
+void ActivityTalk_QueueMessage10(Activity *activity);
+
 #endif

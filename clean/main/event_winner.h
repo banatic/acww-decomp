@@ -49,4 +49,28 @@ void EventWinner_GetItem(u16 *item, const EventWinner *record);
 void EventWinner_SetItem(EventWinner *record, const u16 *item);
 NpcId *EventWinner_Npc2E(EventWinner *record);
 
+/* The record's kind, kept in the last byte of its date (date.unused, 0x47): the event it is of.
+ * It picks the letters' archive (data_020e1fcc: "ev_fishing", "ev_insect", "ev_gardening"), the
+ * notice's archive (data_020e1fbc: "bbs_fishing", ...) and the prize. */
+enum EventWinnerKind {
+    EVENT_WINNER_KIND_NONE = 0,
+    EVENT_WINNER_KIND_FISHING = 1,
+    EVENT_WINNER_KIND_INSECTS = 2,
+    EVENT_WINNER_KIND_GARDENS = 3
+};
+
+void EventWinner_SetNpc2E(EventWinner *record, const NpcId *npc);
+void EventWinner_ClearNpc2E(EventWinner *record);
+NpcId *EventWinner_Villager(EventWinner *record);
+void EventWinner_SetVillager(EventWinner *record, const NpcId *villager);
+DesignCreator *EventWinner_Player(EventWinner *record);
+void EventWinner_SetPlayer(EventWinner *record, const DesignCreator *player);
+void EventWinner_SetKind(EventWinner *record, u8 kind);
+void EventWinner_Restart(EventWinner *record);
+void EventWinner_Reset(EventWinner *record);
+EventWinner *EventWinner_Destruct(EventWinner *record);
+EventWinner *EventWinner_Construct(EventWinner *record);
+void EventWinner_SendLetters(EventWinner *record);
+void EventWinner_PostNotice(EventWinner *record);
+
 #endif
