@@ -82,6 +82,17 @@ def main() -> None:
             line = text.count("\n", 0, m.start()) + 1
             errors.append(f"{rel}:{line}: Hangul text; the repository is English-only")
 
+    # Clean code is linked in one program that lets a name be defined twice (the Native objects
+    # need that), so a second Clean function of the same name would silently replace the first.
+    definition = re.compile(r"^(?!static\b)[A-Za-z_][\w \*]*?\b([A-Za-z_]\w*)\([^;{]*\)\n\{", re.M)
+    defined: dict[str, str] = {}
+    for p in sorted((C.ROOT / "clean").rglob("*.c")):
+        rel = p.relative_to(C.ROOT).as_posix()
+        for m in definition.finditer(p.read_text(encoding="utf-8", errors="replace")):
+            if m.group(1) in defined and defined[m.group(1)] != rel:
+                errors.append(f"{rel}: {m.group(1)} is also defined in {defined[m.group(1)]}")
+            defined.setdefault(m.group(1), rel)
+
     for e in errors[:50]:
         print(e)
     if len(errors) > 50:
