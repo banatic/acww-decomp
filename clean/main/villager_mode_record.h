@@ -38,5 +38,21 @@ u32 VillagerModeRecord_Group(VillagerModeRecord *record);
 u32 VillagerModeRecord_GroupOfMode(u32 mode);
 void VillagerModeRecord_SetMode(VillagerModeRecord *record, int mode);
 int VillagerModeRecord_Mode(VillagerModeRecord *record);
+void VillagerModeRecord_Redraw(VillagerModeRecord *record, const u8 *scores, int halve);
+unsigned int VillagerModeRecord_IsInUse(VillagerModeRecord *record);
+int VillagerModeRecord_IsKind(VillagerModeRecord *record);
+int VillagerModeRecord_IsKindMode(unsigned int mode);
+void VillagerModeRecord_Init(VillagerModeRecord *record);
+VillagerModeRecord *VillagerModeRecord_Destruct(VillagerModeRecord *record);
+VillagerModeRecord *VillagerModeRecord_Construct(VillagerModeRecord *record);
+int VillagerModeRecord_KindByte(unsigned char *bytes, unsigned char kind);
+void VillagerModeRecord_SetKindByte(char *bytes, int kind, char value);
+void VillagerModeRecord_RaiseScore(unsigned char *scores, int kind, int delta);
+void VillagerModeRecord_HalveScores(void *scores, unsigned char kind);
+int VillagerModeRecord_DrawTopKind(const unsigned char *scores);
+void VillagerModeRecord_CopyKindBytes(unsigned char *to, const unsigned char *from);
+void VillagerModeRecord_ClearKindBytes(void *bytes);
+void VillagerModeRecord_DestructKindBytes(void *bytes);
+int VillagerModeRecord_ConstructKindBytes(unsigned char *bytes);
 
 #endif

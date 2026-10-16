@@ -536,3 +536,108 @@ void LayeredModel_ClearNodeA(LayeredModel *model, u32 node)
     mask_clear(model->nodes_a, node);
 }
 CLEAN_AS(func_02054a34, LayeredModel_ClearNodeA)
+
+/* func_02054a64: `node` into layer A. */
+void LayeredModel_SetNodeA(LayeredModel *model, u32 node)
+{
+    mask_set(model->nodes_a, node);
+}
+CLEAN_AS(func_02054a64, LayeredModel_SetNodeA)
+
+/* func_02054a94: called before a node is put in a layer; does nothing. */
+void LayeredModel_BeforeAddNode(LayeredModel *model, u32 node)
+{
+    (void) model;
+    (void) node;
+}
+CLEAN_AS(func_02054a94, LayeredModel_BeforeAddNode)
+
+/* func_02054a98: called before a node is taken out of layer A; does nothing. */
+void LayeredModel_BeforeRemoveNode(LayeredModel *model, u32 node)
+{
+    (void) model;
+    (void) node;
+}
+CLEAN_AS(func_02054a98, LayeredModel_BeforeRemoveNode)
+
+/* The vtables of the class with layer A: its own and those of its frame control and Ramp
+ * parts (at 0x9c and 0xb8). */
+extern const u8 data_020dd0ac[];
+extern const u8 data_020dd0bc[];
+extern const u8 data_020dd0cc[];
+
+/* The base model object's destructor and constructor (animated_model.h). */
+extern LayeredModel *func_02054d9c(LayeredModel *model);
+extern LayeredModel *func_02054e8c(LayeredModel *model);
+
+/* The destructor's work: the vtables of the class, then layer A's Ramp and frame control
+ * destructed, then the base model object's destructor. */
+static void destruct_a(LayeredModel *model)
+{
+    model->vtable = data_020dd0ac;
+    model->base_frames.vtable = data_020dd0bc;
+    model->base_ramp.vtable = data_020dd0cc;
+    func_02056ed4(&model->ramp_a);
+    func_02057078(&model->frames_a);
+    func_02054d9c(model);
+}
+
+/* func_02054ad0: the destructor of the class with layer A (the class with both layers' ends
+ * with it). */
+LayeredModel *LayeredModel_DestructA(LayeredModel *model)
+{
+    destruct_a(model);
+    return model;
+}
+CLEAN_AS(func_02054ad0, LayeredModel_DestructA)
+
+/* func_02054b18: its deleting destructor. */
+LayeredModel *LayeredModel_DeleteA(LayeredModel *model)
+{
+    destruct_a(model);
+    Heap_OperatorDeleteB(model);
+    return model;
+}
+CLEAN_AS(func_02054b18, LayeredModel_DeleteA)
+
+/* func_02054b64: its complete destructor, the same. */
+LayeredModel *LayeredModel_DestructAComplete(LayeredModel *model)
+{
+    destruct_a(model);
+    return model;
+}
+CLEAN_AS(func_02054b64, LayeredModel_DestructAComplete)
+
+/* The constructor's work: the base model object, then this class's vtables, layer A's frame
+ * control at frame 0 with speed 1.0, its Ramp, no animation object and no node. */
+static void construct_a(LayeredModel *model)
+{
+    func_02054e8c(model);
+    model->vtable = data_020dd0ac;
+    model->base_frames.vtable = data_020dd0bc;
+    model->base_ramp.vtable = data_020dd0cc;
+    model->frames_a.vtable = data_020dd184;
+    model->frames_a.frame = 0;
+    model->frames_a.previous = 0;
+    model->frames_a.speed = 0x1000;
+    func_02056ee0(&model->ramp_a);
+    model->anim_a = NULL;
+    model->nodes_a[0] = 0;
+    model->nodes_a[1] = 0;
+}
+
+/* func_02054bac: the constructor of the class with layer A. */
+LayeredModel *LayeredModel_ConstructA(LayeredModel *model)
+{
+    construct_a(model);
+    return model;
+}
+CLEAN_AS(func_02054bac, LayeredModel_ConstructA)
+
+/* func_02054c2c: the same constructor, the one the class with both layers' starts with. */
+LayeredModel *LayeredModel_ConstructABase(LayeredModel *model)
+{
+    construct_a(model);
+    return model;
+}
+CLEAN_AS(func_02054c2c, LayeredModel_ConstructABase)

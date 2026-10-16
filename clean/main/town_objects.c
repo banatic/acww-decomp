@@ -781,3 +781,41 @@ void TownObjects_ResetRecordedModes(void)
     data_021f4b14 = 0;
 }
 CLEAN_AS(func_020b316c, TownObjects_ResetRecordedModes)
+
+/* Item codes: whether a code is one of 0x5014-0x501a and the first of them, whether it is one
+ * of 0x500d-0x5010 and the first of those. */
+extern u16 func_0204bb68(unsigned int unused);
+extern u16 func_0204bae8(unsigned int unused);
+
+/* func_020b3f58: the index of object `code` (0-0x21: the code's low bits, the codes 0x5014-
+ * 0x501a counted as 0x5014 and 0x500d-0x5010 as 0x500d), -1 for a code outside the objects. */
+int TownObjects_Index(u16 code)
+{
+    u16 object = code;
+
+    if (func_0204bba8(&object)) {
+        object = func_0204bb68(0);
+    }
+    if (func_0204bb00(&object)) {
+        object = func_0204bae8(0);
+    }
+    if (object < TOWN_OBJECTS_FIRST || object > TOWN_OBJECTS_LAST) {
+        return -1;
+    }
+    return object & 0xfff;
+}
+CLEAN_AS(func_020b3f58, TownObjects_Index)
+
+/* func_020b3fc0: the number of bits set among the low four of `bits` (the visitors' slots). */
+int TownObjects_CountVisitors(int bits)
+{
+    int count = 0;
+
+    for (unsigned int i = 0; i < 4; i++) {
+        if (((u32) bits >> i) & 1) {
+            count++;
+        }
+    }
+    return count;
+}
+CLEAN_AS(func_020b3fc0, TownObjects_CountVisitors)

@@ -110,4 +110,45 @@ void CautionWindow_CloseGlobal(void);
 void CautionWindow_StartGlobal(void);
 int CautionWindow_IsShuttingDown(void);
 
+/* The window's three labels are classes of their own, derived from the label base of
+ * text_label.h (constructed by func_020a8cac, destroyed by func_020a8c38), each with a vtable
+ * of four entries: the destructor, the deleting destructor, the capacity in characters and the
+ * address of the characters (which start at 0x12):
+ *   data_020da530  256 characters, 0x114 bytes (CautionWindow.message);
+ *   data_020da548  128 characters, 0x94 bytes (CautionWindow.line_text);
+ *   data_020da560   64 characters, 0x54 bytes (CautionWindow.unit). */
+#define CAUTION_WINDOW_TEXT_START 0x12
+#define CAUTION_WINDOW_MESSAGE_CAPACITY 256
+#define CAUTION_WINDOW_LINE_CAPACITY 128
+#define CAUTION_WINDOW_UNIT_CAPACITY 64
+
+typedef struct CautionWindowLabel {
+    const void *vtable;
+    u8 base_04[CAUTION_WINDOW_TEXT_START - 4]; /* the label base's */
+} CautionWindowLabel;
+
+unsigned char CautionWindow_ArePlanesHidden(void);
+CautionWindow *CautionWindow_DestructDelete(CautionWindow *self);
+CautionWindow *CautionWindow_Destruct(CautionWindow *self);
+CautionWindow *CautionWindow_Construct(CautionWindow *self);
+char *CautionWindow_ErrorCodeText(void);
+void CautionWindow_WidenText(unsigned char *out, signed char *in);
+void CautionWindow_RecordNetError(void);
+int CautionWindowLine_Buffer(int label);
+int CautionWindowLine_Capacity(void);
+CautionWindowLabel *CautionWindowLine_DestructDelete(CautionWindowLabel *label);
+CautionWindowLabel *CautionWindowLine_Destruct(CautionWindowLabel *label);
+CautionWindowLabel *CautionWindowLine_Construct(CautionWindowLabel *label);
+int CautionWindowUnit_Buffer(int label);
+int CautionWindowUnit_Capacity(void);
+CautionWindowLabel *CautionWindowUnit_DestructDelete(CautionWindowLabel *label);
+CautionWindowLabel *CautionWindowUnit_Destruct(CautionWindowLabel *label);
+CautionWindowLabel *CautionWindowUnit_Construct(CautionWindowLabel *label);
+int CautionWindowMessage_Buffer(int label);
+int CautionWindowMessage_Capacity(void);
+CautionWindowLabel *CautionWindowMessage_DestructDelete(CautionWindowLabel *label);
+CautionWindowLabel *CautionWindowMessage_Destruct(CautionWindowLabel *label);
+int CautionWindowMessage_Construct(int label);
+void CautionWindow_RaiseEndFailure(void);
+
 #endif

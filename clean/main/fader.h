@@ -17,5 +17,9 @@
 int Fader_Level(const Fader *fader);
 int Fader_Mix(int level, int from, int to);
 int Fader_Switch(Fader *fader, int on, int fade, int flash, int speed);
+void Fader_Run(Fader *fader);
+void Fader_Set(Fader *fader, int on);
+void Fader_Destruct(Fader *fader);
+void Fader_Construct(Fader *fader);
 
 #endif

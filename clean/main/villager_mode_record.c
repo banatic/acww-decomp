@@ -361,3 +361,189 @@ int VillagerModeRecord_Mode(VillagerModeRecord *record)
     return record->mode;
 }
 CLEAN_AS(func_0209c330, VillagerModeRecord_Mode)
+
+/* The mode an emptied record (VillagerModeRecord_Init) starts with: kind 7. */
+#define VILLAGER_MODE_RECORD_INIT_MODE 7
+
+extern void MI_CpuFill8(void *dst, u8 value, u32 size);
+
+/* func_0209c334: a new mode drawn for the record: its scores copied from `scores`, its mode one
+ * of the highest of them (VillagerModeRecord_DrawTopKind), then, when `halve` is set, that
+ * kind's score cleared and every score halved; both dates set to now. */
+void VillagerModeRecord_Redraw(VillagerModeRecord *record, const u8 *scores, int halve)
+{
+    VillagerModeRecord_CopyKindBytes(record->scores, scores);
+    record->mode = (u8) VillagerModeRecord_DrawTopKind(record->scores);
+    if (halve) {
+        VillagerModeRecord_HalveScores(record->scores, record->mode);
+    }
+    func_0209e474(&record->since);
+    func_0209e474(&record->counted);
+}
+CLEAN_AS(func_0209c334, VillagerModeRecord_Redraw)
+
+/* func_0209c370: whether the record is in use (its mode below VILLAGER_MODE_UNCHANGED). */
+unsigned int VillagerModeRecord_IsInUse(VillagerModeRecord *record)
+{
+    return record->mode < VILLAGER_MODE_UNCHANGED;
+}
+CLEAN_AS(func_0209c370, VillagerModeRecord_IsInUse)
+
+/* func_0209c380: whether the record's mode is one of the eight kinds. */
+int VillagerModeRecord_IsKind(VillagerModeRecord *record)
+{
+    return VillagerModeRecord_IsKindMode(record->mode);
+}
+CLEAN_AS(func_0209c380, VillagerModeRecord_IsKind)
+
+/* func_0209c38c: whether `mode` is one of the eight kinds. */
+int VillagerModeRecord_IsKindMode(unsigned int mode)
+{
+    return mode < VILLAGER_MODE_KINDS;
+}
+CLEAN_AS(func_0209c38c, VillagerModeRecord_IsKindMode)
+
+/* func_0209c398: the record emptied: all zero but its mode, which is kind 7, with its scores and
+ * counts cleared once more and its dates zeroed. */
+void VillagerModeRecord_Init(VillagerModeRecord *record)
+{
+    MI_CpuFill8(record, 0, sizeof(VillagerModeRecord));
+    record->mode = VILLAGER_MODE_RECORD_INIT_MODE;
+    VillagerModeRecord_ClearKindBytes(record->scores);
+    VillagerModeRecord_ClearKindBytes(record->counts);
+    record->since = (DateTime){0};
+    record->counted = (DateTime){0};
+}
+CLEAN_AS(func_0209c398, VillagerModeRecord_Init)
+
+/* func_0209c3c8: the record's destructor (its counts and scores need nothing). */
+VillagerModeRecord *VillagerModeRecord_Destruct(VillagerModeRecord *record)
+{
+    VillagerModeRecord_DestructKindBytes(record->counts);
+    VillagerModeRecord_DestructKindBytes(record->scores);
+    return record;
+}
+CLEAN_AS(func_0209c3c8, VillagerModeRecord_Destruct)
+
+/* func_0209c3e4: the record's constructor: dates zeroed, scores and counts constructed (cleared),
+ * then emptied (VillagerModeRecord_Init). */
+VillagerModeRecord *VillagerModeRecord_Construct(VillagerModeRecord *record)
+{
+    record->since = (DateTime){0};
+    record->counted = (DateTime){0};
+    VillagerModeRecord_ConstructKindBytes(record->scores);
+    VillagerModeRecord_ConstructKindBytes(record->counts);
+    VillagerModeRecord_Init(record);
+    return record;
+}
+CLEAN_AS(func_0209c3e4, VillagerModeRecord_Construct)
+
+/* func_0209c410: the byte of kind `kind` in eight bytes of a kind each; 0 for an index that is
+ * not a kind. */
+int VillagerModeRecord_KindByte(unsigned char *bytes, unsigned char kind)
+{
+    if (VillagerModeRecord_IsKindMode(kind)) {
+        return bytes[kind];
+    }
+    return 0;
+}
+CLEAN_AS(func_0209c410, VillagerModeRecord_KindByte)
+
+/* func_0209c42c: the byte of kind `kind` set; nothing for an index that is not a kind. */
+void VillagerModeRecord_SetKindByte(char *bytes, int kind, char value)
+{
+    if (VillagerModeRecord_IsKindMode((unsigned int) kind)) {
+        bytes[kind] = value;
+    }
+}
+CLEAN_AS(func_0209c42c, VillagerModeRecord_SetKindByte)
+
+/* func_0209c448: the score of kind `kind` raised by `delta`, up to VILLAGER_MODE_RECORD_SCORE_MAX.
+ * QUIRK: only the top is clamped: a negative sum is stored as its low byte. */
+void VillagerModeRecord_RaiseScore(unsigned char *scores, int kind, int delta)
+{
+    if (VillagerModeRecord_IsKindMode((unsigned int) kind)) {
+        int score = (int) ((u32) scores[kind] + (u32) delta);
+        if (score >= VILLAGER_MODE_RECORD_SCORE_MAX) {
+            score = VILLAGER_MODE_RECORD_SCORE_MAX;
+        }
+        scores[kind] = (u8) score;
+    }
+}
+CLEAN_AS(func_0209c448, VillagerModeRecord_RaiseScore)
+
+/* func_0209c470: the score of kind `kind` cleared, then every score halved. */
+void VillagerModeRecord_HalveScores(void *scores, unsigned char kind)
+{
+    VillagerModeRecord_SetKindByte(scores, kind, 0);
+    for (int i = 0; i < VILLAGER_MODE_KINDS; i++) {
+        u8 score = (u8) VillagerModeRecord_KindByte(scores, (u8) i);
+        VillagerModeRecord_SetKindByte(scores, (u8) i, (char) (score >> 1));
+    }
+}
+CLEAN_AS(func_0209c470, VillagerModeRecord_HalveScores)
+
+/* func_0209c4a8: the kind of a highest score, picked at random (func_020644cc) among the kinds
+ * that share it. */
+int VillagerModeRecord_DrawTopKind(const unsigned char *scores)
+{
+    int top = -1;
+    unsigned int tied = 0; /* bit k: kind k has the top score */
+    int count = 0;
+
+    for (int kind = 0; kind < VILLAGER_MODE_KINDS; kind++) {
+        if (scores[kind] > top) {
+            top = scores[kind];
+            tied = 1u << kind;
+            count = 1;
+        } else if (scores[kind] == top) {
+            tied |= 1u << kind;
+            count++;
+        }
+    }
+
+    u8 result = VILLAGER_MODE_KINDS;
+    if (count > 0) {
+        u32 pick = func_020644cc(count);
+        for (int kind = 0; kind < VILLAGER_MODE_KINDS; kind++) {
+            if (tied & (1u << kind)) {
+                if (pick == 0) {
+                    result = (u8) kind;
+                    break;
+                }
+                pick--;
+            }
+        }
+    }
+    return result;
+}
+CLEAN_AS(func_0209c4a8, VillagerModeRecord_DrawTopKind)
+
+/* func_0209c51c: eight bytes of a kind each copied from `from` to `to`. */
+void VillagerModeRecord_CopyKindBytes(unsigned char *to, const unsigned char *from)
+{
+    MI_CpuCopy8(from, to, VILLAGER_MODE_KINDS);
+}
+CLEAN_AS(func_0209c51c, VillagerModeRecord_CopyKindBytes)
+
+/* func_0209c52c: eight bytes of a kind each cleared. */
+void VillagerModeRecord_ClearKindBytes(void *bytes)
+{
+    MI_CpuFill8(bytes, 0, VILLAGER_MODE_KINDS);
+}
+CLEAN_AS(func_0209c52c, VillagerModeRecord_ClearKindBytes)
+
+/* func_0209c538: their destructor: nothing. */
+void VillagerModeRecord_DestructKindBytes(void *bytes)
+{
+    (void) bytes;
+}
+CLEAN_AS(func_0209c538, VillagerModeRecord_DestructKindBytes)
+
+/* func_0209c53c: their constructor: cleared. */
+int VillagerModeRecord_ConstructKindBytes(unsigned char *bytes)
+{
+    VillagerModeRecord_ClearKindBytes(bytes);
+    return (int) (uintptr_t) bytes;
+}
+CLEAN_AS(func_0209c53c, VillagerModeRecord_ConstructKindBytes)

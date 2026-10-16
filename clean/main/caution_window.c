@@ -712,3 +712,276 @@ int CautionWindow_IsShuttingDown(void)
     return data_021c5c4c.state >= CAUTION_WINDOW_SHUTDOWN;
 }
 CLEAN_AS(func_02038a30, CautionWindow_IsShuttingDown)
+
+/* ---- The object and its labels */
+
+static_assert(offsetof(CautionWindow, planes_hidden) == 0x0ca, "planes hidden");
+static_assert(sizeof(CautionWindow) == 0xae4, "window size");
+
+/* The window's vtable and its labels' (caution_window.h). */
+extern const u8 data_020da520[];
+extern const u8 data_020da530[];
+extern const u8 data_020da548[];
+extern const u8 data_020da560[];
+
+/* The window's model: constructed and destroyed. The copy into texture VRAM: constructed. */
+extern void *func_0205577c(void *model);
+extern void *func_02055764(void *model);
+extern void *func_020ba01c(void *transfer);
+
+/* The label base (text_label.h): constructed, destroyed. The deleting destructors' delete. */
+extern void *func_020a8cac(void *label);
+extern void *func_020a8c38(void *label);
+extern void func_020edb3c(void *block);
+
+/* The network's error detail when the session shut down (CautionWindow_RecordNetError) and its
+ * text, as 16-bit characters (CautionWindow_ErrorCodeText). */
+extern int data_021c5938;
+extern u8 data_021c5970[];
+extern const char data_020da590[];                               /* " <%d>" */
+extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
+
+/* The characters CautionWindow_WidenText knows (" -0123456789ABCDEF<>", then a 0) and the
+ * 16-bit character of each, as two bytes: the full-width forms. */
+#define CAUTION_WINDOW_WIDE_CHARS 21
+extern const s8 data_020ca0f4[0x18];
+extern const u8 data_020ca10c[][2];
+
+/* The session's error flag raised when the network library could not end. */
+#define CAUTION_WINDOW_END_FAILED 0x20
+
+/* func_02038a44: whether the window hid the screen's planes. */
+unsigned char CautionWindow_ArePlanesHidden(void)
+{
+    return data_021c5c4c.planes_hidden;
+}
+CLEAN_AS(func_02038a44, CautionWindow_ArePlanesHidden)
+
+/* func_02038a50 (vtable entry 1): the destructor, and the object freed. */
+CautionWindow *CautionWindow_DestructDelete(CautionWindow *self)
+{
+    CautionWindow_Destruct(self);
+    func_020edb3c(self);
+    return self;
+}
+CLEAN_AS(func_02038a50, CautionWindow_DestructDelete)
+
+/* func_02038a90 (vtable entry 0): the labels and the model destroyed, last member first. */
+CautionWindow *CautionWindow_Destruct(CautionWindow *self)
+{
+    self->vtable = data_020da520;
+    CautionWindowLine_Destruct((CautionWindowLabel *) self->line_text);
+    CautionWindowUnit_Destruct((CautionWindowLabel *) self->unit);
+    CautionWindowMessage_Destruct((CautionWindowLabel *) self->message);
+    func_02055764(self->model);
+    return self;
+}
+CLEAN_AS(func_02038a90, CautionWindow_Destruct)
+
+/* func_02038acc: the constructor: the model and the copy constructed, the state and the saved
+ * registers 0, the labels empty and the bitmap filled with colour 1. */
+CautionWindow *CautionWindow_Construct(CautionWindow *self)
+{
+    self->vtable = data_020da520;
+    func_0205577c(self->model);
+    func_020ba01c(self->transfer);
+    self->state = CAUTION_WINDOW_OFF;
+    self->timer = 0;
+    self->line = 0;
+    self->shown = 0;
+    self->trouble = 0;
+    self->planes_hidden = 0;
+    self->blend_pending = 0;
+    self->blend_main = 0;
+    self->blend_sub = 0;
+    self->main_planes = 0;
+    self->sub_planes = 0;
+    self->main_windows = 0;
+    self->sub_windows = 0;
+    self->text_width = 0;
+    self->seconds = 0;
+    CautionWindowMessage_Construct((int) (uintptr_t) self->message);
+    CautionWindowUnit_Construct((CautionWindowLabel *) self->unit);
+    CautionWindowLine_Construct((CautionWindowLabel *) self->line_text);
+    MI_CpuFill8(self->bitmap, 0x11, CAUTION_WINDOW_BITMAP_SIZE);
+    return self;
+}
+CLEAN_AS(func_02038acc, CautionWindow_Construct)
+
+/* func_02038b80: the recorded error detail as " <n>" in 16-bit characters, in a static buffer. */
+char *CautionWindow_ErrorCodeText(void)
+{
+    char text[20];
+    func_02064328(text, data_020da590, data_021c5938);
+    CautionWindow_WidenText(data_021c5970, (signed char *) text);
+    return (char *) data_021c5970;
+}
+CLEAN_AS(func_02038b80, CautionWindow_ErrorCodeText)
+
+/* func_02038bac: each character of `in` written to `out` as the two bytes of its full-width
+ * form, then a 16-bit 0.
+ * QUIRK: a character the table lacks leaves its two bytes of `out` as they were; the table's
+ * bytes are compared as signed, so one above 0x7f would never match. */
+void CautionWindow_WidenText(unsigned char *out, signed char *in)
+{
+    for (; *in != 0; in++, out += 2) {
+        int c = (unsigned char) *in;
+        for (int i = 0; i < CAUTION_WINDOW_WIDE_CHARS; i++) {
+            if (c == data_020ca0f4[i]) {
+                out[0] = data_020ca10c[i][0];
+                out[1] = data_020ca10c[i][1];
+            }
+        }
+    }
+    out[0] = 0;
+    out[1] = 0;
+}
+CLEAN_AS(func_02038bac, CautionWindow_WidenText)
+
+/* func_02038bfc: the network's error detail recorded, and whether its mode is 3 or 4. */
+void CautionWindow_RecordNetError(void)
+{
+    data_021c5938 = Net_GetErrorDetail();
+    u8 mode = Net_GetMode();
+    data_021c5934 = mode == 3 || mode == 4;
+}
+CLEAN_AS(func_02038bfc, CautionWindow_RecordNetError)
+
+/* func_02038c2c (vtable entry 3 of the 128-character label) */
+int CautionWindowLine_Buffer(int label)
+{
+    return label + CAUTION_WINDOW_TEXT_START;
+}
+CLEAN_AS(func_02038c2c, CautionWindowLine_Buffer)
+
+/* func_02038c30 (vtable entry 2) */
+int CautionWindowLine_Capacity(void)
+{
+    return CAUTION_WINDOW_LINE_CAPACITY;
+}
+CLEAN_AS(func_02038c30, CautionWindowLine_Capacity)
+
+/* func_02038c34 (vtable entry 1) */
+CautionWindowLabel *CautionWindowLine_DestructDelete(CautionWindowLabel *label)
+{
+    label->vtable = data_020da548;
+    func_020a8c38(label);
+    func_020edb3c(label);
+    return label;
+}
+CLEAN_AS(func_02038c34, CautionWindowLine_DestructDelete)
+
+/* func_02038c54 (vtable entry 0) */
+CautionWindowLabel *CautionWindowLine_Destruct(CautionWindowLabel *label)
+{
+    label->vtable = data_020da548;
+    func_020a8c38(label);
+    return label;
+}
+CLEAN_AS(func_02038c54, CautionWindowLine_Destruct)
+
+/* func_02038c6c: an empty label. */
+CautionWindowLabel *CautionWindowLine_Construct(CautionWindowLabel *label)
+{
+    func_020a8cac(label);
+    label->vtable = data_020da548;
+    func_020a8c1c(label);
+    return label;
+}
+CLEAN_AS(func_02038c6c, CautionWindowLine_Construct)
+
+/* func_02038c8c (vtable entry 3 of the 64-character label) */
+int CautionWindowUnit_Buffer(int label)
+{
+    return label + CAUTION_WINDOW_TEXT_START;
+}
+CLEAN_AS(func_02038c8c, CautionWindowUnit_Buffer)
+
+/* func_02038c90 (vtable entry 2) */
+int CautionWindowUnit_Capacity(void)
+{
+    return CAUTION_WINDOW_UNIT_CAPACITY;
+}
+CLEAN_AS(func_02038c90, CautionWindowUnit_Capacity)
+
+/* func_02038c94 (vtable entry 1) */
+CautionWindowLabel *CautionWindowUnit_DestructDelete(CautionWindowLabel *label)
+{
+    label->vtable = data_020da560;
+    func_020a8c38(label);
+    func_020edb3c(label);
+    return label;
+}
+CLEAN_AS(func_02038c94, CautionWindowUnit_DestructDelete)
+
+/* func_02038cb4 (vtable entry 0) */
+CautionWindowLabel *CautionWindowUnit_Destruct(CautionWindowLabel *label)
+{
+    label->vtable = data_020da560;
+    func_020a8c38(label);
+    return label;
+}
+CLEAN_AS(func_02038cb4, CautionWindowUnit_Destruct)
+
+/* func_02038ccc: an empty label. */
+CautionWindowLabel *CautionWindowUnit_Construct(CautionWindowLabel *label)
+{
+    func_020a8cac(label);
+    label->vtable = data_020da560;
+    func_020a8c1c(label);
+    return label;
+}
+CLEAN_AS(func_02038ccc, CautionWindowUnit_Construct)
+
+/* func_02038cec (vtable entry 3 of the 256-character label) */
+int CautionWindowMessage_Buffer(int label)
+{
+    return label + CAUTION_WINDOW_TEXT_START;
+}
+CLEAN_AS(func_02038cec, CautionWindowMessage_Buffer)
+
+/* func_02038cf0 (vtable entry 2) */
+int CautionWindowMessage_Capacity(void)
+{
+    return CAUTION_WINDOW_MESSAGE_CAPACITY;
+}
+CLEAN_AS(func_02038cf0, CautionWindowMessage_Capacity)
+
+/* func_02038cf8 (vtable entry 1) */
+CautionWindowLabel *CautionWindowMessage_DestructDelete(CautionWindowLabel *label)
+{
+    label->vtable = data_020da530;
+    func_020a8c38(label);
+    func_020edb3c(label);
+    return label;
+}
+CLEAN_AS(func_02038cf8, CautionWindowMessage_DestructDelete)
+
+/* func_02038d18 (vtable entry 0) */
+CautionWindowLabel *CautionWindowMessage_Destruct(CautionWindowLabel *label)
+{
+    label->vtable = data_020da530;
+    func_020a8c38(label);
+    return label;
+}
+CLEAN_AS(func_02038d18, CautionWindowMessage_Destruct)
+
+/* func_02038d30: an empty label (its address passed and returned as an integer). */
+int CautionWindowMessage_Construct(int label)
+{
+    CautionWindowLabel *object = (CautionWindowLabel *) (uintptr_t) label;
+    func_020a8cac(object);
+    object->vtable = data_020da530;
+    func_020a8c1c(object);
+    return label;
+}
+CLEAN_AS(func_02038d30, CautionWindowMessage_Construct)
+
+/* func_02038d50: the session's error flag 0x20 raised, when the network library could not end
+ * (func_020b8d6c); it is one of the flags the window shuts down on at once. */
+void CautionWindow_RaiseEndFailure(void)
+{
+    NetSession *session = data_020ccf94;
+    Session_SetErrorFlags(session, (int) (Session_GetErrorFlags(session) | CAUTION_WINDOW_END_FAILED));
+}
+CLEAN_AS(func_02038d50, CautionWindow_RaiseEndFailure)

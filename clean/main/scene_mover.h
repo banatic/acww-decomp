@@ -73,5 +73,9 @@ void SceneMover_AimAtEnd(SceneMover *self, u8 *object);
 int SceneMover_Mode(SceneMover *self);
 void SceneMover_SetMode(SceneMover *self, u8 *object, int mode, int turn_rate, u16 word);
 void SceneMover_Drive(SceneMover *self, u8 *object);
+void SceneMover_Update(SceneMover *self, u8 *object);
+void SceneMover_Reset(SceneMover *self);
+void SceneMover_Destruct(SceneMover *self);
+SceneMover *SceneMover_Construct(SceneMover *self);
 
 #endif

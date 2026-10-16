@@ -34,12 +34,6 @@ extern const char data_020e5108[];
  * (5 bits each of red, green and blue) in its high half. */
 extern const u32 data_027e0148[];
 
-/* The fader: a frame of it, switched at once, taken down, built. */
-extern void func_020b36c8(Fader *fader);
-extern void func_020b3720(Fader *fader, int on);
-extern void func_020b373c(Fader *fader);
-extern void func_020b3740(Fader *fader);
-
 /* The game's sprintf. */
 extern int func_02064328(char *buffer, const char *format, ...);
 /* The index of the material `name` of a model, -1 for none. */
@@ -85,7 +79,7 @@ CLEAN_AS(func_020b3328, BuildingLights_Switch)
  * shown at its level. */
 void BuildingLights_Update(BuildingLights *lights, BuildingLightsModel *model)
 {
-    func_020b36c8(&lights->fader);
+    Fader_Run(&lights->fader);
     int level = Fader_Level(&lights->fader);
     if (model != NULL) {
         BuildingLights_ShowLamps(&lights->lamps, model, level);
@@ -99,7 +93,7 @@ CLEAN_AS(func_020b3340, BuildingLights_Update)
  * found. */
 void BuildingLights_Bind(BuildingLights *lights, BuildingLightsModel *model, int on)
 {
-    func_020b3720(&lights->fader, on);
+    Fader_Set(&lights->fader, on);
     if (model != NULL) {
         BuildingLights_BindDoor(&lights->door, model);
         BuildingLights_BindLamps(&lights->lamps, model);
@@ -114,7 +108,7 @@ BuildingLights *BuildingLights_Destruct(BuildingLights *lights)
     BuildingLights_DestructWindow(&lights->window);
     BuildingLights_DestructLamps(&lights->lamps);
     BuildingLights_DestructDoor(&lights->door);
-    func_020b373c(&lights->fader);
+    Fader_Destruct(&lights->fader);
     return lights;
 }
 CLEAN_AS(func_020b33b8, BuildingLights_Destruct)
@@ -122,7 +116,7 @@ CLEAN_AS(func_020b33b8, BuildingLights_Destruct)
 /* func_020b33e0: the fader off, no door, lamps or window. */
 BuildingLights *BuildingLights_Construct(BuildingLights *lights)
 {
-    func_020b3740(&lights->fader);
+    Fader_Construct(&lights->fader);
     BuildingLights_ConstructDoor(&lights->door);
     BuildingLights_ConstructLamps(&lights->lamps);
     BuildingLights_ConstructWindow(&lights->window);
@@ -200,7 +194,7 @@ CLEAN_AS(func_020b3504, BuildingLights_BindLamps)
 BuildingLightsLamps *BuildingLights_DestructLamps(BuildingLightsLamps *lamps)
 {
     lamps->vtable = data_020e50dc;
-    func_020b373c(&lamps->fader);
+    Fader_Destruct(&lamps->fader);
     return lamps;
 }
 CLEAN_AS(func_020b3550, BuildingLights_DestructLamps)
@@ -209,7 +203,7 @@ CLEAN_AS(func_020b3550, BuildingLights_DestructLamps)
 BuildingLightsLamps *BuildingLights_ConstructLamps(BuildingLightsLamps *lamps)
 {
     lamps->vtable = data_020e50dc;
-    func_020b3740(&lamps->fader);
+    Fader_Construct(&lamps->fader);
     for (unsigned int i = 0; i < BUILDING_LIGHTS_LAMPS; i++) {
         lamps->materials[i] = BUILDING_LIGHTS_NO_MATERIAL;
     }

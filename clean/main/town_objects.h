@@ -71,5 +71,7 @@ void TownObjects_CopyRecord(SceneActorRecord *dst, const SceneActorRecord *src);
 int TownObjects_SetRecordedMode(u32 code, u8 mode);
 int TownObjects_RecordedMode(u32 code);
 void TownObjects_ResetRecordedModes(void);
+int TownObjects_Index(u16 code);
+int TownObjects_CountVisitors(int bits);
 
 #endif

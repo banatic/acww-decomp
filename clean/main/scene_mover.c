@@ -307,3 +307,63 @@ void SceneMover_Drive(SceneMover *self, u8 *object)
     Actor_Move((Actor *) (void *) object, (const ActorCarrier *) (const void *) (object + SCENE_MOVER_OBJECT_CARRIER));
 }
 CLEAN_AS(func_0201b268, SceneMover_Drive)
+
+/* ---- Each frame, construction and reset */
+
+/* The paces 0 to 2 a mover starts with (paces 1 and 2 walk at 0.0625 and 0.1). */
+extern const ScenePace data_020c81d8[SCENE_MOVER_PACES];
+
+extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
+
+/* The pace a new mover has (1.0, reached at once), and its mode: none of the five yet. */
+#define SCENE_MOVER_NEW_SPEED 0x1000
+#define SCENE_MOVER_NO_MODE SCENE_MOVER_MODES
+
+/* The fields SceneMover_Reset and SceneMover_Construct share: `reach` is left as it is. */
+static void scene_mover_clear(SceneMover *self)
+{
+    self->pace.speed = SCENE_MOVER_NEW_SPEED;
+    self->pace.speed_up = 0;
+    self->pace.slow_down = 0;
+    self->mode = SCENE_MOVER_NO_MODE;
+    self->start.x = 0;
+    self->start.y = 0;
+    self->start.z = 0;
+    self->end.x = 0;
+    self->end.y = 0;
+    self->end.z = 0;
+    self->continues = 0;
+    self->turn_way = SCENE_MOVER_TURN_SHORTER;
+}
+
+/* func_0201b2d8: the object's frame (func_0201b910) moves it first of all (SceneMover_Drive). */
+void SceneMover_Update(SceneMover *self, u8 *object)
+{
+    SceneMover_Drive(self, object);
+}
+CLEAN_AS(func_0201b2d8, SceneMover_Update)
+
+/* func_0201b2e0: as SceneMover_Construct, and the three paces from data_020c81d8 (the object's
+ * set-up, func_0201bdb4). */
+void SceneMover_Reset(SceneMover *self)
+{
+    scene_mover_clear(self);
+    MI_CpuCopy8(data_020c81d8, self->paces, sizeof(self->paces));
+}
+CLEAN_AS(func_0201b2e0, SceneMover_Reset)
+
+/* func_0201b320: the destructor; nothing to do. */
+void SceneMover_Destruct(SceneMover *self)
+{
+    (void) self;
+}
+CLEAN_AS(func_0201b320, SceneMover_Destruct)
+
+/* func_0201b324: the constructor: pace 1.0, no mode, both points at the origin, turning by the
+ * shorter side. The paces and `reach` are not set. Returns the mover. */
+SceneMover *SceneMover_Construct(SceneMover *self)
+{
+    scene_mover_clear(self);
+    return self;
+}
+CLEAN_AS(func_0201b324, SceneMover_Construct)

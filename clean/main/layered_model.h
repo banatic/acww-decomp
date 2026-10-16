@@ -110,4 +110,13 @@ void LayeredModel_RecordNodeA(LayeredModel *model, LayeredModelNodeState *state)
 int LayeredModel_HasNodeA(LayeredModel *model, u32 node);
 void LayeredModel_ClearNodeA(LayeredModel *model, u32 node);
 
+void LayeredModel_SetNodeA(LayeredModel *model, u32 node);
+void LayeredModel_BeforeAddNode(LayeredModel *model, u32 node);
+void LayeredModel_BeforeRemoveNode(LayeredModel *model, u32 node);
+LayeredModel *LayeredModel_DestructA(LayeredModel *model);
+LayeredModel *LayeredModel_DeleteA(LayeredModel *model);
+LayeredModel *LayeredModel_DestructAComplete(LayeredModel *model);
+LayeredModel *LayeredModel_ConstructA(LayeredModel *model);
+LayeredModel *LayeredModel_ConstructABase(LayeredModel *model);
+
 #endif
