@@ -14,4 +14,9 @@ int Process020daae4_Execute(Process *process);
 void Process020daae4_AfterExecute(Process *process, int outcome);
 int Process020daae4_Draw(void);
 
+/* Its creation (slot 0), deletion (slot 3), and the profile's function that makes one. */
+int Process020daae4_Create(void);
+int Process020daae4_Delete(void);
+Process *Process020daae4_New(void);
+
 #endif

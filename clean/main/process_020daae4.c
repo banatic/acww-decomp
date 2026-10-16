@@ -88,3 +88,44 @@ int Process020daae4_Draw(void)
     return 1;
 }
 CLEAN_AS(func_0203e510, Process020daae4_Draw)
+
+/* ---- Its creation and deletion (slots 0 and 3) ---- */
+
+/* The flags of main's queue of events (event_queue.h). */
+extern u32 data_021c72c0;
+/* The session's slots of objects cleared, and its answer byte back to 6 (nothing asked). */
+extern void func_0203f4c4(void);
+
+/* func_0203ec78 (slot 0): the queue of events started over, the session's slots cleared and
+ * every flag cleared; done at once. */
+int Process020daae4_Create(void)
+{
+    EventQueue_Reset();
+    func_0203f4c4();
+    data_021c72c0 = 0;
+    return 1;
+}
+CLEAN_AS(func_0203ec78, Process020daae4_Create)
+
+/* func_0203ec74 (slot 3): deleted at once. */
+int Process020daae4_Delete(void)
+{
+    return 1;
+}
+CLEAN_AS(func_0203ec74, Process020daae4_Delete)
+
+/* func_0203ed2c (its profile's creation function): a new process of 0x50 bytes from the
+ * auxiliary heap, constructed with the root class's vtable and then its own; NULL when the
+ * allocation fails. */
+Process *Process020daae4_New(void)
+{
+    Process *process = Heap_AllocAuxZeroed(0x50);
+
+    if (process != NULL) {
+        Process_Construct(process);
+        process->vtable = data_020da13c;
+        process->vtable = data_020daae4;
+    }
+    return process;
+}
+CLEAN_AS(func_0203ed2c, Process020daae4_New)

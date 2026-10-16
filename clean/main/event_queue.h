@@ -131,4 +131,8 @@ void EventQueue_StepRunning(Process *process);
 void EventQueue_StepStarting(Process *process);
 void EventQueue_TakeNext(Process *process);
 
+int EventQueue_HasCurrent(void);
+void EventQueue_StartScene(void);
+void EventQueue_Reset(void);
+
 #endif

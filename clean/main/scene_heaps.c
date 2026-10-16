@@ -548,3 +548,207 @@ int SceneHeaps_CreateFishPool(int size, Heap *parent)
     return (int) (uintptr_t) data_021c9b00;
 }
 CLEAN_AS(func_0205c8f8, SceneHeaps_CreateFishPool)
+
+/* ---- The heaps of single systems, each kept in a word of its own: model pools of the
+ * overlays (func_0209d180's allocate and release functions), the countdown board's digits,
+ * the background models, the overlay task's scenes, the model cache and the network. */
+
+extern Heap *data_021c9b04; /* the second model pool of overlay 3's func_ov003_02228b74 (one model), an expanded heap */
+extern Heap *data_021c9b08; /* the first model pool of overlay 3's func_ov003_02228b74 (six models), an expanded heap */
+extern Heap *data_021c9b0c; /* the model pool of overlay 4's func_ov004_0223f9c8 (0x20 models), an expanded heap */
+extern Heap *data_021c9b10; /* the first model pool of overlay 3's func_ov003_0222fd60 (eight models), an expanded heap */
+extern Heap *data_021c9b14; /* the third model pool of overlay 3's func_ov003_0222fd60 (four models), an expanded heap */
+extern Heap *data_021c9b18; /* the second model pool of overlay 3's func_ov003_0222fd60 (two models), an expanded heap */
+extern Heap *data_021c9b1c; /* the countdown board's digits (ov003 countdown.c), a frame heap */
+extern Heap *data_021c9b20; /* the model pool of overlay 4's func_ov004_0223d434, an expanded heap */
+extern Heap *data_021c9b24; /* the background models (bg_models.c), an expanded heap */
+extern Heap *data_021c9b28; /* the overlay task's scenes (overlay_task.c, ov002 menu_scene.c), an expanded heap */
+extern Heap *data_021c9b2c; /* the shared model heap (model_cache.c), an expanded heap */
+extern Heap *data_021c9b30; /* the network heap (session_link.c, session_net.c), an expanded heap */
+
+/* func_0205c910 */
+void SceneHeaps_DestroyOv003PoolB(void)
+{
+    Heap_Delete(data_021c9b04);
+    data_021c9b04 = NULL;
+}
+CLEAN_AS(func_0205c910, SceneHeaps_DestroyOv003PoolB)
+
+/* func_0205c92c: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv003PoolB(int size, Heap *parent)
+{
+    data_021c9b04 = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b04;
+}
+CLEAN_AS(func_0205c92c, SceneHeaps_CreateOv003PoolB)
+
+/* func_0205c944 */
+void SceneHeaps_DestroyOv003PoolA(void)
+{
+    Heap_Delete(data_021c9b08);
+    data_021c9b08 = NULL;
+}
+CLEAN_AS(func_0205c944, SceneHeaps_DestroyOv003PoolA)
+
+/* func_0205c960: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv003PoolA(int size, Heap *parent)
+{
+    data_021c9b08 = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b08;
+}
+CLEAN_AS(func_0205c960, SceneHeaps_CreateOv003PoolA)
+
+/* func_0205c978 */
+void SceneHeaps_DestroyOv004PoolB(void)
+{
+    Heap_Delete(data_021c9b0c);
+    data_021c9b0c = NULL;
+}
+CLEAN_AS(func_0205c978, SceneHeaps_DestroyOv004PoolB)
+
+/* func_0205c994: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv004PoolB(int size, Heap *parent)
+{
+    data_021c9b0c = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b0c;
+}
+CLEAN_AS(func_0205c994, SceneHeaps_CreateOv004PoolB)
+
+/* func_0205c9ac */
+void SceneHeaps_DestroyOv003PoolC(void)
+{
+    Heap_Delete(data_021c9b10);
+    data_021c9b10 = NULL;
+}
+CLEAN_AS(func_0205c9ac, SceneHeaps_DestroyOv003PoolC)
+
+/* func_0205c9c8: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv003PoolC(int size, Heap *parent)
+{
+    data_021c9b10 = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b10;
+}
+CLEAN_AS(func_0205c9c8, SceneHeaps_CreateOv003PoolC)
+
+/* func_0205c9e0 */
+void SceneHeaps_DestroyOv003PoolE(void)
+{
+    Heap_Delete(data_021c9b14);
+    data_021c9b14 = NULL;
+}
+CLEAN_AS(func_0205c9e0, SceneHeaps_DestroyOv003PoolE)
+
+/* func_0205c9fc: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv003PoolE(int size, Heap *parent)
+{
+    data_021c9b14 = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b14;
+}
+CLEAN_AS(func_0205c9fc, SceneHeaps_CreateOv003PoolE)
+
+/* func_0205ca14 */
+void SceneHeaps_DestroyOv003PoolD(void)
+{
+    Heap_Delete(data_021c9b18);
+    data_021c9b18 = NULL;
+}
+CLEAN_AS(func_0205ca14, SceneHeaps_DestroyOv003PoolD)
+
+/* func_0205ca30: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv003PoolD(int size, Heap *parent)
+{
+    data_021c9b18 = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b18;
+}
+CLEAN_AS(func_0205ca30, SceneHeaps_CreateOv003PoolD)
+
+/* func_0205ca48 */
+void SceneHeaps_DestroyCountdown(void)
+{
+    Heap_Delete(data_021c9b1c);
+    data_021c9b1c = NULL;
+}
+CLEAN_AS(func_0205ca48, SceneHeaps_DestroyCountdown)
+
+/* func_0205ca64: a frame heap of `size` bytes from `parent`. */
+void SceneHeaps_CreateCountdown(int size, Heap *parent)
+{
+    data_021c9b1c = FrameHeap_Create(size, parent);
+}
+CLEAN_AS(func_0205ca64, SceneHeaps_CreateCountdown)
+
+/* func_0205ca7c */
+void SceneHeaps_DestroyOv004PoolC(void)
+{
+    Heap_Delete(data_021c9b20);
+    data_021c9b20 = NULL;
+}
+CLEAN_AS(func_0205ca7c, SceneHeaps_DestroyOv004PoolC)
+
+/* func_0205ca98: an expanded heap of `size` bytes from `parent`; it, as an address. */
+int SceneHeaps_CreateOv004PoolC(int size, Heap *parent)
+{
+    data_021c9b20 = ExpHeap_Create(size, parent);
+    return (int) (uintptr_t) data_021c9b20;
+}
+CLEAN_AS(func_0205ca98, SceneHeaps_CreateOv004PoolC)
+
+/* func_0205cab0 */
+void SceneHeaps_DestroyBgModels(void)
+{
+    Heap_Delete(data_021c9b24);
+    data_021c9b24 = NULL;
+}
+CLEAN_AS(func_0205cab0, SceneHeaps_DestroyBgModels)
+
+/* func_0205cacc: an expanded heap of `size` bytes from `parent`. */
+void SceneHeaps_CreateBgModels(int size, Heap *parent)
+{
+    data_021c9b24 = ExpHeap_Create(size, parent);
+}
+CLEAN_AS(func_0205cacc, SceneHeaps_CreateBgModels)
+
+/* func_0205cae4 */
+void SceneHeaps_DestroyOverlayTask(void)
+{
+    Heap_Delete(data_021c9b28);
+    data_021c9b28 = NULL;
+}
+CLEAN_AS(func_0205cae4, SceneHeaps_DestroyOverlayTask)
+
+/* func_0205cb00: an expanded heap of `size` bytes from `parent`. */
+void SceneHeaps_CreateOverlayTask(int size, Heap *parent)
+{
+    data_021c9b28 = ExpHeap_Create(size, parent);
+}
+CLEAN_AS(func_0205cb00, SceneHeaps_CreateOverlayTask)
+
+/* func_0205cb18 */
+void SceneHeaps_DestroyModelCache(void)
+{
+    Heap_Delete(data_021c9b2c);
+    data_021c9b2c = NULL;
+}
+CLEAN_AS(func_0205cb18, SceneHeaps_DestroyModelCache)
+
+/* func_0205cb34: an expanded heap of `size` bytes from `parent`. */
+void SceneHeaps_CreateModelCache(int size, Heap *parent)
+{
+    data_021c9b2c = ExpHeap_Create(size, parent);
+}
+CLEAN_AS(func_0205cb34, SceneHeaps_CreateModelCache)
+
+/* func_0205cb4c */
+void SceneHeaps_DestroyNetwork(void)
+{
+    Heap_Delete(data_021c9b30);
+    data_021c9b30 = NULL;
+}
+CLEAN_AS(func_0205cb4c, SceneHeaps_DestroyNetwork)
+
+/* func_0205cb68: an expanded heap of `size` bytes from `parent`. */
+void SceneHeaps_CreateNetwork(int size, Heap *parent)
+{
+    data_021c9b30 = ExpHeap_Create(size, parent);
+}
+CLEAN_AS(func_0205cb68, SceneHeaps_CreateNetwork)

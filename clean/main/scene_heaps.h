@@ -63,4 +63,29 @@ int SceneHeaps_CreateOv004Pool(int size, Heap *parent);
 void SceneHeaps_DestroyFishPool(void);
 int SceneHeaps_CreateFishPool(int size, Heap *parent);
 
+void SceneHeaps_DestroyOv003PoolB(void);
+int SceneHeaps_CreateOv003PoolB(int size, Heap *parent);
+void SceneHeaps_DestroyOv003PoolA(void);
+int SceneHeaps_CreateOv003PoolA(int size, Heap *parent);
+void SceneHeaps_DestroyOv004PoolB(void);
+int SceneHeaps_CreateOv004PoolB(int size, Heap *parent);
+void SceneHeaps_DestroyOv003PoolC(void);
+int SceneHeaps_CreateOv003PoolC(int size, Heap *parent);
+void SceneHeaps_DestroyOv003PoolE(void);
+int SceneHeaps_CreateOv003PoolE(int size, Heap *parent);
+void SceneHeaps_DestroyOv003PoolD(void);
+int SceneHeaps_CreateOv003PoolD(int size, Heap *parent);
+void SceneHeaps_DestroyCountdown(void);
+void SceneHeaps_CreateCountdown(int size, Heap *parent);
+void SceneHeaps_DestroyOv004PoolC(void);
+int SceneHeaps_CreateOv004PoolC(int size, Heap *parent);
+void SceneHeaps_DestroyBgModels(void);
+void SceneHeaps_CreateBgModels(int size, Heap *parent);
+void SceneHeaps_DestroyOverlayTask(void);
+void SceneHeaps_CreateOverlayTask(int size, Heap *parent);
+void SceneHeaps_DestroyModelCache(void);
+void SceneHeaps_CreateModelCache(int size, Heap *parent);
+void SceneHeaps_DestroyNetwork(void);
+void SceneHeaps_CreateNetwork(int size, Heap *parent);
+
 #endif

@@ -3,6 +3,8 @@
 
 #include "acre_tile.h"
 #include "clean.h"
+#include "map_item.h"
+#include "town_tile.h"
 
 #define TOWN_SPOT_ACRE_TILES 16
 /* The rows of inner acres TownSpot_PickRandom keeps a mask for. */
@@ -120,3 +122,122 @@ int TownSpot_PickTileInAcre(TownSpot *spot, Vec3 *position, const TownSpotAcre *
     return 0;
 }
 CLEAN_AS(func_02087950, TownSpot_PickTileInAcre)
+
+/* func_02087a08: how many of the acre's 16 x 16 tiles TownSpot_TileSuits accepts, row by row.
+ * `spot` is not read. */
+int TownSpot_CountTilesInAcre(TownSpot *spot, const TownSpotAcre *acre, AcreMap *map)
+{
+    (void) spot;
+    int first_x = 0;
+    int first_z = 0;
+    int count = 0;
+    AcreTile_TileOfAcre(&first_x, &first_z, acre->x, acre->z, 0, 0);
+    for (int z = first_z; z < first_z + TOWN_SPOT_ACRE_TILES; z++) {
+        for (int x = first_x; x < first_x + TOWN_SPOT_ACRE_TILES; x++) {
+            if (TownSpot_TileSuits(x, z, map) != 0) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+CLEAN_AS(func_02087a08, TownSpot_CountTilesInAcre)
+
+/* func_02087a64 */
+void TownSpot_Clear(TownSpot *spot)
+{
+    MI_CpuFill8(spot, 0, sizeof(*spot));
+}
+CLEAN_AS(func_02087a64, TownSpot_Clear)
+
+/* func_02087a70: the constructor does nothing. */
+void TownSpot_Construct(TownSpot *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_02087a70, TownSpot_Construct)
+
+/* func_02087a74: the destructor does nothing. */
+void TownSpot_Destruct(TownSpot *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_02087a74, TownSpot_Destruct)
+
+/* The objects that keep a tile from suiting: the event buildings, and (beside the tile) the
+ * codes of the growth lines and 0x66-0x6d (map_item.h) past their first stage. */
+#define TOWN_SPOT_EVENT_BUILDING_FIRST 0x5000
+#define TOWN_SPOT_EVENT_BUILDING_LAST 0x5021
+
+/* Whether an object is one of the special codes 0xf030, 0xf031, 0xfffd, 0xfffe or one
+ * func_0204c774 accepts. */
+extern int func_0204c71c(const u16 *item);
+
+/* The acre of a tile, with the ROM's arithmetic shift for tiles left of or above the map. */
+static int town_spot_acre_of(int tile)
+{
+    return tile >= 0 ? tile / TOWN_SPOT_ACRE_TILES : ~(~tile / TOWN_SPOT_ACRE_TILES);
+}
+
+static int town_spot_is_event_building(u16 code)
+{
+    return code >= TOWN_SPOT_EVENT_BUILDING_FIRST && code <= TOWN_SPOT_EVENT_BUILDING_LAST;
+}
+
+/* The growth lines 0x26-0x2a, 0x2f-0x56, 0x57-0x5b, 0x5d-0x61 and 0xc8-0xcf, and the codes
+ * 0x66-0x6d, tested range by range as the ROM does. */
+static int town_spot_grows(u16 code)
+{
+    static const u16 ranges[][2] = {
+        {0x26, 0x2a}, {0x5d, 0x61}, {0x2f, 0x56}, {0x57, 0x5b}, {0x66, 0x68},
+        {0x69, 0x69}, {0x6a, 0x6c}, {0x6d, 0x6d}, {0xc8, 0xcf},
+    };
+    for (size_t i = 0; i < sizeof(ranges) / sizeof(ranges[0]); i++) {
+        if (code >= ranges[i][0] && code <= ranges[i][1]) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/* The object of tile (x, z) of the map in layer 0, or NULL off the map. */
+static const u16 *town_spot_item(AcreMap *map, int x, int z)
+{
+    int acre_x = town_spot_acre_of(x);
+    int acre_z = town_spot_acre_of(z);
+    return AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, x - acre_x * TOWN_SPOT_ACRE_TILES,
+                               z - acre_z * TOWN_SPOT_ACRE_TILES, 0);
+}
+
+/* func_02088024: whether an actor may be put on tile (x, z) of the map: the tile is clear
+ * (TownTile_IsClear), and for the tiles 1 and then 2 away in +z and in -z (asked in the order
+ * +1, -1, +2, -2) each is on the map and holds no event building (0x5000-0x5021); the ones in
+ * +z must also not hold an object func_0204c71c accepts, nor a growing object past its first
+ * stage (MapItem_IsStage0 is asked first). 0 without a map. */
+int TownSpot_TileSuits(int x, int z, AcreMap *map)
+{
+    if (map == NULL) {
+        return 0;
+    }
+    if (TownTile_IsClear(x, z, map) == 0) {
+        return 0;
+    }
+    for (int i = 1; i <= 2; i++) {
+        const u16 *item = town_spot_item(map, x, z + i);
+        if (item == NULL || town_spot_is_event_building(*item)) {
+            return 0;
+        }
+        if (func_0204c71c(item) != 0) {
+            return 0;
+        }
+        if (MapItem_IsStage0(item) == 0 && town_spot_grows(*item)) {
+            return 0;
+        }
+        item = town_spot_item(map, x, z - i);
+        if (item == NULL || town_spot_is_event_building(*item)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_02088024, TownSpot_TileSuits)

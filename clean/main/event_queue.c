@@ -636,3 +636,62 @@ void EventQueue_TakeNext(Process *process)
     }
 }
 CLEAN_AS(func_0203e5f4, EventQueue_TakeNext)
+
+/* ---- Starting over ---- */
+
+#include "town_objects.h"
+
+/* The list cleared (both ends NULL). */
+extern void func_02065c68(List *list);
+/* All 15 entries freed and cleared. */
+extern void func_0203f53c(void);
+
+/* func_0203ec98: whether there is a current event. */
+int EventQueue_HasCurrent(void)
+{
+    return data_021c72b8 != NULL;
+}
+CLEAN_AS(func_0203ec98, EventQueue_HasCurrent)
+
+/* func_0203ecac (when a scene starts, func_020b6d20): the queue started over, and the scene's
+ * own event made current at once (priority 1, byte 0x17 at 5): of kind 12 about the object on
+ * the kept tile (TownObjects_AtKeptTile) when there is one, starting at step 7; else of kind 4,
+ * already EVENT_RUNNING at step 5. */
+void EventQueue_StartScene(void)
+{
+    EventQueueEntry *event;
+    int object;
+
+    EventQueue_Reset();
+    event = func_0203f504();
+    object = TownObjects_AtKeptTile();
+    if (object != 0) {
+        event->first_id = (u32) object;
+        event->second_id = 0;
+        event->kind = 12;
+        event->state = EVENT_STARTING;
+        event->step = 7;
+    } else {
+        event->first_id = 0;
+        event->second_id = 0;
+        event->kind = 4;
+        event->state = EVENT_RUNNING;
+        event->step = 5;
+    }
+    event->priority = 1;
+    event->step_17 = 5;
+    data_021c72b8 = event;
+}
+CLEAN_AS(func_0203ecac, EventQueue_StartScene)
+
+/* func_0203ecfc: the queue emptied, every entry freed, no current event nor target object, and
+ * flags 2 and 4 cleared. */
+void EventQueue_Reset(void)
+{
+    func_02065c68(&data_021c72c4);
+    func_0203f53c();
+    data_021c72b8 = NULL;
+    data_021c72bc = 0;
+    EventQueue_ClearFlags(2 | 4);
+}
+CLEAN_AS(func_0203ecfc, EventQueue_Reset)
