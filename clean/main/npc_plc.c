@@ -48,9 +48,6 @@ extern const char data_020d315c[];
 /* The word its motion requests carry. */
 extern u16 data_020c80f8;
 
-/* Its state set (the state's entry run first; its answer other than 1 refuses it). */
-extern void func_020c3dac(NpcPlc *self, int state);
-
 static SceneMotion *npc_plc_motion(NpcPlc *self)
 {
     return (SceneMotion *) (void *) ((u8 *) self + NPC_PLC_MOTION);
@@ -100,10 +97,10 @@ void NpcPlc_OnEvent(NpcPlc *self, int code)
         case NPC_PLC_EVENT_0:
             npc_plc_talk_slot(&self->talk, NPC_PLC_TALK_SLOT_RESET);
             SceneBase_SetMotionArg(&self->talk.scene, SceneObject_ActorObject((u8 *) self, NPC_PLC_PLAYER_ACTOR));
-            func_020c3dac(self, NPC_PLC_TALK);
+            NpcPlc_SetState(self, NPC_PLC_TALK);
             break;
         case NPC_PLC_EVENT_ACT_ENDED:
-            func_020c3dac(self, NPC_PLC_TURN_BACK);
+            NpcPlc_SetState(self, NPC_PLC_TURN_BACK);
             break;
         default:
             break;
@@ -215,7 +212,7 @@ CLEAN_AS(func_020c3c7c, NpcPlcTalk_Construct)
 int NpcPlc_UpdateTurnBack(NpcPlc *self)
 {
     if (SceneMotion_Kind(npc_plc_motion(self)) == NPC_PLC_TURN && SceneMotion_IsDone(npc_plc_motion(self)) == 1) {
-        func_020c3dac(self, NPC_PLC_IDLE);
+        NpcPlc_SetState(self, NPC_PLC_IDLE);
     }
     return 1;
 }
@@ -242,7 +239,7 @@ int NpcPlc_UpdateTalk(NpcPlc *self)
 {
     if (!SceneAction_IsBusy(npc_plc_action(self))) {
         EventQueue_FinishObjectEvent(self);
-        func_020c3dac(self, NPC_PLC_TALKED);
+        NpcPlc_SetState(self, NPC_PLC_TALKED);
     }
     return 1;
 }
@@ -269,3 +266,174 @@ int NpcPlc_UpdateIdle(void)
     return 1;
 }
 CLEAN_AS(func_020c3d74, NpcPlc_UpdateIdle)
+
+/* ---- The state machine and the object's life */
+
+#include "ov004/member_pointer.h"
+#include "pool_link.h"
+#include "scene_object_base.h"
+#include "scene_object_members.h"
+#include "scene_probe.h"
+#include "scene_value_3aa.h"
+
+/* The members of the scene object built by NpcPlc_Create, by place (scene_object.h). */
+#define NPC_PLC_PERSON 0x0ea /* u16: the person code */
+#define NPC_PLC_MODEL 0x0ec
+#define NPC_PLC_STANDARD_ANIMS 0x2a0
+#define NPC_PLC_FACE 0x2ac
+#define NPC_PLC_ANIM 0x334
+#define NPC_PLC_MOVER 0x350
+#define NPC_PLC_PROBE 0x3a8
+#define NPC_PLC_VALUE_3AA 0x3aa
+#define NPC_PLC_LOOK 0x3b0
+#define NPC_PLC_TALK_STATE 0x418
+#define NPC_PLC_EFFECTS 0x420
+#define NPC_PLC_COLLIDER 0x49c
+#define NPC_PLC_CARRIER 0x4cc
+#define NPC_PLC_EMITTER 0x514
+#define NPC_PLC_FOOTSTEPS 0x558
+#define NPC_PLC_HEAP 0x640
+
+/* No person yet, and its person. */
+#define NPC_PLC_NO_PERSON 0xfff1
+#define NPC_PLC_PERSON_CODE 0xd000
+
+/* The kind of motion of standing (scene_motion_kinds.h). */
+#define NPC_PLC_STAND 0
+
+/* Each state's entry and update (C++ pointers to member functions of the object; null for
+ * none), filled at start-up. */
+typedef struct NpcPlcStateFns {
+    MemberPointer enter;
+    MemberPointer update;
+} NpcPlcStateFns;
+extern NpcPlcStateFns data_021fbd90[NPC_PLC_STATES];
+
+/* Its files' names: "npc_sp/model/plc.nsbmd" and "npc_sp/model/plc_tex.nsbtx". */
+extern const u32 data_020d3164[2];
+/* The vtable of its base class (special_scene_object.h). */
+extern const u8 data_020da088[];
+
+/* func_020c3d78: standing (priority 1). Always 1. */
+int NpcPlc_EnterIdle(NpcPlc *self)
+{
+    SceneMotion_Request(npc_plc_motion(self), NPC_PLC_STAND, 1, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
+    return 1;
+}
+CLEAN_AS(func_020c3d78, NpcPlc_EnterIdle)
+
+/* func_020c3dac: the state's entry run (when it has one); when it answers 1 (or there is
+ * none) the state is taken.
+ * REQUIRES: `state` is one of the NPC_PLC_STATES. */
+void NpcPlc_SetState(NpcPlc *self, int state)
+{
+    const MemberPointer *enter = &data_021fbd90[state].enter;
+    int answer = 1;
+    if (enter->function != 0) {
+        answer = MemberPointer_CallInt(enter, self);
+    }
+    if (answer == 1) {
+        self->state = state;
+    }
+}
+CLEAN_AS(func_020c3dac, NpcPlc_SetState)
+
+/* func_020c3df0 (slot 0x68): the state's update run (when it has one); its answer, else 0. */
+int NpcPlc_Update(NpcPlc *self)
+{
+    const MemberPointer *update = &data_021fbd90[self->state].update;
+    if (update->function == 0) {
+        return 0;
+    }
+    return MemberPointer_CallInt(update, self);
+}
+CLEAN_AS(func_020c3df0, NpcPlc_Update)
+
+/* func_020c3e3c (slot 0x70): the model's file name. */
+u32 NpcPlc_ModelName(void)
+{
+    return data_020d3164[0];
+}
+CLEAN_AS(func_020c3e3c, NpcPlc_ModelName)
+
+/* func_020c3e48 (slot 0x6c): the texture's file name. */
+u32 NpcPlc_TextureName(void)
+{
+    return data_020d3164[1];
+}
+CLEAN_AS(func_020c3e48, NpcPlc_TextureName)
+
+/* func_020c3e54 (slot 0x0c): whether the base class let it leave. */
+int NpcPlc_Leave(NpcPlc *self)
+{
+    return SpecialSceneObject_Leave(self) != 0;
+}
+CLEAN_AS(func_020c3e54, NpcPlc_Leave)
+
+/* func_020c3e6c (slot 0x00): unless the base class refuses to start, NPC_PLC_IDLE, and the
+ * angle it faces kept as the one to turn back to. Whether it started. */
+int NpcPlc_Start(NpcPlc *self)
+{
+    if (SpecialSceneObject_Start(self) == 0) {
+        return 0;
+    }
+    NpcPlc_SetState(self, NPC_PLC_IDLE);
+    self->home_angle = self->angle;
+    return 1;
+}
+CLEAN_AS(func_020c3e6c, NpcPlc_Start)
+
+/* func_020c3e98 (slot 0x04): unless the base class refuses, its person is 0xd000 and its
+ * scene is its talk, which gets it as its owner. Whether it was set up. */
+int NpcPlc_Init(NpcPlc *self)
+{
+    if (SpecialSceneObject_Init(self) == 0) {
+        return 0;
+    }
+    u16 person = NPC_PLC_PERSON_CODE;
+    SceneObject_SetPerson((u8 *) self, &person);
+    SceneObject_SetScene((u8 *) self, &self->talk.scene);
+    NpcPlcTalk_SetOwner(&self->talk, self);
+    return 1;
+}
+CLEAN_AS(func_020c3e98, NpcPlc_Init)
+
+/* func_020c3ee8 (the create function of its record): a zeroed block of 0x714 bytes from the
+ * auxiliary heap, constructed: the scene object base, the class 0x020d8c64's vtable and
+ * members in place order (no person yet, 0xfff1), the class 0x020da088's vtable and heap link,
+ * then the class's vtable and its talk. Null when there is no room. */
+NpcPlc *NpcPlc_Create(void)
+{
+    u8 *object = (u8 *) Heap_AllocAuxZeroed(sizeof(NpcPlc));
+    if (object == NULL) {
+        return NULL;
+    }
+    SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
+    *(const u8 **) (void *) object = data_020d8c64;
+    *(u16 *) (void *) (object + NPC_PLC_PERSON) = NPC_PLC_NO_PERSON;
+    LayeredModel_ConstructB((LayeredModel *) (void *) (object + NPC_PLC_MODEL));
+    SceneStandardAnims_Init((SceneStandardAnims *) (void *) (object + NPC_PLC_STANDARD_ANIMS));
+    SceneFace_Construct((SceneFace *) (void *) (object + NPC_PLC_FACE));
+    /* func_020169a8, the animation player's constructor (registered under the destructor's
+     * name). */
+    SpeakerAnim_Destruct((SpeakerAnim *) (void *) (object + NPC_PLC_ANIM));
+    SceneMover_Construct((SceneMover *) (void *) (object + NPC_PLC_MOVER));
+    SceneProbe_Construct(object + NPC_PLC_PROBE);
+    SceneValue3aa_Clear((SceneValue3aa *) (void *) (object + NPC_PLC_VALUE_3AA));
+    SceneLook_Construct((SceneLook *) (void *) (object + NPC_PLC_LOOK));
+    SceneTalkState_Construct((SceneTalkState *) (void *) (object + NPC_PLC_TALK_STATE));
+    ActEffects_Construct((ActEffects *) (void *) (object + NPC_PLC_EFFECTS));
+    CollisionContacts_Construct((CollisionContacts *) (void *) (object + NPC_PLC_COLLIDER));
+    FieldOwnedBody_Construct2((FieldOwnedBody *) (void *) (object + NPC_PLC_CARRIER));
+    SoundEmitterClass_Construct1((SoundEmitterObject *) (void *) (object + NPC_PLC_EMITTER));
+    Footsteps_Construct((Footsteps *) (void *) (object + NPC_PLC_FOOTSTEPS));
+    SceneMotion_Construct(npc_plc_motion((NpcPlc *) (void *) object));
+    SceneAction_Construct(npc_plc_action((NpcPlc *) (void *) object));
+    *(const u8 **) (void *) object = data_020da088;
+    PoolLink_Heap4Construct((PoolLink *) (void *) (object + NPC_PLC_HEAP));
+    *(const u8 **) (void *) object = data_020e877c;
+    NpcPlc *self = (NpcPlc *) (void *) object;
+    NpcPlcTalk_Construct(&self->talk);
+    return self;
+}
+CLEAN_AS(func_020c3ee8, NpcPlc_Create)

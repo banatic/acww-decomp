@@ -14,21 +14,25 @@
 #include "types.h"
 
 #define TALK_SLIDER_LEVEL_MAX 0x1000
+#define TALK_SLIDER_LABELS 5
+
+struct LabelBox;
 
 /* TalkSlider.focus */
 #define TALK_SLIDER_FOCUS_KNOB 0
 #define TALK_SLIDER_FOCUS_OK 1
 
 typedef struct TalkSlider {
-    void *window;    /* 0x00: the slider window's message window (its knob and track) */
-    s32 speed;       /* 0x04: how far the buttons move the knob each frame */
-    s32 level;       /* 0x08: 0 to TALK_SLIDER_LEVEL_MAX */
-    s32 last_level;  /* 0x0c: the level of the last frame, for the notches' sound */
-    s32 grab_offset; /* 0x10: where the knob was touched, from its top */
-    u8 unk_14[0x2c - 0x14];
-    s32 focus;             /* 0x2c: TALK_SLIDER_FOCUS_* */
-    u8 held;               /* 0x30: the knob is held (dragged, or A held) */
-    u8 confirmed_by_start; /* 0x31: the OK button was pressed with START */
+    void *window;                                /* 0x00: the slider window's message window (its knob and track) */
+    s32 speed;                                   /* 0x04: how far the buttons move the knob each frame */
+    s32 level;                                   /* 0x08: 0 to TALK_SLIDER_LEVEL_MAX */
+    s32 last_level;                              /* 0x0c: the level of the last frame, for the notches' sound */
+    s32 grab_offset;                             /* 0x10: where the knob was touched, from its top */
+    struct LabelBox *labels[TALK_SLIDER_LABELS]; /* 0x14: the answers' labels, or NULL */
+    u32 label_cells;                             /* 0x28: the wider of the top and bottom labels, in tiles */
+    s32 focus;                                   /* 0x2c: TALK_SLIDER_FOCUS_* */
+    u8 held;                                     /* 0x30: the knob is held (dragged, or A held) */
+    u8 confirmed_by_start;                       /* 0x31: the OK button was pressed with START */
     u8 pad_32[2];
     void *choices; /* 0x34: the talk's choices the level is handed to */
 } TalkSlider;
@@ -43,5 +47,28 @@ int TalkSlider_ReleasedByButtons(TalkSlider *slider);
 int TalkSlider_ReleasedByTouch(TalkSlider *slider);
 int TalkSlider_GrabbedByButtons(TalkSlider *slider);
 int TalkSlider_GrabbedByTouch(TalkSlider *slider);
+void TalkSlider_UpdateHold(TalkSlider *slider);
+void TalkSlider_UpdateFocus(TalkSlider *slider);
+int TalkSlider_SwitchInput(void);
+void TalkSlider_FreeLabels(TalkSlider *slider);
+void TalkSlider_ClearLabels(TalkSlider *slider);
+void TalkSlider_DrawLabels(TalkSlider *slider);
+void TalkSlider_MakeLabels(TalkSlider *slider);
+void TalkSlider_MeasureLabels(TalkSlider *slider);
+int TalkSlider_TouchOrStart(TalkSlider *slider);
+int TalkSlider_KnobHeld(TalkSlider *slider);
+int TalkSlider_OkFocused(TalkSlider *slider);
+int TalkSlider_KnobFocused(TalkSlider *slider);
+void TalkSlider_Update(TalkSlider *slider);
+void TalkSlider_Close(TalkSlider *slider);
+void TalkSlider_Hide(TalkSlider *slider);
+void TalkSlider_Show(TalkSlider *slider);
+void TalkSlider_Start(TalkSlider *slider);
+int TalkSlider_Picked(TalkSlider *slider);
+int TalkSlider_LabelCells(TalkSlider *slider);
+int TalkSlider_Level(TalkSlider *slider);
+void TalkSlider_SetChoices(TalkSlider *slider, void *choices);
+TalkSlider *TalkSlider_Destruct(TalkSlider *slider);
+void TalkSlider_Construct(TalkSlider *slider, void *window);
 
 #endif

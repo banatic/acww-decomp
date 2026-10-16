@@ -82,4 +82,74 @@ static inline u16 *TownAcreCount_CodeAt(AcreMap *map, int x, int z)
     return AcreTile_ItemInAcre(map, (u32) (x >> 4), (u32) (z >> 4), x & 15, z & 15, 0);
 }
 
+/* More of TownAcreCount.flags */
+#define TOWN_ACRE_HAS_FAMILY 0x0004      /* a code of the families' lines (map_item.h) */
+#define TOWN_ACRE_MONEY_ROCKS_SHIFT 6    /* 4 bits: bit n for a money rock of kind n (the day's count) */
+#define TOWN_ACRE_HAS_1548 0x0400        /* item 0x1548 (the day's count) */
+#define TOWN_ACRE_LINE_5D_GROWN 0x1000   /* a code of line 0x5d at its last stage */
+#define TOWN_ACRE_HAS_MARKED_1566 0x2000 /* a marked item 0x1566 */
+#define TOWN_ACRE_HAS_154A 0x4000        /* an unmarked item 0x154a-0x1553 */
+
+/* More of TownAcreTotals.flags */
+#define TOWN_TOTALS_HAS_154A 0x40 /* an acre with TOWN_ACRE_HAS_154A */
+#define TOWN_TOTALS_HAS_1320 0x80 /* an acre with items 0x1320-0x1322 */
+
+/* The bands an acre's score falls in (TownAcreCount_ScoreBand): below 75, 80, 95 and 101, and
+ * the rest. The summary counts the acres of each from byte 0x04 on. */
+#define TOWN_ACRE_BANDS 5
+#define TOWN_ACRE_BANDS_OFFSET 0x04
+
+/* The acre with the lowest score and what lowers it most (from byte 0x18 of the summary). */
+typedef struct TownAcreWorst {
+    int acre_x; /* an inner acre (from 0), -1 for none */
+    int acre_z;
+    int reason; /* TOWN_ACRE_WORST_*, -1 for no acre */
+} TownAcreWorst;
+
+#define TOWN_ACRE_WORST_OFFSET 0x18
+
+/* TownAcreWorst.reason: the largest of the score's deductions (the first of equal ones). */
+#define TOWN_ACRE_WORST_MANY_LINES 0 /* more than 15 of the growth lines' codes (also: no deduction) */
+#define TOWN_ACRE_WORST_FEW_LINES 1  /* fewer than 12 */
+#define TOWN_ACRE_WORST_CODES_21 2   /* codes 0x21-0x24 */
+#define TOWN_ACRE_WORST_OTHERS 3     /* other items */
+#define TOWN_ACRE_WORST_1320 4       /* items 0x1320-0x1322 */
+#define TOWN_ACRE_WORST_SPOT 5       /* code 0x1b */
+#define TOWN_ACRE_WORST_REASONS 6
+
+/* The growth lines' codes and the codes at their last stage only (map_item.h): 0x26-0x2a,
+ * 0x2f-0x5b, 0x5d-0x61, 0x66-0x6d and 0xc8-0xcf. */
+static inline int TownAcreCount_IsLineCode(u16 code)
+{
+    return (code >= 0x26 && code <= 0x2a) || (code >= 0x5d && code <= 0x61) || (code >= 0x2f && code <= 0x5b) ||
+           (code >= 0x66 && code <= 0x6d) || (code >= 0xc8 && code <= 0xcf);
+}
+
+/* Family B's codes (map_item.h). */
+static inline int TownAcreCount_IsFamilyBCode(u16 code)
+{
+    return code >= 0x6e && code <= 0x87;
+}
+
+/* Family C's codes and 0xa5. */
+static inline int TownAcreCount_IsFamilyCCode(u16 code)
+{
+    return (code >= 0x8a && code <= 0xa3) || code == 0xa5;
+}
+
+void TownAcreCount_Count(TownAcreCount *acre, AcreMap *map, int acre_x, int acre_z);
+void TownAcreCount_CountDay(TownAcreCount *acre, AcreMap *map, int acre_x, int acre_z);
+void TownAcreCount_CountInner(TownDayAcres *acres, AcreMap *map, int acre_x, int acre_z);
+void TownAcreCount_ClearTile(TownAcreCount *acre, AcreMap *map, int acre_x, int acre_z, int index);
+void TownAcreCount_Score(TownAcreCount *acre);
+int TownAcreCount_ScoreBand(const TownDayAcres *acres, int score);
+int TownAcreCount_Grade(const TownDayAcres *acres, const int *bands, int wide, int high);
+int TownAcreCount_Summarize(TownDayAcres *acres, AcreMap *map);
+void TownAcreCount_SummarizeDay(TownDayAcres *acres, AcreMap *map, int wide, int high);
+void TownAcreCount_FindWorst(TownAcreWorst *worst, const TownDayTile *acre_of, const TownAcreCount *acre);
+void TownAcreCount_DestroyWorst(TownAcreWorst *worst);
+void TownAcreCount_InitWorst(TownAcreWorst *worst);
+TownDayAcres *TownAcreCount_DestroyAcres(TownDayAcres *acres);
+void TownAcreCount_DestroyTown(TownDay *town);
+
 #endif

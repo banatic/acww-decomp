@@ -123,5 +123,6 @@ int CatchPanelText_Chars(CatchPanelText *text);
 int CatchPanelText_Capacity(CatchPanelText *text);
 CatchPanelText *CatchPanelText_Delete(CatchPanelText *text);
 CatchPanelText *CatchPanelText_Destruct(CatchPanelText *text);
+void *CatchPanelText_Construct(CatchPanelText *text);
 
 #endif

@@ -102,4 +102,9 @@ u32 ItemInfo_HeldModelNumber(const u16 *item);
 void ItemInfo_HeldModelItem(u16 *out, int number);
 u32 ItemInfo_HeldModelCount(void);
 
+void ItemInfoFiles_Close(ItemInfoFiles *files);
+int ItemInfoFiles_Open(ItemInfoFiles *files);
+ItemInfoFiles *ItemInfoFiles_Destruct(ItemInfoFiles *files);
+ItemInfoFiles *ItemInfoFiles_Construct(ItemInfoFiles *files);
+
 #endif

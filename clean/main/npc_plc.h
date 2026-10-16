@@ -83,4 +83,18 @@ void NpcPlcTalk_Line(NpcPlcTalk *talk, NpcPlcLine *line);
 void NpcPlcTalk_LineBySet(NpcPlcTalk *talk, NpcPlcLine *line);
 void NpcPlcTalk_Line0(NpcPlcTalk *talk, NpcPlcLine *line);
 
+/* The number of its states. */
+#define NPC_PLC_STATES 4
+
+/* The state machine, its life and its files. */
+int NpcPlc_EnterIdle(NpcPlc *self);
+void NpcPlc_SetState(NpcPlc *self, int state);
+int NpcPlc_Update(NpcPlc *self);
+u32 NpcPlc_ModelName(void);
+u32 NpcPlc_TextureName(void);
+int NpcPlc_Leave(NpcPlc *self);
+int NpcPlc_Start(NpcPlc *self);
+int NpcPlc_Init(NpcPlc *self);
+NpcPlc *NpcPlc_Create(void);
+
 #endif

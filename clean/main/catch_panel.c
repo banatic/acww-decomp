@@ -753,3 +753,13 @@ CatchPanelText *CatchPanelText_Destruct(CatchPanelText *text)
     return text;
 }
 CLEAN_AS(func_0208e00c, CatchPanelText_Destruct)
+
+/* func_0208e024: the constructor: the label base's, then the text emptied. */
+void *CatchPanelText_Construct(CatchPanelText *text)
+{
+    TextBase_Construct(text);
+    text->vtable = &data_020e21e4;
+    TextBase_Clear(text);
+    return text;
+}
+CLEAN_AS(func_0208e024, CatchPanelText_Construct)

@@ -504,3 +504,75 @@ void ItemInfoFiles_LoadIndoor(ItemInfoFiles *files, int stream)
     func_0206e704(files, stream);
 }
 CLEAN_AS(func_02062c9c, ItemInfoFiles_LoadIndoor)
+
+/* The record files' functions ItemInfoFiles uses beside those above (main's record file code,
+ * as furniture_info.c names them): close the three; open the three; close one; read all of
+ * one's records; open one; a record file's destructor and constructor. */
+extern void func_0206e71c(FurnitureRecordFiles *files);
+extern int func_0206e73c(FurnitureRecordFiles *files, const char *path0, u32 size0, const char *path1, u32 size1,
+                         const char *path2, u32 size2, u32 records);
+extern void func_0206e808(FurnitureRecordFile *file);
+extern void func_0206e854(FurnitureRecordFile *file);
+extern int func_0206e890(FurnitureRecordFile *file, const char *path, u32 record_size, u32 records);
+extern FurnitureRecordFile *func_0206e8b4(FurnitureRecordFile *file);
+extern void func_0206e8c4(FurnitureRecordFile *file);
+
+extern const char data_020de5b0[]; /* "/item_info/always.bin" */
+extern const char data_020de5c8[]; /* "/item_info/indoor.bin" */
+extern const char data_020de5e0[]; /* "/item_info/dma.bin" */
+extern const char data_020de5f4[]; /* "/item_info/series.bin" */
+
+/* How many records the files are opened with room for. */
+#define ITEM_INFO_FILE_RECORDS 0x600
+#define ITEM_INFO_SERIES_RECORDS 0x80
+
+/* func_02062ca4: the three files closed, then series.bin. */
+void ItemInfoFiles_Close(ItemInfoFiles *files)
+{
+    func_0206e71c(&files->files);
+    func_0206e808(&files->series);
+}
+CLEAN_AS(func_02062ca4, ItemInfoFiles_Close)
+
+/* func_02062cbc: the files opened (always.bin read whole), the items counted, then series.bin
+ * opened and read whole.
+ * QUIRK: the answers of the two opens are not looked at: the items are counted, series.bin is
+ * read and 1 is returned whether the files could be opened or not. */
+int ItemInfoFiles_Open(ItemInfoFiles *files)
+{
+    data_021cb5c0 = 0;
+    (void) func_0206e73c(&files->files, data_020de5b0, sizeof(ItemInfoAlways), data_020de5c8, sizeof(ItemInfoIndoor),
+                         data_020de5e0, sizeof(ItemInfoDma), ITEM_INFO_FILE_RECORDS);
+    ItemInfo_FindHeldModels();
+    ItemInfo_CountSharedPairs();
+    ItemInfo_CountUnk06Is1d();
+    (void) func_0206e890(&files->series, data_020de5f4, sizeof(ItemInfoSeries), ITEM_INFO_SERIES_RECORDS);
+    func_0206e854(&files->series);
+    return 1;
+}
+CLEAN_AS(func_02062cbc, ItemInfoFiles_Open)
+
+/* func_02062d44: the destructor: the files closed (as ItemInfoFiles_Close does), then each
+ * destructed, the last first. */
+ItemInfoFiles *ItemInfoFiles_Destruct(ItemInfoFiles *files)
+{
+    func_0206e71c(&files->files);
+    func_0206e808(&files->series);
+    func_0206e8b4(&files->series);
+    func_0206e8b4(&files->files.dma);
+    func_0206e8b4(&files->files.indoor);
+    func_0206e8b4(&files->files.always);
+    return files;
+}
+CLEAN_AS(func_02062d44, ItemInfoFiles_Destruct)
+
+/* func_02062d7c: the constructor: the four record files constructed, in order. */
+ItemInfoFiles *ItemInfoFiles_Construct(ItemInfoFiles *files)
+{
+    func_0206e8c4(&files->files.always);
+    func_0206e8c4(&files->files.indoor);
+    func_0206e8c4(&files->files.dma);
+    func_0206e8c4(&files->series);
+    return files;
+}
+CLEAN_AS(func_02062d7c, ItemInfoFiles_Construct)
