@@ -29,6 +29,13 @@ struct FieldActor *FieldActor_DestructDelete(struct FieldActor *actor);
 void *FieldActor_Destruct(struct FieldActor *actor);
 struct FieldActor *FieldActor_Construct(struct FieldActor *actor);
 int FieldActor_Shutdown(struct FieldActor *actor);
+void FieldActor_Create(void);
+struct FieldActor *FieldActorReceiver_DestructDelete(void *receiver);
+void FieldActorReceiver_TalkClosing(void *receiver);
+void FieldActorReceiver_TalkChoice(void *receiver);
+void FieldActorReceiver_TalkMessage(void *receiver);
+void FieldActorReceiver_TalkIgnore(void *receiver);
+void *FieldActorReceiver_Destruct(void *receiver);
 
 /* field_actor_model.c: placing the actor's models for drawing. */
 struct NodeRenderState;
@@ -366,7 +373,8 @@ void FieldActor_SetupLooks(struct FieldActor *actor);
 
 /* field_actor_support.c: the state requests, the message receiver's hooks, the flags, sounds and
  * footsteps, turning and easing, following another console's actor, the sun level's messages
- * and date, and the targets on the map. */
+ * and date, the targets on the map, the steps of speeds, angles and values towards a target,
+ * and the object under the actor. */
 struct DateTime;
 void StateRequest_Set(struct StateRequest *request, int state, int priority, int arg);
 void StateRequest_DestructPart(void);
@@ -428,6 +436,16 @@ int FieldActor_PollTarget(struct FieldActor *actor);
 void FieldActor_PollRequest810(struct FieldActor *actor);
 int FieldActor_FindTarget(struct FieldActor *actor, const Vec3 *point, int mode, int tool);
 int FieldActor_TargetKind(struct FieldActor *actor);
+int FieldActor_SlowGently(int value, int floor);
+int FieldActor_Slow(int value, int floor);
+int FieldActor_StepDown(int value, int floor, int step);
+int FieldActor_SpeedUp(int value, int ceiling);
+int FieldActor_TurnAngleSlowly(s16 *angle, int target);
+int FieldActor_TurnAngleStep(s16 *angle, int target);
+int FieldActor_TurnAngle(s16 *angle, int target, int rate, int max_step, int min_step);
+void FieldActor_EaseValue(fx32 *value, int target);
+void FieldActor_EaseValueBy(fx32 *value, int target, fx32 rate, int max_step, int min_step);
+int FieldActor_NoteObjectUnderfoot(int player);
 
 /* field_actor_looks.c: the looks, from the player's record: the palettes, the clothes, the
  * head (part B), part C, and the sun level. */
@@ -453,6 +471,7 @@ unsigned int FieldActor_RecordHeadKind(struct FieldActor *actor);
 void FieldActor_RecordHeadItem(u16 *item, struct FieldActor *actor);
 void FieldActor_RecordCloth(u16 *item, struct FieldActor *actor);
 int FieldActor_RecordFlag249A(struct FieldActor *actor);
+u8 *FieldActor_Record(struct FieldActor *actor);
 
 /* field_actor_anim.c: the body's animations, the held item's and the face's. */
 void FieldActor_PlayHeldAnimation(struct FieldActor *actor, u16 *item, int animation, int frames);

@@ -13,9 +13,11 @@
  * slot or swapped with the item of a taken one; putting it down writes the pocket slot back
  * through the grid's object (func_ov094_0229aa14, func_0209a088).
  *
- * Its setup (func_ov099_0229d994, not here) also puts item 0x11a9 in pocket slot 0 and item
- * 0x1548 in slot 2. Which part of the game opens the scene is not known; the name says only
- * what it shows. */
+ * The scene runs in two ways, as state flag 2 says (func_0206fe54/func_0206fe60): by the touch
+ * (sub states 0-3, the cursor sprite hidden) or by the keys (sub states 4-7, the cursor sprite
+ * shown). Y in the keys' idle sub state closes it. Its setup (PocketsView_Setup) also puts
+ * item 0x11a9 in pocket slot 0 and item 0x1548 in slot 2. Which part of the game opens the
+ * scene is not known; the name says only what it shows. */
 #ifndef CLEAN_OV099_POCKETS_VIEW_H
 #define CLEAN_OV099_POCKETS_VIEW_H
 
@@ -166,5 +168,53 @@ void PocketsView_UpdateObject94(PocketsView *self);
 void PocketsView_GlideHeldTo(PocketsView *self, u8 place, u32 steps);
 void PocketsView_PickUpWithCursor(PocketsView *self, int place);
 void PocketsView_PickUpWithTouch(PocketsView *self, int place);
+void PocketsView_TouchPlace(PocketsView *self, u8 place);
+void PocketsView_EndAction(PocketsView *self);
+void PocketsView_EndActionAtCursor(PocketsView *self);
+void PocketsView_EndActionHidden(PocketsView *self);
+void PocketsView_WaitError(PocketsView *self);
+void PocketsView_RunActionWhenIdle(PocketsView *self);
+void PocketsView_CloseChoice(PocketsView *self);
+void PocketsView_WaitChoiceToPoint(PocketsView *self);
+void PocketsView_StepHeldGlide(PocketsView *self);
+void PocketsView_FinishSwapWithCursor(PocketsView *self);
+void PocketsView_SwapWithCursor(PocketsView *self);
+void PocketsView_PutDownWithCursor(PocketsView *self);
+void PocketsView_FinishPickUp(PocketsView *self);
+void PocketsView_PickUpOnTurn(PocketsView *self);
+void PocketsView_WaitCursorAnim(PocketsView *self);
+void PocketsView_WaitAnimToSubState10(PocketsView *self);
+void PocketsView_WaitCursorGlide(PocketsView *self);
+void PocketsView_PickActionRow(PocketsView *self);
+void PocketsView_ActionChoiceByKeys(PocketsView *self);
+void PocketsView_MoveHeldItemByKeys(PocketsView *self);
+void PocketsView_IdleByKeys(PocketsView *self);
+void PocketsView_DragHeldItem(PocketsView *self);
+void PocketsView_ActionChoiceByTouch(PocketsView *self);
+void PocketsView_HoldTouchOnPlace(PocketsView *self);
+void PocketsView_IdleByTouch(PocketsView *self);
+int PocketsView_StepWalletSetup(PocketsView *self);
+void PocketsView_PrepareWallet(PocketsView *self);
+void PocketsView_SetUpLayer6(void);
+void PocketsView_EndFrame(PocketsView *self);
+void PocketsView_BeginFrame(PocketsView *self);
+void PocketsView_EndInteractiveFrame(PocketsView *self);
+void PocketsView_BeginInteractiveFrame(PocketsView *self);
+void PocketsView_Teardown(PocketsView *self);
+void PocketsView_Setup(PocketsView *self);
+void PocketsView_WipeOut(PocketsView *self);
+void PocketsView_StartWipeOut(PocketsView *self);
+void PocketsView_WipeIn(PocketsView *self);
+void PocketsView_StartWipeIn(PocketsView *self);
+void PocketsView_StartSetup(PocketsView *self);
+int PocketsView_RequestDelete(PocketsView *self);
+int PocketsView_Phase1Idle(void);
+int PocketsView_Phase0Idle(void);
+int PocketsView_RunInteractive(PocketsView *self);
+int PocketsView_RunState(PocketsView *self);
+int PocketsView_Draw(PocketsView *self);
+int PocketsView_Close(PocketsView *self);
+int PocketsView_Start(PocketsView *self);
+PocketsView *PocketsView_New(void);
 
 #endif

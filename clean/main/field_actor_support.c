@@ -84,11 +84,7 @@ extern void func_02054848(void *model, int a);
 extern int func_02055d0c(void *model, void *out, int joint);
 extern void func_0205eae0(void *held, int pose, int a, int b);
 
-/* Turning and easing. */
-extern int func_02011404(s16 *angle, int target, int rate, int max_step, int min_step);
-extern int func_020113e0(s16 *angle, int target);
-extern void func_02011490(fx32 *value, int target);
-extern void func_020114b0(fx32 *value, int target, fx32 rate, int max_step, int min_step);
+/* Turning. */
 extern int func_02064558(int angle);
 
 /* Sounds and effects. */
@@ -100,7 +96,6 @@ extern int func_020b1cb0(const Vec3 *point);
 extern int func_0202f188(void);
 extern int func_0208ffac(void);
 extern int func_0208ff98(void);
-extern void *func_02011368(FieldActor *actor);
 extern s16 func_020997a8(void *record);
 extern void func_02099794(int record, u16 date);
 extern u16 *func_0209d358(int a, int b);
@@ -122,6 +117,25 @@ extern int func_020431c8(int request);
 extern void func_020431b8(int target);
 extern const u8 *func_02042fc4(int target);
 extern int func_ov004_0222ac24(FieldActor *actor, const int *tile, int number, int priority, int arg);
+
+/* The object under the actor (FieldActor_NoteObjectUnderfoot): whether a player's actor has a
+ * flag (named DWC_Alloc in the symbols, though it is not NitroDWC's), the object on a point (-1
+ * for none), noting it and its kind in the actor of player 4, and what follows. */
+extern int DWC_Alloc(int flag, int player);
+extern int func_02030890(const Vec3 *point);
+extern void func_020953c4(const int *object);
+extern void func_020953a4(const int *kind);
+extern void *func_020b5e10(void);
+extern int func_020b6044(void *table, int object, int *kind, int *other);
+extern int func_0209d780(int object);
+extern int func_020b67ac(void);
+extern int func_0203e110(void);
+extern int func_0203e420(void);
+extern int func_02096190(int player);
+extern int func_0203e444(int a, int object);
+
+/* No object on the point (func_02030890). */
+#define NO_OBJECT (-1)
 
 /* No target held (FieldActor.target, unk_810). */
 #define NO_TARGET (-1)
@@ -595,15 +609,15 @@ int FieldActor_StateFlagA20(FieldActor *actor, int state)
 }
 CLEAN_AS(func_0200f05c, FieldActor_StateFlagA20)
 
-/* func_0200f098: while flag 0x15 is set the head turns (func_02011404, by 0x400) towards the
+/* func_0200f098: while flag 0x15 is set the head turns (FieldActor_TurnAngle, by 0x400) towards the
  * pitch and yaw at 0x460 and 0x462; once all four are 0 the flag is cleared. */
 void FieldActor_TurnHeadBack(FieldActor *actor)
 {
     if (!FieldActor_TestFlag(actor, 0x15)) {
         return;
     }
-    func_02011404(&actor->head_pitch, FIELD_ACTOR_FIELD(actor, s16, 0x460), 0x400, 0x1770000, 0xc0000);
-    func_02011404(&actor->head_yaw, FIELD_ACTOR_FIELD(actor, s16, 0x462), 0x400, 0x1770000, 0xc0000);
+    FieldActor_TurnAngle(&actor->head_pitch, FIELD_ACTOR_FIELD(actor, s16, 0x460), 0x400, 0x1770000, 0xc0000);
+    FieldActor_TurnAngle(&actor->head_yaw, FIELD_ACTOR_FIELD(actor, s16, 0x462), 0x400, 0x1770000, 0xc0000);
     if (FIELD_ACTOR_FIELD(actor, s16, 0x460) == 0 && FIELD_ACTOR_FIELD(actor, s16, 0x462) == 0 && actor->head_pitch == 0 &&
         actor->head_yaw == 0) {
         FieldActor_ClearFlag(actor, 0x15);
@@ -957,7 +971,7 @@ CLEAN_AS(func_0200f7ac, FieldActor_StoreSunDate)
  * into `stored`, and their order (func_0209e3ac, fields 0x3f): -1, 0 or 1. */
 int FieldActor_CompareSunDate(FieldActor *actor, DateTime *now, DateTime *stored)
 {
-    u16 date = (u16) func_020997a8(func_02011368(actor));
+    u16 date = (u16) func_020997a8(FieldActor_Record(actor));
     func_0209e474(now);
     MI_CpuCopy8(now, stored, 8);
     stored->year = (u8) PACKED_YEAR(date);
@@ -1061,11 +1075,11 @@ void FieldActor_TileAhead(Vec3 *out, FieldActor *actor)
 }
 CLEAN_AS(func_0200fa8c, FieldActor_TileAhead)
 
-/* Turns the body towards `target` at `rate` (func_02011404); whether it is there. */
+/* Turns the body towards `target` at `rate` (FieldActor_TurnAngle); whether it is there. */
 static int field_actor_support_turn_to(FieldActor *actor, int target, int rate)
 {
     s16 yaw = actor->yaw;
-    int arrived = func_02011404(&yaw, target, rate, 0x1770000, 0xc0000) == 0;
+    int arrived = FieldActor_TurnAngle(&yaw, target, rate, 0x1770000, 0xc0000) == 0;
     FieldActor_SetYaw(actor, &yaw);
     return arrived;
 }
@@ -1084,29 +1098,29 @@ int FieldActor_TurnToZero(FieldActor *actor, int rate)
 }
 CLEAN_AS(func_0200faf0, FieldActor_TurnToZero)
 
-/* func_0200fb34: the body turns towards `yaw` (func_020113e0). */
+/* func_0200fb34: the body turns towards `yaw` (FieldActor_TurnAngleStep). */
 void FieldActor_TurnTowards(FieldActor *actor, int yaw)
 {
     s16 turned = actor->yaw;
-    func_020113e0(&turned, yaw);
+    FieldActor_TurnAngleStep(&turned, yaw);
     FieldActor_SetYaw(actor, &turned);
 }
 CLEAN_AS(func_0200fb34, FieldActor_TurnTowards)
 
-/* func_0200fb58: the position eases towards (x, z) (func_02011490). */
+/* func_0200fb58: the position eases towards (x, z) (FieldActor_EaseValue). */
 void FieldActor_EaseToXZ(FieldActor *actor, int x, int z)
 {
-    func_02011490(&actor->position.x, x);
-    func_02011490(&actor->position.z, z);
+    FieldActor_EaseValue(&actor->position.x, x);
+    FieldActor_EaseValue(&actor->position.z, z);
 }
 CLEAN_AS(func_0200fb58, FieldActor_EaseToXZ)
 
-/* func_0200fb7c: the position eases towards (x, z) (func_020114b0: 0xe66 of the way, at most
+/* func_0200fb7c: the position eases towards (x, z) (FieldActor_EaseValueBy: 0xe66 of the way, at most
  * 0x4cd, the rest when within 0x31) and the body turns towards `yaw`. */
 void FieldActor_EaseToPose(FieldActor *actor, int x, int z, int yaw)
 {
-    func_020114b0(&actor->position.x, x, 0x0e66, 0x04cd, 0x31);
-    func_020114b0(&actor->position.z, z, 0x0e66, 0x04cd, 0x31);
+    FieldActor_EaseValueBy(&actor->position.x, x, 0x0e66, 0x04cd, 0x31);
+    FieldActor_EaseValueBy(&actor->position.z, z, 0x0e66, 0x04cd, 0x31);
     FieldActor_TurnTowards(actor, yaw);
 }
 CLEAN_AS(func_0200fb7c, FieldActor_EaseToPose)
@@ -1319,3 +1333,183 @@ int FieldActor_TargetKind(FieldActor *actor)
     return *(const int *) (func_02042fc4(actor->target) + 0xc);
 }
 CLEAN_AS(func_0200ffec, FieldActor_TargetKind)
+
+/* ---- Speeds, angles and values moved a step towards a target */
+
+/* Sums and differences of 32-bit values wrap as the ARM's do. */
+static int field_actor_support_add32(int a, int b)
+{
+    return (int) ((u32) a + (u32) b);
+}
+
+static int field_actor_support_sub32(int a, int b)
+{
+    return (int) ((u32) a - (u32) b);
+}
+
+static int field_actor_support_abs32(int a)
+{
+    return a < 0 ? (int) (0u - (u32) a) : a;
+}
+
+/* A turn, and half of one, in 20.12 angle units (an angle of 0x10000 is a turn). */
+#define FULL_TURN_FX 0x10000000
+#define HALF_TURN_FX 0x08000000
+
+/* func_0201138c: `value` less 0x8f, not below `floor` (a speed slowing gently). */
+int FieldActor_SlowGently(int value, int floor)
+{
+    return FieldActor_StepDown(value, floor, 0x8f);
+}
+CLEAN_AS(func_0201138c, FieldActor_SlowGently)
+
+/* func_02011398: `value` less 0x9c, not below `floor` (a speed slowing). */
+int FieldActor_Slow(int value, int floor)
+{
+    return FieldActor_StepDown(value, floor, 0x9c);
+}
+CLEAN_AS(func_02011398, FieldActor_Slow)
+
+/* func_020113a4: `value` less `step`, not below `floor`. */
+int FieldActor_StepDown(int value, int floor, int step)
+{
+    int lowered = field_actor_support_sub32(value, step);
+    return lowered >= floor ? lowered : floor;
+}
+CLEAN_AS(func_020113a4, FieldActor_StepDown)
+
+/* func_020113b0: `value` plus 0x93, not above `ceiling` (a speed rising). */
+int FieldActor_SpeedUp(int value, int ceiling)
+{
+    int raised = field_actor_support_add32(value, 0x93);
+    return raised <= ceiling ? raised : ceiling;
+}
+CLEAN_AS(func_020113b0, FieldActor_SpeedUp)
+
+/* func_020113bc: FieldActor_TurnAngle at the rate 0x666, by at most 0xbb8 and at least 0xc0. */
+int FieldActor_TurnAngleSlowly(s16 *angle, int target)
+{
+    return FieldActor_TurnAngle(angle, target, 0x666, 0x00bb8000, 0x000c0000);
+}
+CLEAN_AS(func_020113bc, FieldActor_TurnAngleSlowly)
+
+/* func_020113e0: FieldActor_TurnAngle at the rate 0x800, by at most 0x1770 and at least 0xc0. */
+int FieldActor_TurnAngleStep(s16 *angle, int target)
+{
+    return FieldActor_TurnAngle(angle, target, 0x800, 0x01770000, 0x000c0000);
+}
+CLEAN_AS(func_020113e0, FieldActor_TurnAngleStep)
+
+/* func_02011404: `angle` turned towards `target` the short way round, by the fraction `rate`
+ * (20.12) of the distance, at most `max_step` (20.12); a step of `min_step` or less lands on the
+ * target. What is left to turn (`target` less the new angle, as 16 bits); 0 once there.
+ * QUIRK: the angles are compared as they are, so a `target` outside -0x8000..0x7fff never
+ * equals the angle; the arithmetic is in 20.12 units of the 16-bit angle. */
+int FieldActor_TurnAngle(s16 *angle, int target, int rate, int max_step, int min_step)
+{
+    s16 current = *angle;
+    if (current == target) {
+        return 0;
+    }
+    int from = current * 0x1000;
+    int to = (int) ((u32) target << 12);
+    int distance = field_actor_support_abs32(field_actor_support_sub32(to, from));
+    int the_other_way = distance > HALF_TURN_FX;
+    int step = FX_MulFunc(rate, the_other_way ? FULL_TURN_FX - distance : distance);
+    if (step <= min_step) {
+        *angle = (s16) target;
+        return 0;
+    }
+    if (step > max_step) {
+        step = max_step;
+    }
+    int up = to >= from;
+    if (the_other_way) {
+        up = !up;
+    }
+    int turned = up ? field_actor_support_add32(from, step) : field_actor_support_sub32(from, step);
+    *angle = (s16) (turned >> 12);
+    return (s16) field_actor_support_sub32(target, *angle);
+}
+CLEAN_AS(func_02011404, FieldActor_TurnAngle)
+
+/* func_02011490: FieldActor_EaseValueBy with 0xe66 of the distance, at most 0x1ec and at least
+ * 0x31. */
+void FieldActor_EaseValue(fx32 *value, int target)
+{
+    FieldActor_EaseValueBy(value, target, 0x0e66, 0x01ec, 0x31);
+}
+CLEAN_AS(func_02011490, FieldActor_EaseValue)
+
+/* func_020114b0: `value` moved towards `target` by the fraction `rate` (20.12) of the distance,
+ * at most `max_step` and at least `min_step`; closer than `min_step` it lands on the target.
+ * QUIRK: a step that rounds to 0 counts as one upwards (only possible with a small `rate`). */
+void FieldActor_EaseValueBy(fx32 *value, int target, fx32 rate, int max_step, int min_step)
+{
+    if (*value == target) {
+        return;
+    }
+    int distance = field_actor_support_sub32(target, *value);
+    if (field_actor_support_abs32(distance) < min_step) {
+        *value = target;
+        return;
+    }
+    int step = FX_MulFunc(distance, rate);
+    int size = field_actor_support_abs32(step);
+    if (size > max_step) {
+        size = max_step;
+    } else if (size < min_step) {
+        size = min_step;
+    } else {
+        *value = field_actor_support_add32(*value, step);
+        return;
+    }
+    *value = step >= 0 ? field_actor_support_add32(*value, size) : field_actor_support_sub32(*value, size);
+}
+CLEAN_AS(func_020114b0, FieldActor_EaseValueBy)
+
+/* func_02011520: run after each frame's update. For this console's player, unless its actor has
+ * flag 0xb, 0x13 or 5 (DWC_Alloc): the object at the position of player 4's actor
+ * (func_02030890, -1 for none) is noted (func_020953c4), its kind looked up in func_020b5e10's
+ * table (func_020b6044) and noted (func_020953a4). For kinds 1, 2 and 4, or an object
+ * func_0209d780 accepts, func_0203e110 (only while func_020b67ac) and func_0203e420 run;
+ * otherwise func_0203e444 with func_02096190(4) and the object. The result is the answer that
+ * stopped it (0, a flag, -1) or the last call's; the caller drops it. */
+int FieldActor_NoteObjectUnderfoot(int player)
+{
+    static const int blocking_flags[] = {0xb, 0x13, 5};
+
+    int result = Session_IsLocalPlayer(data_020ccf94, player);
+    if (result == 0) {
+        return result;
+    }
+    for (size_t i = 0; i < sizeof blocking_flags / sizeof blocking_flags[0]; i++) {
+        result = DWC_Alloc(blocking_flags[i], player);
+        if (result != 0) {
+            return result;
+        }
+    }
+    const Vec3 *position = func_02095794(4);
+    if (position == NULL) {
+        return 0;
+    }
+    int object = func_02030890(position);
+    if (object == NO_OBJECT) {
+        return object;
+    }
+    func_020953c4(&object);
+    int kind;
+    int other;
+    if (func_020b6044(func_020b5e10(), object, &kind, &other) == 0) {
+        return 0;
+    }
+    func_020953a4(&kind);
+    if (kind == 1 || kind == 2 || kind == 4 || func_0209d780(object) != 0) {
+        if (func_020b67ac() != 0) {
+            func_0203e110();
+        }
+        return func_0203e420();
+    }
+    return func_0203e444(func_02096190(4), object);
+}
+CLEAN_AS(func_02011520, FieldActor_NoteObjectUnderfoot)

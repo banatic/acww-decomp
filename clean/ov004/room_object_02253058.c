@@ -17,6 +17,7 @@
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"
+#include "room_object_life.h"
 #include "room_object_map.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
@@ -36,7 +37,7 @@ static_assert(offsetof(RoomObject02253058, mode) == 0x858, "mode");
 static_assert(offsetof(RoomObject02253058, item) == 0x85c, "item");
 static_assert(offsetof(RoomObject02253058, state) == 0x85e, "state");
 static_assert(offsetof(RoomObject02253058, glows) == 0x860, "glows");
-static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size func_ov004_0221882c allocates");
+static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size RoomObject02253058_Create allocates");
 
 #define RECEIVER_OFFSET 0xec
 #define SLOT_70_VALUE 0xff /* the second argument given with a state (vtable slot 0x70) */
@@ -67,6 +68,12 @@ static_assert(sizeof(RoomObject02253058) == 0x8b8, "the size func_ov004_0221882c
 #define TALK_STATE 4    /* the receiver's state byte with "obj_etc_player" */
 #define DONE_EVENT 0x2e /* queued in func_020b5e10's object when the sequence is done */
 #define DONE_EVENT_ARG 2
+#define NO_ITEM 0xfff1 /* RoomObject02253058.item when none is kept */
+#define ROOM_OBJECT_02253058_SIZE 0x8b8
+
+/* The class's vtables, and its receiver part's. */
+extern const u8 data_ov004_02253058[];
+extern const u8 data_ov004_02253104[];
 
 /* The receiver's names: "obj_etc_player", "sp_etc_sequence4" and "sp_etc_sequence2". */
 extern const char data_ov004_022531f0[];
@@ -122,9 +129,6 @@ extern s32 data_020ca0ec;
 extern int func_ov004_0223c700(void);
 extern int func_020b2300(void);
 extern int func_020b67ac(void);
-/* Whether the state is at least 1. */
-extern int func_ov004_0221876c(RoomObject02253058 *object);
-
 /* The town's map: a cell's point and a point's cell, whether a cell holds something
  * (func_ov004_0223c5b8, func_020308a4 gives -1 for nothing), the same for the cell of a point,
  * and the grid of the room's objects. */
@@ -988,10 +992,68 @@ int RoomObject02253058_Start(RoomObject02253058 *object)
 CLEAN_AS(func_ov004_022186cc, RoomObject02253058_Start)
 
 /* func_ov004_02218734 (vtable slot 0x48): whether it is busy for the scene: the session not
- * linked, past PUSHED (func_ov004_0221876c) and marked to be pushed or talked to. */
+ * linked, past PUSHED (RoomObject02253058_IsPastPushed) and marked to be pushed or talked to. */
 int RoomObject02253058_Vfunc48(RoomObject02253058 *object)
 {
-    return Session_IsLinked(data_020ccf94) == 0 && func_ov004_0221876c(object) != 0 &&
+    return Session_IsLinked(data_020ccf94) == 0 && RoomObject02253058_IsPastPushed(object) != 0 &&
            object->mode != ROOM_OBJECT_02253058_MODE_NONE;
 }
 CLEAN_AS(func_ov004_02218734, RoomObject02253058_Vfunc48)
+
+/* func_ov004_0221876c: whether it has left PUSHED (any state from WATCH on). */
+int RoomObject02253058_IsPastPushed(RoomObject02253058 *object)
+{
+    return object->state >= ROOM_OBJECT_02253058_WATCH;
+}
+CLEAN_AS(func_ov004_0221876c, RoomObject02253058_IsPastPushed)
+
+static void RoomObject02253058_set_vtables(RoomObject02253058 *object)
+{
+    object->base.vtable = (const RoomObjectVtable *) data_ov004_02253058;
+    object->base.receiver_vtable = data_ov004_02253104;
+}
+
+/* func_ov004_02218780 (the deleting destructor, vtable slot 0x44): the glows taken down, then
+ * the base class's, and the memory given back. */
+RoomObject02253058 *RoomObject02253058_Delete(RoomObject02253058 *object)
+{
+    RoomObject02253058_set_vtables(object);
+    GlowSet_Destruct(&object->glows);
+    RoomObject_DestructBase(&object->base);
+    RoomObject_Free(object);
+    return object;
+}
+CLEAN_AS(func_ov004_02218780, RoomObject02253058_Delete)
+
+/* func_ov004_022187b8 (the destructor, vtable slot 0x40): the glows taken down, then the base
+ * class's. */
+RoomObject02253058 *RoomObject02253058_Destroy(RoomObject02253058 *object)
+{
+    RoomObject02253058_set_vtables(object);
+    GlowSet_Destruct(&object->glows);
+    RoomObject_DestructBase(&object->base);
+    return object;
+}
+CLEAN_AS(func_ov004_022187b8, RoomObject02253058_Destroy)
+
+/* func_ov004_022187ec (the constructor): no item kept and the glows built. Its other fields are
+ * left as the allocation zeroed them. */
+RoomObject02253058 *RoomObject02253058_Construct(RoomObject02253058 *object)
+{
+    RoomObject_ConstructBase(&object->base);
+    RoomObject02253058_set_vtables(object);
+    object->item = NO_ITEM;
+    GlowSet_Construct(&object->glows);
+    return object;
+}
+CLEAN_AS(func_ov004_022187ec, RoomObject02253058_Construct)
+
+/* func_ov004_0221882c: a new one from the room's heap; nothing when it has no room. */
+void RoomObject02253058_Create(void)
+{
+    RoomObject02253058 *object = RoomObject_Alloc(ROOM_OBJECT_02253058_SIZE);
+    if (object != NULL) {
+        RoomObject02253058_Construct(object);
+    }
+}
+CLEAN_AS(func_ov004_0221882c, RoomObject02253058_Create)

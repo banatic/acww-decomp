@@ -143,5 +143,10 @@ int RoomObject02253058_Vfunc24(void);
 int RoomObject02253058_Update(RoomObject02253058 *object);
 int RoomObject02253058_Start(RoomObject02253058 *object);
 int RoomObject02253058_Vfunc48(RoomObject02253058 *object);
+int RoomObject02253058_IsPastPushed(RoomObject02253058 *object);
+RoomObject02253058 *RoomObject02253058_Delete(RoomObject02253058 *object);
+RoomObject02253058 *RoomObject02253058_Destroy(RoomObject02253058 *object);
+RoomObject02253058 *RoomObject02253058_Construct(RoomObject02253058 *object);
+void RoomObject02253058_Create(void);
 
 #endif

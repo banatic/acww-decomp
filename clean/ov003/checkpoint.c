@@ -1,11 +1,24 @@
 /* The checkpoint: its files and the town's design on it (checkpoint.h). */
 #include "checkpoint.h"
 
+#include "autoload_2/heap.h" /* Heap_FreeAux, Heap_AllocAuxZeroed */
 #include "clean.h"
 
 static_assert(offsetof(Checkpoint, model) == 0x198, "model");
 static_assert(offsetof(Checkpoint, design) == 0x2b4, "design");
 static_assert(offsetof(CheckpointDesign, texture_file) == 0x28, "texture file");
+static_assert(offsetof(Checkpoint, position) == 0x5c, "position");
+static_assert(offsetof(Checkpoint, receiver_vtable) == 0xec, "receiver");
+static_assert(offsetof(Checkpoint, model_object) == 0x13c, "model object");
+static_assert(sizeof(Checkpoint) == 0x5a0, "the size Checkpoint_New allocates");
+
+#define CHECKPOINT_RECEIVER_OFFSET 0xec
+/* The edges func_02030920 makes solid: all four. */
+#define CHECKPOINT_SOLID_EDGES 15
+
+/* The vtables: the class's and its receiver part's. */
+extern const u8 data_ov003_02238934[];
+extern const u8 data_ov003_022389f8[];
 
 /* "w", the material the design goes on. */
 extern const char data_ov003_02238a70[];
@@ -43,6 +56,15 @@ extern int func_020b3858(void *record);
 /* A letter for the textures (from data_ov003_0223666c by func_020b6598). */
 extern signed char func_ov003_022203dc(void);
 extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
+/* The model object's animation: advanced, and its frame written where it goes. */
+extern void func_02055124(void *model_object);
+/* The tile a point is on. */
+extern void func_0204f818(int *x, int *z, const Vec3 *point);
+/* Sets the collision of the edges of tile (x, z) that `edges` names (bits 0-3) to solid. */
+extern int func_02030920(int x, int z, int edges);
+/* Overlay 9's scene actor: its destructor and its constructor. */
+extern void *func_ov009_0226539c(Checkpoint *checkpoint);
+extern void *func_ov009_0226552c(Checkpoint *checkpoint);
 
 /* func_ov003_0221c430: takes the design off the material (the binding's func_020b9e2c). */
 void Checkpoint_ReleaseDesign(CheckpointDesign *design)
@@ -149,3 +171,115 @@ int Checkpoint_Style(void)
     return func_020b3858(func_020b374c(data_021f34b0));
 }
 CLEAN_AS(func_ov003_0221c588, Checkpoint_Style)
+
+/* func_ov003_0221c5a0 (vtable slot 0x0c, leaving the scene): takes the design off; always 1. */
+int Checkpoint_Leave(Checkpoint *checkpoint)
+{
+    Checkpoint_ReleaseDesign(&checkpoint->design);
+    return 1;
+}
+CLEAN_AS(func_ov003_0221c5a0, Checkpoint_Leave)
+
+/* func_ov003_0221c5b8 (vtable slot 0x24): always 1. */
+int Checkpoint_Slot24(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov003_0221c5b8, Checkpoint_Slot24)
+
+/* func_ov003_0221c5bc (vtable slot 0x18, its update): the model's animation goes on; always
+ * 1. */
+int Checkpoint_Update(Checkpoint *checkpoint)
+{
+    func_02055124(checkpoint->model_object);
+    return 1;
+}
+CLEAN_AS(func_ov003_0221c5bc, Checkpoint_Update)
+
+/* func_ov003_0221c5d4 (vtable slot 0x70, setting it up): puts the town's design on the model,
+ * as Checkpoint_RefreshDesign does, and makes the five tiles of the row before its own tile
+ * (x - 2 to x + 2 at z - 1) solid on every edge; always 1. */
+int Checkpoint_Init(Checkpoint *checkpoint)
+{
+    void *model = checkpoint->model;
+    void *source = func_020b3848(func_020b374c(data_021f34b0));
+    Checkpoint_PutDesign(&checkpoint->design, model, source);
+
+    int x;
+    int z;
+    func_0204f818(&x, &z, &checkpoint->position);
+    for (int dx = -2; dx <= 2; dx++) {
+        func_02030920(x + dx, z - 1, CHECKPOINT_SOLID_EDGES);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_0221c5d4, Checkpoint_Init)
+
+/* The vtables set back, the design part destroyed, then overlay 9's destructor. */
+static void checkpoint_destroy_parts(Checkpoint *checkpoint)
+{
+    checkpoint->vtable = data_ov003_02238934;
+    checkpoint->receiver_vtable = data_ov003_022389f8;
+    Checkpoint_DestroyDesign(&checkpoint->design);
+    func_ov009_0226539c(checkpoint);
+}
+
+/* func_ov003_0221c630 (vtable slot 0x44, the deleting destructor): the destructor's work, then
+ * the memory freed. */
+Checkpoint *Checkpoint_DestroyAndFree(Checkpoint *checkpoint)
+{
+    checkpoint_destroy_parts(checkpoint);
+    Heap_FreeAux(checkpoint);
+    return checkpoint;
+}
+CLEAN_AS(func_ov003_0221c630, Checkpoint_DestroyAndFree)
+
+/* func_ov003_0221c668 (vtable slot 0x40): the destructor, without freeing. */
+Checkpoint *Checkpoint_Destroy(Checkpoint *checkpoint)
+{
+    checkpoint_destroy_parts(checkpoint);
+    return checkpoint;
+}
+CLEAN_AS(func_ov003_0221c668, Checkpoint_Destroy)
+
+/* func_ov003_0221c69c: the constructor: overlay 9's, the vtables, then the design part's. */
+Checkpoint *Checkpoint_Construct(Checkpoint *checkpoint)
+{
+    func_ov009_0226552c(checkpoint);
+    checkpoint->vtable = data_ov003_02238934;
+    checkpoint->receiver_vtable = data_ov003_022389f8;
+    Checkpoint_ConstructDesign(&checkpoint->design);
+    return checkpoint;
+}
+CLEAN_AS(func_ov003_0221c69c, Checkpoint_Construct)
+
+/* func_ov003_0221c6cc (the class's entry in the overlay's table of profiles): allocates and
+ * constructs one; nothing keeps the pointer here. */
+void Checkpoint_New(void)
+{
+    Checkpoint *checkpoint = Heap_AllocAuxZeroed(sizeof(Checkpoint));
+    if (checkpoint != NULL) {
+        Checkpoint_Construct(checkpoint);
+    }
+}
+CLEAN_AS(func_ov003_0221c6cc, Checkpoint_New)
+
+/* The checkpoint around its receiver part, as the receiver vtable's thunks find it. */
+static Checkpoint *checkpoint_from_receiver(void *receiver)
+{
+    return (Checkpoint *) (void *) ((u8 *) receiver - CHECKPOINT_RECEIVER_OFFSET);
+}
+
+/* _ZThn236_N18Obj_ov003_02238934D0Ev (receiver slot 0x04): Checkpoint_DestroyAndFree. */
+Checkpoint *Checkpoint_ReceiverDestroyAndFree(void *receiver)
+{
+    return Checkpoint_DestroyAndFree(checkpoint_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238934D0Ev, Checkpoint_ReceiverDestroyAndFree)
+
+/* _ZThn236_N18Obj_ov003_02238934D1Ev (receiver slot 0x00): Checkpoint_Destroy. */
+Checkpoint *Checkpoint_ReceiverDestroy(void *receiver)
+{
+    return Checkpoint_Destroy(checkpoint_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov003_02238934D1Ev, Checkpoint_ReceiverDestroy)

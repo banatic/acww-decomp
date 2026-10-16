@@ -61,8 +61,11 @@ extern u32 data_020cc7d0;
 extern void func_0206435c(int from, int to, const void *from_name, const void *to_name);
 extern void func_0206439c(int from, int to, const void *from_name, const void *to_name);
 
+/* A player's record number, and the record of a number (NULL for none). */
+extern u8 func_02096284(int player);
+extern u8 *func_0209847c(int number);
+
 /* The player's record of the actor (NULL for none) and its fields. */
-extern u8 *func_02011368(FieldActor *actor);
 extern u16 *func_02099728(u8 *record);      /* the held item (slot 5, 0x2406) */
 extern u16 *func_02099710(u8 *record);      /* the clothes (slot 2, 0x2408) */
 extern u16 *func_020996f8(u8 *record);      /* the head's item (slot 4, 0x240a) */
@@ -200,7 +203,7 @@ void FieldActor_ApplyHead(FieldActor *actor)
     int second;
     func_0205e708(FieldActor_RecordFlag249A(actor), FIELD_ACTOR_HEAD_KIND(actor), &item, &model_kind, &second);
     u16 loaded = FIELD_ACTOR_HEAD_ITEM(actor);
-    func_0205e348(head, model_kind, second, &loaded, (int) (uintptr_t) func_02011368(actor));
+    func_0205e348(head, model_kind, second, &loaded, (int) (uintptr_t) FieldActor_Record(actor));
     FieldActor_SetPalettes(actor, FIELD_ACTOR_HEAD_HAIR_COLOR(actor), FieldActor_SunLevel(actor, 0));
 
     int first_texture = func_021077e8(func_0205e194(head, 0));
@@ -337,7 +340,7 @@ CLEAN_AS(func_0201063c, FieldActor_BindCloth)
 /* func_02010680: the clothes become `item` (func_0205d3d4, with the player's record). */
 void FieldActor_SetCloth(FieldActor *actor, u16 *item)
 {
-    func_0205d3d4(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH), item, (int) (uintptr_t) func_02011368(actor), 0, 0);
+    func_0205d3d4(field_actor_looks_at(actor, FIELD_ACTOR_CLOTH), item, (int) (uintptr_t) FieldActor_Record(actor), 0, 0);
 }
 CLEAN_AS(func_02010680, FieldActor_SetCloth)
 
@@ -374,13 +377,13 @@ void FieldActor_SetPalettes(FieldActor *actor, int hair_color, int sun_level)
 }
 CLEAN_AS(func_020106a8, FieldActor_SetPalettes)
 
-/* ---- The player's record (func_02011368, NULL for none) */
+/* ---- The player's record (FieldActor_Record, NULL for none) */
 
 /* func_020110c4: the held item (slot 5); ITEM_NONE without a record. */
 void FieldActor_RecordHeldItem(u16 *item, FieldActor *actor)
 {
     *item = ITEM_NONE;
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     if (record != NULL) {
         *item = *func_02099728(record);
     }
@@ -391,7 +394,7 @@ CLEAN_AS(func_020110c4, FieldActor_RecordHeldItem)
  * 0 without a record. */
 int FieldActor_RecordFace(FieldActor *actor)
 {
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     int face = 0x20;
     if (record != NULL) {
         face = (int) func_0209984c(record);
@@ -406,7 +409,7 @@ CLEAN_AS(func_020110e8, FieldActor_RecordFace)
 /* func_0201111c: the record's flag 0 (bit 0 of its words at 0x23f8); 0 without a record. */
 int FieldActor_RecordFlag0(FieldActor *actor)
 {
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     if (record == NULL) {
         return 0;
     }
@@ -418,7 +421,7 @@ CLEAN_AS(func_0201111c, FieldActor_RecordFlag0)
  * REQUIRES: the actor's player has a record (without one, the halfword at 0x240c is read). */
 void FieldActor_RecordPartCItem(u16 *item, FieldActor *actor)
 {
-    *item = *func_020996e0(func_02011368(actor));
+    *item = *func_020996e0(FieldActor_Record(actor));
 }
 CLEAN_AS(func_02011138, FieldActor_RecordPartCItem)
 
@@ -455,7 +458,7 @@ u8 FieldActor_SunLevel(FieldActor *actor, int store)
     if (FieldActor_LinkedNotPlayer0(actor) != 0) {
         linked = 1;
     }
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     DateTime now = {0};
     DateTime stored = {0};
     int order = FieldActor_CompareSunDate(actor, &now, &stored);
@@ -496,7 +499,7 @@ CLEAN_AS(func_02011150, FieldActor_SunLevel)
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243d is read). */
 unsigned int FieldActor_RecordSunLevel(FieldActor *actor)
 {
-    return func_020997d0(func_02011368(actor));
+    return func_020997d0(FieldActor_Record(actor));
 }
 CLEAN_AS(func_020112bc, FieldActor_RecordSunLevel)
 
@@ -505,7 +508,7 @@ CLEAN_AS(func_020112bc, FieldActor_RecordSunLevel)
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243d is read). */
 unsigned int FieldActor_RecordHairColor(FieldActor *actor)
 {
-    return func_020997f8(func_02011368(actor));
+    return func_020997f8(FieldActor_Record(actor));
 }
 CLEAN_AS(func_020112d0, FieldActor_RecordHairColor)
 
@@ -514,14 +517,14 @@ CLEAN_AS(func_020112d0, FieldActor_RecordHairColor)
  * REQUIRES: the actor's player has a record (without one, the byte at 0x243c is read). */
 unsigned int FieldActor_RecordHeadKind(FieldActor *actor)
 {
-    return func_02099824(func_02011368(actor));
+    return func_02099824(FieldActor_Record(actor));
 }
 CLEAN_AS(func_020112e4, FieldActor_RecordHeadKind)
 
 /* func_020112f8: the head's item (slot 4); ITEM_NONE without a record. */
 void FieldActor_RecordHeadItem(u16 *item, FieldActor *actor)
 {
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     *item = ITEM_NONE;
     if (record != NULL) {
         *item = *func_020996f8(record);
@@ -532,7 +535,7 @@ CLEAN_AS(func_020112f8, FieldActor_RecordHeadItem)
 /* func_0201131c: the clothes (slot 2); ITEM_NONE without a record. */
 void FieldActor_RecordCloth(u16 *item, FieldActor *actor)
 {
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     *item = ITEM_NONE;
     if (record != NULL) {
         *item = *func_02099710(record);
@@ -544,10 +547,22 @@ CLEAN_AS(func_0201131c, FieldActor_RecordCloth)
  * 0 without a record. */
 int FieldActor_RecordFlag249A(FieldActor *actor)
 {
-    u8 *record = func_02011368(actor);
+    u8 *record = FieldActor_Record(actor);
     if (record == NULL) {
         return 0;
     }
     return func_020950c0((const s8 *) func_02099870(record)) != 0;
 }
 CLEAN_AS(func_02011340, FieldActor_RecordFlag249A)
+
+/* func_02011368: the record of the actor's player (func_0209847c with the player's record
+ * number, func_02096284), NULL for a number of 7 or more. */
+u8 *FieldActor_Record(FieldActor *actor)
+{
+    int number = func_02096284(actor->player);
+    if (number < 7) {
+        return func_0209847c(number);
+    }
+    return NULL;
+}
+CLEAN_AS(func_02011368, FieldActor_Record)

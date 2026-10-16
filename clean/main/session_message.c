@@ -82,12 +82,9 @@ extern void func_0209d498(const u8 *answer);
 extern void func_0209d484(const u8 *request, int slot);
 
 /* The villagers. A payload byte names a villager in its high nibble and an entry of it in its
- * low one (func_020789f4); the other unpackers read the same way. */
-extern u8 *func_0207cec0(u8 *villagers, int index); /* a villager, NULL when there is none */
-extern u8 *func_020807c0(u8 *villager, int index);  /* villager + 0x80 * index, or NULL */
-extern void func_020789f4(int *villager, int *entry, const u8 *byte);
-extern void func_020786d8(u32 *villager, u8 *operation, u8 *value, const u8 *bytes);
-extern void func_02078794(u32 *villager, u32 *entry, u16 *item, const u8 *bytes);
+ * low one (SessionVillager_UnpackEntry); the other unpackers read the same way. */
+extern u8 *func_0207cec0(u8 *villagers, int index);       /* a villager, NULL when there is none */
+extern u8 *func_020807c0(u8 *villager, int index);        /* villager + 0x80 * index, or NULL */
 extern void func_02080cd8(u8 *villager, const u16 *item); /* its item 0x7d2 */
 extern u16 *func_0207dfd4(u8 *villager, u32 index);       /* its item 0x7b0 + 2 * index, NULL from 4 */
 extern u8 *func_0207f1c8(u8 *villager);                   /* villager + 0x734 */
@@ -454,7 +451,7 @@ static u8 *session_message_villager_entry(const u8 *byte)
 {
     int villager;
     int entry;
-    func_020789f4(&villager, &entry, byte);
+    SessionVillager_UnpackEntry(&villager, &entry, byte);
     u8 *record = func_0207cec0(data_021e5a2c, villager);
     if (record == NULL) {
         return NULL;
@@ -463,8 +460,8 @@ static u8 *session_message_villager_entry(const u8 *byte)
 }
 
 /* func_02076a18: the entry the payload names gets the sender's name (func_02081e94).
- * REQUIRES: size <= 4 (the payload is one byte, func_020789ac); the original reads it into a
- * 4-byte variable. */
+ * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendEntrySenderByIndex); the original
+ * reads it into a 4-byte variable. */
 void SessionMessage_SetVillagerEntrySender(int size, int kind, int scene, int slot)
 {
     (void) kind;
@@ -481,8 +478,8 @@ CLEAN_AS(func_02076a18, SessionMessage_SetVillagerEntrySender)
 
 /* func_020769b8: the entry the payload names is filled with the sender's name
  * (func_02081e14).
- * REQUIRES: size <= 4 (the payload is one byte, func_0207892c); the original reads it into a
- * 4-byte variable. */
+ * REQUIRES: size <= 4 (the payload is one byte, SessionVillager_SendEntryFillByIndex); the original
+ * reads it into a 4-byte variable. */
 void SessionMessage_FillVillagerEntry(int size, int kind, int scene, int slot)
 {
     (void) kind;
@@ -597,7 +594,7 @@ void SessionMessage_ChangeVillagerObject(int size, int kind, u8 scene, u32 slot)
     u8 bytes[2];
     u32 index;
     Session_ReadMessage(data_020ccf94, bytes, 2);
-    func_020786d8(&index, &operation, &value, bytes);
+    SessionVillager_UnpackObjectChange(&index, &operation, &value, bytes);
     u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;
@@ -687,7 +684,7 @@ void SessionMessage_SetVillagerEntryItem(int size, int kind, u8 scene, u32 slot)
     u32 index;
     u32 entry_index;
     Session_ReadMessage(data_020ccf94, bytes, 3);
-    func_02078794(&index, &entry_index, &item, bytes);
+    SessionVillager_UnpackEntryItem(&index, &entry_index, &item, bytes);
     u8 *villager = func_0207cec0(data_021e5a2c, (int) index);
     if (villager == NULL) {
         return;

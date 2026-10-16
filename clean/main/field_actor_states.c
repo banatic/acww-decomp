@@ -240,7 +240,6 @@ extern s16 func_02073d80(NetSession *session);
 extern int func_0203f8d0(Vec3 *out, Vec3 *in);
 extern int func_0203f7d0(Vec3 *out, const Vec3 *in);
 extern void func_0205ea60(void *held);
-extern int func_02011520(int player);
 extern void func_0208ffcc(void);
 extern void func_0208ffc0(void);
 extern void func_0208ffd8(void);
@@ -353,7 +352,7 @@ void FieldActor_RunFrame(FieldActor *actor)
     FieldActor_StepFaceAnims(actor);
     FieldActor_CallUpdate(&update, actor);
 
-    func_02011520(actor->player);
+    FieldActor_NoteObjectUnderfoot(actor->player);
     int state = actor->state;
     FieldActor_ResetPitchForState(actor, state, 0);
     if (func_02073908(session, actor->player)) {
@@ -1245,8 +1244,6 @@ extern int func_0203e3f8(void);
 extern void func_02035624(int a);
 extern void func_02035684(int a, int b, int c);
 extern void func_020356c4(int a, int b, int c, int d);
-extern int func_02011404(s16 *angle, int target, int a, int b, int c);
-extern int func_020113e0(s16 *angle, int target);
 extern int func_020778f8(const u8 *packed);
 extern void func_02077910(u8 *packed, int value);
 extern int func_020912d4(int kind, Vec3 *position, s16 *angle, int a);
@@ -1268,14 +1265,10 @@ extern int func_020310c8(int a);
 extern int FX_MulFunc(int a, int b);
 extern void func_02054860(void *body);
 extern u8 func_020b65c4(void);
-extern void func_02011490(fx32 *value, fx32 target);
-extern int func_02011398(int value, int a);
-extern int func_020113b0(int value, int a);
 extern const s16 FX_SinCosTable_[];
 extern void func_0209e474(DateTime *now);
 extern u8 *func_0209626c(void);
 extern void func_0209e140(DateTime *when, int days);
-extern void *func_02011368(FieldActor *actor);
 /* The date packed into 16 bits, stored in the player's record at 0x2412. */
 extern void func_02099794(void *record, u16 date);
 extern int func_02095694(int a, int player);
@@ -1537,11 +1530,11 @@ void FieldActor_EndState77(FieldActor *actor)
 }
 CLEAN_AS(func_02008cac, FieldActor_EndState77)
 
-/* func_02008cec: the body turns towards the yaw (func_02011404 with 0x800). */
+/* func_02008cec: the body turns towards the yaw (FieldActor_TurnAngle with 0x800). */
 void FieldActor_TurnState77(FieldActor *actor)
 {
     s16 yaw = actor->yaw;
-    func_02011404(&yaw, *state77_yaw(actor), 0x800, 0x1770000, 0xc0000);
+    FieldActor_TurnAngle(&yaw, *state77_yaw(actor), 0x800, 0x1770000, 0xc0000);
     FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_02008cec, FieldActor_TurnState77)
@@ -1959,13 +1952,13 @@ void FieldActor_EndState70(FieldActor *actor)
 }
 CLEAN_AS(func_02009504, FieldActor_EndState70)
 
-/* func_02009534: the body turns towards the yaw (func_020113e0); the yaw before is noted. */
+/* func_02009534: the body turns towards the yaw (FieldActor_TurnAngleStep); the yaw before is noted. */
 void FieldActor_TurnState70(FieldActor *actor)
 {
     State70Work *work = state70_work(actor);
     s16 yaw = actor->yaw;
     work->before = yaw;
-    func_020113e0(&yaw, work->target);
+    FieldActor_TurnAngleStep(&yaw, work->target);
     FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_02009534, FieldActor_TurnState70)
@@ -2150,10 +2143,10 @@ CLEAN_AS(func_02009728, FieldActor_AnimateState6F)
  * With flag 0x18 the point's X is the actor's (it walks along Z); in scene 0x20, coming from
  * state 0x40, the point's Z is raised to the actor's when that is at or past it. Within
  * 4 x speed (at least 1.0) of the point, at a speed of 0x333 or less, the actor is moved
- * towards it (func_02011490 on X and Z): when it gets there the speed is 0 and the result 1;
+ * towards it (FieldActor_EaseValue on X and Z): when it gets there the speed is 0 and the result 1;
  * else the speed becomes the distance moved and the actor goes back to where it was. Nearer at
- * a higher speed the speed falls (func_02011398, 819); farther it rises (func_020113b0, the
- * acceleration). While the speed is not 0 the body turns towards the point (func_020113e0);
+ * a higher speed the speed falls (FieldActor_Slow, 819); farther it rises (FieldActor_SpeedUp, the
+ * acceleration). While the speed is not 0 the body turns towards the point (FieldActor_TurnAngleStep);
  * the step taken (FieldActor_SetSpeed) is the speed times the cosine of the angle between the body
  * and the point, made positive. */
 int FieldActor_MoveState6F(FieldActor *actor)
@@ -2177,8 +2170,8 @@ int FieldActor_MoveState6F(FieldActor *actor)
     }
     if (Vec_LengthXZ(&to) < near) {
         if (*speed <= 0x333) {
-            func_02011490(&actor->position.x, work->point.x);
-            func_02011490(&actor->position.z, work->point.z);
+            FieldActor_EaseValue(&actor->position.x, work->point.x);
+            FieldActor_EaseValue(&actor->position.z, work->point.z);
             if (work->point.x == actor->position.x && work->point.z == actor->position.z) {
                 *speed = 0;
                 arrived = 1;
@@ -2187,16 +2180,16 @@ int FieldActor_MoveState6F(FieldActor *actor)
                 actor->position = start;
             }
         } else {
-            *speed = func_02011398(*speed, 819);
+            *speed = FieldActor_Slow(*speed, 819);
         }
     } else {
-        *speed = func_020113b0(*speed, accel);
+        *speed = FieldActor_SpeedUp(*speed, accel);
     }
 
     s16 toward = Math_Atan2(to.x, to.z);
     s16 yaw = actor->yaw;
     if (*speed != 0) {
-        func_020113e0(&yaw, toward);
+        FieldActor_TurnAngleStep(&yaw, toward);
         FieldActor_SetYaw(actor, &yaw);
     }
     u32 index = (u16) (yaw - toward) >> 4;
@@ -2239,7 +2232,7 @@ void FieldActor_EnterState6F(FieldActor *actor, const StateRequest *request, int
             func_0209e140(&now, 1);
         }
         u16 date = (u16) ((now.year & 0x7f) | (now.month & 0xf) << 7 | (now.day & 0x1f) << 11);
-        func_02099794(func_02011368(actor), date);
+        func_02099794(FieldActor_Record(actor), date);
     }
 }
 CLEAN_AS(func_02009918, FieldActor_EnterState6F)
@@ -2393,7 +2386,7 @@ void FieldActor_EnterState3F(FieldActor *actor, const StateRequest *request, int
     if (data_020e54a8 == 0) {
         u16 held;
         FieldActor_RecordHeldItem(&held, actor);
-        void *record = func_02011368(actor);
+        void *record = FieldActor_Record(actor);
         u16 none = NO_ITEM;
         func_0209971c(record, &none);
         FieldActor_PlayAnimationOnce(actor, 0x13, 5, 5);
@@ -2672,12 +2665,12 @@ CLEAN_AS(func_0200a088, FieldActor_AnimateState32)
 
 /* func_0200a0c8: one step towards the object's point.
  * This console's actor (nothing without the point): the speed falls to 0 once func_02057c68
- * says it is there, else rises by 0x333 (func_020113b0); the actor turns towards the point.
+ * says it is there, else rises by 0x333 (FieldActor_SpeedUp); the actor turns towards the point.
  * Another console's actor goes where FieldActor_ReportedPosition says its console has it, facing the yaw it
  * gives (without it, FieldActor_SetSpeed gets 0 and nothing more happens): away from there the speed
  * rises by 0x333 and the actor turns towards it, unless that is a quarter turn or more from the
  * body's yaw, which stops it (speed 0); there, the speed is 0.
- * While the speed is not 0 the body turns (func_020113e0); the step taken (FieldActor_SetSpeed) is
+ * While the speed is not 0 the body turns (FieldActor_TurnAngleStep); the step taken (FieldActor_SetSpeed) is
  * the speed times the cosine of the angle between the body and the direction, made positive. */
 void FieldActor_MoveState32(FieldActor *actor)
 {
@@ -2695,7 +2688,7 @@ void FieldActor_MoveState32(FieldActor *actor)
         if (func_02057c68(actor)) {
             *speed = 0;
         } else {
-            *speed = func_020113b0(*speed, 0x333);
+            *speed = FieldActor_SpeedUp(*speed, 0x333);
         }
         toward = Math_Atan2(dx, dz);
     } else {
@@ -2708,7 +2701,7 @@ void FieldActor_MoveState32(FieldActor *actor)
         if (x != actor->position.x || z != actor->position.z) {
             int dx = sub32(x, actor->position.x);
             int dz = sub32(z, actor->position.z);
-            *speed = func_020113b0(*speed, 0x333);
+            *speed = FieldActor_SpeedUp(*speed, 0x333);
             s16 angle = Math_Atan2(dx, dz);
             if (Math_AbsDiff16(angle, yaw) >= 0x4000) {
                 *speed = 0;
@@ -2721,7 +2714,7 @@ void FieldActor_MoveState32(FieldActor *actor)
     }
 
     if (*speed != 0) {
-        func_020113e0(&yaw, toward);
+        FieldActor_TurnAngleStep(&yaw, toward);
         FieldActor_SetYaw(actor, &yaw);
     }
     u32 index = (u16) (yaw - toward) >> 4;
@@ -4607,7 +4600,7 @@ void FieldActor_FaceState10Target(FieldActor *actor)
     const Vec3 *at = point_of(target);
     s16 toward = Math_Atan2(sub32(at->x, actor->position.x), sub32(at->z, actor->position.z));
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, toward);
+    FieldActor_TurnAngleStep(&yaw, toward);
     FieldActor_SetYaw(actor, &yaw);
 }
 CLEAN_AS(func_0200c2c8, FieldActor_FaceState10Target)
@@ -5104,8 +5097,6 @@ typedef struct State4Args {
 
 static_assert(sizeof(State4Work) <= sizeof(FieldActorWork), "state 4 work");
 
-extern int func_0201138c(int value, int target);
-
 static State4Work *state4_work(FieldActor *actor)
 {
     return (State4Work *) &actor->work;
@@ -5149,15 +5140,15 @@ void FieldActor_EndState4(FieldActor *actor)
 }
 CLEAN_AS(func_0200ca18, FieldActor_EndState4)
 
-/* func_0200ca60: the body turns towards the work's yaw (func_020113e0) and the speed falls by
- * 0x8f towards 0 (func_0201138c, FieldActor_SetSpeed); in the frame it reaches 0, effect 0x29 (dust)
+/* func_0200ca60: the body turns towards the work's yaw (FieldActor_TurnAngleStep) and the speed falls by
+ * 0x8f towards 0 (FieldActor_SlowGently, FieldActor_SetSpeed); in the frame it reaches 0, effect 0x29 (dust)
  * plays at the position along the work's dust angle. */
 void FieldActor_TurnState4(FieldActor *actor)
 {
     State4Work *work = state4_work(actor);
-    func_020113e0(&actor->yaw, (s16) work->yaw);
+    FieldActor_TurnAngleStep(&actor->yaw, (s16) work->yaw);
     fx32 speed = FieldActor_Base(actor)->speed;
-    int slowed = func_0201138c(speed, 0);
+    int slowed = FieldActor_SlowGently(speed, 0);
     FieldActor_SetSpeed(actor, &slowed);
     if (slowed != 0 || speed == 0) {
         return;
@@ -5422,7 +5413,7 @@ CLEAN_AS(func_0200ce2c, FieldActor_MoveState3)
 /* func_0200cf50: another console's actor follows where its console reports it (FieldActor_ReportedPosition,
  * in this scene only); whether it stopped. Nearer than 0x108, or (nearer than 0x2666) more than
  * a quarter turn from the body, it stops. Otherwise the body turns towards the point
- * (func_020113e0, FieldActor_SetYaw) and the speed moves towards the distance (at most 0x6e2) times
+ * (FieldActor_TurnAngleStep, FieldActor_SetYaw) and the speed moves towards the distance (at most 0x6e2) times
  * the cosine between body and direction (not below 0), capped near the point at 0x108 plus
  * (distance - 0x108) x 0x5da / 0x255e; from 0xe000 away the actor is put there with the yaw
  * reported (no speed set) and it stops. */
@@ -5446,7 +5437,7 @@ int FieldActor_FollowState3(FieldActor *actor)
         return 1;
     }
     s16 yaw = actor->yaw;
-    func_020113e0(&yaw, direction);
+    FieldActor_TurnAngleStep(&yaw, direction);
     FieldActor_SetYaw(actor, &yaw);
 
     int speed = FieldActor_Base(actor)->speed;
@@ -5474,9 +5465,9 @@ int FieldActor_FollowState3(FieldActor *actor)
         }
     }
     if (speed < target) {
-        speed = func_020113b0(speed, target);
+        speed = FieldActor_SpeedUp(speed, target);
     } else if (speed > target) {
-        speed = func_02011398(speed, target);
+        speed = FieldActor_Slow(speed, target);
     }
     FieldActor_SetSpeed(actor, &speed);
     return 0;
@@ -5485,21 +5476,21 @@ CLEAN_AS(func_0200cf50, FieldActor_FollowState3)
 
 /* func_0200d0b0: this console's actor follows the push. The work's speed moves towards the one
  * the push gives (FieldActor_WalkSpeed: up by 0x93, down by 0x9c); with a push the body turns towards
- * its yaw (func_020113e0, FieldActor_SetYaw); the step (FieldActor_SetSpeed) is the work's speed times the
+ * its yaw (FieldActor_TurnAngleStep, FieldActor_SetYaw); the step (FieldActor_SetSpeed) is the work's speed times the
  * cosine between the body and the push, made positive. */
 void FieldActor_SteerState3(FieldActor *actor)
 {
     fx32 *speed = &state3_work(actor)->speed;
     int target = FieldActor_WalkSpeed(actor);
     if (*speed < target) {
-        *speed = func_020113b0(*speed, target);
+        *speed = FieldActor_SpeedUp(*speed, target);
     } else if (*speed > target) {
-        *speed = func_02011398(*speed, target);
+        *speed = FieldActor_Slow(*speed, target);
     }
     s16 push_yaw = FieldActor_PushYaw(actor);
     s16 yaw = actor->yaw;
     if (target > 0) {
-        func_020113e0(&yaw, push_yaw);
+        FieldActor_TurnAngleStep(&yaw, push_yaw);
         FieldActor_SetYaw(actor, &yaw);
     }
     int step = FX_MulFunc(*speed, state_cosine((u16) (yaw - push_yaw)));
@@ -5580,7 +5571,6 @@ extern u8 data_ov004_02259a08;
 /* 2 while the player may steer. */
 extern u8 data_021c75b8;
 extern int func_020b67d4(void);
-extern int func_020113bc(s16 *angle, int target);
 extern int func_02095518(int a, int b, int c);
 extern int DWC_Alloc(int a, int b);
 
@@ -5672,7 +5662,7 @@ CLEAN_AS(func_0200d2bc, FieldActor_RunState2)
 
 /* func_0200d3a4: another console's actor standing; whether it should walk (FieldActor_ShouldWalkToward, as in
  * FieldActor_FollowState3). Otherwise it turns towards the yaw its console reports
- * (func_020113bc, FieldActor_SetYaw) and slides towards the point (func_02011490 on X and Z). 0
+ * (FieldActor_TurnAngleSlowly, FieldActor_SetYaw) and slides towards the point (FieldActor_EaseValue on X and Z). 0
  * without a report in this scene. */
 int FieldActor_FollowState2(FieldActor *actor)
 {
@@ -5693,10 +5683,10 @@ int FieldActor_FollowState2(FieldActor *actor)
     int walks = FieldActor_ShouldWalkToward(actor, dx, dz, distance2, reported_yaw, &direction);
     if (walks == 0) {
         s16 yaw = actor->yaw;
-        func_020113bc(&yaw, reported_yaw);
+        FieldActor_TurnAngleSlowly(&yaw, reported_yaw);
         FieldActor_SetYaw(actor, &yaw);
-        func_02011490(&actor->position.x, x);
-        func_02011490(&actor->position.z, z);
+        FieldActor_EaseValue(&actor->position.x, x);
+        FieldActor_EaseValue(&actor->position.z, z);
     }
     return walks;
 }

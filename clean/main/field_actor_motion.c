@@ -73,9 +73,6 @@ extern int func_020310c8(int a);
 extern void *func_02032c64(void *collider);
 extern void *func_02032c50(void *collider);
 extern void func_02031288(void *collider, Vec3 *position, Vec3 *from, int yaw, int size, FieldActor *owner, int layer);
-extern int func_020113e0(s16 *angle, int target);
-extern int func_020113bc(s16 *angle, s16 target);
-extern void func_02011490(fx32 *value, int target);
 
 /* A temporary collider (func_02032c64 makes it, func_02032c50 destroys it). */
 typedef struct FieldActorCollider {
@@ -228,10 +225,10 @@ void FieldActor_SetSpeed(FieldActor *actor, const int *speed)
 }
 CLEAN_AS(func_0201107c, FieldActor_SetSpeed)
 
-/* func_0201108c: the lean (the angle about X) turns a step towards `target` (func_020113e0). */
+/* func_0201108c: the lean (the angle about X) turns a step towards `target` (FieldActor_TurnAngleStep). */
 void FieldActor_LeanTowards(FieldActor *actor, int target)
 {
-    func_020113e0(&FieldActor_Base(actor)->angle[0], target);
+    FieldActor_TurnAngleStep(&FieldActor_Base(actor)->angle[0], target);
 }
 CLEAN_AS(func_0201108c, FieldActor_LeanTowards)
 
@@ -256,7 +253,7 @@ CLEAN_AS(func_020110a0, FieldActor_SetYaw)
 /* func_02010f6c: a step towards where another console reports its actor
  * (FieldActor_ReportedPosition), when it reports one in this scene; 0 otherwise. The yaw turns
  * a step towards the reported one, X and Z move a step towards the reported point
- * (func_02011490); 1 once the yaw had arrived and the point is reached. */
+ * (FieldActor_EaseValue); 1 once the yaw had arrived and the point is reached. */
 int FieldActor_StepTowardReported(FieldActor *actor)
 {
     u8 scene;
@@ -270,10 +267,10 @@ int FieldActor_StepTowardReported(FieldActor *actor)
         return 0;
     }
     s16 yaw = actor->yaw;
-    int arrived = func_020113bc(&yaw, reported_yaw) == 0;
+    int arrived = FieldActor_TurnAngleSlowly(&yaw, reported_yaw) == 0;
     FieldActor_SetYaw(actor, &yaw);
-    func_02011490(&actor->position.x, x);
-    func_02011490(&actor->position.z, z);
+    FieldActor_EaseValue(&actor->position.x, x);
+    FieldActor_EaseValue(&actor->position.z, z);
     if (arrived) {
         arrived = x == actor->position.x && z == actor->position.z;
     }

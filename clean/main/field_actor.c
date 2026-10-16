@@ -293,6 +293,71 @@ struct FieldActor *FieldActor_Construct(struct FieldActor *actor)
 }
 CLEAN_AS(func_02004f34, FieldActor_Construct)
 
+/* The size of the class. */
+#define FIELD_ACTOR_SIZE 0xca0
+
+/* func_020115d0: a new actor (FieldActor_New), constructed; nothing when there is no room. */
+void FieldActor_Create(void)
+{
+    struct FieldActor *actor = FieldActor_New(FIELD_ACTOR_SIZE);
+    if (actor != NULL) {
+        FieldActor_Construct(actor);
+    }
+}
+CLEAN_AS(func_020115d0, FieldActor_Create)
+
+/* The receiver's vtable (0x020d832c) enters the actor's functions through these: each moves
+ * the pointer back from the receiver part (at 0xec) to the actor and goes on with the actor's
+ * function. */
+#define FIELD_ACTOR_RECEIVER 0xec
+
+static struct FieldActor *actor_of(void *receiver)
+{
+    return (struct FieldActor *) ((u8 *) receiver - FIELD_ACTOR_RECEIVER);
+}
+
+/* func_0201160c */
+struct FieldActor *FieldActorReceiver_DestructDelete(void *receiver)
+{
+    return FieldActor_DestructDelete(actor_of(receiver));
+}
+CLEAN_AS(_ZThn236_N12Obj_020d82b4D0Ev, FieldActorReceiver_DestructDelete)
+
+/* func_02011628 */
+void FieldActorReceiver_TalkClosing(void *receiver)
+{
+    FieldActor_TalkClosing(actor_of(receiver));
+}
+CLEAN_AS(_ZThn236_N12Obj_020d82b417vfunc_02066994_70Ev, FieldActorReceiver_TalkClosing)
+
+/* func_02011644 */
+void FieldActorReceiver_TalkChoice(void *receiver)
+{
+    FieldActor_TalkChoice(actor_of(receiver));
+}
+CLEAN_AS(_ZThn236_N12Obj_020d82b417vfunc_02066994_18Ev, FieldActorReceiver_TalkChoice)
+
+/* func_02011660 */
+void FieldActorReceiver_TalkMessage(void *receiver)
+{
+    FieldActor_TalkMessage(actor_of(receiver));
+}
+CLEAN_AS(_ZThn236_N12Obj_020d82b417vfunc_02066994_14Ev, FieldActorReceiver_TalkMessage)
+
+/* func_0201167c */
+void FieldActorReceiver_TalkIgnore(void *receiver)
+{
+    FieldActor_TalkIgnore(actor_of(receiver));
+}
+CLEAN_AS(_ZThn236_N12Obj_020d82b417vfunc_02066994_10Ev, FieldActorReceiver_TalkIgnore)
+
+/* func_02011698 */
+void *FieldActorReceiver_Destruct(void *receiver)
+{
+    return FieldActor_Destruct(actor_of(receiver));
+}
+CLEAN_AS(_ZThn236_N12Obj_020d82b4D1Ev, FieldActorReceiver_Destruct)
+
 /* func_020051b4: run when the actor goes away (FieldActor_Teardown). In state 0x6d its effect
  * is ended; the session's and the members' resources are released; and flags 0x1a
  * (func_02035638 0x3f), 0xa (the sound emitter that plays: 0x83c with flag 0x19, else 0x880)
@@ -373,7 +438,6 @@ extern void func_0205db4c(void *part, int value);
 extern void func_0205d8c4(void *part, int value);
 extern void func_0205dccc(void *part, int value);
 extern int func_0205dc94(void *part, int value);
-extern void *func_02011368(struct FieldActor *actor);
 extern void func_0205ec50(void *held, int value, struct FieldActor *actor, u16 *item, void *record, int a);
 extern void func_02060500(void *line, int player);
 extern void func_0205df14(void *part, u8 value);
@@ -417,7 +481,7 @@ int FieldActor_Init(struct FieldActor *actor)
     index = func_020961d0(actor->player);
     u16 item;
     FieldActor_RecordHeldItem(&item, actor);
-    func_0205ec50(actor->held, data_020c75e0[index], actor, &item, func_02011368(actor), 0);
+    func_0205ec50(actor->held, data_020c75e0[index], actor, &item, FieldActor_Record(actor), 0);
     func_02060500(at(actor, 0x5c8), actor->player);
     base->gravity = -0x5000;
     base->min_y_velocity = -0xa000;
