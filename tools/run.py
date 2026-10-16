@@ -238,6 +238,9 @@ def build_clean(flags: list[str]) -> list[str]:
     # the runtime redirects a function at its entry, which a call inlined into its caller, or
     # two identical functions folded into one, would get round.
     flags = [*flags, "-fno-inline"] + ([] if "clang" in " ".join(diffcheck.compiler()) else ["-fno-ipa-icf"])
+    # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
+    # comparison tells the bytes a structure filled in part passes on from the game's values
+    flags += ["-ftrivial-auto-var-init=pattern"]
     objects = []
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         obj = OUT / "clean" / src.relative_to(C.ROOT).with_suffix(".o")
@@ -535,8 +538,10 @@ def native_main(args, manifest, table, budget, env) -> int:
         env["RUN_NATIVE_POLICY"] = nat_env["RUN_NATIVE_POLICY"] = str(write_policy(args.native, args.clean))
         ref = reference()
     nat = summary(nat_text)
-    print(f"logs: {(out / 'reference.log').relative_to(C.ROOT).as_posix()}, "
-          f"{(out / 'native.log').relative_to(C.ROOT).as_posix()}")
+    # the run's directory may be outside the tree (ACWW_RUNTIME_OUT)
+    shown = [p.relative_to(C.ROOT) if p.is_relative_to(C.ROOT) else p
+             for p in (out / "reference.log", out / "native.log")]
+    print(f"logs: {shown[0].as_posix()}, {shown[1].as_posix()}")
     for line in nat["native"]:
         print(line)
     if nat["stop"]:

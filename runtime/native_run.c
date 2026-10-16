@@ -615,6 +615,15 @@ static void hash_memory(uint32_t frame, char hex[41])
  * holds a PC address the ROM's code was handed and kept (a pointer to a variable on the host
  * stack, or to a source's wrapper function), which cannot be the Reference's. Returns the
  * count, -1 without the image; prints the first few. */
+/* What Native code's uninitialized locals hold (tools/native.py, -ftrivial-auto-var-init=pattern):
+ * clang fills them with 0xff bytes on a 32-bit target, gcc with 0xfe. The runtime is built by
+ * the same compiler as the Native objects (tools/run.py). */
+#ifdef __clang__
+#define NATIVE_UNINIT_BYTE 0xffu
+#else
+#define NATIVE_UNINIT_BYTE 0xfeu
+#endif
+
 static long compare_with_reference(uint32_t frame)
 {
     char path[600];
@@ -627,7 +636,7 @@ static long compare_with_reference(uint32_t frame)
     uint8_t *ref = malloc(total);
     size_t got = fread(ref, 1, total, f);
     fclose(f);
-    long differ = 0, host = 0;
+    long differ = 0, host = 0, uninit = 0;
     for (uint32_t i = 0; got == total && i < total; i += 4) {
         uint32_t a, b;
         memcpy(&a, ref + i, 4);
@@ -635,8 +644,21 @@ static long compare_with_reference(uint32_t frame)
         if (a == b) {
             continue;
         }
+        /* a PC address the ROM's code was handed and kept */
         if (b >= 0x10000u && !native_fault_is_ds(b)) {
             host++;
+            continue;
+        }
+        /* bytes of a Native's uninitialized local passed on into the game's memory (a structure
+           filled in part and copied): the ROM's code leaves there what its stack held, Native
+           code the fill tools/native.py asks the compiler for */
+        uint32_t other = 0;
+        for (int k = 0; k < 4; k++) {
+            uint32_t byte_a = (a >> (8 * k)) & 0xffu, byte_b = (b >> (8 * k)) & 0xffu;
+            other |= (uint32_t) (byte_a != byte_b && byte_b != NATIVE_UNINIT_BYTE) << k;
+        }
+        if (other == 0) {
+            uninit++;
             continue;
         }
         if (differ++ < 8) {
@@ -647,8 +669,9 @@ static long compare_with_reference(uint32_t frame)
         }
     }
     free(ref);
-    printf("native: memory after frame %u: %ld words differ from the Reference's, %ld more hold PC addresses\n", frame,
-           got == total ? differ : -1, host);
+    printf("native: memory after frame %u: %ld words differ from the Reference's, %ld more hold PC addresses, %ld "
+           "uninitialized bytes\n",
+           frame, got == total ? differ : -1, host, uninit);
     return got == total ? differ : -1;
 }
 
@@ -753,6 +776,27 @@ static void blame(const char *name, const char *why)
 
 static int record_ended; /* the record ran out in the last frame (not a divergence) */
 
+/* Where the program's code is (the image is linked at a fixed address: tools/run.py). */
+#define HOST_CODE_LOW 0x00400000u
+#define HOST_CODE_HIGH 0x01000000u
+
+/* The Native functions whose return addresses are on the host stack from `esp` up: the
+ * calls that led there. */
+static void print_callers(uint32_t esp)
+{
+    printf("native: called from");
+    const uint32_t *sp = (const uint32_t *) (uintptr_t) esp;
+    for (int i = 0, n = 0; i < 1024 && n < 16 && native_os_accessible(esp + 4u * (uint32_t) i, 4, 0); i++) {
+        const char *name = sp[i] >= 0x00401000u && sp[i] < HOST_CODE_HIGH ? caller_of(sp[i]) : NULL;
+        if (name != NULL) {
+            printf(" %s", name);
+            n++;
+        }
+    }
+    printf("\n");
+    fflush(stdout);
+}
+
 static void report_divergence(Stream *s, const Record *r, uint32_t kind, uint32_t function)
 {
     uint32_t left = 0;
@@ -776,6 +820,11 @@ static void report_divergence(Stream *s, const Record *r, uint32_t kind, uint32_
     printf(", Native %s %s%s%s\n", crossing_names[kind], fn_name(function),
            out_caller && (kind == CROSS_CALL_OUT || kind == CROSS_BACK) ? " from " : "",
            out_caller && (kind == CROSS_CALL_OUT || kind == CROSS_BACK) ? out_caller : "");
+    if (kind == CROSS_CALL_OUT || kind == CROSS_BACK) {
+        /* the Native code that made the call is on the host stack above this frame */
+        volatile uint32_t here = 0;
+        print_callers((uint32_t) (uintptr_t) &here);
+    }
     fflush(stdout);
 }
 
@@ -784,8 +833,8 @@ static void report_divergence(Stream *s, const Record *r, uint32_t kind, uint32_
 static uint32_t watch_address, watch_value;
 
 static uint64_t value_differences;
-/* RUN_NATIVE_DRIFT_FRAME=<frame>: print the first OFF-STEP calls from that frame on (the
- * default prints the run's first ten) */
+/* RUN_NATIVE_DRIFT_FRAME=<frame>: print the first OFF-STEP calls, and the VALUE differences,
+ * from that frame on (the default prints the run's first ten OFF-STEP calls) */
 static uint32_t drift_from_frame;
 static int drift_printed;
 /* The function of a crossing into PC code (call_host): matches the Reference's whatever it is */
@@ -876,7 +925,7 @@ static void crossing(uint32_t kind, uint32_t function, uint32_t check, uint32_t 
     if (r->check != check && kind != CROSS_CALL_OUT && function != HOST_FUNCTION) {
         /* Same function, other values: a Native that computes something else, or one that
            got other arguments. The first ones are the place to look. */
-        if (value_differences++ < 100000) {
+        if (frame_now >= drift_from_frame && value_differences++ < 100000) {
             printf("native: VALUE at frame %u, stream %08x crossing %llu, %s %s%s%s: Reference %08x, Native %08x\n", frame_now,
                    s->key, (unsigned long long) s->seen, crossing_names[kind], fn_name(function),
                    out_caller && kind == CROSS_BACK ? " from " : "", out_caller && kind == CROSS_BACK ? out_caller : "",
@@ -1205,8 +1254,6 @@ static int call_native(ArmCpu *c, void *user)
  * destructor for __register_global_object); each calls one function with the object. The
  * interpreter goes to that function's DS address instead, as the ROM's code does, and the
  * function then runs Native or not like any other. */
-#define HOST_CODE_LOW 0x00400000u
-#define HOST_CODE_HIGH 0x01000000u
 
 static uint32_t wrapped_function(uint32_t host)
 {
@@ -1217,6 +1264,13 @@ static uint32_t wrapped_function(uint32_t host)
         }
     }
     uint32_t ds = 0;
+    /* A Clean function itself: Clean code that hands the game a function by its game symbol
+       gets the Clean function when that symbol is registered (CLEAN_AS). */
+    for (uint32_t c = 0; c < clean_function_count && ds == 0; c++) {
+        if ((uint32_t) (uintptr_t) clean_functions[c].host == host) {
+            ds = clean_functions[c].address;
+        }
+    }
     const uint8_t *code = (const uint8_t *) (uintptr_t) host;
     for (int i = 0; i < 64 && ds == 0; i++) {
         if (code[i] != 0xe8 && code[i] != 0xe9) { /* call / jmp rel32 */
@@ -1432,18 +1486,7 @@ int native_fault_data(uint32_t eip, uint32_t address, uint32_t esp)
            diverged   ? ", after the run diverged"
            : hardware ? "; it has to stay Reference"
                       : "");
-    /* the Native functions whose return addresses are on the stack: the calls that led here */
-    printf("native: called from");
-    const uint32_t *sp = (const uint32_t *) (uintptr_t) esp;
-    for (int i = 0, n = 0; i < 512 && n < 8 && native_os_accessible(esp + 4u * (uint32_t) i, 4, 0); i++) {
-        const char *name = sp[i] >= 0x00401000u && sp[i] < HOST_CODE_HIGH ? caller_of(sp[i]) : NULL;
-        if (name != NULL) {
-            printf(" %s", name);
-            n++;
-        }
-    }
-    printf("\n");
-    fflush(stdout);
+    print_callers(esp);
     /* Only what a run still in step with the Reference finds is the function's own doing. */
     if (learn_path != NULL && !diverged) {
         FILE *out = fopen(learn_path, "a");
@@ -1487,6 +1530,29 @@ static void stuck_in(uint32_t eip)
         }
     }
     _Exit(3);
+}
+
+int native_fault_divide(uint32_t eip)
+{
+    const NativeFunction *n = running ? native_by_host(eip) : NULL;
+    if (n == NULL || eip - (uintptr_t) n->host >= 0x4000u) {
+        return 0;
+    }
+    /* each function once (the first few) */
+    static const NativeFunction *seen[16];
+    static int seen_count;
+    int known = 0;
+    for (int i = 0; i < seen_count; i++) {
+        known |= seen[i] == n;
+    }
+    if (!known && seen_count < 16) {
+        seen[seen_count++] = n;
+        printf("native: %s divides by zero at frame %u; it goes on with the ROM's helpers' result (the dividend, "
+               "remainder 0)\n",
+               caller_of(eip), frame_now);
+        fflush(stdout);
+    }
+    return 1;
 }
 
 void native_watch_hit(uint32_t eip)
@@ -1695,6 +1761,7 @@ static int is_clean(const Fn *f)
 static int patch_clean(void)
 {
     uint8_t *stubs = native_os_code_alloc((size_t) clean_function_count * 16 + 16);
+    uint8_t *wrappers = NULL; /* 48 bytes for each Clean function with a narrow result */
     if (stubs == NULL) {
         return -1;
     }
@@ -1733,8 +1800,56 @@ static int patch_clean(void)
             if (n->address != clean->address || (n->info >> 16) != (clean->info >> 16)) {
                 continue;
             }
+            const void *to = clean->host;
+            int kind = native_return(n);
+            if (kind == NATIVE_RET_U8 || kind == NATIVE_RET_S8 || kind == NATIVE_RET_U16 || kind == NATIVE_RET_S16) {
+                /* A char or short result: Native callers (many declare such a function as
+                   returning int) take eax whole, which the Native's wrapper extended as the
+                   ROM's code does (tools/native.py, widen) and the PC's compiler leaves as it
+                   is. The Clean function is called through a wrapper of the same kind: the
+                   argument words copied down, the result extended. */
+                static const uint8_t extend[][3] = {
+                    [NATIVE_RET_U8] = {0x0f, 0xb6, 0xc0},  /* movzbl %al, %eax */
+                    [NATIVE_RET_S8] = {0x0f, 0xbe, 0xc0},  /* movsbl %al, %eax */
+                    [NATIVE_RET_U16] = {0x0f, 0xb7, 0xc0}, /* movzwl %ax, %eax */
+                    [NATIVE_RET_S16] = {0x0f, 0xbf, 0xc0}, /* movswl %ax, %eax */
+                };
+                if (wrappers == NULL && (wrappers = native_os_code_alloc((size_t) clean_function_count * 48)) == NULL) {
+                    return -1;
+                }
+                uint8_t *w = wrappers + 48 * c;
+                static const uint8_t head[] = {
+                    0x55,                         /* push %ebp */
+                    0x89, 0xe5,                   /* mov %esp, %ebp */
+                    0x56,                         /* push %esi */
+                    0x57,                         /* push %edi */
+                    0x83, 0xec, 0x40,             /* sub $64, %esp */
+                    0x8d, 0x75, 0x08,             /* lea 8(%ebp), %esi */
+                    0x89, 0xe7,                   /* mov %esp, %edi */
+                    0xb9, 0x10, 0x00, 0x00, 0x00, /* mov $16, %ecx */
+                    0xf3, 0xa5,                   /* rep movsl */
+                    0xe8,                         /* call clean */
+                };
+                static const uint8_t tail[] = {
+                    0x83, 0xc4, 0x40, /* add $64, %esp */
+                    0x5f,             /* pop %edi */
+                    0x5e,             /* pop %esi */
+                    0x5d,             /* pop %ebp */
+                    0xc3,             /* ret */
+                };
+                size_t at = 0;
+                memcpy(w, head, sizeof(head));
+                at += sizeof(head);
+                int32_t call = (int32_t) ((uintptr_t) clean->host - ((uintptr_t) w + at + 4));
+                memcpy(w + at, &call, 4);
+                at += 4;
+                memcpy(w + at, extend[kind], 3);
+                at += 3;
+                memcpy(w + at, tail, sizeof(tail));
+                to = w;
+            }
             uint8_t jmp[5] = {0xe9}; /* jmp clean */
-            int32_t rel = (int32_t) ((uintptr_t) clean->host - ((uintptr_t) n->host + 5));
+            int32_t rel = (int32_t) ((uintptr_t) to - ((uintptr_t) n->host + 5));
             memcpy(jmp + 1, &rel, 4);
             if (native_os_patch((void *) n->host, jmp, 5) != 0) {
                 return -1;

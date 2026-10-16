@@ -64,6 +64,67 @@ def class_bodies(text: str) -> list[tuple[int, int]]:
     return spans
 
 
+NARROW_RESULTS = {("unsigned", "char"): (1, False), ("u8",): (1, False), ("char",): (1, True),
+                  ("signed", "char"): (1, True), ("s8",): (1, True), ("unsigned", "short"): (2, False),
+                  ("unsigned", "short", "int"): (2, False), ("u16",): (2, False), ("short",): (2, True),
+                  ("short", "int"): (2, True), ("signed", "short"): (2, True), ("s16",): (2, True)}
+
+
+def result_width(ret: str) -> tuple[int, bool] | None:
+    """(bytes, signed) of a char or short result, (4, False) for a word-sized one (an int, a
+    long, a pointer), None for anything else (void, floating point, 64 bits, structures)."""
+    words = [w for w in ret.replace("*", " * ").split()
+             if w not in ("extern", "static", "inline", "const", "volatile", "virtual", "__arm", "__thumb")]
+    if "*" in words:
+        return 4, False
+    if tuple(words) in NARROW_RESULTS:
+        return NARROW_RESULTS[tuple(words)]
+    if words in (["int"], ["unsigned"], ["unsigned", "int"], ["signed"], ["signed", "int"], ["long"],
+                 ["unsigned", "long"], ["long", "int"], ["unsigned", "long", "int"], ["u32"], ["s32"], ["BOOL"]):
+        return 4, False
+    return None
+
+
+def narrowed_results() -> list[tuple[str, str]]:
+    """(declaring source, function) for each declaration of a game function with a char or
+    short result that the definition does not produce: a word, or another width or sign.
+    The DS's caller trusts the callee to have extended r0 as the declaration says, so it uses
+    the whole register where it needs more than the narrow value; the PC's caller extends the
+    low bits itself."""
+    defs: dict[str, tuple[int, bool]] = {}
+    decls: list[tuple[str, str, tuple[int, bool]]] = []
+    for path in C.all_sources():
+        if C.SRC not in path.parents:
+            continue
+        rel = path.relative_to(C.ROOT).as_posix()
+        text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
+        local = {m.group(2) for m in FUNC.finditer(text) if "static" in m.group(1).split()}
+        members = class_bodies(text)
+        for m in FUNC.finditer(text):
+            ret, name, end = m.group(1), m.group(2), m.group(4)
+            if STATEMENT & set(ret.replace("*", " ").split()) or name in local or "asm" in ret.split():
+                continue
+            if any(start <= m.start(2) < stop for start, stop in members):
+                continue
+            width = result_width(ret)
+            if width is None:
+                continue
+            if end == "{":
+                defs[name] = width
+            elif width[0] < 4:
+                decls.append((rel, name, width))
+    out = []
+    for rel, name, (n, signed) in decls:
+        if name not in defs:
+            continue
+        dn, dsigned = defs[name]
+        # a narrower definition extended the same way gives the same value
+        if dn < n and (not dsigned or signed) or (dn, dsigned) == (n, signed):
+            continue
+        out.append((rel, name))
+    return out
+
+
 def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, str]]:
     """Every declaration that disagrees with its function's definition: (the declaring source,
     the function, its declared and defined parameter counts, whether it is declared and defined

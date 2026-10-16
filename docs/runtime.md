@@ -123,14 +123,18 @@ CI checks against `title-start.sha1`.
 **M4: The game starts, as Native.** Done: on Windows (clang) and Linux (gcc),
 `tools/run.py ... --native=all --expect runtime/recordings/title-start.sha1` runs about 24,500
 functions as Native and gives the Reference's 1,300 frames, with RAM at six points equal apart
-from words that hold PC addresses (function pointers and stack addresses the PC code keeps); CI
-runs it on Linux.
+from words that hold PC addresses (function pointers and stack addresses the PC code keeps) and
+bytes of uninitialized locals the game copies into its memory (Native code fills those with a
+pattern, `-ftrivial-auto-var-init=pattern`); CI runs it on Linux. The same holds for the 13,760
+frames of `runtime/recordings/new-game.txt` (power-on to walking in the town). A division by zero
+in Native code gives the ROM's helpers' result (the dividend), not a trap (`runtime/native_os.c`).
 `runtime/native_run.c` dispatches between the two: Reference code calling a Native function, a
 Native function calling the ROM's code through the interpreter (`native_tramp.S`), and a trace of
-the Reference run's crossings that gives Native code the Reference's timing. About 730 functions
+the Reference run's crossings that gives Native code the Reference's timing. About 870 functions
 stay Reference: those `tools/native.py` finds by reading the sources (member function pointers
 shared with the ROM's code, which lays them out in 12 bytes where the PC has 8; calls to a
-function's middle), and those listed with a
+function's middle; a callee declared with a char or short result its definition does not
+produce, whose whole register the ROM's code goes on with), and those listed with a
 reason in `runtime/native-reference.txt` (hardware access, calls with fewer arguments than the
 callee takes, undefined behaviour, a source that relies on mwccarm's stack layout).
 - The same recording run with Native for every function that has a source gives the same frames

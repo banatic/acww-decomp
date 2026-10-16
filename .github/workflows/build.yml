@@ -107,6 +107,15 @@ jobs:
             > build/adm-kr/native-clean.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -40; exit 1; }
           grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -12
 
+      # The same for a new game, from power-on to walking in the town and opening the pockets.
+      - name: Play a new game as Native with the Clean functions
+        run: |
+          python3 tools/run.py 0 13760 --input runtime/recordings/new-game.txt --rtc "2005-11-23 12:00:00" \
+            --native=all --clean --ram-hash 1299,2600,7200,9750,12100,13300,13759 \
+            --expect runtime/recordings/new-game.sha1 \
+            > build/adm-kr/native-new-game.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-new-game.log | tail -40; exit 1; }
+          grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-new-game.log | tail -12
+
       - name: Upload the Native run logs
         if: failure()
         uses: actions/upload-artifact@v4

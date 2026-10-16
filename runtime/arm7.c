@@ -315,6 +315,23 @@ static void tp_frame(void)
     }
 }
 
+/* Tag 8, power management. A register read (PMi_ReadRegisterAsync, 0x0211de24) sends command
+ * 0x65 with the register number in the low byte; PM_GetBattery (0x0211dbcc) reads register 1
+ * and takes bit 0 as "battery low". The power management chip's registers as a console that
+ * has just been switched on has them: 0 control (both backlights on), 1 battery status (not
+ * low), 2 microphone amplifier (off), 3 amplifier gain (lowest). */
+#define PM_READ_REGISTER 0x65u
+
+static uint32_t pm_register(uint32_t reg)
+{
+    switch (reg) {
+        case 0:
+            return 0x0c;
+        default:
+            return 0;
+    }
+}
+
 /* Tag 0xb, the backup chip. The ARM9 sends a command number (with the error flag, which
  * both sides use as "attention"), after command 0 the address of its command block, and
  * waits for a word back once the block's result (offset 0) is written (CARDi_Request,
@@ -456,8 +473,15 @@ static int handle(uint32_t word)
                 sound_list(0x02000000u | (data & 0x3ffffffu));
             }
             return 1;
-        case 8: { /* power management: echo the command with result 0 */
+        case 8: { /* power management: echo the command with result 0, or a register's value */
             uint32_t command = (data >> 8) & 0x7f;
+            if (command == PM_READ_REGISTER && (data & 0xffu) < 4) {
+                /* the register's value comes back as command 0x70 + register (PMi_CommonCallback,
+                   0x0211df10, stores it in the buffer PMi_ReadRegisterAsync named): no echo */
+                uint32_t reg = data & 0xffu;
+                reply(8, (0x70u + reg) << 8 | pm_register(reg), 0);
+                return 1;
+            }
             reply(8, command << 8, 0);
             return 1;
         }

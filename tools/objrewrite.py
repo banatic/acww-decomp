@@ -13,8 +13,9 @@ So every reference is rewritten by its kind:
   call through) goes to the plain name, which absolute.s places at its DS address;
 - a definition of such a name in the object is renamed to `native_<name>`, so the plain name
   always means the DS's;
-- with `pmf`, a reference from data to a method `pmf` names (an entry of a table of
-  member-function pointers that only Native code reads, tools/native.py) goes to
+- with `pmf`, an absolute reference to a method `pmf` names (an entry of a table of
+  member-function pointers that only Native code reads, tools/native.py, or such an entry
+  the compiler loads as a constant where it knows the index: gcc does) goes to
   `native_pmf_<name>`, a jump to it that tools/native.py places at an even PC address: the
   PC's C++ ABI takes an odd pointer in a member-function pointer for a vtable offset, and a
   Thumb method's DS address is odd.
@@ -60,7 +61,7 @@ class Strings:
 def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
                  pmf: set[str] = frozenset()) -> tuple[bytes, set[str]]:
     """`known`: plain names the symbol table has; `native`: the plain names of functions with
-    a Native definition anywhere; `pmf`: the methods whose references from data go through
+    a Native definition anywhere; `pmf`: the methods whose absolute references go through
     `native_pmf_<name>`. Names in the object carry `prefix` ("_" on i386). Returns the new
     object and the known names it now refers to by their DS address, and the `native_pmf_`
     names it uses."""
@@ -134,7 +135,6 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
     for s in range(nsec):
         hdr = 20 + opt + 40 * s
         relptr, nrel = struct.unpack_from("<I", data, hdr + 24)[0], struct.unpack_from("<H", data, hdr + 32)[0]
-        code = struct.unpack_from("<I", data, hdr + 36)[0] & 0x20000020  # IMAGE_SCN_CNT_CODE, MEM_EXECUTE
         for r in range(nrel):
             off = relptr + 10 * r
             vaddr, symidx, rtype = struct.unpack_from("<IIH", data, off)
@@ -144,7 +144,7 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
                 continue
             if rtype == COFF_REL32 and p in native:
                 target = symidx if symidx in renamed else symbol_for(prefix + NATIVE + p)
-            elif rtype == COFF_DIR32 and not code and p in pmf:
+            elif rtype == COFF_DIR32 and p in pmf:
                 target = symbol_for(prefix + PMF + p)
             else:
                 target = symbol_for(prefix + p)
@@ -208,7 +208,6 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str], pmf: set[str] = 
     for s in sections:
         if s[1] != 9 or s[6] != symtab_index:  # SHT_REL against this symbol table
             continue
-        code = sections[s[7]][2] & 4  # the section relocated is SHF_EXECINSTR
         for off in range(s[4], s[4] + s[5], 8):
             r_info, = struct.unpack_from("<I", data, off + 4)
             symidx, rtype = r_info >> 8, r_info & 0xFF
@@ -217,7 +216,7 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str], pmf: set[str] = 
                 continue
             if rtype in (ELF_R_386_PC32, ELF_R_386_PLT32) and name in native:
                 target = symidx if symidx in renamed else symbol_for(NATIVE + name)
-            elif rtype == ELF_R_386_32 and not code and name in pmf:
+            elif rtype == ELF_R_386_32 and name in pmf:
                 target = symbol_for(PMF + name)
             else:
                 target = symbol_for(name)

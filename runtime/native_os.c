@@ -23,6 +23,59 @@
  * again, nest on it. */
 #define FIBER_STACK (16u << 20)
 
+/* An integer division by zero (or the one that overflows, INT_MIN / -1) traps on the PC.
+ * The ROM's code divides with its helpers (_s32_div_f, _u32_div_f), which give the dividend
+ * as the quotient and 0 as the remainder in both cases. For a DIV or IDIV of Native code
+ * (native_fault_divide), the quotient register still holds the dividend's low part, which
+ * the compiler extended into the high part: clearing the remainder register and going on
+ * after the instruction gives the helpers' result. Returns the instruction's length and
+ * the remainder's width in bytes (1 for AH, 2 for DX, 4 for EDX), or 0. */
+static uint32_t divide_length(const uint8_t *p, int *width)
+{
+    uint32_t n = 0;
+    int wide = 4;
+    if (p[n] == 0x66) {
+        wide = 2;
+        n++;
+    }
+    if (p[n] != 0xf6 && p[n] != 0xf7) {
+        return 0;
+    }
+    *width = p[n] == 0xf6 ? 1 : wide;
+    uint8_t modrm = p[n + 1];
+    uint32_t mod = modrm >> 6, rm = modrm & 7, reg = (modrm >> 3) & 7;
+    if (reg != 6 && reg != 7) {
+        return 0;
+    }
+    n += 2;
+    if (mod != 3 && rm == 4) {
+        uint8_t sib = p[n++];
+        if (mod == 0 && (sib & 7) == 5) {
+            n += 4;
+        }
+    }
+    if (mod == 0 && rm == 5) {
+        n += 4;
+    } else if (mod == 1) {
+        n += 1;
+    } else if (mod == 2) {
+        n += 4;
+    }
+    return n;
+}
+
+static uint32_t without_remainder(uint32_t value, int width, int is_eax)
+{
+    /* the remainder: AH (in EAX) for a byte division, DX or EDX otherwise */
+    if (width == 1) {
+        return is_eax ? value & ~0xff00u : value;
+    }
+    if (is_eax) {
+        return value;
+    }
+    return width == 2 ? value & ~0xffffu : 0;
+}
+
 #ifdef _WIN32
 
 /* A call to a DS address faults on the instruction fetch: an access violation whose kind
@@ -35,6 +88,17 @@ static LONG CALLBACK on_fault(EXCEPTION_POINTERS *info)
         /* RUN_NATIVE_HWWATCH: a write to the watched word */
         native_watch_hit((uint32_t) c->Eip);
         c->Dr6 = 0;
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+    if (r->ExceptionCode == EXCEPTION_INT_DIVIDE_BY_ZERO || r->ExceptionCode == EXCEPTION_INT_OVERFLOW) {
+        int width = 0;
+        uint32_t length = divide_length((const uint8_t *) (uintptr_t) c->Eip, &width);
+        if (length == 0 || !native_fault_divide((uint32_t) c->Eip)) {
+            return EXCEPTION_CONTINUE_SEARCH;
+        }
+        c->Eax = without_remainder((uint32_t) c->Eax, width, 1);
+        c->Edx = without_remainder((uint32_t) c->Edx, width, 0);
+        c->Eip += length;
         return EXCEPTION_CONTINUE_EXECUTION;
     }
     if (r->ExceptionCode != EXCEPTION_ACCESS_VIOLATION || r->NumberParameters < 2) {
@@ -227,6 +291,18 @@ static void on_fault(int sig, siginfo_t *info, void *context)
     greg_t *g = uc->uc_mcontext.gregs;
     uint32_t eip = (uint32_t) g[REG_EIP];
     uint32_t address = (uint32_t) (uintptr_t) info->si_addr;
+    if (sig == SIGFPE) {
+        int width = 0;
+        uint32_t length = divide_length((const uint8_t *) (uintptr_t) eip, &width);
+        if ((info->si_code == FPE_INTDIV || info->si_code == FPE_INTOVF) && length != 0 && native_fault_divide(eip)) {
+            g[REG_EAX] = (greg_t) without_remainder((uint32_t) g[REG_EAX], width, 1);
+            g[REG_EDX] = (greg_t) without_remainder((uint32_t) g[REG_EDX], width, 0);
+            g[REG_EIP] = (greg_t) (eip + length);
+            return;
+        }
+        signal(sig, SIG_DFL);
+        return;
+    }
     if (sig == SIGSEGV && address == eip && native_fault_is_ds(eip)) {
         uint32_t eax = (uint32_t) g[REG_EAX];
         g[REG_EIP] = (greg_t) native_fault_execute(eip, &eax, (uint32_t) g[REG_ECX]);
@@ -312,7 +388,7 @@ int native_os_init(void)
     sa.sa_sigaction = on_fault;
     sa.sa_flags = SA_SIGINFO | SA_NODEFER;
     sigemptyset(&sa.sa_mask);
-    if (sigaction(SIGSEGV, &sa, NULL) != 0 || sigaction(SIGBUS, &sa, NULL) != 0) {
+    if (sigaction(SIGSEGV, &sa, NULL) != 0 || sigaction(SIGBUS, &sa, NULL) != 0 || sigaction(SIGFPE, &sa, NULL) != 0) {
         return -1;
     }
     return 0;

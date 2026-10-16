@@ -83,7 +83,14 @@ def flags_for(path: pathlib.Path) -> list[str]:
     # structures as the DS lays them out (runtime/native.h): GCC's bit-fields on Windows too
     layout = ["-mno-ms-bitfields"] if WINDOWS else []
     relax = RELAX if "clang" in " ".join(compiler()) else []  # gcc only warns about these
-    return [*lang, *pic, *layout, "-O2", "-w", *relax, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
+    # Locals the source leaves uninitialized hold what the stack held before. The ROM's code
+    # can pass such bytes on into the game's memory (a structure filled in part and copied);
+    # the PC's stack holds other leftovers than the DS's, which no Native can match. Filled with
+    # a pattern (0xff bytes from clang for a 32-bit target, 0xfe from gcc), they read the same
+    # on every run, and the memory comparison (runtime/native_run.c, compare_with_reference)
+    # counts a word whose differing bytes are all the pattern's apart from the game's values.
+    uninit = ["-ftrivial-auto-var-init=pattern"]
+    return [*lang, *pic, *layout, "-O2", "-w", *relax, *uninit, "-fwrapv", "-fno-strict-aliasing", "-fno-exceptions",
             "-include", str(C.ROOT / "runtime" / "native.h"), f"-I{C.INCLUDE}", f"-I{C.INCLUDE / 'msl'}"]
 
 
@@ -707,6 +714,13 @@ def main() -> None:
     for rel, callee, n, dn, ret, dret, _drel in protos.disagreements():
         if (n is not None and dn is not None and n < dn) or (ret and not dret):
             short[rel].append(callee)
+    # A caller that declares a function with a char or short result the definition does not
+    # produce (protos.narrowed_results): mwccarm trusts the callee to have extended r0 as
+    # declared, so the ROM's code goes on with the whole register (returns it, compares it, adds
+    # an offset to it); the PC's code extends the low bits itself.
+    narrowed: dict[str, list[str]] = collections.defaultdict(list)
+    for rel, callee in protos.narrowed_results():
+        narrowed[rel].append(callee)
     keep = []
     for (path, _), names in zip(objects, per_object):
         name = C.parse_source(path).object_symbol
@@ -719,9 +733,13 @@ def main() -> None:
                         "is a rewrite, and passes registers on differently" + chr(10))
             continue
         inner = sorted(set(re.findall(r"\b(\w+_unk)\s*\(", text)) - {name})
+        narrow = sorted(set(narrowed.get(path.relative_to(C.ROOT).as_posix(), [])))
         if inner:
             keep.append(f"{name} calls {' '.join(inner)}, an entry into the middle of other code: the ROM's code "
                         "there goes on into a function whose Native would not start there" + chr(10))
+        elif narrow:
+            keep.append(f"{name} declares {' '.join(narrow)} with a narrower result than the definition returns: "
+                        "the ROM's code uses the whole register the callee leaves, the PC's only the low bits\n")
         elif by_value:
             keep.append(f"{name} calls {' '.join(by_value)}, which returns a structure by value: mwccarm passes "
                         "a pointer to the result in r0, the PC's compiler returns a small one in registers\n")

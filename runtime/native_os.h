@@ -26,6 +26,9 @@ int native_os_init(void);
 uintptr_t native_fault_execute(uint32_t target, uint32_t *eax, uint32_t ecx);
 int native_fault_data(uint32_t eip, uint32_t address, uint32_t esp);
 int native_fault_is_ds(uint32_t address);
+/* Native code at host address `eip` divided by zero (or INT_MIN by -1): 1 when it is Native
+ * code's, which then goes on with the ROM's helpers' result (native_os.c), else 0. */
+int native_fault_divide(uint32_t eip);
 /* Debugging (RUN_NATIVE_HWWATCH, Windows): code at host address `eip` wrote the watched word. */
 void native_watch_hit(uint32_t eip);
 
