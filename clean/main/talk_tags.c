@@ -124,15 +124,12 @@ extern const s32 data_020cd40c;
 extern StateBlock data_021dc7a8;
 extern HouseRecord data_021ebcd4;
 
-/* The texts of the villager loaded into the talk: 0 when they could not be. */
-extern int func_0206781c(u8 *talk);
-extern int func_02067728(u8 *talk);
-extern int func_0206777c(u8 *talk);
-extern int func_020677d0(u8 *talk);
-extern int func_0206786c(u8 *talk);
-extern int func_020678f8(u8 *talk);
-extern int func_02067964(u8 *talk);
-extern int func_020679b0(u8 *talk);
+/* The talk shown, as talk_object.h lays it out: the texts of the villager are loaded into it
+ * (0 when they could not be). */
+static TalkObject *talk_tags_object(TalkTagsWalker *walker)
+{
+    return (TalkObject *) (void *) walker->talk;
+}
 /* An answer; all of them cleared (the pick too); an answer's weight and its byte 0x70; the
  * first answer's text. */
 extern TalkAnswer *func_020ab550(TalkAnswers *answers, int index);
@@ -674,15 +671,16 @@ CLEAN_AS(func_02069c1c, TalkTags_SliderChoices)
 /* func_02069d24 (tag 4/34): the villager's boom (func_0206781c), without colours. */
 void TalkTags_PutBoom(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_0206781c(walker->talk), TALK_TAGS_NOTE_BOOM, data_020df14c, TALK_TAGS_BOOM, -1, 1);
+    talk_tags_put_loaded(walker, TalkObject_LoadBoom(talk_tags_object(walker)), TALK_TAGS_NOTE_BOOM, data_020df14c,
+                         TALK_TAGS_BOOM, -1, 1);
 }
 CLEAN_AS(func_02069d24, TalkTags_PutBoom)
 
 /* func_02069d8c (tag 4/33): the villager's praise word (func_02067728), ending with colour 2. */
 void TalkTags_PutPraise(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_02067728(walker->talk), TALK_TAGS_NOTE_PRAISE, data_020df154, TALK_TAGS_PRAISE,
-                         TALK_TAGS_COLOUR_PRAISE, 1);
+    talk_tags_put_loaded(walker, TalkObject_LoadPraise(talk_tags_object(walker)), TALK_TAGS_NOTE_PRAISE, data_020df154,
+                         TALK_TAGS_PRAISE, TALK_TAGS_COLOUR_PRAISE, 1);
 }
 CLEAN_AS(func_02069d8c, TalkTags_PutPraise)
 
@@ -693,16 +691,16 @@ CLEAN_AS(func_02069e10, TalkTags_Nothing4_32)
 /* func_02069e14 (tag 4/31): the nickname the villager gives the player (func_0206777c). */
 void TalkTags_PutNickname(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_0206777c(walker->talk), TALK_TAGS_NOTE_NICKNAME, data_020df160, TALK_TAGS_NICKNAME,
-                         TALK_TAGS_COLOUR_PLAYER, 1);
+    talk_tags_put_loaded(walker, TalkObject_LoadNickname(talk_tags_object(walker)), TALK_TAGS_NOTE_NICKNAME, data_020df160,
+                         TALK_TAGS_NICKNAME, TALK_TAGS_COLOUR_PLAYER, 1);
 }
 CLEAN_AS(func_02069e14, TalkTags_PutNickname)
 
 /* func_02069e98 (tag 4/30): the villager's impression (func_020677d0), without colours. */
 void TalkTags_PutImpression(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_020677d0(walker->talk), TALK_TAGS_NOTE_IMPRESSION, data_020df170, TALK_TAGS_IMPRESSION,
-                         -1, 1);
+    talk_tags_put_loaded(walker, TalkObject_LoadImpression(talk_tags_object(walker)), TALK_TAGS_NOTE_IMPRESSION, data_020df170,
+                         TALK_TAGS_IMPRESSION, -1, 1);
 }
 CLEAN_AS(func_02069e98, TalkTags_PutImpression)
 
@@ -815,7 +813,7 @@ CLEAN_AS(func_02069fa8, TalkTags_PutPart0)
  * 5, or 6 when the talk's byte 0x1e76 is set. */
 void TalkTags_PutOtherPlayer(TalkTagsWalker *walker)
 {
-    if (func_0206786c(walker->talk) == 0) {
+    if (TalkObject_LoadOtherPlayer(talk_tags_object(walker)) == 0) {
         TalkTags_FailureNote(walker, TALK_TAGS_NOTE_OTHER_PLAYER, data_020df178);
     }
     MessageWalker_Enter(&walker->base, MessageTag_ColourTag(walker->name_colour));
@@ -832,24 +830,24 @@ CLEAN_AS(func_02069fb4, TalkTags_PutOtherPlayer)
 /* func_0206a048 (tag 4/13): a villager picked at random (func_020678f8). */
 void TalkTags_PutRandomNpc(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_020678f8(walker->talk), TALK_TAGS_NOTE_RANDOM_NPC, data_020df188, TALK_TAGS_RANDOM_NPC,
-                         TALK_TAGS_COLOUR_NPC, 0);
+    talk_tags_put_loaded(walker, TalkObject_LoadRandomNpc(talk_tags_object(walker)), TALK_TAGS_NOTE_RANDOM_NPC, data_020df188,
+                         TALK_TAGS_RANDOM_NPC, TALK_TAGS_COLOUR_NPC, 0);
 }
 CLEAN_AS(func_0206a048, TalkTags_PutRandomNpc)
 
 /* func_0206a0cc (tag 4/12): a villager the one talked to is on bad terms with (func_02067964). */
 void TalkTags_PutDislikedNpc(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_02067964(walker->talk), TALK_TAGS_NOTE_DISLIKED_NPC, data_020df198,
-                         TALK_TAGS_DISLIKED_NPC, TALK_TAGS_COLOUR_NPC, 0);
+    talk_tags_put_loaded(walker, TalkObject_LoadDislikedNpc(talk_tags_object(walker)), TALK_TAGS_NOTE_DISLIKED_NPC,
+                         data_020df198, TALK_TAGS_DISLIKED_NPC, TALK_TAGS_COLOUR_NPC, 0);
 }
 CLEAN_AS(func_0206a0cc, TalkTags_PutDislikedNpc)
 
 /* func_0206a150 (tag 4/11): a villager the one talked to is on good terms with (func_020679b0). */
 void TalkTags_PutLikedNpc(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_020679b0(walker->talk), TALK_TAGS_NOTE_LIKED_NPC, data_020df1a8, TALK_TAGS_LIKED_NPC,
-                         TALK_TAGS_COLOUR_NPC, 0);
+    talk_tags_put_loaded(walker, TalkObject_LoadLikedNpc(talk_tags_object(walker)), TALK_TAGS_NOTE_LIKED_NPC, data_020df1a8,
+                         TALK_TAGS_LIKED_NPC, TALK_TAGS_COLOUR_NPC, 0);
 }
 CLEAN_AS(func_0206a150, TalkTags_PutLikedNpc)
 
@@ -887,16 +885,11 @@ extern const char data_020df1b8[];
 /* The talk's texts of the date and time it began (func_02067c20 kept them at 0x1a64 to
  * 0x1a70) are set and answered by TalkObject_SecondText to TalkObject_YearText. */
 /* The town's name and this system's player's name (both answer 1), the villager's
- * catchphrase, and the text the villager remembers of the player: loaded into the talk; 0
- * when not. */
-extern int func_02067a3c(u8 *talk);
-extern int func_020679fc(u8 *talk);
-extern int func_02067a74(u8 *talk);
-extern int func_020676d0(u8 *talk);
+ * catchphrase, and the text the villager remembers of the player, are loaded into the talk
+ * (TalkObject_LoadTownName, TalkObject_LoadPlayerName, TalkObject_LoadCatchphrase,
+ * TalkObject_LoadMemory); 0 when not. */
 /* The text of the receiver's name (the receiver plus 0x20). */
 extern void *func_020668d4(void *receiver);
-/* The talk's word 0x10 set. */
-extern void func_020676c4(u8 *talk, int value);
 
 /* The tables of the handlers (function-local statics of the game, filled on the first call),
  * by group: the guard, the table, and the constants it is filled from. */
@@ -1078,7 +1071,7 @@ CLEAN_AS(func_0206a384, TalkTags_PutYear)
 /* func_0206a3cc (tag 4/3): the town's name, ending with colour 8. */
 void TalkTags_PutTownName(TalkTagsWalker *walker)
 {
-    func_02067a3c(walker->talk);
+    TalkObject_LoadTownName(talk_tags_object(walker));
     talk_tags_put_loaded(walker, 1, 0, NULL, TALK_TAGS_TOWN_NAME, TALK_TAGS_COLOUR_TOWN, 0);
 }
 CLEAN_AS(func_0206a3cc, TalkTags_PutTownName)
@@ -1086,8 +1079,8 @@ CLEAN_AS(func_0206a3cc, TalkTags_PutTownName)
 /* func_0206a438 (tag 4/2): the catchphrase of the villager talked to, without colours. */
 void TalkTags_PutCatchphrase(TalkTagsWalker *walker)
 {
-    talk_tags_put_loaded(walker, func_02067a74(walker->talk), TALK_TAGS_NOTE_CATCHPHRASE, data_020df1b8, TALK_TAGS_CATCHPHRASE,
-                         -1, 0);
+    talk_tags_put_loaded(walker, TalkObject_LoadCatchphrase(talk_tags_object(walker)), TALK_TAGS_NOTE_CATCHPHRASE,
+                         data_020df1b8, TALK_TAGS_CATCHPHRASE, -1, 0);
 }
 CLEAN_AS(func_0206a438, TalkTags_PutCatchphrase)
 
@@ -1108,7 +1101,7 @@ CLEAN_AS(func_0206a4a0, TalkTags_PutReceiverName)
 /* func_0206a510 (tag 4/0): this system's player's name, ending with colour 5. */
 void TalkTags_PutPlayerName(TalkTagsWalker *walker)
 {
-    func_020679fc(walker->talk);
+    TalkObject_LoadPlayerName(talk_tags_object(walker));
     talk_tags_put_loaded(walker, 1, 0, NULL, TALK_TAGS_PLAYER_NAME, TALK_TAGS_COLOUR_PLAYER, 0);
 }
 CLEAN_AS(func_0206a510, TalkTags_PutPlayerName)
@@ -1232,7 +1225,7 @@ void TalkTags_SetTalkWord10(TalkTagsWalker *walker)
 {
     u8 value;
     MessageTag_GetFirstByte(&walker->tag, &value);
-    func_020676c4(walker->talk, value);
+    TalkObject_SetAutoAdvance(talk_tags_object(walker), value);
 }
 CLEAN_AS(func_0206a978, TalkTags_SetTalkWord10)
 
@@ -1309,7 +1302,7 @@ void TalkTags_RememberedText(TalkTagsWalker *walker)
     if (end == 0) {
         return;
     }
-    if (func_020676d0(walker->talk) == 0) {
+    if (TalkObject_LoadMemory(talk_tags_object(walker)) == 0) {
         return;
     }
     MessageWalker_Skip(&walker->base, end - position);
@@ -1988,3 +1981,173 @@ TalkTagsWalker *TalkTags_Construct(TalkTagsWalker *walker, u8 *talk, void *page)
     return walker;
 }
 CLEAN_AS(func_0206bde0, TalkTags_Construct)
+
+/* ---- The handlers of tags 0xff/0 and 0xff/2, and of group 11 from kind 8 on. */
+
+/* The talk's four values (MessagePart), after its parts. */
+#define TALK_TAGS_VALUES 0x18ac
+/* The particles' last syllable (MailTextParticles.last_syllable). */
+#define TALK_TAGS_LAST_SYLLABLE 0x1a5c
+/* The first Hangul syllable, the syllables of one initial and vowel (one for each final
+ * consonant, the first with none), and the final rieul. */
+#define TALK_TAGS_HANGUL_FIRST 0xac00
+#define TALK_TAGS_FINALS 28
+#define TALK_TAGS_FINAL_RIEUL 8
+/* The particle "ro" / "euro" (text_codes.h). */
+#define TALK_TAGS_PARTICLE_RO 6
+
+/* func_02069270 (tag 0xff/2): a text of the tag's own that stands beside the characters after
+ * it (the tag's first parameter byte says how many): a span walks those characters, another
+ * the tag's text, and the walk itself skips the characters. A setting of the game
+ * (TalkObject_OptionFlagOff) picks which of the two goes into the window's page.
+ * QUIRK: the tag's text ends at its start plus the bytes up to the tag's end with the lowest
+ * bit flipped: the text starts one byte after the parameters, and the end is taken back to a
+ * whole number of characters from there. */
+void TalkTags_StartSpans(TalkTagsWalker *walker)
+{
+    u32 count;
+    s32 end;
+    const s8 *text;
+    MessageTag_SplitParams(&walker->tag, &count, &end, &text);
+    int after_to_page = TalkObject_OptionFlagOff();
+    TalkSpan_StartCounted(talk_tags_span_after(walker), end, (int) count, (u8) after_to_page);
+    u32 start = (u32) (uintptr_t) text;
+    TalkSpan_StartRange(talk_tags_span_own(walker), start, start + (((u32) end - start) ^ 1), !after_to_page);
+    MessageWalker_Skip(&walker->base, (int) (count << 1));
+}
+CLEAN_AS(func_02069270, TalkTags_StartSpans)
+
+/* func_020692c8 (tag 0xff/0): a colour change: the colour kept for the names, put into the
+ * window's page as a tag and for its new lines, and told to the talk's voice. */
+void TalkTags_ChangeColour(TalkTagsWalker *walker)
+{
+    walker->name_colour = MessageTag_Colour(&walker->tag);
+    TalkPage_PutTag((TalkPage *) walker->window, &walker->tag);
+    TalkPage_SetColourOfNewLines((TalkPage *) walker->window, walker->name_colour);
+    talk_tags_talk(walker)->voice.colour = walker->name_colour;
+}
+CLEAN_AS(func_020692c8, TalkTags_ChangeColour)
+
+/* func_020692f8 (tag 11/20): particle number (the tag's first byte less 1) walked in place of
+ * the tag, in its form after a vowel when the last syllable kept has no final consonant (or
+ * there is none), else in its form after a final consonant; with ro_after_rieul set, "ro"
+ * after a final rieul takes the form after a vowel. */
+void TalkTags_PutParticle(TalkTagsWalker *walker)
+{
+    u8 particle;
+    MessageTag_GetFirstByte(&walker->tag, &particle);
+    particle--;
+    s32 ro_after_rieul = *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_RO_AFTER_RIEUL);
+    s32 last = *(s32 *) (void *) talk_tags_at(walker, TALK_TAGS_LAST_SYLLABLE);
+    TextParticle *text;
+    if (last == 0) {
+        text = TextCodes_ParticleAfterVowel(particle);
+    } else {
+        int final = (last - TALK_TAGS_HANGUL_FIRST) % TALK_TAGS_FINALS;
+        if (final == 0) {
+            text = TextCodes_ParticleAfterVowel(particle);
+        } else if (ro_after_rieul == 1 && particle == TALK_TAGS_PARTICLE_RO && final == TALK_TAGS_FINAL_RIEUL) {
+            text = TextCodes_ParticleAfterVowel(particle);
+        } else {
+            text = TextCodes_ParticleAfterConsonant(particle);
+        }
+    }
+    MessageWalker_Enter(&walker->base, (int) (uintptr_t) text);
+}
+CLEAN_AS(func_020692f8, TalkTags_PutParticle)
+
+/* The talk's value `index` handed to the empty TalkTags_NotePart. */
+static void talk_tags_note_value(TalkTagsWalker *walker, int index)
+{
+    TalkTags_NotePart(walker, talk_tags_at(walker, TALK_TAGS_VALUES + (u32) index * TALK_TAGS_PART_SIZE));
+}
+
+/* func_0206937c (tag 11/19): value 3 of the talk handed to the empty func_0206b97c. */
+void TalkTags_NoteValue3(TalkTagsWalker *walker)
+{
+    talk_tags_note_value(walker, 3);
+}
+CLEAN_AS(func_0206937c, TalkTags_NoteValue3)
+
+/* func_02069398 (tag 11/18): value 2, likewise. */
+void TalkTags_NoteValue2(TalkTagsWalker *walker)
+{
+    talk_tags_note_value(walker, 2);
+}
+CLEAN_AS(func_02069398, TalkTags_NoteValue2)
+
+/* func_020693ac (tag 11/17): value 1, likewise. */
+void TalkTags_NoteValue1(TalkTagsWalker *walker)
+{
+    talk_tags_note_value(walker, 1);
+}
+CLEAN_AS(func_020693ac, TalkTags_NoteValue1)
+
+/* func_020693c0 (tag 11/16): value 0, likewise. */
+void TalkTags_NoteValue0(TalkTagsWalker *walker)
+{
+    talk_tags_note_value(walker, 0);
+}
+CLEAN_AS(func_020693c0, TalkTags_NoteValue0)
+
+/* The talk's part `index` handed to the empty TalkTags_NotePart. */
+static void talk_tags_note_part(TalkTagsWalker *walker, int index)
+{
+    TalkTags_NotePart(walker, talk_tags_at(walker, TALK_TAGS_PARTS + (u32) index * TALK_TAGS_PART_SIZE));
+}
+
+/* func_020693d4 (tag 11/15): part 10 of the talk handed to the empty func_0206b97c. */
+void TalkTags_NotePart10(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 10);
+}
+CLEAN_AS(func_020693d4, TalkTags_NotePart10)
+
+/* func_020693f0 (tag 11/14): part 9, likewise. */
+void TalkTags_NotePart9(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 9);
+}
+CLEAN_AS(func_020693f0, TalkTags_NotePart9)
+
+/* func_0206940c (tag 11/13): part 8, likewise. */
+void TalkTags_NotePart8(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 8);
+}
+CLEAN_AS(func_0206940c, TalkTags_NotePart8)
+
+/* func_02069428 (tag 11/12): part 7, likewise. */
+void TalkTags_NotePart7(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 7);
+}
+CLEAN_AS(func_02069428, TalkTags_NotePart7)
+
+/* func_02069444 (tag 11/11): part 6, likewise. */
+void TalkTags_NotePart6(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 6);
+}
+CLEAN_AS(func_02069444, TalkTags_NotePart6)
+
+/* func_02069460 (tag 11/10): part 5, likewise. */
+void TalkTags_NotePart5(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 5);
+}
+CLEAN_AS(func_02069460, TalkTags_NotePart5)
+
+/* func_0206947c (tag 11/9): part 4, likewise. */
+void TalkTags_NotePart4(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 4);
+}
+CLEAN_AS(func_0206947c, TalkTags_NotePart4)
+
+/* func_02069498 (tag 11/8): part 3, likewise. */
+void TalkTags_NotePart3(TalkTagsWalker *walker)
+{
+    talk_tags_note_part(walker, 3);
+}
+CLEAN_AS(func_02069498, TalkTags_NotePart3)

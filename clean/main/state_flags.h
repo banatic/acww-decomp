@@ -27,4 +27,25 @@ fx32 StateFlags_ValueOrZero(void);
 void StateFlags_SetValue(u32 value);
 void StateFlags_Reset(void);
 
+/* Flag 0x80 asks the open menu to close (menu_tab.c, the pockets screen); a delay, counted
+ * down while it is set, holds the asking back (StateFlags_MenuCloseAsked). */
+BOOL StateFlags_MenuCloseAsked(void);
+void StateFlags_CountMenuCloseDelay(void);
+void StateFlags_EndMenuClose(void);
+void StateFlags_AskMenuClose(void);
+
+void StateFlags_Clear200(void);
+void StateFlags_Set200(void);
+BOOL StateFlags_Test200(void);
+BOOL StateFlags_Test100(void);
+void StateFlags_Clear100(void);
+void StateFlags_Set100(void);
+void StateFlags_Clear8And20And40(void);
+void StateFlags_Set40(void);
+void StateFlags_Set20(void);
+void StateFlags_Set8(void);
+BOOL StateFlags_Test40(void);
+BOOL StateFlags_Test20(void);
+BOOL StateFlags_Test8(void);
+
 #endif

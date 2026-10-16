@@ -3,8 +3,10 @@
 
 #include <assert.h>
 
+#include "autoload_2/heap.h"
 #include "autoload_2/input.h"
 #include "autoload_2/links.h"
+#include "autoload_2/process.h"
 #include "clean.h"
 #include "control_mode.h"
 #include "overlay_groups.h"
@@ -161,3 +163,25 @@ OverlayTask *OverlayTask_New(void)
 CLEAN_AS(func_02070400, OverlayTask_New)
 
 static_assert(sizeof(OverlayTask) == 0x50, "OverlayTask layout");
+
+/* func_0206f49c (slot 16): the destructor: this class's vtable, then the base's, and the
+ * base's destructor (Process_Destruct). Returns the object. */
+OverlayTask *OverlayTask_Destruct(OverlayTask *self)
+{
+    self->vtable = data_020df548;
+    self->vtable = data_020da13c;
+    Process_Destruct((Process *) (void *) self);
+    return self;
+}
+CLEAN_AS(func_0206f49c, OverlayTask_Destruct)
+
+/* func_0206f4bc (slot 17): destructed, then freed to the auxiliary heap. */
+OverlayTask *OverlayTask_DestructDelete(OverlayTask *self)
+{
+    self->vtable = data_020df548;
+    self->vtable = data_020da13c;
+    Process_Destruct((Process *) (void *) self);
+    Heap_FreeAux(self);
+    return self;
+}
+CLEAN_AS(func_0206f4bc, OverlayTask_DestructDelete)

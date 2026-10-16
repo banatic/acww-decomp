@@ -81,5 +81,6 @@ void MenuBackdrop_BeginWipeOut(void);
 void MenuBackdrop_BeginWipeIn(void);
 void MenuBackdrop_StopWipe(void);
 void MenuBackdrop_WipeOutFrame(void);
+void MenuBackdrop_WipeInFrame(void);
 
 #endif

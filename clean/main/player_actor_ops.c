@@ -18,9 +18,7 @@
 #include "scene_kinds.h"
 #include "scene_tables.h"
 #include "session.h"
-
-/* The field actor of session player `player` (PLAYER_ACTOR_OPS_OWN: this console's), or NULL. */
-extern FieldActor *func_02096718(int player);
+#include "session_players.h"
 
 /* Overlay 4: asks for state 0x8d with a point. */
 extern int func_ov004_022265dc(FieldActor *actor, const Vec3 *point, int priority, int arg);
@@ -115,7 +113,7 @@ CLEAN_AS(func_020953a0, PlayerActorOps_Nothing)
 /* func_020953a4: notes the kind of the object under this console's actor. */
 void PlayerActorOps_NoteObjectKind(int *kind)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor != NULL) {
         PLAYER_ACTOR_OPS_OBJECT_KIND(actor) = *kind;
     }
@@ -125,7 +123,7 @@ CLEAN_AS(func_020953a4, PlayerActorOps_NoteObjectKind)
 /* func_020953c4: notes the object under this console's actor. */
 void PlayerActorOps_NoteObject(unsigned int *object)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor != NULL) {
         PLAYER_ACTOR_OPS_OBJECT(actor) = (int) *object;
     }
@@ -137,7 +135,7 @@ CLEAN_AS(func_020953c4, PlayerActorOps_NoteObject)
  * room where no object of the room is ahead; outdoors not on a marked tile. */
 u16 *PlayerActorOps_ItemAhead(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL || actor->state != 2) {
         return NULL;
     }
@@ -166,7 +164,7 @@ CLEAN_AS(func_020953e4, PlayerActorOps_ItemAhead)
  * REQUIRES: the actor exists (it is not checked for NULL). */
 void PlayerActorOps_CopyBlock698(struct FieldActorBlock48 *out, int player)
 {
-    const u32 *from = (const u32 *) (const void *) &func_02096718(player)->unk_698;
+    const u32 *from = (const u32 *) (const void *) &SessionPlayers_FieldActor(player)->unk_698;
     u32 *to = (u32 *) (void *) out;
     for (size_t i = 0; i < sizeof(FieldActorBlock48) / sizeof(u32); i += 2) {
         u32 first = from[i];
@@ -181,7 +179,7 @@ CLEAN_AS(func_0209549c, PlayerActorOps_CopyBlock698)
  * (Globe_Unbend); whether there is one (an actor whose point is not all zero). */
 int PlayerActorOps_HeadPoint(Vec3 *out, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -201,7 +199,7 @@ CLEAN_AS(func_020954c0, PlayerActorOps_HeadPoint)
  * was not); whether it has an actor. */
 int PlayerActorOps_SetLook(int pitch, int yaw, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -236,7 +234,7 @@ int PlayerActorOps_SetFlag0(int set, int player)
         return 0;
     }
     PlayerRecord_SetFlag0(record, set);
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL || actor->animation >= PLAYER_ACTOR_OPS_FIXED_LOOKS_ANIMATION) {
         return 0;
     }
@@ -273,7 +271,7 @@ int PlayerActorOps_SetWorn(u16 *item, int part, int player)
             break;
     }
 
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL || actor->animation >= PLAYER_ACTOR_OPS_FIXED_LOOKS_ANIMATION) {
         return 0;
     }
@@ -309,7 +307,7 @@ CLEAN_AS(func_020955e0, PlayerActorOps_SetWorn)
  * actor has one. */
 int PlayerActorOps_SetHeldModel(unsigned int number, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -350,7 +348,7 @@ CLEAN_AS(func_02095694, PlayerActorOps_SetHeldModel)
  * an actor (written first either way). */
 void PlayerActorOps_HeldItem(u16 *item, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     *item = PLAYER_ACTOR_OPS_ITEM_NONE;
     if (actor != NULL) {
         u16 held;
@@ -363,7 +361,7 @@ CLEAN_AS(func_02095764, PlayerActorOps_HeldItem)
 /* func_02095794: where player `player`'s actor was when its frame began, or NULL. */
 Vec3 *PlayerActorOps_StartPosition(int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     return actor != NULL ? &actor->start_position : NULL;
 }
 CLEAN_AS(func_02095794, PlayerActorOps_StartPosition)
@@ -373,7 +371,7 @@ CLEAN_AS(func_02095794, PlayerActorOps_StartPosition)
  * REQUIRES: `*kind` is 1 or more (the table starts at kind 1). */
 int PlayerActorOps_RequestState14(unsigned char *kind)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -387,7 +385,7 @@ CLEAN_AS(func_020957b4, PlayerActorOps_RequestState14)
  * 0x13; whether it was queued. */
 int PlayerActorOps_RequestState13(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -402,7 +400,7 @@ CLEAN_AS(func_02095804, PlayerActorOps_RequestState13)
  * Whether it was queued; 0 off a door. */
 int PlayerActorOps_StepOffDoor(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -443,7 +441,7 @@ CLEAN_AS(func_0209583c, PlayerActorOps_StepOffDoor)
  * is in state 0x28 with flag 0xb. Whether it was queued. */
 int PlayerActorOps_RequestState10(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -460,7 +458,7 @@ CLEAN_AS(func_02095904, PlayerActorOps_RequestState10)
  * it is asked for state 0x10 for 3 frames. */
 void PlayerActorOps_Approach(unsigned int approach)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return;
     }
@@ -484,7 +482,7 @@ int PlayerActorOps_RequestState79(void)
     if (EventQueue_IsKind5Unfinished() != 0) {
         return 0;
     }
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL || FieldActor_TestFlag(actor, PLAYER_ACTOR_OPS_FLAG_B) != 0) {
         return 0;
     }
@@ -502,7 +500,7 @@ CLEAN_AS(func_020959ac, PlayerActorOps_RequestState79)
 /* func_02095a28: this console's actor is asked for state 0x32; whether it was queued. */
 int PlayerActorOps_RequestState32(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -514,7 +512,7 @@ CLEAN_AS(func_02095a28, PlayerActorOps_RequestState32)
  * whether it was queued. */
 int PlayerActorOps_RequestState30(u16 *item, int *a, unsigned char *b, int *c, int d)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -526,7 +524,7 @@ CLEAN_AS(func_02095a4c, PlayerActorOps_RequestState30)
  * queued. */
 int PlayerActorOps_Turn(int yaw, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -538,7 +536,7 @@ CLEAN_AS(func_02095a8c, PlayerActorOps_Turn)
  * (state 0x6f); whether it was queued. */
 int PlayerActorOps_MoveTo(Vec3 *point, int accel, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -551,7 +549,7 @@ CLEAN_AS(func_02095ab0, PlayerActorOps_MoveTo)
  * was queued. */
 int PlayerActorOps_RequestState85(unsigned short *item)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -564,7 +562,7 @@ CLEAN_AS(func_02095aec, PlayerActorOps_RequestState85)
  * queued. */
 int PlayerActorOps_RequestState3F(unsigned short *item)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -626,7 +624,7 @@ CLEAN_AS(func_02095b9c, PlayerActorOps_RequestState7Kind0Next5)
  * follow; whether it was queued. */
 int PlayerActorOps_RequestState7(unsigned short *item, int kind, int next)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -642,7 +640,7 @@ CLEAN_AS(func_02095ba8, PlayerActorOps_RequestState7)
  * else for state 2 for 3 frames. The request's answer. */
 int PlayerActorOps_FinishState(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -680,7 +678,7 @@ CLEAN_AS(func_02095bdc, PlayerActorOps_FinishState)
 /* func_02095ce0: this console's actor is asked for state 5 for 3 frames; whether it was queued. */
 int PlayerActorOps_RequestState5(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -691,7 +689,7 @@ CLEAN_AS(func_02095ce0, PlayerActorOps_RequestState5)
 /* func_02095d04: whether this console's actor has nothing of priority 5 or more queued. */
 int PlayerActorOps_QueueBelow5(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     return actor != NULL && FieldActor_QueuePriority(actor) < 5;
 }
 CLEAN_AS(func_02095d04, PlayerActorOps_QueueBelow5)
@@ -700,7 +698,7 @@ CLEAN_AS(func_02095d04, PlayerActorOps_QueueBelow5)
  * of the event queue and the actor's flag 0x13 are clear. */
 int PlayerActorOps_Flag0bInState28_2_8(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -719,7 +717,7 @@ CLEAN_AS(func_02095d2c, PlayerActorOps_Flag0bInState28_2_8)
  * else without flag 0x13 and with nothing of priority 5 or more queued. */
 int PlayerActorOps_MayAct(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -736,7 +734,7 @@ CLEAN_AS(func_02095d84, PlayerActorOps_MayAct)
 /* func_02095de0: whether this console's actor has nothing of priority 6 or more queued. */
 int PlayerActorOps_QueueBelow6(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     return actor != NULL && FieldActor_QueuePriority(actor) < 6;
 }
 CLEAN_AS(func_02095de0, PlayerActorOps_QueueBelow6)
@@ -746,7 +744,7 @@ CLEAN_AS(func_02095de0, PlayerActorOps_QueueBelow6)
  * queued. */
 int PlayerActorOps_MayActFree(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL || FieldActor_TestFlag(actor, PLAYER_ACTOR_OPS_FLAG_B) != 0) {
         return 0;
     }
@@ -764,7 +762,7 @@ CLEAN_AS(func_02095e08, PlayerActorOps_MayActFree)
 /* func_02095e84: clears flag `bit` of player `player`'s actor; whether it has one. */
 int PlayerActorOps_ClearFlag(int bit, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -776,7 +774,7 @@ CLEAN_AS(func_02095e84, PlayerActorOps_ClearFlag)
 /* func_02095ea4: sets flag `bit` of player `player`'s actor; whether it has one. */
 int PlayerActorOps_SetFlag(int bit, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -826,7 +824,7 @@ CLEAN_AS(func_02095f08, PlayerActorOps_SwitchOwnFlag0b)
 /* func_02095f28: flag 0xa20 of the state table for this console's actor's state. */
 int PlayerActorOps_StateFlagA20(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return 0;
     }
@@ -844,7 +842,7 @@ CLEAN_AS(func_02095f4c, PlayerActorOps_InState3F)
 /* func_02095f58: whether this console's actor is in state 7 before frame 19 of its animation. */
 int PlayerActorOps_EarlyInState7(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     return actor != NULL && actor->state == 7 && actor->anim.frame < 0x13000;
 }
 CLEAN_AS(func_02095f58, PlayerActorOps_EarlyInState7)
@@ -853,7 +851,7 @@ CLEAN_AS(func_02095f58, PlayerActorOps_EarlyInState7)
  * is 0; PLAYER_ACTOR_OPS_NO_STATE without an actor. */
 int PlayerActorOps_StateOrStartState(void)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return PLAYER_ACTOR_OPS_NO_STATE;
     }
@@ -871,7 +869,7 @@ CLEAN_AS(func_02095f90, PlayerActorOps_StateOrStartState)
  * and yaw are put back afterwards. Other states give themselves and the actor's place. */
 int PlayerActorOps_PlaceAfterState(Vec3 *position, s16 *yaw)
 {
-    FieldActor *actor = func_02096718(PLAYER_ACTOR_OPS_OWN);
+    FieldActor *actor = SessionPlayers_FieldActor(PLAYER_ACTOR_OPS_OWN);
     if (actor == NULL) {
         return PLAYER_ACTOR_OPS_NO_STATE;
     }
@@ -933,7 +931,7 @@ CLEAN_AS(func_02095fc0, PlayerActorOps_PlaceAfterState)
 /* func_020960d8: player `player`'s actor's state, PLAYER_ACTOR_OPS_NO_STATE without one. */
 int PlayerActorOps_State(int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     return actor != NULL ? actor->state : PLAYER_ACTOR_OPS_NO_STATE;
 }
 CLEAN_AS(func_020960d8, PlayerActorOps_State)
@@ -941,7 +939,7 @@ CLEAN_AS(func_020960d8, PlayerActorOps_State)
 /* func_020960f8: whether player `player`'s actor is in `state`. */
 int PlayerActorOps_InState(int state, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     return actor != NULL && actor->state == state;
 }
 CLEAN_AS(func_020960f8, PlayerActorOps_InState)
@@ -950,7 +948,7 @@ CLEAN_AS(func_020960f8, PlayerActorOps_InState)
  * `player`'s actor; 0 without one. */
 int PlayerActorOps_TestFlag(int bit, int player)
 {
-    FieldActor *actor = func_02096718(player);
+    FieldActor *actor = SessionPlayers_FieldActor(player);
     if (actor == NULL) {
         return 0;
     }
@@ -1001,3 +999,11 @@ int PlayerActorOps_StartState(int made_with)
     return player_actor_ops_start_state((u32) made_with);
 }
 CLEAN_AS(func_02096180, PlayerActorOps_StartState)
+
+/* func_02096188: the session player a field actor was made for, from its argument (bits 30 and
+ * 31). */
+int PlayerActorOps_Player(int made_with)
+{
+    return (int) (((u32) made_with >> 30) & 3);
+}
+CLEAN_AS(func_02096188, PlayerActorOps_Player)

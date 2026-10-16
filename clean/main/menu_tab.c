@@ -9,7 +9,8 @@
 #include "event_queue.h" /* EventQueue_FinishKind10, EventQueue_IsKind10Unfinished, ... */
 #include "oam_buffer.h"  /* OamBuffer_DrawCell */
 #include "ov004/member_pointer.h"
-#include "sound.h" /* SoundSys_PlaySe */
+#include "sound.h"       /* SoundSys_PlaySe */
+#include "state_flags.h" /* StateFlags_MenuCloseAsked, StateFlags_EndMenuClose */
 
 static_assert(offsetof(MenuTab, anim) == 0x0c && offsetof(MenuTab, state) == 0x20, "MenuTab");
 static_assert(offsetof(MenuTab, open) == 0x24 && offsetof(MenuTab, shown) == 0x26, "MenuTab");
@@ -43,10 +44,6 @@ extern void func_020a7e64(void);
 extern void func_020a7e70(void);
 extern void func_020a7dec(void);
 
-/* State flag 0x80 is set and the byte at data_021cfc54 is 0: the menu is asked to close. */
-extern int func_0206f56c(void);
-/* State flag 0x80 cleared and data_021cfc54 set to 0x37. */
-extern void func_0206f5b0(void);
 /* The current scene's number (func_020960d8(4)). */
 extern int func_020960d8(int which);
 
@@ -124,7 +121,7 @@ CLEAN_AS(func_0208bc88, MenuTab_EnterClosing)
 void MenuTab_StepOpen(MenuTab *tab)
 {
     int pressed = MenuTab_Pressed(tab, 1);
-    int asked = func_0206f56c();
+    int asked = StateFlags_MenuCloseAsked();
     if (pressed != 0 || asked != 0) {
         MenuTab_EnterClosing(tab);
     }
@@ -169,7 +166,7 @@ CLEAN_AS(func_0208bd18, MenuTab_EnterOpening)
 void MenuTab_StepShown(MenuTab *tab)
 {
     if (EventQueue_IsKind10Unfinished() != 0) {
-        func_0206f5b0();
+        StateFlags_EndMenuClose();
         MenuTab_EnterOpening(tab);
     } else if (MenuTab_IsAllowed(tab) == 0) {
         MenuTab_EnterHiding(tab);

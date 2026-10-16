@@ -1743,3 +1743,951 @@ int EffectKinds_LandParticlesAtLimit(ParticleEmitter *emitter, int ground_set, v
                                        floor_setups, floor_set2, floor_setups2);
 }
 CLEAN_AS(func_02094a4c, EffectKinds_LandParticlesAtLimit)
+
+/* --- Kinds 0x35-0x4b --- */
+
+/* The set-up words of kinds 0x35-0x4b's sets. */
+extern void *data_020e2794[]; /* kind 0x3e, one-shot set 0x6c */
+extern void *data_020e27a0[]; /* kind 0x3e, one-shot set 0x6d */
+extern void *data_020e27a8[]; /* kinds 0x37 and 0x38 */
+extern void *data_020e27b0[]; /* kind 0x3f, one-shot */
+extern void *data_020e27d4[]; /* kind 0x40 */
+extern void *data_020e281c[]; /* kind 0x49 */
+extern void *data_020e284c[]; /* kind 0x3a */
+extern void *data_020e285c[]; /* kind 0x39 in the snow */
+extern void *data_020e2864[]; /* kind 0x39 on attribute 0x16 or in the rain */
+extern void *data_020e2874[]; /* kind 0x3b */
+extern void *data_020e2894[]; /* kinds 0x4a and 0x4b */
+extern void *data_020e28dc[]; /* kind 0x3f, kept */
+extern void *data_020e2954[]; /* kind 0x3c */
+extern void *data_020e2974[]; /* kind 0x3d */
+extern void *data_020e2994[]; /* kinds 0x41 and 0x42 */
+extern void *data_020e2a3c[]; /* kind 0x35 */
+extern void *data_020e2a8c[]; /* kind 0x36 */
+extern void *data_020e2b04[]; /* kind 0x48 */
+
+/* More of the emitters' offsets and axes. */
+extern const Vec3 data_020d16a8; /* (0, 0, 0.8) */
+extern const Vec3 data_020d16cc; /* (-1.4, 0, 1.7) */
+extern const Vec3 data_020d16e4; /* (1.7, 0, 1.7) */
+extern const Vec3 data_020d172c; /* (1.7, 0, -1.7) */
+extern const Vec3 data_020d1774; /* (0, 0, 0.8) */
+extern const Vec3 data_020d1798; /* (0, 1, 1) */
+extern const Vec3 data_020d17b0; /* (0, 0, 0.8) */
+
+extern fx32 FX_MulFunc(fx32 a, fx32 b);
+extern fx32 FX_Div(fx32 numerator, fx32 denominator);
+/* The functions handed to the game: kind 0x3f's model set-up and kind 0x37's emitter callback. */
+extern void func_020920e4(void *transform);
+extern void func_02092898(ParticleEmitter *emitter, unsigned int after);
+
+#define EFFECT_KINDS_SET_KIND_4B 0x5c
+#define EFFECT_KINDS_SET_KIND_4A 0x5b
+#define EFFECT_KINDS_SET_KIND_49 0x07
+#define EFFECT_KINDS_SET_KIND_48 0x06
+#define EFFECT_KINDS_SET_KIND_47 0x05
+#define EFFECT_KINDS_SET_KIND_46 0x04
+#define EFFECT_KINDS_SET_KIND_45 0x03
+#define EFFECT_KINDS_SET_KIND_44 0x01
+#define EFFECT_KINDS_SET_KIND_43 0x00
+#define EFFECT_KINDS_SET_KIND_42 0x97
+#define EFFECT_KINDS_SET_KIND_41 0x96
+#define EFFECT_KINDS_SET_KIND_40 0x95
+#define EFFECT_KINDS_SET_KIND_3E 0x6c
+#define EFFECT_KINDS_SET_KIND_3E_LARGE 0x6d /* as well, for a size from 0xc00 */
+#define EFFECT_KINDS_SET_KIND_3D 0x53
+#define EFFECT_KINDS_SET_KIND_3C 0x92
+#define EFFECT_KINDS_SET_KIND_3B 0x4f
+#define EFFECT_KINDS_SET_KIND_3A 0x8d
+#define EFFECT_KINDS_SET_KIND_39_WET 0x85
+#define EFFECT_KINDS_SET_KIND_39_SNOW 0x86
+#define EFFECT_KINDS_SET_KIND_39_ON_13 0x84
+#define EFFECT_KINDS_SET_KIND_39 0x83
+#define EFFECT_KINDS_SET_KIND_38_SNOW 0x8a
+#define EFFECT_KINDS_SET_KIND_38_ON_13 0x89
+#define EFFECT_KINDS_SET_KIND_37_SNOW 0x88
+#define EFFECT_KINDS_SET_KIND_37_ON_13 0x87
+#define EFFECT_KINDS_SET_KIND_36 0x7f
+#define EFFECT_KINDS_SET_KIND_35 0x7e
+/* The sets the landed particles of kinds 0x39 and 0x3f start. */
+#define EFFECT_KINDS_SET_LANDED_GROUND 0x1f
+#define EFFECT_KINDS_SET_LANDED_FLOOR_3F 0x1e
+#define EFFECT_KINDS_SET_LANDED_FLOOR_39 0x1d
+
+/* Kinds 0x35 and 0x36 follow their places from frames -181 counting up to -1 (for ever), which
+ * lets their emitters fade in over the first 20 frames and out over the last 60. */
+#define EFFECT_KINDS_RAMP_FRAMES (-181)
+#define EFFECT_KINDS_RAMP_START (-180)     /* the frames once the first followed frame counted */
+#define EFFECT_KINDS_RAMP_IN_END (-161)    /* the last frame of the fade in */
+#define EFFECT_KINDS_RAMP_OUT_START (-60)  /* the first frame of the fade out */
+#define EFFECT_KINDS_KIND_3D_END_FRAMES 11 /* the frames kind 0x3d's places fade out over */
+#define EFFECT_KINDS_KIND_3E_LARGE 0xc00
+
+/* The emitter's emission interval and base alpha (the first two bytes of its misc word). */
+static void effect_kinds_set_interval(ParticleEmitter *emitter, u8 interval)
+{
+    emitter->misc = particle_with_bits(emitter->misc, EMITTER_INTERVAL_SHIFT, 8, interval);
+}
+
+static void effect_kinds_set_base_alpha(ParticleEmitter *emitter, u8 alpha)
+{
+    emitter->misc = particle_with_bits(emitter->misc, EMITTER_BASE_ALPHA_SHIFT, 8, alpha);
+}
+
+/* `base` plus the half-word `step` times `count`, as a half-word. */
+static s16 effect_kinds_ramp(fx32 base, int step, int count)
+{
+    return (s16) ((u32) base + (u32) (s32) (s16) ((u32) step * (u32) count));
+}
+
+/* `scale` times `count` in 1/4096, as the ARM's 32-bit product shifted. */
+static s32 effect_kinds_scaled(int count, int scale)
+{
+    return (s32) ((u32) count * (u32) scale) >> 12;
+}
+
+/* func_02091dd8: kind 0x4b, kept set 0x5c, its first emitter a unit ahead of its place. */
+void EffectKinds_StartKind4b(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_4B, kind, position, angle, extra, data_020e2894);
+}
+CLEAN_AS(func_02091dd8, EffectKinds_StartKind4b)
+
+/* func_02091e00: kind 0x4a, kept set 0x5b with kind 0x4b's words. */
+void EffectKinds_StartKind4a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_4A, kind, position, angle, extra, data_020e2894);
+}
+CLEAN_AS(func_02091e00, EffectKinds_StartKind4a)
+
+/* func_02091e28: the first emitter of kinds 0x4a and 0x4b moved with its place, a unit ahead
+ * of it. */
+void EffectKinds_FollowKind4b(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectPlaces_Follow's is still in r0 when it
+     * returns, and the instances' follower (func_0209099c) reads it. */
+    EffectPlaces_Follow(instance, &data_020d1750, NULL);
+}
+CLEAN_AS(func_02091e28, EffectKinds_FollowKind4b)
+
+/* func_02091e38: the first emitter of kinds 0x4a and 0x4b placed a unit ahead of its place. */
+void EffectKinds_PlaceKind4b(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d1750, NULL);
+}
+CLEAN_AS(func_02091e38, EffectKinds_PlaceKind4b)
+
+/* func_02091e48: kind 0x49, kept set 7. */
+void EffectKinds_StartKind49(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_49, kind, position, angle, extra, data_020e281c);
+}
+CLEAN_AS(func_02091e48, EffectKinds_StartKind49)
+
+/* func_02091e70: kind 0x49's first emitter moved with its place, 0.8 ahead of it. */
+void EffectKinds_FollowKind49(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectPlaces_Follow's is still in r0 when it
+     * returns, and the instances' follower (func_0209099c) reads it. */
+    EffectPlaces_Follow(instance, &data_020d1774, NULL);
+}
+CLEAN_AS(func_02091e70, EffectKinds_FollowKind49)
+
+/* func_02091e80: kind 0x49's first emitter placed 0.8 ahead of its place. */
+void EffectKinds_PlaceKind49(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d1774, NULL);
+}
+CLEAN_AS(func_02091e80, EffectKinds_PlaceKind49)
+
+/* func_02091e90: kind 0x48, kept set 6 (the default words for each of its four emitters). */
+void EffectKinds_StartKind48(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_48, kind, position, angle, extra, data_020e2b04);
+}
+CLEAN_AS(func_02091e90, EffectKinds_StartKind48)
+
+/* func_02091eb8: kind 0x47, one-shot set 5 with the default words. */
+void EffectKinds_StartKind47(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_47, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091eb8, EffectKinds_StartKind47)
+
+/* func_02091edc: kind 0x46, one-shot set 4 with the default words. */
+int EffectKinds_StartKind46(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_46, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091edc, EffectKinds_StartKind46)
+
+/* func_02091f00: kind 0x45, one-shot set 3 with the default words. */
+void EffectKinds_StartKind45(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_45, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091f00, EffectKinds_StartKind45)
+
+/* func_02091f24: kind 0x44, kept set 1 with the default words. */
+void EffectKinds_StartKind44(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_44, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091f24, EffectKinds_StartKind44)
+
+/* func_02091f48: kind 0x43, one-shot set 0 with the default words. */
+void EffectKinds_StartKind43(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_43, kind, position, angle, extra, NULL);
+}
+CLEAN_AS(func_02091f48, EffectKinds_StartKind43)
+
+/* func_02091f6c: kind 0x42, kept set 0x97 with kind 0x41's words. */
+int EffectKinds_StartKind42(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_42, kind, position, angle, extra, data_020e2994);
+}
+CLEAN_AS(func_02091f6c, EffectKinds_StartKind42)
+
+/* func_02091f94: kind 0x41, kept set 0x96: three emitters at three offsets around the place,
+ * the fourth at it. */
+void EffectKinds_StartKind41(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_41, kind, position, angle, extra, data_020e2994);
+}
+CLEAN_AS(func_02091f94, EffectKinds_StartKind41)
+
+/* func_02091fbc: the third emitter of kinds 0x41 and 0x42 moved with its place, at its offset
+ * (data_020d172c). */
+void EffectKinds_FollowKind41Third(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectPlaces_Follow's is still in r0 when it
+     * returns, and the instances' follower (func_0209099c) reads it. */
+    EffectPlaces_Follow(instance, &data_020d172c, NULL);
+}
+CLEAN_AS(func_02091fbc, EffectKinds_FollowKind41Third)
+
+/* func_02091fcc: the second emitter of kinds 0x41 and 0x42 moved with its place, at its offset
+ * (data_020d16e4). */
+void EffectKinds_FollowKind41Second(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectPlaces_Follow's is still in r0 when it
+     * returns, and the instances' follower (func_0209099c) reads it. */
+    EffectPlaces_Follow(instance, &data_020d16e4, NULL);
+}
+CLEAN_AS(func_02091fcc, EffectKinds_FollowKind41Second)
+
+/* func_02091fdc: the first emitter of kinds 0x41 and 0x42 moved with its place, at its offset
+ * (data_020d16cc). */
+void EffectKinds_FollowKind41First(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectPlaces_Follow's is still in r0 when it
+     * returns, and the instances' follower (func_0209099c) reads it. */
+    EffectPlaces_Follow(instance, &data_020d16cc, NULL);
+}
+CLEAN_AS(func_02091fdc, EffectKinds_FollowKind41First)
+
+/* func_02091fec: the third emitter of kinds 0x41 and 0x42 placed at its offset. */
+void EffectKinds_PlaceKind41Third(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d172c, NULL);
+}
+CLEAN_AS(func_02091fec, EffectKinds_PlaceKind41Third)
+
+/* func_02091ffc: the second emitter of kinds 0x41 and 0x42 placed at its offset. */
+void EffectKinds_PlaceKind41Second(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d16e4, NULL);
+}
+CLEAN_AS(func_02091ffc, EffectKinds_PlaceKind41Second)
+
+/* func_0209200c: the first emitter of kinds 0x41 and 0x42 placed at its offset. */
+void EffectKinds_PlaceKind41First(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d16cc, NULL);
+}
+CLEAN_AS(func_0209200c, EffectKinds_PlaceKind41First)
+
+/* func_0209201c: kind 0x40, kept set 0x95: an emitter 0.8 ahead of the place, and one placed
+ * and followed as kind 0x01's (EffectKinds_PlaceKind01, EffectKinds_FollowWet). */
+void EffectKinds_StartKind40(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_40, kind, position, angle, extra, data_020e27d4);
+}
+CLEAN_AS(func_0209201c, EffectKinds_StartKind40)
+
+/* func_02092044: kind 0x40's first emitter moved with its place, 0.8 ahead of it. */
+void EffectKinds_FollowKind40(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectPlaces_Follow's is still in r0 when it
+     * returns, and the instances' follower (func_0209099c) reads it. */
+    EffectPlaces_Follow(instance, &data_020d16a8, NULL);
+}
+CLEAN_AS(func_02092044, EffectKinds_FollowKind40)
+
+/* func_02092054: kind 0x40's first emitter placed 0.8 ahead of its place. */
+void EffectKinds_PlaceKind40(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d16a8, NULL);
+}
+CLEAN_AS(func_02092054, EffectKinds_PlaceKind40)
+
+/* func_02092064: kind 0x3f, its size given by `extra` (from 0x600): kept set 0x45 and one-shot
+ * set 0x60 with model 2 (EffectKinds_StartWithModel), at a place whose half-word 0x10 is the
+ * size as a fraction, (extra - 0x600) / 0x1200; 3 without a size. */
+int EffectKinds_StartKind3f(int kind, Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    s16 size;
+
+    if (extra == NULL) {
+        return EFFECT_KINDS_NOT_STARTED;
+    }
+    size = (s16) FX_Div(*extra - 0x600, 0x1200);
+    return EffectKinds_StartWithModel(kind, position, angle, &size, data_020e28dc, data_020e27b0, func_020920e4);
+}
+CLEAN_AS(func_02092064, EffectKinds_StartKind3f)
+
+/* func_020920bc: kind 0x3f's first kept emitter each frame (EffectKinds_FollowParticles): its
+ * landed particles start set 0x1f on the ground, 0x1e and 0x1e at height 0. */
+int EffectKinds_FollowKind3f(EffectKindsInstance *instance)
+{
+    return EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc,
+                                       EFFECT_KINDS_SET_LANDED_FLOOR_3F, data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_3F,
+                                       data_020e29dc, -1, NULL);
+}
+CLEAN_AS(func_020920bc, EffectKinds_FollowKind3f)
+
+/* func_020920e4: kind 0x3f's model placed, scaled by the size (0.6 + 2 * size). */
+void EffectKinds_SetModelTransformKind3f(EffectKindsModelTransform *transform)
+{
+    EffectKinds_SetModelTransformScaled(transform, (u32) FX_MulFunc(0x2000, data_021d5658.unk_10) + 0x99a);
+}
+CLEAN_AS(func_020920e4, EffectKinds_SetModelTransformKind3f)
+
+/* func_02092110: kind 0x3f's first one-shot emitter set up, scaled by the size
+ * (0.7 + 1.9 * size, as a half-word). */
+void EffectKinds_SetUpKind3f(ParticleEmitter *emitter)
+{
+    s16 scale = (s16) ((u32) FX_MulFunc(0x1e66, data_021d5658.unk_10) + 0xb33);
+
+    EffectPlaces_SetUpScaled(emitter, scale);
+}
+CLEAN_AS(func_02092110, EffectKinds_SetUpKind3f)
+
+/* func_02092144: kind 0x3f's first kept emitter placed, its radius (0.3 + 1.2 * size) and its
+ * speed along its axis (0.5 + 0.23 * size) by the size. */
+void EffectKinds_PlaceKind3f(EffectKindsInstance *instance)
+{
+    s16 size = data_021d5658.unk_10;
+    s16 radius = (s16) ((u32) FX_MulFunc(0x1333, size) + 0x4cd);
+    s16 axis_speed = (s16) ((u32) FX_MulFunc(0x3ae, size) + 0x800);
+
+    EffectPlaces_PlaceDefault(instance);
+    instance->emitter->radius = radius;
+    instance->emitter->axis_speed = axis_speed;
+}
+CLEAN_AS(func_02092144, EffectKinds_PlaceKind3f)
+
+/* func_020921a0: kind 0x3e, its size given by `extra` (from 0x600): one-shot set 0x6c, and from
+ * size 0xc00 set 0x6d as well; 1 whether they started or not, 3 without a size. */
+int EffectKinds_StartKind3e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    if (extra == NULL) {
+        return EFFECT_KINDS_NOT_STARTED;
+    }
+    EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_3E, kind, position, angle, extra, data_020e2794);
+    if (*extra >= EFFECT_KINDS_KIND_3E_LARGE) {
+        EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_3E_LARGE, kind, position, angle, extra, data_020e27a0);
+    }
+    return 1;
+}
+CLEAN_AS(func_020921a0, EffectKinds_StartKind3e)
+
+/* func_020921f8: the first emitter of kind 0x3e's set 0x6d set up at the place being started,
+ * its radius, speed and base scale growing with the size (the place's half-word 0x10, from
+ * 0xc00), its collision height 0.6, then tinted. */
+void EffectKinds_SetUpKind3eLarge(ParticleEmitter *emitter)
+{
+    const EffectKindsPlace *place = &data_021d5658;
+    Vec3 at = place->position;
+    int t = FX_Div(place->unk_10 - 0xc00, 0xc00);
+    s16 radius = (s16) ((u32) FX_MulFunc(0x4cd, t) + 0xb33);
+    s16 base_scale = (s16) ((u32) FX_MulFunc(0x19a, t) + 0x400);
+    s16 speed = (s16) ((u32) FX_MulFunc(0x19a, t) + 0x333);
+
+    emitter->radius = radius;
+    emitter->speed = speed;
+    emitter->base_scale = base_scale;
+    effect_kinds_put(emitter, &at);
+    emitter->collision_y = 0x99a;
+    EffectSystem_TintEmitter(emitter);
+}
+CLEAN_AS(func_020921f8, EffectKinds_SetUpKind3eLarge)
+
+/* func_020922b4: the first emitter of kind 0x3e's set 0x6c set up at the place being started,
+ * its radius, speed and base scale by the size (the place's half-word 0x10): growing from
+ * 0x600 to 0xc00, then faster from 0xc00 on; then tinted. */
+void EffectKinds_SetUpKind3e(ParticleEmitter *emitter)
+{
+    const EffectKindsPlace *place = &data_021d5658;
+    s16 size = place->unk_10;
+    s16 radius;
+    s16 speed;
+    s16 base_scale;
+
+    if (size < 0xc00) {
+        int t = FX_Div(size - 0x600, 0x600);
+
+        radius = (s16) ((u32) FX_MulFunc(0x266, t) + 0x266);
+        base_scale = (s16) ((u32) FX_MulFunc(0x400, t) + 0x400);
+        speed = (s16) ((u32) FX_MulFunc(0x52, t) + 0xcd);
+    } else {
+        int t = FX_Div(size - 0xc00, 0xc00);
+
+        radius = (s16) ((u32) FX_MulFunc(0x800, t) + 0x4cd);
+        base_scale = (s16) ((u32) FX_MulFunc(0x4cd, t) + 0x800);
+        speed = (s16) ((u32) FX_MulFunc(0x52, t) + 0x11f);
+    }
+    emitter->radius = radius;
+    emitter->speed = speed;
+    emitter->base_scale = base_scale;
+    effect_kinds_put(emitter, &place->position);
+    EffectSystem_TintEmitter(emitter);
+}
+CLEAN_AS(func_020922b4, EffectKinds_SetUpKind3e)
+
+/* func_020923a8: kind 0x3d's end: its places given 11 frames to fade out over. */
+void EffectKinds_EndKind3d(int handle)
+{
+    EffectSystem_SetHandleFrames(data_021d52d8, handle, EFFECT_KINDS_KIND_3D_END_FRAMES);
+}
+CLEAN_AS(func_020923a8, EffectKinds_EndKind3d)
+
+/* func_020923bc: kind 0x3d, kept set 0x53: two emitters that fade out once it ends, two that
+ * count its frames down. */
+void EffectKinds_StartKind3d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_3D, kind, position, angle, extra, data_020e2974);
+}
+CLEAN_AS(func_020923bc, EffectKinds_StartKind3d)
+
+/* func_020923e4: the first two emitters of kind 0x3d each frame: while their place is kept and
+ * has frames left the emitter is put at it (not turned); while its frames count down (after
+ * the end) its base alpha falls with them (frames * 2.58). Whether it lasts; the place's entry
+ * is cleared when not. */
+int EffectKinds_FollowKind3d(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8[instance->slot];
+    int lasts = 0;
+
+    if (place->handle != -1 && place->frames != 0) {
+        effect_kinds_put(instance->emitter, &place->position);
+        if (place->frames > 0) {
+            effect_kinds_set_base_alpha(instance->emitter, (u8) ((place->frames * 0x2955) >> 12));
+            place->frames = (s16) (place->frames - 1);
+        }
+        lasts = 1;
+    }
+    if (!lasts) {
+        EffectSystem_ClearPlace(place);
+    }
+    return lasts;
+}
+CLEAN_AS(func_020923e4, EffectKinds_FollowKind3d)
+
+/* func_02092478: the first two emitters of kind 0x3d placed (as EffectPlaces_PlaceDefault). */
+void EffectKinds_PlaceKind3d(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, NULL, NULL);
+}
+CLEAN_AS(func_02092478, EffectKinds_PlaceKind3d)
+
+/* func_02092484: kind 0x3c, kept set 0x92. */
+void EffectKinds_StartKind3c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_3C, kind, position, angle, extra, data_020e2954);
+}
+CLEAN_AS(func_02092484, EffectKinds_StartKind3c)
+
+/* func_020924ac: kind 0x3b, kept set 0x4f. */
+void EffectKinds_StartKind3b(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_3B, kind, position, angle, extra, data_020e2874);
+}
+CLEAN_AS(func_020924ac, EffectKinds_StartKind3b)
+
+/* func_020924d4: an emitter of kinds 0x3b and 0x3c moved with its place, 0.8 ahead of it. */
+int EffectKinds_FollowKind3b(EffectKindsInstance *instance)
+{
+    return EffectPlaces_Follow(instance, &data_020d17b0, NULL);
+}
+CLEAN_AS(func_020924d4, EffectKinds_FollowKind3b)
+
+/* func_020924e4: an emitter of kinds 0x3b and 0x3c placed 0.8 ahead of its place. */
+void EffectKinds_PlaceKind3b(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, &data_020d17b0, NULL);
+}
+CLEAN_AS(func_020924e4, EffectKinds_PlaceKind3b)
+
+/* func_020924f4: kind 0x3a, kept set 0x8d. */
+void EffectKinds_StartKind3a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    /* QUIRK: declared without a result; in the ROM the set's result is still in r0 when it
+     * returns, and the kind table's caller (func_02091358) reads it as the kind's. */
+    EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_3A, kind, position, angle, extra, data_020e284c);
+}
+CLEAN_AS(func_020924f4, EffectKinds_StartKind3a)
+
+/* func_0209251c: kind 0x3a's first emitter each frame. While its place is kept and has frames
+ * left the emitter is put at it (not turned), and it and each of its particles take the
+ * place's half-word 0x10 as their base scale; once not, its particles are aged to their end
+ * and the place's entry is cleared. Whether it lasts. */
+int EffectKinds_FollowKind3a(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8[instance->slot];
+    ParticleLink *link;
+
+    if (place->handle != -1 && place->frames != 0) {
+        Vec3 at = place->position;
+
+        effect_kinds_put(instance->emitter, &at);
+        if (place->frames > 0) {
+            place->frames = (s16) (place->frames - 1);
+        }
+        instance->emitter->base_scale = place->unk_10;
+        for (link = instance->emitter->particles.first; link != NULL; link = link->next) {
+            ((Particle *) link)->base_scale = place->unk_10;
+        }
+        return 1;
+    }
+    for (link = instance->emitter->particles.first; link != NULL; link = link->next) {
+        Particle *particle = (Particle *) link;
+
+        particle->age = particle->life;
+    }
+    EffectSystem_ClearPlace(place);
+    return 0;
+}
+CLEAN_AS(func_0209251c, EffectKinds_FollowKind3a)
+
+/* func_020925d0: kind 0x3a's first emitter put at the place being started (not turned) and
+ * tinted, and the place kept in the instance's entry. */
+void EffectKinds_PlaceKind3a(EffectKindsInstance *instance)
+{
+    const EffectKindsPlace *place = &data_021d5658;
+    u8 slot = instance->slot;
+    Vec3 at = place->position;
+
+    effect_kinds_put(instance->emitter, &at);
+    EffectSystem_TintEmitter(instance->emitter);
+    MI_CpuCopy8(place, &data_021d52d8[slot], sizeof(EffectKindsPlace));
+}
+CLEAN_AS(func_020925d0, EffectKinds_PlaceKind3a)
+
+/* func_02092644: kind 0x39 by the ground at the point: on attribute 0x16 or while rain falls
+ * kept set 0x85, on attribute 3 in the snow season kept set 0x86 (each answering 2 when it
+ * started), on attribute 0x13 one-shot set 0x84, elsewhere one-shot set 0x83. The ground is
+ * released after the set has started. */
+int EffectKinds_StartKind39(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    CollisionGround ground;
+    int attr;
+    int result = EFFECT_KINDS_NOT_STARTED;
+
+    CollisionGround_Init(&ground, position, 0, 0);
+    attr = ground.attr;
+    if (attr == EFFECT_KINDS_GROUND_16 || Sky_Falling() == SKY_FALLING_RAIN) {
+        if (EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_39_WET, kind, position, angle, extra, data_020e2864) == 0) {
+            result = EFFECT_KINDS_KEPT_STARTED;
+        }
+    } else if (attr == EFFECT_KINDS_GROUND_3 && SceneQuery_IsSnowSeason()) {
+        if (EffectPlaces_StartKept(EFFECT_KINDS_SET_KIND_39_SNOW, kind, position, angle, extra, data_020e285c) == 0) {
+            result = EFFECT_KINDS_KEPT_STARTED;
+        }
+    } else if (attr == EFFECT_KINDS_GROUND_13) {
+        result = EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_39_ON_13, kind, position, angle, extra, NULL);
+    } else {
+        result = EffectPlaces_StartOneShot(EFFECT_KINDS_SET_KIND_39, kind, position, angle, extra, NULL);
+    }
+    CollisionGround_Destroy(&ground);
+    return result;
+}
+CLEAN_AS(func_02092644, EffectKinds_StartKind39)
+
+/* func_020926f8: kind 0x39's kept emitter in the snow each frame (EffectKinds_FollowParticles):
+ * its landed particles start set 0x1f on the ground, 0x1d and 0x1d at height 0. */
+void EffectKinds_FollowKind39Snow(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectKinds_FollowParticles's is still in r0
+     * when it returns, and the instances' follower (func_0209099c) reads it. */
+    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39,
+                                data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39, data_020e29dc, -1, NULL);
+}
+CLEAN_AS(func_020926f8, EffectKinds_FollowKind39Snow)
+
+/* func_02092720: kind 0x39's kept emitter on attribute 0x16 or in the rain each frame, the same
+ * as in the snow. */
+void EffectKinds_FollowKind39Wet(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectKinds_FollowParticles's is still in r0
+     * when it returns, and the instances' follower (func_0209099c) reads it. */
+    EffectKinds_FollowParticles(instance, EFFECT_KINDS_SET_LANDED_GROUND, data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39,
+                                data_020e29dc, EFFECT_KINDS_SET_LANDED_FLOOR_39, data_020e29dc, -1, NULL);
+}
+CLEAN_AS(func_02092720, EffectKinds_FollowKind39Wet)
+
+/* func_02092748: kind 0x39's kept emitter placed, its axis up and forward. */
+void EffectKinds_PlaceKind39(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, NULL, &data_020d1798);
+}
+CLEAN_AS(func_02092748, EffectKinds_PlaceKind39)
+
+/* Kinds 0x37 and 0x38: one-shot set `snow_set` on attribute 3 in the snow season, `set_13` on
+ * attribute 0x13, else 3. The snow season is asked first; the ground is released after the
+ * set has started. */
+static int effect_kinds_start_on_ground(int kind, const Vec3 *position, const s16 *angle, const s16 *extra, int snow_set,
+                                        int set_13)
+{
+    CollisionGround ground;
+    int attr;
+    int set = -1;
+    int result;
+
+    CollisionGround_Init(&ground, position, 0, 0);
+    attr = ground.attr;
+    if (SceneQuery_IsSnowSeason() && attr == EFFECT_KINDS_GROUND_3) {
+        set = snow_set;
+    } else if (attr == EFFECT_KINDS_GROUND_13) {
+        set = set_13;
+    }
+    if (set == -1) {
+        CollisionGround_Destroy(&ground);
+        return EFFECT_KINDS_NOT_STARTED;
+    }
+    result = EffectPlaces_StartOneShot(set, kind, position, angle, extra, data_020e27a8);
+    CollisionGround_Destroy(&ground);
+    return result;
+}
+
+/* func_02092758: kind 0x38, one-shot set 0x8a on snowy ground or 0x89 on attribute 0x13. */
+int EffectKinds_StartKind38(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return effect_kinds_start_on_ground(kind, position, angle, extra, EFFECT_KINDS_SET_KIND_38_SNOW,
+                                        EFFECT_KINDS_SET_KIND_38_ON_13);
+}
+CLEAN_AS(func_02092758, EffectKinds_StartKind38)
+
+/* func_020927c4: kind 0x37, one-shot set 0x88 on snowy ground or 0x87 on attribute 0x13. */
+int EffectKinds_StartKind37(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return effect_kinds_start_on_ground(kind, position, angle, extra, EFFECT_KINDS_SET_KIND_37_SNOW,
+                                        EFFECT_KINDS_SET_KIND_37_ON_13);
+}
+CLEAN_AS(func_020927c4, EffectKinds_StartKind37)
+
+/* func_02092830: the first emitter of kinds 0x37 and 0x38 set up at the place being started,
+ * its axis level along the place's angle, tinted; its first particle is turned to that axis
+ * after the emitter's first update (EffectKinds_TurnFirstParticleKind37). */
+void EffectKinds_SetUpKind37(ParticleEmitter *emitter)
+{
+    const EffectKindsPlace *place = &data_021d5658;
+    int index = ((u16) place->angle >> 4) * 2;
+
+    effect_kinds_put(emitter, &place->position);
+    emitter->axis.x = FX_SinCosTable_[index];
+    emitter->axis.y = 0;
+    emitter->axis.z = FX_SinCosTable_[index + 1];
+    EffectSystem_TintEmitter(emitter);
+    emitter->callback = func_02092898;
+}
+CLEAN_AS(func_02092830, EffectKinds_SetUpKind37)
+
+/* func_02092898: the callback of kinds 0x37 and 0x38's emitter, the same as
+ * EffectKinds_TurnFirstParticle: after its update (`after` 1), once it has a particle, the
+ * newest particle turned to face the emitter's axis and the callback removed. */
+void EffectKinds_TurnFirstParticleKind37(ParticleEmitter *emitter, int after)
+{
+    Particle *particle;
+
+    if (after != 1) {
+        return;
+    }
+    particle = (Particle *) emitter->particles.first;
+    if (particle != NULL) {
+        particle->rotation = (u16) Math_Atan2(emitter->axis.x, emitter->axis.z);
+        emitter->callback = NULL;
+    }
+}
+CLEAN_AS(func_02092898, EffectKinds_TurnFirstParticleKind37)
+
+/* Kinds 0x35 and 0x36: kept set `set` at a place with the next handle that is followed from
+ * frames -181 (EFFECT_KINDS_RAMP_FRAMES); 0 when it started, else 3. The place being started
+ * is cleared afterwards. */
+static int effect_kinds_start_ramped(int set, int kind, const Vec3 *position, const s16 *angle, const s16 *extra,
+                                     void *const *setups)
+{
+    int result = EFFECT_KINDS_NOT_STARTED;
+
+    EffectSystem_FillPlace(&data_021d5658, effect_kinds_next_handle(), (short) kind, position, angle, extra,
+                           EFFECT_KINDS_RAMP_FRAMES);
+    if (EffectSystem_StartKeptSet(set, position, angle, setups) != 0) {
+        result = 0;
+    }
+    EffectSystem_ClearPlace(&data_021d5658);
+    return result;
+}
+
+/* func_020928c4: kind 0x36, kept set 0x7f followed from frames -181. */
+int EffectKinds_StartKind36(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return effect_kinds_start_ramped(EFFECT_KINDS_SET_KIND_36, kind, position, angle, extra, data_020e2a8c);
+}
+CLEAN_AS(func_020928c4, EffectKinds_StartKind36)
+
+/* func_02092914: the third and fourth emitters of kind 0x36 each frame. While their place is
+ * kept and has frames left the emitter is put at it (not turned) and its emission interval
+ * set: 5 while the frames count down or once they reach -1; while they count up from -181, 1
+ * until the last 40 frames, then rising to 4. Whether it lasts; the place's entry is cleared
+ * when not. */
+int EffectKinds_FollowKind36(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8[instance->slot];
+    int lasts = 0;
+
+    if (place->handle != -1 && place->frames != 0) {
+        Vec3 at = place->position;
+        s16 frames = place->frames;
+
+        effect_kinds_put(instance->emitter, &at);
+        if (frames > 0) {
+            place->frames = (s16) (place->frames - 1);
+            effect_kinds_set_interval(instance->emitter, 5);
+        } else if (frames < -1) {
+            u16 interval;
+
+            place->frames = (s16) (place->frames + 1);
+            if (place->frames <= -41) {
+                interval = 1;
+            } else {
+                interval = (u16) ((((place->frames + 40) * 410) >> 12) + 1);
+            }
+            effect_kinds_set_interval(instance->emitter, (u8) interval);
+        } else {
+            effect_kinds_set_interval(instance->emitter, 5);
+        }
+        lasts = 1;
+    }
+    if (!lasts) {
+        EffectSystem_ClearPlace(place);
+    }
+    return lasts;
+}
+CLEAN_AS(func_02092914, EffectKinds_FollowKind36)
+
+/* func_020929e4: the third and fourth emitters of kind 0x36 placed, emitting every frame. */
+void EffectKinds_PlaceKind36(EffectKindsInstance *instance)
+{
+    EffectPlaces_PlaceDefault(instance);
+    effect_kinds_set_interval(instance->emitter, 1);
+}
+CLEAN_AS(func_020929e4, EffectKinds_PlaceKind36)
+
+/* func_020929fc: kind 0x35, kept set 0x7e followed from frames -181. */
+int EffectKinds_StartKind35(int kind, const Vec3 *position, const s16 *angle, const s16 *extra)
+{
+    return effect_kinds_start_ramped(EFFECT_KINDS_SET_KIND_35, kind, position, angle, extra, data_020e2a3c);
+}
+CLEAN_AS(func_020929fc, EffectKinds_StartKind35)
+
+/* The instance's emitter put at its place (not turned), its axis forward turned by the place's
+ * angle. */
+static void effect_kinds_put_facing(EffectKindsInstance *instance, const EffectKindsPlace *place)
+{
+    Vec3 at = place->position;
+    Vec3 axis = data_020d1750;
+
+    effect_kinds_put(instance->emitter, &at);
+    Vec_RotateY(&axis, place->angle);
+    instance->emitter->axis.x = (fx16) axis.x;
+    instance->emitter->axis.y = (fx16) axis.y;
+    instance->emitter->axis.z = (fx16) axis.z;
+}
+
+/* func_02092a4c: kind 0x35's fifth emitter each frame. While its place is kept and has frames
+ * left the emitter is put at it, its axis forward; while the frames count up from -181 it
+ * fades in over 20 frames (base alpha up to 14, its speeds growing), holds (alpha 15) and
+ * fades out over the last 60; at -1 it has alpha 0 and its first speeds. Whether it lasts;
+ * the place's entry is cleared when not. */
+int EffectKinds_FollowKind35C(EffectKindsInstance *instance)
+{
+    EffectKindsPlace *place = &data_021d52d8[instance->slot];
+    ParticleEmitter *emitter;
+    s16 frames;
+
+    if (place->handle == -1 || place->frames == 0) {
+        EffectSystem_ClearPlace(place);
+        return 0;
+    }
+    frames = place->frames;
+    effect_kinds_put_facing(instance, place);
+    emitter = instance->emitter;
+    if (frames > 0) {
+        place->frames = (s16) (place->frames - 1);
+        /* QUIRK: counting down it zeroes the base scale where the other branches set the base
+         * alpha; kind 0x35's frames never count down (its end gives them 0, which ends it). */
+        emitter->base_scale = 0;
+        emitter->speed = 0x3d;
+        emitter->axis_speed = 0x466;
+    } else if (frames < -1) {
+        int t;
+        u8 alpha;
+        s16 speed;
+        s16 axis_speed;
+
+        place->frames = (s16) (place->frames + 1);
+        t = place->frames;
+        if (t <= EFFECT_KINDS_RAMP_IN_END) {
+            t -= EFFECT_KINDS_RAMP_START;
+            alpha = (u8) ((0xc00 * t) >> 12);
+            speed = effect_kinds_ramp(0x3d, 3, t);
+            axis_speed = effect_kinds_ramp(0x466, 0x38, t);
+        } else if (t < EFFECT_KINDS_RAMP_OUT_START) {
+            alpha = 15;
+            speed = 0x7b;
+            axis_speed = 0x8cd;
+        } else {
+            t = -t;
+            alpha = (u8) ((t << 10) >> 12);
+            speed = effect_kinds_ramp(0x3d, 1, t);
+            axis_speed = effect_kinds_ramp(0x466, 0x13, t);
+        }
+        effect_kinds_set_base_alpha(emitter, alpha);
+        emitter->speed = speed;
+        emitter->axis_speed = axis_speed;
+    } else {
+        effect_kinds_set_base_alpha(emitter, 0);
+        emitter->speed = 0x3d;
+        emitter->axis_speed = 0x466;
+    }
+    return 1;
+}
+CLEAN_AS(func_02092a4c, EffectKinds_FollowKind35C)
+
+/* func_02092bcc: kind 0x35's fourth emitter each frame (EffectKinds_FollowKind35Ramp). */
+int EffectKinds_FollowKind35B(EffectKindsInstance *instance)
+{
+    return EffectKinds_FollowKind35Ramp(instance, 1, 0x333, 0x111, 0xe1, 0x1c3, 0xb, 4, 0x266, 0x4cd, 0x1f, 0xa);
+}
+CLEAN_AS(func_02092bcc, EffectKinds_FollowKind35B)
+
+/* func_02092c14: kind 0x35's second and third emitters each frame
+ * (EffectKinds_FollowKind35Ramp). */
+void EffectKinds_FollowKind35A(EffectKindsInstance *instance)
+{
+    /* QUIRK: declared without a result; in the ROM EffectKinds_FollowKind35Ramp's is still in
+     * r0 when it returns, and the instances' follower (func_0209099c) reads it. */
+    EffectKinds_FollowKind35Ramp(instance, 2, 0x266, 0xcd, 0xcd, 0x19a, 0xa, 3, 0x200, 0x400, 0x1a, 9);
+}
+CLEAN_AS(func_02092c14, EffectKinds_FollowKind35A)
+
+/* func_02092c58: one of kind 0x35's emitters each frame. While its place is kept and has frames
+ * left the emitter is put at it, its axis forward. While the frames count up from -181 its
+ * emission interval and speeds follow a ramp: over the first 20 frames the interval falls to
+ * `interval` + 1 (by `in_rate` a frame, in 1/4096) and the speeds rise from their bases by
+ * `speed_in` and `axis_in` a frame; then `interval`, `speed_hold` and `axis_hold`; over the
+ * last 60 frames the interval rises from `interval` + 1 again (by `out_rate`) and the speeds
+ * fall back to their bases. Otherwise interval 5 and the base speeds. Whether it lasts; the
+ * place's entry is cleared when not. */
+int EffectKinds_FollowKind35Ramp(EffectKindsInstance *instance, int interval, int in_rate, int out_rate, int speed,
+                                 short speed_hold, short speed_in, short speed_out, int axis_speed, short axis_hold,
+                                 short axis_in, short axis_out)
+{
+    EffectKindsPlace *place = &data_021d52d8[instance->slot];
+    ParticleEmitter *emitter;
+    s16 frames;
+
+    if (place->handle == -1 || place->frames == 0) {
+        EffectSystem_ClearPlace(place);
+        return 0;
+    }
+    frames = place->frames;
+    effect_kinds_put_facing(instance, place);
+    emitter = instance->emitter;
+    if (frames > 0) {
+        place->frames = (s16) (place->frames - 1);
+        effect_kinds_set_interval(emitter, 5);
+        emitter->speed = speed;
+        emitter->axis_speed = axis_speed;
+    } else if (frames < -1) {
+        int t;
+        u16 now;
+        s16 speed_now;
+        s16 axis_now;
+
+        place->frames = (s16) (place->frames + 1);
+        t = place->frames;
+        if (t <= EFFECT_KINDS_RAMP_IN_END) {
+            now = (u16) ((u32) interval + 1 + (u32) effect_kinds_scaled(EFFECT_KINDS_RAMP_IN_END - t, in_rate));
+            t -= EFFECT_KINDS_RAMP_START;
+            speed_now = effect_kinds_ramp(speed, speed_in, t);
+            axis_now = effect_kinds_ramp(axis_speed, axis_in, t);
+        } else if (t < EFFECT_KINDS_RAMP_OUT_START) {
+            now = (u16) interval;
+            speed_now = speed_hold;
+            axis_now = axis_hold;
+        } else {
+            now = (u16) ((u32) interval + 1 + (u32) effect_kinds_scaled(t - EFFECT_KINDS_RAMP_OUT_START, out_rate));
+            t = -t;
+            speed_now = effect_kinds_ramp(speed, speed_out, t);
+            axis_now = effect_kinds_ramp(axis_speed, axis_out, t);
+        }
+        effect_kinds_set_interval(emitter, (u8) now);
+        emitter->speed = speed_now;
+        emitter->axis_speed = axis_now;
+    } else {
+        effect_kinds_set_interval(emitter, 5);
+        emitter->speed = speed;
+        emitter->axis_speed = axis_speed;
+    }
+    return 1;
+}
+CLEAN_AS(func_02092c58, EffectKinds_FollowKind35Ramp)
+
+/* func_02092e14: kind 0x35's fifth emitter placed, its axis forward, starting unseen (base
+ * alpha 0) at its first speeds. */
+void EffectKinds_PlaceKind35C(EffectKindsInstance *instance)
+{
+    EffectPlaces_Place(instance, NULL, &data_020d1750);
+    effect_kinds_set_base_alpha(instance->emitter, 0);
+    instance->emitter->speed = 0x3d;
+    instance->emitter->axis_speed = 0x466;
+}
+CLEAN_AS(func_02092e14, EffectKinds_PlaceKind35C)

@@ -77,5 +77,6 @@ int PlayerActorOps_IsBusy(int player);
 int PlayerActorOps_TestOwnFlag4(void);
 int PlayerActorOps_TestOwnFlag1(void);
 int PlayerActorOps_StartState(int made_with);
+int PlayerActorOps_Player(int made_with);
 
 #endif

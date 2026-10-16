@@ -74,7 +74,7 @@ void TalkPageMeasurer_Name0(TalkPageMeasurer *measurer);
 /* ---- The rest of the measurer's handlers, and its tables of them by the tag's kind. The
  * measurer walks the texts the talk's tag walker (talk_tags.h) walks in place of a tag, without
  * the colour tags around names, so that a centred line is measured as it will be shown. Its
- * table by group (func_0206d330) holds group 0 (func_0206d26c), group 1
+ * table by group (TalkPageMeasurer_DispatchTag) holds group 0 (TalkPageMeasurer_DispatchGroup0), group 1
  * (TalkPageMeasurer_DispatchGroup1), group 2 (TalkPageMeasurer_SkipTexts), group 4
  * (TalkPageMeasurer_DispatchGroup4), group 11 (TalkPageMeasurer_DispatchGroup11) and group 0xff
  * (TalkPageMeasurer_DispatchGroupFF). */
@@ -148,5 +148,23 @@ void TalkPageMeasurer_DispatchGroup11(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_DispatchGroup4(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_SkipTexts(TalkPageMeasurer *measurer);
 void TalkPageMeasurer_DispatchGroup1(TalkPageMeasurer *measurer);
+
+/* ---- The measurer itself (vtable data_020def7c: TalkPageMeasurer_Destruct, _Delete, _OnText,
+ * _OnEnd, _OnCharacter, _OnTag), its table by group and its group 0. */
+void TalkPageMeasurer_DispatchGroup0(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_DispatchTag(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_IgnoreText(void *measurer, void *text);
+void TalkPageMeasurer_Ignore(void);
+void TalkPageMeasurer_PutTalkName(TalkPageMeasurer *measurer, int index);
+void TalkPageMeasurer_PutTalkPart(TalkPageMeasurer *measurer, int index);
+void TalkPageMeasurer_Clear50(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_OnTag(TalkPageMeasurer *measurer, int position);
+void TalkPageMeasurer_OnCharacter(TalkPageMeasurer *measurer, int character);
+void TalkPageMeasurer_OnEnd(TalkPageMeasurer *measurer);
+void TalkPageMeasurer_OnText(TalkPageMeasurer *measurer);
+int TalkPageMeasurer_Measure(TalkPageMeasurer *measurer, int characters, int centred);
+TalkPageMeasurer *TalkPageMeasurer_Delete(TalkPageMeasurer *measurer);
+TalkPageMeasurer *TalkPageMeasurer_Destruct(TalkPageMeasurer *measurer);
+TalkPageMeasurer *TalkPageMeasurer_Construct(TalkPageMeasurer *measurer, u8 *talk);
 
 #endif

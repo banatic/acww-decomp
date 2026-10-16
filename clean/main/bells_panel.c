@@ -5,8 +5,9 @@
 #include "autoload_2/heap.h"     /* Heap_OperatorDeleteB */
 #include "cell_anim.h"
 #include "clean.h"
-#include "number_text.h" /* NumberText_Format */
-#include "oam_buffer.h"  /* OamBuffer_DrawCell */
+#include "group_params.h" /* GroupParams_HeldBells */
+#include "number_text.h"  /* NumberText_Format */
+#include "oam_buffer.h"   /* OamBuffer_DrawCell */
 #include "ov004/member_pointer.h"
 #include "player_pockets.h" /* PlayerPockets_Bells */
 #include "player_record.h"  /* PlayerRecord_Pockets */
@@ -36,8 +37,6 @@ extern MemberPointer data_021d31b0[4];
 extern const MemberPointer data_020e20f4, data_020e20e4, data_020e2154, data_020e2114;
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* The bells held on the pockets screen's cursor (data_021cfc74). */
-extern int func_0206f854(void);
 /* A text box from VRAM tile `first_tile`, `cells` tiles wide and `rows` high, in the boxes'
  * heap (NULL when it is full); a box destroyed and freed. */
 extern TextDrawBox *func_020a9034(int first_tile, int cells, int rows);
@@ -148,7 +147,7 @@ int BellsPanel_Bells(BellsPanel *panel)
         return 0;
     }
     int bells = PlayerPockets_Bells(PlayerRecord_Pockets(record), 1);
-    return bells + func_0206f854();
+    return bells + (int) GroupParams_HeldBells();
 }
 CLEAN_AS(func_0208b720, BellsPanel_Bells)
 

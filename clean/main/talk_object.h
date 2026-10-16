@@ -184,4 +184,53 @@ int TalkObject_SetMessageIfNone(TalkObject *talk, const u8 *message, const char 
 TalkObject *TalkObject_Destruct(TalkObject *talk);
 TalkObject *TalkObject_Construct(TalkObject *talk);
 
+void TalkObject_StartMessage(TalkObject *talk);
+void TalkObject_StartGivenMessage(TalkObject *talk);
+void TalkObject_LoadMessage(TalkObject *talk);
+const char *TalkObject_FileSubfolder(TalkObject *talk, const char *name);
+const char *TalkObject_FileFolder(TalkObject *talk, const char *name);
+char *TalkObject_MessagePath(TalkObject *talk, const char *name, const char *folder);
+void TalkObject_RunAnswerText(TalkObject *talk);
+void TalkObject_BeginMessage(TalkObject *talk);
+void TalkObject_PlayMessageSound(TalkObject *talk);
+void TalkObject_TellAnswer(TalkObject *talk);
+void TalkObject_TellMessageEnded(TalkObject *talk);
+void TalkObject_TellMessageBegun(TalkObject *talk);
+void TalkObject_FreeNameBox(TalkObject *talk);
+void TalkObject_MakeNameBox(TalkObject *talk);
+void TalkObject_ChangeFondness(TalkObject *talk, int change);
+/* The countdown at word 0x10 (unk_10): while the talk waits, it goes on by itself when the
+ * countdown reaches 0. */
+int TalkObject_AutoAdvanceDue(TalkObject *talk);
+void TalkObject_SetAutoAdvance(TalkObject *talk, int frames);
+void TalkObject_ClearAutoAdvance(TalkObject *talk);
+/* The texts loaded from the villager talked to (or about), and cleared. */
+int TalkObject_LoadMemory(TalkObject *talk);
+void TalkObject_ClearMemory(TalkObject *talk);
+int TalkObject_LoadPraise(TalkObject *talk);
+void TalkObject_ClearPraise(TalkObject *talk);
+int TalkObject_LoadNickname(TalkObject *talk);
+void TalkObject_ClearNickname(TalkObject *talk);
+int TalkObject_LoadImpression(TalkObject *talk);
+void TalkObject_ClearImpression(TalkObject *talk);
+int TalkObject_LoadBoom(TalkObject *talk);
+void TalkObject_ClearBoom(TalkObject *talk);
+int TalkObject_LoadOtherPlayer(TalkObject *talk);
+void TalkObject_ClearOtherPlayer(TalkObject *talk);
+int TalkObject_LoadRandomNpc(TalkObject *talk);
+void TalkObject_ClearRandomNpc(TalkObject *talk);
+int TalkObject_LoadDislikedNpc(TalkObject *talk);
+void TalkObject_ClearDislikedNpc(TalkObject *talk);
+int TalkObject_LoadLikedNpc(TalkObject *talk);
+void TalkObject_ClearLikedNpc(TalkObject *talk);
+int TalkObject_LoadPlayerName(TalkObject *talk);
+void TalkObject_ClearPlayerName(TalkObject *talk);
+int TalkObject_LoadTownName(TalkObject *talk);
+void TalkObject_ClearTownName(TalkObject *talk);
+int TalkObject_LoadCatchphrase(TalkObject *talk);
+void TalkObject_ClearCatchphrase(TalkObject *talk);
+void TalkObject_ClearValues(TalkObject *talk);
+void TalkObject_ClearParts(TalkObject *talk);
+void TalkObject_NoteTime(TalkObject *talk);
+
 #endif

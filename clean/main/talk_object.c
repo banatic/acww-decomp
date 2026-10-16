@@ -4,6 +4,24 @@
 #include <string.h>
 
 #include "clean.h"
+#include "bmg_file.h"
+#include "c_library.h"
+#include "calendar.h"
+#include "clock.h"
+#include "player_record.h"
+#include "player_records.h"
+#include "session_villager.h"
+#include "sound.h"
+#include "state_block.h"
+#include "talk_flow.h"
+#include "text_draw.h"
+#include "villager_catchphrase.h"
+#include "villager_impression.h"
+#include "villager_memories.h"
+#include "villager_memory_entry.h"
+#include "villager_names.h"
+#include "villager_status.h"
+#include "talk_box.h"
 #include "mail_particles.h"
 #include "menu_input.h"
 #include "message_reader.h"
@@ -78,20 +96,8 @@ extern void *func_020a8210(void *part);
 extern void *func_02068644(void *talk);
 extern void *func_020684b0(void *talk);
 
-/* The state asked for entered (talk_flow.h). */
-extern void func_02067108(TalkObject *talk);
-/* The speaker's name: its label box freed, and made again. */
-extern void func_020675c0(TalkObject *talk);
-extern void func_020675e0(TalkObject *talk);
 /* The message window: constructed, destroyed, run, drawn, placed; its spinner started and
  * stopped. */
-extern void *func_02069128(void *window);
-extern void *func_02069100(void *window);
-extern void func_020690ec(void *window);
-extern void func_020690d8(void *window);
-extern void func_02068d44(void *window, s32 x, s32 y);
-extern void func_02068c24(void *window, int sound);
-extern void func_02068c10(void *window);
 /* The part at 0xb14: constructed and destroyed. */
 extern void *func_0206d688(void *part);
 extern void *func_0206d670(void *part);
@@ -147,14 +153,14 @@ void TalkObject_Shake(TalkObject *talk)
         u16 angle = talk->shake_angle;
         x = FX_MulFunc(talk_object_cos((u16) (angle + 0x2000)), x);
         y = FX_MulFunc(talk_object_sin((u16) (angle * 2 - 0x4000)), y);
-        func_02068d44(talk->window, -(x >> 12), talk->window_offset + (y >> 12));
+        TalkBox_SetPlace((TalkBox *) (void *) talk->window, -(x >> 12), talk->window_offset + (y >> 12));
     } else {
         talk->shake_angle = 0;
         talk->shake_amplitude = 0;
         talk->shake_fall = 0;
         talk->shake_scale_x = 0;
         talk->shake_scale_y = 0;
-        func_02068d44(talk->window, 0, talk->window_offset);
+        TalkBox_SetPlace((TalkBox *) (void *) talk->window, 0, talk->window_offset);
     }
 }
 CLEAN_AS(func_02067c74, TalkObject_Shake)
@@ -256,8 +262,8 @@ void TalkObject_ColourNamePlate(TalkObject *talk)
             row[x] = (u16) ((row[x] & ~TALK_OBJECT_PALETTE_BITS) | palette);
         }
     }
-    func_020675c0(talk);
-    func_020675e0(talk);
+    TalkObject_FreeNameBox(talk);
+    TalkObject_MakeNameBox(talk);
 }
 CLEAN_AS(func_02067e84, TalkObject_ColourNamePlate)
 
@@ -373,7 +379,7 @@ CLEAN_AS(func_02068114, TalkObject_OptionFlagOff)
 /* func_0206812c: the message window and the choice windows drawn. */
 void TalkObject_Draw(TalkObject *talk)
 {
-    func_020690d8(talk->window);
+    TalkBox_Draw((TalkBox *) (void *) talk->window);
     TalkWindows_Draw(&talk->choice_windows);
 }
 CLEAN_AS(func_0206812c, TalkObject_Draw)
@@ -387,9 +393,9 @@ void TalkObject_Update(TalkObject *talk)
     };
     MemberTable_InitOnce(&data_021cda5c, data_021cdb14, constants, 6);
     MemberPointer_CallVoid(&data_021cdb14[talk->state], talk);
-    func_02067108(talk);
+    TalkFlow_EnterNext(talk);
     TalkObject_Shake(talk);
-    func_020690ec(talk->window);
+    TalkBox_Update((TalkBox *) (void *) talk->window);
     TalkWindows_Update(&talk->choice_windows);
     if (talk->state != TALK_OBJECT_CLOSED && talk->state != TALK_OBJECT_GONE) {
         TalkObject_ApplyInputMode(talk);
@@ -495,14 +501,14 @@ CLEAN_AS(func_02068340, TalkObject_AttachReceiver)
 /* func_02068358 */
 void TalkObject_StopSpinner(TalkObject *talk)
 {
-    func_02068c10(talk->window);
+    TalkBox_StopSpinner((TalkBox *) (void *) talk->window);
 }
 CLEAN_AS(func_02068358, TalkObject_StopSpinner)
 
 /* func_02068364 */
 void TalkObject_StartSpinner(TalkObject *talk, int sound)
 {
-    func_02068c24(talk->window, sound);
+    TalkBox_StartSpinner((TalkBox *) (void *) talk->window, sound);
 }
 CLEAN_AS(func_02068364, TalkObject_StartSpinner)
 
@@ -611,7 +617,7 @@ CLEAN_AS(func_02068484, TalkObject_SetMessageIfNone)
  * members destroyed in the reverse order of their construction. */
 TalkObject *TalkObject_Destruct(TalkObject *talk)
 {
-    func_020675c0(talk);
+    TalkObject_FreeNameBox(talk);
     TalkObject_DetachReceiver(talk);
     VillagerMemoryLabel_Destruct(&talk->memory);
     Label22Text_Destruct(&talk->praise);
@@ -643,7 +649,7 @@ TalkObject *TalkObject_Destruct(TalkObject *talk)
     TalkPage_Destruct(&talk->page);
     TalkAnswers_Destruct(&talk->answers);
     TalkWindows_Destruct(&talk->choice_windows);
-    func_02069100(talk->window);
+    TalkBox_Destruct((TalkBox *) (void *) talk->window);
     return talk;
 }
 CLEAN_AS(func_020684b0, TalkObject_Destruct)
@@ -660,7 +666,7 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     talk->unk_10 = 0;
     talk->mode = 4;
     talk->choices_asked = 0;
-    func_02069128(talk->window);
+    TalkBox_Construct((TalkBox *) (void *) talk->window);
     talk->window_offset = 0;
     talk->shake_angle = 0;
     talk->shake_amplitude = 0;
@@ -722,3 +728,663 @@ TalkObject *TalkObject_Construct(TalkObject *talk)
     return talk;
 }
 CLEAN_AS(func_02068644, TalkObject_Construct)
+
+/* The first and the second part of a message file's name ("fu", "bo", ..., "obj", then "ai",
+ * "tsu", ..., "q17"), each followed by '_' in the name: lists of strings ending with NULL. */
+extern const char *const data_020ccec4[];
+extern const char *const data_020ccee8[];
+/* A message file's path, built by TalkObject_MessagePath: its buffer, and its formats with
+ * both parts ("%s/%s/%s/%s_.bmg"), with the first only ("%s/%s/Other/%s_.bmg") and with none
+ * ("%s/Other/%s_.bmg"). */
+extern char data_021cdb74[];
+extern const char data_020df094[];
+extern const char data_020df0a8[];
+extern const char data_020df0bc[];
+/* The sound effects of a message by its entry's byte 9 (0 or 1; 0 for none). */
+extern const u16 data_020cce84[];
+/* The change of the villager's fondness for the player by a message's entry's byte 5. */
+extern const s8 data_020ccea0[];
+/* The state block: the town's name at its 0x02. */
+extern StateBlock data_021dc7a8;
+
+/* The talk's message file at 0xb14: its text buffer cleared. */
+extern void func_0206d63c(void *file);
+/* A walker of the talk's tags (0x44 bytes) over a text: constructed on the talk, run over the
+ * text, destroyed. */
+extern void *func_0206923c(void *walker, TalkObject *talk);
+extern void func_020691cc(void *walker, const char *chars);
+extern void *func_0206921c(void *walker);
+
+/* The receiver's vtable slots the talk calls here: the folder of the message files, what
+ * begins with a message (0x10), what follows its end (0x14), the player's answer (0x18). */
+#define TALK_OBJECT_SLOT_FOLDER 0x0c
+#define TALK_OBJECT_SLOT_BEGUN 0x10
+#define TALK_OBJECT_SLOT_ENDED 0x14
+#define TALK_OBJECT_SLOT_ANSWER 0x18
+
+/* The talk's message file (BmgFile) and its text buffer's slot (the derived class's slot 2). */
+#define TALK_OBJECT_FILE_SLOT_BUFFER 0x08
+
+/* A message's sounds (data_020cce84's entries). */
+#define TALK_OBJECT_MESSAGE_SOUNDS 2
+
+/* The speaker's name box: its first VRAM tile and its size in tiles, its screens, background
+ * and text colours. */
+#define TALK_OBJECT_NAME_TILE 0x89
+#define TALK_OBJECT_NAME_CELLS 8
+#define TALK_OBJECT_NAME_ROWS 2
+#define TALK_OBJECT_NAME_SCREENS 2
+#define TALK_OBJECT_NAME_BACKGROUND 0x0e
+#define TALK_OBJECT_NAME_COLOUR 2
+
+/* The kind a cleared value gets (TalkObject.value_kinds). */
+#define TALK_OBJECT_VALUE_CLEARED 7
+
+/* The size of the walker TalkObject_RunAnswerText builds on its stack. */
+#define TALK_OBJECT_ANSWER_WALKER_SIZE 0x44
+
+/* The receiver's vtable entry at `slot`. */
+static u32 talk_object_receiver_slot(const TalkReceiver *receiver, int slot)
+{
+    const u8 *vtable = (const u8 *) receiver->base.vtable;
+    return *(const u32 *) (const void *) (vtable + slot);
+}
+
+/* The villager talked to (the receiver's slot 0x68), or NULL. */
+static u8 *talk_object_villager(TalkObject *talk)
+{
+    typedef u8 *TalkObjectVillager(TalkReceiver * receiver);
+    TalkReceiver *receiver = talk->receiver;
+    return ((TalkObjectVillager *) (uintptr_t) talk_object_receiver_slot(receiver, TALK_OBJECT_SLOT_VILLAGER))(receiver);
+}
+
+/* The receiver's slot `slot` told `value`. */
+static void talk_object_tell(TalkObject *talk, int slot, int value)
+{
+    typedef void TalkObjectTell(TalkReceiver * receiver, int value);
+    TalkReceiver *receiver = talk->receiver;
+    ((TalkObjectTell *) (uintptr_t) talk_object_receiver_slot(receiver, slot))(receiver, value);
+}
+
+/* The characters of a text (its vtable's slot 3). */
+static const char *talk_object_chars(void *text)
+{
+    typedef const char *TalkObjectChars(void *text);
+    const TextVtable *vtable = *(const TextVtable *const *) text;
+    return ((TalkObjectChars *) (uintptr_t) vtable->buffer)(text);
+}
+
+/* The talk's message file. */
+static BmgFile *talk_object_file(TalkObject *talk)
+{
+    return (BmgFile *) (void *) talk->unk_b14;
+}
+
+/* This system's player. */
+static DesignCreator *talk_object_player(void)
+{
+    return PlayerRecord_Player(PlayerRecords_Current());
+}
+
+/* func_020671fc: the receiver's message loaded and begun; the date and time noted. */
+void TalkObject_StartMessage(TalkObject *talk)
+{
+    TalkObject_LoadMessage(talk);
+    TalkObject_BeginMessage(talk);
+    TalkObject_NoteTime(talk);
+}
+CLEAN_AS(func_020671fc, TalkObject_StartMessage)
+
+/* func_02067218: the message the talk was given handed to the receiver (its number, and its
+ * file when it has one) and the talk's cleared; then as TalkObject_StartMessage.
+ * REQUIRES: the talk has a receiver. */
+void TalkObject_StartGivenMessage(TalkObject *talk)
+{
+    talk->receiver->base.message = talk->message;
+    if (talk->name[0] != 0) {
+        MessageReceiver_SetName(&talk->receiver->base, talk->name);
+    }
+    TalkObject_SetMessage(talk, &data_021f43f8, NULL);
+    TalkObject_LoadMessage(talk);
+    TalkObject_BeginMessage(talk);
+    TalkObject_NoteTime(talk);
+}
+CLEAN_AS(func_02067218, TalkObject_StartGivenMessage)
+
+/* func_0206726c: the receiver's message read from its file into the talk's message file (the
+ * text buffer cleared first; nothing read when the file does not open), and the message's
+ * INF1 entry kept at 0x14ac. */
+void TalkObject_LoadMessage(TalkObject *talk)
+{
+    BmgFile *file = talk_object_file(talk);
+    func_0206d63c(file);
+    const char *path = TalkObject_MessagePath(talk, NULL, NULL);
+    if (BmgFile_Open(file, path)) {
+        BmgFile_LoadMessage(file, &talk->receiver->base.message);
+    }
+    Block020a8248_Copy(&talk->unk_14ac, BmgFile_Entry(file));
+    BmgFile_Close(file);
+}
+CLEAN_AS(func_0206726c, TalkObject_LoadMessage)
+
+/* The entry of `parts` that `name` begins with, followed by '_', or NULL. */
+static const char *talk_object_find_part(const char *const *parts, const char *name)
+{
+    const char *part;
+    while ((part = *parts) != NULL) {
+        size_t length = strlen(part);
+        if (strncmp(name, part, length) == 0 && name[length] == '_') {
+            break;
+        }
+        parts++;
+    }
+    return part;
+}
+
+/* func_020672cc: the second part `name` begins with (data_020ccee8), or NULL. */
+const char *TalkObject_FileSubfolder(TalkObject *talk, const char *name)
+{
+    (void) talk;
+    return talk_object_find_part(data_020ccee8, name);
+}
+CLEAN_AS(func_020672cc, TalkObject_FileSubfolder)
+
+/* func_02067308: the first part `name` begins with (data_020ccec4), or NULL. */
+const char *TalkObject_FileFolder(TalkObject *talk, const char *name)
+{
+    (void) talk;
+    return talk_object_find_part(data_020ccec4, name);
+}
+CLEAN_AS(func_02067308, TalkObject_FileFolder)
+
+/* func_02067344: the path of the message file `name` (the receiver's file when NULL) under
+ * `folder` (the receiver's folder, its slot 0x0c, when NULL): the name's first and second
+ * parts are its folders, the rest of it the file's name ("Other" for a missing second part,
+ * and the whole name in "Other" without a first part). Written to data_021cdb74, and returned.
+ * REQUIRES: the talk has a receiver when either is NULL. */
+char *TalkObject_MessagePath(TalkObject *talk, const char *name, const char *folder)
+{
+    typedef const char *TalkObjectFolder(TalkReceiver * receiver);
+
+    if (folder == NULL) {
+        TalkReceiver *receiver = talk->receiver;
+        folder = ((TalkObjectFolder *) (uintptr_t) talk_object_receiver_slot(receiver, TALK_OBJECT_SLOT_FOLDER))(receiver);
+    }
+    if (name == NULL) {
+        name = talk->receiver->base.name;
+    }
+    const char *first = TalkObject_FileFolder(talk, name);
+    if (first == NULL) {
+        CLib_SPrintf(data_021cdb74, data_020df0bc, folder, name);
+        return data_021cdb74;
+    }
+    const char *rest = name + strlen(first) + 1;
+    const char *second = TalkObject_FileSubfolder(talk, rest);
+    if (second != NULL) {
+        CLib_SPrintf(data_021cdb74, data_020df094, folder, first, second, rest + strlen(second) + 1);
+    } else {
+        CLib_SPrintf(data_021cdb74, data_020df0a8, folder, first, rest);
+    }
+    return data_021cdb74;
+}
+CLEAN_AS(func_02067344, TalkObject_MessagePath)
+
+/* func_020673e0: the text of the answer picked walked by a walker of the talk's tags (so its
+ * tags act on the talk). */
+void TalkObject_RunAnswerText(TalkObject *talk)
+{
+    u32 walker[TALK_OBJECT_ANSWER_WALKER_SIZE / sizeof(u32)];
+    u8 *text = TalkAnswers_PickedText(&talk->answers);
+    func_0206923c(walker, talk);
+    func_020691cc(walker, talk_object_chars(text));
+    func_0206921c(walker);
+}
+CLEAN_AS(func_020673e0, TalkObject_RunAnswerText)
+
+/* func_0206741c: the message begins: the receiver to be told of its beginning and its end,
+ * no answer to tell; the page centred for the kinds of message that are (the entry's kind),
+ * the walker's speed and the voice's muting by the kind; the message that follows (the
+ * entry's byte 8) set, of no file; the receiver told the beginning, the message's sound
+ * played, and the walk started over the file's text. */
+void TalkObject_BeginMessage(TalkObject *talk)
+{
+    typedef int TalkObjectBuffer(BmgFile * file);
+
+    talk->unk_1e95 = 1;
+    talk->unk_1e94 = 1;
+    talk->unk_1e96 = 0;
+    TalkPage_SetCentred(&talk->page, Block020a8248_FlagOfKind(&talk->unk_14ac) == 1);
+    int speed = (int) (uintptr_t) Block020a8248_ValueOfKind(&talk->unk_14ac);
+    TalkTags_SetSpeed(&talk->walker, speed);
+    talk->voice.unk_1c = speed == 1;
+
+    u8 next = 0;
+    Block020a8248_GetByte08(&next, &talk->unk_14ac);
+    TalkObject_SetMessage(talk, &next, NULL);
+    TalkObject_TellMessageBegun(talk);
+    TalkObject_PlayMessageSound(talk);
+
+    MessageWalkRun_Reset(&talk->run);
+    BmgFile *file = talk_object_file(talk);
+    const u8 *vtable = (const u8 *) file->vtable;
+    u32 buffer = *(const u32 *) (const void *) (vtable + TALK_OBJECT_FILE_SLOT_BUFFER);
+    MessageWalkRun_Start(&talk->run, ((TalkObjectBuffer *) (uintptr_t) buffer)(file));
+}
+CLEAN_AS(func_0206741c, TalkObject_BeginMessage)
+
+/* func_020674d8: the sound of the message (its entry's byte 9), when it has one. */
+void TalkObject_PlayMessageSound(TalkObject *talk)
+{
+    int sound = Block020a8248_Byte09(&talk->unk_14ac);
+    if (sound < TALK_OBJECT_MESSAGE_SOUNDS && data_020cce84[sound] != 0) {
+        SoundSys_PlaySe(data_020cce84[sound]);
+    }
+}
+CLEAN_AS(func_020674d8, TalkObject_PlayMessageSound)
+
+/* func_02067504: the receiver told the answer picked (its record's byte 7, slot 0x18), once
+ * after a choice. */
+void TalkObject_TellAnswer(TalkObject *talk)
+{
+    if (talk->unk_1e96 == 0) {
+        return;
+    }
+    int answer = Block020a8248_Byte07(TalkAnswers_PickedRecord(&talk->answers));
+    talk_object_tell(talk, TALK_OBJECT_SLOT_ANSWER, answer);
+    talk->unk_1e96 = 0;
+}
+CLEAN_AS(func_02067504, TalkObject_TellAnswer)
+
+/* func_02067540: the message's end, once: the villager's fondness for the player changed by
+ * the entry's byte 5, and the receiver told the entry's byte 7 (slot 0x14). */
+void TalkObject_TellMessageEnded(TalkObject *talk)
+{
+    if (talk->unk_1e95 == 0) {
+        return;
+    }
+    TalkObject_ChangeFondness(talk, Block020a8248_Byte05(&talk->unk_14ac));
+    talk_object_tell(talk, TALK_OBJECT_SLOT_ENDED, Block020a8248_Byte07(&talk->unk_14ac));
+    talk->unk_1e95 = 0;
+}
+CLEAN_AS(func_02067540, TalkObject_TellMessageEnded)
+
+/* func_02067588: the message's beginning, once: the receiver told the entry's byte 6 (slot
+ * 0x10). */
+void TalkObject_TellMessageBegun(TalkObject *talk)
+{
+    if (talk->unk_1e94 == 0) {
+        return;
+    }
+    talk_object_tell(talk, TALK_OBJECT_SLOT_BEGUN, Block020a8248_Byte06(&talk->unk_14ac));
+    talk->unk_1e94 = 0;
+}
+CLEAN_AS(func_02067588, TalkObject_TellMessageBegun)
+
+/* func_020675c0: the speaker's name box freed. */
+void TalkObject_FreeNameBox(TalkObject *talk)
+{
+    if (talk->name_box != NULL) {
+        LabelBox_Free(talk->name_box);
+        talk->name_box = NULL;
+    }
+}
+CLEAN_AS(func_020675c0, TalkObject_FreeNameBox)
+
+/* func_020675e0: the speaker's name box made in VRAM (when there is room) with the speaker's
+ * name, centred and drawn. */
+void TalkObject_MakeNameBox(TalkObject *talk)
+{
+    talk->name_box = LabelBox_NewInVram(TALK_OBJECT_NAME_TILE, TALK_OBJECT_NAME_CELLS, TALK_OBJECT_NAME_ROWS);
+    if (talk->name_box == NULL) {
+        return;
+    }
+    talk->name_box->base.screens = TALK_OBJECT_NAME_SCREENS;
+    talk->name_box->base.background = TALK_OBJECT_NAME_BACKGROUND;
+    TalkReceiverName *speaker = TalkReceiver_SpeakerName(talk->receiver);
+    talk->name_box->base.text = talk_object_chars(speaker);
+    TextDraw_Center(&talk->name_box->base);
+    talk->name_box->base.color = TALK_OBJECT_NAME_COLOUR;
+    TextDraw_RequestDraw(&talk->name_box->base);
+}
+CLEAN_AS(func_020675e0, TalkObject_MakeNameBox)
+
+/* func_02067648: the villager talked to changes its fondness for this system's player by
+ * data_020ccea0[change] (nothing for 0, without a villager, or when it does not remember the
+ * player), and the link is told the new fondness.
+ * REQUIRES: change indexes data_020ccea0 (0 to 32). */
+void TalkObject_ChangeFondness(TalkObject *talk, int change)
+{
+    if (change == 0) {
+        return;
+    }
+    u8 *villager = talk_object_villager(talk);
+    u8 *records = PlayerRecords_Current();
+    if (villager == NULL) {
+        return;
+    }
+    int entry = VillagerMemory_IndexOf(villager, PlayerRecord_Player(records));
+    VillagerMemory *memory = VillagerMemory_At(villager, entry);
+    if (memory == NULL) {
+        return;
+    }
+    VillagerMemoryEntry_ChangeFondness(memory, data_020ccea0[change]);
+    SessionVillager_SendEntryByte6C(villager, entry, VillagerMemoryEntry_Fondness(memory));
+}
+CLEAN_AS(func_02067648, TalkObject_ChangeFondness)
+
+/* func_020676ac: the talk's countdown (word 0x10) run a frame: 1 when it reached 0 now. */
+int TalkObject_AutoAdvanceDue(TalkObject *talk)
+{
+    if (talk->unk_10 <= 0) {
+        return 0;
+    }
+    talk->unk_10--;
+    return talk->unk_10 == 0;
+}
+CLEAN_AS(func_020676ac, TalkObject_AutoAdvanceDue)
+
+/* func_020676c4: the talk goes on by itself, while waiting, after `frames` frames. */
+void TalkObject_SetAutoAdvance(TalkObject *talk, int frames)
+{
+    talk->unk_10 = frames;
+}
+CLEAN_AS(func_020676c4, TalkObject_SetAutoAdvance)
+
+/* func_020676c8 (named NNS_G2dResetEntityPaletteTable in the symbols): the countdown off. */
+void TalkObject_ClearAutoAdvance(TalkObject *talk)
+{
+    talk->unk_10 = 0;
+}
+CLEAN_AS(NNS_G2dResetEntityPaletteTable, TalkObject_ClearAutoAdvance)
+
+/* The texts loaded from the villager talked to (or about) for a message's tags: each loader
+ * clears its text and, with a villager, loads it; 1 when it did. Each is cleared again for the
+ * next message (TalkFlow_NextMessage). */
+
+/* func_020676d0: what the villager remembers of this system's player; 1 when it does. */
+int TalkObject_LoadMemory(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->memory);
+    if (villager == NULL) {
+        return 0;
+    }
+    return VillagerMemory_GetText3E(villager, &talk->memory, talk_object_player()) != 0;
+}
+CLEAN_AS(func_020676d0, TalkObject_LoadMemory)
+
+/* func_02067718 */
+void TalkObject_ClearMemory(TalkObject *talk)
+{
+    TextBase_Clear(&talk->memory);
+}
+CLEAN_AS(func_02067718, TalkObject_ClearMemory)
+
+/* func_02067728: the villager's praise word for this system's player. */
+int TalkObject_LoadPraise(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->praise);
+    if (villager == NULL) {
+        return 0;
+    }
+    VillagerMemory_GetText2A(villager, &talk->praise, talk_object_player());
+    return 1;
+}
+CLEAN_AS(func_02067728, TalkObject_LoadPraise)
+
+/* func_0206776c */
+void TalkObject_ClearPraise(TalkObject *talk)
+{
+    TextBase_Clear(&talk->praise);
+}
+CLEAN_AS(func_0206776c, TalkObject_ClearPraise)
+
+/* func_0206777c: the nickname the villager gives this system's player. */
+int TalkObject_LoadNickname(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->nickname);
+    if (villager == NULL) {
+        return 0;
+    }
+    VillagerMemory_NameFor(villager, &talk->nickname, talk_object_player());
+    return 1;
+}
+CLEAN_AS(func_0206777c, TalkObject_LoadNickname)
+
+/* func_020677c0 */
+void TalkObject_ClearNickname(TalkObject *talk)
+{
+    TextBase_Clear(&talk->nickname);
+}
+CLEAN_AS(func_020677c0, TalkObject_ClearNickname)
+
+/* func_020677d0: the villager's impression (of no record). */
+int TalkObject_LoadImpression(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->impression);
+    if (villager == NULL) {
+        return 0;
+    }
+    VillagerImpression_LoadText(villager, (int) (uintptr_t) &talk->impression, NULL);
+    return 1;
+}
+CLEAN_AS(func_020677d0, TalkObject_LoadImpression)
+
+/* func_0206780c */
+void TalkObject_ClearImpression(TalkObject *talk)
+{
+    TextBase_Clear(&talk->impression);
+}
+CLEAN_AS(func_0206780c, TalkObject_ClearImpression)
+
+/* func_0206781c: the villager's boom; 1 when it has one. */
+int TalkObject_LoadBoom(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->boom);
+    if (villager == NULL) {
+        return 0;
+    }
+    return VillagerStatus_LoadModeText(villager, &talk->boom) != 0;
+}
+CLEAN_AS(func_0206781c, TalkObject_LoadBoom)
+
+/* func_0206785c */
+void TalkObject_ClearBoom(TalkObject *talk)
+{
+    TextBase_Clear(&talk->boom);
+}
+CLEAN_AS(func_0206785c, TalkObject_ClearBoom)
+
+/* func_0206786c: another resident's player name, loaded once until cleared (byte 0x1e75);
+ * without one, another villager's name (then `other_colour` set), and 0 without a villager
+ * either.
+ * QUIRK: once tried, it answers 1 until cleared, even when nothing was loaded. */
+int TalkObject_LoadOtherPlayer(TalkObject *talk)
+{
+    int loaded = 1;
+    if (talk->unk_1e75 != 0) {
+        return loaded;
+    }
+    u8 *records = PlayerRecords_Current();
+    TextBase_Clear(&talk->other_player);
+    if (PlayerRecord_OtherPlayerName(records, (struct PlayerRecordName *) (void *) &talk->other_player) == 0) {
+        u8 *villager = talk_object_villager(talk);
+        if (villager != NULL) {
+            VillagerNames_FormatOther(villager, (char *) (void *) &talk->other_player);
+            talk->other_colour = 1;
+        } else {
+            loaded = 0;
+        }
+    }
+    talk->unk_1e75 = 1;
+    return loaded;
+}
+CLEAN_AS(func_0206786c, TalkObject_LoadOtherPlayer)
+
+/* func_020678d4: the other resident's name cleared, to load again. */
+void TalkObject_ClearOtherPlayer(TalkObject *talk)
+{
+    talk->unk_1e75 = 0;
+    talk->other_colour = 0;
+    TextBase_Clear(&talk->other_player);
+}
+CLEAN_AS(func_020678d4, TalkObject_ClearOtherPlayer)
+
+/* func_020678f8: another villager's name, picked once until cleared (byte 0x1e74); 0 without
+ * a villager talked to.
+ * QUIRK: once tried, it answers 1 until cleared, even when nothing was loaded. */
+int TalkObject_LoadRandomNpc(TalkObject *talk)
+{
+    int loaded = 1;
+    if (talk->unk_1e74 != 0) {
+        return loaded;
+    }
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->random_npc);
+    if (villager != NULL) {
+        VillagerNames_FormatOther(villager, (char *) (void *) &talk->random_npc);
+    } else {
+        loaded = 0;
+    }
+    talk->unk_1e74 = 1;
+    return loaded;
+}
+CLEAN_AS(func_020678f8, TalkObject_LoadRandomNpc)
+
+/* func_02067948: the other villager's name cleared, to pick again. */
+void TalkObject_ClearRandomNpc(TalkObject *talk)
+{
+    talk->unk_1e74 = 0;
+    TextBase_Clear(&talk->random_npc);
+}
+CLEAN_AS(func_02067948, TalkObject_ClearRandomNpc)
+
+/* func_02067964: a villager the one talked to is on bad terms with. */
+int TalkObject_LoadDislikedNpc(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->disliked_npc);
+    if (villager == NULL) {
+        return 0;
+    }
+    VillagerNames_FormatWorstMatch(villager, (char *) (void *) &talk->disliked_npc);
+    return 1;
+}
+CLEAN_AS(func_02067964, TalkObject_LoadDislikedNpc)
+
+/* func_020679a0 */
+void TalkObject_ClearDislikedNpc(TalkObject *talk)
+{
+    TextBase_Clear(&talk->disliked_npc);
+}
+CLEAN_AS(func_020679a0, TalkObject_ClearDislikedNpc)
+
+/* func_020679b0: a villager the one talked to is on good terms with. */
+int TalkObject_LoadLikedNpc(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->liked_npc);
+    if (villager == NULL) {
+        return 0;
+    }
+    VillagerNames_FormatBestMatch(villager, (char *) (void *) &talk->liked_npc);
+    return 1;
+}
+CLEAN_AS(func_020679b0, TalkObject_LoadLikedNpc)
+
+/* func_020679ec */
+void TalkObject_ClearLikedNpc(TalkObject *talk)
+{
+    TextBase_Clear(&talk->liked_npc);
+}
+CLEAN_AS(func_020679ec, TalkObject_ClearLikedNpc)
+
+/* func_020679fc: this system's player's name; always 1. */
+int TalkObject_LoadPlayerName(TalkObject *talk)
+{
+    u8 *records = PlayerRecords_Current();
+    TextBase_Clear(&talk->unk_1cac);
+    PlayerId_NameToText(PlayerRecord_Player(records), (TextBase *) (void *) &talk->unk_1cac);
+    return 1;
+}
+CLEAN_AS(func_020679fc, TalkObject_LoadPlayerName)
+
+/* func_02067a2c */
+void TalkObject_ClearPlayerName(TalkObject *talk)
+{
+    TextBase_Clear(&talk->unk_1cac);
+}
+CLEAN_AS(func_02067a2c, TalkObject_ClearPlayerName)
+
+/* func_02067a3c: the town's name; always 1. */
+int TalkObject_LoadTownName(TalkObject *talk)
+{
+    TextBase_Clear(&talk->town_name);
+    TownName_ToText((TownName *) (void *) &data_021dc7a8.town, (TextBase *) (void *) &talk->town_name);
+    return 1;
+}
+CLEAN_AS(func_02067a3c, TalkObject_LoadTownName)
+
+/* func_02067a64 */
+void TalkObject_ClearTownName(TalkObject *talk)
+{
+    TextBase_Clear(&talk->town_name);
+}
+CLEAN_AS(func_02067a64, TalkObject_ClearTownName)
+
+/* func_02067a74: the villager's catchphrase (with VillagerCatchphrase_ToLabel's third argument
+ * 1). */
+int TalkObject_LoadCatchphrase(TalkObject *talk)
+{
+    u8 *villager = talk_object_villager(talk);
+    TextBase_Clear(&talk->unk_1c70);
+    if (villager == NULL) {
+        return 0;
+    }
+    VillagerCatchphrase_ToLabel(villager, &talk->unk_1c70, 1);
+    return 1;
+}
+CLEAN_AS(func_02067a74, TalkObject_LoadCatchphrase)
+
+/* func_02067ab0 */
+void TalkObject_ClearCatchphrase(TalkObject *talk)
+{
+    TextBase_Clear(&talk->unk_1c70);
+}
+CLEAN_AS(func_02067ab0, TalkObject_ClearCatchphrase)
+
+/* func_02067ac0: the four values a message's tags put in cleared, of the cleared kind. */
+void TalkObject_ClearValues(TalkObject *talk)
+{
+    for (int i = 0; i < TALK_OBJECT_VALUES; i++) {
+        MessagePart_Clear(&talk->values[i]);
+        talk->value_kinds[i] = TALK_OBJECT_VALUE_CLEARED;
+    }
+}
+CLEAN_AS(func_02067ac0, TalkObject_ClearValues)
+
+/* func_02067af8: the eleven message parts cleared. */
+void TalkObject_ClearParts(TalkObject *talk)
+{
+    for (int i = 0; i < TALK_OBJECT_PARTS; i++) {
+        MessagePart_Clear(&talk->parts[i]);
+    }
+}
+CLEAN_AS(func_02067af8, TalkObject_ClearParts)
+
+/* func_02067c20: the date and time the talk begins noted: the year, the day and month, the
+ * minute and hour, the weekday, the second and the part of the day. */
+void TalkObject_NoteTime(TalkObject *talk)
+{
+    talk->year = Clock_Year();
+    Clock_GetDayMonth(&talk->day);
+    Calendar_Now((Time *) (void *) &talk->minute);
+    talk->weekday = Calendar_TodayWeekday();
+    talk->second = (u32) Clock_Second();
+    talk->part_of_day = Calendar_PartOfDay();
+}
+CLEAN_AS(func_02067c20, TalkObject_NoteTime)

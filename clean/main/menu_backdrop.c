@@ -632,3 +632,25 @@ void MenuBackdrop_WipeOutFrame(void)
     set_edges(data_021cfc1c);
 }
 CLEAN_AS(func_0206f38c, MenuBackdrop_WipeOutFrame)
+
+/* func_0206f408: the sweep in's VBlank function: the edge moved left; once it would reach
+ * the screen's left edge, the line handler taken out, window 1 set over the whole screen from
+ * x 0 and the edge left at 0. Then the pattern's edges set from it, and window 1 given the
+ * first line's edge.
+ * HW: WIN1H is written at once when the sweep ends and again at the end, the line handler no
+ * longer setting it; the line handler's own writes come from the edges set here. */
+void MenuBackdrop_WipeInFrame(void)
+{
+    if (data_021cfc1c > WIPE_SPEED) {
+        data_021cfc1c = (s16) (data_021cfc1c - WIPE_SPEED);
+    } else {
+        LineHandlers_Remove(&data_021cfc2c);
+        data_021cfc14 &= (u8) ~WIPE_HANDLER_ADDED;
+        DisplayShadow_SetMainWindow1(0, 0, SCREEN_RIGHT, SCREEN_BOTTOM);
+        REG_WIN1H = SCREEN_RIGHT;
+        data_021cfc1c = 0;
+    }
+    set_edges(data_021cfc1c);
+    REG_WIN1H = (u16) ((data_027e0438[0] << 8) | SCREEN_RIGHT);
+}
+CLEAN_AS(func_0206f408, MenuBackdrop_WipeInFrame)

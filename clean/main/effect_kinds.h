@@ -193,4 +193,70 @@ int EffectKinds_LandParticlesAtLimit(ParticleEmitter *emitter, int ground_set, v
                                      void *const *ground_setups2, int floor_set, void *const *floor_setups, int floor_set2,
                                      void *const *floor_setups2);
 
+/* Kinds 0x35-0x4b. Kinds 0x35 and 0x36 follow their places from frames -181 counting up, their
+ * emitters fading in and out over that time; kinds 0x37-0x39 choose their set by the ground at
+ * the point; kinds 0x3e and 0x3f are sized by the half-word `extra`. */
+void EffectKinds_StartKind4b(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind4a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowKind4b(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind4b(EffectKindsInstance *instance);
+void EffectKinds_StartKind49(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowKind49(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind49(EffectKindsInstance *instance);
+void EffectKinds_StartKind48(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind47(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind46(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind45(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind44(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind43(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind42(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind41(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowKind41Third(EffectKindsInstance *instance);
+void EffectKinds_FollowKind41Second(EffectKindsInstance *instance);
+void EffectKinds_FollowKind41First(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind41Third(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind41Second(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind41First(EffectKindsInstance *instance);
+void EffectKinds_StartKind40(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowKind40(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind40(EffectKindsInstance *instance);
+int EffectKinds_StartKind3f(int kind, Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind3f(EffectKindsInstance *instance);
+void EffectKinds_SetModelTransformKind3f(EffectKindsModelTransform *transform);
+void EffectKinds_SetUpKind3f(ParticleEmitter *emitter);
+void EffectKinds_PlaceKind3f(EffectKindsInstance *instance);
+int EffectKinds_StartKind3e(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetUpKind3eLarge(ParticleEmitter *emitter);
+void EffectKinds_SetUpKind3e(ParticleEmitter *emitter);
+void EffectKinds_EndKind3d(int handle);
+void EffectKinds_StartKind3d(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind3d(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind3d(EffectKindsInstance *instance);
+void EffectKinds_StartKind3c(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_StartKind3b(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind3b(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind3b(EffectKindsInstance *instance);
+void EffectKinds_StartKind3a(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind3a(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind3a(EffectKindsInstance *instance);
+int EffectKinds_StartKind39(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_FollowKind39Snow(EffectKindsInstance *instance);
+void EffectKinds_FollowKind39Wet(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind39(EffectKindsInstance *instance);
+int EffectKinds_StartKind38(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_StartKind37(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+void EffectKinds_SetUpKind37(ParticleEmitter *emitter);
+void EffectKinds_TurnFirstParticleKind37(ParticleEmitter *emitter, int after);
+int EffectKinds_StartKind36(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind36(EffectKindsInstance *instance);
+void EffectKinds_PlaceKind36(EffectKindsInstance *instance);
+int EffectKinds_StartKind35(int kind, const Vec3 *position, const s16 *angle, const s16 *extra);
+int EffectKinds_FollowKind35C(EffectKindsInstance *instance);
+int EffectKinds_FollowKind35B(EffectKindsInstance *instance);
+void EffectKinds_FollowKind35A(EffectKindsInstance *instance);
+int EffectKinds_FollowKind35Ramp(EffectKindsInstance *instance, int interval, int in_rate, int out_rate, int speed,
+                                 short speed_hold, short speed_in, short speed_out, int axis_speed, short axis_hold,
+                                 short axis_in, short axis_out);
+void EffectKinds_PlaceKind35C(EffectKindsInstance *instance);
+
 #endif

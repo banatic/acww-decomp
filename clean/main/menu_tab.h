@@ -2,7 +2,7 @@
  * (vtable data_020e2234, 0x100 bytes, derived from main's screen sprite base, screen_sprite.h)
  * that opens a menu window of its own (the member at 0x28, 0xd8 bytes) by X, or by a tap at
  * the touch screen's top right (x 200 to 231, y 0 to 15), and closes it by X, B, a tap there,
- * or once state flag 0x80 asks the menu to close (func_0206f56c).
+ * or once state flag 0x80 asks the menu to close (StateFlags_MenuCloseAsked).
  *
  * A press asks main's event queue for an event of kind 10 (EventQueue_RequestKind10); the
  * window opens once that event runs, and the event is finished when the window has closed.

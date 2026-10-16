@@ -46,14 +46,6 @@ extern void MI_CpuFill8(void *dst, int value, unsigned int size);
 
 /* The box colour of a line colour: 9 as 2, then plus one. */
 extern unsigned char func_02068bc8(int colour);
-/* The measurer measures `characters` centred in its box: the line's start in pixels (0 when
- * `centred` is 0 or it has no box). */
-extern u32 func_0206d56c(TalkPageMeasurer *measurer, int characters, int centred);
-/* The measurer built for `talk`, and destroyed. */
-extern void *func_0206d5e4(TalkPageMeasurer *measurer, u8 *talk);
-extern void *func_0206d5c0(TalkPageMeasurer *measurer);
-/* Empty: a name of the talk met by the measurer. */
-extern void func_0206d420(void *measurer, void *name);
 /* 1 when the setting func_0203d4a8 reads is off: the characters after a 0xff/2 tag are shown,
  * else the tag's own text. */
 extern int func_02068114(void);
@@ -171,7 +163,7 @@ void TalkPage_BeginLine(TalkPage *page, int position)
     if (page->lines >= TALK_PAGE_LINES) {
         return;
     }
-    page->offset[page->lines] = func_0206d56c(&page->measurer, position, page->centred);
+    page->offset[page->lines] = (u32) TalkPageMeasurer_Measure(&page->measurer, position, page->centred);
     u32 line = page->lines;
     page->lines = line + 1;
     page->line_start[line] = (u32) (uintptr_t) page + page->used;
@@ -256,7 +248,7 @@ CLEAN_AS(func_0206c340, TalkPage_ClearPlain)
 TalkPage *TalkPage_Destruct(TalkPage *page)
 {
     TalkPage_FreeBoxes(page);
-    func_0206d5c0(&page->measurer);
+    TalkPageMeasurer_Destruct(&page->measurer);
     return page;
 }
 CLEAN_AS(func_0206c34c, TalkPage_Destruct)
@@ -267,7 +259,7 @@ TalkPage *TalkPage_Construct(TalkPage *page, u8 *talk)
     page->used = 0;
     page->lines = 0;
     page->centred = 0;
-    func_0206d5e4(&page->measurer, talk);
+    TalkPageMeasurer_Construct(&page->measurer, talk);
     TalkPage_ClearPlain(page);
     for (u32 i = 0; i < TALK_PAGE_LINES; i++) {
         page->box[i] = NULL;
@@ -322,10 +314,10 @@ void TalkPageMeasurer_PutParticle(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206c3fc, TalkPageMeasurer_PutParticle)
 
-/* The talk's name `index` handed to the empty func_0206d420. */
+/* The talk's name `index` handed to the empty TalkPageMeasurer_IgnoreText. */
 static void talk_page_measurer_name(TalkPageMeasurer *measurer, int index)
 {
-    func_0206d420(measurer, measurer->talk + TALK_PAGE_TALK_NAMES + index * TALK_PAGE_TALK_NAME_SIZE);
+    TalkPageMeasurer_IgnoreText(measurer, measurer->talk + TALK_PAGE_TALK_NAMES + index * TALK_PAGE_TALK_NAME_SIZE);
 }
 
 /* func_0206c480: name 3. */
@@ -412,11 +404,6 @@ extern void *func_02068058(u8 *talk);
 extern void *func_0206807c(u8 *talk);
 /* The text of the receiver's name (the receiver plus 0x20). */
 extern void *func_020668d4(void *receiver);
-/* The talk's name `index` (0 to 3) and its part `index` (0 to 10) walked by the measurer. */
-extern void func_0206d428(TalkPageMeasurer *measurer, int index);
-extern void func_0206d484(TalkPageMeasurer *measurer, int index);
-/* Empty (tag 11/4). */
-extern void func_0206d424(void);
 
 /* The tables of the handlers (function-local statics of the game, filled on the first call):
  * the guard, the table, and the constants it is filled from. */
@@ -491,10 +478,11 @@ static void talk_page_measurer_walk_set_text(TalkPageMeasurer *measurer, TalkPag
     talk_page_particles(measurer)->ro_after_rieul = 1;
 }
 
-/* The talk's part `index` handed to the empty func_0206d420. */
+/* The talk's part `index` handed to the empty TalkPageMeasurer_IgnoreText. */
 static void talk_page_measurer_part(TalkPageMeasurer *measurer, int index)
 {
-    func_0206d420(measurer, talk_page_talk_at(measurer, TALK_PAGE_TALK_PARTS + (u32) index * TALK_PAGE_TALK_PART_SIZE));
+    TalkPageMeasurer_IgnoreText(measurer,
+                                talk_page_talk_at(measurer, TALK_PAGE_TALK_PARTS + (u32) index * TALK_PAGE_TALK_PART_SIZE));
 }
 
 /* The handler of the tag's kind in a table (filled on the first call); a null entry does
@@ -510,7 +498,7 @@ static void talk_page_measurer_dispatch(TalkPageMeasurer *measurer, u32 *guard, 
     }
 }
 
-/* func_0206c4d8 (tag 11/15): part 10 handed to the empty func_0206d420. */
+/* func_0206c4d8 (tag 11/15): part 10 handed to the empty TalkPageMeasurer_IgnoreText. */
 void TalkPageMeasurer_Part10(TalkPageMeasurer *measurer)
 {
     talk_page_measurer_part(measurer, 10);
@@ -587,10 +575,10 @@ void TalkPageMeasurer_Part0(TalkPageMeasurer *measurer)
 }
 CLEAN_AS(func_0206c5e0, TalkPageMeasurer_Part0)
 
-/* func_0206c5f4 (tag 11/4): the empty func_0206d424. */
+/* func_0206c5f4 (tag 11/4): the empty TalkPageMeasurer_Ignore. */
 void TalkPageMeasurer_Nothing11_4(void)
 {
-    func_0206d424();
+    TalkPageMeasurer_Ignore();
 }
 CLEAN_AS(func_0206c5f4, TalkPageMeasurer_Nothing11_4)
 
@@ -640,105 +628,105 @@ CLEAN_AS(func_0206c6fc, TalkPageMeasurer_PutImpression)
 /* func_0206c74c (tag 4/29): the talk's name 3. */
 void TalkPageMeasurer_PutName3(TalkPageMeasurer *measurer)
 {
-    func_0206d428(measurer, 3);
+    TalkPageMeasurer_PutTalkName(measurer, 3);
 }
 CLEAN_AS(func_0206c74c, TalkPageMeasurer_PutName3)
 
 /* func_0206c758 (tag 4/28): name 2. */
 void TalkPageMeasurer_PutName2(TalkPageMeasurer *measurer)
 {
-    func_0206d428(measurer, 2);
+    TalkPageMeasurer_PutTalkName(measurer, 2);
 }
 CLEAN_AS(func_0206c758, TalkPageMeasurer_PutName2)
 
 /* func_0206c764 (tag 4/27): name 1. */
 void TalkPageMeasurer_PutName1(TalkPageMeasurer *measurer)
 {
-    func_0206d428(measurer, 1);
+    TalkPageMeasurer_PutTalkName(measurer, 1);
 }
 CLEAN_AS(func_0206c764, TalkPageMeasurer_PutName1)
 
 /* func_0206c770 (tag 4/26): name 0. */
 void TalkPageMeasurer_PutName0(TalkPageMeasurer *measurer)
 {
-    func_0206d428(measurer, 0);
+    TalkPageMeasurer_PutTalkName(measurer, 0);
 }
 CLEAN_AS(func_0206c770, TalkPageMeasurer_PutName0)
 
 /* func_0206c77c (tag 4/25): the talk's part 10. */
 void TalkPageMeasurer_PutPart10(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 10);
+    TalkPageMeasurer_PutTalkPart(measurer, 10);
 }
 CLEAN_AS(func_0206c77c, TalkPageMeasurer_PutPart10)
 
 /* func_0206c788 (tag 4/24): part 9. */
 void TalkPageMeasurer_PutPart9(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 9);
+    TalkPageMeasurer_PutTalkPart(measurer, 9);
 }
 CLEAN_AS(func_0206c788, TalkPageMeasurer_PutPart9)
 
 /* func_0206c794 (tag 4/23): part 8. */
 void TalkPageMeasurer_PutPart8(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 8);
+    TalkPageMeasurer_PutTalkPart(measurer, 8);
 }
 CLEAN_AS(func_0206c794, TalkPageMeasurer_PutPart8)
 
 /* func_0206c7a0 (tag 4/22): part 7. */
 void TalkPageMeasurer_PutPart7(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 7);
+    TalkPageMeasurer_PutTalkPart(measurer, 7);
 }
 CLEAN_AS(func_0206c7a0, TalkPageMeasurer_PutPart7)
 
 /* func_0206c7ac (tag 4/21): part 6. */
 void TalkPageMeasurer_PutPart6(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 6);
+    TalkPageMeasurer_PutTalkPart(measurer, 6);
 }
 CLEAN_AS(func_0206c7ac, TalkPageMeasurer_PutPart6)
 
 /* func_0206c7b8 (tag 4/20): part 5. */
 void TalkPageMeasurer_PutPart5(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 5);
+    TalkPageMeasurer_PutTalkPart(measurer, 5);
 }
 CLEAN_AS(func_0206c7b8, TalkPageMeasurer_PutPart5)
 
 /* func_0206c7c4 (tag 4/19): part 4. */
 void TalkPageMeasurer_PutPart4(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 4);
+    TalkPageMeasurer_PutTalkPart(measurer, 4);
 }
 CLEAN_AS(func_0206c7c4, TalkPageMeasurer_PutPart4)
 
 /* func_0206c7d0 (tag 4/18): part 3. */
 void TalkPageMeasurer_PutPart3(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 3);
+    TalkPageMeasurer_PutTalkPart(measurer, 3);
 }
 CLEAN_AS(func_0206c7d0, TalkPageMeasurer_PutPart3)
 
 /* func_0206c7dc (tag 4/17): part 2. */
 void TalkPageMeasurer_PutPart2(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 2);
+    TalkPageMeasurer_PutTalkPart(measurer, 2);
 }
 CLEAN_AS(func_0206c7dc, TalkPageMeasurer_PutPart2)
 
 /* func_0206c7e8 (tag 4/16): part 1. */
 void TalkPageMeasurer_PutPart1(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 1);
+    TalkPageMeasurer_PutTalkPart(measurer, 1);
 }
 CLEAN_AS(func_0206c7e8, TalkPageMeasurer_PutPart1)
 
 /* func_0206c7f4 (tag 4/15): part 0. */
 void TalkPageMeasurer_PutPart0(TalkPageMeasurer *measurer)
 {
-    func_0206d484(measurer, 0);
+    TalkPageMeasurer_PutTalkPart(measurer, 0);
 }
 CLEAN_AS(func_0206c7f4, TalkPageMeasurer_PutPart0)
 
@@ -967,3 +955,233 @@ void TalkPageMeasurer_DispatchGroup1(TalkPageMeasurer *measurer)
     talk_page_measurer_dispatch(measurer, &data_021cda48, data_021cdeec, constants, 17);
 }
 CLEAN_AS(func_0206d1a4, TalkPageMeasurer_DispatchGroup1)
+
+/* ---- The measurer itself */
+
+#include "autoload_2/heap.h"
+
+/* The measurer's vtable. */
+extern const u8 data_020def7c[];
+
+/* The table by group (filled on the first call) and the handler of group 0xff, which is not in
+ * it. */
+extern u32 data_021cda54;
+extern MemberPointer data_021cdd94[12];
+extern const MemberPointer data_020deabc, data_020deac4, data_020de84c, data_020deb9c, data_020de864, data_020de8dc;
+/* The table of group 0. */
+extern u32 data_021cda58;
+extern MemberPointer data_021cdcdc[11];
+extern const MemberPointer data_020deec4, data_020de88c, data_020de8c4, data_020dea2c, data_020dea54;
+
+/* The box the measurer measures with: 20 x 2 tiles from tile 0. */
+#define TALK_PAGE_MEASURE_TILE 0
+#define TALK_PAGE_MEASURE_CELLS 20
+#define TALK_PAGE_MEASURE_ROWS 2
+
+/* The group handled outside the table by group, and the groups in it. */
+#define TALK_PAGE_GROUP_FF 0xff
+#define TALK_PAGE_GROUPS 12
+
+/* func_0206d26c (group 0): kinds 0 to 10: 0 TalkPageMeasurer_PutAsterisk, 1
+ * TalkPageMeasurer_PutSlash, 6 TalkPageMeasurer_PutAmpersand, 7 TalkPageMeasurer_PutPercent, 8
+ * TalkPageMeasurer_PutLeftBrace.
+ * REQUIRES: the kind is 0, 1, 6, 7 or 8: the others are the null member pointer, which the ROM
+ * calls (at address 0) without looking, and above 10 it reads past the table. */
+void TalkPageMeasurer_DispatchGroup0(TalkPageMeasurer *measurer)
+{
+    static const MemberPointer *const constants[11] = {
+        &data_020deec4, &data_020de88c, &__ptmf_null,   &__ptmf_null, &__ptmf_null, &__ptmf_null,
+        &data_020de8c4, &data_020dea2c, &data_020dea54, &__ptmf_null, &__ptmf_null,
+    };
+    MemberTable_InitOnce(&data_021cda58, data_021cdcdc, constants, 11);
+    MemberPointer handler = data_021cdcdc[measurer->tag.kind];
+    MemberPointer_CallVoid(&handler, measurer);
+}
+CLEAN_AS(func_0206d26c, TalkPageMeasurer_DispatchGroup0)
+
+/* func_0206d330: the tag handled by the table of its group: 0 TalkPageMeasurer_DispatchGroup0,
+ * 1 TalkPageMeasurer_DispatchGroup1, 2 TalkPageMeasurer_SkipTexts, 4
+ * TalkPageMeasurer_DispatchGroup4, 11 TalkPageMeasurer_DispatchGroup11, 0xff
+ * TalkPageMeasurer_DispatchGroupFF; the other groups nothing.
+ * REQUIRES: the group is below 0x80000000 (it is a byte of the tag): the ROM compares it signed
+ * and would index the table below its start. */
+void TalkPageMeasurer_DispatchTag(TalkPageMeasurer *measurer)
+{
+    static const MemberPointer *const constants[TALK_PAGE_GROUPS] = {
+        &data_020deabc, &data_020deac4, &data_020de84c, &__ptmf_null, &data_020deb9c, &__ptmf_null,
+        &__ptmf_null,   &__ptmf_null,   &__ptmf_null,   &__ptmf_null, &__ptmf_null,   &data_020de864,
+    };
+    MemberTable_InitOnce(&data_021cda54, data_021cdd94, constants, TALK_PAGE_GROUPS);
+    s32 group = (s32) measurer->tag.group;
+    MemberPointer handler = __ptmf_null;
+    if (group == TALK_PAGE_GROUP_FF) {
+        handler = data_020de8dc;
+    } else if (group < TALK_PAGE_GROUPS) {
+        handler = data_021cdd94[group];
+    }
+    if (handler.function != 0) {
+        MemberPointer_CallVoid(&handler, measurer);
+    }
+}
+CLEAN_AS(func_0206d330, TalkPageMeasurer_DispatchTag)
+
+/* func_0206d420: nothing (the measurer meeting one of the talk's names or parts in a group 11
+ * tag). */
+void TalkPageMeasurer_IgnoreText(void *measurer, void *text)
+{
+    (void) measurer;
+    (void) text;
+}
+CLEAN_AS(func_0206d420, TalkPageMeasurer_IgnoreText)
+
+/* func_0206d424: nothing (tag 11/4). */
+void TalkPageMeasurer_Ignore(void) {}
+CLEAN_AS(func_0206d424, TalkPageMeasurer_Ignore)
+
+/* The talk's text object at `offset` walked in place of the tag: its characters entered, the
+ * word 0x50 cleared, its last syllable kept for the particles, and ro_after_rieul cleared. The
+ * object is asked for its characters twice, as the ROM does. */
+static void talk_page_measurer_put_text(TalkPageMeasurer *measurer, u32 offset)
+{
+    const u8 *text = talk_page_talk_at(measurer, offset);
+    MessageWalker_Enter(&measurer->walker.base, talk_page_characters(text));
+    TalkPageMeasurer_Clear50(measurer);
+    MailParticles_TakeLastSyllable(talk_page_particles(measurer), (const char *) (uintptr_t) talk_page_characters(text));
+    talk_page_particles(measurer)->ro_after_rieul = 0;
+}
+
+/* func_0206d428: the talk's name `index` walked in place of the tag. */
+void TalkPageMeasurer_PutTalkName(TalkPageMeasurer *measurer, int index)
+{
+    talk_page_measurer_put_text(measurer, TALK_PAGE_TALK_NAMES + (u32) index * TALK_PAGE_TALK_NAME_SIZE);
+}
+CLEAN_AS(func_0206d428, TalkPageMeasurer_PutTalkName)
+
+/* func_0206d484: the talk's part `index` walked in place of the tag. */
+void TalkPageMeasurer_PutTalkPart(TalkPageMeasurer *measurer, int index)
+{
+    talk_page_measurer_put_text(measurer, TALK_PAGE_TALK_PARTS + (u32) index * TALK_PAGE_TALK_PART_SIZE);
+}
+CLEAN_AS(func_0206d484, TalkPageMeasurer_PutTalkPart)
+
+/* func_0206d4e0: the word 0x50 cleared (tags 11/1 and 11/2 set it). */
+void TalkPageMeasurer_Clear50(TalkPageMeasurer *measurer)
+{
+    measurer->unk_50 = 0;
+}
+CLEAN_AS(func_0206d4e0, TalkPageMeasurer_Clear50)
+
+/* func_0206d4e8 (vtable slot 5): the tag at `position` read and handled. */
+void TalkPageMeasurer_OnTag(TalkPageMeasurer *measurer, int position)
+{
+    MessageTag_Read(&measurer->tag, position);
+    TalkPageMeasurer_DispatchTag(measurer);
+}
+CLEAN_AS(func_0206d4e8, TalkPageMeasurer_OnTag)
+
+/* func_0206d500 (vtable slot 4): the character handed to the box; when the walk has reached
+ * where a text walked in place of a tag ends (`return_at` or the word 0x4c), the walk goes back
+ * to where it was, once for each.
+ * QUIRK: the positions are compared without looking whether they are set, so a walk at
+ * position 0 (its end) goes back once for each of them that is 0. */
+void TalkPageMeasurer_OnCharacter(TalkPageMeasurer *measurer, int character)
+{
+    if (measurer->box != NULL) {
+        LabelBox_OnCharacter(measurer->box, character);
+    }
+    if (measurer->walker.base.position == measurer->return_at) {
+        measurer->return_at = 0;
+        MessageWalker_Return(&measurer->walker.base);
+    }
+    if (measurer->walker.base.position == (u32) measurer->unk_4c) {
+        measurer->unk_4c = 0;
+        MessageWalker_Return(&measurer->walker.base);
+    }
+}
+CLEAN_AS(func_0206d500, TalkPageMeasurer_OnCharacter)
+
+/* func_0206d538 (vtable slot 3): the end of the text handed to the box. */
+void TalkPageMeasurer_OnEnd(TalkPageMeasurer *measurer)
+{
+    if (measurer->box != NULL) {
+        LabelBox_OnEnd(measurer->box);
+    }
+}
+CLEAN_AS(func_0206d538, TalkPageMeasurer_OnEnd)
+
+/* func_0206d54c (vtable slot 2): a new text: what the tags left set is forgotten and the box
+ * told. */
+void TalkPageMeasurer_OnText(TalkPageMeasurer *measurer)
+{
+    if (measurer->box != NULL) {
+        measurer->unk_50 = 0;
+        measurer->return_at = 0;
+        measurer->unk_4c = 0;
+        LabelBox_OnText(measurer->box);
+    }
+}
+CLEAN_AS(func_0206d54c, TalkPageMeasurer_OnText)
+
+/* func_0206d56c: where a line of the message text at `characters` starts in a box when centred,
+ * in pixels: measured by giving the text to the measurer's box and centring it there (the box
+ * is left without a text). 0 when `centred` is 0 or there is no box. */
+int TalkPageMeasurer_Measure(TalkPageMeasurer *measurer, int characters, int centred)
+{
+    int start = 0;
+    if (centred && measurer->box != NULL) {
+        measurer->box->base.text = (const char *) (uintptr_t) characters;
+        TextDraw_Center(&measurer->box->base);
+        start = (int) measurer->box->base.offset;
+        measurer->box->base.text = NULL;
+    }
+    return start;
+}
+CLEAN_AS(func_0206d56c, TalkPageMeasurer_Measure)
+
+/* The destructor's work: the measurer's vtable, its box freed, then the text walker's
+ * destructor. */
+static void talk_page_measurer_destroy(TalkPageMeasurer *measurer)
+{
+    measurer->walker.base.vtable = data_020def7c;
+    if (measurer->box != NULL) {
+        LabelBox_Free(measurer->box);
+    }
+    TextWalker_Destruct(measurer);
+}
+
+/* func_0206d594 (vtable slot 1): destroyed and freed. */
+TalkPageMeasurer *TalkPageMeasurer_Delete(TalkPageMeasurer *measurer)
+{
+    talk_page_measurer_destroy(measurer);
+    Heap_OperatorDeleteB(measurer);
+    return measurer;
+}
+CLEAN_AS(func_0206d594, TalkPageMeasurer_Delete)
+
+/* func_0206d5c0 (vtable slot 0): destroyed. */
+TalkPageMeasurer *TalkPageMeasurer_Destruct(TalkPageMeasurer *measurer)
+{
+    talk_page_measurer_destroy(measurer);
+    return measurer;
+}
+CLEAN_AS(func_0206d5c0, TalkPageMeasurer_Destruct)
+
+/* func_0206d5e4: a measurer of `talk`: a text walker stopping at newlines, with a box of its own
+ * in VRAM (when one can be made) that it walks for. */
+TalkPageMeasurer *TalkPageMeasurer_Construct(TalkPageMeasurer *measurer, u8 *talk)
+{
+    TextWalker_Construct(&measurer->walker, 1);
+    measurer->walker.base.vtable = data_020def7c;
+    measurer->talk = talk;
+    measurer->box = NULL;
+    MessageTag_Construct(&measurer->tag);
+    measurer->return_at = 0;
+    measurer->unk_4c = 0;
+    measurer->unk_50 = 0;
+    measurer->box = LabelBox_NewInVram(TALK_PAGE_MEASURE_TILE, TALK_PAGE_MEASURE_CELLS, TALK_PAGE_MEASURE_ROWS);
+    if (measurer->box != NULL) {
+        LabelBox_SetWalker(measurer->box, (u32) (uintptr_t) measurer);
+    }
+    return measurer;
+}
+CLEAN_AS(func_0206d5e4, TalkPageMeasurer_Construct)

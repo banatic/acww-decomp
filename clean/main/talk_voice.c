@@ -43,8 +43,6 @@ extern const u8 data_020cce88[];
 #define TALK_VOICE_SLOT_VILLAGER 0x68
 #define TALK_VOICE_SLOT_MODE 0x6c
 
-/* The mode set when it changes and a mode is in use (TalkVoice_FollowColour). */
-extern void func_02068b88(TalkVoice *voice, int mode);
 /* A sound effect (misnamed: func_020f1fb4 on the sound state). */
 extern void RtcSendPxiCommand(int command);
 
@@ -80,7 +78,7 @@ void TalkVoice_FollowColour(TalkVoice *voice)
         }
     }
     if (mode != TALK_VOICE_NO_MODE) {
-        func_02068b88(voice, mode);
+        TalkVoice_ChangeMode(voice, mode);
     }
 }
 CLEAN_AS(func_020688e0, TalkVoice_FollowColour)
@@ -258,3 +256,51 @@ TalkVoice *TalkVoice_Construct(TalkVoice *voice, struct TalkObject *talk)
     return voice;
 }
 CLEAN_AS(func_02068b30, TalkVoice_Construct)
+
+/* func_02068b64: the sound mode changed to the speaker's (the receiver's vtable slot 0x6c), as
+ * when the speaker changes.
+ * REQUIRES: the talk has a receiver. */
+void TalkVoice_TakeSpeakerMode(TalkVoice *voice)
+{
+    TalkVoice_ChangeMode(voice, talk_voice_ask_receiver(voice, TALK_VOICE_SLOT_MODE));
+}
+CLEAN_AS(func_02068b64, TalkVoice_TakeSpeakerMode)
+
+/* func_02068b88: the sound mode changed to `mode` and handed to the sound system, when no mode
+ * is forced and a mode other than `mode` is in use. */
+void TalkVoice_ChangeMode(TalkVoice *voice, int mode)
+{
+    if (voice->forced_mode == TALK_VOICE_NO_MODE && voice->mode != TALK_VOICE_NO_MODE && voice->mode != mode) {
+        SoundSys_SetKeyboardMode(mode);
+        voice->mode = mode;
+    }
+}
+CLEAN_AS(func_02068b88, TalkVoice_ChangeMode)
+
+/* func_02068bb0 */
+void TalkVoice_ClearKindOverride(TalkVoice *voice)
+{
+    voice->kind_override = TALK_VOICE_NO_KIND;
+}
+CLEAN_AS(func_02068bb0, TalkVoice_ClearKindOverride)
+
+/* func_02068bb8: `kind` used for the sounds' style in place of the talk's. */
+void TalkVoice_SetKindOverride(TalkVoice *voice, int kind)
+{
+    voice->kind_override = kind;
+}
+CLEAN_AS(func_02068bb8, TalkVoice_SetKindOverride)
+
+/* func_02068bbc */
+void TalkVoice_ClearForcedMode(TalkVoice *voice)
+{
+    voice->forced_mode = TALK_VOICE_NO_MODE;
+}
+CLEAN_AS(func_02068bbc, TalkVoice_ClearForcedMode)
+
+/* func_02068bc4: `mode` set by TalkVoice_Start in place of the speaker's. */
+void TalkVoice_SetForcedMode(TalkVoice *voice, int mode)
+{
+    voice->forced_mode = mode;
+}
+CLEAN_AS(func_02068bc4, TalkVoice_SetForcedMode)

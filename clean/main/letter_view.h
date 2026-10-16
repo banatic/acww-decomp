@@ -125,4 +125,14 @@ void LetterView_LoadScreen(LetterView *view, int layer);
 LetterView *LetterView_Destruct(LetterView *view);
 LetterView *LetterView_Construct(LetterView *view);
 
+/* The wide text's destructors, and the line's marks and text (its own functions before
+ * LetterLine_Show). */
+LetterWideText *LetterWideText_Destruct(LetterWideText *text);
+LetterWideText *LetterWideText_Delete(LetterWideText *text);
+void LetterLine_SetNameMark(LetterLine *line, char first, char count);
+void LetterLine_SetMark(LetterLine *line, char first, char count, char style);
+void LetterLine_Clear(LetterLine *line);
+void LetterLine_SetTextWithEnd(LetterLine *line, LetterWideText *text, int end_code);
+void LetterLine_SetText(LetterLine *line, LetterWideText *text);
+
 #endif

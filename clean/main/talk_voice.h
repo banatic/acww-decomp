@@ -59,4 +59,11 @@ TalkVoice *TalkVoice_DestructDelete(TalkVoice *voice);
 void TalkVoice_Destruct(TalkVoice *voice);
 TalkVoice *TalkVoice_Construct(TalkVoice *voice, struct TalkObject *talk);
 
+void TalkVoice_TakeSpeakerMode(TalkVoice *voice);
+void TalkVoice_ChangeMode(TalkVoice *voice, int mode);
+void TalkVoice_ClearKindOverride(TalkVoice *voice);
+void TalkVoice_SetKindOverride(TalkVoice *voice, int kind);
+void TalkVoice_ClearForcedMode(TalkVoice *voice);
+void TalkVoice_SetForcedMode(TalkVoice *voice, int mode);
+
 #endif

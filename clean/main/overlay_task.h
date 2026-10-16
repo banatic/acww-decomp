@@ -15,6 +15,8 @@ enum OverlayTaskSlot {
     OVERLAY_TASK_SLOT_END = 3,
     OVERLAY_TASK_SLOT_UPDATE = 6,
     OVERLAY_TASK_SLOT_9 = 9,
+    OVERLAY_TASK_SLOT_DESTRUCT = 16,
+    OVERLAY_TASK_SLOT_DESTRUCT_DELETE = 17,
 };
 
 typedef struct OverlayTask {
@@ -27,5 +29,7 @@ BOOL OverlayTask_Update(void);
 BOOL OverlayTask_End(void);
 BOOL OverlayTask_Init(OverlayTask *self);
 OverlayTask *OverlayTask_New(void);
+OverlayTask *OverlayTask_Destruct(OverlayTask *self);
+OverlayTask *OverlayTask_DestructDelete(OverlayTask *self);
 
 #endif

@@ -268,4 +268,21 @@ void *TalkTags_Delete(void *walker);
 void *TalkTags_Destruct(void *walker);
 TalkTagsWalker *TalkTags_Construct(TalkTagsWalker *walker, u8 *talk, void *page);
 
+/* Tags 0xff/0 and 0xff/2, and group 11 from kind 8 on. */
+void TalkTags_StartSpans(TalkTagsWalker *walker);
+void TalkTags_ChangeColour(TalkTagsWalker *walker);
+void TalkTags_PutParticle(TalkTagsWalker *walker);
+void TalkTags_NoteValue3(TalkTagsWalker *walker);
+void TalkTags_NoteValue2(TalkTagsWalker *walker);
+void TalkTags_NoteValue1(TalkTagsWalker *walker);
+void TalkTags_NoteValue0(TalkTagsWalker *walker);
+void TalkTags_NotePart10(TalkTagsWalker *walker);
+void TalkTags_NotePart9(TalkTagsWalker *walker);
+void TalkTags_NotePart8(TalkTagsWalker *walker);
+void TalkTags_NotePart7(TalkTagsWalker *walker);
+void TalkTags_NotePart6(TalkTagsWalker *walker);
+void TalkTags_NotePart5(TalkTagsWalker *walker);
+void TalkTags_NotePart4(TalkTagsWalker *walker);
+void TalkTags_NotePart3(TalkTagsWalker *walker);
+
 #endif

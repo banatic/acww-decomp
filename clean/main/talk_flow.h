@@ -19,6 +19,7 @@
 #include "main/message_walker.h"
 #include "main/talk_page.h"
 #include "main/talk_receiver.h"
+#include "main/talk_object.h"
 #include "main/talk_tags.h"
 #include "types.h"
 
@@ -73,5 +74,29 @@ void TalkFlow_EnterGone(TalkFlowTalk *talk);
 void TalkFlow_StepClosing(TalkFlowTalk *talk);
 void TalkFlow_EnterClosing(TalkFlowTalk *talk);
 void TalkFlow_StepWriting(TalkFlowTalk *talk);
+
+/* The other states' steps and entries, the state asked for entered, and what the talk does
+ * when the walk goes on or ends (TalkObject from talk_object.h):
+ * - 0, closed: nothing each frame; on entry the window closed (TalkFlow_EnterClosed);
+ * - 1, opening (TalkFlow_EnterOpening, TalkFlow_StepOpening): the message loaded and begun,
+ *   the window built for the speaker and slid in over five frames; then the talk writes;
+ * - 2, waiting (TalkFlow_EnterWaiting, TalkFlow_StepWaiting): the window's arrow runs through
+ *   its poses 0 to 3 as the player goes on, then TalkFlow_WalkStopped;
+ * - 3, writing: entered by TalkFlow_EnterWriting. */
+void TalkFlow_StepWaiting(TalkObject *talk);
+void TalkFlow_EnterWriting(TalkObject *talk);
+void TalkFlow_EnterWaiting(TalkObject *talk);
+void TalkFlow_StepOpening(TalkObject *talk);
+void TalkFlow_EnterOpening(TalkObject *talk);
+void TalkFlow_StepClosed(void *talk);
+void TalkFlow_EnterClosed(TalkObject *talk);
+void TalkFlow_EnterNext(TalkObject *talk);
+void TalkFlow_TakeAnswer(TalkObject *talk);
+void TalkFlow_EndAtLast(TalkObject *talk);
+void TalkFlow_End(TalkObject *talk);
+void TalkFlow_NextMessage(TalkObject *talk);
+void TalkFlow_NewPage(TalkObject *talk);
+void TalkFlow_SameWindow(TalkObject *talk);
+void TalkFlow_AfterChoices(TalkObject *talk);
 
 #endif

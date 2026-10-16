@@ -35,14 +35,6 @@ extern const TextVtable data_020df270; /* the wide text's vtable */
 extern const char data_020df280[];     /* "menu/letter/b_ltr_a_bg.bsc" */
 extern Heap *data_021fbe94;            /* the heap the screen file is read with */
 
-/* The line's own functions next to these (main): clear the text and the marks (marking the line
- * dirty), set the marks, and set the text from a wide text. */
-extern void func_0206db74(LetterLine *line);
-extern void func_0206db50(LetterLine *line, u8 first, u8 count);
-extern void func_0206db5c(LetterLine *line, u8 first, u8 count, int style);
-extern void func_0206dba8(LetterLine *line, LetterWideText *text, int end_code);
-extern void func_0206dbc0(LetterLine *line, LetterWideText *text);
-
 /* The line's constructor and destructor, as the game hands them to the array helpers. */
 extern void func_0206dd8c(void *line);
 extern void func_0206dd6c(void *line);
@@ -327,7 +319,7 @@ CLEAN_AS(func_0206df1c, LetterView_BreakBody)
 /* func_0206df40: mark `count` characters of the signature from `first` (both their low byte). */
 void LetterView_MarkSignature(LetterView *view, int first, int count, int style)
 {
-    func_0206db5c(&view->signature, (u8) first, (u8) count, style);
+    LetterLine_SetMark(&view->signature, (u8) first, (u8) count, style);
 }
 CLEAN_AS(func_0206df40, LetterView_MarkSignature)
 
@@ -351,7 +343,7 @@ void LetterView_MarkBody(LetterView *view, unsigned int first, unsigned int coun
             } else {
                 marked = length - (first - line_first);
             }
-            func_0206db5c(&view->body[i], (u8) (first - line_first), (u8) marked, style);
+            LetterLine_SetMark(&view->body[i], (u8) (first - line_first), (u8) marked, style);
             first = (u8) line_end;
             count -= marked;
             if (count == 0) {
@@ -366,7 +358,7 @@ CLEAN_AS(func_0206df58, LetterView_MarkBody)
 /* func_0206dfe0: mark `count` characters of the greeting from `first` (both their low byte). */
 void LetterView_MarkGreeting(LetterView *view, int first, int count, int style)
 {
-    func_0206db5c(&view->greeting, (u8) first, (u8) count, style);
+    LetterLine_SetMark(&view->greeting, (u8) first, (u8) count, style);
 }
 CLEAN_AS(func_0206dfe0, LetterView_MarkGreeting)
 
@@ -375,9 +367,9 @@ void LetterView_SetSignature(LetterView *view, const u16 *signature)
 {
     LetterWideText text;
     wide_construct(&text);
-    func_0206db74(&view->signature);
+    LetterLine_Clear(&view->signature);
     TextBase_SetWide(&text, signature, LETTER_SIGNATURE_LENGTH);
-    func_0206dbc0(&view->signature, &text);
+    LetterLine_SetText(&view->signature, &text);
     wide_destruct(&text);
 }
 CLEAN_AS(func_0206dff8, LetterView_SetSignature)
@@ -395,19 +387,19 @@ void LetterView_SetBody(LetterView *view, const u16 *body, int editing)
     for (int i = 0; i < LETTER_VIEW_BODY_LINES; i++) {
         int length = view->line_start[i + 1] - view->line_start[i];
         LetterLine *line = &view->body[i];
-        func_0206db74(line);
+        LetterLine_Clear(line);
         if (length != 0) {
             TextBase_SetWide(&text, body + view->line_start[i], length);
             if (editing) {
-                func_0206dba8(line, &text, i == view->end_line);
+                LetterLine_SetTextWithEnd(line, &text, i == view->end_line);
             } else {
-                func_0206dbc0(line, &text);
+                LetterLine_SetText(line, &text);
             }
         } else if (editing && i == view->end_line) {
             TextBase_SetWide(&text, empty, 1);
-            func_0206dba8(line, &text, 1);
+            LetterLine_SetTextWithEnd(line, &text, 1);
         } else {
-            func_0206db74(line);
+            LetterLine_Clear(line);
         }
     }
     wide_destruct(&text);
@@ -426,7 +418,7 @@ void LetterView_SetGreeting(LetterView *view, const LetterViewLetter *letter, u1
     int i = 0;
     int from = 0;
 
-    func_0206db74(&view->greeting);
+    LetterLine_Clear(&view->greeting);
     for (; i < letter->name_position; i++, from++) {
         chars[i] = letter->greeting[from];
     }
@@ -437,12 +429,12 @@ void LetterView_SetGreeting(LetterView *view, const LetterViewLetter *letter, u1
         chars[i] = from < LETTER_GREETING_LENGTH ? letter->greeting[from] : 0;
     }
     if (view->name_length > 0) {
-        func_0206db50(&view->greeting, letter->name_position, (u8) view->name_length);
+        LetterLine_SetNameMark(&view->greeting, letter->name_position, (u8) view->name_length);
     }
 
     wide_construct(&text);
     TextBase_SetWide(&text, chars, LETTER_WIDE_CAPACITY);
-    func_0206dbc0(&view->greeting, &text);
+    LetterLine_SetText(&view->greeting, &text);
     wide_destruct(&text);
 }
 CLEAN_AS(func_0206e114, LetterView_SetGreeting)
@@ -541,3 +533,70 @@ LetterView *LetterView_Construct(LetterView *view)
     return view;
 }
 CLEAN_AS(func_0206e388, LetterView_Construct)
+
+/* ---- The wide text's destructors, and the line's marks and text */
+
+/* func_0206db18 (the wide text's vtable entry 0): the destructor. */
+LetterWideText *LetterWideText_Destruct(LetterWideText *text)
+{
+    wide_destruct(text);
+    return text;
+}
+CLEAN_AS(func_0206db18, LetterWideText_Destruct)
+
+/* func_0206db30 (the wide text's vtable entry 1): destroyed and freed. */
+LetterWideText *LetterWideText_Delete(LetterWideText *text)
+{
+    wide_destruct(text);
+    Heap_OperatorDeleteB(text);
+    return text;
+}
+CLEAN_AS(func_0206db30, LetterWideText_Delete)
+
+/* func_0206db50: the name's range marked (`count` 0 for none); the line is not marked dirty. */
+void LetterLine_SetNameMark(LetterLine *line, char first, char count)
+{
+    line->name_first = (u8) first;
+    line->name_count = (u8) count;
+}
+CLEAN_AS(func_0206db50, LetterLine_SetNameMark)
+
+/* func_0206db5c: the marked range (`count` 0 for none) and its style; the line is not marked
+ * dirty. */
+void LetterLine_SetMark(LetterLine *line, char first, char count, char style)
+{
+    line->mark_first = (u8) first;
+    line->mark_count = (u8) count;
+    line->mark_style = (u8) style;
+}
+CLEAN_AS(func_0206db5c, LetterLine_SetMark)
+
+/* func_0206db74: the text emptied and both marks taken away; the line is marked dirty. */
+void LetterLine_Clear(LetterLine *line)
+{
+    TextBase_Clear(line);
+    line->mark_first = 0;
+    line->mark_count = 0;
+    line->mark_style = 0;
+    line->name_first = 0;
+    line->name_count = 0;
+    line->dirty = 1;
+}
+CLEAN_AS(func_0206db74, LetterLine_Clear)
+
+/* func_0206dba8: the text set from the wide text, each newline written as the newline code's
+ * text and, with `end_code`, its end as the end code's; the line is marked dirty. */
+void LetterLine_SetTextWithEnd(LetterLine *line, LetterWideText *text, int end_code)
+{
+    TextBase_WideToBytes((TextBase *) (void *) line, (WideTextBase *) (void *) text, 1, end_code);
+    line->dirty = 1;
+}
+CLEAN_AS(func_0206dba8, LetterLine_SetTextWithEnd)
+
+/* func_0206dbc0: the text set from the wide text as it is; the line is marked dirty. */
+void LetterLine_SetText(LetterLine *line, LetterWideText *text)
+{
+    TextBase_WideToBytes((TextBase *) (void *) line, (WideTextBase *) (void *) text, 0, 0);
+    line->dirty = 1;
+}
+CLEAN_AS(func_0206dbc0, LetterLine_SetText)
