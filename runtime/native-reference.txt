@@ -302,3 +302,4 @@ func_ov147_0229a3ac touches the hardware at 0400000e
 func_ov147_0229a374 touches the hardware at 04000000
 func_02068e04 touches the hardware at 0400000c
 func_020bae60 updates the title sky's per-line tables and their variables while the display draws them (interrupts read them mid-run): Native code takes no time, so its stores land on other lines than the ROM's (frames 933, 963, 974)
+func_0201354c passes &s2c to func_020137ec as a two-word point whose second word is the separate local s30: it relies on the ROM's stack layout (s30 right after s2c); on the PC the second word is something else (frame 559 with the clock's date and time in their places)

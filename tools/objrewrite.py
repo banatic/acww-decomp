@@ -12,7 +12,12 @@ So every reference is rewritten by its kind:
 - every other reference to a name the symbol table has (an address loaded, stored or used to
   call through) goes to the plain name, which absolute.s places at its DS address;
 - a definition of such a name in the object is renamed to `native_<name>`, so the plain name
-  always means the DS's.
+  always means the DS's;
+- with `pmf`, a reference from data to a method `pmf` names (an entry of a table of
+  member-function pointers that only Native code reads, tools/native.py) goes to
+  `native_pmf_<name>`, a jump to it that tools/native.py places at an even PC address: the
+  PC's C++ ABI takes an odd pointer in a member-function pointer for a vtable offset, and a
+  Thumb method's DS address is odd.
 
 COFF (32-bit Windows objects) and ELF (32-bit x86 Linux objects) are handled.
 """
@@ -28,6 +33,9 @@ BODY: set[str] = set()
 
 # relocation types meaning "relative branch target"
 COFF_REL32 = 0x14
+COFF_DIR32 = 0x06
+ELF_R_386_32 = 1
+PMF = NATIVE + "pmf_"
 ELF_R_386_PC32 = 2
 ELF_R_386_PLT32 = 4
 
@@ -49,10 +57,13 @@ class Strings:
         return offset
 
 
-def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str) -> tuple[bytes, set[str]]:
+def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
+                 pmf: set[str] = frozenset()) -> tuple[bytes, set[str]]:
     """`known`: plain names the symbol table has; `native`: the plain names of functions with
-    a Native definition anywhere. Names in the object carry `prefix` ("_" on i386). Returns
-    the new object and the known names it now refers to by their DS address."""
+    a Native definition anywhere; `pmf`: the methods whose references from data go through
+    `native_pmf_<name>`. Names in the object carry `prefix` ("_" on i386). Returns the new
+    object and the known names it now refers to by their DS address, and the `native_pmf_`
+    names it uses."""
     machine, nsec, stamp, symptr, nsym, opt, chars = struct.unpack_from("<HHIIIHH", data, 0)
     if machine != 0x14C:
         raise ValueError("not an i386 COFF object")
@@ -123,6 +134,7 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str) ->
     for s in range(nsec):
         hdr = 20 + opt + 40 * s
         relptr, nrel = struct.unpack_from("<I", data, hdr + 24)[0], struct.unpack_from("<H", data, hdr + 32)[0]
+        code = struct.unpack_from("<I", data, hdr + 36)[0] & 0x20000020  # IMAGE_SCN_CNT_CODE, MEM_EXECUTE
         for r in range(nrel):
             off = relptr + 10 * r
             vaddr, symidx, rtype = struct.unpack_from("<IIH", data, off)
@@ -132,6 +144,8 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str) ->
                 continue
             if rtype == COFF_REL32 and p in native:
                 target = symidx if symidx in renamed else symbol_for(prefix + NATIVE + p)
+            elif rtype == COFF_DIR32 and not code and p in pmf:
+                target = symbol_for(prefix + PMF + p)
             else:
                 target = symbol_for(prefix + p)
             struct.pack_into("<I", out, off + 4, target)
@@ -140,11 +154,11 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str) ->
     struct.pack_into("<I", out, 8, len(out))  # PointerToSymbolTable
     struct.pack_into("<I", out, 12, len(symbols))  # NumberOfSymbols
     table = bytes(strings.data)
-    to_ds = {n[len(prefix):] for n in extra if not n.startswith(prefix + NATIVE)}
+    to_ds = {n[len(prefix):] for n in extra if not n.startswith(prefix + NATIVE) or n.startswith(prefix + PMF)}
     return bytes(out) + body + struct.pack("<I", len(table) + 4) + table, to_ds
 
 
-def rewrite_elf(data: bytes, known: set[str], native: set[str]) -> tuple[bytes, set[str]]:
+def rewrite_elf(data: bytes, known: set[str], native: set[str], pmf: set[str] = frozenset()) -> tuple[bytes, set[str]]:
     """The same for a 32-bit x86 ELF relocatable object (no name prefix there). The symbol and
     string tables grow, so they and the section header table are written again at the end."""
     if data[4] != 1 or data[5] != 1 or struct.unpack_from("<H", data, 18)[0] != 3:
@@ -194,6 +208,7 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str]) -> tuple[bytes, 
     for s in sections:
         if s[1] != 9 or s[6] != symtab_index:  # SHT_REL against this symbol table
             continue
+        code = sections[s[7]][2] & 4  # the section relocated is SHF_EXECINSTR
         for off in range(s[4], s[4] + s[5], 8):
             r_info, = struct.unpack_from("<I", data, off + 4)
             symidx, rtype = r_info >> 8, r_info & 0xFF
@@ -202,6 +217,8 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str]) -> tuple[bytes, 
                 continue
             if rtype in (ELF_R_386_PC32, ELF_R_386_PLT32) and name in native:
                 target = symidx if symidx in renamed else symbol_for(NATIVE + name)
+            elif rtype == ELF_R_386_32 and not code and name in pmf:
+                target = symbol_for(PMF + name)
             else:
                 target = symbol_for(name)
             struct.pack_into("<I", out, off + 4, (target << 8) | rtype)
@@ -219,10 +236,11 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str]) -> tuple[bytes, 
     body = b"".join(bytes(raw) for raw in symbols)
     symtab[4], symtab[5] = place(body), len(body)
     struct.pack_into("<I", out, 0x20, place(b"".join(struct.pack("<10I", *s) for s in sections)))
-    return bytes(out), {n for n in extra if not n.startswith(NATIVE)}
+    return bytes(out), {n for n in extra if not n.startswith(NATIVE) or n.startswith(PMF)}
 
 
-def rewrite(data: bytes, known: set[str], native: set[str], prefix: str) -> tuple[bytes, set[str]]:
+def rewrite(data: bytes, known: set[str], native: set[str], prefix: str,
+            pmf: set[str] = frozenset()) -> tuple[bytes, set[str]]:
     if data[:4] == b"\x7fELF":
-        return rewrite_elf(data, known, native)
-    return rewrite_coff(data, known, native, prefix)
+        return rewrite_elf(data, known, native, pmf)
+    return rewrite_coff(data, known, native, prefix, pmf)

@@ -101,6 +101,78 @@ def nm(obj: pathlib.Path) -> tuple[set[str], set[str]]:
     return defined, undefined
 
 
+def code_references(obj: pathlib.Path) -> set[str]:
+    """The names an object's code refers to (not its data: a vtable the PC's compiler emits
+    with the class's key function lists the bases' methods, but Native code installs the
+    ROM's vtable, and the PC's copy is never read)."""
+    tool = str(LLVM / "llvm-objdump.exe") if WINDOWS else "objdump"
+    out = subprocess.run([tool, "-r", str(obj)], capture_output=True, text=True).stdout
+    names, code = set(), False
+    for line in out.splitlines():
+        m = re.match(r"RELOCATION RECORDS FOR \[(.*)\]:", line)
+        if m:
+            code = m.group(1).startswith(".text")
+            continue
+        parts = line.split()
+        if code and len(parts) >= 3 and re.match(r"[0-9a-fA-F]+$", parts[0]):
+            names.add(re.sub(r"[+-]0x[0-9a-fA-F]+$", "", parts[2]))
+    return names
+
+
+VPROBE = re.compile(r"^_*vprobe_(\d+):\s*\n\s*\.long\s+(\S+)[^\n]*\n\s*\.long\s+(\S+)", re.M)
+
+
+def probe_virtuals(path: pathlib.Path, methods: list[str]) -> dict[str, tuple[int, int]]:
+    """For the methods (Itanium names) a source calls directly that are virtual, the byte
+    offset of their vtable slot and the adjustment of `this`, as the PC's compiler lays the
+    class out: a member-function pointer to a virtual method holds 1 + the offset."""
+    tool = [str(LLVM / "llvm-cxxfilt.exe")] if WINDOWS else ["c++filt"]
+    plain = subprocess.run([*tool, *methods], capture_output=True, text=True).stdout.split("\n")
+    lines = [f'#include "{path.resolve().as_posix()}"']
+    for i, demangled in enumerate(plain[:len(methods)]):
+        name = demangled.split("(")[0].strip()
+        if "::" not in name or "<" in name:
+            continue
+        lines.append(f"auto vprobe_{i} = &{name};")
+    probe = OUT / "vprobe" / path.relative_to(C.SRC).with_suffix(path.suffix)
+    probe.parent.mkdir(parents=True, exist_ok=True)
+    probe.write_text("\n".join(lines) + "\n")
+    asm = probe.with_suffix(".s")
+    p = subprocess.run([*compiler(), "-S", *flags_for(path), str(probe), "-o", str(asm)], capture_output=True,
+                       text=True)
+    if p.returncode != 0:
+        return {}
+    out = {}
+    for i, ptr, adjust in VPROBE.findall(asm.read_text()):
+        if re.fullmatch(r"-?\d+", ptr) and int(ptr) & 1 and re.fullmatch(r"-?\d+", adjust):
+            out[methods[int(i)]] = (int(ptr) - 1, int(adjust))
+    return out
+
+
+def virtual_calls(objects: list[tuple[pathlib.Path, pathlib.Path]], nowhere: set[str]) -> dict[str, tuple[int, int]]:
+    """The names without an address (`nowhere`, as the objects name them) that are virtual
+    methods the sources call directly, with their vtable offset and `this` adjustment
+    (probe_virtuals). A name the sources lay out in more than one way is left out, and so is
+    any source with a virtual destructor in sight: mwccarm gives it one slot, the PC two."""
+    work = []
+    for path, obj in objects:
+        refs = sorted(code_references(obj) & nowhere)
+        methods = [r[len(PREFIX):] for r in refs if r[len(PREFIX):].startswith("_ZN")]
+        if not methods:
+            continue
+        texts = [path.read_text(encoding="utf-8", errors="replace")]
+        texts += [h.read_text(encoding="utf-8", errors="replace") for h in C.included_files(path)]
+        if any(re.search(r"\bvirtual\s+~", COMMENT.sub(" ", t)) for t in texts):
+            continue
+        work.append((path, methods))
+    found: dict[str, set[tuple[int, int]]] = collections.defaultdict(set)
+    with cf.ThreadPoolExecutor(max(1, (os.cpu_count() or 4) - 2)) as pool:
+        for (path, methods), slots in zip(work, pool.map(lambda w: probe_virtuals(*w), work)):
+            for m in methods:
+                found[m].add(slots.get(m, (-1, 0)))
+    return {PREFIX + m: next(iter(v)) for m, v in found.items() if len(v) == 1 and next(iter(v))[0] >= 0}
+
+
 def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, str]:
     flags = flags_for(path)
     obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
@@ -121,17 +193,19 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     return path, obj, ""
 
 
-def rewrite_one(obj: pathlib.Path, known: set[str], native: set[str], names_key: str) -> tuple[pathlib.Path, set[str]]:
+def rewrite_one(obj: pathlib.Path, known: set[str], native: set[str], names_key: str,
+                pmf: set[str] = frozenset()) -> tuple[pathlib.Path, set[str]]:
     """The object with its references pointed at the game's memory, and the names it now
     refers to by their DS address (cached by the object's content and by the sets of names:
-    a call goes to another Native function only while that one compiles)."""
+    a call goes to another Native function only while that one compiles). With `pmf`, its
+    tables of member-function pointers go through native_pmf_ jumps (tools/objrewrite.py)."""
     data = obj.read_bytes()
     out = OUT / "linked" / obj.relative_to(OUT / "obj")
     stamp = out.with_suffix(".names")
-    key = hashlib.sha1(data + names_key.encode()).hexdigest()
+    key = hashlib.sha1(data + names_key.encode() + (b"pmf" if pmf else b"")).hexdigest()
     if out.exists() and stamp.exists() and stamp.read_text().startswith(key):
         return out, set(stamp.read_text().split()[1:])
-    new, names = objrewrite.rewrite(data, known, native, PREFIX)
+    new, names = objrewrite.rewrite(data, known, native, PREFIX, pmf)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_bytes(new)
     stamp.write_text(" ".join([key, *sorted(names)]))
@@ -197,6 +271,239 @@ def pmf_names(path: pathlib.Path, text: str) -> list[str]:
     for header in C.included_files(path):
         names |= set(PMF_TYPEDEF.findall(COMMENT.sub(" ", header.read_text(encoding="utf-8", errors="replace"))))
     return sorted(n for n in names if re.search(r"\b" + re.escape(n) + r"\b", text))
+
+
+# what a table of member-function pointers that only Native code builds may hold
+PMF_METHOD = re.compile(r"&\s*(?:\w+\s*::\s*)+(\w+)")
+PMF_CONSTANT = re.compile(r"(?:\(\s*\w+\s*\)\s*)?&\s*(?:\w+\s*::\s*)+\w+|-?\b(?:0x[0-9a-fA-F]+|\d+)\b|\bNULL\b|[{},\s\\]")
+CALL_KEYWORDS = {"if", "while", "for", "switch", "return", "sizeof"}
+
+
+def _statement_start(text: str, pos: int) -> int:
+    return max(text.rfind(";", 0, pos), text.rfind("{", 0, pos), text.rfind("}", 0, pos)) + 1
+
+
+def _open(text: str, pos: int, start: int, opening: str, closing: str) -> int:
+    """The position of the innermost `opening` still open at `pos` (looking back to `start`),
+    or -1."""
+    depth = 0
+    for i in range(pos - 1, start - 1, -1):
+        if text[i] == closing:
+            depth += 1
+        elif text[i] == opening:
+            if depth == 0:
+                return i
+            depth -= 1
+    return -1
+
+
+def _typedefs(text: str) -> set[str]:
+    out = set()
+    for m in PMF_TYPEDEF.finditer(text):
+        if re.search(r"\btypedef\b", text[_statement_start(text, m.start()):m.start()]):
+            out.add(m.group(1))
+    return out
+
+
+def _is_argument(text: str, pos: int) -> bool:
+    """Whether the expression at `pos` is an argument of a call, or part of one."""
+    start = _statement_start(text, pos)
+    paren = _open(text, pos, start, "(", ")")
+    while paren >= 0:
+        head = text[start:paren]
+        m = re.search(r"(\w+)\s*$", head)
+        if (m and m.group(1) not in CALL_KEYWORDS) or re.search(r"\)\s*$", head):
+            return True
+        paren = _open(text, paren, start, "(", ")")
+    return False
+
+
+def _in_static_initializer(text: str, pos: int) -> bool:
+    stmt = _statement_start(text, pos)
+    if re.search(r"\bstatic\b[^;]*=", text[stmt:pos]):
+        return True
+    brace = _open(text, pos, 0, "{", "}")
+    return brace >= 0 and bool(re.search(r"\bstatic\b[^;]*=\s*$", text[_statement_start(text, brace):brace]))
+
+
+def expand_macros(text: str) -> str:
+    """`text` with its own macros expanded (a table written with a macro per entry, or as one
+    macro)."""
+    text = re.sub(r"\[ \t]*\n", " ", text)
+    define = re.compile(r"^[ \t]*#\s*define[ \t]+(\w+)(\([^)]*\))?[ \t]+(.+)$", re.M)
+    macros = [(m.group(1), m.group(2), m.group(3)) for m in define.finditer(text)]
+    text = define.sub("", text)
+    for name, params, body in macros:
+        if params is None:
+            text = re.sub(r"\b" + re.escape(name) + r"\b", lambda _, body=body: body, text)
+            continue
+
+        def subst(call: re.Match, params=[p.strip() for p in params[1:-1].split(",")], body=body) -> str:
+            out = body
+            for p, a in zip(params, (a.strip() for a in call.group(1).split(","))):
+                out = re.sub(r"\b" + re.escape(p) + r"\b", lambda _, a=a: a, out)
+            return out
+        text = re.sub(r"\b" + re.escape(name) + r"\s*\(([^()]*)\)", subst, text)
+    return text
+
+
+def _constant_table(text: str, pos: int) -> bool:
+    """Whether the declaration at `pos` is static and initialized with constants."""
+    stmt = _statement_start(text, pos)
+    if not re.search(r"\bstatic\b", text[stmt:pos]):
+        return False
+    depth, i = 0, pos
+    while i < len(text) and not (text[i] == ";" and depth == 0):
+        depth += text[i] == "{"
+        depth -= text[i] == "}"
+        i += 1
+    init = text[pos:i]
+    return "=" in init and not PMF_CONSTANT.sub("", init.split("=", 1)[1]).strip()
+
+
+def _private_structure(text: str, brace: int, head: str, tables: set[str]) -> str | None:
+    """Why the structure whose body opens at `brace` may hold data the ROM's code shares, or
+    None when it is only the type of static tables of constants, which `tables` gets."""
+    close = brace
+    depth = 0
+    for close in range(brace, len(text)):
+        depth += text[close] == "{"
+        depth -= text[close] == "}"
+        if depth == 0:
+            break
+    tag = re.search(r"\b(?:struct|class|union)\s+(\w+)", head)
+    after = re.match(r"\s*(\w+)", text[close + 1:])
+    if re.search(r"\btypedef\b", head) and after:
+        tag = after
+    elif not tag:  # declared with its definition: `static struct { ... } tbl = { ... };`
+        if not after or not _constant_table(text, close + 1 + after.start(1)) or \
+                not re.search(r"\bstatic\b", head):
+            return "a structure the ROM's code may share"
+        tables.add(after.group(1))
+        return None
+    name = tag.group(1)
+    for m in re.finditer(r"\b" + re.escape(name) + r"\b", text):
+        if brace > m.start() >= _statement_start(text, brace) or close < m.start() <= close + 1 + (after.end() if after else 0):
+            continue  # the definition
+        rest = text[m.end():]
+        if re.search(r"sizeof\s*\(\s*(?:struct\s+)?$", text[:m.start()]):
+            continue
+        d = re.match(r"\s*(\w+)\s*\[?", rest)
+        if d and _constant_table(text, m.end() + d.start(1)):
+            tables.add(d.group(1))
+            continue
+        if re.match(r"\s*\*\s*\)\s*\(\s*\(\s*char\s*\*\s*\)\s*(\w+)", rest):
+            continue  # an entry of a table, found by its offset (checked below)
+        if re.search(r"\btypedef\s+(?:struct|class|union)\s+$", text[:m.start()]) and \
+                re.match(r"\s+" + re.escape(name) + r"\s*;", rest):
+            continue
+        return f"{name} used elsewhere"
+    return None
+
+
+def pmf_unsafe(path: pathlib.Path, text: str) -> str | None:
+    """Why the member-function pointers `text` (a source's text, comments removed) uses cannot
+    work as Native, or None when they can. mwccarm lays one out in 12 bytes, the PC (Itanium
+    C++ ABI) in 8 with another encoding, so the PC's code can only use the ones it builds and
+    reads itself: a static table (in the function or the file) of `&Class::method` constants,
+    and locals filled from it. Whatever shares one with the ROM's code breaks: a parameter or
+    a result, an argument passed on, a structure field (whose structure changes layout too),
+    data the ROM has (`extern`, or a global at its DS address), a cast, a pointer to one. A
+    virtual method in a table is left out too: its entry is a vtable offset, which the PC
+    counts with its own slots."""
+    headers = [COMMENT.sub(" ", h.read_text(encoding="utf-8", errors="replace")) for h in C.included_files(path)]
+    text = expand_macros(text)
+    types = set(_typedefs(text))
+    for h in headers:
+        types |= {t for t in _typedefs(h) if re.search(r"\b" + re.escape(t) + r"\b", text)}
+    declared = []  # (name, position of the name, a pointer or reference to one)
+    for m in PMF_TYPEDEF.finditer(text):
+        if m.group(1) not in types:
+            declared.append((m.group(1), m.start(1), False))
+    for m in re.finditer(r"\(\s*(?:\w+\s*::\s*)+\*\s*(?:const\s+)?(\w+)\s*\[", text):  # `(Obj::*tbl[2])()`
+        declared.append((m.group(1), m.start(1), False))
+    for t in types:
+        for m in re.finditer(r"\b" + re.escape(t) + r"\b", text):
+            stmt = _statement_start(text, m.start())
+            if re.search(r"\btypedef\b", text[stmt:m.start()]) and re.search(r"::\s*\*\s*$", text[stmt:m.start()]):
+                continue  # the typedef itself
+            after = text[m.end():]
+            if re.match(r"\s*::", after):
+                continue
+            if re.match(r"\s*(?:const\s*)?[*&\s]*[)>]", after):
+                if re.match(r"\s*\)\s*" + PMF_METHOD.pattern, after) and _in_static_initializer(text, m.start()):
+                    continue  # a constant of a table, cast to the table's type
+                return f"a cast to {t}"
+            d = re.match(r"\s*(?:const\s+)?([*&]*)\s*(?:const\s+)?(\w+)", after)
+            if not d:
+                return f"{t} where no declaration is"
+            declared.append((d.group(2), m.end() + d.start(2), bool(d.group(1))))
+    tables, locals_ = set(), set()
+    for name, pos, indirect in declared:
+        stmt = _statement_start(text, pos)
+        before = text[stmt:pos]
+        if indirect:
+            return f"{name}, a pointer or reference to a member-function pointer"
+        if _open(text, pos, stmt, "(", ")") >= 0 and not re.search(r"::\s*\*\s*(?:const\s+)?$", before):
+            return f"{name}, a member-function pointer parameter"
+        if re.match(r"\s*\)?\s*\(", text[pos + len(name):]) and re.search(r"::\s*\*\s*(?:const\s+)?$", before) is None:
+            return f"{name}, which returns a member-function pointer"
+        if re.search(r"::\s*\*\s*(?:const\s+)?$", before) and _open(text, pos, stmt, "(", ")") >= 0:
+            # a declarator in parentheses: a parameter when another parenthesis is open around it
+            inner = _open(text, pos, stmt, "(", ")")
+            if _open(text, inner, stmt, "(", ")") >= 0:
+                return f"{name}, a member-function pointer parameter"
+        brace = _open(text, pos, 0, "{", "}")
+        head = text[_statement_start(text, brace):brace] if brace >= 0 else ""
+        if re.search(r"\b(?:struct|class|union)\b[^;{}()]*$", head):
+            # a field: only of a structure that is the type of static tables alone
+            why = _private_structure(text, brace, head, tables)
+            if why:
+                return f"{name}, a structure field ({why})"
+            continue
+        if re.search(r"\bextern\b", before):
+            return f"{name}, data the ROM has"
+        static = re.search(r"\bstatic\b", before)
+        if not static and brace < 0:
+            return f"{name}, a global the ROM has"
+        if static:
+            end = text.find(";", pos)
+            init = text[pos + len(name):end]
+            if "=" in init:
+                value = init.split("=", 1)[1]
+                if PMF_CONSTANT.sub("", value).strip():
+                    return f"{name}, a table filled from elsewhere"
+                for method in PMF_METHOD.findall(value):
+                    if any(re.search(r"\bvirtual\b[^;{}]*\b" + re.escape(method) + r"\s*\(", b) for b in [text, *headers]):
+                        return f"{name}, a table with the virtual method {method}"
+            tables.add(name)
+        else:
+            locals_.add(name)
+    if not tables:
+        return "no table of its own"
+    # a constant outside a table's initializer
+    for m in PMF_METHOD.finditer(text):
+        stmt = _statement_start(text, m.start())
+        brace = _open(text, m.start(), 0, "{", "}")
+        if not re.search(r"\bstatic\b", text[stmt:m.start()]) and \
+                not (brace >= 0 and re.search(r"\bstatic\b", text[_statement_start(text, brace):brace])):
+            return f"{m.group(0)} outside a table"
+    # each table or local is only indexed, called through, assigned to a local or tested
+    at = {pos for _, pos, _ in declared}
+    for name in tables | locals_:
+        for m in re.finditer(r"\b" + re.escape(name) + r"\b", text):
+            if m.start() in at:
+                continue
+            stmt = _statement_start(text, m.start())
+            if _is_argument(text, m.start()):
+                return f"{name} passed to a call"
+            target = re.search(r"([\w\]\)>.-]+)\s*=\s*$", text[stmt:m.start()])
+            if target and not re.fullmatch(r"\w+", target.group(1)) or \
+                    target and target.group(1) not in locals_ | tables:
+                return f"{name} stored to {target.group(1)}"
+            if re.search(r"\breturn\b", text[stmt:m.start()]) and not re.search(r"->\*|\.\*", text[stmt:m.end() + 4]):
+                return f"{name} returned"
+    return None
 
 
 def struct_results(text: str) -> list[str]:
@@ -270,14 +577,27 @@ def main() -> None:
     objrewrite.BODY = set(widen)
     names_key = hashlib.sha1(" ".join(sorted(native) + ["|"] + sorted(known) + ["|"] + sorted(widen)).encode()
                              + pathlib.Path(objrewrite.__file__).read_bytes()).hexdigest()
+    # Sources whose member-function pointers only Native code builds and reads (pmf_unsafe):
+    # their tables refer to the methods through native_pmf_ jumps at even addresses.
+    pmf_why: dict[pathlib.Path, str | None] = {}
+    for path, _ in objects:
+        text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
+        if "::*" in text or "->*" in text or pmf_names(path, text):
+            pmf_why[path] = pmf_unsafe(path, text)
+    methods = {n for n in known if n.startswith("_ZN")
+               and any(s.kind == "function" for s in syms.by_name.get(n, []))}
     to_ds: set[str] = set()
     rewritten = []
     with cf.ThreadPoolExecutor(workers) as pool:
-        for (path, _), (obj, names) in zip(objects, pool.map(lambda po: rewrite_one(po[1], known, native, names_key),
-                                                             objects)):
+        work = [(po, methods if po[0] in pmf_why and pmf_why[po[0]] is None else frozenset()) for po in objects]
+        for (path, _), (obj, names) in zip(objects, pool.map(lambda w: rewrite_one(w[0][1], known, native, names_key,
+                                                                                   w[1]), work)):
             rewritten.append((path, obj))
             to_ds |= names
     objects = rewritten
+    thunks = sorted(n for n in to_ds if n.startswith(objrewrite.PMF))
+    to_ds -= set(thunks)
+    to_ds |= {n[len(objrewrite.PMF):] for n in thunks if n[len(objrewrite.PMF):] not in native}
     undefined |= {PREFIX + n for n in to_ds}
     defined = {PREFIX + objrewrite.NATIVE + d[strip:] if d[strip:] in known else d for d in defined}
 
@@ -303,6 +623,11 @@ def main() -> None:
             # through one faults at address 0, which the runtime reports
             unknown.append((host, len(addrs)))
             absolute.append((host, 0))
+    # A virtual method the PC's compiler calls directly (the object's type is known to it) has
+    # no address of its own; the ROM's code calls it through the object's vtable. Such a name
+    # becomes a jump through the object's vtable, at the slot the PC's compiler counts for it.
+    vcalls = virtual_calls(objects, {h for h, a in absolute if a == 0})
+    absolute = [(h, a) for h, a in absolute if h not in vcalls]
     (OUT / "absolute.s").write_text("".join(f"\t.globl {h}\n\t.set {h}, 0x{a:08x}\n" for h, a in absolute),
                                     newline="\n")
 
@@ -329,6 +654,18 @@ def main() -> None:
     # the wrappers that widen narrow results: the arguments (16 words, more than any function
     # takes) are copied down for the body, whose result is then extended
     lines += ["\t.text"]
+    # the jumps the tables of member-function pointers hold (tools/objrewrite.py), at even
+    # addresses: to the method's Native, or to its DS address (the ROM's code)
+    # the virtual calls (virtual_calls): `this` is the first word on the stack (cdecl)
+    for host, (offset, adjust) in sorted(vcalls.items()):
+        lines += ["\t.p2align 4", f"\t.globl {host}", f"{host}:", "\tmovl 4(%esp), %eax"]
+        if adjust:
+            lines += [f"\taddl ${adjust}, %eax", "\tmovl %eax, 4(%esp)"]
+        lines += ["\tmovl (%eax), %eax", f"\tjmp *{offset}(%eax)"]
+    for thunk in thunks:
+        method = thunk[len(objrewrite.PMF):]
+        target = PREFIX + (objrewrite.NATIVE if method in native else "") + method
+        lines += ["\t.p2align 4", f"\t.globl {PREFIX}{thunk}", f"{PREFIX}{thunk}:", f"\tjmp {target}"]
     for name, extend in sorted(widen.items()):
         wrapper, body = PREFIX + objrewrite.NATIVE + name, PREFIX + objrewrite.NATIVE + "body_" + name
         lines += [f"\t.globl {wrapper}", f"{wrapper}:", "\tpushl %ebp", "\tmovl %esp, %ebp", "\tpushl %esi",
@@ -374,7 +711,7 @@ def main() -> None:
     for (path, _), names in zip(objects, per_object):
         name = C.parse_source(path).object_symbol
         vts = sorted({n[strip:] for n in names if n[strip:].startswith("_ZTV") and n[strip:] not in vtables})
-        zero = sorted(n[strip:] for n in names & nowhere)
+        zero = sorted(n[strip:] for n in code_references(_) & nowhere) if names & nowhere else []
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
         by_value = struct_results(text)
         if "__MWERKS__" in text and ASM_FUNCTION.search(text):
@@ -388,9 +725,9 @@ def main() -> None:
         elif by_value:
             keep.append(f"{name} calls {' '.join(by_value)}, which returns a structure by value: mwccarm passes "
                         "a pointer to the result in r0, the PC's compiler returns a small one in registers\n")
-        elif "::*" in text or "->*" in text or pmf_names(path, text):
-            keep.append(f"{name} uses member-function pointers, which mwccarm lays out in 12 bytes and the PC "
-                        "(Itanium C++ ABI) in 8\n")
+        elif pmf_why.get(path):
+            keep.append(f"{name} shares member-function pointers with the ROM's code ({pmf_why[path]}), which "
+                        "mwccarm lays out in 12 bytes and the PC (Itanium C++ ABI) in 8\n")
         elif short.get(path.relative_to(C.ROOT).as_posix()):
             keep.append(f"{name} declares {' '.join(sorted(set(short[path.relative_to(C.ROOT).as_posix()])))} with "
                         "fewer parameters than their definitions or a result they do not return, which the DS "
