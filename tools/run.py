@@ -251,7 +251,11 @@ def build_clean(flags: list[str]) -> list[str]:
         obj.write_bytes(data)
         objects.append(obj)
     names = diffcheck.game_names(objects)
-    return [str(o) for o in objects] + ([str(names)] if names else [])
+    # Through a response file, as the Native objects are: the paths would pass Windows's limit
+    # on a command line.
+    listed = OUT / "clean" / "objects.txt"
+    listed.write_text("".join(f"{p.as_posix()}\n" for p in [*objects, *([names] if names else [])]), newline="\n")
+    return [f"@{listed}"]
 
 
 def build(native: bool, clean: str | None = None) -> pathlib.Path:
