@@ -232,3 +232,18 @@ int VramRegion_LoadImages(void *texture, VramRegion *region)
     return func_02056140(texture, key, key_4x4);
 }
 CLEAN_AS(func_020560e0, VramRegion_LoadImages)
+
+/* NitroSystem: the texture resource's textures sent to VRAM at their keys (`exec_begin_end`
+ * set: the VRAM banks are opened and closed around the copy). */
+extern void NNS_G3dTexLoad(void *texture, int exec_begin_end);
+
+/* func_02056140: the texture resource's plain and 4x4 textures given `key` and `key_4x4`, the
+ * resource written back from the data cache, and its textures sent to VRAM. 1. */
+int VramRegion_LoadImagesAt(void *texture, VramKey key, VramKey key_4x4)
+{
+    NNS_G3dTexSetTexKey(texture, key, key_4x4);
+    DC_FlushRange(texture, texture_size(texture));
+    NNS_G3dTexLoad(texture, 1);
+    return 1;
+}
+CLEAN_AS(func_02056140, VramRegion_LoadImagesAt)

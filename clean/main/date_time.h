@@ -32,5 +32,7 @@ int DateTime_MinutesBetween(const DateTime *from, const DateTime *to);
 int DateTime_DaysBetween(const DateTime *from, const DateTime *to);
 int DateTime_Compare(const DateTime *a, const DateTime *b, int fields);
 void DateTime_Now(DateTime *now);
+void DateTime_Set(DateTime *when, const Date *date, u8 hour, u8 minute, u8 second);
+int DateTime_IsInvalid(const DateTime *when);
 
 #endif

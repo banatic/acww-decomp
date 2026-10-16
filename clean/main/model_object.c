@@ -719,3 +719,37 @@ ModelObject *ModelObject_BaseConstruct(ModelObject *object)
     return object;
 }
 CLEAN_AS(func_02056044, ModelObject_BaseConstruct)
+
+/* The root of the holder's classes (vtable data_020dd11c): it has nothing but its vtable, and
+ * each of its functions only sets that vtable. */
+extern const u8 data_020dd11c[];
+
+/* func_02056390: its destructor (the one ModelObject_BaseDestruct ends with). */
+void ModelObject_RootDestruct(ModelObject *object)
+{
+    object->vtable = data_020dd11c;
+}
+CLEAN_AS(func_02056390, ModelObject_RootDestruct)
+
+/* func_0205639c: its deleting destructor (the vtable's second entry). */
+ModelObject *ModelObject_RootDelete(ModelObject *object)
+{
+    object->vtable = data_020dd11c;
+    Heap_OperatorDeleteB(object);
+    return object;
+}
+CLEAN_AS(func_0205639c, ModelObject_RootDelete)
+
+/* func_020563b4: its complete destructor (the vtable's first entry). */
+void ModelObject_RootDestructComplete(ModelObject *object)
+{
+    object->vtable = data_020dd11c;
+}
+CLEAN_AS(func_020563b4, ModelObject_RootDestructComplete)
+
+/* func_020563c0: its constructor (the one ModelObject_BaseConstruct starts with). */
+void ModelObject_RootConstruct(ModelObject *object)
+{
+    object->vtable = data_020dd11c;
+}
+CLEAN_AS(func_020563c0, ModelObject_RootConstruct)

@@ -120,3 +120,19 @@ void ResidentProcess_SpawnAll(void)
     }
 }
 CLEAN_AS(func_0209dae8, ResidentProcess_SpawnAll)
+
+static_assert(sizeof(Process) == 0x50, "the resident process has no fields of its own");
+
+/* func_0209db24: a resident process allocated (0x50 bytes, zeroed) and constructed: the base
+ * process, then its base class's vtable and its own; NULL when there was no room. */
+Process *ResidentProcess_New(void)
+{
+    Process *self = Heap_AllocAuxZeroed(sizeof(Process));
+    if (self != NULL) {
+        Process_Construct(self);
+        self->vtable = data_020da13c;
+        self->vtable = data_020e360c;
+    }
+    return self;
+}
+CLEAN_AS(func_0209db24, ResidentProcess_New)

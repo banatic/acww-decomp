@@ -333,3 +333,193 @@ u8 MessageDecoder_WantsMore(MessageDecoder *decoder)
     return decoder->ok;
 }
 CLEAN_AS(func_020b5174, MessageDecoder_WantsMore)
+
+/* The decoder's class and the walkers' base class (message_cursor.h). */
+extern const u8 data_020e5278[];
+extern const u8 data_020e3e68[];
+
+/* The walkers' base: its constructor and destructor, back to the start, the text to walk and
+ * the walk (up to the end or until slot 6 says to stop). */
+extern void *func_020a9484(void *walker);
+extern void *func_020a941c(void *walker);
+extern void func_020a94a4(void *walker);
+extern void func_020a9354(void *walker, int text);
+extern int func_020a92d8(void *walker, int stop);
+/* A tag: its constructor; read from the message at `position`; whether it is a 4/15-25 tag. */
+extern void func_020a8754(MessageTag *tag);
+extern void func_020a8764(MessageTag *tag, int position);
+extern int func_020a835c(MessageTag *tag);
+/* The deleting destructors' delete (autoload_2/heap.h). */
+void Heap_OperatorDeleteB(void *block);
+
+typedef void MessageDecoderHandler(MessageDecoder *decoder);
+typedef int MessageDecoderBufferFunction(void *file);
+
+/* The tags' groups and kinds that have a handler. */
+#define MESSAGE_DECODER_GROUP_SOURCE 0x00
+#define MESSAGE_DECODER_GROUP_PART 0x04
+#define MESSAGE_DECODER_GROUP_FORM 0x0b
+#define MESSAGE_DECODER_GROUP_RAW 0xff
+/* Slot 2 of the message file's vtable gives its buffer (MessageFile_Buffer). */
+#define MESSAGE_DECODER_FILE_BUFFER_SLOT 2
+
+/* The handler of the tag just read, or NULL when it has none. The ROM picks it as a C++ member
+ * pointer from the constants at data_020e5134-data_020e518c, which all name these functions
+ * directly (no virtual call, no adjustment). The group 4 test is asked only for group 4. */
+static MessageDecoderHandler *message_decoder_handler(MessageDecoder *decoder)
+{
+    u32 kind = decoder->tag.kind;
+
+    switch (decoder->tag.group) {
+        case MESSAGE_DECODER_GROUP_SOURCE:
+            switch (kind) {
+                case 2:
+                    return MessageDecoder_InsertSourceFirst;
+                case 3:
+                    return MessageDecoder_InsertSourceSecond;
+                case 4:
+                    return MessageDecoder_InsertSourceThird;
+                case 5:
+                    return MessageDecoder_InsertSourceEnd;
+                case 6:
+                    return MessageDecoder_InsertText6;
+                case 9:
+                    return MessageDecoder_InsertText9;
+                case 10:
+                    return MessageDecoder_InsertText10;
+                default:
+                    return NULL;
+            }
+        case MESSAGE_DECODER_GROUP_RAW:
+            return kind == 2 ? MessageDecoder_CopyTag : NULL;
+        case MESSAGE_DECODER_GROUP_PART:
+            return func_020a835c(&decoder->tag) != 0 ? MessageDecoder_InsertPart : NULL;
+        case MESSAGE_DECODER_GROUP_FORM:
+            if (kind == 0) {
+                return MessageDecoder_SetAttributes;
+            }
+            return kind == 3 ? MessageDecoder_ConvertNext : NULL;
+        default:
+            return NULL;
+    }
+}
+
+/* func_020b517c (the decoder's slot 5): the tag at `position` read and handled; a tag without
+ * a handler makes the decoding fail. */
+void MessageDecoder_OnTag(MessageDecoder *decoder, int position)
+{
+    func_020a8764(&decoder->tag, position);
+    MessageDecoderHandler *handler = message_decoder_handler(decoder);
+    if (handler != NULL) {
+        handler(decoder);
+    } else {
+        decoder->ok = 0;
+    }
+}
+CLEAN_AS(func_020b517c, MessageDecoder_OnTag)
+
+/* func_020b52dc (slot 4): a character of the message. It is first turned into its other form
+ * when a 0x0b/3 tag asked; right after a character of the source text was inserted (for a
+ * nickname) it must differ from that one, else the decoding fails; then it goes into the text
+ * while nothing failed. */
+void MessageDecoder_OnCharacter(MessageDecoder *decoder, unsigned int character)
+{
+    if (decoder->convert_next != 0) {
+        character = (unsigned int) func_02050bdc_unk((int) character);
+        decoder->convert_next = 0;
+    }
+    if (decoder->nickname != 0 && decoder->inserted != 0) {
+        if (MessageDecoder_DiffersFromLast(decoder, (int) character) == 0) {
+            decoder->ok = 0;
+        }
+        decoder->inserted = 0;
+    }
+    if (decoder->ok != 0) {
+        decoder->character = (s32) character;
+        MessageDecoder_PutCharacter(decoder);
+    }
+}
+CLEAN_AS(func_020b52dc, MessageDecoder_OnCharacter)
+
+/* func_020b5348 (slot 3): nothing at the end. */
+void MessageDecoder_OnEnd(void) {}
+CLEAN_AS(func_020b5348, MessageDecoder_OnEnd)
+
+/* func_020b534c (slot 2): nothing when a text is set. */
+void MessageDecoder_OnText(void) {}
+CLEAN_AS(func_020b534c, MessageDecoder_OnText)
+
+/* The buffer of the reader's message file, through its vtable, as an address. */
+static int message_decoder_file_buffer(MessageReader *reader)
+{
+    void *file = reader->file;
+    const u32 *vtable = *(const u32 *const *) file;
+    MessageDecoderBufferFunction *buffer =
+        (MessageDecoderBufferFunction *) (uintptr_t) vtable[MESSAGE_DECODER_FILE_BUFFER_SLOT];
+    return buffer(file);
+}
+
+/* func_020b5350: the message in the reader's file buffer decoded into the reader's text, with
+ * the request's two bytes; whether it went well. For a nickname the text must also start
+ * well and differ from its source text (the first failing check ends the checks). */
+u8 MessageDecoder_Decode(MessageDecoder *decoder, u8 expand_tags, u8 nickname)
+{
+    decoder->ok = 1;
+    decoder->length = 0;
+    decoder->expand_tags = expand_tags;
+    decoder->nickname = nickname;
+    decoder->convert_next = 0;
+    decoder->character = 0;
+    func_020a94a4(decoder);
+    func_020a9354(decoder, message_decoder_file_buffer(decoder->reader));
+    func_020a92d8(decoder, 0);
+    if (decoder->ok != 0 && decoder->nickname != 0) {
+        if (MessageDecoder_StartsWell(decoder) == 0 || MessageDecoder_DiffersFromSource(decoder) == 0) {
+            decoder->ok = 0;
+        }
+    }
+    return decoder->ok;
+}
+CLEAN_AS(func_020b5350, MessageDecoder_Decode)
+
+/* func_020b53d0 (slot 1): the decoder destroyed (MessageDecoder_Destruct) and freed. */
+MessageDecoder *MessageDecoder_Delete(MessageDecoder *decoder)
+{
+    decoder->base.vtable = data_020e5278;
+    decoder->base.vtable = data_020e3e68;
+    func_020a941c(decoder);
+    Heap_OperatorDeleteB(decoder);
+    return decoder;
+}
+CLEAN_AS(func_020b53d0, MessageDecoder_Delete)
+
+/* func_020b53f8 (slot 0): the destructor: its vtable, the base class's, then the walkers' base
+ * destructor. */
+MessageDecoder *MessageDecoder_Destruct(MessageDecoder *decoder)
+{
+    decoder->base.vtable = data_020e5278;
+    decoder->base.vtable = data_020e3e68;
+    func_020a941c(decoder);
+    return decoder;
+}
+CLEAN_AS(func_020b53f8, MessageDecoder_Destruct)
+
+/* func_020b5418: the constructor, for `reader`: nothing written, nothing to insert, no
+ * request bytes, and the decoding going well. */
+MessageDecoder *MessageDecoder_Construct(MessageDecoder *decoder, MessageReader *reader)
+{
+    func_020a9484(decoder);
+    decoder->base.vtable = data_020e3e68;
+    decoder->base.vtable = data_020e5278;
+    decoder->reader = reader;
+    func_020a8754(&decoder->tag);
+    decoder->character = 0;
+    decoder->length = 0;
+    decoder->inserted = 0;
+    decoder->ok = 1;
+    decoder->expand_tags = 0;
+    decoder->nickname = 0;
+    decoder->convert_next = 0;
+    return decoder;
+}
+CLEAN_AS(func_020b5418, MessageDecoder_Construct)

@@ -118,3 +118,40 @@ CLEAN_AS(func_02056e84, Ramp_Step)
 
 static_assert(sizeof(FrameCtrl) == 0x18 && offsetof(FrameCtrl, flags) == 0x14, "FrameCtrl layout");
 static_assert(offsetof(Ramp, weight) == 0x34 && offsetof(Ramp, rate) == 0x38, "Ramp layout");
+
+#include "autoload_2/heap.h"
+
+extern fx32 FX_Div(fx32 numerator, fx32 denominator);
+
+/* The frame control's vtable. */
+extern const u8 data_020dd184[];
+
+/* func_02056e60: the weight set to 0 and stepped to 1.0 over `frames` steps (Ramp_Step); with
+ * 0 frames no ramp runs (Ramp_Step answers TRUE at once).
+ * QUIRK: the frame count is shifted into 20.12 without a check, as in FrameCtrl_Init. */
+void Ramp_Start(Ramp *ramp, u32 frames)
+{
+    ramp->weight = 0;
+    if (frames == 0) {
+        ramp->rate = 0;
+    } else {
+        ramp->rate = FX_Div(ONE_FRAME, (fx32) (frames << 12));
+    }
+}
+CLEAN_AS(func_02056e60, Ramp_Start)
+
+/* func_02057054: the frame control's destructor. */
+void FrameCtrl_Destruct(FrameCtrl *ctrl)
+{
+    ctrl->vtable = data_020dd184;
+}
+CLEAN_AS(func_02057054, FrameCtrl_Destruct)
+
+/* func_02057060: its deleting destructor (the vtable's second entry). */
+FrameCtrl *FrameCtrl_Delete(FrameCtrl *ctrl)
+{
+    ctrl->vtable = data_020dd184;
+    Heap_OperatorDeleteB(ctrl);
+    return ctrl;
+}
+CLEAN_AS(func_02057060, FrameCtrl_Delete)

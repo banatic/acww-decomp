@@ -1702,3 +1702,49 @@ QuickMessageText *QuickMessage_TextDestruct(QuickMessageText *text)
     return text;
 }
 CLEAN_AS(func_0203a3ec, QuickMessage_TextDestruct)
+
+/* A label's base (func_020a8cac constructs it) and its text emptied. */
+extern void *func_020a8cac(QuickMessageText *text);
+
+/* func_0203a404: an empty message label. */
+QuickMessageText *QuickMessage_TextConstruct(QuickMessageText *text)
+{
+    func_020a8cac(text);
+    text->words[0] = vtable_word(data_020da640);
+    func_020a8c1c(text);
+    return text;
+}
+CLEAN_AS(func_0203a404, QuickMessage_TextConstruct)
+
+/* func_0203a424 (vtable slot 0 of a name label's base class, which other 8-bit labels share):
+ * destroyed. */
+void QuickMessage_NameBaseDestruct(QuickMessageName *name)
+{
+    name->words[0] = vtable_word(data_020da6dc);
+}
+CLEAN_AS(func_0203a424, QuickMessage_NameBaseDestruct)
+
+/* func_0203a430 (slot 1): destroyed and freed. */
+QuickMessageName *QuickMessage_NameBaseDestructDelete(QuickMessageName *name)
+{
+    name->words[0] = vtable_word(data_020da6dc);
+    Heap_OperatorDeleteB(name);
+    return name;
+}
+CLEAN_AS(func_0203a430, QuickMessage_NameBaseDestructDelete)
+
+/* func_0203a448 (vtable slot 0 of the base class of views and wide texts): destroyed. */
+void QuickMessage_ViewBaseDestruct(QuickMessageView *view)
+{
+    view->words[0] = vtable_word(data_020da6c4);
+}
+CLEAN_AS(func_0203a448, QuickMessage_ViewBaseDestruct)
+
+/* func_0203a454 (slot 1): destroyed and freed. */
+QuickMessageView *QuickMessage_ViewBaseDestructDelete(QuickMessageView *view)
+{
+    view->words[0] = vtable_word(data_020da6c4);
+    Heap_OperatorDeleteB(view);
+    return view;
+}
+CLEAN_AS(func_0203a454, QuickMessage_ViewBaseDestructDelete)

@@ -46,5 +46,6 @@ int VramRegion_LoadTexture(void *texture, VramRegion *region);
 int VramRegion_LoadPalettes(void *texture, VramRegion *region);
 int VramRegion_LoadPalettesAt(void *texture, VramKey key);
 int VramRegion_LoadImages(void *texture, VramRegion *region);
+int VramRegion_LoadImagesAt(void *texture, VramKey key, VramKey key_4x4);
 
 #endif

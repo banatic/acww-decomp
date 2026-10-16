@@ -22,5 +22,6 @@ int ResidentProcess_Execute(void);
 int ResidentProcess_Delete(void);
 int ResidentProcess_Create(Process *self);
 void ResidentProcess_SpawnAll(void);
+Process *ResidentProcess_New(void);
 
 #endif

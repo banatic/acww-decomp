@@ -102,5 +102,9 @@ ModelObject *ModelObject_BaseDestruct(ModelObject *object);
 ModelObject *ModelObject_BaseDelete(ModelObject *object);
 ModelObject *ModelObject_BaseDestructComplete(ModelObject *object);
 ModelObject *ModelObject_BaseConstruct(ModelObject *object);
+void ModelObject_RootDestruct(ModelObject *object);
+ModelObject *ModelObject_RootDelete(ModelObject *object);
+void ModelObject_RootDestructComplete(ModelObject *object);
+void ModelObject_RootConstruct(ModelObject *object);
 
 #endif

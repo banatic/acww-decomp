@@ -12,5 +12,8 @@
 
 void LetterStore_Clear(MailLetter *letters);
 MailLetter *LetterStore_Page(MailLetter *letters, int page);
+void LetterStore_MarkBlockReady(u8 *block);
+void LetterStore_MarkBlock1C(u8 *block);
+int LetterStore_IsBlockReady(u8 *block);
 
 #endif

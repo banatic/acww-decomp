@@ -20,6 +20,7 @@ void DateTime_Subtract(DateTime *when, const DateTime *amount)
     DateTime_SubtractMonths(when, amount->month);
     DateTime_SubtractYears(when, amount->year);
 }
+CLEAN_AS(func_0209e040, DateTime_Subtract)
 
 /* `value` less `amount` in a unit of `size` (60 seconds, 60 minutes, 24 hours): the units
  * borrowed from the next larger one, and in `value` what is left. REQUIRES: amount >= 0. */
@@ -45,6 +46,7 @@ void DateTime_SubtractSeconds(DateTime *when, int seconds)
     }
     when->second = (u8) second;
 }
+CLEAN_AS(func_0209e080, DateTime_SubtractSeconds)
 
 /* func_0209e0c0 */
 void DateTime_SubtractMinutes(DateTime *when, int minutes)
@@ -56,6 +58,7 @@ void DateTime_SubtractMinutes(DateTime *when, int minutes)
     }
     when->minute = (u8) minute;
 }
+CLEAN_AS(func_0209e0c0, DateTime_SubtractMinutes)
 
 /* func_0209e100 */
 void DateTime_SubtractHours(DateTime *when, int hours)
@@ -67,6 +70,7 @@ void DateTime_SubtractHours(DateTime *when, int hours)
     }
     when->hour = (u8) hour;
 }
+CLEAN_AS(func_0209e100, DateTime_SubtractHours)
 
 /* The length of the month before `when`'s.
  * QUIRK: before January the game takes December of the same year, not the year before; both
@@ -86,6 +90,7 @@ void DateTime_SubtractDays(DateTime *when, int days)
     }
     when->day = (u8) day;
 }
+CLEAN_AS(func_0209e140, DateTime_SubtractDays)
 
 /* func_0209e1ac. Months count from 1, so the borrow is taken below 1. */
 void DateTime_SubtractMonths(DateTime *when, int months)
@@ -98,6 +103,7 @@ void DateTime_SubtractMonths(DateTime *when, int months)
     }
     when->month = (u8) month;
 }
+CLEAN_AS(func_0209e1ac, DateTime_SubtractMonths)
 
 /* func_0209e1f0. REQUIRES: years <= 100. */
 void DateTime_SubtractYears(DateTime *when, int years)
@@ -108,6 +114,7 @@ void DateTime_SubtractYears(DateTime *when, int years)
     }
     when->year = (u8) year;
 }
+CLEAN_AS(func_0209e1f0, DateTime_SubtractYears)
 
 /* func_0209e200 */
 void DateTime_AddSeconds(DateTime *when, int seconds)
@@ -119,6 +126,7 @@ void DateTime_AddSeconds(DateTime *when, int seconds)
     }
     when->second = (u8) second;
 }
+CLEAN_AS(func_0209e200, DateTime_AddSeconds)
 
 /* func_0209e234 */
 void DateTime_AddMinutes(DateTime *when, int minutes)
@@ -130,6 +138,7 @@ void DateTime_AddMinutes(DateTime *when, int minutes)
     }
     when->minute = (u8) minute;
 }
+CLEAN_AS(func_0209e234, DateTime_AddMinutes)
 
 /* func_0209e268 */
 void DateTime_AddHours(DateTime *when, int hours)
@@ -141,6 +150,7 @@ void DateTime_AddHours(DateTime *when, int hours)
     }
     when->hour = (u8) hour;
 }
+CLEAN_AS(func_0209e268, DateTime_AddHours)
 
 /* func_0209e29c */
 void DateTime_AddDays(DateTime *when, int days)
@@ -154,6 +164,7 @@ void DateTime_AddDays(DateTime *when, int days)
     }
     when->day = (u8) day;
 }
+CLEAN_AS(func_0209e29c, DateTime_AddDays)
 
 /* func_0209e2d0.
  * BUG: months count from 1, but the carry is taken as if from 0: a sum that is a multiple of
@@ -175,6 +186,7 @@ void DateTime_AddMonths(DateTime *when, int months)
 #endif
     when->month = (u8) month;
 }
+CLEAN_AS(func_0209e2d0, DateTime_AddMonths)
 
 /* func_0209e304. REQUIRES: years <= 100. */
 void DateTime_AddYears(DateTime *when, int years)
@@ -185,6 +197,7 @@ void DateTime_AddYears(DateTime *when, int years)
     }
     when->year = (u8) year;
 }
+CLEAN_AS(func_0209e304, DateTime_AddYears)
 
 /* func_0209e314: midnight at the start of `when`'s week (Sunday) in `start`, which may be
  * `when` itself. Nothing happens without `start`. */
@@ -210,6 +223,7 @@ int DateTime_MinutesBetween(const DateTime *from, const DateTime *to)
     int days = DateTime_DaysBetween(from, to);
     return days * 24 * 60 + (to->hour - from->hour) * 60 - from->minute + to->minute;
 }
+CLEAN_AS(func_0209e350, DateTime_MinutesBetween)
 
 /* func_0209e380: the days from `from`'s date to `to`'s. */
 int DateTime_DaysBetween(const DateTime *from, const DateTime *to)
@@ -218,6 +232,7 @@ int DateTime_DaysBetween(const DateTime *from, const DateTime *to)
     Date from_date = {from->day, from->month, from->year, 0};
     return Calendar_DaysFrom(&to_date, &from_date);
 }
+CLEAN_AS(func_0209e380, DateTime_DaysBetween)
 
 /* func_0209e3ac: -1, 0 or 1 as `a` is before, at or after `b`, looking only at `fields`
  * (enum DateTimeField), from the year down. */
@@ -238,6 +253,7 @@ int DateTime_Compare(const DateTime *a, const DateTime *b, int fields)
     }
     return 0;
 }
+CLEAN_AS(func_0209e3ac, DateTime_Compare)
 
 /* func_0209e474: the clock's date and time. */
 void DateTime_Now(DateTime *now)
@@ -249,3 +265,28 @@ void DateTime_Now(DateTime *now)
     now->minute = (u8) data_021dc754.minute;
     now->second = (u8) data_021dc754.second;
 }
+CLEAN_AS(func_0209e474, DateTime_Now)
+
+/* func_0209dfd8: `when` set to `date` at `hour`:`minute`:`second`; its unused bytes are left
+ * as they were. */
+void DateTime_Set(DateTime *when, const Date *date, u8 hour, u8 minute, u8 second)
+{
+    when->year = date->year;
+    when->month = date->month;
+    when->day = date->day;
+    when->hour = hour;
+    when->minute = minute;
+    when->second = second;
+}
+CLEAN_AS(func_0209dfd8, DateTime_Set)
+
+/* func_0209dffc: 0 when every field of `when` is in its range (seconds and minutes below 60,
+ * hours below 24, a day of 1-31, a month of 1-12, a year of 0-99), else 1. The day is not
+ * checked against its month's length. */
+int DateTime_IsInvalid(const DateTime *when)
+{
+    BOOL valid = when->second < 60 && when->minute < 60 && when->hour < 24 && when->day >= 1 && when->day <= 31 &&
+                 when->month >= 1 && when->month <= 12 && when->year <= 99;
+    return valid ? 0 : 1;
+}
+CLEAN_AS(func_0209dffc, DateTime_IsInvalid)

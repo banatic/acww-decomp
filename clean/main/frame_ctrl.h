@@ -34,5 +34,8 @@ BOOL FrameCtrl_Passed(const FrameCtrl *ctrl, int frame);
 BOOL FrameCtrl_IsDone(const FrameCtrl *ctrl);
 void FrameCtrl_Step(FrameCtrl *ctrl);
 BOOL Ramp_Step(Ramp *ramp);
+void Ramp_Start(Ramp *ramp, u32 frames);
+void FrameCtrl_Destruct(FrameCtrl *ctrl);
+FrameCtrl *FrameCtrl_Delete(FrameCtrl *ctrl);
 
 #endif

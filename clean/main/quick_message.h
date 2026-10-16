@@ -192,5 +192,10 @@ int QuickMessage_TextBuffer(int text);
 int QuickMessage_TextCapacity(void);
 struct QuickMessageText *QuickMessage_TextDestructDelete(struct QuickMessageText *text);
 struct QuickMessageText *QuickMessage_TextDestruct(struct QuickMessageText *text);
+struct QuickMessageText *QuickMessage_TextConstruct(struct QuickMessageText *text);
+void QuickMessage_NameBaseDestruct(struct QuickMessageName *name);
+struct QuickMessageName *QuickMessage_NameBaseDestructDelete(struct QuickMessageName *name);
+void QuickMessage_ViewBaseDestruct(struct QuickMessageView *view);
+struct QuickMessageView *QuickMessage_ViewBaseDestructDelete(struct QuickMessageView *view);
 
 #endif

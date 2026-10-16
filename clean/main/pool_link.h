@@ -41,9 +41,9 @@ typedef struct SlotPool SlotPool;
 typedef struct SlotPoolVtable {
     u32 destruct;
     u32 destruct_delete;
-    u32 entry_2;
-    u32 entry_3;
-    u8 *(*taken)(SlotPool *pool, int index); /* the entry's "taken" byte, or null */
+    void (*take)(SlotPool *pool, int index);      /* sets entry `index` up as taken */
+    void (*give_back)(SlotPool *pool, int index); /* clears entry `index`'s "taken" byte */
+    u8 *(*taken)(SlotPool *pool, int index);      /* the entry's "taken" byte, or null */
 } SlotPoolVtable;
 
 struct SlotPool {
@@ -88,5 +88,33 @@ PoolLink *PoolLink_PartDestruct(PoolLink *link);
 PoolLink *PoolLink_PartConstruct(PoolLink *link);
 int PoolLink_AnimSet(PoolLink *link);
 PoolLink *PoolLink_AnimSetDestructDelete(PoolLink *link);
+PoolLink *PoolLink_AnimSetDestruct(PoolLink *link);
+PoolLink *PoolLink_AnimSetConstruct(PoolLink *link);
+int PoolLink_Block(PoolLink *link);
+PoolLink *PoolLink_BlockDestructDelete(PoolLink *link);
+PoolLink *PoolLink_BlockDestruct(PoolLink *link);
+PoolLink *PoolLink_BlockConstruct(PoolLink *link);
+int PoolLink_Pool1E20Entry(PoolLink *link);
+PoolLink *PoolLink_Pool1E20DestructDelete(PoolLink *link);
+PoolLink *PoolLink_Pool1E20Destruct(PoolLink *link);
+PoolLink *PoolLink_Pool1E20Construct(PoolLink *link);
+int PoolLink_Heap4(PoolLink *link);
+PoolLink *PoolLink_Heap4DestructDelete(PoolLink *link);
+PoolLink *PoolLink_Heap4Destruct(PoolLink *link);
+PoolLink *PoolLink_Heap4Construct(PoolLink *link);
+int PoolLink_Heap8(PoolLink *link);
+PoolLink *PoolLink_Heap8DestructDelete(PoolLink *link);
+PoolLink *PoolLink_Heap8Destruct(PoolLink *link);
+PoolLink *PoolLink_Heap8Construct(PoolLink *link);
+int PoolLink_Pool1E48Byte(PoolLink *link, int which);
+PoolLink *PoolLink_Pool1E48DestructDelete(PoolLink *link);
+PoolLink *PoolLink_Pool1E48Destruct(PoolLink *link);
+PoolLink *PoolLink_Pool1E48Construct(PoolLink *link);
+void PoolLink_Release(PoolLink *link);
+int PoolLink_Take(PoolLink *link);
+void PoolLink_BaseDestruct(PoolLink *link);
+PoolLink *PoolLink_BaseDestructDelete(PoolLink *link);
+void PoolLink_BaseDestructVirtual(PoolLink *link);
+void PoolLink_BaseConstruct(PoolLink *link);
 
 #endif

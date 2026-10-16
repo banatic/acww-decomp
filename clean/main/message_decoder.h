@@ -75,5 +75,13 @@ void MessageDecoder_ExpandTag(MessageDecoder *decoder);
 void MessageDecoder_KeepTag(MessageDecoder *decoder);
 void MessageDecoder_PutCharacter(MessageDecoder *decoder);
 u8 MessageDecoder_WantsMore(MessageDecoder *decoder);
+void MessageDecoder_OnTag(MessageDecoder *decoder, int position);
+void MessageDecoder_OnCharacter(MessageDecoder *decoder, unsigned int character);
+void MessageDecoder_OnEnd(void);
+void MessageDecoder_OnText(void);
+u8 MessageDecoder_Decode(MessageDecoder *decoder, u8 expand_tags, u8 nickname);
+MessageDecoder *MessageDecoder_Delete(MessageDecoder *decoder);
+MessageDecoder *MessageDecoder_Destruct(MessageDecoder *decoder);
+MessageDecoder *MessageDecoder_Construct(MessageDecoder *decoder, MessageReader *reader);
 
 #endif

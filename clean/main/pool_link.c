@@ -245,3 +245,316 @@ PoolLink *PoolLink_AnimSetDestructDelete(PoolLink *link)
     return link;
 }
 CLEAN_AS(func_02082dcc, PoolLink_AnimSetDestructDelete)
+
+/* func_02082dec (vtable entry 0) */
+PoolLink *PoolLink_AnimSetDestruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a68;
+    PoolLink_BaseDestruct(link);
+    return link;
+}
+CLEAN_AS(func_02082dec, PoolLink_AnimSetDestruct)
+
+/* func_02082e04: an animation set link with no entry. */
+PoolLink *PoolLink_AnimSetConstruct(PoolLink *link)
+{
+    PoolLink_BaseConstruct(link);
+    link->vtable = &data_020e1a68;
+    return link;
+}
+CLEAN_AS(func_02082e04, PoolLink_AnimSetConstruct)
+
+/* The entries of the pools the remaining classes of link stand for, by number, past their
+ * "taken" byte; null for a number past the pool. */
+extern int func_02083544(SlotPool *pool, u32 index); /* a block slot */
+extern int func_02083684(SlotPool *pool, u32 index); /* an entry of data_021d1e20 */
+extern int func_02083800(SlotPool *pool, u32 index); /* a heap4 slot */
+extern int func_02083940(SlotPool *pool, u32 index); /* a heap8 slot */
+/* The address of value `which` of an entry of data_021d1e48, or null. */
+extern int func_02083a80(SlotPool *pool, u32 index, u32 which);
+/* The number of the first entry of a pool that is not taken, -1 when all are. */
+extern int func_02083bfc(SlotPool *pool);
+
+extern const PoolLinkVtable data_020e1a7c; /* the block slot link's vtable */
+extern const PoolLinkVtable data_020e1a54; /* the data_021d1e20 link's vtable */
+extern const PoolLinkVtable data_020e19f0; /* the heap4 slot link's vtable */
+extern const PoolLinkVtable data_020e1a04; /* the heap8 slot link's vtable */
+extern const PoolLinkVtable data_020e1a18; /* the data_021d1e48 link's vtable */
+extern const PoolLinkVtable data_020e1a2c; /* the link base class's vtable */
+
+/* ---- The block slot link (vtable data_020e1a7c) */
+
+/* func_02082e1c: the block slot the link's entry holds, or null. */
+int PoolLink_Block(PoolLink *link)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return 0;
+    }
+    return func_02083544(pool, (u32) link->index);
+}
+CLEAN_AS(func_02082e1c, PoolLink_Block)
+
+/* func_02082e40 (vtable entry 1) */
+PoolLink *PoolLink_BlockDestructDelete(PoolLink *link)
+{
+    link->vtable = &data_020e1a7c;
+    PoolLink_BaseDestruct(link);
+    Heap_OperatorDeleteB(link);
+    return link;
+}
+CLEAN_AS(func_02082e40, PoolLink_BlockDestructDelete)
+
+/* func_02082e60 (vtable entry 0) */
+PoolLink *PoolLink_BlockDestruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a7c;
+    PoolLink_BaseDestruct(link);
+    return link;
+}
+CLEAN_AS(func_02082e60, PoolLink_BlockDestruct)
+
+/* func_02082e78: a block slot link with no entry. */
+PoolLink *PoolLink_BlockConstruct(PoolLink *link)
+{
+    PoolLink_BaseConstruct(link);
+    link->vtable = &data_020e1a7c;
+    return link;
+}
+CLEAN_AS(func_02082e78, PoolLink_BlockConstruct)
+
+/* ---- The data_021d1e20 link (vtable data_020e1a54) */
+
+/* func_02082e90: the entry of data_021d1e20 the link's entry holds, or null. */
+int PoolLink_Pool1E20Entry(PoolLink *link)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return 0;
+    }
+    return func_02083684(pool, (u32) link->index);
+}
+CLEAN_AS(func_02082e90, PoolLink_Pool1E20Entry)
+
+/* func_02082eb4 (vtable entry 1) */
+PoolLink *PoolLink_Pool1E20DestructDelete(PoolLink *link)
+{
+    link->vtable = &data_020e1a54;
+    PoolLink_BaseDestruct(link);
+    Heap_OperatorDeleteB(link);
+    return link;
+}
+CLEAN_AS(func_02082eb4, PoolLink_Pool1E20DestructDelete)
+
+/* func_02082ed4 (vtable entry 0) */
+PoolLink *PoolLink_Pool1E20Destruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a54;
+    PoolLink_BaseDestruct(link);
+    return link;
+}
+CLEAN_AS(func_02082ed4, PoolLink_Pool1E20Destruct)
+
+/* func_02082eec: a data_021d1e20 link with no entry. */
+PoolLink *PoolLink_Pool1E20Construct(PoolLink *link)
+{
+    PoolLink_BaseConstruct(link);
+    link->vtable = &data_020e1a54;
+    return link;
+}
+CLEAN_AS(func_02082eec, PoolLink_Pool1E20Construct)
+
+/* ---- The heap4 slot link (vtable data_020e19f0) */
+
+/* func_02082f04: the heap4 slot the link's entry holds, or null. */
+int PoolLink_Heap4(PoolLink *link)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return 0;
+    }
+    return func_02083800(pool, (u32) link->index);
+}
+CLEAN_AS(func_02082f04, PoolLink_Heap4)
+
+/* func_02082f28 (vtable entry 1) */
+PoolLink *PoolLink_Heap4DestructDelete(PoolLink *link)
+{
+    link->vtable = &data_020e19f0;
+    PoolLink_BaseDestruct(link);
+    Heap_OperatorDeleteB(link);
+    return link;
+}
+CLEAN_AS(func_02082f28, PoolLink_Heap4DestructDelete)
+
+/* func_02082f48 (vtable entry 0) */
+PoolLink *PoolLink_Heap4Destruct(PoolLink *link)
+{
+    link->vtable = &data_020e19f0;
+    PoolLink_BaseDestruct(link);
+    return link;
+}
+CLEAN_AS(func_02082f48, PoolLink_Heap4Destruct)
+
+/* func_02082f60: a heap4 slot link with no entry. */
+PoolLink *PoolLink_Heap4Construct(PoolLink *link)
+{
+    PoolLink_BaseConstruct(link);
+    link->vtable = &data_020e19f0;
+    return link;
+}
+CLEAN_AS(func_02082f60, PoolLink_Heap4Construct)
+
+/* ---- The heap8 slot link (vtable data_020e1a04) */
+
+/* func_02082f78: the heap8 slot the link's entry holds, or null. */
+int PoolLink_Heap8(PoolLink *link)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return 0;
+    }
+    return func_02083940(pool, (u32) link->index);
+}
+CLEAN_AS(func_02082f78, PoolLink_Heap8)
+
+/* func_02082f9c (vtable entry 1) */
+PoolLink *PoolLink_Heap8DestructDelete(PoolLink *link)
+{
+    link->vtable = &data_020e1a04;
+    PoolLink_BaseDestruct(link);
+    Heap_OperatorDeleteB(link);
+    return link;
+}
+CLEAN_AS(func_02082f9c, PoolLink_Heap8DestructDelete)
+
+/* func_02082fbc (vtable entry 0) */
+PoolLink *PoolLink_Heap8Destruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a04;
+    PoolLink_BaseDestruct(link);
+    return link;
+}
+CLEAN_AS(func_02082fbc, PoolLink_Heap8Destruct)
+
+/* func_02082fd4: a heap8 slot link with no entry. */
+PoolLink *PoolLink_Heap8Construct(PoolLink *link)
+{
+    PoolLink_BaseConstruct(link);
+    link->vtable = &data_020e1a04;
+    return link;
+}
+CLEAN_AS(func_02082fd4, PoolLink_Heap8Construct)
+
+/* ---- The data_021d1e48 link (vtable data_020e1a18)
+ *
+ * An entry of data_021d1e48 is four bytes: its "taken" byte, then three values (an actor's
+ * speaking animations, speaker_anim.h). */
+
+/* func_02082fec: the address of value `which` of the link's entry, or null. */
+int PoolLink_Pool1E48Byte(PoolLink *link, int which)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return 0;
+    }
+    return func_02083a80(pool, (u32) link->index, (u32) which);
+}
+CLEAN_AS(func_02082fec, PoolLink_Pool1E48Byte)
+
+/* func_02083018 (vtable entry 1) */
+PoolLink *PoolLink_Pool1E48DestructDelete(PoolLink *link)
+{
+    link->vtable = &data_020e1a18;
+    PoolLink_BaseDestruct(link);
+    Heap_OperatorDeleteB(link);
+    return link;
+}
+CLEAN_AS(func_02083018, PoolLink_Pool1E48DestructDelete)
+
+/* func_02083038 (vtable entry 0) */
+PoolLink *PoolLink_Pool1E48Destruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a18;
+    PoolLink_BaseDestruct(link);
+    return link;
+}
+CLEAN_AS(func_02083038, PoolLink_Pool1E48Destruct)
+
+/* func_02083050: a data_021d1e48 link with no entry. */
+PoolLink *PoolLink_Pool1E48Construct(PoolLink *link)
+{
+    PoolLink_BaseConstruct(link);
+    link->vtable = &data_020e1a18;
+    return link;
+}
+CLEAN_AS(func_02083050, PoolLink_Pool1E48Construct)
+
+/* ---- The link base class (vtable data_020e1a2c) */
+
+/* func_02083068: gives the link's entry back to its pool (pool vtable entry 3) and leaves the
+ * link with none. A link with no entry hands the pool POOL_LINK_NONE, which every pool's entry 3
+ * ignores as a number past its end. */
+void PoolLink_Release(PoolLink *link)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return;
+    }
+    pool->vtable->give_back(pool, link->index);
+    link->index = POOL_LINK_NONE;
+}
+CLEAN_AS(func_02083068, PoolLink_Release)
+
+/* func_0208308c: makes sure the link has an entry: one that has none takes the first free entry
+ * of its pool and sets it up (pool vtable entry 2). Whether the link has an entry now; 0 when it
+ * has no pool or the pool is full. */
+int PoolLink_Take(PoolLink *link)
+{
+    SlotPool *pool = pool_link_pool(link);
+    if (pool == NULL) {
+        return 0;
+    }
+    if (link->index != POOL_LINK_NONE) {
+        return 1;
+    }
+    int free_index = func_02083bfc(pool);
+    if ((u32) free_index >= pool->count) {
+        return 0;
+    }
+    link->index = (s8) free_index;
+    pool->vtable->take(pool, link->index);
+    return 1;
+}
+CLEAN_AS(func_0208308c, PoolLink_Take)
+
+/* func_020830d0: the base class's part of every link's destructor. */
+void PoolLink_BaseDestruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a2c;
+}
+CLEAN_AS(func_020830d0, PoolLink_BaseDestruct)
+
+/* func_020830dc (base vtable entry 1) */
+PoolLink *PoolLink_BaseDestructDelete(PoolLink *link)
+{
+    link->vtable = &data_020e1a2c;
+    Heap_OperatorDeleteB(link);
+    return link;
+}
+CLEAN_AS(func_020830dc, PoolLink_BaseDestructDelete)
+
+/* func_020830f4 (base vtable entry 0) */
+void PoolLink_BaseDestructVirtual(PoolLink *link)
+{
+    link->vtable = &data_020e1a2c;
+}
+CLEAN_AS(func_020830f4, PoolLink_BaseDestructVirtual)
+
+/* func_02083100: the base class's part of every link's constructor: no entry. */
+void PoolLink_BaseConstruct(PoolLink *link)
+{
+    link->vtable = &data_020e1a2c;
+    link->index = POOL_LINK_NONE;
+}
+CLEAN_AS(func_02083100, PoolLink_BaseConstruct)
