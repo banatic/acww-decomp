@@ -28,5 +28,7 @@ ShopDesignObject *ShopDesignObject_Delete(ShopDesignObject *object);
 ShopDesignObject *ShopDesignObject_Destroy(ShopDesignObject *object);
 ShopDesignObject *ShopDesignObject_Construct(ShopDesignObject *object);
 void ShopDesignObject_Create(void);
+ShopDesignObject *ShopDesignObjectReceiver_Delete(void *receiver);
+ShopDesignObject *ShopDesignObjectReceiver_Destroy(void *receiver);
 
 #endif

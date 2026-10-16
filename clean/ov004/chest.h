@@ -107,5 +107,7 @@ Chest *Chest_Delete(Chest *chest);
 Chest *Chest_Destroy(Chest *chest);
 Chest *Chest_Construct(Chest *chest);
 void Chest_Create(void);
+Chest *ChestReceiver_Delete(void *receiver);
+Chest *ChestReceiver_Destroy(void *receiver);
 
 #endif

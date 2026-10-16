@@ -45,5 +45,7 @@ Bromide *Bromide_Delete(Bromide *bromide);
 Bromide *Bromide_Destroy(Bromide *bromide);
 Bromide *Bromide_Construct(Bromide *bromide);
 void Bromide_Create(void);
+Bromide *BromideReceiver_Delete(void *receiver);
+Bromide *BromideReceiver_Destroy(void *receiver);
 
 #endif

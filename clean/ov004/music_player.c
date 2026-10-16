@@ -619,3 +619,25 @@ void MusicPlayer_Create(void)
     }
 }
 CLEAN_AS(func_ov004_022168bc, MusicPlayer_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters MusicPlayer's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static MusicPlayer *MusicPlayer_from_receiver(void *receiver)
+{
+    return (MusicPlayer *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a804: the deleting destructor, entered from the receiver part. */
+MusicPlayer *MusicPlayerReceiver_Delete(void *receiver)
+{
+    return MusicPlayer_Delete(MusicPlayer_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD0Ev, MusicPlayerReceiver_Delete)
+
+/* func_ov004_0221a820: the destructor, entered from the receiver part. */
+MusicPlayer *MusicPlayerReceiver_Destroy(void *receiver)
+{
+    return MusicPlayer_Destroy(MusicPlayer_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022517bcD1Ev, MusicPlayerReceiver_Destroy)

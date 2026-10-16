@@ -148,3 +148,25 @@ void ShopDesignObject_Create(void)
     }
 }
 CLEAN_AS(func_ov004_02213b54, ShopDesignObject_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters ShopDesignObject's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static ShopDesignObject *ShopDesignObject_from_receiver(void *receiver)
+{
+    return (ShopDesignObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a9fc: the deleting destructor, entered from the receiver part. */
+ShopDesignObject *ShopDesignObjectReceiver_Delete(void *receiver)
+{
+    return ShopDesignObject_Delete(ShopDesignObject_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D0Ev, ShopDesignObjectReceiver_Delete)
+
+/* func_ov004_0221aa18: the destructor, entered from the receiver part. */
+ShopDesignObject *ShopDesignObjectReceiver_Destroy(void *receiver)
+{
+    return ShopDesignObject_Destroy(ShopDesignObject_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251ec4D1Ev, ShopDesignObjectReceiver_Destroy)

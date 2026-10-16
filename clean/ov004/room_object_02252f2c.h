@@ -43,5 +43,11 @@ u8 RoomObject02252f2c_StateIsOn(RoomObject02252f2c *object, unsigned int state);
 int RoomObject02252f2c_Vfunc0C(void);
 int RoomObject02252f2c_Update(RoomObject02252f2c *object);
 int RoomObject02252f2c_Start(RoomObject02252f2c *object);
+RoomObject02252f2c *RoomObject02252f2c_Delete(RoomObject02252f2c *object);
+RoomObject02252f2c *RoomObject02252f2c_Destroy(RoomObject02252f2c *object);
+RoomObject02252f2c *RoomObject02252f2c_Construct(RoomObject02252f2c *object);
+void RoomObject02252f2c_Create(void);
+RoomObject02252f2c *RoomObject02252f2cReceiver_Delete(void *receiver);
+RoomObject02252f2c *RoomObject02252f2cReceiver_Destroy(void *receiver);
 
 #endif

@@ -97,4 +97,61 @@ void Mailbox_RunClosing(Mailbox *mailbox);
 int Mailbox_EnterEmptying(Mailbox *mailbox);
 void Mailbox_RunEmptying(Mailbox *mailbox);
 
+/* Its other machine: the word at 0x2b4, run each frame by Mailbox_RunState and moved by
+ * Mailbox_SetState, both through tables of member pointers. It is the player checking the
+ * mailbox:
+ *
+ *   0 idle:     nothing happens; scene event 0 or 1 moves to 1, event 8 back here.
+ *   1 approach: entering it asks the player of this console to go to the point 2.0 along z
+ *               from the mailbox (player state 0x6a) and, when that was queued, moves the
+ *               mode on to MAILBOX_OPENING; once the mode is MAILBOX_OPEN, state 2.
+ *   2 letters:  entering it asks main to open group 9 in mode 0x27 and fails when main
+ *               refuses; the next frame moves to state 3.
+ *   3 reading:  once main can open a screen again (the letters' screen closed) and the player
+ *               of this console takes state 0x6c, state 4.
+ *   4 close:    entering it moves the mode on to MAILBOX_CLOSING; once the mode is
+ *               MAILBOX_EMPTY or MAILBOX_FULL the scene goes on (Mailbox_RunClose).
+ *
+ * Set up (vtable slot 0x70), it starts its texture pattern animation, puts a touch sphere of
+ * radius 1.0 one unit above its position, and lets its modes move on (the byte at 0x2f4) only
+ * in scene 0 and when this console is slot 0 of a linked session or plays alone; then its mode
+ * is MAILBOX_EMPTY if they move on, else the one main recorded for its code. */
+enum MailboxState {
+    MAILBOX_STATE_IDLE,
+    MAILBOX_STATE_APPROACH,
+    MAILBOX_STATE_LETTERS,
+    MAILBOX_STATE_READING,
+    MAILBOX_STATE_CLOSE,
+    MAILBOX_STATES
+};
+
+struct Mtx43;
+struct SceneObjectBase;
+
+int Mailbox_EnterClose(Mailbox *mailbox);
+void Mailbox_RunReading(Mailbox *mailbox);
+int Mailbox_EnterReading(Mailbox *mailbox);
+int Mailbox_RunLetters(Mailbox *mailbox);
+int Mailbox_EnterLetters(Mailbox *mailbox);
+void Mailbox_RunApproach(Mailbox *mailbox);
+int Mailbox_EnterApproach(Mailbox *mailbox);
+void Mailbox_RunIdle(void);
+int Mailbox_EnterIdle(Mailbox *mailbox);
+void Mailbox_RunState(Mailbox *mailbox);
+int Mailbox_SetState(Mailbox *mailbox, int state);
+int Mailbox_ModelMatrix(Mailbox *mailbox, struct Mtx43 *matrix);
+u8 Mailbox_MovesOn(Mailbox *mailbox);
+int Mailbox_CountLetters(Mailbox *mailbox);
+void Mailbox_OnSceneEvent(Mailbox *mailbox, int event);
+int Mailbox_MayAct(Mailbox *mailbox, struct SceneObjectBase *other);
+int Mailbox_DrawsModel(void);
+int Mailbox_Update(Mailbox *mailbox);
+int Mailbox_SetUp(Mailbox *mailbox);
+Mailbox *Mailbox_DestroyAndFree(Mailbox *mailbox);
+Mailbox *Mailbox_Destroy(Mailbox *mailbox);
+Mailbox *Mailbox_Construct(Mailbox *mailbox);
+void Mailbox_New(void);
+Mailbox *Mailbox_ReceiverDestroyAndFree(void *receiver);
+Mailbox *Mailbox_ReceiverDestroy(void *receiver);
+
 #endif

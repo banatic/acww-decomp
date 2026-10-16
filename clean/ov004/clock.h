@@ -41,5 +41,7 @@ Clock *Clock_Delete(Clock *clock);
 Clock *Clock_Destroy(Clock *clock);
 Clock *Clock_Construct(Clock *clock);
 void Clock_Create(void);
+Clock *ClockReceiver_Delete(void *receiver);
+Clock *ClockReceiver_Destroy(void *receiver);
 
 #endif

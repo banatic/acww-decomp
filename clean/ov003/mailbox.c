@@ -6,6 +6,26 @@
 #include "clean.h"
 #include "ov004/member_pointer.h"
 
+#include "autoload_2/approach.h" /* Math_AbsDiff16 */
+#include "autoload_2/heap.h"     /* Heap, Heap_FreeAux, Heap_AllocAuxZeroed */
+#include "autoload_2/matrix.h"   /* Mtx43, Mtx43_Translate */
+#include "autoload_2/vector.h"   /* Vec3, Vec_DistanceXZ */
+#include "main/collision_query.h"
+#include "main/globe.h"
+#include "main/group_params.h"
+#include "main/letter.h"
+#include "main/mail.h"
+#include "main/model_anim.h"
+#include "main/model_object.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/session.h"
+#include "main/touch_pick_shapes.h"
+#include "main/town_objects.h" /* TownObjects_SetActorMode, SceneActor */
+#include "ov003/field_actor.h"
+
 static_assert(offsetof(Mailbox, receiver_vtable) == 0xec, "receiver");
 static_assert(offsetof(Mailbox, mode) == 0x134, "mode");
 static_assert(offsetof(Mailbox, code) == 0x136, "code");
@@ -321,3 +341,461 @@ void Mailbox_RunClose(Mailbox *mailbox)
     }
 }
 CLEAN_AS(func_ov003_0221e404, Mailbox_RunClose)
+
+/* The other machine (enum MailboxState), its set-up, its drawing and its life. */
+
+static_assert(offsetof(Mailbox, state) == 0x2b4, "other machine's state");
+static_assert(offsetof(SceneActor, position) == 0x5c, "actor position");
+static_assert(offsetof(SceneActor, yaw) == 0x8e, "actor yaw");
+static_assert(offsetof(SceneActor, code) == 0x136, "actor code");
+static_assert(offsetof(SceneActor, model) == 0x198, "actor model");
+static_assert(sizeof(ModelAnim) == sizeof(MailboxAnim), "the pattern is main's animation");
+static_assert(sizeof(TouchPickSphere) == sizeof(((Mailbox *) NULL)->unk_2D8), "touch sphere");
+
+#define MAILBOX_RECEIVER_OFFSET 0xec
+/* The scene events of vtable slot 0x4c. */
+#define MAILBOX_EVENT_CHECK 0
+#define MAILBOX_EVENT_CHECK_AGAIN 1
+#define MAILBOX_EVENT_IDLE 8
+/* The mode of group 9 that shows the letters. */
+#define MAILBOX_LETTERS_MODE 0x27
+/* FieldActor_PlayerRequestState6BOr6C's choice of state 0x6c. */
+#define MAILBOX_PLAYER_STATE_6C 2
+/* Where the player is asked to go: 2.0 along z from the mailbox. */
+#define MAILBOX_APPROACH_Z 0x2000
+/* How near (about 2.2) and how squarely the player must stand to check it. */
+#define MAILBOX_ACT_DISTANCE 0x2333
+#define MAILBOX_ACT_ANGLE 0x1200
+/* The point of the ground the model is placed at: 2.0 along x and 1.0 back along z from its
+ * position; the matrix is then moved back by as much. */
+#define MAILBOX_MODEL_X 0x2000
+#define MAILBOX_MODEL_Z 0x1000
+/* The touch sphere: 1.0 above its position, of radius 1.0 and kind 7. */
+#define MAILBOX_SPHERE_HEIGHT 0x1000
+#define MAILBOX_SPHERE_RADIUS 0x1000
+#define MAILBOX_SPHERE_KIND 7
+/* The flags its texture pattern animation is started with when it is set up. */
+#define MAILBOX_PATTERN_SETUP_FLAGS 1
+/* The vtable slot that sets its mode (Mailbox_SetMode for this class). */
+#define MAILBOX_SLOT_SET_MODE 0x6c
+
+/* The vtables: the class's and its receiver part's. */
+extern const u8 data_ov003_0223948c[];
+extern const u8 data_ov003_02239550[];
+/* The other machine's tables (member_pointer.h): their guards, the tables and their
+ * constants. */
+extern u32 data_ov003_0223c9c4;
+extern MemberPointer data_ov003_0223ca08[MAILBOX_STATES];
+extern const MemberPointer data_ov003_0223941c, data_ov003_022393cc, data_ov003_022393d4, data_ov003_02239404,
+    data_ov003_022393e4;
+extern u32 data_ov003_0223c9b8;
+extern MemberPointer data_ov003_0223c9e0[MAILBOX_STATES];
+extern const MemberPointer data_ov003_0223942c, data_ov003_0223944c, data_ov003_02239444, data_ov003_0223943c,
+    data_ov003_02239434;
+/* A matrix of main's the model's matrix is moved in. */
+extern Mtx43 data_021fbe48;
+/* The heap its pattern's animation object comes from. */
+extern Heap *data_021c9b1c;
+extern NetSession *data_020ccf94;
+/* Overlay 9's scene actor: its model's matrix built from its placement (the point at 0xc4 and
+ * the turn about y at 0xd0), its destructor and its constructor. */
+extern void func_ov009_022648a4(Mailbox *mailbox, Mtx43 *matrix);
+extern void *func_ov009_0226539c(Mailbox *mailbox);
+extern void *func_ov009_0226552c(Mailbox *mailbox);
+/* Its index in overlay 3's table of 32 scene actors (data_ov003_0223cef0), -1 when it is not
+ * there. */
+extern int func_ov003_02220150(Mailbox *mailbox);
+
+/* The point and the turn overlay 9 builds the model's matrix from (bytes 0xc4 to 0xd1 of the
+ * scene actor). */
+typedef struct MailboxPlacement {
+    Vec3 point;
+    u16 turn;
+} MailboxPlacement;
+
+#define MAILBOX_PLACEMENT_OFFSET 0xc4
+
+/* The mailbox as overlay 9's scene actor, which it is derived from. */
+static SceneActor *mailbox_actor(Mailbox *mailbox)
+{
+    return (SceneActor *) (void *) mailbox;
+}
+
+static MailboxPlacement *mailbox_placement(Mailbox *mailbox)
+{
+    return (MailboxPlacement *) (void *) ((u8 *) mailbox + MAILBOX_PLACEMENT_OFFSET);
+}
+
+/* The pattern as main's animation object, and the touch sphere at 0x2d8. */
+static ModelAnim *mailbox_pattern(Mailbox *mailbox)
+{
+    return (ModelAnim *) (void *) &mailbox->pattern;
+}
+
+static TouchPickSphere *mailbox_sphere(Mailbox *mailbox)
+{
+    return (TouchPickSphere *) (void *) mailbox->unk_2D8;
+}
+
+/* Sets the mode through vtable slot 0x6c. */
+static void mailbox_set_mode_slot(Mailbox *mailbox, int mode)
+{
+    typedef int (*MailboxSetModeSlot)(Mailbox *mailbox, int mode);
+
+    u32 code = *(const u32 *) ((const u8 *) mailbox->vtable + MAILBOX_SLOT_SET_MODE);
+    ((MailboxSetModeSlot) (uintptr_t) code)(mailbox, mode);
+}
+
+/* Copies a matrix two words at a time, in the order the original does. */
+static void mailbox_copy_matrix(Mtx43 *dst, const Mtx43 *src)
+{
+    const fx32 *from = &src->m[0][0];
+    fx32 *to = &dst->m[0][0];
+    for (int i = 0; i < 12; i += 2) {
+        fx32 first = from[i];
+        fx32 second = from[i + 1];
+        to[i] = first;
+        to[i + 1] = second;
+    }
+}
+
+/* func_ov003_0221e424 (entry of MAILBOX_STATE_CLOSE): moves the mode on to MAILBOX_CLOSING;
+ * always 1. */
+int Mailbox_EnterClose(Mailbox *mailbox)
+{
+    TownObjects_SetActorMode(mailbox_actor(mailbox), MAILBOX_CLOSING);
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e424, Mailbox_EnterClose)
+
+/* _ZN18Obj_ov003_0223948c19func_ov003_0221e438Ev (run of MAILBOX_STATE_READING): once main can
+ * open a screen again, asks for player state 0x6c and moves to MAILBOX_STATE_CLOSE when it was
+ * queued. */
+void Mailbox_RunReading(Mailbox *mailbox)
+{
+    if (GroupParams_CanOpen() && FieldActor_PlayerRequestState6BOr6C(MAILBOX_PLAYER_STATE_6C)) {
+        Mailbox_SetState(mailbox, MAILBOX_STATE_CLOSE);
+    }
+}
+CLEAN_AS(_ZN18Obj_ov003_0223948c19func_ov003_0221e438Ev, Mailbox_RunReading)
+
+/* func_ov003_0221e45c (entry of MAILBOX_STATE_READING): always 1. */
+int Mailbox_EnterReading(Mailbox *mailbox)
+{
+    (void) mailbox;
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e45c, Mailbox_EnterReading)
+
+/* _ZN18Obj_ov003_0223948c19func_ov003_0221e460Ev (run of MAILBOX_STATE_LETTERS): on to
+ * MAILBOX_STATE_READING; whether it got there. */
+int Mailbox_RunLetters(Mailbox *mailbox)
+{
+    return Mailbox_SetState(mailbox, MAILBOX_STATE_READING);
+}
+CLEAN_AS(_ZN18Obj_ov003_0223948c19func_ov003_0221e460Ev, Mailbox_RunLetters)
+
+/* func_ov003_0221e46c (entry of MAILBOX_STATE_LETTERS): whether main agreed to open group 9 in
+ * mode 0x27. */
+int Mailbox_EnterLetters(Mailbox *mailbox)
+{
+    (void) mailbox;
+    return GroupParams_Open(MAILBOX_LETTERS_MODE) != 0;
+}
+CLEAN_AS(func_ov003_0221e46c, Mailbox_EnterLetters)
+
+/* _ZN18Obj_ov003_0223948c19func_ov003_0221e488Ev (run of MAILBOX_STATE_APPROACH): once the mode
+ * is MAILBOX_OPEN, on to MAILBOX_STATE_LETTERS. */
+void Mailbox_RunApproach(Mailbox *mailbox)
+{
+    if (mailbox->mode == MAILBOX_OPEN) {
+        Mailbox_SetState(mailbox, MAILBOX_STATE_LETTERS);
+    }
+}
+CLEAN_AS(_ZN18Obj_ov003_0223948c19func_ov003_0221e488Ev, Mailbox_RunApproach)
+
+/* func_ov003_0221e4a4 (entry of MAILBOX_STATE_APPROACH): asks the player of this console to go
+ * to the point 2.0 along z from the mailbox, at the floor's height (player state 0x6a); when
+ * that was queued the mode moves on to MAILBOX_OPENING. Always 1. */
+int Mailbox_EnterApproach(Mailbox *mailbox)
+{
+    SceneActor *actor = mailbox_actor(mailbox);
+    Vec3 point;
+    point.x = actor->position.x;
+    point.y = CollisionQuery_FloorHeight(0);
+    point.z = actor->position.z + MAILBOX_APPROACH_Z;
+    if (FieldActor_PlayerRequestState6A(&point)) {
+        TownObjects_SetActorMode(actor, MAILBOX_OPENING);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e4a4, Mailbox_EnterApproach)
+
+/* func_ov003_0221e4e0 (run of MAILBOX_STATE_IDLE) */
+void Mailbox_RunIdle(void) {}
+CLEAN_AS(func_ov003_0221e4e0, Mailbox_RunIdle)
+
+/* func_ov003_0221e4e4 (entry of MAILBOX_STATE_IDLE): always 1. */
+int Mailbox_EnterIdle(Mailbox *mailbox)
+{
+    (void) mailbox;
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e4e4, Mailbox_EnterIdle)
+
+/* func_ov003_0221e4e8: the other machine's run, through its table.
+ * REQUIRES: the state is not negative (Mailbox_SetState only sets 0 to 4). */
+void Mailbox_RunState(Mailbox *mailbox)
+{
+    static const MemberPointer *const runs[MAILBOX_STATES] = {
+        &data_ov003_0223941c, /* Mailbox_RunIdle */
+        &data_ov003_022393cc, /* Mailbox_RunApproach */
+        &data_ov003_022393d4, /* Mailbox_RunLetters */
+        &data_ov003_02239404, /* Mailbox_RunReading */
+        &data_ov003_022393e4, /* Mailbox_RunClose */
+    };
+    MemberTable_InitOnce(&data_ov003_0223c9c4, data_ov003_0223ca08, runs, MAILBOX_STATES);
+    if (mailbox->state < MAILBOX_STATES) {
+        MemberPointer_CallVoid(&data_ov003_0223ca08[mailbox->state], mailbox);
+    }
+}
+CLEAN_AS(func_ov003_0221e4e8, Mailbox_RunState)
+
+/* _ZN18Obj_ov003_0223948c19func_ov003_0221e580Ei: enters `state` of the other machine if its
+ * entry (through a table) agrees; whether it did. States 5 and above do not exist.
+ * REQUIRES: `state` is not negative. */
+int Mailbox_SetState(Mailbox *mailbox, int state)
+{
+    static const MemberPointer *const entries[MAILBOX_STATES] = {
+        &data_ov003_0223942c, /* Mailbox_EnterIdle */
+        &data_ov003_0223944c, /* Mailbox_EnterApproach */
+        &data_ov003_02239444, /* Mailbox_EnterLetters */
+        &data_ov003_0223943c, /* Mailbox_EnterReading */
+        &data_ov003_02239434, /* Mailbox_EnterClose */
+    };
+    MemberTable_InitOnce(&data_ov003_0223c9b8, data_ov003_0223c9e0, entries, MAILBOX_STATES);
+    if (state < MAILBOX_STATES && MemberPointer_CallInt(&data_ov003_0223c9e0[state], mailbox) != 0) {
+        mailbox->state = state;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(_ZN18Obj_ov003_0223948c19func_ov003_0221e580Ei, Mailbox_SetState)
+
+/* func_ov003_0221e628 (vtable slot 0xb8): the model's matrix. Overlay 9 builds it at the point
+ * of the bent ground (Globe_BendFar) under 2.0 along x and 1.0 back along z from the position,
+ * turned by what the bending gives; the matrix is then moved back by (-2.0, 0, 1.0) in the
+ * model's own axes, in main's matrix data_021fbe48. Always 1. */
+int Mailbox_ModelMatrix(Mailbox *mailbox, Mtx43 *matrix)
+{
+    SceneActor *actor = mailbox_actor(mailbox);
+    MailboxPlacement *placement = mailbox_placement(mailbox);
+    Vec3 point;
+    point.x = actor->position.x + MAILBOX_MODEL_X;
+    point.y = 0;
+    point.z = actor->position.z - MAILBOX_MODEL_Z;
+    placement->turn = (u16) Globe_BendFar(&placement->point, &point);
+    func_ov009_022648a4(mailbox, matrix);
+    mailbox_copy_matrix(&data_021fbe48, matrix);
+    Mtx43_Translate(&data_021fbe48, -MAILBOX_MODEL_X, 0, MAILBOX_MODEL_Z);
+    mailbox_copy_matrix(matrix, &data_021fbe48);
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e628, Mailbox_ModelMatrix)
+
+/* func_ov003_0221e6a0: whether its modes move on (the byte at 0x2f4). */
+u8 Mailbox_MovesOn(Mailbox *mailbox)
+{
+    return mailbox->moves_on;
+}
+CLEAN_AS(func_ov003_0221e6a0, Mailbox_MovesOn)
+
+/* func_ov003_0221e6ac: the number of letters in the mailbox of this console's player (those of
+ * its ten whose state is not 0); 0 while the modes do not move on or when the player has no
+ * mailbox. */
+int Mailbox_CountLetters(Mailbox *mailbox)
+{
+    if (Mailbox_MovesOn(mailbox) == 0) {
+        return 0;
+    }
+    MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
+    if (box == NULL) {
+        return 0;
+    }
+    int count = 0;
+    for (int i = 0; i < MAILBOX_LETTERS; i++) {
+        MailLetter *letter = MailBox_Letter(box, i);
+        if (letter != NULL && Letter_State((const Letter *) (const void *) letter) != 0) {
+            count++;
+        }
+    }
+    return count;
+}
+CLEAN_AS(func_ov003_0221e6ac, Mailbox_CountLetters)
+
+/* _ZN18Obj_ov003_0223948c19func_ov003_0221e6f0Ei (vtable slot 0x4c): the scene's events: 0 and
+ * 1 start a check (MAILBOX_STATE_APPROACH), 8 makes it idle; others do nothing. */
+void Mailbox_OnSceneEvent(Mailbox *mailbox, int event)
+{
+    switch (event) {
+        case MAILBOX_EVENT_CHECK:
+        case MAILBOX_EVENT_CHECK_AGAIN:
+            Mailbox_SetState(mailbox, MAILBOX_STATE_APPROACH);
+            break;
+        case MAILBOX_EVENT_IDLE:
+            Mailbox_SetState(mailbox, MAILBOX_STATE_IDLE);
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(_ZN18Obj_ov003_0223948c19func_ov003_0221e6f0Ei, Mailbox_OnSceneEvent)
+
+/* func_ov003_0221e718 (vtable slot 0x48): whether `other` (the player of this console) may
+ * check it: its modes move on, it is MAILBOX_FULL, and `other` stands within about 2.2 of it
+ * in the ground plane facing it (its yaw within 0x1200 of the mailbox's turned half round).
+ * SceneObjectBase_ClearApproach runs on it first in any case. */
+int Mailbox_MayAct(Mailbox *mailbox, SceneObjectBase *other)
+{
+    SceneActor *actor = mailbox_actor(mailbox);
+    SceneObjectBase_ClearApproach((SceneObjectBase *) (void *) mailbox);
+    if (Mailbox_MovesOn(mailbox) == 0) {
+        return 0;
+    }
+    return mailbox->mode == MAILBOX_FULL && other != NULL &&
+           Vec_DistanceXZ(&other->position, &actor->position) < MAILBOX_ACT_DISTANCE &&
+           Math_AbsDiff16((s16) (actor->yaw + 0x8000), other->yaw) < MAILBOX_ACT_ANGLE;
+}
+CLEAN_AS(func_ov003_0221e718, Mailbox_MayAct)
+
+/* func_ov003_0221e788 (vtable slot 0xb0): its drawing does not draw the model; always 0. */
+int Mailbox_DrawsModel(void)
+{
+    return 0;
+}
+CLEAN_AS(func_ov003_0221e788, Mailbox_DrawsModel)
+
+/* func_ov003_0221e78c (vtable slot 0x18, its update): the other machine's run, then the touch
+ * sphere is added to the field's touch pick for this frame; always 1. */
+int Mailbox_Update(Mailbox *mailbox)
+{
+    Mailbox_RunState(mailbox);
+    TouchPick_AddSphere((TouchPick *) (intptr_t) SceneQuery_FieldObject(), mailbox_sphere(mailbox));
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e78c, Mailbox_Update)
+
+/* func_ov003_0221e7ac (vtable slot 0x70, setting it up): when overlay 9 has its animation file
+ * 0 and a material animation object could be allocated for the model, the pattern starts from
+ * that file and is attached to the model's render object. The touch sphere is set 1.0 above
+ * its position, with its index in overlay 3's table of actors. Its modes move on only in scene
+ * 0 and when this console is slot 0 of a linked session or plays alone. Then the other machine
+ * is idle and the mode (vtable slot 0x6c) MAILBOX_EMPTY when the modes move on, else the one
+ * main recorded for its code. Always 1. */
+int Mailbox_SetUp(Mailbox *mailbox)
+{
+    SceneActor *actor = mailbox_actor(mailbox);
+    ModelAnim *pattern = mailbox_pattern(mailbox);
+    if (func_ov009_02264cf8(mailbox, 0) != NULL && ModelAnim_AllocMaterialAnim(pattern, actor->model, data_021c9b1c) != 0) {
+        ModelAnim_Start(pattern, func_ov009_02264cf8(mailbox, 0), MAILBOX_PATTERN_SETUP_FLAGS, MAILBOX_ONE, 0);
+        ModelAnim_Attach(pattern, ModelObject_RenderObject((ModelObject *) (void *) mailbox->model_object));
+    }
+
+    u8 index = (u8) func_ov003_02220150(mailbox);
+    Vec3 centre = actor->position;
+    centre.y += MAILBOX_SPHERE_HEIGHT;
+    TouchPick_SetSphereAndAdd((TouchPick *) (intptr_t) SceneQuery_FieldObject(), mailbox_sphere(mailbox), &centre,
+                              MAILBOX_SPHERE_RADIUS, MAILBOX_SPHERE_KIND, index);
+
+    mailbox->moves_on = 1;
+    if (!SceneQuery_CurrentIs0()) {
+        mailbox->moves_on = 0;
+    } else {
+        NetSession *session = data_020ccf94;
+        if (Session_IsLinked(session) && !Session_IsLocalSlot(session, 0)) {
+            mailbox->moves_on = 0;
+        }
+    }
+
+    Mailbox_SetState(mailbox, MAILBOX_STATE_IDLE);
+    if (Mailbox_MovesOn(mailbox)) {
+        mailbox_set_mode_slot(mailbox, MAILBOX_EMPTY);
+    } else {
+        mailbox_set_mode_slot(mailbox, TownObjects_RecordedMode(actor->code));
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_0221e7ac, Mailbox_SetUp)
+
+/* The vtables set back, the touch sphere and the pattern destroyed, then overlay 9's
+ * destructor. */
+static void mailbox_destroy_parts(Mailbox *mailbox)
+{
+    mailbox->vtable = data_ov003_0223948c;
+    mailbox->receiver_vtable = data_ov003_02239550;
+    TouchPickSphere_Destruct2(mailbox_sphere(mailbox));
+    ModelAnim_DestructComplete(mailbox_pattern(mailbox));
+    func_ov009_0226539c(mailbox);
+}
+
+/* func_ov003_0221e8c4 (vtable slot 0x44, the deleting destructor): the destructor's work, then
+ * the memory freed. */
+Mailbox *Mailbox_DestroyAndFree(Mailbox *mailbox)
+{
+    mailbox_destroy_parts(mailbox);
+    Heap_FreeAux(mailbox);
+    return mailbox;
+}
+CLEAN_AS(func_ov003_0221e8c4, Mailbox_DestroyAndFree)
+
+/* func_ov003_0221e908 (vtable slot 0x40): the destructor, without freeing. */
+Mailbox *Mailbox_Destroy(Mailbox *mailbox)
+{
+    mailbox_destroy_parts(mailbox);
+    return mailbox;
+}
+CLEAN_AS(func_ov003_0221e908, Mailbox_Destroy)
+
+/* func_ov003_0221e948: the constructor: overlay 9's, the vtables, then the pattern and the
+ * touch sphere. */
+Mailbox *Mailbox_Construct(Mailbox *mailbox)
+{
+    func_ov009_0226552c(mailbox);
+    mailbox->vtable = data_ov003_0223948c;
+    mailbox->receiver_vtable = data_ov003_02239550;
+    ModelAnim_Construct(mailbox_pattern(mailbox));
+    TouchPickSphere_Construct(mailbox_sphere(mailbox));
+    return mailbox;
+}
+CLEAN_AS(func_ov003_0221e948, Mailbox_Construct)
+
+/* func_ov003_0221e984 (the class's entry in the overlay's table of profiles): allocates and
+ * constructs one; nothing keeps the pointer here. */
+void Mailbox_New(void)
+{
+    Mailbox *mailbox = Heap_AllocAuxZeroed(sizeof(Mailbox));
+    if (mailbox != NULL) {
+        Mailbox_Construct(mailbox);
+    }
+}
+CLEAN_AS(func_ov003_0221e984, Mailbox_New)
+
+/* The mailbox around its receiver part, as the receiver vtable's thunks find it. */
+static Mailbox *mailbox_from_receiver(void *receiver)
+{
+    return (Mailbox *) (void *) ((u8 *) receiver - MAILBOX_RECEIVER_OFFSET);
+}
+
+/* _ZThn236_N18Obj_ov003_0223948cD0Ev (receiver slot 0x04): Mailbox_DestroyAndFree. */
+Mailbox *Mailbox_ReceiverDestroyAndFree(void *receiver)
+{
+    return Mailbox_DestroyAndFree(mailbox_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov003_0223948cD0Ev, Mailbox_ReceiverDestroyAndFree)
+
+/* _ZThn236_N18Obj_ov003_0223948cD1Ev (receiver slot 0x00): Mailbox_Destroy. */
+Mailbox *Mailbox_ReceiverDestroy(void *receiver)
+{
+    return Mailbox_Destroy(mailbox_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov003_0223948cD1Ev, Mailbox_ReceiverDestroy)

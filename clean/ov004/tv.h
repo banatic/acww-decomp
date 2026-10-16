@@ -94,5 +94,9 @@ Tv *Tv_Destroy(Tv *tv);
 Tv *Tv_Construct(Tv *tv);
 Tv *Tv_ConstructBase(Tv *tv);
 void Tv_Create(void);
+Tv *TvReceiver_Delete(void *receiver);
+Tv *TvReceiver_Destroy(void *receiver);
+TvAnimated *TvAnimatedReceiver_Delete(void *receiver);
+TvAnimated *TvAnimatedReceiver_Destroy(void *receiver);
 
 #endif

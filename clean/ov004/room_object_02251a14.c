@@ -220,3 +220,25 @@ void RoomObject02251a14_Create(void)
     }
 }
 CLEAN_AS(func_ov004_02219e38, RoomObject02251a14_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02251a14's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static RoomObject02251a14 *RoomObject02251a14_from_receiver(void *receiver)
+{
+    return (RoomObject02251a14 *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a5d4: the deleting destructor, entered from the receiver part. */
+RoomObject02251a14 *RoomObject02251a14Receiver_Delete(void *receiver)
+{
+    return RoomObject02251a14_Delete(RoomObject02251a14_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251a14D0Ev, RoomObject02251a14Receiver_Delete)
+
+/* func_ov004_0221a5f0: the destructor, entered from the receiver part. */
+RoomObject02251a14 *RoomObject02251a14Receiver_Destroy(void *receiver)
+{
+    return RoomObject02251a14_Destroy(RoomObject02251a14_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251a14D1Ev, RoomObject02251a14Receiver_Destroy)

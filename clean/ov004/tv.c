@@ -525,3 +525,47 @@ void Tv_Create(void)
     }
 }
 CLEAN_AS(func_ov004_02215f70, Tv_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Tv's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static Tv *Tv_from_receiver(void *receiver)
+{
+    return (Tv *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a83c: the deleting destructor, entered from the receiver part. */
+Tv *TvReceiver_Delete(void *receiver)
+{
+    return Tv_Delete(Tv_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251438D0Ev, TvReceiver_Delete)
+
+/* func_ov004_0221a858: the destructor, entered from the receiver part. */
+Tv *TvReceiver_Destroy(void *receiver)
+{
+    return Tv_Destroy(Tv_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251438D1Ev, TvReceiver_Destroy)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters TvAnimated's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static TvAnimated *TvAnimated_from_receiver(void *receiver)
+{
+    return (TvAnimated *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a874: the deleting destructor, entered from the receiver part. */
+TvAnimated *TvAnimatedReceiver_Delete(void *receiver)
+{
+    return TvAnimated_Delete(TvAnimated_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250f88D0Ev, TvAnimatedReceiver_Delete)
+
+/* func_ov004_0221a890: the destructor, entered from the receiver part. */
+TvAnimated *TvAnimatedReceiver_Destroy(void *receiver)
+{
+    return TvAnimated_Destroy(TvAnimated_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250f88D1Ev, TvAnimatedReceiver_Destroy)

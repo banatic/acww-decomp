@@ -52,5 +52,7 @@ RoomObject02252248 *RoomObject02252248_Delete(RoomObject02252248 *object);
 RoomObject02252248 *RoomObject02252248_Destroy(RoomObject02252248 *object);
 RoomObject02252248 *RoomObject02252248_Construct(RoomObject02252248 *object);
 void RoomObject02252248_Create(void);
+RoomObject02252248 *RoomObject02252248Receiver_Delete(void *receiver);
+RoomObject02252248 *RoomObject02252248Receiver_Destroy(void *receiver);
 
 #endif

@@ -254,3 +254,25 @@ void Bromide_Create(void)
     }
 }
 CLEAN_AS(func_ov004_022136dc, Bromide_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Bromide's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static Bromide *Bromide_from_receiver(void *receiver)
+{
+    return (Bromide *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221aa6c: the deleting destructor, entered from the receiver part. */
+Bromide *BromideReceiver_Delete(void *receiver)
+{
+    return Bromide_Delete(Bromide_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D0Ev, BromideReceiver_Delete)
+
+/* func_ov004_0221aa88: the destructor, entered from the receiver part. */
+Bromide *BromideReceiver_Destroy(void *receiver)
+{
+    return Bromide_Destroy(Bromide_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02251b40D1Ev, BromideReceiver_Destroy)

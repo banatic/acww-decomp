@@ -19,6 +19,7 @@ extern const u32 data_020e2044[]; /* FieldOwnedPointBody's vtable */
 
 extern void func_0208a07c(FieldBody *body);       /* the base class's destructor */
 extern FieldBody *func_0208a088(FieldBody *body); /* the base class's constructor */
+extern int func_02089c48(FieldOwnedBody *body);   /* FieldOwnedBody_Identity */
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 
@@ -418,10 +419,12 @@ CLEAN_AS(func_0208a0b4, FieldOwnedPointBody_Position)
 
 /* func_0208a0b8: vtable slot 1, the identity: the owner's serial number (FieldOwnedBody_Identity).
  * QUIRK: declared without a result; in the ROM the serial number is still in r0 when it
- * returns, which is what the caller of the slot reads. */
+ * returns, which is what the caller of the slot reads. The call names the game's symbol, not
+ * FieldOwnedBody_Identity: a compiler that sees that function only reads memory drops a call
+ * whose result is unused, and the value with it. */
 void FieldOwnedPointBody_Identity(FieldOwnedPointBody *body)
 {
-    (void) FieldOwnedBody_Identity(&body->base);
+    (void) func_02089c48(&body->base);
 }
 CLEAN_AS(func_0208a0b8, FieldOwnedPointBody_Identity)
 

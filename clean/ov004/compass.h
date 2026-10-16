@@ -36,5 +36,7 @@ Compass *Compass_Delete(Compass *compass);
 Compass *Compass_Destroy(Compass *compass);
 Compass *Compass_Construct(Compass *compass);
 void Compass_Create(void);
+Compass *CompassReceiver_Delete(void *receiver);
+Compass *CompassReceiver_Destroy(void *receiver);
 
 #endif

@@ -796,3 +796,25 @@ void Chest_Create(void)
     }
 }
 CLEAN_AS(func_ov004_02217848, Chest_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters Chest's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static Chest *Chest_from_receiver(void *receiver)
+{
+    return (Chest *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a794: the deleting destructor, entered from the receiver part. */
+Chest *ChestReceiver_Delete(void *receiver)
+{
+    return Chest_Delete(Chest_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD0Ev, ChestReceiver_Delete)
+
+/* func_ov004_0221a7b0: the destructor, entered from the receiver part. */
+Chest *ChestReceiver_Destroy(void *receiver)
+{
+    return Chest_Destroy(Chest_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_0225211cD1Ev, ChestReceiver_Destroy)

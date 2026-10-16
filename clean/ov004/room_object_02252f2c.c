@@ -8,6 +8,7 @@
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"
+#include "room_object_life.h"
 #include "room_object_methods.h"
 
 static_assert(offsetof(RoomObject02252f2c, state) == 0x844, "state");
@@ -226,3 +227,81 @@ int RoomObject02252f2c_Start(RoomObject02252f2c *object)
     return 1;
 }
 CLEAN_AS(func_ov004_0221a420, RoomObject02252f2c_Start)
+
+#define ROOM_OBJECT_02252F2C_SIZE 0x8a0
+
+/* The class's vtable and its receiver part's (at 0xec). */
+extern const u8 data_ov004_02252f2c[];
+extern const u8 data_ov004_02252fd8[];
+
+static void RoomObject02252f2c_set_vtables(RoomObject02252f2c *object)
+{
+    object->base.vtable = (const RoomObjectVtable *) (const void *) data_ov004_02252f2c;
+    object->base.receiver_vtable = data_ov004_02252fd8;
+}
+
+/* func_ov004_0221a4ac (the deleting destructor, vtable slot 0x44): the vtables back to the
+ * class's, the glows taken down, the base taken down and the block freed. */
+RoomObject02252f2c *RoomObject02252f2c_Delete(RoomObject02252f2c *object)
+{
+    RoomObject02252f2c_set_vtables(object);
+    GlowSet_Destruct(&object->glows);
+    RoomObject_DestructBase(&object->base);
+    RoomObject_Free(object);
+    return object;
+}
+CLEAN_AS(func_ov004_0221a4ac, RoomObject02252f2c_Delete)
+
+/* func_ov004_0221a4e4 (the destructor, vtable slot 0x40): as RoomObject02252f2c_Delete, without
+ * freeing the block. */
+RoomObject02252f2c *RoomObject02252f2c_Destroy(RoomObject02252f2c *object)
+{
+    RoomObject02252f2c_set_vtables(object);
+    GlowSet_Destruct(&object->glows);
+    RoomObject_DestructBase(&object->base);
+    return object;
+}
+CLEAN_AS(func_ov004_0221a4e4, RoomObject02252f2c_Destroy)
+
+/* func_ov004_0221a518 (the constructor): the base, the vtables, the glows (not bound). The state
+ * is left as the allocation zeroed it. */
+RoomObject02252f2c *RoomObject02252f2c_Construct(RoomObject02252f2c *object)
+{
+    RoomObject_ConstructBase(&object->base);
+    RoomObject02252f2c_set_vtables(object);
+    GlowSet_Construct(&object->glows);
+    return object;
+}
+CLEAN_AS(func_ov004_0221a518, RoomObject02252f2c_Construct)
+
+/* func_ov004_0221a548: a new one from the room's heap; nothing when it has no room. */
+void RoomObject02252f2c_Create(void)
+{
+    RoomObject02252f2c *object = RoomObject_Alloc(ROOM_OBJECT_02252F2C_SIZE);
+    if (object != NULL) {
+        RoomObject02252f2c_Construct(object);
+    }
+}
+CLEAN_AS(func_ov004_0221a548, RoomObject02252f2c_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters RoomObject02252f2c's functions
+ * through its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static RoomObject02252f2c *RoomObject02252f2c_from_receiver(void *receiver)
+{
+    return (RoomObject02252f2c *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221a564: the deleting destructor, entered from the receiver part. */
+RoomObject02252f2c *RoomObject02252f2cReceiver_Delete(void *receiver)
+{
+    return RoomObject02252f2c_Delete(RoomObject02252f2c_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252f2cD0Ev, RoomObject02252f2cReceiver_Delete)
+
+/* func_ov004_0221a580: the destructor, entered from the receiver part. */
+RoomObject02252f2c *RoomObject02252f2cReceiver_Destroy(void *receiver)
+{
+    return RoomObject02252f2c_Destroy(RoomObject02252f2c_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252f2cD1Ev, RoomObject02252f2cReceiver_Destroy)

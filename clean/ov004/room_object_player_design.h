@@ -25,5 +25,7 @@ PlayerDesignObject *PlayerDesignObject_Delete(PlayerDesignObject *object);
 PlayerDesignObject *PlayerDesignObject_Destroy(PlayerDesignObject *object);
 PlayerDesignObject *PlayerDesignObject_Construct(PlayerDesignObject *object);
 void PlayerDesignObject_Create(void);
+PlayerDesignObject *PlayerDesignObjectReceiver_Delete(void *receiver);
+PlayerDesignObject *PlayerDesignObjectReceiver_Destroy(void *receiver);
 
 #endif
