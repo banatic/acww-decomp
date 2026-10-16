@@ -13,6 +13,12 @@
 #ifndef CLEAN_CLEAN_H
 #define CLEAN_CLEAN_H
 
+/* What Clean code uses everywhere: static_assert (a macro of <assert.h> in C11), offsetof and
+ * the fixed-width integers. */
+#include <assert.h>
+#include <stddef.h>
+#include <stdint.h>
+
 #define CLEAN_AS(symbol, function)                                                                                            \
     static const void *const clean_as_##symbol __attribute__((unused)) = (const void *) (function);
 
