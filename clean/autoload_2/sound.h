@@ -126,7 +126,7 @@ struct SoundScene;
 
 /* The game's sound state (data_021fd1bc); sound_system.h says more. */
 typedef struct SoundSystem {
-    void *owner;              /* 0x00: an object that puts itself here when built (func_020f9624) */
+    void *owner;              /* 0x00: an object that puts itself here when built (MusicBeatShow_Construct) */
     SoundFader fader;         /* 0x04: the music's own fades and its tracks' cross-fades */
     SoundFader volume_a;      /* 0x10: the first group of players' volume */
     SoundFader volume_b;      /* 0x1c: the second group of players' volume */

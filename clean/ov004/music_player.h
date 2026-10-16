@@ -1,7 +1,7 @@
 /* The music players: a class of overlay 4's room objects (vtable 0x022517bc, receiver part
  * 0x02251868) that plays one of the 70 songs of the music items 0x1323-0x1368 (song n is item
- * 0x1323 + n, played as music 0xb0 + n by func_ov004_022165dc and stopped by
- * func_ov004_02216598). It has three glowing materials (a GlowSet, room_object_parts.h) that
+ * 0x1323 + n, played as music 0xb0 + n by MusicPlayer_PlaySong and stopped by
+ * MusicPlayer_StopSong). It has three glowing materials (a GlowSet, room_object_parts.h) that
  * fade in while it plays. Kind 0x29 (RoomObject.unk_780) also animates while playing.
  *
  * Its state (MusicPlayer.state) runs through tables of member pointers (member_pointer.h),
@@ -12,9 +12,17 @@
  *   that is on switched off (this one included), then the switch on and the song played; kind
  *   0x29 loops the animations of variant 1. Each frame the sound at 0 follows the object.
  * Touching it does not switch it: the switch is put back and the scene is asked for an event
- * (func_0203e0a8), whose answer (vtable slot 0x4c) starts a talk.
+ * (func_0203e0a8), whose answer (vtable slot 0x4c) starts a talk: event 1 the song menu when
+ * func_020b67d4 and Room_Check0220fed0 allow it, else the talk that tells the song; event 8
+ * ends the talk.
  *
- * The talk has its own steps (MusicPlayer.talk_step), with another two tables:
+ * Once its model is bound (vtable slot 0x7c) it plays when its switch is on, outside the areas
+ * func_ov004_0223c10c names: in a villager's house the villager's song, unless a player already
+ * started it there (data_ov004_02256fec), elsewhere the house's music item; else it is
+ * stopped. Vtable slot 0x0c stops the song and forgets the villager's song started.
+ *
+ * The talk has its own steps (MusicPlayer.talk_step), entered by MusicPlayer_EnterTalkStep,
+ * with another two tables:
  * - MUSIC_PLAYER_TALK_NONE (0);
  * - MUSIC_PLAYER_TALK_MENU_NEXT (1): the next frame opens the menu;
  * - MUSIC_PLAYER_TALK_MENU (2): the song menu (group 9 in mode 0x40) is opened on entry, a step
@@ -36,7 +44,7 @@
 
 typedef struct MusicPlayer {
     RoomObject base;
-    u8 playing; /* its song is playing (set by func_ov004_022165dc, cleared by func_ov004_02216598) */
+    u8 playing; /* its song is playing (set by MusicPlayer_PlaySong, cleared by MusicPlayer_StopSong) */
     u8 song;    /* the song it plays, 0 to 69 (0xff when asked for an item that is no music) */
     u8 unk_846[2];
     GlowSet glows;
@@ -77,5 +85,17 @@ int MusicPlayer_EnterTalkMenuNext(MusicPlayer *player);
 void MusicPlayer_UpdateTalkNone(MusicPlayer *player);
 int MusicPlayer_EnterTalkNone(MusicPlayer *player);
 void MusicPlayer_UpdateTalkStep(MusicPlayer *player);
+int MusicPlayer_EnterTalkStep(MusicPlayer *player, int step);
+void MusicPlayer_OnSceneEvent(MusicPlayer *player, int event);
+void MusicPlayer_StopSong(MusicPlayer *player, unsigned int song, int clear_item);
+void MusicPlayer_PlaySong(MusicPlayer *player, unsigned int song);
+int MusicPlayer_Stop(MusicPlayer *player);
+void MusicPlayer_UpdateUnsettled(MusicPlayer *player);
+int MusicPlayer_Update(MusicPlayer *player);
+int MusicPlayer_Start(MusicPlayer *player);
+MusicPlayer *MusicPlayer_Delete(MusicPlayer *player);
+MusicPlayer *MusicPlayer_Destroy(MusicPlayer *player);
+MusicPlayer *MusicPlayer_Construct(MusicPlayer *player);
+void MusicPlayer_Create(void);
 
 #endif

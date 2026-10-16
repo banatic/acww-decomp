@@ -61,12 +61,6 @@ extern const fx32 data_020d72f4[];
 extern const fx32 data_020d7308[];
 extern const fx32 data_020d7310[];
 
-/* The point `distance` ahead of `from` along the yaw (the second argument is not read). */
-extern void func_0200fa1c(Vec3 *out, FieldActor *unused, const Vec3 *from, const u16 *yaw, const fx32 *distance);
-extern int func_0200f290(FieldActor *actor, int bit);
-extern void func_0200f268(FieldActor *actor, int bit);
-extern int func_0200edb0(FieldActor *actor);
-extern int func_0200fbe0(FieldActor *actor);
 extern int func_020b5d5c(void);
 extern void func_020b8db4(void);
 extern int func_0203e110(void);
@@ -154,7 +148,7 @@ static fx32 push_of_length(fx32 length)
 /* func_0200dc98: reads the control for the actor of this console. With the field not
  * steerable (the byte 0x021c75b8 not 2) only the act at 0x140, the word at 0x144 and the byte
  * at 0x16d are reset. Under flag 0xb or 0x1b the control is reset to nothing (the aim point
- * 1.0 ahead at data_020d7310) and, under flag 0x1b, when func_020b5d5c says 1 and func_0200edb0
+ * 1.0 ahead at data_020d7310) and, under flag 0x1b, when func_020b5d5c says 1 and FieldActor_AnyPlayerUnreported
  * says 0, the flag is cleared (func_020b8db4; func_020eae40 when this console has slot 0 in
  * network modes 3 and 4; func_0203e110 in states 2, 0x83, 0x28 and 8).
  *
@@ -193,7 +187,7 @@ void FieldActor_ReadControl(FieldActor *actor)
     int pick_kind;
     u8 pick_extra;
 
-    func_0200fa1c(&aim, actor, position_of(actor), yaw_of(actor), data_020d7310);
+    FieldActor_PointAhead(&aim, actor, position_of(actor), yaw_of(actor), data_020d7310);
     actor->unk_140 = 0;
     actor->unk_144 = 0;
     FIELD_ACTOR_PICK_EXTRA(actor) = 0xff;
@@ -201,7 +195,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         return;
     }
 
-    if (func_0200f290(actor, 0xb) || func_0200f290(actor, 0x1b)) {
+    if (FieldActor_TestFlag(actor, 0xb) || FieldActor_TestFlag(actor, 0x1b)) {
         FIELD_ACTOR_PUSH(actor) = 0;
         FIELD_ACTOR_RUN(actor) = 0;
         FIELD_ACTOR_ACT(actor) = 0;
@@ -209,10 +203,10 @@ void FieldActor_ReadControl(FieldActor *actor)
         FIELD_ACTOR_HOLD(actor) = 0;
         actor->unk_148 = 0;
         actor->aim_point = aim;
-        if (!func_0200f290(actor, 0x1b) || func_020b5d5c() != 1 || func_0200edb0(actor) != 0) {
+        if (!FieldActor_TestFlag(actor, 0x1b) || func_020b5d5c() != 1 || FieldActor_AnyPlayerUnreported(actor) != 0) {
             return;
         }
-        func_0200f268(actor, 0x1b);
+        FieldActor_ClearFlag(actor, 0x1b);
         func_020b8db4();
         /* Network modes 3 and 4 (Net_GetMode's result less 3, as a byte, at most 1). */
         if (data_020ccf94->local_slot == 0 && (u8) (Net_GetMode() - 3) <= 1) {
@@ -258,7 +252,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                     if (pen_came_down()) {
                         actor->unk_144 = 1;
                         Vec3 target = pick;
-                        if (func_0200fbe0(actor) == 1) {
+                        if (FieldActor_HeldTool(actor) == 1) {
                             u16 *tile_item = func_0204f5a8(data_021c80bc, &pick, 0);
                             if (*tile_item >= 0xfc && *tile_item <= 0xfd) {
                                 int actor_x = 0, actor_z = 0, ground_x = 0, ground_z = 0;
@@ -299,7 +293,7 @@ void FieldActor_ReadControl(FieldActor *actor)
         FIELD_ACTOR_RUN(actor) = 0;
         hold = 1;
         actor->unk_140 = 1;
-        func_0200fa1c(&ahead, actor, position_of(actor), yaw_of(actor), data_020d72f4);
+        FieldActor_PointAhead(&ahead, actor, position_of(actor), yaw_of(actor), data_020d72f4);
         aim = ahead;
         mode = 2;
     } else {
@@ -359,7 +353,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 aim = ground;
             }
         } else {
-            u16 steer = (func_0203e31c() || func_0200f290(actor, 0x13)) ? BUTTONS_ALL : BUTTONS_STEER;
+            u16 steer = (func_0203e31c() || FieldActor_TestFlag(actor, 0x13)) ? BUTTONS_ALL : BUTTONS_STEER;
             u16 held = data_021fbe40.held;
             mode = (held & steer) ? 1 : actor->aim_mode;
             run = (held & (BUTTON_B | BUTTON_R | BUTTON_L)) != 0;
@@ -372,7 +366,7 @@ void FieldActor_ReadControl(FieldActor *actor)
                 if (data_021fbe40.pressed & BUTTON_B) {
                     Vec3 ahead;
                     aimed = 1;
-                    func_0200fa1c(&ahead, actor, position_of(actor), yaw_of(actor), data_020d7308);
+                    FieldActor_PointAhead(&ahead, actor, position_of(actor), yaw_of(actor), data_020d7308);
                     aim = ahead;
                 }
             }

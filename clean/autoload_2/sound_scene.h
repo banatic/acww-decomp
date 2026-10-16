@@ -7,6 +7,7 @@
 #ifndef CLEAN_AUTOLOAD_2_SOUND_SCENE_H
 #define CLEAN_AUTOLOAD_2_SOUND_SCENE_H
 
+#include "music_beat.h"
 #include "sound_system.h"
 
 #include <assert.h>
@@ -44,27 +45,12 @@ SoundScene *SoundScene51_Construct(SoundScene *scene);
  *   kind 44: scenes 0x25, 0x26  kind 35: scene 0x1f
  *
  * Each loads its own group of the archive; class 41 is 0x38 bytes long and owns a part at
- * 0x08 that follows the music (SoundScenePart). Class 31's destructor and constructor come
+ * 0x08 that follows the music (MusicBeatShow, music_beat.h). Class 31's destructor and constructor come
  * after these. */
 
-struct SoundScenePart;
-
-/* The part's vtable (0x0213f250), as far as class 41 uses it. */
-typedef struct SoundScenePartVtable {
-    void (*update)(struct SoundScenePart *part); /* 0x00: its frame update */
-} SoundScenePartVtable;
-
-/* The part class 41 owns: built by func_020f9624 (which makes it the sound system's owner),
- * destroyed by func_020f95f8, set up by func_020f97dc and turned on or off by func_020f95f0
- * (its byte 0x28). */
-typedef struct SoundScenePart {
-    const SoundScenePartVtable *vtable; /* 0x00 */
-    u8 unk_04[0x2c];
-} SoundScenePart;
-
 typedef struct SoundScene41 {
-    SoundScene base;     /* 0x00 */
-    SoundScenePart part; /* 0x08 */
+    SoundScene base;    /* 0x00 */
+    MusicBeatShow part; /* 0x08 */
 } SoundScene41;
 
 static_assert(offsetof(SoundScene41, part) == 0x08, "SoundScene41.part");
@@ -165,17 +151,10 @@ SoundScene *SoundScene31_Construct(SoundScene *scene);
  * Also here: the base class's helpers that make the heaps of players 6, 12, 13, 17, 18 and
  * 19. */
 
-/* The part class 10 owns at 0x08 (vtable 0x0213f25c), the base of class 41's part: built by
- * func_020f9888, destroyed by func_020f9868 (which clears the sound system's owner) and set up
- * by func_020f97dc. */
-typedef struct SoundScene10Part {
-    const SoundScenePartVtable *vtable; /* 0x00 */
-    u8 unk_04[0x10];
-} SoundScene10Part;
-
+/* Class 10 owns a MusicBeat (music_beat.h) at 0x08, the base class of class 41's part. */
 typedef struct SoundScene10 {
-    SoundScene base;       /* 0x00 */
-    SoundScene10Part part; /* 0x08 */
+    SoundScene base; /* 0x00 */
+    MusicBeat part;  /* 0x08 */
     /* 0x1c: 0 when built, 1 once the scene's sounds are loaded (start or slot 8), 2 once the
      * keyboard's sounds replace them (slot 7) */
     u8 stage;

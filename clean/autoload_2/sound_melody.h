@@ -116,5 +116,6 @@ void MelodyPlayer_PlaySeqD3(MelodyPlayer *player, int index);
 void MelodyPlayer_Start(MelodyPlayer *player, const u8 *melody);
 int MelodyPlayer_StartArc(MelodyPlayer *player, unsigned short seq_arc, const u8 *melody);
 void MelodyPlayer_Init(MelodyPlayer *player);
+MelodyPlayer *MelodyPlayer_Destruct(MelodyPlayer *player);
 
 #endif

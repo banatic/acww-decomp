@@ -7,6 +7,7 @@
 #include "main/library_overlay.h"
 #include "main/session.h"
 #include "main/session_link.h"
+#include "main/session_net.h"
 
 /* The scenes (func_020b65c4) the activity handlers act in. */
 #define SCENE_09 9
@@ -76,8 +77,6 @@ extern void func_0209e474(DateTime *now);            /* reads the clock */
 extern void *func_02137550(void *dst, u32 size);     /* clears size bytes (none for NULL) */
 
 /* Whether every peer among the AIDs of `to` can take a packet (has a credit). */
-extern int func_02077a8c(u32 to);
-extern void func_02077b3c(u8 *packet, int credits, int kind); /* writes a system packet's first byte */
 
 /* The 0x950-byte block of a slot: func_02090078(slot - 1) for slots 1-3, data_021ee418 for
  * any other number; func_02090174 clears one and the records it holds; func_02090158 says
@@ -496,7 +495,7 @@ static int system_packet_can_send(u32 to)
     if (!system_packet_network_ready()) {
         return 0;
     }
-    return func_02077a8c(to) != 0;
+    return SessionNet_PeersHaveCredit(to) != 0;
 }
 
 /* Sends the packet built in the share block, `length` bytes, to the AIDs of `to`. */
@@ -517,7 +516,7 @@ static int system_packet_send_kind(int kind, int to, int ask_slot0)
     if (ask_slot0) {
         Session_IsLocalSlot(session, 0);
     }
-    func_02077b3c(Session_GetSendBlock(session, SHARE_BLOCK), 0, kind);
+    SessionNet_WriteSystemHeader(Session_GetSendBlock(session, SHARE_BLOCK), 0, kind);
     return system_packet_send(session, 1, to);
 }
 
@@ -562,7 +561,7 @@ int SystemPacket_SendActivityPlayerF4(void)
         return 0;
     }
     NetSession *session = data_020ccf94;
-    func_02077b3c(Session_GetSendBlock(session, SHARE_BLOCK), 0, SYSTEM_SET_ACTIVITY_PLAYER_F4);
+    SessionNet_WriteSystemHeader(Session_GetSendBlock(session, SHARE_BLOCK), 0, SYSTEM_SET_ACTIVITY_PLAYER_F4);
     Session_GetPeerMask();
     return system_packet_send(session, 1, TO_HOST);
 }
@@ -598,7 +597,7 @@ int SystemPacket_SendLinkEntries(int slot)
         return 0;
     }
     u8 *packet = Session_GetSendBlock(data_020ccf94, SHARE_BLOCK);
-    func_02077b3c(packet, 0, SYSTEM_SET_LINK_ENTRIES);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_LINK_ENTRIES);
     u8 *write = packet + 1;
     int length = 1;
     for (u32 i = 0; i < 4; i++) {
@@ -629,7 +628,7 @@ int SystemPacket_SendActivityPlayerEF(int value, int to)
     }
     NetSession *session = data_020ccf94;
     u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-    func_02077b3c(packet, 0, SYSTEM_SET_ACTIVITY_PLAYER_EF);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_ACTIVITY_PLAYER_EF);
     packet[1] = (u8) value;
     return system_packet_send(session, 2, to);
 }
@@ -644,7 +643,7 @@ int SystemPacket_SendDateTime(int to)
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
     u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-    func_02077b3c(packet, 0, SYSTEM_SET_ACTIVITY_DATA_DC);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_ACTIVITY_DATA_DC);
     DateTime now = {0};
     func_0209e474(&now);
     MI_CpuCopy8(&now, packet + 1, sizeof(now));
@@ -687,7 +686,7 @@ int SystemPacket_SendModeRequest(void)
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
     u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-    func_02077b3c(packet, 0, SYSTEM_REQUEST_MODE);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_REQUEST_MODE);
     packet[1] = SESSION_MODE_CREDITS;
     return system_packet_send(session, 2, to);
 }
@@ -747,7 +746,7 @@ int SystemPacket_SendSlotBlocks(int content1, int block1, int content2, int bloc
         }
         u8 *packet = Session_GetSendBlock(session, (int) i + 1);
         packets[i] = packet;
-        func_02077b3c(packet, 0, SYSTEM_SET_OWN_BLOCK);
+        SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_OWN_BLOCK);
         lengths[i] += 1;
         if (content == SLOT_BLOCK_KEEP) {
             packet[1] = SLOT_BLOCK_KEEP;
@@ -764,7 +763,7 @@ int SystemPacket_SendSlotBlocks(int content1, int block1, int content2, int bloc
     if (content1 == SLOT_BLOCK_NONE && content2 == SLOT_BLOCK_NONE && content3 == SLOT_BLOCK_NONE) {
         return 1;
     }
-    if (func_02077a8c((u16) (to[0] | to[1] | to[2])) == 0) {
+    if (SessionNet_PeersHaveCredit((u16) (to[0] | to[1] | to[2])) == 0) {
         return 0;
     }
     return Session_SendBlocks(session, packets[0], lengths[0], to[0], packets[1], lengths[1], to[1], packets[2], lengths[2],
@@ -813,7 +812,7 @@ int SystemPacket_SendInChunks(u8 *chunks_sent, const u8 *data, u32 size, int kin
         }
         NetSession *session = data_020ccf94;
         u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-        func_02077b3c(packet, 0, kind);
+        SessionNet_WriteSystemHeader(packet, 0, kind);
         MI_CpuCopy8(&offset, packet + 1, 4);
         MI_CpuCopy8(data + offset, packet + 5, length);
         if (system_packet_send(session, (int) length + 5, to) != 0) {
@@ -834,7 +833,7 @@ int SystemPacket_SendActivityMembers(int to)
     NetSession *session = data_020ccf94;
     Session_IsLocalSlot(session, 0); /* QUIRK: the answer is not used */
     u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-    func_02077b3c(packet, 0, SYSTEM_SET_ACTIVITY_MEMBERS);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_ACTIVITY_MEMBERS);
     u32 taken = 0;
     for (int slot = 0; slot < SESSION_SLOTS; slot++) {
         if (Session_IsSlotTaken(session, slot) != 0) {

@@ -20,17 +20,6 @@ static_assert(offsetof(MelodySet, a_playing) == 0x38, "MelodySet.a_playing");
 static_assert(offsetof(MelodySet, state) == 0x3c, "MelodySet.state");
 static_assert(offsetof(SoundScene10, heap_level) == 0x1d, "SoundScene10.heap_level");
 
-/* What a MelodySeq reads of the current scene's sound object: its part at 0x08
- * (SoundScene10Part, set up by func_020f97dc and updated by func_020f9728). */
-typedef struct MelodyBeat {
-    const void *vtable;
-    fx32 beat_frames; /* 0x04: frames a beat lasts, 600 / the part's tempo */
-    u8 unk_08[2];
-    u8 new_beat; /* 0x0a: set on the frames the sound library's global variable 2 changes */
-} MelodyBeat;
-
-static_assert(offsetof(MelodyBeat, new_beat) == 0x0a, "MelodyBeat.new_beat");
-
 extern SoundSystem data_021fd1bc;
 /* The melody MelodySeqs play: the sound set's own, taken by MelodySeq_Init. */
 extern const u8 *data_021fd268;
@@ -207,7 +196,7 @@ CLEAN_AS(func_020f6194, MelodySeq_ReadVariables)
  * REQUIRES: the current scene's sound object exists and has the beat part (SoundScene10). */
 void MelodySeq_Update(MelodySeq *seq, const Vec3 *pos)
 {
-    const MelodyBeat *beat;
+    const MusicBeat *beat;
     u8 new_beat;
     int percent;
     fx32 beat_frames;
@@ -224,7 +213,7 @@ void MelodySeq_Update(MelodySeq *seq, const Vec3 *pos)
     }
 
     seq->frame++;
-    beat = (const MelodyBeat *) &((SoundScene10 *) data_021fd1bc.scene)->part;
+    beat = &((SoundScene10 *) data_021fd1bc.scene)->part;
     new_beat = beat->new_beat;
     if (seq->frame >= seq->note_frames) {
         int over = MelodySeq_EndNote(seq);
@@ -807,3 +796,11 @@ void MelodyPlayer_Init(MelodyPlayer *player)
     Sound_InitHandle(&player->handle);
 }
 CLEAN_AS(ENV_SetResourceSet, MelodyPlayer_Init)
+
+/* func_020f70d0: the destructor: the handle's sequence released. */
+MelodyPlayer *MelodyPlayer_Destruct(MelodyPlayer *player)
+{
+    NNS_SndHandleReleaseSeq(&player->handle);
+    return player;
+}
+CLEAN_AS(func_020f70d0, MelodyPlayer_Destruct)

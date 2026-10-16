@@ -12,6 +12,7 @@
 #include "main/calendar.h"     /* DateTime */
 #include "main/group_params.h" /* GroupParams_CanOpen, GroupParams_C4CIs1 */
 #include "main/session.h"      /* NetSession */
+#include "snowman.h"           /* Snowman_Knock */
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -4792,7 +4793,6 @@ static_assert(sizeof(State5EWork) <= sizeof(((StateRequest *) 0)->payload), "sta
 /* max(value - 0x9c, min) */
 extern int func_02011398(int value, int min);
 extern void func_ov003_022241a4(int *tile);
-extern int func_ov003_0221abf8(void *object, int flag);
 /* Turns the actor towards a point. */
 extern void func_02010d88(FieldActor *actor, const Vec3 *point, int a, int b);
 extern void func_02089fc8(void *p);
@@ -4847,7 +4847,7 @@ CLEAN_AS(func_ov003_02211df8, FieldActor_EndState5D)
  * object ahead is of kind 0 to 4 (outside 0xe3-0xfb and the growth lines) or of kind 10, 13 or
  * 14, else sound 0x844 and effect 5 0.8 ahead and 0.5 to the side of the actor; an object of
  * main's tables (2) is told the held item (its vtable slot 24) after sound 0x7df; an object of
- * overlay 3 (3) gets func_ov003_0221abf8 for the actor of this console, sound 0x7df when that
+ * overlay 3 (3) gets Snowman_Knock for the actor of this console, sound 0x7df when that
  * fails or for another player's actor; 1 gives sound 0x7df. What was met is forgotten. */
 void FieldActor_AnimateState5D(FieldActor *actor)
 {
@@ -4924,7 +4924,7 @@ void FieldActor_AnimateState5D(FieldActor *actor)
             }
             break;
         case 3:
-            if (is_local_player(actor) && func_ov003_0221abf8(actor->other, 1)) {
+            if (is_local_player(actor) && Snowman_Knock(actor->other, 1)) {
                 break;
             }
             func_0200f328(actor, 0x7df);
@@ -8507,7 +8507,7 @@ CLEAN_AS(func_ov003_02216740, FieldActor_EndState49)
  * and 0x1c are cleared. Then by what was met (other_result): nothing (0) gives effect 4 at 0.8
  * ahead, 0.5 to the side and 0.8 above the actor, turned by the yaw plus 0x2000, and sound
  * 0x83c; an object of main's tables (2) is told the held item (its vtable slot 24) after sound
- * 0x7df; an object of overlay 3 (3) gets func_ov003_0221abf8 for the actor of this console,
+ * 0x7df; an object of overlay 3 (3) gets Snowman_Knock for the actor of this console,
  * sound 0x7df when that fails or for another player's actor; 1 gives sound 0x7df. What was met
  * is forgotten. */
 void FieldActor_ActState49(FieldActor *actor)
@@ -8569,7 +8569,7 @@ void FieldActor_ActState49(FieldActor *actor)
             }
             break;
         case 3:
-            if (is_local_player(actor) && func_ov003_0221abf8(actor->other, 1)) {
+            if (is_local_player(actor) && Snowman_Knock(actor->other, 1)) {
                 break;
             }
             func_0200f328(actor, 0x7df);
@@ -11295,17 +11295,20 @@ int FieldActor_PlayerRequestState38(int *x, int *z, short *yaw)
 }
 CLEAN_AS(func_ov003_02219ad0, FieldActor_PlayerRequestState38)
 
-/* func_ov003_02219b38: the actor of this console looks (state 0x8f, going back to state 5 after
- * it when it is in state 5 now) when `args.track` is set, else asks for state 0x57 in mode 1.
- * Callers pass an int whose low byte is `track`. Whether it was queued. */
-int FieldActor_PlayerLook(FieldActorLookFlag args)
+/* func_ov003_02219b38: the actor of this console looks (state 0x8f with `flag`'s low byte as
+ * LookArgs.track, going back to state 5 after it when it is in state 5 now) when that byte is
+ * nonzero, else asks for state 0x57 in mode 1. Only the low byte of `flag` is read (the source
+ * declares a 12-byte structure passed by value, of which the callers fill the first register).
+ * Whether it was queued. */
+int FieldActor_PlayerLook(int flag)
 {
     FieldActor *actor = func_02096718(THIS_PLAYER);
     if (actor == NULL) {
         return 0;
     }
-    if (args.track != 0) {
-        return FieldActor_RequestLook(actor, &args.track, actor->state == 5, 6, -1);
+    u8 track = (u8) flag;
+    if (track != 0) {
+        return FieldActor_RequestLook(actor, &track, actor->state == 5, 6, -1);
     }
     return (int) (uintptr_t) FieldActor_RequestState57(actor, 1, 0, 0, 6, -1);
 }

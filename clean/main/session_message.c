@@ -4,6 +4,7 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/design.h"
+#include "main/packed_bytes.h"
 #include "main/player_messages.h"
 #include "main/session.h"
 #include "main/session_link.h"
@@ -70,9 +71,7 @@ extern void func_020a7944(u8 *value);
 extern void func_020a7938(const u8 *src, u8 *dst);
 
 /* Town items: an item record is the item (2 bytes), a source byte (the scene in bits 0-5 and a
- * flag in bits 6-7, func_02077a34) and the x and y (signed bytes). */
-extern u16 func_02077898(const u8 *bytes); /* a little-endian u16 */
-extern void func_02077a34(const u8 *source, u8 *scene, u8 *flag);
+ * flag in bits 6-7, PackedBytes_SplitScene) and the x and y (signed bytes). */
 extern int func_0205fa84(u8 *record); /* puts an item record on the town map */
 /* Puts an item on the town map here, or sends it on as message 19. */
 extern void func_0205f9d4(int x, int y, int scene, int item, int flag);
@@ -420,8 +419,8 @@ void SessionMessage_RelayTownItems(u32 size, int kind, u8 scene, u32 slot)
         u8 item_scene;
         u8 flag;
         Session_ReadMessage(session, record, 5);
-        u16 item = func_02077898(record);
-        func_02077a34(&record[2], &item_scene, &flag);
+        u16 item = PackedBytes_ReadItem(record);
+        PackedBytes_SplitScene(&record[2], &item_scene, &flag);
         func_0205f9d4((s8) record[3], (s8) record[4], item_scene, item, flag != 0 ? 1 : 0);
     }
 }

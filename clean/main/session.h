@@ -1,21 +1,21 @@
 /* The multiplayer session (data_020ccf94): up to four systems in slots 0-3, this system's slot
- * at 0x64 (4 when it has none). Each other system is a peer, numbered 0-2 by func_02077b58
+ * at 0x64 (4 when it has none). Each other system is a peer, numbered 0-2 by SessionNet_PeerIndex
  * (the slots in order, without this system's).
  *
  * Every frame each peer is sent one packet from its block in send_blocks and its packets are
  * received into a queue of three blocks in recv_blocks (Session_SendBlocks and Session_Update,
  * func_02074330; the receive callback Session_OnReceived, func_02075050). A packet starts with a byte whose low two bits give credits
- * back and whose top bit marks a system packet (func_02077b20, func_02077b28), then the shared
+ * back and whose top bit marks a system packet (session_net.h), then the shared
  * records that changed (an id below 70 and the record's bytes, ended by an id of 70 or more),
  * then messages. A peer is sent a data packet only while it has a credit, one per free entry of
  * its receive queue; each packet this system takes from a peer's queue is a credit owed back.
  *
  * A message is a 5-byte header and its payload:
- *   bytes 0-1  the payload's length (little-endian, read by func_02077868);
+ *   bytes 0-1  the payload's length (little-endian, read by PackedBytes_ReadU16);
  *   byte 2     the handler: an index into the table func_02076168 calls through;
  *   byte 3     a kind the handler receives (6 and 7 select where Session_ProcessReceived
  *              delivers it);
- *   byte 4     the sender's scene (low 6 bits) and slot (top 2 bits), split by func_02077a34.
+ *   byte 4     the sender's scene (low 6 bits) and slot (top 2 bits), split by PackedBytes_SplitScene.
  * A handler reads its payload with Session_ReadMessage, from the cursor func_02076168 sets.
  * A message is built in the send buffer (Session_BeginMessage, Session_AppendMessage,
  * Session_EndMessage); once a frame the send buffer moves to the outbox, from which the

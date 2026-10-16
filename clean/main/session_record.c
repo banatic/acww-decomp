@@ -2,7 +2,9 @@
 #include "session_record.h"
 
 #include "clean.h"
+#include "main/packed_bytes.h"
 #include "main/session.h"
+#include "main/session_net.h"
 
 #define RECORD_TABLE_SIZE 0x6a0
 #define RECORD_TABLE_ALIGN 4
@@ -10,7 +12,6 @@
 extern NetSession *data_020ccf94;                  /* the session */
 extern SessionRecordWriter *const data_020cd2f4[]; /* the writers, by record id */
 
-extern void *func_02077afc(int size, int align);                  /* from the network heap (data_021c9b30) */
 extern int func_02064344(const void *a, const void *b, u32 size); /* whether the bytes differ */
 extern void func_0208520c(u8 *record, int id);                    /* the record from its entry at data_021d232c */
 extern SessionRecordFiller *const data_020cd1dc[];                /* the fillers, by record id */
@@ -26,8 +27,6 @@ extern void func_ov003_02235c94(u8 *record, int id, void *object); /* records 24
  * 0x1a of the matching entry of data_021d13e4 (func_0207b9d0(id - 12)) cleared. */
 extern void func_02085350(u8 *record, int id);
 /* The packers of records 0-7 (the actors' saved states use them too). */
-extern void func_020779b8(u8 *packed, fx32 x, fx32 z); /* x and z in 5 bytes */
-extern void func_02077910(u8 *packed, int value);      /* a 16-bit value in 2 bytes */
 extern void MI_CpuFill8(void *dst, u8 value, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -36,7 +35,7 @@ extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
  * filled even when there is none. */
 void SessionRecord_Init(void)
 {
-    u8 *table = func_02077afc(RECORD_TABLE_SIZE, RECORD_TABLE_ALIGN);
+    u8 *table = SessionNet_Alloc(RECORD_TABLE_SIZE, RECORD_TABLE_ALIGN);
     Session_SetRecordTable(data_020ccf94, table);
     if (table != NULL) {
         MI_CpuFill8(table, 0, RECORD_TABLE_SIZE);
@@ -642,10 +641,10 @@ void SessionRecord_Write4(u8 *record, const s16 *value, int mode)
 }
 CLEAN_AS(func_02077554, SessionRecord_Write4)
 
-/* func_0207755c: `*value` packed into 2 bytes (func_02077910). */
+/* func_0207755c: `*value` packed into 2 bytes (PackedBytes_WriteS16). */
 void SessionRecord_PackValue(u8 *record, const s16 *value)
 {
-    func_02077910(record, *value);
+    PackedBytes_WriteS16(record, *value);
 }
 CLEAN_AS(func_0207755c, SessionRecord_PackValue)
 
@@ -681,10 +680,10 @@ void SessionRecord_Write0(u8 *record, const SessionRecordPoint *point, int mode)
 }
 CLEAN_AS(func_02077580, SessionRecord_Write0)
 
-/* func_02077588: the x and z of `point` packed into 5 bytes (func_020779b8); y is left out. */
+/* func_02077588: the x and z of `point` packed into 5 bytes (PackedBytes_PackPoint); y is left out. */
 void SessionRecord_PackPoint(u8 *record, const SessionRecordPoint *point)
 {
-    func_020779b8(record, point->x, point->z);
+    PackedBytes_PackPoint(record, point->x, point->z);
 }
 CLEAN_AS(func_02077588, SessionRecord_PackPoint)
 

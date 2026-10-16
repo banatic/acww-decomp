@@ -56,7 +56,7 @@ extern void *func_02066994(void *receiver);
 extern void *func_0203f080(void *actor);
 
 /* The constructors of the base, the receiver and the members, as FieldActor_Construct runs
- * them; func_0200e92c makes an entry of the request queue. */
+ * them; StateRequest_Construct makes an entry of the request queue. */
 extern void *func_0203f130(void *actor);
 extern void *func_02066a30(void *receiver);
 extern void *func_02089bd4(void *member);
@@ -101,8 +101,6 @@ extern void func_0205e4b0(void *part);
 extern void func_0205d4e8(void *member);
 extern void func_0205d084(void *member);
 extern void func_020961e0(int player);
-extern int func_0200f290(FieldActor *actor, int bit);
-extern void func_0200f268(FieldActor *actor, int bit);
 extern void func_02035638(int a);
 extern void func_020b8db4(void);
 
@@ -325,20 +323,20 @@ int FieldActor_Shutdown(struct FieldActor *actor)
     func_0205d4e8(at(actor, 0x774));
     func_0205d084(at(actor, 0x389));
     func_020961e0(actor->player);
-    if (func_0200f290(actor, 0x1a)) {
+    if (FieldActor_TestFlag(actor, 0x1a)) {
         func_02035638(0x3f);
-        func_0200f268(actor, 0x1a);
+        FieldActor_ClearFlag(actor, 0x1a);
     }
-    if (func_0200f290(actor, 0xa)) {
-        if (func_0200f290(actor, 0x19)) {
+    if (FieldActor_TestFlag(actor, 0xa)) {
+        if (FieldActor_TestFlag(actor, 0x19)) {
             SoundEmitter_Vfunc10B((SoundEmitter *) at(actor, FIELD_ACTOR_EMITTER_B));
         } else {
             SoundEmitter_Vfunc10B((SoundEmitter *) at(actor, FIELD_ACTOR_EMITTER));
         }
-        func_0200f268(actor, 0xa);
+        FieldActor_ClearFlag(actor, 0xa);
     }
-    if (func_0200f290(actor, 0x1b)) {
-        func_0200f268(actor, 0x1b);
+    if (FieldActor_TestFlag(actor, 0x1b)) {
+        FieldActor_ClearFlag(actor, 0x1b);
         func_020b8db4();
     }
     return 1;
@@ -383,7 +381,6 @@ extern void func_020110c4(u16 *item, struct FieldActor *actor);
 extern void *func_02011368(struct FieldActor *actor);
 extern void func_0205ec50(void *held, int value, struct FieldActor *actor, u16 *item, void *record, int a);
 extern void func_02060500(void *line, int player);
-extern u32 *func_0200f27c(struct FieldActor *actor, int bit);
 extern void func_0205df14(void *part, u8 value);
 extern void func_02011138(u16 *item, struct FieldActor *actor);
 extern int func_020103c0(struct FieldActor *actor, u16 *item);
@@ -444,9 +441,9 @@ int FieldActor_Init(struct FieldActor *actor)
     FIELD_ACTOR_PENDING_BITS(actor) &= (u8) ~PENDING_ACTION_SET;
     FieldActor_TakeRequests(actor);
     actor->flags = 0;
-    func_0200f27c(actor, 1);
+    FieldActor_SetFlag(actor, 1);
     if (data_020e54a8 == 0) {
-        func_0200f27c(actor, 0);
+        FieldActor_SetFlag(actor, 0);
     }
     actor->start_position = actor->position;
     actor->target = -1;

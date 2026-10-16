@@ -439,13 +439,6 @@ typedef struct State6Saved {
     u8 progress;
 } State6Saved;
 
-/* What FieldActor_PlayerLook is given: callers pass an int in its first register, whose low byte
- * is read. */
-typedef struct FieldActorLookFlag {
-    u8 track; /* nonzero: state 0x8f with LookArgs.track pointing here; zero: state 0x57 */
-    u8 unk_01[11];
-} FieldActorLookFlag;
-
 /* State 0x16's work: a tile and how the state ends (0: not yet; 1: state 0x17 on the tile;
  * 2: the usual way). */
 typedef struct State16Work {
@@ -1283,7 +1276,7 @@ int FieldActor_PlayerRequestState6A(Vec3 *point);
 int FieldActor_PlayerRequestState3B(void);
 int FieldActor_PlayerRequestState39(u32 kind, int *x, int *z, int yaw);
 int FieldActor_PlayerRequestState38(int *x, int *z, short *yaw);
-int FieldActor_PlayerLook(FieldActorLookFlag args);
+int FieldActor_PlayerLook(int flag);
 int FieldActor_PlayerRequestState61(const Vec3 *point, u16 *item);
 u32 FieldActor_PlayerShownItem(void);
 int FieldActor_PlayerShowing(void);

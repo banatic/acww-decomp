@@ -8,6 +8,8 @@
 #include "member_pointer.h"
 #include "room_object_anims.h"
 #include "room_object_body.h"
+#include "room_object_life.h"
+#include "room_object_map.h"
 #include "room_object_parts.h"
 
 static_assert(offsetof(MusicPlayer, playing) == 0x844, "playing");
@@ -16,12 +18,15 @@ static_assert(offsetof(MusicPlayer, glows) == 0x848, "glows");
 static_assert(offsetof(MusicPlayer, state) == 0x8a0, "state");
 static_assert(offsetof(MusicPlayer, talk_step) == 0x8a4, "talk step");
 static_assert(offsetof(RoomSound, position) == 0x20, "the sound's position");
+static_assert(sizeof(MusicPlayer) == 0x8a8, "the size MusicPlayer_Create allocates");
 
 #define MUSIC_PLAYER_RECEIVER_OFFSET 0xec
+#define MUSIC_PLAYER_SIZE 0x8a8
 #define ONE 0x1000           /* normal speed, 20.12 fixed point */
 #define ANIM_MODE_LOOP 0     /* start again at the end */
 #define ANIM_MODE_ONCE 1     /* stop at the end */
 #define KIND_ANIMATED 0x29   /* RoomObject.unk_780 of the players that animate */
+#define KIND_13 0x13         /* another kind whose animations are loaded with its model */
 #define MENU_MODE_SONGS 0x40 /* the mode group 9 opens the song menu in */
 
 /* The music items: song n is item MUSIC_ITEM_FIRST + n. */
@@ -29,6 +34,9 @@ static_assert(offsetof(RoomSound, position) == 0x20, "the sound's position");
 #define MUSIC_ITEM_LAST 0x1368
 #define SONG_COUNT 0x46
 #define NO_SONG (-1)
+#define NO_VALUE 0xff    /* the song given with MUSIC_PLAYER_STOPPED */
+#define MUSIC_FIRST 0xb0 /* the music of song 0 */
+#define ITEM_NONE 0xfff1 /* no item */
 
 /* What the receiver's state byte tells the talk: the song handed to the link, or none. */
 #define SAYS_SONG 5
@@ -55,12 +63,33 @@ extern const char data_ov004_022531f0[];
 /* The villagers (0x7ec bytes each). */
 extern u8 data_021e5a2c[];
 
-/* Plays song `song` (as music 0xb0 + song) and makes it the house's music item, when none is
- * playing; and stops it (also clearing the item with `clear_item`) when one is. */
-extern void func_ov004_022165dc(MusicPlayer *player, unsigned int song);
-extern void func_ov004_02216598(MusicPlayer *player, unsigned int song, int clear_item);
-/* Enters talk step `step` if its entry agrees (through a table); whether it did. */
-extern int func_ov004_022164a0(MusicPlayer *player, int step);
+/* The talk steps' entries. */
+extern u32 data_ov004_02257058;
+extern MemberPointer data_ov004_022575ac[MUSIC_PLAYER_TALK_STEP_COUNT];
+extern const MemberPointer data_ov004_02250088, data_ov004_022504f0, data_ov004_022504e8, data_ov004_022504e0,
+    data_ov004_022504d8, data_ov004_022504d0;
+
+/* The class's vtables, and its receiver part's. */
+extern const u8 data_ov004_022517bc[];
+extern const u8 data_ov004_02251868[];
+
+/* The music item a player started in a villager's house (the villager's song), 0xfff1 for
+ * none: a player there starts on with the villager's song only while none was started. */
+extern u16 data_ov004_02256fec;
+
+/* Music: starting music `id` (with 0x11, 0x7f and 0) and stopping it. */
+extern void func_020356c4(int a0, int id, int a2, int a3);
+extern void func_02035638(int id);
+/* Sets the music item of the scene's house (func_02060b70 reads it), and sets it to none. */
+extern void *func_02060b34(u16 *item);
+extern void func_02060afc(void);
+/* func_020b67e8 of the scene (func_020b65c4). */
+extern int func_020b67d4(void);
+/* Whether func_020b6730 says so or the area (func_020b65c4) is 10 or 15. */
+extern int func_ov004_0223c10c(void);
+/* Request a state for the object at the object's cell (only when data_020e54a8 is 1), straight
+ * to func_020526b8. */
+extern int func_02052738(unsigned int object, int state, int a2, int a3);
 /* Switches every room object to `value` whose switch shows otherwise, of those `filter`
  * accepts. */
 extern void func_ov004_0223c2b4(int value, int (*filter)(void *object), void *pending);
@@ -140,7 +169,7 @@ int MusicPlayer_EnterPlaying(MusicPlayer *player)
     func_ov004_0223c2b4(0, func_ov004_02211308, NULL);
     Switch_Set(&player->base.light_switch, 1, 0);
     player->song = player->base.unk_77C;
-    func_ov004_022165dc(player, player->base.unk_77C);
+    MusicPlayer_PlaySong(player, player->base.unk_77C);
     if (player->base.unk_780 == KIND_ANIMATED) {
         RoomObject_PlayAnimsFrom(&player->base, 1, ANIM_MODE_LOOP, ONE, 0);
     }
@@ -170,7 +199,7 @@ int MusicPlayer_EnterStopped(MusicPlayer *player)
     RoomObject_PlaySound2(&player->base);
     Switch_Set(&player->base.light_switch, 0, 0);
     if (player->base.unk_77E == 0) {
-        func_ov004_02216598(player, player->song, 1);
+        MusicPlayer_StopSong(player, player->song, 1);
     }
     if (player->base.unk_780 == KIND_ANIMATED) {
         RoomObject_PlayAnimsFrom(&player->base, 0, ANIM_MODE_ONCE, ONE, 0);
@@ -248,7 +277,7 @@ CLEAN_AS(func_ov004_02216244, MusicPlayer_EnterTalkEnd)
 void MusicPlayer_UpdateTalk(MusicPlayer *player)
 {
     if (player->base.link != NULL && player->base.link->open != 0) {
-        func_ov004_022164a0(player, MUSIC_PLAYER_TALK_END);
+        MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_END);
     }
 }
 CLEAN_AS(func_ov004_02216248, MusicPlayer_UpdateTalk)
@@ -296,7 +325,7 @@ CLEAN_AS(func_ov004_0221626c, MusicPlayer_EnterTalk)
 /* func_ov004_02216350 (update of MUSIC_PLAYER_TALK_NEXT): talks. */
 void MusicPlayer_UpdateTalkNext(MusicPlayer *player)
 {
-    func_ov004_022164a0(player, MUSIC_PLAYER_TALK);
+    MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK);
 }
 CLEAN_AS(func_ov004_02216350, MusicPlayer_UpdateTalkNext)
 
@@ -341,7 +370,7 @@ CLEAN_AS(func_ov004_022163c4, MusicPlayer_EnterTalkMenu)
 /* func_ov004_022163e0 (update of MUSIC_PLAYER_TALK_MENU_NEXT): opens the menu. */
 void MusicPlayer_UpdateTalkMenuNext(MusicPlayer *player)
 {
-    func_ov004_022164a0(player, MUSIC_PLAYER_TALK_MENU);
+    MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_MENU);
 }
 CLEAN_AS(func_ov004_022163e0, MusicPlayer_UpdateTalkMenuNext)
 
@@ -369,7 +398,7 @@ int MusicPlayer_EnterTalkNone(MusicPlayer *player)
 CLEAN_AS(func_ov004_022163f4, MusicPlayer_EnterTalkNone)
 
 /* _ZN18Obj_ov004_022517bc19func_ov004_022163f8Ev: the talk step's update, through its table.
- * REQUIRES: the step is not negative (func_ov004_022164a0 is only given 0 to 5). */
+ * REQUIRES: the step is not negative (MusicPlayer_EnterTalkStep only sets 0 to 5). */
 void MusicPlayer_UpdateTalkStep(MusicPlayer *player)
 {
     static const MemberPointer *const updates[MUSIC_PLAYER_TALK_STEP_COUNT] = {
@@ -386,3 +415,207 @@ void MusicPlayer_UpdateTalkStep(MusicPlayer *player)
     }
 }
 CLEAN_AS(_ZN18Obj_ov004_022517bc19func_ov004_022163f8Ev, MusicPlayer_UpdateTalkStep)
+
+/* func_ov004_022164a0: enters talk step `step` if its entry (through a table) agrees; whether it
+ * did.
+ * REQUIRES: `step` is not negative (the game passes the constants 0 to 5); for a negative step
+ * the original reads a member pointer from before its table. */
+int MusicPlayer_EnterTalkStep(MusicPlayer *player, int step)
+{
+    static const MemberPointer *const entries[MUSIC_PLAYER_TALK_STEP_COUNT] = {
+        &data_ov004_02250088, /* MusicPlayer_EnterTalkNone */
+        &data_ov004_022504f0, /* MusicPlayer_EnterTalkMenuNext */
+        &data_ov004_022504e8, /* MusicPlayer_EnterTalkMenu */
+        &data_ov004_022504e0, /* MusicPlayer_EnterTalkNext */
+        &data_ov004_022504d8, /* MusicPlayer_EnterTalk */
+        &data_ov004_022504d0, /* MusicPlayer_EnterTalkEnd */
+    };
+    MemberTable_InitOnce(&data_ov004_02257058, data_ov004_022575ac, entries, MUSIC_PLAYER_TALK_STEP_COUNT);
+    if (step >= 0 && step < MUSIC_PLAYER_TALK_STEP_COUNT && MemberPointer_CallInt(&data_ov004_022575ac[step], player) != 0) {
+        player->talk_step = step;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_022164a0, MusicPlayer_EnterTalkStep)
+
+/* func_ov004_02216558 (vtable slot 0x4c): the scene's answer to func_0203e0a8. Event 1 starts
+ * the song menu when func_020b67d4 and Room_Check0220fed0 allow it, else the talk that tells the
+ * song; event 8 ends the talk; others do nothing. */
+void MusicPlayer_OnSceneEvent(MusicPlayer *player, int event)
+{
+    switch (event) {
+        case 1:
+            if (func_020b67d4() != 0 && Room_Check0220fed0() != 0) {
+                MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_MENU_NEXT);
+            } else {
+                MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_NEXT);
+            }
+            break;
+        case 8:
+            MusicPlayer_EnterTalkStep(player, MUSIC_PLAYER_TALK_NONE);
+            break;
+    }
+}
+CLEAN_AS(func_ov004_02216558, MusicPlayer_OnSceneEvent)
+
+/* func_ov004_02216598: stops song `song` (music 0xb0 + song) when it is playing, and with
+ * `clear_item` sets the house's music item to none. Nothing for a song past the last. */
+void MusicPlayer_StopSong(MusicPlayer *player, unsigned int song, int clear_item)
+{
+    if (player->playing && song < SONG_COUNT) {
+        func_02035638((u16) (song + MUSIC_FIRST));
+        if (clear_item != 0) {
+            u16 none = ITEM_NONE;
+            func_02060b34(&none);
+        }
+        player->playing = 0;
+    }
+}
+CLEAN_AS(func_ov004_02216598, MusicPlayer_StopSong)
+
+/* func_ov004_022165dc: plays song `song` (music 0xb0 + song) and makes its item the house's
+ * music item, when none is playing. Nothing for a song past the last. */
+void MusicPlayer_PlaySong(MusicPlayer *player, unsigned int song)
+{
+    if (!player->playing && song < SONG_COUNT) {
+        func_020356c4(0x11, (u16) (song + MUSIC_FIRST), 0x7f, 0);
+        u16 item = (u16) (MUSIC_ITEM_FIRST + song);
+        func_02060b34(&item);
+        player->playing = 1;
+    }
+}
+CLEAN_AS(func_ov004_022165dc, MusicPlayer_PlaySong)
+
+/* func_ov004_02216630 (vtable slot 0x0c): stops the song, setting the house's music item to none
+ * when the object is vanishing; forgets the villager's song started (data_ov004_02256fec). */
+int MusicPlayer_Stop(MusicPlayer *player)
+{
+    int vanishing = RoomObject_IsVanishing(&player->base);
+    MusicPlayer_StopSong(player, player->song, vanishing);
+    if (data_ov004_02256fec >= MUSIC_ITEM_FIRST && data_ov004_02256fec <= MUSIC_ITEM_LAST) {
+        data_ov004_02256fec = ITEM_NONE;
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02216630, MusicPlayer_Stop)
+
+/* func_ov004_02216680 (vtable slot 0x84, each frame while appearing or vanishing): the same as
+ * each frame otherwise (vtable slot 0x80, MusicPlayer_Update). */
+void MusicPlayer_UpdateUnsettled(MusicPlayer *player)
+{
+    player->base.vtable->update_settled(&player->base);
+}
+CLEAN_AS(func_ov004_02216680, MusicPlayer_UpdateUnsettled)
+
+/* _ZN18Obj_ov004_022517bc19func_ov004_02216694Ev (vtable slot 0x80, each frame while neither
+ * appearing nor vanishing): the state, the talk step and the glows. */
+int MusicPlayer_Update(MusicPlayer *player)
+{
+    MusicPlayer_UpdateState(player);
+    MusicPlayer_UpdateTalkStep(player);
+    GlowSet_Update(&player->glows);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_022517bc19func_ov004_02216694Ev, MusicPlayer_Update)
+
+/* Vtable slot 0x70 (MusicPlayer_EnterState): requests state `state` with `song`. */
+static int MusicPlayer_request(MusicPlayer *player, int state, int song)
+{
+    return player->base.vtable->vfunc_70(&player->base, state, song);
+}
+
+/* func_ov004_022166b8 (vtable slot 0x7c, once the model is bound): kinds 0x13 and 0x29 load the
+ * animations of variant 0, looping; the glows are bound, on as the switch shows. In mode 1
+ * (unk_76C) STOPPED is requested for the object's cell (func_02052738). Otherwise, with the
+ * switch on outside the areas func_ov004_0223c10c names, it plays:
+ * - in a villager's house the villager's song (song 0 for no villager), noted as started
+ *   (data_ov004_02256fec, the first song's item for a song past the last); but once a song was
+ *   started there it stops instead;
+ * - elsewhere the song of the house's music item; with none the item is set to none and it
+ *   stops.
+ * Else it stops. Done at once. */
+int MusicPlayer_Start(MusicPlayer *player)
+{
+    RoomObject *base = &player->base;
+    if (base->unk_780 == KIND_ANIMATED || base->unk_780 == KIND_13) {
+        RoomObject_LoadAnims(base, 0, ANIM_MODE_LOOP, ONE, 0);
+    }
+    GlowSet_Bind(&player->glows, base->model_resource, Switch_Value(&base->light_switch));
+    if (base->unk_76C == 1) {
+        func_02052738(MusicPlayer_address(player), MUSIC_PLAYER_STOPPED, NO_VALUE, 1);
+    } else if (Switch_Value(&base->light_switch) != 0 && func_ov004_0223c10c() == 0) {
+        if (func_020b6680() != 0) {
+            u32 song = 0;
+            void *villager = func_0207cec0(data_021e5a2c, func_020b66b0());
+            if (villager != NULL) {
+                song = (u32) func_0207f2c4(villager);
+            }
+            if (data_ov004_02256fec >= MUSIC_ITEM_FIRST && data_ov004_02256fec <= MUSIC_ITEM_LAST) {
+                MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
+            } else if (MusicPlayer_request(player, MUSIC_PLAYER_PLAYING, (u8) song) != 0) {
+                data_ov004_02256fec = song < SONG_COUNT ? (u16) (MUSIC_ITEM_FIRST + song) : MUSIC_ITEM_FIRST;
+            }
+        } else {
+            u16 item = *func_02060b70();
+            if (item >= MUSIC_ITEM_FIRST && item <= MUSIC_ITEM_LAST) {
+                MusicPlayer_request(player, MUSIC_PLAYER_PLAYING, (u8) (item - MUSIC_ITEM_FIRST));
+            } else {
+                func_02060afc();
+                MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
+            }
+        }
+    } else {
+        MusicPlayer_request(player, MUSIC_PLAYER_STOPPED, NO_VALUE);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_022166b8, MusicPlayer_Start)
+
+static void MusicPlayer_set_vtables(MusicPlayer *player)
+{
+    player->base.vtable = (const RoomObjectVtable *) data_ov004_022517bc;
+    player->base.receiver_vtable = data_ov004_02251868;
+}
+
+/* func_ov004_02216820 (the deleting destructor, vtable slot 0x44) */
+MusicPlayer *MusicPlayer_Delete(MusicPlayer *player)
+{
+    MusicPlayer_set_vtables(player);
+    GlowSet_Destruct(&player->glows);
+    RoomObject_DestructBase(&player->base);
+    RoomObject_Free(player);
+    return player;
+}
+CLEAN_AS(func_ov004_02216820, MusicPlayer_Delete)
+
+/* func_ov004_02216858 (the destructor, vtable slot 0x40) */
+MusicPlayer *MusicPlayer_Destroy(MusicPlayer *player)
+{
+    MusicPlayer_set_vtables(player);
+    GlowSet_Destruct(&player->glows);
+    RoomObject_DestructBase(&player->base);
+    return player;
+}
+CLEAN_AS(func_ov004_02216858, MusicPlayer_Destroy)
+
+/* func_ov004_0221688c (the constructor): the base, the vtables and the glows. Its other fields
+ * are left as the allocation zeroed them. */
+MusicPlayer *MusicPlayer_Construct(MusicPlayer *player)
+{
+    RoomObject_ConstructBase(&player->base);
+    MusicPlayer_set_vtables(player);
+    GlowSet_Construct(&player->glows);
+    return player;
+}
+CLEAN_AS(func_ov004_0221688c, MusicPlayer_Construct)
+
+/* func_ov004_022168bc: a new music player from the room's heap; nothing when it has no room. */
+void MusicPlayer_Create(void)
+{
+    MusicPlayer *player = RoomObject_Alloc(MUSIC_PLAYER_SIZE);
+    if (player != NULL) {
+        MusicPlayer_Construct(player);
+    }
+}
+CLEAN_AS(func_ov004_022168bc, MusicPlayer_Create)

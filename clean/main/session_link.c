@@ -7,8 +7,11 @@
 #include "autoload_2/network.h"
 #include "clean.h"
 #include "main/library_overlay.h"
+#include "main/packed_bytes.h"
 #include "main/player_messages.h"
+#include "main/session_net.h"
 #include "main/system_packet.h"
+#include "main/wifi_friends.h"
 
 static_assert(offsetof(NetSession, max_record_size) == 0x6d, "max record size");
 static_assert(offsetof(NetSession, record_scratch) == 0x70, "record scratch");
@@ -44,10 +47,6 @@ static_assert(offsetof(NetSession, active) == 0x74, "active");
 
 #define NET_HEAP_SIZE 0x4b000
 
-/* The friends' records in the player record (func_020984e8): this many bytes apart, the friend
- * data first. */
-#define FRIEND_RECORD_SIZE 0x24
-
 extern NetSession *data_020ccf94; /* the session */
 extern Heap *data_021c9b30;       /* the network heap */
 extern u8 data_021d0a34[];        /* a 1-byte credits packet for each peer */
@@ -59,22 +58,14 @@ extern void DC_FlushAll(void);
 extern u32 OS_EnableInterrupts(void);
 extern u32 OS_DisableInterrupts(void);
 
-/* The network heap's allocator and its free, which the library is also handed. */
+/* The network heap's allocator and its free (SessionNet_Alloc, SessionNet_Free) at the game's
+ * addresses, as the library is handed them. */
 extern void *func_02077afc(int size, int align);
 extern void func_02077ae8(void *block);
 
-extern int func_02077b58(int slot);                           /* the peer index of a slot */
-extern int func_02077b20(const u8 *packet);                   /* the credits a packet gives back */
-extern int func_02077b14(const u8 *packet);                   /* a system packet's kind */
-extern int func_02077b28(const u8 *packet);                   /* whether a packet is a system packet */
-extern void func_02077b3c(u8 *packet, int credits, int kind); /* writes a system packet's first byte */
-extern void func_02077b50(u8 *packet, int credits);           /* writes a data packet's first byte */
-extern void func_02077a34(const u8 *source, u8 *scene, u8 *slot);
-extern u16 func_02077868(const u8 *bytes); /* a little-endian u16 (a message's length) */
-extern u8 func_0207762c(u32 record);       /* a shared record's size */
-extern int func_02077a80(void);            /* whether every peer has a credit */
-extern void func_0207718c(void);           /* allocates and fills the shared records */
-extern u8 func_020b65c4(void);             /* the current scene */
+extern u8 func_0207762c(u32 record); /* a shared record's size */
+extern void func_0207718c(void);     /* allocates and fills the shared records */
+extern u8 func_020b65c4(void);       /* the current scene */
 /* Where a message of `kind` for `scene` goes from this system to `slot`: the slot it is for;
  * *hold is set when it must wait in the held queue. */
 extern int func_020a70ec(int slot, int kind, int scene, u8 *hold);
@@ -95,17 +86,13 @@ extern void func_0205cb4c(void);                   /* destroys the network heap 
 extern void func_0205cb68(int size, void *parent); /* creates the network heap */
 extern void func_020b8d6c(void);                   /* called when the library could not end */
 
-extern u8 *func_020984e8(void);              /* this system's player record */
-extern u8 *func_02099658(u8 *record);        /* the friends in a player record */
-extern u8 *func_02099870(u8 *record);        /* a player record's field 0x247e */
-extern u8 *func_02099664(u8 *record);        /* a player record's field 0x1f0c */
-extern u8 *func_020950a8(u8 *field);         /* field + 0x10 */
-extern u8 *func_020642a4(u8 *field);         /* field + 2 */
-extern u8 *func_02077d00(u8 *friends);       /* returns its argument */
-extern u8 *func_02077c3c(u8 *friend_record); /* returns its argument */
-extern u8 *func_02077d68(u8 *friend_data);   /* returns its argument */
-extern u8 *func_02077bcc(u8 *field);         /* returns its argument */
-extern void func_02099e78(void);             /* does nothing; the friend-deleted callback */
+extern u8 *func_020984e8(void);       /* this system's player record */
+extern u8 *func_02099658(u8 *record); /* the friend roster in a player record (wifi_friends.h) */
+extern u8 *func_02099870(u8 *record); /* a player record's field 0x247e */
+extern u8 *func_02099664(u8 *record); /* the Wi-Fi account in a player record (wifi_friends.h) */
+extern u8 *func_020950a8(u8 *field);  /* field + 0x10 */
+extern u8 *func_020642a4(u8 *field);  /* field + 2 */
+extern void func_02099e78(void);      /* does nothing; the friend-deleted callback */
 /* The receive callback handed to the library: Session_OnReceived. */
 extern void func_02075050(int aid, char *buffer, unsigned int size);
 
@@ -316,7 +303,7 @@ int Session_SendLocalStatus(int status)
     if (Session_IsSlotTaken(session, slot) == 0) {
         func_020a6f74(SESSION_UNLINKED_SLOT, STATUS_WAITING);
         u8 *packet = Session_GetSendBlock(session, SHARE_BLOCK);
-        func_02077b3c(packet, 0, SYSTEM_SET_SENDER_STATUS);
+        SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_SENDER_STATUS);
         packet[1] = 0;
         return Session_SendBlocks(session, Session_GetSendBlock(session, SHARE_BLOCK), 2, 1, NULL, 0, 0, NULL, 0, 0);
     }
@@ -454,7 +441,7 @@ static void send_data(NetSession *session)
                 data += records_size;
                 size += records_size;
                 size += Session_CollectMessages(data, slot);
-                int peer = func_02077b58(slot);
+                int peer = SessionNet_PeerIndex(slot);
                 sends.block[peer] = Session_GetSendBlock(session, slot);
                 sends.size[peer] = size;
                 sends.to[peer] = (u16) (1 << slot);
@@ -513,7 +500,7 @@ static void send_credits(NetSession *session)
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (is_peer(session, slot)) {
             u8 *block = Session_GetSendBlock(session, slot);
-            if (func_02077b20(block) != 0) {
+            if (SessionNet_GetCredits(block) != 0) {
                 sends.block[count] = block;
                 sends.size[count] = 1;
                 sends.to[count] = (u16) (1 << slot);
@@ -551,10 +538,10 @@ static void send_credit_packets(NetSession *session)
     for (int slot = SESSION_SLOTS - 1; slot >= 0; slot--) {
         if (is_peer(session, slot)) {
             int owed = Session_GetOwedCredits(session, slot);
-            int peer = func_02077b58(slot);
+            int peer = SessionNet_PeerIndex(slot);
             if (owed != 0) {
                 u8 *packet = &data_021d0a34[peer];
-                func_02077b3c(packet, owed, SESSION_SYSTEM_CREDITS);
+                SessionNet_WriteSystemHeader(packet, owed, SESSION_SYSTEM_CREDITS);
                 sends.block[peer] = packet;
                 sends.size[peer] = 1;
                 sends.to[peer] = (u16) (1 << slot);
@@ -649,7 +636,7 @@ void Session_Update(int keep_frame)
 
     if (ready != 0) {
         if (mode == SESSION_MODE_DATA) {
-            if (func_02077a80() != 0) {
+            if (SessionNet_AllPeersHaveCredit() != 0) {
                 send_data(session);
             } else {
                 send_credits(session);
@@ -734,27 +721,27 @@ int Session_End(void)
     if (data_020ccf94->active != 0) {
         ended = end_library();
         NetSession *session = data_020ccf94;
-        func_02077ae8(Session_GetBundle16Buffer(session));
+        SessionNet_Free(Session_GetBundle16Buffer(session));
         Session_SetBundle16Buffer(session, NULL);
-        func_02077ae8(Session_GetBundle15Buffer(session));
+        SessionNet_Free(Session_GetBundle15Buffer(session));
         Session_SetBundle15Buffer(session, NULL);
-        func_02077ae8(Session_GetLocalQueue(session));
+        SessionNet_Free(Session_GetLocalQueue(session));
         Session_SetLocalQueueBuffer(session, NULL);
-        func_02077ae8(Session_GetSceneQueue(session));
+        SessionNet_Free(Session_GetSceneQueue(session));
         Session_SetSceneQueueBuffer(session, NULL);
-        func_02077ae8(Session_GetHeldQueue(session));
+        SessionNet_Free(Session_GetHeldQueue(session));
         Session_SetHeldQueueBuffer(session, NULL);
-        func_02077ae8(Session_GetOutbox(session));
+        SessionNet_Free(Session_GetOutbox(session));
         Session_SetOutbox(session, NULL);
-        func_02077ae8(Session_GetSendBuffer(session));
+        SessionNet_Free(Session_GetSendBuffer(session));
         Session_SetSendBuffer(session, NULL);
-        func_02077ae8(Session_GetRecvBlock(session, SESSION_SLOTS, 0));
+        SessionNet_Free(Session_GetRecvBlock(session, SESSION_SLOTS, 0));
         Session_SetRecvBlocks(session, NULL);
-        func_02077ae8(Session_GetSendBlock(session, SHARE_BLOCK));
+        SessionNet_Free(Session_GetSendBlock(session, SHARE_BLOCK));
         Session_SetSendBlocks(session, NULL);
-        func_02077ae8(session->record_scratch);
+        SessionNet_Free(session->record_scratch);
         session->record_scratch = NULL;
-        func_02077ae8(Session_GetRecordTable(session));
+        SessionNet_Free(Session_GetRecordTable(session));
         Session_SetRecordTable(session, NULL);
         Session_Reset(session);
         session->active = 0;
@@ -782,16 +769,16 @@ void Session_Start(int mode, int players, int connect_mode)
     NetSession *session = data_020ccf94;
     session->active = 1;
     func_0207718c();
-    session->record_scratch = func_02077afc(session->max_record_size, BLOCK_ALIGN);
-    Session_SetSendBlocks(session, func_02077afc(SESSION_PEERS * SESSION_BLOCK_SIZE, BLOCK_ALIGN));
-    Session_SetRecvBlocks(session, func_02077afc(SESSION_PEERS * SESSION_RECV_ENTRIES * SESSION_BLOCK_SIZE, BLOCK_ALIGN));
-    Session_SetSendBuffer(session, func_02077afc(SESSION_SEND_SIZE, BLOCK_ALIGN));
-    Session_SetOutbox(session, func_02077afc(SESSION_SEND_SIZE, BLOCK_ALIGN));
-    Session_SetHeldQueueBuffer(session, func_02077afc(SESSION_SEND_SIZE, BLOCK_ALIGN));
-    Session_SetSceneQueueBuffer(session, func_02077afc(SESSION_SEND_SIZE, BLOCK_ALIGN));
-    Session_SetLocalQueueBuffer(session, func_02077afc(SESSION_SEND_SIZE, BLOCK_ALIGN));
-    Session_SetBundle15Buffer(session, func_02077afc(0xc00, BLOCK_ALIGN));
-    Session_SetBundle16Buffer(session, func_02077afc(0xc00, BLOCK_ALIGN));
+    session->record_scratch = SessionNet_Alloc(session->max_record_size, BLOCK_ALIGN);
+    Session_SetSendBlocks(session, SessionNet_Alloc(SESSION_PEERS * SESSION_BLOCK_SIZE, BLOCK_ALIGN));
+    Session_SetRecvBlocks(session, SessionNet_Alloc(SESSION_PEERS * SESSION_RECV_ENTRIES * SESSION_BLOCK_SIZE, BLOCK_ALIGN));
+    Session_SetSendBuffer(session, SessionNet_Alloc(SESSION_SEND_SIZE, BLOCK_ALIGN));
+    Session_SetOutbox(session, SessionNet_Alloc(SESSION_SEND_SIZE, BLOCK_ALIGN));
+    Session_SetHeldQueueBuffer(session, SessionNet_Alloc(SESSION_SEND_SIZE, BLOCK_ALIGN));
+    Session_SetSceneQueueBuffer(session, SessionNet_Alloc(SESSION_SEND_SIZE, BLOCK_ALIGN));
+    Session_SetLocalQueueBuffer(session, SessionNet_Alloc(SESSION_SEND_SIZE, BLOCK_ALIGN));
+    Session_SetBundle15Buffer(session, SessionNet_Alloc(0xc00, BLOCK_ALIGN));
+    Session_SetBundle16Buffer(session, SessionNet_Alloc(0xc00, BLOCK_ALIGN));
     LibraryOverlay_RequireAny();
     Net_Init(GAME_CODE, GAME_ID_PLAY, 1, NET_TIMEOUT, (u8) players, func_02077afc, func_02077ae8);
 
@@ -805,14 +792,15 @@ void Session_Start(int mode, int players, int connect_mode)
         MI_CpuFill8(friends, 0, sizeof(FriendList));
         MI_CpuFill8(user_block, 0, sizeof(state->start_header));
         u8 *record = func_020984e8();
-        u8 *friend_record = func_02077d00(func_02099658(record));
+        WifiFriend *friend_record = WifiFriendList_GetEntries((WifiFriendList *) func_02099658(record));
         for (int i = 0; i < FRIEND_COUNT; i++) {
-            MI_CpuCopy8(func_02077d68(func_02077c3c(friend_record)), friends->friend_data[i], FRIEND_DATA_SIZE);
-            friend_record += FRIEND_RECORD_SIZE;
+            MI_CpuCopy8(WifiFriendData_GetData(WifiFriend_GetFriendData(friend_record)), friends->friend_data[i],
+                        FRIEND_DATA_SIZE);
+            friend_record++;
         }
         MI_CpuCopy8(func_020950a8(func_02099870(record)), user_block, 0xc);
         MI_CpuCopy8(func_020642a4(data_021dc7a8 + 2), user_block + 0x10, 0xc);
-        MI_CpuCopy8(func_02077bcc(func_02099664(record)), user_block + 0x20, 0x40);
+        MI_CpuCopy8(WifiAccount_GetUserData((WifiAccount *) func_02099664(record)), user_block + 0x20, 0x40);
         LibraryOverlay_Require65();
         Wfc_Setup(mode, func_02075050, (void (*)(int)) func_02099e78, user_block, friends);
     }
@@ -873,7 +861,7 @@ int Session_WriteStatusPacket(int slot)
         return 0;
     }
     u8 *packet = Session_GetSendBlock(data_020ccf94, slot);
-    func_02077b3c(packet, 0, SYSTEM_SET_OWN_STATUS);
+    SessionNet_WriteSystemHeader(packet, 0, SYSTEM_SET_OWN_STATUS);
     int status = func_020a6f64(slot);
     unsigned int members = Session_GetMemberMask();
     packet[1] = (u8) ((status & 7) | ((members << 4) & 0xf0));
@@ -904,8 +892,8 @@ int Session_CollectMessages(u8 *dst, int slot)
         u8 kind = header[HEADER_KIND];
         u8 scene;
         u8 sender;
-        func_02077a34(&header[HEADER_SOURCE], &scene, &sender);
-        u32 size = MESSAGE_HEADER_SIZE + (u32) func_02077868(header);
+        PackedBytes_SplitScene(&header[HEADER_SOURCE], &scene, &sender);
+        u32 size = MESSAGE_HEADER_SIZE + (u32) PackedBytes_ReadU16(header);
         func_020b65c4();
         u8 hold;
         int to = func_020a70ec(slot, kind, scene, &hold);
@@ -963,7 +951,7 @@ void Session_WriteOwedCredits(void)
         if (is_peer(session, slot)) {
             u8 *packet = Session_GetSendBlock(session, slot);
             int owed = Session_GetOwedCredits(session, slot);
-            func_02077b50(packet, owed);
+            SessionNet_WriteDataHeader(packet, owed);
         }
     }
 }
@@ -1012,12 +1000,12 @@ void Session_OnReceived(int aid, char *packet, unsigned int size)
 {
     const u8 *bytes = (const u8 *) packet;
     DC_FlushAll();
-    int credits = func_02077b20(bytes);
+    int credits = SessionNet_GetCredits(bytes);
     if (credits != 0) {
         Session_AddCredits(data_020ccf94, aid, credits);
     }
-    if (func_02077b28(bytes) != 0) {
-        int kind = func_02077b14(bytes);
+    if (SessionNet_IsSystemPacket(bytes) != 0) {
+        int kind = SessionNet_GetSystemKind(bytes);
         if (kind < SESSION_SYSTEM_CREDITS) {
             SystemPacket_Dispatch((u8 *) packet + 1, size - 1, aid, kind);
         }

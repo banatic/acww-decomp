@@ -51,16 +51,6 @@ extern void NNS_SndPlayerSetPlayerVolume(int player_no, int volume);
 /* Loads item 9 of the sound archive into the heap (one of the SDK's archive loads). */
 extern int func_0210e160(int item, void *heap);
 
-/* Class 41's part (SoundScenePart): its constructor, destructor, set-up and switch. */
-extern SoundScenePart *func_020f9624(SoundScenePart *part);
-extern SoundScenePart *func_020f95f8(SoundScenePart *part);
-/* The set-up of class 41's part and of class 10's (SoundScene10Part, its base class). */
-extern void func_020f97dc(void *part, unsigned char stopped);
-extern void func_020f95f0(SoundScenePart *part, unsigned char on);
-/* Class 10's part (SoundScene10Part): its constructor and destructor. */
-extern SoundScene10Part *func_020f9888(SoundScene10Part *part);
-extern SoundScene10Part *func_020f9868(SoundScene10Part *part);
-
 /* The kinds of these classes. */
 enum {
     KIND_1 = 1,
@@ -619,7 +609,7 @@ CLEAN_AS(func_020f2ed4, SoundScene41_Start)
 void SoundScene41_Update(SoundScene41 *scene, int value)
 {
     SoundSceneBase_Update(&scene->base, value);
-    scene->part.vtable->update(&scene->part);
+    scene->part.beat.vtable->update(&scene->part.beat);
 }
 CLEAN_AS(func_020f2eb0, SoundScene41_Update)
 
@@ -630,10 +620,10 @@ void SoundScene41_OnMusic(SoundScene41 *scene, int stopped, unsigned int music)
 {
     if (music >= SCENE41_MUSIC_FIRST && music <= SCENE41_MUSIC_LAST) {
         /* QUIRK: the part keeps `stopped` as a byte. */
-        func_020f97dc(&scene->part, (unsigned char) stopped);
-        func_020f95f0(&scene->part, 1);
+        MusicBeat_Reset(&scene->part.beat, (unsigned char) stopped);
+        MusicBeatShow_SetOn(&scene->part, 1);
     } else {
-        func_020f95f0(&scene->part, 0);
+        MusicBeatShow_SetOn(&scene->part, 0);
     }
 }
 CLEAN_AS(func_020f2e68, SoundScene41_OnMusic)
@@ -642,7 +632,7 @@ CLEAN_AS(func_020f2e68, SoundScene41_OnMusic)
 SoundScene41 *SoundScene41_DestructDelete(SoundScene41 *scene)
 {
     scene->base.vtable = &data_0213ecdc;
-    func_020f95f8(&scene->part);
+    MusicBeatShow_Destruct(&scene->part);
     SoundSceneBase_DestructBase(&scene->base);
     Heap_OperatorDeleteB(scene);
     return scene;
@@ -653,7 +643,7 @@ CLEAN_AS(func_020f2f1c, SoundScene41_DestructDelete)
 SoundScene41 *SoundScene41_Destruct(SoundScene41 *scene)
 {
     scene->base.vtable = &data_0213ecdc;
-    func_020f95f8(&scene->part);
+    MusicBeatShow_Destruct(&scene->part);
     SoundSceneBase_DestructBase(&scene->base);
     return scene;
 }
@@ -664,7 +654,7 @@ SoundScene41 *SoundScene41_Construct(SoundScene41 *scene)
 {
     SoundSceneBase_Construct(&scene->base);
     scene->base.vtable = &data_0213ecdc;
-    func_020f9624(&scene->part);
+    MusicBeatShow_Construct(&scene->part);
     scene->base.kind = KIND_41;
     return scene;
 }
@@ -1229,7 +1219,7 @@ CLEAN_AS(func_020f3a48, SoundScene10_SetKeyboardMode)
  * is. */
 void SoundScene10_OnMusic(SoundScene10 *scene, unsigned char stopped)
 {
-    func_020f97dc(&scene->part, stopped);
+    MusicBeat_Reset(&scene->part, stopped);
 }
 CLEAN_AS(func_020f3a80, SoundScene10_OnMusic)
 
@@ -1237,7 +1227,7 @@ CLEAN_AS(func_020f3a80, SoundScene10_OnMusic)
 void SoundScene10_Update(SoundScene10 *scene, int value)
 {
     SoundSceneBase_Update(&scene->base, value);
-    scene->part.vtable->update((SoundScenePart *) &scene->part);
+    scene->part.vtable->update(&scene->part);
 }
 CLEAN_AS(func_020f3a90, SoundScene10_Update)
 
@@ -1268,7 +1258,7 @@ void SoundScene10_Start(SoundScene10 *scene)
     scene->stage = 1;
     data_021fd1bc.unk_62 = 0;
 
-    func_020f97dc(&scene->part, 1);
+    MusicBeat_Reset(&scene->part, 1);
     NNS_SndPlayerSetPlayerVolume(18, 63);
     NNS_SndPlayerSetPlayerVolume(19, 63);
 }
@@ -1278,7 +1268,7 @@ CLEAN_AS(func_020f3ab4, SoundScene10_Start)
 SoundScene10 *SoundScene10_DestructDelete(SoundScene10 *scene)
 {
     scene->base.vtable = &data_0213ea04;
-    func_020f9868(&scene->part);
+    MusicBeat_Destruct(&scene->part);
     SoundSceneBase_DestructBase(&scene->base);
     Heap_OperatorDeleteB(scene);
     return scene;
@@ -1289,7 +1279,7 @@ CLEAN_AS(func_020f3b80, SoundScene10_DestructDelete)
 SoundScene10 *SoundScene10_Destruct(SoundScene10 *scene)
 {
     scene->base.vtable = &data_0213ea04;
-    func_020f9868(&scene->part);
+    MusicBeat_Destruct(&scene->part);
     SoundSceneBase_DestructBase(&scene->base);
     return scene;
 }
@@ -1300,7 +1290,7 @@ SoundScene10 *SoundScene10_Construct(SoundScene10 *scene)
 {
     SoundSceneBase_Construct(&scene->base);
     scene->base.vtable = &data_0213ea04;
-    func_020f9888(&scene->part);
+    MusicBeat_Construct(&scene->part);
     scene->base.kind = KIND_10;
     scene->stage = 0;
     return scene;

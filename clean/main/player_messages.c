@@ -5,6 +5,7 @@
 
 #include "autoload_2/heap.h"
 #include "clean.h"
+#include "main/packed_bytes.h"
 
 #define RECORD_SIZE 0x100
 #define BYTES_SIZE 30
@@ -65,7 +66,6 @@ extern void *func_020900f0(void *record);
 extern int func_02066830(void *dst, void *src); /* copy a record */
 extern void func_02090100(void *record);
 extern void func_02090140(void *record, u32 arg);
-extern void func_02077978(const u8 *packed, s32 *x, s32 *z);
 extern PlayerObject *func_020961a8(int player);
 extern int func_ov003_0222780c(int player, int id, Vec3 *position);
 extern void func_ov003_0222c3a8(Vec3 *position, int player);
@@ -239,7 +239,7 @@ void PlayerMessages_Place(const u8 *message, int player)
     u8 packed[PACKED_POSITION_SIZE];
     Vec3 position;
     MI_CpuCopy8(message + 2, packed, PACKED_POSITION_SIZE);
-    func_02077978(packed, &position.x, &position.z);
+    PackedBytes_UnpackPoint(packed, (u32 *) &position.x, (u32 *) &position.z);
     position.y = data_020c904c;
     if (message[0] == PLAYER_MESSAGE_PLACE_ID) {
         int id = message[1] < PLACE_IDS ? PLACE_ID_FIRST + message[1] : PLACE_ID_FIRST;

@@ -60,9 +60,7 @@ extern u32 data_021bfff4;
 extern MemberPointer data_021c0008[2];
 extern const MemberPointer data_020d747c, data_020d74b4;
 
-extern int func_0200f290(FieldActor *actor, int bit);
 extern int func_020310c8(int value);
-extern int func_0200fbe0(FieldActor *actor);
 /* A point on the flat ground to the curved ground drawn (func_0203f7d0), back
  * (func_0203f8d0, giving the angle of the slope), and the same with the slope's angle about X
  * (func_0203f844); func_0203f758 is the curve's radius. */
@@ -133,7 +131,7 @@ void FieldActor_PlaceForDraw(FieldActor *actor)
     MemberTable_InitOnce(&data_021bfff4, data_021c0008, constants, 2);
     MemberPointer place = data_021c0008[actor->unk_7F8];
     FieldActor_CallUpdate(&place, actor);
-    if (func_0200f290(actor, 0xd)) {
+    if (FieldActor_TestFlag(actor, 0xd)) {
         Vec3 position = actor->unk_824;
         Vec3 scale = {actor->unk_830[0], actor->unk_830[1], actor->unk_830[2]};
         if (data_020e54a8 == 0) {
@@ -149,7 +147,7 @@ CLEAN_AS(func_02005338, FieldActor_PlaceForDraw)
  * where it is func_020310c8(0). */
 int FieldActor_ModelY(FieldActor *actor, int y)
 {
-    if (data_020e54a8 != 0 && func_0200f290(actor, 3)) {
+    if (data_020e54a8 != 0 && FieldActor_TestFlag(actor, 3)) {
         return func_020310c8(0);
     }
     return y;
@@ -208,11 +206,11 @@ void FieldActor_PlaceModel(FieldActor *actor)
         func_020acbc8(&ground, FIELD_ACTOR_MARK(actor));
     }
 
-    if (func_0200f290(actor, 0)) {
+    if (FieldActor_TestFlag(actor, 0)) {
         Mtx43 placement;
         int mode;
         func_0205e954(actor->held, matrix_at(actor, FIELD_ACTOR_MATRIX_JOINT_E));
-        switch (func_0200fbe0(actor)) {
+        switch (FieldActor_HeldTool(actor)) {
             case 4:
             case 10:
                 mode = 2;
@@ -228,7 +226,7 @@ void FieldActor_PlaceModel(FieldActor *actor)
         }
         func_0205e8f8(&placement, actor->held, (u32) mode);
         *matrix_at(actor, FIELD_ACTOR_MATRIX_HELD) = placement;
-        if (func_0200fbe0(actor) == 4) {
+        if (FieldActor_HeldTool(actor) == 4) {
             func_0205e8f8(&placement, actor->held, 3);
             *matrix_at(actor, FIELD_ACTOR_MATRIX_HELD_ALT) = placement;
         }
