@@ -350,3 +350,22 @@ void CameraControl_SetMode17(u32 value)
     func_0203c0ac(data_021c67a4, CAMERA_MODE_17);
 }
 CLEAN_AS(func_0203aeec, CameraControl_SetMode17)
+
+extern void MTX_Identity43_(Mtx43 *mtx);
+
+/* func_0203caf0: a new camera from the auxiliary heap (zeroed), built as a process, then each
+ * class's vtable in turn, the camera's own last; its view matrix starts as the identity. NULL
+ * when the heap has no room. */
+CameraControl *CameraControl_New(void)
+{
+    CameraControl *camera = Heap_AllocAuxZeroed(sizeof(CameraControl));
+    if (camera != NULL) {
+        Process_Construct((Process *) camera);
+        camera->vtable = data_020da13c;
+        camera->vtable = data_020e58cc;
+        MTX_Identity43_(&camera->view_matrix);
+        camera->vtable = data_020da87c;
+    }
+    return camera;
+}
+CLEAN_AS(func_0203caf0, CameraControl_New)

@@ -197,5 +197,7 @@ void SlotPool_BaseDestruct(SlotPool *pool);
 SlotPool *SlotPool_BaseDestructDelete(SlotPool *pool);
 void SlotPool_BaseDestructVirtual(SlotPool *pool);
 void SlotPool_BaseConstruct(SlotPool *pool, u32 count);
+void SlotPool_BaseEntryDestruct(void *entry);
+void SlotPool_BaseEntryConstruct(u8 *taken);
 
 #endif

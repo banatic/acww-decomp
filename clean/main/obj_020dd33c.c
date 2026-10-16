@@ -5,6 +5,8 @@
 #include "autoload_2/sound_emitter_class.h"
 #include "clean.h"
 #include "main/fish_disp.h"
+#include "main/item_code.h"
+#include "main/scene_query.h"
 
 static_assert(sizeof(Process) == 0x50, "Process size");
 static_assert(offsetof(Obj020dd33c, stage) == 0x58, "Obj020dd33c stage");
@@ -22,16 +24,8 @@ extern const u32 data_020da13c[];
 /* The instance, NULL when there is none. */
 extern Obj020dd33c *data_021c9350;
 
-/* The instance's methods: the stage set when `actor` is the first of the actors taking part
- * (0205963c); the first actor made `actor` (0205992c); the mode set when `actor` is the first
- * (020598dc); whether its mode lets an actor away from the point count as near (0205989c);
- * reset (02059ac4). Whether `actor` is the first (func_02057d34). */
-extern int func_0205963c(Obj020dd33c *obj, int stage, void *actor); /* the stage kept in a byte */
-extern int func_0205992c(Obj020dd33c *obj, void *actor);
-extern int func_020598dc(Obj020dd33c *obj, int mode, void *actor);
-extern int func_0205989c(Obj020dd33c *obj);
+/* The instance's reset. */
 extern void func_02059ac4(Obj020dd33c *obj);
-extern int func_02057d34(void *actor);
 
 /* func_02057b34: the destructor: the sound emitter base's, then the root class's. */
 void *Obj020dd33c_Destruct(Obj020dd33c *obj)
@@ -63,7 +57,7 @@ int Obj020dd33c_SetStage(int stage, void *actor)
     if (data_021c9350 == NULL) {
         return 0;
     }
-    return func_0205963c(data_021c9350, stage, actor);
+    return Obj020dd33c_SetStageIfLead(data_021c9350, stage, actor);
 }
 CLEAN_AS(func_02057b90, Obj020dd33c_SetStage)
 
@@ -103,7 +97,7 @@ int Obj020dd33c_Lead(void *actor)
     if (data_021c9350 == NULL) {
         return 0;
     }
-    return func_0205992c(data_021c9350, actor);
+    return Obj020dd33c_MakeLead(data_021c9350, actor);
 }
 CLEAN_AS(func_02057c20, Obj020dd33c_Lead)
 
@@ -129,7 +123,7 @@ int Obj020dd33c_IsNear(const Actor *actor)
     if (Vec_DistanceXZ(&actor->position, &obj->point) <= obj->reach) {
         return 1;
     }
-    return func_0205989c(obj) != 0 && data_021c9350->unk_d5 == 0;
+    return Obj020dd33c_ModeAllowsAway(obj) != 0 && data_021c9350->unk_d5 == 0;
 }
 CLEAN_AS(func_02057c68, Obj020dd33c_IsNear)
 
@@ -137,7 +131,7 @@ CLEAN_AS(func_02057c68, Obj020dd33c_IsNear)
  * given back and the instance is reset. */
 void Obj020dd33c_Finish(void *actor)
 {
-    if (data_021c9350 == NULL || func_02057d34(actor) != 1) {
+    if (data_021c9350 == NULL || Obj020dd33c_IsLead(actor) != 1) {
         return;
     }
     int model = data_021c9350->fish_model;
@@ -165,6 +159,297 @@ int Obj020dd33c_SetActorMode(int mode, void *actor)
     if (data_021c9350 == NULL) {
         return 0;
     }
-    return func_020598dc(data_021c9350, mode, actor);
+    return Obj020dd33c_SetActorModeIfLead(data_021c9350, mode, actor);
 }
 CLEAN_AS(func_02057d0c, Obj020dd33c_SetActorMode)
+
+/* func_02057d34: whether `actor` is the instance's first actor; 0 without the instance. */
+int Obj020dd33c_IsLead(void *actor)
+{
+    if (data_021c9350 == NULL) {
+        return 0;
+    }
+    return Obj020dd33c_IsActor(data_021c9350, actor, 0);
+}
+CLEAN_AS(func_02057d34, Obj020dd33c_IsLead)
+
+/* func_02057d58: the instance started with an item and its actors (Obj020dd33c_Begin); 0
+ * either way. */
+int Obj020dd33c_Start(u16 *item, int look, int stage, int kind, Actor *first, Actor *second)
+{
+    if (data_021c9350 == NULL) {
+        return 0;
+    }
+    return Obj020dd33c_Begin(data_021c9350, item, look, (u8) stage, kind, first, second);
+}
+CLEAN_AS(func_02057d58, Obj020dd33c_Start)
+
+/* Hold offsets by the actor's class (Actor.profile): 0x6b, 0x6a, 0x76 and the rest (which
+ * also stands for no actor, as class 0xd8). */
+extern const Vec3 data_020cbb10; /* (0, -0x1000, 0) */
+extern const Vec3 data_020cbb1c; /* (0, -0x1000, 0x200) */
+extern const Vec3 data_020cbb28; /* (0, -0x900, 0x300) */
+extern const Vec3 data_020cbb04; /* (0, -0x600, 0) */
+
+/* func_02059598: into `out`, the offset from the place beside actor `index` to where the item
+ * is held, by the actor's class.
+ * REQUIRES: `index` is 0 or 1 (the game passes 0). */
+void Obj020dd33c_HoldOffset(Vec3 *out, Obj020dd33c *obj, int index)
+{
+    u16 profile = 0xd8;
+    const Actor *actor = obj->actors[index];
+    if (actor != NULL) {
+        profile = actor->profile;
+    }
+    if (profile == 0x6b) {
+        *out = data_020cbb10;
+    } else if (profile == 0x6a) {
+        *out = data_020cbb1c;
+    } else if (profile == 0x76) {
+        *out = data_020cbb28;
+    } else {
+        *out = data_020cbb04;
+    }
+}
+CLEAN_AS(func_02059598, Obj020dd33c_HoldOffset)
+
+extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
+
+/* func_020595fc: into `out`, `offset` turned to actor `index`'s heading and added to its
+ * position; `offset` as it is when there is no such actor. */
+void Obj020dd33c_PlaceByActor(Obj020dd33c *obj, Vec3 *out, const Vec3 *offset, unsigned int index)
+{
+    /* Copied a component at a time, as the original does, so that it reads the same values
+     * should `out` overlap `offset`. */
+    out->x = offset->x;
+    out->y = offset->y;
+    out->z = offset->z;
+    if (index < 2 && obj->actors[index] != NULL) {
+        Vec_RotateY(out, obj->actors[index]->angle[1]);
+        VEC_Add(out, &obj->actors[index]->position, out);
+    }
+}
+CLEAN_AS(func_020595fc, Obj020dd33c_PlaceByActor)
+
+/* func_0205963c: the stage set to `stage` when the instance is busy, its movement is not
+ * running and `actor` is its first actor; whether it was. */
+int Obj020dd33c_SetStageIfLead(Obj020dd33c *obj, u8 stage, void *actor)
+{
+    if (obj->mode == 0 || obj->unk_d9 == 1) {
+        return 0;
+    }
+    if (Obj020dd33c_IsActor(obj, actor, 0) != 1) {
+        return 0;
+    }
+    obj->stage = stage;
+    return 1;
+}
+CLEAN_AS(func_0205963c, Obj020dd33c_SetStageIfLead)
+
+/* func_02059674: whether the mode's movement runs (1) or is over (0). */
+void Obj020dd33c_SetMoving(Obj020dd33c *obj, u8 moving)
+{
+    obj->unk_d9 = moving;
+}
+CLEAN_AS(func_02059674, Obj020dd33c_SetMoving)
+
+/* The method at slot 0x5c (word 23) of an actor's vtable: the point it holds things at,
+ * written to `out` (for the scene objects, a joint's point; nothing written while that is the
+ * origin). */
+typedef void (*Obj020dd33cHoldMethod)(Actor *actor, Vec3 *out);
+#define OBJ_020DD33C_SLOT_HOLD_POINT 23
+
+/* func_0205967c: into `out`, the first actor's hold point; nothing without a first actor. */
+void Obj020dd33c_HoldPoint(Obj020dd33c *obj, Vec3 *out)
+{
+    Actor *actor = obj->actors[0];
+    if (actor != NULL) {
+        const u32 *vtable = (const u32 *) actor->vtable;
+        ((Obj020dd33cHoldMethod) (uintptr_t) vtable[OBJ_020DD33C_SLOT_HOLD_POINT])(actor, out);
+    }
+}
+CLEAN_AS(func_0205967c, Obj020dd33c_HoldPoint)
+
+/* func_02059694: the item drawn at the point, with the scale and the angles, while a mode
+ * runs (below OBJ_020DD33C_MODE_COUNT), there is an item and it is shown. Looked as model 0x27
+ * it is drawn as that model, unless it is one of the items 0x155f-0x1564. */
+void Obj020dd33c_Draw(Obj020dd33c *obj)
+{
+    if (obj->mode >= OBJ_020DD33C_MODE_COUNT || obj->item == OBJ_020DD33C_NO_ITEM || obj->shown != 1) {
+        return;
+    }
+    if (obj->look == OBJ_020DD33C_LOOK_MODEL_27 && !(obj->item >= 0x1561 && obj->item <= 0x1564) &&
+        !(obj->item >= 0x155f && obj->item <= 0x1560)) {
+        Obj020dd33c_DrawModel(obj, 0x27, &obj->point, &obj->scale, obj->rotation);
+        return;
+    }
+    Obj020dd33c_DrawItem(obj, &obj->item, &obj->point, &obj->scale, obj->rotation);
+}
+CLEAN_AS(func_02059694, Obj020dd33c_Draw)
+
+/* 0 while the field's code is overlay 3's, else overlay 4's is used (the test the pockets
+ * scene makes too). */
+extern u8 data_020e54a8;
+/* Each overlay's drawing of a model by number and of an item by its code, from a position and
+ * a scale (copies) and three angles. */
+extern void func_ov003_022246c8(int model, Vec3 *position, Vec3 *scale, int x, int y, int z);
+extern void func_ov004_02233b5c(int model, Vec3 *position, Vec3 *scale, int x, int y, int z);
+extern void func_ov003_02224678(int item, Vec3 *position, Vec3 *scale, int x, int y, int z);
+extern void func_ov004_02233b10(int item, Vec3 *position, Vec3 *scale, int x, int y, int z);
+
+/* func_0205971c: model `model` drawn at `position` with `scale` and `rotation`, by overlay 3
+ * when data_020e54a8 is 0, else by overlay 4. */
+void Obj020dd33c_DrawModel(Obj020dd33c *obj, int model, const Vec3 *position, const Vec3 *scale, const s16 *rotation)
+{
+    (void) obj;
+    Vec3 at = *position;
+    Vec3 size = *scale;
+    if (data_020e54a8 == 0) {
+        func_ov003_022246c8(model, &at, &size, rotation[0], rotation[1], rotation[2]);
+    } else {
+        func_ov004_02233b5c(model, &at, &size, rotation[0], rotation[1], rotation[2]);
+    }
+}
+CLEAN_AS(func_0205971c, Obj020dd33c_DrawModel)
+
+/* func_020597a8: the item `item` drawn at `position` with `scale` and `rotation`: a fish by
+ * the fish display's model the instance took (when it has one), anything else by overlay 3
+ * when data_020e54a8 is 0, else by overlay 4. */
+void Obj020dd33c_DrawItem(Obj020dd33c *obj, const u16 *item, const Vec3 *position, const Vec3 *scale, const s16 *rotation)
+{
+    unsigned int code = *item;
+    if (code >= 0x12e8 && code <= 0x131f && obj->fish_model != -1) {
+        FishDisp_ShowModel(obj->fish_model, (int) (code - 0x12e8), position, scale, rotation[0], rotation[1], rotation[2], 0,
+                           0, 0x1f);
+        return;
+    }
+    Vec3 at = *position;
+    Vec3 size = *scale;
+    if (data_020e54a8 == 0) {
+        func_ov003_02224678(*item, &at, &size, rotation[0], rotation[1], rotation[2]);
+    } else {
+        func_ov004_02233b10(*item, &at, &size, rotation[0], rotation[1], rotation[2]);
+    }
+}
+CLEAN_AS(func_020597a8, Obj020dd33c_DrawItem)
+
+/* func_0205989c: whether the mode lets an actor anywhere count as near: mode 2, or mode 1 or 7
+ * while the instance is not in that mode by Obj020dd33c_InMode. */
+int Obj020dd33c_ModeAllowsAway(Obj020dd33c *obj)
+{
+    if (obj->mode == 2) {
+        return 1;
+    }
+    if (obj->mode == 1) {
+        return Obj020dd33c_InMode(1) == 0;
+    }
+    if (obj->mode == 7) {
+        return Obj020dd33c_InMode(7) == 0;
+    }
+    return 0;
+}
+CLEAN_AS(func_0205989c, Obj020dd33c_ModeAllowsAway)
+
+/* func_020598dc: the actor mode set to `mode` when `actor` is the first actor; whether it
+ * was. */
+int Obj020dd33c_SetActorModeIfLead(Obj020dd33c *obj, int mode, void *actor)
+{
+    if (Obj020dd33c_IsActor(obj, actor, 0) != 1) {
+        return 0;
+    }
+    Obj020dd33c_SetActorModeOf(obj, (u8) mode);
+    return 1;
+}
+CLEAN_AS(func_020598dc, Obj020dd33c_SetActorModeIfLead)
+
+/* The countdown modes 1 and 7 start with (40). */
+extern const u8 data_020cbae8;
+
+/* func_02059904: the actor mode set to `mode`; modes 1 and 7 also start the countdown at
+ * 0xd5. */
+void Obj020dd33c_SetActorModeOf(Obj020dd33c *obj, u8 mode)
+{
+    obj->actor_mode = mode;
+    if (mode == 1 || mode == 7) {
+        obj->unk_d5 = data_020cbae8;
+    }
+}
+CLEAN_AS(func_02059904, Obj020dd33c_SetActorModeOf)
+
+/* func_02059920: no actor mode asked for. */
+void Obj020dd33c_ClearActorMode(Obj020dd33c *obj)
+{
+    Obj020dd33c_SetActorModeOf(obj, OBJ_020DD33C_NO_MODE);
+}
+CLEAN_AS(func_02059920, Obj020dd33c_ClearActorMode)
+
+/* func_0205992c: when `actor` is the second actor, it becomes the first and the first the
+ * second; whether `actor` takes part. */
+int Obj020dd33c_MakeLead(Obj020dd33c *obj, void *actor)
+{
+    if (Obj020dd33c_IsActor(obj, actor, 1) == 1) {
+        obj->actors[1] = obj->actors[0];
+        obj->actors[0] = actor;
+        return 1;
+    }
+    return Obj020dd33c_IsActor(obj, actor, 0) == 1;
+}
+CLEAN_AS(func_0205992c, Obj020dd33c_MakeLead)
+
+/* The word at 0xdc of a scene object (Base_0203f080): the person it stands for. */
+extern unsigned long func_0203efbc(void *object);
+
+/* func_0205996c: whether actor `index` (0 or 1) is there and is the same person as `actor`
+ * (their words at 0xdc). */
+int Obj020dd33c_IsActor(Obj020dd33c *obj, void *actor, unsigned int index)
+{
+    if (index >= 2 || obj->actors[index] == NULL) {
+        return 0;
+    }
+    unsigned long person = func_0203efbc(actor);
+    return person == func_0203efbc(obj->actors[index]);
+}
+CLEAN_AS(func_0205996c, Obj020dd33c_IsActor)
+
+/* The reach of the actors' nearness: 0x4000 in scenes 9 and 0x10 for the item 0x1565 (or a
+ * variant of it) looked as itself and for the items 0x1492-0x14fd looked as model 0x27; 0x1500
+ * otherwise. */
+extern const fx32 data_020cbaf8;
+extern const fx32 data_020cbafc;
+
+/* func_020599a8: when the instance is idle and there is a first actor: the item, its look, the
+ * stage, the kind and the two actors kept, the reach set, and a fish display model taken for a
+ * fish. 0 either way. */
+int Obj020dd33c_Begin(Obj020dd33c *obj, u16 *item, int look, u8 stage, int kind, Actor *first, Actor *second)
+{
+    if (obj->mode != 0 || first == NULL) {
+        return 0;
+    }
+    obj->item = *item;
+    obj->look = look;
+    obj->stage = stage;
+    obj->kind = kind;
+    obj->actors[0] = first;
+    obj->actors[1] = second;
+
+    int is_1565;
+    if (ItemCode_HasVariant(&obj->item)) {
+        ItemCode other = 0x1565;
+        int variant = ItemCode_VariantItem(&obj->item);
+        is_1565 = variant == ItemCode_VariantItem(&other);
+    } else {
+        is_1565 = obj->item == 0x1565;
+    }
+    int wide =
+        (is_1565 && obj->look == 0) || (obj->item >= 0x1492 && obj->item <= 0x14fd && obj->look == OBJ_020DD33C_LOOK_MODEL_27);
+    if (wide && (SceneQuery_Current() == 9 || SceneQuery_Current() == 0x10)) {
+        obj->reach = data_020cbaf8;
+    } else {
+        obj->reach = data_020cbafc;
+    }
+    if (obj->item >= 0x12e8 && obj->item <= 0x131f) {
+        obj->fish_model = FishDisp_TakeModel();
+    }
+    return 0;
+}
+CLEAN_AS(func_020599a8, Obj020dd33c_Begin)

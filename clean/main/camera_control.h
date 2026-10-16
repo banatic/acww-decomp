@@ -136,4 +136,6 @@ void CameraControl_SetMode3(void);
 void CameraControl_SetMode19(void);
 void CameraControl_SetMode17(u32 value);
 
+CameraControl *CameraControl_New(void);
+
 #endif

@@ -18,5 +18,6 @@ BOOL TileGrid_IsMarkedInSearchRows(const TileGrid *grid, u32 x, u32 z);
 BOOL TileGrid_IsMarked(const TileGrid *grid, u32 x, u32 z);
 BOOL TileGrid_Unmark(TileGrid *grid, u32 x, u32 z);
 BOOL TileGrid_Mark(TileGrid *grid, u32 x, u32 z);
+int TileGrid_Build(TileGrid *grid);
 
 #endif

@@ -996,3 +996,17 @@ void SlotPool_BaseConstruct(SlotPool *pool, u32 count)
     pool->count = count;
 }
 CLEAN_AS(func_02083ca8, SlotPool_BaseConstruct)
+
+/* func_02083cb4: the destructor of an entry's base part; nothing to do. */
+void SlotPool_BaseEntryDestruct(void *entry)
+{
+    (void) entry;
+}
+CLEAN_AS(func_02083cb4, SlotPool_BaseEntryDestruct)
+
+/* func_02083cb8: the constructor of an entry's base part: not taken. */
+void SlotPool_BaseEntryConstruct(u8 *taken)
+{
+    *taken = 0;
+}
+CLEAN_AS(func_02083cb8, SlotPool_BaseEntryConstruct)
