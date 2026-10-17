@@ -9,8 +9,6 @@
 #include "museum_insect_motions.h"
 
 /* The motions shared by several kinds are in museum_insect_motions.h. */
-/* A random yaw: one of sixteen steps of 0xaaa either way. */
-extern short func_ov004_02244f90(void);
 
 extern void NNS_G3dMdlSetMdlAlpha(int model, int material, int alpha);
 
@@ -124,7 +122,7 @@ CLEAN_AS(func_ov004_02240244, InsectKind_Init11)
  * animation's frames set to three, the room's bounds, and a rest. */
 void InsectKind_Init55(MuseumInsect *insect)
 {
-    short yaw = func_ov004_02244f90();
+    short yaw = InsectMotion_RandomYaw();
     InsectMotion_Start(insect, 0x50, 0x50, 0, yaw, 0, 5);
     insect->unk_170 = 0;
     FrameCtrl_Init(&insect->model.frames, 3, 0, 0x1000, 0);
@@ -138,7 +136,7 @@ CLEAN_AS(func_ov004_02240250, InsectKind_Init55)
  * the room's bounds. */
 void InsectKind_Init54(MuseumInsect *insect)
 {
-    InsectMotion_Start(insect, 0x50, 0x50, 0, func_ov004_02244f90(), 0, 5);
+    InsectMotion_Start(insect, 0x50, 0x50, 0, InsectMotion_RandomYaw(), 0, 5);
     insect->unk_170 = 0;
     MuseumInsect *other = InsectRoom_FindPairSecond();
     if (other != NULL) {
@@ -267,9 +265,6 @@ static_assert(offsetof(MuseumInsect, unk_16a) == 0x16a, "insect 0x16a");
 static_assert(offsetof(MuseumInsect, timer) == 0x174, "insect timer");
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
-/* More frame functions. */
-extern void func_ov004_022442b4(MuseumInsect *insect);
-extern void func_ov004_02244620(MuseumInsect *insect);
 
 /* The ROM's signed division (_s32_div_f): a divisor of 0 gives the numerator back. */
 static int InsectKind_div(int numerator, int divisor)
@@ -294,7 +289,7 @@ static fx32 InsectKind_fx(int whole)
  * `word_4c` at 0x4c. */
 static void InsectKind_start_boxed(MuseumInsect *insect, short a, int b, int f, int word_4c)
 {
-    short yaw = func_ov004_02244f90();
+    short yaw = InsectMotion_RandomYaw();
     InsectMotion_Start(insect, a, b, 0, yaw, 0, f);
     InsectMotion_BoundAroundPosition(insect);
     insect->unk_4c = word_4c;
@@ -398,7 +393,7 @@ CLEAN_AS(func_ov004_02240794, InsectKind_Init21)
  * QUIRK: the division is the ROM's, so a divisor of 0 gives 0x1000. */
 void InsectKind_StartAnchored(MuseumInsect *insect, int a, int b, int height, u8 divisor, u8 distance, int word_4c)
 {
-    short yaw = func_ov004_02244f90();
+    short yaw = InsectMotion_RandomYaw();
     InsectMotion_Start(insect, (short) a, b, 0, yaw, height, InsectKind_div(0x1000, divisor));
     insect->distance = distance;
     insect->unk_4c = word_4c;
@@ -414,7 +409,7 @@ CLEAN_AS(func_ov004_022407e4, InsectKind_StartAnchored)
 /* func_ov004_0224086c (kinds 21-23's frame) */
 void InsectKind_Frame21(MuseumInsect *insect)
 {
-    func_ov004_022442b4(insect);
+    InsectMotion_UpdateDarter(insect);
 }
 CLEAN_AS(func_ov004_0224086c, InsectKind_Frame21)
 
@@ -429,7 +424,7 @@ CLEAN_AS(func_ov004_02240874, InsectKind_Frame52)
  * 60-240 frames, and 0x98 cleared. */
 void InsectKind_Init52(MuseumInsect *insect)
 {
-    InsectMotion_Start(insect, 0x3c, 0x46, 0, func_ov004_02244f90(), 0, 0x26);
+    InsectMotion_Start(insect, 0x3c, 0x46, 0, InsectMotion_RandomYaw(), 0, 0x26);
     insect->timer = 20 * ((int) MainRandom_Below(10) + 3);
     insect->unk_98 = 0;
 }
@@ -487,7 +482,7 @@ CLEAN_AS(func_ov004_02240a10, InsectKind_Frame12)
  * QUIRK: the division is the ROM's, so a divisor of 0 gives 0x1000. */
 void InsectKind_StartFacing(MuseumInsect *insect, int a, int b, int divisor, u8 distance)
 {
-    short yaw = func_ov004_02244f90();
+    short yaw = InsectMotion_RandomYaw();
     InsectMotion_Start(insect, (short) a, b, 0, yaw, 0, InsectKind_div(0x1000, divisor));
     insect->unk_98 = (s16) (20 * ((int) MainRandom_Below(9) + 2));
     insect->distance = distance;
@@ -820,6 +815,6 @@ CLEAN_AS(func_ov004_02240e3c, InsectKind_StartAtHeight)
 /* func_ov004_02240f24 (kinds 0-7's frame) */
 void InsectKind_Frame0(MuseumInsect *insect)
 {
-    func_ov004_02244620(insect);
+    InsectMotion_UpdateFlapper(insect);
 }
 CLEAN_AS(func_ov004_02240f24, InsectKind_Frame0)

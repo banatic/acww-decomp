@@ -56,7 +56,7 @@ enum MailboxSceneFlag {
 
 /* The places of the cursor (`cursor`, `slot`, ...). The letters object of ov094's knows the
  * carried letters as its places 0-9 and the mailbox's as its places 0x23-0x2c
- * (func_ov106_0229d360, func_ov106_0229d340). */
+ * (MailboxScene_LetterIndex, MailboxScene_LetterPlace). */
 enum MailboxScenePlace {
     MAILBOX_SCENE_CARRIED_FIRST = 0x0b, /* 0x0b-0x14: the carried letters, 0x0b + row * 2 + column */
     MAILBOX_SCENE_CARRIED_LAST = 0x14,
@@ -82,7 +82,7 @@ enum MailboxSceneAction {
     MAILBOX_SCENE_ACTION_1 = 1,       /* MailboxScene_RunAction1 */
     MAILBOX_SCENE_ACTION_PICK_UP = 2, /* MailboxScene_PickUpSlotLetter */
     MAILBOX_SCENE_ACTION_MENU = 3,    /* MailboxScene_OpenFixedMenu */
-    MAILBOX_SCENE_ACTION_CANCEL = 4   /* func_ov106_0229d73c */
+    MAILBOX_SCENE_ACTION_CANCEL = 4   /* MailboxScene_EndAction */
 };
 
 typedef struct MailboxScene {
@@ -90,13 +90,13 @@ typedef struct MailboxScene {
     u32 flags;                              /* 0x94: MailboxSceneFlag */
     s32 unk_98;                             /* 0x98 */
     s32 unk_9c;                             /* 0x9c */
-    s32 unk_a0;                             /* 0xa0 */
+    s32 wipe_y;                             /* 0xa0: MenuScene_WipeOffsetY's while a message wipes */
     s32 grab_dx;                            /* 0xa4: from the touch to the held letter */
     s32 grab_dy;                            /* 0xa8 */
     s32 held_x;                             /* 0xac: where the held letter is drawn */
     s32 held_y;                             /* 0xb0 */
     u8 held_kind;                           /* 0xb4: MailboxSceneHeldKind */
-    u8 unk_b5;                              /* 0xb5 */
+    u8 touch_place;                         /* 0xb5: the place touched */
     u8 popup_place;                         /* 0xb6: the place the popup tells of */
     u8 held_from;                           /* 0xb7: the place the held letter was taken from */
     u8 cursor;                              /* 0xb8: MailboxScenePlace */
@@ -105,9 +105,10 @@ typedef struct MailboxScene {
     u8 return_state;                        /* 0xbb: the sub state to go back to */
     u8 action;                              /* 0xbc: MailboxSceneAction */
     u8 choice_row;                          /* 0xbd: the choice row the cursor sprite points at */
-    u8 unk_be;                              /* 0xbe */
-    u8 unk_bf;                              /* 0xbf */
-    u8 unk_c0[0x38];                        /* 0xc0: an object of main's (constructor func_020b9af4) */
+    u8 panel_button;                        /* 0xbe: the panel button chosen, 0 button 3, 1 button 4 */
+    u8 open_delay;                          /* 0xbf: frames before a touched place's choice opens (2) */
+    u8 unk_c0[0x38];                        /* 0xc0: a layer load task (constructor func_020b9af4,
+                                             * MailboxScene_EndLayerTask) */
     PocketsGrid grid;                       /* 0xf8 */
     PocketsLetters letters;                 /* 0xb58 */
     PocketsWallet wallet;                   /* 0xb80 */
@@ -187,5 +188,114 @@ Letter *MailboxScene_PlaceLetter(MailboxScene *self, int place);
 void MailboxScene_PutLetterAt(MailboxScene *self, int place, Letter *letter);
 int MailboxScene_PutHeldLetterAt(MailboxScene *self, int place);
 int MailboxScene_LetterPlaceAtTouch(MailboxScene *self, int x, int y, int with_letter);
+
+/* More of `flags`: the touched place's letter may be dragged, as it is not dimmed
+ * (MailboxScene_TouchPlace). */
+#define MAILBOX_SCENE_FLAG_DRAGGABLE 0x04
+
+/* The sub states, run from the table of func_ov106_0229ef8c; the ones handled here are named by
+ * what their handler does (0 and 1 are func_ov106_0229e7e0's and func_ov106_0229e734's). */
+enum MailboxSceneSubState {
+    MAILBOX_SCENE_SUB_TOUCH_IDLE = 0x00,        /* func_ov106_0229e7e0 */
+    MAILBOX_SCENE_SUB_TOUCH_HOLD = 0x01,        /* func_ov106_0229e734 */
+    MAILBOX_SCENE_SUB_TOUCH_CHOICE = 0x02,      /* MailboxScene_WatchChoiceTouch */
+    MAILBOX_SCENE_SUB_OPEN_TOUCHED = 0x03,      /* MailboxScene_OpenTouchedChoice */
+    MAILBOX_SCENE_SUB_DRAG = 0x04,              /* MailboxScene_DragHeld */
+    MAILBOX_SCENE_SUB_LABEL_BY_TOUCH = 0x05,    /* MailboxScene_LabelByTouch */
+    MAILBOX_SCENE_SUB_CHOICE_BY_TOUCH = 0x06,   /* MailboxScene_ChooseByTouch */
+    MAILBOX_SCENE_SUB_BROWSE = 0x07,            /* MailboxScene_BrowseByKeys */
+    MAILBOX_SCENE_SUB_HOLD = 0x08,              /* MailboxScene_MoveHeldByKeys */
+    MAILBOX_SCENE_SUB_LABEL_BY_KEYS = 0x09,     /* MailboxScene_LabelByKeys */
+    MAILBOX_SCENE_SUB_LABEL_PRESS = 0x0a,       /* MailboxScene_WaitLabelPress */
+    MAILBOX_SCENE_SUB_CHOICE_BY_KEYS = 0x0b,    /* MailboxScene_ChooseByKeys */
+    MAILBOX_SCENE_SUB_CHOICE_PICK = 0x0c,       /* MailboxScene_PickChoiceRow */
+    MAILBOX_SCENE_SUB_SPRITE_MOVE = 0x0d,       /* MailboxScene_WaitCursorSprite */
+    MAILBOX_SCENE_SUB_PLACE_PRESS = 0x0e,       /* MailboxScene_PressPlace */
+    MAILBOX_SCENE_SUB_PRESS_END = 0x0f,         /* MailboxScene_FinishPlacePress */
+    MAILBOX_SCENE_SUB_PICK_UP = 0x10,           /* MailboxScene_PickUpAtCursor */
+    MAILBOX_SCENE_SUB_PICK_UP_END = 0x11,       /* MailboxScene_FinishPickUp */
+    MAILBOX_SCENE_SUB_PUT_DOWN = 0x12,          /* MailboxScene_PutDown */
+    MAILBOX_SCENE_SUB_SWAP = 0x13,              /* MailboxScene_Swap */
+    MAILBOX_SCENE_SUB_SWAP_END = 0x14,          /* MailboxScene_FinishSwap */
+    MAILBOX_SCENE_SUB_HELD_GLIDE = 0x15,        /* MailboxScene_StepHeldGlide */
+    MAILBOX_SCENE_SUB_CHOICE_OPEN = 0x16,       /* MailboxScene_WaitChoiceShown */
+    MAILBOX_SCENE_SUB_CHOICE_CLOSE = 0x17,      /* MailboxScene_CloseChoice */
+    MAILBOX_SCENE_SUB_CHOICE_RUN = 0x18,        /* MailboxScene_RunActionWhenIdle */
+    MAILBOX_SCENE_SUB_ERROR = 0x19,             /* MailboxScene_WaitError */
+    MAILBOX_SCENE_SUB_MESSAGE_UP = 0x1a,        /* MailboxScene_WaitMessageUp */
+    MAILBOX_SCENE_SUB_MESSAGE_WIPE_BACK = 0x1b, /* MailboxScene_MessageWipeBack */
+    MAILBOX_SCENE_SUB_PANEL_BY_TOUCH = 0x1c,    /* MailboxScene_ChoosePanelButtonByTouch */
+    MAILBOX_SCENE_SUB_PANEL_BY_KEYS = 0x1d,     /* MailboxScene_ChoosePanelButtonByKeys */
+    MAILBOX_SCENE_SUB_PANEL_PRESS = 0x1e,       /* MailboxScene_PressChosenPanelButton */
+    MAILBOX_SCENE_SUB_PANEL_PRESSED = 0x1f,     /* MailboxScene_FollowMessagePanelPress */
+    MAILBOX_SCENE_SUB_MESSAGE_CLOSE = 0x20,     /* MailboxScene_CloseMessage */
+    MAILBOX_SCENE_SUB_MESSAGE_WIPE_END = 0x21,  /* MailboxScene_EndMessageWipe */
+    MAILBOX_SCENE_SUB_LABEL_PRESSED = 0x22,     /* MailboxScene_FollowLabelPress */
+    MAILBOX_SCENE_SUB_BELOW_PRESSED = 0x23,     /* MailboxScene_FollowPanelPress */
+    MAILBOX_SCENE_SUB_TAKE_NEXT = 0x24,         /* MailboxScene_TakeNextLetter */
+    MAILBOX_SCENE_SUB_TAKE_GLIDE = 0x25,        /* MailboxScene_StepTakenLetterGlide */
+    MAILBOX_SCENE_SUB_LET_GO = 0x26             /* MailboxScene_WaitLetGo */
+};
+
+u8 MailboxScene_LetterPlace(u8 unused, u8 index);
+u8 MailboxScene_LetterIndex(MailboxScene *self, unsigned int place);
+int MailboxScene_IsBelowPlace(MailboxScene *self, int place);
+int MailboxScene_IsMailboxPlace(MailboxScene *self, unsigned int place);
+int MailboxScene_IsCarriedPlace(MailboxScene *self, unsigned int place);
+void MailboxScene_EndLayerTask(MailboxScene *self);
+void MailboxScene_PressPanelButton4(MailboxScene *self);
+void MailboxScene_PressPanelButton3(MailboxScene *self);
+void MailboxScene_ShowMessage(MailboxScene *self, char message);
+int MailboxScene_FirstMailboxLetterPlace(MailboxScene *self);
+int MailboxScene_FreeCarriedPlace(MailboxScene *self);
+void MailboxScene_HoldAndGlide(MailboxScene *self, int from, int to);
+void MailboxScene_DropHeldAtTouch(MailboxScene *self, int place, int x);
+void MailboxScene_GlideHeldTo(MailboxScene *self, int place, int steps);
+void MailboxScene_PickUpWithCursor(MailboxScene *self, int place);
+void MailboxScene_PickUpWithTouch(MailboxScene *self, int place);
+void MailboxScene_TouchPlace(MailboxScene *self, int place);
+void MailboxScene_OfferPanelButtons(MailboxScene *self);
+void MailboxScene_OfferPanelButtonsByKeys(MailboxScene *self);
+void MailboxScene_OfferPanelButtonsByTouch(MailboxScene *self);
+void MailboxScene_EndAction(MailboxScene *self);
+void MailboxScene_EndActionAtCursor(MailboxScene *self);
+void MailboxScene_EndActionHidden(MailboxScene *self);
+void MailboxScene_WaitLetGo(MailboxScene *self);
+void MailboxScene_StepTakenLetterGlide(MailboxScene *self);
+void MailboxScene_TakeNextLetter(MailboxScene *self);
+void MailboxScene_FollowPanelPress(MailboxScene *self);
+void MailboxScene_FollowLabelPress(MailboxScene *self);
+void MailboxScene_EndMessageWipe(MailboxScene *self);
+void MailboxScene_CloseMessage(MailboxScene *self);
+void MailboxScene_FollowMessagePanelPress(MailboxScene *self);
+void MailboxScene_PressChosenPanelButton(MailboxScene *self);
+void MailboxScene_ChoosePanelButtonByKeys(MailboxScene *self);
+void MailboxScene_ChoosePanelButtonByTouch(MailboxScene *self);
+void MailboxScene_MessageWipeBack(MailboxScene *self);
+void MailboxScene_WaitMessageUp(MailboxScene *self);
+void MailboxScene_WaitError(MailboxScene *self);
+void MailboxScene_RunActionWhenIdle(MailboxScene *self);
+void MailboxScene_CloseChoice(MailboxScene *self);
+void MailboxScene_WaitChoiceShown(MailboxScene *self);
+void MailboxScene_StepHeldGlide(MailboxScene *self);
+void MailboxScene_FinishSwap(MailboxScene *self);
+void MailboxScene_Swap(MailboxScene *self);
+void MailboxScene_PutDown(MailboxScene *self);
+void MailboxScene_FinishPickUp(MailboxScene *self);
+void MailboxScene_PickUpAtCursor(MailboxScene *self);
+void MailboxScene_FinishPlacePress(MailboxScene *self);
+void MailboxScene_PressPlace(MailboxScene *self);
+void MailboxScene_WaitCursorSprite(MailboxScene *self);
+void MailboxScene_PickChoiceRow(MailboxScene *self);
+void MailboxScene_ChooseByKeys(MailboxScene *self);
+void MailboxScene_WaitLabelPress(MailboxScene *self);
+void MailboxScene_LabelByKeys(MailboxScene *self);
+void MailboxScene_MoveHeldByKeys(MailboxScene *self);
+void MailboxScene_BrowseByKeys(MailboxScene *self);
+void MailboxScene_ChooseByTouch(MailboxScene *self);
+void MailboxScene_LabelByTouch(MailboxScene *self);
+void MailboxScene_DragHeld(MailboxScene *self);
+void MailboxScene_OpenTouchedChoice(MailboxScene *self);
+void MailboxScene_WatchChoiceTouch(MailboxScene *self);
 
 #endif

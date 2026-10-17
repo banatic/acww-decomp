@@ -8,7 +8,10 @@
  *   0x8d  step off: it walks to the request's point (PlayerActorOps_StepOffDoor asks for it
  *                   6.0 beyond a door);
  *   0x8c  exit:     it walks through a door; at its 10th frame this console's actor takes
- *                   the scene's exit (its entry and walk are elsewhere in the overlay).
+ *                   the scene's exit (at once when the way is neither a door nor a sliding
+ *                   one);
+ *   0x8b  arrive:   the actor starts 6.0 further in z than its place and walks to it, after
+ *                   waiting 20 frames behind a sliding door (or a held door).
  * In each the work at 0x7d4 is a FieldActorRoomsWalk, and the point the actor walks to is kept
  * packed at 0x8f0 (x and z) for the message handler of another console's actor. */
 #ifndef CLEAN_OV004_FIELD_ACTOR_ROOMS_H
@@ -56,5 +59,27 @@ int FieldActorRooms_RequestStepOff(struct FieldActor *actor, const Vec3 *point, 
 void FieldActorRooms_PutStepOffPoint(Vec3 *payload, Vec3 point);
 
 void FieldActorRooms_UpdateExit(struct FieldActor *actor);
+
+void FieldActorRooms_EndWalk(struct FieldActor *actor);
+void FieldActorRooms_AnimateBySpeed(struct FieldActor *actor);
+
+void FieldActorRooms_StepExit(struct FieldActor *actor);
+void FieldActorRooms_ExitMessage(struct FieldActor *actor, int arg);
+void FieldActorRooms_EnterExit(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRooms_UnpackExitPoint(const u8 *packed, u32 *x, u32 *z);
+void FieldActorRooms_PackExitPoint(u8 *packed, int x, int z);
+void FieldActorRooms_SetExitWork(FieldActorRoomsWalk *work, Vec3 point, fx32 speed, fx32 max_speed, u8 kind);
+int FieldActorRooms_RequestExit(struct FieldActor *actor, const Vec3 *point, int priority, int arg);
+void FieldActorRooms_PutExitPoint(Vec3 *payload, Vec3 point);
+
+void FieldActorRooms_UpdateArrive(struct FieldActor *actor);
+void FieldActorRooms_StepArrive(struct FieldActor *actor);
+void FieldActorRooms_ArriveMessage(struct FieldActor *actor, int arg);
+void FieldActorRooms_EnterArrive(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRooms_UnpackArrivePoint(const u8 *packed, u32 *x, u32 *z);
+void FieldActorRooms_PackArrivePoint(u8 *packed, int x, int z);
+void FieldActorRooms_SetArriveWork(FieldActorRoomsWalk *work, Vec3 point, fx32 max_speed, u8 wait, u8 kind);
+int FieldActorRooms_RequestArrive(struct FieldActor *actor, const Vec3 *point, int priority, int arg);
+void FieldActorRooms_PutArrivePoint(Vec3 *payload, Vec3 point);
 
 #endif

@@ -24,4 +24,25 @@ FurnitureMover *RoomManager_Mover(void);
 int RoomManager_BroadcastChanged(void);
 void RoomManager_SetBroadcastChanged(void);
 
+/* What the TV's sound kept of the frame before (RoomManager.unk_2a8, set up by the room's
+ * start, func_ov004_0223d434: 0, 1 and 0). */
+typedef struct RoomTvSoundState {
+    u8 told;   /* 0x2a8: the sound has been silenced or raised once */
+    u8 silent; /* 0x2a9: no TV that is on was near the player */
+    u8 pad_2aa[2];
+    int channel; /* 0x2ac: the channel shown (RoomManager_TvChannel) */
+} RoomTvSoundState;
+
+int RoomManager_TvFrame(void);
+int RoomManager_TvLoops(void);
+int RoomManager_TvSound(void);
+short RoomManager_TvChannel(void);
+int RoomManager_TvTexture(void);
+void RoomManager_UpdateTvSound(RoomManager *room);
+void RoomManager_MarkNearestClock(RoomManager *room);
+void RoomManager_MarkNearestStriker(RoomManager *room);
+void RoomManager_PlaceMapFurniture(RoomManager *room);
+void RoomManager_StartStub(RoomManager *room);
+unsigned short RoomManager_FrameCounter(void);
+
 #endif

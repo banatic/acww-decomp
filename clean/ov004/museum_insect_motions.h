@@ -52,6 +52,17 @@ typedef struct InsectSighting {
 #define INSECT_MOTION_MOVE 4       /* walking, flying, hopping */
 #define INSECT_MOTION_TURN_AWAY 15 /* from a wall, to unk_ac */
 
+/* More of MuseumInsect.mode: the flappers' (kinds 0-7) and the darters' (kinds 21-23). */
+#define INSECT_MOTION_FLY 0              /* flapping */
+#define INSECT_MOTION_SETTLE 5           /* to the rest point */
+#define INSECT_MOTION_PERCH 6            /* on the anchor */
+#define INSECT_MOTION_STARTLED 7         /* alarmed: off along unk_ac */
+#define INSECT_MOTION_HOVER 11           /* before a dart */
+#define INSECT_MOTION_HOVER_BLOCKED 12   /* after a wall */
+#define INSECT_MOTION_HOVER_BLOCKED_2 13 /* the same */
+#define INSECT_MOTION_HOVER_TO_REST 14   /* before the rest point */
+#define INSECT_MOTION_TURN_TO_REST 19    /* to the rest point */
+
 int InsectMotion_Start(MuseumInsect *insect, short threshold, int sight, short pitch, short yaw, int height, int speed);
 void InsectMotion_BoundAroundPosition(MuseumInsect *insect);
 void InsectMotion_SetBounds(MuseumInsect *insect, const int *low, const int *high);
@@ -112,5 +123,39 @@ void InsectMotion_SingWhenCalm(MuseumInsect *insect);
 void *InsectMotion_TurnFromWall(MuseumInsect *insect, short *frames);
 void InsectMotion_Glide(MuseumInsect *insect);
 void InsectMotion_UpdateGlider(MuseumInsect *insect);
+
+int InsectMotion_NearestRestPoint(MuseumInsect *insect);
+void InsectMotion_DartFromWall(MuseumInsect *insect);
+void InsectMotion_Dart(MuseumInsect *insect);
+void InsectMotion_HoverInPlace(MuseumInsect *insect);
+void InsectMotion_SettleOnRestPoint(MuseumInsect *insect);
+void InsectMotion_UpdateDarter(MuseumInsect *insect);
+void InsectMotion_FlapBounds(MuseumInsect *insect, short *phase);
+void InsectMotion_FlapFly(MuseumInsect *insect);
+void InsectMotion_UpdateFlapper(MuseumInsect *insect);
+int InsectMotion_WatchPlayer(MuseumInsect *insect, InsectSighting *sighting);
+int InsectMotion_UpdateAlarm(MuseumInsect *insect);
+void InsectMotion_TurnToHeading(MuseumInsect *insect, int flag, int mode);
+short InsectMotion_YawFromWall(short yaw, int blocked);
+void InsectMotion_TowardAnchor(MuseumInsect *insect, short *turn, int *distance, Vec3 *anchor);
+int InsectMotion_FleeIfAlarmed(MuseumInsect *insect);
+void InsectMotion_BobHeight(MuseumInsect *insect, int phase, int range, int divisor);
+void InsectMotion_Wander(MuseumInsect *insect, int step, int period, unsigned int threshold);
+int InsectMotion_SoundNumber(int kind, int variant);
+int InsectMotion_PlaySound(MuseumInsect *insect, int mode);
+int InsectMotion_TimerDone(MuseumInsect *insect);
+void InsectMotion_Perched(MuseumInsect *insect);
+void InsectMotion_SeekAnchor(MuseumInsect *insect);
+int InsectMotion_ClampToBounds(MuseumInsect *insect, Vec3 *point);
+int InsectMotion_StayOnFloor(Vec3 *position, const Vec3 *previous);
+void InsectMotion_FlipFrame(MuseumInsect *insect);
+void InsectMotion_PointAlong(Vec3 *out, const Vec3 *base, int yaw, fx32 distance);
+short InsectMotion_RandomYaw(void);
+void InsectMotion_Facing(Vec3 *out, int yaw);
+void InsectMotion_PlaceFeelers(MuseumInsect *insect);
+int InsectMotion_FeelersPushed(MuseumInsect *insect);
+int InsectMotion_FeelersOffGround(MuseumInsect *insect);
+int InsectMotion_FeelWalls(MuseumInsect *insect);
+int InsectMotion_FeelGround(MuseumInsect *insect);
 
 #endif

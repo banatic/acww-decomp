@@ -17,6 +17,7 @@
 #include "main/museum_record.h"
 #include "main/rom_file.h"
 #include "main/shadow.h"
+#include "museum_insect_motions.h"
 
 static_assert(sizeof(InsectKindInfo) == 4, "kind info");
 static_assert(offsetof(MuseumInsect, sound) == 0x24, "insect sound");
@@ -85,8 +86,6 @@ extern u8 *func_02107bbc(void *set, u32 index);
 extern int NNS_G3dMdlGetMdlAlpha(int model, u32 material);
 /* Clears `size` bytes at `dst`. */
 extern void *func_02137550(void *dst, u32 size);
-/* The kind's sound (0 for none) for a variant. */
-extern int func_ov004_02244ae4(int kind, int variant);
 
 /* The members' constructors and destructors handed to __cxa_vec_ctor and __cxa_vec_cleanup:
  * the game's (FieldPointBody_Construct, FieldPointBody_Destruct2, TrivialObject_Construct and
@@ -713,7 +712,7 @@ void InsectRoom_UpdateInsect(InsectRoom *self, MuseumInsect *insect)
             insect->anim.anim->frame = insect->anim.ctrl.frame;
         }
     }
-    if (func_ov004_02244ae4((s8) kind, 0) > 0) {
+    if (InsectMotion_SoundNumber((s8) kind, 0) > 0) {
         Vec3 at = *position;
         SoundSource_UpdateAt(&insect->sound, &at);
     }
@@ -963,3 +962,20 @@ void InsectRoom_PlaceInsect(InsectRoom *self, MuseumInsect *insect)
     insect->position.z = sixteenths(insect->position.z);
 }
 CLEAN_AS(func_ov004_0223fad0, InsectRoom_PlaceInsect)
+
+/* An insect's destructor, as the game hands it on. */
+extern MuseumInsect *func_ov004_0223ecc8(MuseumInsect *self);
+
+/* func_ov004_0224519c: the static table's destructor (registered by the overlay's static
+ * initialiser): each entry destructed, the last first (MuseumInsect_Destruct, handed to
+ * __cxa_vec_cleanup as the game's).
+ * QUIRK: it gives back what __cxa_vec_cleanup leaves, the first entry's destructor's result:
+ * the table's address. `object` is the null the initialiser registered it with. */
+int InsectRoom_DestructTable(void *object)
+{
+    (void) object;
+    __cxa_vec_cleanup(data_ov004_02259a34, MUSEUM_INSECT_ENTRIES, sizeof(MuseumInsect),
+                      (void (*)(void *))(uintptr_t) func_ov004_0223ecc8);
+    return (int) (uintptr_t) &data_ov004_02259a34[0];
+}
+CLEAN_AS(func_ov004_0224519c, InsectRoom_DestructTable)

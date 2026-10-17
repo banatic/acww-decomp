@@ -5,12 +5,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/input.h"
 #include "autoload_2/process.h"
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
+#include "main/current_pockets.h"
 #include "main/item_code.h"
 #include "main/item_record.h"
 #include "main/label_sprite.h"
+#include "main/layer_load_task.h"
 #include "main/lookups.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -18,6 +21,7 @@
 #include "main/sound.h"
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
+#include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(MailboxScene, flags) == 0x94, "flags");
 static_assert(offsetof(MailboxScene, grab_dx) == 0xa4 && offsetof(MailboxScene, held_x) == 0xac, "places");
@@ -51,15 +55,6 @@ extern void func_02066688(void *letter);
 extern void func_ov092_02299324(Process *parent, int code, int flag);
 #define MAILBOX_SCENE_PARENT_CODE_END 0x44
 
-/* The scene's own place tests and the letters object's place of a letter place, and back. */
-extern int func_ov106_0229d3a0(MailboxScene *self, unsigned int place); /* a carried letter */
-extern int func_ov106_0229d390(MailboxScene *self, unsigned int place); /* a mailbox letter */
-extern int func_ov106_0229d384(MailboxScene *self, int place);          /* MAILBOX_SCENE_BELOW */
-extern unsigned char func_ov106_0229d360(MailboxScene *self, unsigned int place);
-extern unsigned char func_ov106_0229d340(unsigned char unused, unsigned char index);
-/* The cancel action: the choice is left (func_ov106_0229d73c). */
-extern void func_ov106_0229d73c(MailboxScene *self);
-
 static PagedChoice *mbx_choice(MailboxScene *self)
 {
     return (PagedChoice *) (void *) self->choice;
@@ -72,18 +67,19 @@ static MenuScene *mbx_scene(MailboxScene *self)
 
 static int mbx_is_carried(MailboxScene *self, int place)
 {
-    return func_ov106_0229d3a0(self, (unsigned int) place) != 0;
+    return MailboxScene_IsCarriedPlace(self, (unsigned int) place) != 0;
 }
 
 /* The place is a letter of the letters object: carried or in the mailbox. */
 static int mbx_is_letter_place(MailboxScene *self, int place)
 {
-    return func_ov106_0229d3a0(self, (unsigned int) place) != 0 || func_ov106_0229d390(self, (unsigned int) place) != 0;
+    return MailboxScene_IsCarriedPlace(self, (unsigned int) place) != 0 ||
+           MailboxScene_IsMailboxPlace(self, (unsigned int) place) != 0;
 }
 
 static int mbx_letter_index(MailboxScene *self, int place)
 {
-    return func_ov106_0229d360(self, (unsigned int) place);
+    return MailboxScene_LetterIndex(self, (unsigned int) place);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -231,11 +227,11 @@ int MailboxScene_MoveCursor(MailboxScene *self, int keys, int mode)
     if (keys == 0) {
         return 0;
     }
-    if (func_ov106_0229d3a0(self, self->cursor) != 0) {
+    if (MailboxScene_IsCarriedPlace(self, self->cursor) != 0) {
         MailboxScene_MoveCursorInCarried(self, keys, mode);
-    } else if (func_ov106_0229d390(self, self->cursor) != 0) {
+    } else if (MailboxScene_IsMailboxPlace(self, self->cursor) != 0) {
         MailboxScene_MoveCursorInMailbox(self, keys, mode);
-    } else if (func_ov106_0229d384(self, self->cursor) != 0) {
+    } else if (MailboxScene_IsBelowPlace(self, self->cursor) != 0) {
         MailboxScene_MoveCursorBelow(self, keys);
     }
     return before != self->cursor;
@@ -304,7 +300,8 @@ void MailboxScene_MoveCursorInMailbox(MailboxScene *self, int keys, int mode)
         self->cursor++;
     }
 
-    if (func_ov106_0229d390(self, self->cursor) == 0 || MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAGS_WRAPPED) != 0) {
+    if (MailboxScene_IsMailboxPlace(self, self->cursor) == 0 ||
+        MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAGS_WRAPPED) != 0) {
         return;
     }
     mbx_move_in_column(self, keys, mode, row);
@@ -340,7 +337,8 @@ void MailboxScene_MoveCursorInCarried(MailboxScene *self, int keys, int mode)
         }
     }
 
-    if (func_ov106_0229d3a0(self, self->cursor) == 0 || MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAGS_WRAPPED) != 0) {
+    if (MailboxScene_IsCarriedPlace(self, self->cursor) == 0 ||
+        MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAGS_WRAPPED) != 0) {
         return;
     }
     mbx_move_in_column(self, keys, mode, row);
@@ -439,7 +437,7 @@ void MailboxScene_RunAction(MailboxScene *self)
             MailboxScene_RunActionMenu(self);
             break;
         default:
-            func_ov106_0229d73c(self);
+            MailboxScene_EndAction(self);
             break;
     }
 }
@@ -615,7 +613,7 @@ void MailboxScene_ShowCursorAtCursor(MailboxScene *self)
     int x = MailboxScene_CursorSpriteX(self);
     int y = MailboxScene_CursorSpriteY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
-    if (func_ov106_0229d384(self, self->cursor) != 0) {
+    if (MailboxScene_IsBelowPlace(self, self->cursor) != 0) {
         Glider_SetAnim(&self->cursor_sprite, 7);
     } else {
         Glider_SetAnim(&self->cursor_sprite, 1);
@@ -897,7 +895,7 @@ CLEAN_AS(func_ov106_0229d29c, MailboxScene_PutHeldLetterAt)
 /* func_ov106_0229d2e4: the letter place under the touch at (x, y), by the letters object (the
  * carried letters first, then the mailbox's); with `with_letter`, only one holding a letter.
  * MAILBOX_SCENE_NO_PLACE for none. QUIRK: the scene's address is handed to the byte the place
- * lookup (func_ov106_0229d340) takes first and ignores. */
+ * lookup (MailboxScene_LetterPlace) takes first and ignores. */
 int MailboxScene_LetterPlaceAtTouch(MailboxScene *self, int x, int y, int with_letter)
 {
     int index = PocketsLetters_PocketAtTouch(&self->letters, x, y);
@@ -910,6 +908,1110 @@ int MailboxScene_LetterPlaceAtTouch(MailboxScene *self, int x, int y, int with_l
     if (with_letter != 0 && PocketsLetters_IsEmpty(&self->letters, index) != 0) {
         return MAILBOX_SCENE_NO_PLACE;
     }
-    return func_ov106_0229d340((unsigned char) (uintptr_t) self, (unsigned char) index);
+    return MailboxScene_LetterPlace((unsigned char) (uintptr_t) self, (unsigned char) index);
 }
 CLEAN_AS(func_ov106_0229d2e4, MailboxScene_LetterPlaceAtTouch)
+
+/* func_ov106_0229d340: the place of the letters object's letter `index` (0-9 carried, 0x23-0x2c
+ * the mailbox's), else MAILBOX_SCENE_NO_PLACE. The first byte is not read. */
+u8 MailboxScene_LetterPlace(u8 unused, u8 index)
+{
+    (void) unused;
+    if (index <= 9) {
+        return (u8) (index + MAILBOX_SCENE_CARRIED_FIRST);
+    }
+    if (index >= 0x23 && index <= 0x2c) {
+        return (u8) (index - 0x23 + MAILBOX_SCENE_MAILBOX_FIRST);
+    }
+    return MAILBOX_SCENE_NO_PLACE;
+}
+CLEAN_AS(func_ov106_0229d340, MailboxScene_LetterPlace)
+
+/* func_ov106_0229d360: the letters object's index of a letter place, else 0. */
+u8 MailboxScene_LetterIndex(MailboxScene *self, unsigned int place)
+{
+    (void) self;
+    if (place >= MAILBOX_SCENE_CARRIED_FIRST && place <= MAILBOX_SCENE_CARRIED_LAST) {
+        return (u8) (place - MAILBOX_SCENE_CARRIED_FIRST);
+    }
+    if (place >= MAILBOX_SCENE_MAILBOX_FIRST && place <= MAILBOX_SCENE_MAILBOX_LAST) {
+        return (u8) (place - MAILBOX_SCENE_MAILBOX_FIRST + 0x23);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov106_0229d360, MailboxScene_LetterIndex)
+
+/* func_ov106_0229d384 */
+int MailboxScene_IsBelowPlace(MailboxScene *self, int place)
+{
+    (void) self;
+    return place == MAILBOX_SCENE_BELOW;
+}
+CLEAN_AS(func_ov106_0229d384, MailboxScene_IsBelowPlace)
+
+/* func_ov106_0229d390 */
+int MailboxScene_IsMailboxPlace(MailboxScene *self, unsigned int place)
+{
+    (void) self;
+    return place >= MAILBOX_SCENE_MAILBOX_FIRST && place <= MAILBOX_SCENE_MAILBOX_LAST;
+}
+CLEAN_AS(func_ov106_0229d390, MailboxScene_IsMailboxPlace)
+
+/* func_ov106_0229d3a0 */
+int MailboxScene_IsCarriedPlace(MailboxScene *self, unsigned int place)
+{
+    (void) self;
+    return place >= MAILBOX_SCENE_CARRIED_FIRST && place <= MAILBOX_SCENE_CARRIED_LAST;
+}
+CLEAN_AS(func_ov106_0229d3a0, MailboxScene_IsCarriedPlace)
+
+/* func_ov106_0229d3b0: the layer load task at 0xc0 taken off the main loop's queue and reset. */
+void MailboxScene_EndLayerTask(MailboxScene *self)
+{
+    LayerTask_End((LayerTask *) (void *) self->unk_c0);
+}
+CLEAN_AS(func_ov106_0229d3b0, MailboxScene_EndLayerTask)
+
+/* The pen (autoload_2/input.c): down, and gone down or up this frame. */
+extern u8 data_021fbdd8;
+extern u8 data_021fbddc;
+
+/* The pad (autoload_2/input.h) and the buttons read in `pressed`. */
+extern PadState data_021fbe40;
+#define MAILBOX_SCENE_PAD_A 0x0001
+#define MAILBOX_SCENE_PAD_B 0x0002
+#define MAILBOX_SCENE_PAD_START 0x0008
+#define MAILBOX_SCENE_PAD_Y 0x0800
+
+/* The panel's two buttons offered under a message (`panel_button` 0 and 1), the selected one,
+ * and the label button's anchor the cursor sprite points at. */
+#define MAILBOX_SCENE_PANEL_BUTTON_3 3
+#define MAILBOX_SCENE_PANEL_BUTTON_4 4
+#define MAILBOX_SCENE_PANEL_SELECTED (-1)
+#define MAILBOX_SCENE_LABEL_ANCHOR 1
+
+/* The message shown when no carried letter is free (MailboxScene_TakeNextLetter). */
+#define MAILBOX_SCENE_MESSAGE_CARRIED_FULL 6
+
+/* The sub state runner (the table of member functions, Obj_ov106_0229f6e0::func_ov106_0229ef8c). */
+extern void _ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv(MailboxScene *self);
+
+static CellLayerSprite *mbx_cursor_cells(MailboxScene *self)
+{
+    /* The cursor sprite's base is main's cell layer sprite (glide.h). */
+    return (CellLayerSprite *) (void *) &self->cursor_sprite;
+}
+
+/* The pen went down this frame. */
+static int mbx_pen_pressed(void)
+{
+    return data_021fbdd8 != 0 && data_021fbddc != 0;
+}
+
+/* The value kept with choice row `row` (ChoiceEntries.values), read as the ROM does at
+ * 0x26f1 + row. */
+static u8 mbx_entry_value(MailboxScene *self, int row)
+{
+    const u8 *bytes = (const u8 *) self;
+    return bytes[offsetof(MailboxScene, entries) + offsetof(ChoiceEntries, values) + (size_t) row];
+}
+
+/* A choice row picked with the sound of a pick, except for the row of action 2 (sound 0x24
+ * instead); its action kept; sub state 0x17. */
+static void mbx_pick_choice_row(MailboxScene *self, int row)
+{
+    self->action = mbx_entry_value(self, row);
+    int with_sound = 1;
+    if (self->action == MAILBOX_SCENE_ACTION_PICK_UP) {
+        with_sound = 0;
+        SoundSys_PlaySe(0x24);
+    }
+    PagedChoice_PickRowWithSound(mbx_choice(self), row, with_sound);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_CLOSE);
+}
+
+/* func_ov106_0229d3bc: sound 0x28, the panel's button 4 selected, sub state 0x1f, button 4
+ * chosen. */
+void MailboxScene_PressPanelButton4(MailboxScene *self)
+{
+    SoundSys_PlaySe(0x28);
+    ButtonPanel_Select(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_4);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PANEL_PRESSED);
+    self->panel_button = 1;
+}
+CLEAN_AS(func_ov106_0229d3bc, MailboxScene_PressPanelButton4)
+
+/* func_ov106_0229d3e8: sound 0x27, the panel's button 3 selected, sub state 0x1f, button 3
+ * chosen. */
+void MailboxScene_PressPanelButton3(MailboxScene *self)
+{
+    SoundSys_PlaySe(0x27);
+    ButtonPanel_Select(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_3);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PANEL_PRESSED);
+    self->panel_button = 0;
+}
+CLEAN_AS(func_ov106_0229d3e8, MailboxScene_PressPanelButton3)
+
+/* func_ov106_0229d414: message `message` of the error messages talked, sub state 0x1a, a wipe
+ * started. (The ROM first copies data_021f43ec into the message's byte, then overwrites it.) */
+void MailboxScene_ShowMessage(MailboxScene *self, char message)
+{
+    u8 text = (u8) message;
+    ErrorMessage_StartTalk(&self->error, &text, 1);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_MESSAGE_UP);
+    MenuScene_StartWipe(mbx_scene(self), 0, 0);
+}
+CLEAN_AS(func_ov106_0229d414, MailboxScene_ShowMessage)
+
+/* func_ov106_0229d454: the place of the mailbox's first letter that holds one (its state is not
+ * 0), else MAILBOX_SCENE_NO_PLACE. */
+int MailboxScene_FirstMailboxLetterPlace(MailboxScene *self)
+{
+    for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
+        if (Letter_State(&self->mailbox[i]) != 0) {
+            return (u8) (i + MAILBOX_SCENE_MAILBOX_FIRST);
+        }
+    }
+    return MAILBOX_SCENE_NO_PLACE;
+}
+CLEAN_AS(func_ov106_0229d454, MailboxScene_FirstMailboxLetterPlace)
+
+/* func_ov106_0229d48c: the carried place of the current player's first free letter slot (their
+ * pockets', not the letters object's), else MAILBOX_SCENE_NO_PLACE. */
+int MailboxScene_FreeCarriedPlace(MailboxScene *self)
+{
+    (void) self;
+    int index = CurrentPockets_FreeLetterIndex();
+    if (index == -1) {
+        return MAILBOX_SCENE_NO_PLACE;
+    }
+    return (u8) (index + MAILBOX_SCENE_CARRIED_FIRST);
+}
+CLEAN_AS(func_ov106_0229d48c, MailboxScene_FreeCarriedPlace)
+
+/* func_ov106_0229d4ac: the letter at `from` picked up and drawn there, then glided to `to` in 4
+ * steps. */
+void MailboxScene_HoldAndGlide(MailboxScene *self, int from, int to)
+{
+    MailboxScene_PickUpLetter(self, from);
+    self->held_x = MailboxScene_PlaceX(self, from);
+    self->held_y = MailboxScene_PlaceY(self, from);
+    MailboxScene_GlideHeldTo(self, to, 4);
+}
+CLEAN_AS(func_ov106_0229d4ac, MailboxScene_HoldAndGlide)
+
+/* func_ov106_0229d4e4: the dragged letter let go with the touch at `x`: one from the mailbox
+ * dropped over the carried letters (x from 0xc0) goes to the player's first free letter slot;
+ * else, or when there is none, it glides back to `place`. 4 steps. */
+void MailboxScene_DropHeldAtTouch(MailboxScene *self, int place, int x)
+{
+    int to = MAILBOX_SCENE_NO_PLACE;
+    if (x >= 0xc0 && MailboxScene_IsMailboxPlace(self, (unsigned int) place)) {
+        to = MailboxScene_FreeCarriedPlace(self);
+    }
+    if (to != MAILBOX_SCENE_NO_PLACE) {
+        place = to;
+    }
+    MailboxScene_GlideHeldTo(self, place, 4);
+}
+CLEAN_AS(func_ov106_0229d4e4, MailboxScene_DropHeldAtTouch)
+
+/* func_ov106_0229d518: the held letter glides from where it is drawn to `place` (kept as its
+ * place, `held_from`) in `steps` steps, the first taken now. Sub state 0x15 follows it. */
+void MailboxScene_GlideHeldTo(MailboxScene *self, int place, int steps)
+{
+    self->held_from = (u8) place;
+    Glide_SetPlace(&self->glide, self->held_x, self->held_y);
+    int x = MailboxScene_PlaceX(self, place);
+    int y = MailboxScene_PlaceY(self, place);
+    Glide_MoveTo(&self->glide, x, y, steps);
+    Glide_Step(&self->glide);
+    MailboxScene_FollowGlide(self);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_HELD_GLIDE);
+}
+CLEAN_AS(func_ov106_0229d518, MailboxScene_GlideHeldTo)
+
+/* func_ov106_0229d57c: the letter at `place` picked up with the cursor, the popup hidden; when it
+ * is held, the sub state to go back to is 8. It follows the cursor sprite; sound 0xd. */
+void MailboxScene_PickUpWithCursor(MailboxScene *self, int place)
+{
+    self->held_from = (u8) place;
+    Popup_Hide(&self->popup, 1);
+    MailboxScene_PickUpLetter(self, place);
+    if (self->held_kind == MAILBOX_SCENE_HELD_LETTER) {
+        self->return_state = MAILBOX_SCENE_SUB_HOLD;
+    }
+    MailboxScene_FollowCursorSprite(self);
+    PocketsSound_Play0d();
+}
+CLEAN_AS(func_ov106_0229d57c, MailboxScene_PickUpWithCursor)
+
+/* func_ov106_0229d5c4: the letter at `place` picked up with the touch, the popup hidden; when it
+ * is held, sub state 4 drags it. It follows the touch; sound 0xd. */
+void MailboxScene_PickUpWithTouch(MailboxScene *self, int place)
+{
+    self->held_from = (u8) place;
+    Popup_Hide(&self->popup, 1);
+    MailboxScene_PickUpLetter(self, place);
+    if (self->held_kind == MAILBOX_SCENE_HELD_LETTER) {
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_DRAG);
+    }
+    MailboxScene_FollowTouch(self);
+    PocketsSound_Play0d();
+}
+CLEAN_AS(func_ov106_0229d5c4, MailboxScene_PickUpWithTouch)
+
+/* func_ov106_0229d60c: `place` touched: sub state 1, the offset from the touch to the place
+ * kept, the popup told of the place and shown, its choice opening in 2 frames; the letter may be
+ * dragged (MAILBOX_SCENE_FLAG_DRAGGABLE, sound 0xc) unless it is dimmed. */
+void MailboxScene_TouchPlace(MailboxScene *self, int place)
+{
+    self->touch_place = (u8) place;
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TOUCH_HOLD);
+    u8 touch_x = data_021f6c58;
+    u8 touch_y = data_021f6c54;
+    self->grab_dx = MailboxScene_PlaceX(self, self->touch_place) - touch_x;
+    self->grab_dy = MailboxScene_PlaceY(self, self->touch_place) - touch_y;
+    self->popup_place = (u8) place;
+    Popup_Queue(&self->popup);
+    Popup_ShowQueued(&self->popup);
+    self->open_delay = 2;
+    if (MailboxScene_PlaceIsDimmed(self, place)) {
+        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_DRAGGABLE);
+    } else {
+        MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_DRAGGABLE);
+        PocketsSound_Play0c();
+    }
+}
+CLEAN_AS(func_ov106_0229d60c, MailboxScene_TouchPlace)
+
+/* func_ov106_0229d6a4: the panel's buttons 3 and 4 offered, to the touch while state flag 2 is
+ * clear, else to the keys. */
+void MailboxScene_OfferPanelButtons(MailboxScene *self)
+{
+    if (StateFlags_IsClear2()) {
+        MailboxScene_OfferPanelButtonsByTouch(self);
+    } else {
+        MailboxScene_OfferPanelButtonsByKeys(self);
+    }
+}
+CLEAN_AS(func_ov106_0229d6a4, MailboxScene_OfferPanelButtons)
+
+/* func_ov106_0229d6c4: the key repeat reset, button 4 chosen and the cursor sprite shown on it
+ * (animation 1, updated); sub state 0x1d. */
+void MailboxScene_OfferPanelButtonsByKeys(MailboxScene *self)
+{
+    MenuScene_ResetKeyRepeat(mbx_scene(self));
+    self->panel_button = 1;
+    Glider_SetAnim(&self->cursor_sprite, 1);
+    mbx_update_cursor_sprite(&self->cursor_sprite);
+    int x = ButtonPanel_ButtonX(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_4);
+    int y = ButtonPanel_ButtonY(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_4);
+    Glider_PlaceAt(&self->cursor_sprite, x, y);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PANEL_BY_KEYS);
+}
+CLEAN_AS(func_ov106_0229d6c4, MailboxScene_OfferPanelButtonsByKeys)
+
+/* func_ov106_0229d724: the cursor sprite hidden; sub state 0x1c. */
+void MailboxScene_OfferPanelButtonsByTouch(MailboxScene *self)
+{
+    MailboxScene_HideCursorSprite(self);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PANEL_BY_TOUCH);
+}
+CLEAN_AS(func_ov106_0229d724, MailboxScene_OfferPanelButtonsByTouch)
+
+/* func_ov106_0229d73c: the action ends: back to sub state 0 with the cursor sprite hidden while
+ * state flag 2 is clear, else to sub state 7 with it at the cursor. */
+void MailboxScene_EndAction(MailboxScene *self)
+{
+    if (StateFlags_IsClear2()) {
+        MailboxScene_EndActionHidden(self);
+    } else {
+        MailboxScene_EndActionAtCursor(self);
+    }
+}
+CLEAN_AS(func_ov106_0229d73c, MailboxScene_EndAction)
+
+/* func_ov106_0229d75c: no popup place, the cursor sprite shown at the cursor, the key repeat
+ * reset, the popup told of the cursor's place, sub state 7 and the cursor's place selected. */
+void MailboxScene_EndActionAtCursor(MailboxScene *self)
+{
+    self->popup_place = MAILBOX_SCENE_NO_PLACE;
+    MailboxScene_ShowCursorAtCursor(self);
+    MenuScene_ResetKeyRepeat(mbx_scene(self));
+    MailboxScene_UpdatePopup(self);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_BROWSE);
+    MailboxScene_SelectPlace(self, self->cursor);
+}
+CLEAN_AS(func_ov106_0229d75c, MailboxScene_EndActionAtCursor)
+
+/* func_ov106_0229d790 */
+void MailboxScene_EndActionHidden(MailboxScene *self)
+{
+    MailboxScene_HideCursorSprite(self);
+    MailboxScene_ClearSelection(self);
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TOUCH_IDLE);
+}
+CLEAN_AS(func_ov106_0229d790, MailboxScene_EndActionHidden)
+
+/* func_ov106_0229d7ac (sub state 0x26, after MailboxScene_PickUpSlotLetter): once the letters
+ * object's pick-up is over, the held letter is let go (nothing held) and the action ends. */
+void MailboxScene_WaitLetGo(MailboxScene *self)
+{
+    if (PocketsLetters_StepPickUp(&self->letters)) {
+        self->held_kind = MAILBOX_SCENE_HELD_NONE;
+        MailboxScene_EndAction(self);
+    }
+}
+CLEAN_AS(func_ov106_0229d7ac, MailboxScene_WaitLetGo)
+
+/* func_ov106_0229d7d4 (sub state 0x25): the letter taken from the mailbox follows its glide;
+ * when it is over, the letter is put at its place (`held_from`) and the next one is taken (sub
+ * state 0x24), sound 0xe. */
+void MailboxScene_StepTakenLetterGlide(MailboxScene *self)
+{
+    if (Glide_Step(&self->glide) != 0) {
+        MailboxScene_PutHeldAt(self, self->held_from);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TAKE_NEXT);
+        PocketsSound_Play0e();
+    } else {
+        MailboxScene_FollowGlide(self);
+    }
+}
+CLEAN_AS(func_ov106_0229d7d4, MailboxScene_StepTakenLetterGlide)
+
+/* func_ov106_0229d810 (sub state 0x24): the mailbox's first letter glides to the player's first
+ * free letter slot (sub state 0x25). With no letter left in the mailbox, the cursor goes to
+ * MAILBOX_SCENE_BELOW and the action ends; with no free slot, message 6 is shown. */
+void MailboxScene_TakeNextLetter(MailboxScene *self)
+{
+    int from = MailboxScene_FirstMailboxLetterPlace(self);
+    if (from == MAILBOX_SCENE_NO_PLACE) {
+        self->cursor = MAILBOX_SCENE_BELOW;
+        MailboxScene_EndAction(self);
+        return;
+    }
+    int to = MailboxScene_FreeCarriedPlace(self);
+    if (to == MAILBOX_SCENE_NO_PLACE) {
+        MailboxScene_ShowMessage(self, MAILBOX_SCENE_MESSAGE_CARRIED_FULL);
+    } else {
+        MailboxScene_HoldAndGlide(self, from, to);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TAKE_GLIDE);
+    }
+}
+CLEAN_AS(func_ov106_0229d810, MailboxScene_TakeNextLetter)
+
+/* Places the cursor sprite (when shown) on the selected panel button, offset by its press's
+ * frame. */
+static void mbx_follow_selected_press(MailboxScene *self)
+{
+    if (CellLayerSprite_AnimNumber(mbx_cursor_cells(self)) != 0) {
+        int frame = ButtonPanel_SelectedPressFrame(&self->panel);
+        int x = ButtonPanel_ButtonX(&self->panel, MAILBOX_SCENE_PANEL_SELECTED);
+        int y = ButtonPanel_ButtonY(&self->panel, MAILBOX_SCENE_PANEL_SELECTED);
+        Glider_PlaceAt(&self->cursor_sprite, frame + x, frame + y);
+    }
+}
+
+/* func_ov106_0229d860 (sub state 0x23, after MailboxScene_PressPanelButton9): while the selected
+ * panel button's press plays, the cursor sprite (when shown) follows it; after, the sprite is
+ * hidden, state 4 (written directly), MAILBOX_SCENE_FLAG_100 cleared and phase 1. */
+void MailboxScene_FollowPanelPress(MailboxScene *self)
+{
+    if (ButtonPanel_StepSelectedPress(&self->panel) != 0) {
+        mbx_follow_selected_press(self);
+    } else {
+        MailboxScene_HideCursorSprite(self);
+        self->base.state = 4;
+        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_100);
+        MenuScene_SetPhase(mbx_scene(self), 1);
+    }
+}
+CLEAN_AS(func_ov106_0229d860, MailboxScene_FollowPanelPress)
+
+/* func_ov106_0229d8e0 (sub state 0x22): while the label button's animation plays, the cursor
+ * sprite (when shown) follows its anchor; after, the sprite is hidden, state 9 and phase 1. */
+void MailboxScene_FollowLabelPress(MailboxScene *self)
+{
+    if (LabelButton_StepAnimation(&self->button) != 0) {
+        if (CellLayerSprite_AnimNumber(mbx_cursor_cells(self)) != 0) {
+            int x = LabelButton_AnchorX(&self->button, MAILBOX_SCENE_LABEL_ANCHOR);
+            int y = LabelButton_AnchorY(&self->button, MAILBOX_SCENE_LABEL_ANCHOR);
+            Glider_PlaceAt(&self->cursor_sprite, x, y);
+        }
+    } else {
+        MailboxScene_HideCursorSprite(self);
+        MenuScene_SetState(mbx_scene(self), 9);
+        MenuScene_SetPhase(mbx_scene(self), 1);
+    }
+}
+CLEAN_AS(func_ov106_0229d8e0, MailboxScene_FollowLabelPress)
+
+/* func_ov106_0229d948 (sub state 0x21): the wipe back after a message, its offset kept; when
+ * done, the action ends. */
+void MailboxScene_EndMessageWipe(MailboxScene *self)
+{
+    int done = MenuScene_StepWipeBack(mbx_scene(self), -1);
+    self->wipe_y = MenuScene_WipeOffsetY(mbx_scene(self));
+    if (done != 0) {
+        MailboxScene_EndAction(self);
+    }
+}
+CLEAN_AS(func_ov106_0229d948, MailboxScene_EndMessageWipe)
+
+/* func_ov106_0229d978 (sub state 0x20): once the message has closed and the wipe is done (both
+ * stepped every frame, the wipe's offset kept), the panel's flag 2 cleared; after button 3 a
+ * covered wipe back with the panel's layout 5 and message 0x88 (sub state 0x21), after button 4
+ * the panel's layout cleared, state 4 and phase 1. */
+void MailboxScene_CloseMessage(MailboxScene *self)
+{
+    int closed = ErrorMessage_WaitClosed(&self->error);
+    int wiped = MenuScene_StepWipe(mbx_scene(self), -1);
+    self->wipe_y = MenuScene_WipeOffsetY(mbx_scene(self));
+    if ((closed & wiped) == 0) {
+        return;
+    }
+    ButtonPanel_ClearFlag2(&self->panel);
+    if (self->panel_button == 0) {
+        MenuScene_StartWipeCovered(mbx_scene(self), 0, 0);
+        ButtonPanel_SetLayout5(&self->panel, 0x88);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_MESSAGE_WIPE_END);
+    } else {
+        ButtonPanel_ClearLayout(&self->panel);
+        MenuScene_SetState(mbx_scene(self), 4);
+        MenuScene_SetPhase(mbx_scene(self), 1);
+    }
+}
+CLEAN_AS(func_ov106_0229d978, MailboxScene_CloseMessage)
+
+/* func_ov106_0229d9fc (sub state 0x1f): while the selected panel button's press plays, the
+ * cursor sprite (when shown) follows it; after, the sprite is hidden, sub state 0x20, a wipe
+ * started and the message closed. */
+void MailboxScene_FollowMessagePanelPress(MailboxScene *self)
+{
+    if (ButtonPanel_StepSelectedPress(&self->panel) != 0) {
+        mbx_follow_selected_press(self);
+    } else {
+        MailboxScene_HideCursorSprite(self);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_MESSAGE_CLOSE);
+        MenuScene_StartWipe(mbx_scene(self), 0, 0);
+        ErrorMessage_Close(&self->error);
+    }
+}
+CLEAN_AS(func_ov106_0229d9fc, MailboxScene_FollowMessagePanelPress)
+
+/* func_ov106_0229da80 (sub state 0x1e): once the cursor sprite's animation has ended, sub state
+ * 0x1f and the chosen panel button selected (button 4 with sound 0x28, button 3 with 0x27). */
+void MailboxScene_PressChosenPanelButton(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self)) == 0) {
+        return;
+    }
+    MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PANEL_PRESSED);
+    if (self->panel_button != 0) {
+        ButtonPanel_Select(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_4);
+        SoundSys_PlaySe(0x28);
+    } else {
+        ButtonPanel_Select(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_3);
+        SoundSys_PlaySe(0x27);
+    }
+}
+CLEAN_AS(func_ov106_0229da80, MailboxScene_PressChosenPanelButton)
+
+/* func_ov106_0229dad4 (sub state 0x1d): panel buttons 3 and 4 by the keys. A close of the menu
+ * presses button 4 (the sprite hidden); a touch gives them to the touch; A presses the chosen
+ * one (sub state 0x1e, once the sprite's second animation of its set has played), B presses
+ * button 4 and START button 3 at once; left chooses button 3, right button 4 (`panel_button` 0
+ * or 1), the cursor sprite easing to it. */
+void MailboxScene_ChoosePanelButtonByKeys(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_HideCursorSprite(self);
+        MailboxScene_PressPanelButton4(self);
+        return;
+    }
+    if (MenuScene_TakeTouch(mbx_scene(self))) {
+        MailboxScene_OfferPanelButtonsByTouch(self);
+        return;
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if (pressed & MAILBOX_SCENE_PAD_A) {
+        Glider_ShowSecondOfSet(&self->cursor_sprite);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PANEL_PRESS);
+        return;
+    }
+    if (pressed & MAILBOX_SCENE_PAD_B) {
+        MailboxScene_HideCursorSprite(self);
+        MailboxScene_PressPanelButton4(self);
+        return;
+    }
+    if (pressed & MAILBOX_SCENE_PAD_START) {
+        MailboxScene_HideCursorSprite(self);
+        MailboxScene_PressPanelButton3(self);
+        return;
+    }
+
+    u8 before = self->panel_button;
+    int keys = (int) MenuScene_LatchRepeatedKeys(mbx_scene(self));
+    if (KeyRepeat_HasLeft(keys)) {
+        if (self->panel_button != 0) {
+            self->panel_button--;
+        }
+    } else if (KeyRepeat_HasRight(keys)) {
+        if (self->panel_button < 1) {
+            self->panel_button++;
+        }
+    }
+    if (before != self->panel_button) {
+        int button = self->panel_button != 0 ? MAILBOX_SCENE_PANEL_BUTTON_4 : MAILBOX_SCENE_PANEL_BUTTON_3;
+        int x = ButtonPanel_ButtonX(&self->panel, button);
+        int y = ButtonPanel_ButtonY(&self->panel, button);
+        MailboxScene_EaseCursorSpriteTo(self, x, y);
+    }
+}
+CLEAN_AS(func_ov106_0229dad4, MailboxScene_ChoosePanelButtonByKeys)
+
+/* func_ov106_0229dc04 (sub state 0x1c): panel buttons 3 and 4 by the touch. A button gives them
+ * to the keys; the pen going down on button 3, else on button 4, presses it. QUIRK: a close of
+ * the menu presses button 4 and goes on with the rest, so the same frame may hand the buttons to
+ * the keys or press a touched one after it. */
+void MailboxScene_ChoosePanelButtonByTouch(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_PressPanelButton4(self);
+    }
+    if (MenuScene_TakeButtons(mbx_scene(self), 1)) {
+        MailboxScene_OfferPanelButtonsByKeys(self);
+        return;
+    }
+    if (!mbx_pen_pressed()) {
+        return;
+    }
+    if (ButtonPanel_IsTouched(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_3)) {
+        MailboxScene_PressPanelButton3(self);
+    } else if (ButtonPanel_IsTouched(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_4)) {
+        MailboxScene_PressPanelButton4(self);
+    }
+}
+CLEAN_AS(func_ov106_0229dc04, MailboxScene_ChoosePanelButtonByTouch)
+
+/* func_ov106_0229dc80 (sub state 0x1b): the covered wipe back under the message, its offset
+ * kept; when done, the panel's buttons are offered. */
+void MailboxScene_MessageWipeBack(MailboxScene *self)
+{
+    int done = MenuScene_StepWipeBack(mbx_scene(self), -1);
+    self->wipe_y = MenuScene_WipeOffsetY(mbx_scene(self));
+    if (done != 0) {
+        MailboxScene_OfferPanelButtons(self);
+    }
+}
+CLEAN_AS(func_ov106_0229dc80, MailboxScene_MessageWipeBack)
+
+/* func_ov106_0229dcb0 (sub state 0x1a): once the message is up and the wipe is done (both stepped
+ * every frame, the wipe's offset kept), sub state 0x1b with a covered wipe, the panel's layout 10
+ * and its flag 2. */
+void MailboxScene_WaitMessageUp(MailboxScene *self)
+{
+    int up = ErrorMessage_WaitUp(&self->error);
+    int wiped = MenuScene_StepWipe(mbx_scene(self), -1);
+    self->wipe_y = MenuScene_WipeOffsetY(mbx_scene(self));
+    if ((up & wiped) != 0) {
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_MESSAGE_WIPE_BACK);
+        MenuScene_StartWipeCovered(mbx_scene(self), 0, 0);
+        ButtonPanel_SetLayout10(&self->panel);
+        ButtonPanel_SetFlag2(&self->panel);
+    }
+}
+CLEAN_AS(func_ov106_0229dcb0, MailboxScene_WaitMessageUp)
+
+/* func_ov106_0229dd10 (sub state 0x19): once the error message is done, back to the sub state
+ * kept, the cursor sprite's window flag set. */
+void MailboxScene_WaitError(MailboxScene *self)
+{
+    if (ErrorMessage_Update(&self->error, 1)) {
+        MenuScene_SetSubState(mbx_scene(self), self->return_state);
+        CellLayerSprite_SetWindow(mbx_cursor_cells(self));
+    }
+}
+CLEAN_AS(func_ov106_0229dd10, MailboxScene_WaitError)
+
+/* func_ov106_0229dd44 (sub state 0x18): the action picked runs once the choice is idle. */
+void MailboxScene_RunActionWhenIdle(MailboxScene *self)
+{
+    if (PagedChoice_IsIdle(mbx_choice(self)) != 0) {
+        MailboxScene_RunAction(self);
+    }
+}
+CLEAN_AS(func_ov106_0229dd44, MailboxScene_RunActionWhenIdle)
+
+/* func_ov106_0229dd64 (sub state 0x17): once the delay after the pick has run out, the choice
+ * asked to close, the popup hidden, the cursor sprite (when shown) put back at the cursor; sub
+ * state 0x18. */
+void MailboxScene_CloseChoice(MailboxScene *self)
+{
+    if (PagedChoice_CountDown(mbx_choice(self)) != 0) {
+        PagedChoice_RequestClose(mbx_choice(self), 0);
+        Popup_Hide(&self->popup, 1);
+        if (CellLayerSprite_AnimNumber(mbx_cursor_cells(self)) != 0) {
+            MailboxScene_PlaceCursorSprite(self);
+        }
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_RUN);
+    }
+}
+CLEAN_AS(func_ov106_0229dd64, MailboxScene_CloseChoice)
+
+/* func_ov106_0229ddb4 (sub state 0x16): once the choice is shown, it is run by the keys (the
+ * cursor sprite at its default row, sub state 0x0b) when state flag 2 is set, else by the touch
+ * (sub state 6). */
+void MailboxScene_WaitChoiceShown(MailboxScene *self)
+{
+    if (PagedChoice_IsShown(mbx_choice(self)) != 0) {
+        if (StateFlags_Test2()) {
+            MailboxScene_PointAtDefaultRow(self);
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_BY_KEYS);
+        } else {
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_BY_TOUCH);
+        }
+    }
+}
+CLEAN_AS(func_ov106_0229ddb4, MailboxScene_WaitChoiceShown)
+
+/* func_ov106_0229ddf0 (sub state 0x15): the held letter follows its glide. When the glide is over
+ * the letter is put at its place (`held_from`), the action ends, sound 0xe. */
+void MailboxScene_StepHeldGlide(MailboxScene *self)
+{
+    if (Glide_Step(&self->glide) != 0) {
+        MailboxScene_PutHeldAt(self, self->held_from);
+        MailboxScene_EndAction(self);
+        PocketsSound_Play0e();
+    } else {
+        MailboxScene_FollowGlide(self);
+    }
+}
+CLEAN_AS(func_ov106_0229ddf0, MailboxScene_StepHeldGlide)
+
+/* func_ov106_0229de28 (sub state 0x14): back to the sub state kept once the cursor sprite's
+ * animation has ended; once its turn has settled, a hidden held letter is shown again (sound
+ * 0xd) and follows the sprite. */
+void MailboxScene_FinishSwap(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self))) {
+        MenuScene_SetSubState(mbx_scene(self), self->return_state);
+    }
+    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_HELD_HIDDEN)) {
+            MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_HELD_HIDDEN);
+            PocketsSound_Play0d();
+        }
+        MailboxScene_FollowCursorSprite(self);
+    }
+}
+CLEAN_AS(func_ov106_0229de28, MailboxScene_FinishSwap)
+
+/* func_ov106_0229de78 (sub state 0x13): unless the cursor sprite's turn is at its frame 2, the
+ * held letter changes places with the one at `target`, the new held letter hidden for now, the
+ * popup updated; sub state 0x14. At frame 2, sub state 7. */
+void MailboxScene_Swap(MailboxScene *self)
+{
+    if (Glider_IsTurnAtFrame2(&self->cursor_sprite) == 0) {
+        MailboxScene_SwapHeldWith(self, self->target);
+        MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_HELD_HIDDEN);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_SWAP_END);
+        MailboxScene_UpdatePopup(self);
+    } else {
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_BROWSE);
+    }
+}
+CLEAN_AS(func_ov106_0229de78, MailboxScene_Swap)
+
+/* func_ov106_0229dec0 (sub state 0x12): while the cursor sprite's turn has not settled, the held
+ * letter is put down at `target` when the cursor is on it (the popup updated, sub state 7, sound
+ * 0xe), else glided there in 4 steps; once it has, the letter follows the sprite. */
+void MailboxScene_PutDown(MailboxScene *self)
+{
+    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+        u8 target = self->target;
+        if (self->cursor == target) {
+            MailboxScene_PutHeldLetterAt(self, target);
+            MailboxScene_UpdatePopup(self);
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_BROWSE);
+            PocketsSound_Play0e();
+        } else {
+            MailboxScene_GlideHeldTo(self, target, 4);
+        }
+    } else {
+        MailboxScene_FollowCursorSprite(self);
+    }
+}
+CLEAN_AS(func_ov106_0229dec0, MailboxScene_PutDown)
+
+/* func_ov106_0229df14 (sub state 0x11): back to the sub state kept once the cursor sprite's
+ * animation has ended; the held letter follows the sprite. */
+void MailboxScene_FinishPickUp(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self))) {
+        MenuScene_SetSubState(mbx_scene(self), self->return_state);
+    }
+    MailboxScene_FollowCursorSprite(self);
+}
+CLEAN_AS(func_ov106_0229df14, MailboxScene_FinishPickUp)
+
+/* func_ov106_0229df40 (sub state 0x10): once the cursor sprite's turn has settled, the letter at
+ * the cursor is picked up; sub state 0x11. */
+void MailboxScene_PickUpAtCursor(MailboxScene *self)
+{
+    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+        MailboxScene_PickUpWithCursor(self, self->cursor);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_PICK_UP_END);
+    }
+}
+CLEAN_AS(func_ov106_0229df40, MailboxScene_PickUpAtCursor)
+
+/* func_ov106_0229df70 (sub state 0x0f): once the cursor sprite's animation has ended, its set's
+ * first animation; sub state 7. */
+void MailboxScene_FinishPlacePress(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self))) {
+        MailboxScene_ShowCursorFirstOfSet(self);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_BROWSE);
+    }
+}
+CLEAN_AS(func_ov106_0229df70, MailboxScene_FinishPlacePress)
+
+/* func_ov106_0229df98 (sub state 0x0e): once the cursor sprite's animation has ended, the place
+ * is pressed: MAILBOX_SCENE_BELOW presses panel button 9, other places go to sub state 0x0f. */
+void MailboxScene_PressPlace(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self)) == 0) {
+        return;
+    }
+    if (self->cursor == MAILBOX_SCENE_BELOW) {
+        MailboxScene_PressPanelButton9(self);
+    } else {
+        MailboxScene_BeginSubState0f(self);
+    }
+}
+CLEAN_AS(func_ov106_0229df98, MailboxScene_PressPlace)
+
+/* Obj_ov106_0229f6e0::func_ov106_0229dfcc (sub state 0x0d): once the cursor sprite stops moving,
+ * back to the sub state kept (the cursor's place selected for sub state 7), which runs at once;
+ * the held letter follows the sprite. */
+void MailboxScene_WaitCursorSprite(MailboxScene *self)
+{
+    if (Glider_IsMoving(&self->cursor_sprite) == 0) {
+        MenuScene_SetSubState(mbx_scene(self), self->return_state);
+        if (self->return_state == MAILBOX_SCENE_SUB_BROWSE) {
+            MailboxScene_SelectPlace(self, self->cursor);
+        }
+        _ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv(self);
+    }
+    MailboxScene_FollowCursorSprite(self);
+}
+CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229dfccEv, MailboxScene_WaitCursorSprite)
+
+/* func_ov106_0229e014 (sub state 0x0c): once the cursor sprite's animation has ended, the
+ * choice row it points at is picked. */
+void MailboxScene_PickChoiceRow(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self)) == 0) {
+        return;
+    }
+    mbx_pick_choice_row(self, self->choice_row);
+}
+CLEAN_AS(func_ov106_0229e014, MailboxScene_PickChoiceRow)
+
+/* func_ov106_0229e078 (sub state 0x0b): the choice by the keys. A close of the menu or a touch
+ * cancels it; the keys move the row (from row 1 round for the fixed menu), the cursor sprite
+ * gliding to it; A plays the sprite's second animation of its set and picks the row (sub state
+ * 0x0c), B points at the last row. */
+void MailboxScene_ChooseByKeys(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_CancelChoice(self);
+        return;
+    }
+    if (MenuScene_TakeTouch(mbx_scene(self))) {
+        MailboxScene_CancelChoice(self);
+        return;
+    }
+    int keys = (int) MenuScene_LatchRepeatedKeys(mbx_scene(self));
+    u8 first = (u8) MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU);
+    if (PagedChoice_MoveCursor(mbx_choice(self), keys, &self->choice_row, first)) {
+        MailboxScene_GlideToRow(self);
+        return;
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if (pressed & MAILBOX_SCENE_PAD_A) {
+        Glider_ShowSecondOfSet(&self->cursor_sprite);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_PICK);
+    } else if (pressed & MAILBOX_SCENE_PAD_B) {
+        MailboxScene_PointAtLastRow(self);
+    }
+}
+CLEAN_AS(func_ov106_0229e078, MailboxScene_ChooseByKeys)
+
+/* func_ov106_0229e114 (sub state 0x0a): the label button pressed once the cursor sprite's
+ * animation has ended. */
+void MailboxScene_WaitLabelPress(MailboxScene *self)
+{
+    if (CellLayerSprite_IsDone(mbx_cursor_cells(self))) {
+        MailboxScene_PressLabelButton(self);
+    }
+}
+CLEAN_AS(func_ov106_0229e114, MailboxScene_WaitLabelPress)
+
+/* func_ov106_0229e134 (sub state 9): the label button by the keys. A close of the menu closes the
+ * scene. A hidden cursor sprite is shown on the button's anchor (animation 1); a touch hides it
+ * (sub state 5); A or B plays the sprite's second animation of its set, sub state 0x0a. */
+void MailboxScene_LabelByKeys(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_CloseOnRequest(self);
+        return;
+    }
+    if (CellLayerSprite_AnimNumber(mbx_cursor_cells(self)) == 0) {
+        int x = LabelButton_AnchorX(&self->button, MAILBOX_SCENE_LABEL_ANCHOR);
+        int y = LabelButton_AnchorY(&self->button, MAILBOX_SCENE_LABEL_ANCHOR);
+        Glider_PlaceAt(&self->cursor_sprite, x, y);
+        Glider_SetAnim(&self->cursor_sprite, 1);
+    }
+    if (MenuScene_TakeTouch(mbx_scene(self))) {
+        MailboxScene_HideCursorSprite(self);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_LABEL_BY_TOUCH);
+    } else if (data_021fbe40.pressed & (MAILBOX_SCENE_PAD_A | MAILBOX_SCENE_PAD_B)) {
+        Glider_ShowSecondOfSet(&self->cursor_sprite);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_LABEL_PRESS);
+    }
+}
+CLEAN_AS(func_ov106_0229e134, MailboxScene_LabelByKeys)
+
+/* func_ov106_0229e1d8 (sub state 8): a held letter moved with the cursor. A close of the menu puts
+ * it back at its place and presses panel button 9. A move of the cursor updates the popup and
+ * moves the sprite (the popup hidden, its queue kept). A on a letter place puts the letter down
+ * there (sub state 0x12) when it is empty, else swaps (sub state 0x13); not on a dimmed place,
+ * and a letter of the mailbox is not swapped with a carried one. B sends the letter back to its
+ * place (sub state 0x12). Else the letter follows the sprite and a queued popup is shown. */
+void MailboxScene_MoveHeldByKeys(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_PutHeldAt(self, self->held_from);
+        MailboxScene_HideCursorSprite(self);
+        MailboxScene_PressPanelButton9(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    if (MailboxScene_MoveCursor(self, (int) MenuScene_LatchRepeatedKeys(mbx_scene(self)), 1) != 0) {
+        MailboxScene_UpdatePopup(self);
+        MailboxScene_GlideToCursor(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if (pressed & MAILBOX_SCENE_PAD_A) {
+        if (MailboxScene_IsCarriedPlace(self, self->cursor) && MailboxScene_IsMailboxPlace(self, self->held_from) &&
+            MailboxScene_PlaceIsEmpty(self, self->cursor) == 0) {
+            return;
+        }
+        if (MailboxScene_PlaceIsDimmed(self, self->cursor)) {
+            return;
+        }
+        if (MailboxScene_PlaceIsEmpty(self, self->cursor)) {
+            MailboxScene_BeginSubState12(self, self->cursor);
+        } else {
+            MailboxScene_BeginSubState13(self, self->cursor);
+        }
+    } else if (pressed & MAILBOX_SCENE_PAD_B) {
+        MailboxScene_BeginSubState12(self, self->held_from);
+    } else {
+        MailboxScene_FollowCursorSprite(self);
+        Popup_ShowQueued(&self->popup);
+    }
+}
+CLEAN_AS(func_ov106_0229e1d8, MailboxScene_MoveHeldByKeys)
+
+/* func_ov106_0229e2dc (sub state 7): the cursor moved by the keys, nothing held. A touch ends the
+ * action without the sprite. A move updates the popup and moves the sprite (the popup hidden,
+ * its queue kept). Unless the cursor's letter is dimmed: A on a letter opens its choice, A below
+ * presses the place; Y sends a letter of the mailbox to the player's first free letter slot.
+ * Else START or B presses panel button 9, or a queued popup is shown. */
+void MailboxScene_BrowseByKeys(MailboxScene *self)
+{
+    if (MenuScene_TakeTouch(mbx_scene(self))) {
+        MailboxScene_EndActionHidden(self);
+        Popup_Hide(&self->popup, 1);
+        return;
+    }
+    if (MailboxScene_MoveCursor(self, (int) MenuScene_LatchRepeatedKeys(mbx_scene(self)), 0) != 0) {
+        MailboxScene_UpdatePopup(self);
+        MailboxScene_GlideToCursor(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    if (MailboxScene_PlaceIsDimmed(self, self->cursor) == 0) {
+        u16 pressed = data_021fbe40.pressed;
+        if (pressed & MAILBOX_SCENE_PAD_A) {
+            if (mbx_is_letter_place(self, self->cursor)) {
+                if (MailboxScene_PlaceIsEmpty(self, self->cursor) == 0) {
+                    MailboxScene_OpenLetterMenu(self, self->cursor, 0);
+                }
+            } else if (MailboxScene_IsBelowPlace(self, self->cursor)) {
+                MailboxScene_BeginSubState0e(self);
+            }
+            return;
+        }
+        if (pressed & MAILBOX_SCENE_PAD_Y) {
+            if (MailboxScene_IsMailboxPlace(self, self->cursor) && MailboxScene_PlaceIsEmpty(self, self->cursor) == 0) {
+                int to = MailboxScene_FreeCarriedPlace(self);
+                if (to != MAILBOX_SCENE_NO_PLACE) {
+                    MailboxScene_HoldAndGlide(self, self->cursor, to);
+                    Popup_Hide(&self->popup, 1);
+                }
+            }
+            return;
+        }
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if ((pressed & MAILBOX_SCENE_PAD_START) || (pressed & MAILBOX_SCENE_PAD_B)) {
+        MailboxScene_HideCursorSprite(self);
+        MailboxScene_PressPanelButton9(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    Popup_ShowQueued(&self->popup);
+}
+CLEAN_AS(func_ov106_0229e2dc, MailboxScene_BrowseByKeys)
+
+/* func_ov106_0229e430 (sub state 6): the choice by the touch, once shown. A close of the menu or a
+ * button cancels it; the pen going down picks the row under it (the last one outside the
+ * window), but not the set apart first row of the fixed menu. */
+void MailboxScene_ChooseByTouch(MailboxScene *self)
+{
+    if (PagedChoice_IsShown(mbx_choice(self)) == 0) {
+        return;
+    }
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_CancelChoice(self);
+        return;
+    }
+    if (MenuScene_TakeButtons(mbx_scene(self), 1)) {
+        MailboxScene_CancelChoice(self);
+        return;
+    }
+    if (!mbx_pen_pressed()) {
+        return;
+    }
+    int row = PagedChoice_RowAtOrLast(mbx_choice(self), data_021f6c58, data_021f6c54);
+    if (row < 0) {
+        return;
+    }
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_FIXED_MENU) != 0 && row == 0) {
+        return;
+    }
+    mbx_pick_choice_row(self, row);
+}
+CLEAN_AS(func_ov106_0229e430, MailboxScene_ChooseByTouch)
+
+/* func_ov106_0229e4fc (sub state 5): the label button by the touch. A close of the menu closes
+ * the scene; a button gives it to the keys (sub state 9); a touch on it presses it. */
+void MailboxScene_LabelByTouch(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_CloseOnRequest(self);
+        return;
+    }
+    if (MenuScene_TakeButtons(mbx_scene(self), 1)) {
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_LABEL_BY_KEYS);
+        return;
+    }
+    if (LabelButton_IsTouched(&self->button)) {
+        MailboxScene_PressLabelButton(self);
+    }
+}
+CLEAN_AS(func_ov106_0229e4fc, MailboxScene_LabelByTouch)
+
+/* func_ov106_0229e544 (sub state 4): the held letter dragged with the touch, the highlights
+ * cleared. A close of the menu puts it back at its place and presses panel button 9. The letter
+ * place under it (8 right and 0x18 below where it is drawn) is highlighted while the pen is down,
+ * but not the mailbox's for a carried letter. Let go, a carried letter over the mailbox, or a
+ * letter of the mailbox over a carried one that holds a letter, glides back; on a place that is
+ * not dimmed the letter is put down there (sound 0xe) and the action ends; let go elsewhere,
+ * MailboxScene_DropHeldAtTouch sends it to its place or to a free carried slot. */
+void MailboxScene_DragHeld(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MailboxScene_PutHeldAt(self, self->held_from);
+        MailboxScene_PressPanelButton9(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    MailboxScene_FollowTouch(self);
+    MailboxScene_ClearHighlights(self);
+    int x = (int) ((u32) self->held_x + 8);
+    int place = MailboxScene_LetterPlaceAtTouch(self, x, (int) ((u32) self->held_y + 0x18), 0);
+
+    if (place == MAILBOX_SCENE_NO_PLACE) {
+        if (data_021fbdd8 == 0) {
+            MailboxScene_DropHeldAtTouch(self, self->held_from, x);
+        }
+        return;
+    }
+    if (data_021fbdd8 != 0) {
+        if (!(MailboxScene_IsCarriedPlace(self, self->held_from) && MailboxScene_IsMailboxPlace(self, (unsigned int) place))) {
+            MailboxScene_HighlightPlace(self, place);
+        }
+        return;
+    }
+    if (MailboxScene_IsCarriedPlace(self, self->held_from) && MailboxScene_IsMailboxPlace(self, (unsigned int) place)) {
+        MailboxScene_GlideHeldTo(self, self->held_from, 4);
+        return;
+    }
+    if (MailboxScene_IsMailboxPlace(self, self->held_from) && MailboxScene_IsCarriedPlace(self, (unsigned int) place) &&
+        MailboxScene_PlaceIsEmpty(self, place) == 0) {
+        MailboxScene_GlideHeldTo(self, self->held_from, 4);
+        return;
+    }
+    if (MailboxScene_PlaceIsDimmed(self, place) == 0 && MailboxScene_PutHeldLetterAt(self, place) != 0) {
+        PocketsSound_Play0e();
+        MailboxScene_EndAction(self);
+        return;
+    }
+    MailboxScene_DropHeldAtTouch(self, self->held_from, x);
+}
+CLEAN_AS(func_ov106_0229e544, MailboxScene_DragHeld)
+
+/* func_ov106_0229e67c (sub state 3): once the popup is up, after `open_delay` more frames, the
+ * touched place's choice opens above the popup; sub state 2. */
+void MailboxScene_OpenTouchedChoice(MailboxScene *self)
+{
+    if (Popup_IsUp(&self->popup) == 0) {
+        return;
+    }
+    if (self->open_delay != 0) {
+        self->open_delay--;
+    } else {
+        MailboxScene_OpenLetterMenu(self, self->touch_place, 1);
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TOUCH_CHOICE);
+    }
+}
+CLEAN_AS(func_ov106_0229e67c, MailboxScene_OpenTouchedChoice)
+
+/* func_ov106_0229e6c4 (sub state 2): a touched place's choice is open. A close of the menu or the
+ * pen let go hands the choice to the touch (sub state 6); the pen moving off a letter that may be
+ * dragged picks it up (MailboxScene_PickUpWithTouch), closing the choice and hiding the popup. */
+void MailboxScene_WatchChoiceTouch(MailboxScene *self)
+{
+    if (StateFlags_MenuCloseAsked()) {
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_BY_TOUCH);
+        return;
+    }
+    if (data_021fbdd8 == 0) {
+        MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_CHOICE_BY_TOUCH);
+        return;
+    }
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DRAGGABLE) != 0 && MailboxScene_TouchMoved(self) != 0) {
+        MailboxScene_PickUpWithTouch(self, self->touch_place);
+        PagedChoice_RequestClose(mbx_choice(self), 0);
+        Popup_Hide(&self->popup, 1);
+    }
+}
+CLEAN_AS(func_ov106_0229e6c4, MailboxScene_WatchChoiceTouch)

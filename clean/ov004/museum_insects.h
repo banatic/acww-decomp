@@ -161,5 +161,6 @@ int InsectRoom_AddInsect(InsectRoom *self, int kind);
 int InsectRoom_FreeEntry(void);
 void InsectRoom_New(void);
 void InsectRoom_PlaceInsect(InsectRoom *self, MuseumInsect *insect);
+int InsectRoom_DestructTable(void *object);
 
 #endif

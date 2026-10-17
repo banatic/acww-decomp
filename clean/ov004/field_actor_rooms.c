@@ -9,13 +9,17 @@
 #include "main/acre_tile.h"
 #include "main/actor_table.h"
 #include "main/angle_sector.h"
+#include "main/block_020b220c.h"
 #include "main/current_pockets.h"
+#include "main/event_queue.h"
 #include "main/field_actor.h"
 #include "main/field_actor_parts.h"
 #include "main/item_code.h"
+#include "main/layered_model.h"
 #include "main/packed_bytes.h"
 #include "main/scene_exit.h"
 #include "main/scene_kinds.h"
+#include "main/scene_query.h"
 #include "main/scene_tables.h"
 #include "main/session.h"
 #include "main/session_players.h"
@@ -613,3 +617,376 @@ void FieldActorRooms_UpdateExit(FieldActor *actor)
     walk->frames++;
 }
 CLEAN_AS(func_ov004_02226630, FieldActorRooms_UpdateExit)
+
+/* ---- What the door states share */
+
+/* Set once the walk of states 0x8e, 0x8c and 0x8b is under way: their walk ends at a stop
+ * only then. */
+#define FIELD_ACTOR_ROOMS_WALKING(actor) ((actor)->unk_7F8)
+
+/* The animation by the speed: its rate is 0.23 of the speed (at least 0.5) unless that
+ * exceeds the animation's length; above 0x53f the run (animation 2) plays, else the walk. */
+#define FIELD_ACTOR_ROOMS_ANIM_FACTOR 0x3ae1
+#define FIELD_ACTOR_ROOMS_ANIM_MIN 0x800
+#define FIELD_ACTOR_ROOMS_RUN_SPEED 0x53f
+#define FIELD_ACTOR_ROOMS_RUN_ANIMATION 2
+#define FIELD_ACTOR_ROOMS_ANIM_BLEND 3
+
+/* The way the actor goes through the door (Block020b220c_GoneKind), and the sounds the doors
+ * make for it. */
+#define FIELD_ACTOR_ROOMS_GONE_SLIDE 1
+#define FIELD_ACTOR_ROOMS_GONE_DOOR 2
+#define FIELD_ACTOR_ROOMS_SOUND_SLIDE 0x4d2
+#define FIELD_ACTOR_ROOMS_SOUND_DOOR 0x4cb
+#define FIELD_ACTOR_ROOMS_SOUND_DOOR_HELD 0x4ca
+
+/* State 0x8b: how many frames the actor waits behind the door before walking, and the frame
+ * of the count at which it starts. */
+#define FIELD_ACTOR_ROOMS_ARRIVE_WAIT 20
+#define FIELD_ACTOR_ROOMS_ARRIVE_GO_FRAME 10
+
+/* State 2 asked for at the end of a walk (with 3 and priority 5). */
+#define FIELD_ACTOR_ROOMS_END_STATE2_ARG 3
+#define FIELD_ACTOR_ROOMS_END_PRIORITY 5
+
+#define FIELD_ACTOR_ROOMS_ARRIVE 0x8b
+
+/* The door states' speeds (each 0x400). */
+extern const int data_ov004_02254ae4;
+extern const int data_ov004_02254af0;
+extern const int data_ov004_02254af4;
+
+/* The actor's sound for a door, then the scene's door sound when it is 0x4cb. */
+static void far_door_sounds(FieldActor *actor, int sound)
+{
+    FieldActor_PlaySound(actor, sound);
+    if (sound == FIELD_ACTOR_ROOMS_SOUND_DOOR) {
+        Block020b220c_PlaySceneSound();
+    }
+}
+
+/* func_ov004_022268b8: the end of the walk: stopped once the walk is under way, the state's
+ * bar for requests falls to its end value, state 2 is asked for (3, priority 5), flag 5 is
+ * cleared, and for this console's actor the event of kind 4 or 12 finishes. */
+void FieldActorRooms_EndWalk(FieldActor *actor)
+{
+    if (actor->unk_098 != 0 || FIELD_ACTOR_ROOMS_WALKING(actor) != 1) {
+        return;
+    }
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState2(actor, FIELD_ACTOR_ROOMS_END_STATE2_ARG, FIELD_ACTOR_ROOMS_END_PRIORITY,
+                             FIELD_ACTOR_ROOMS_NO_ARG);
+    FieldActor_ClearFlag(actor, FIELD_ACTOR_ROOMS_DOOR_FLAG);
+    if (far_is_local(actor)) {
+        EventQueue_FinishKind4Or12();
+    }
+}
+CLEAN_AS(func_ov004_022268b8, FieldActorRooms_EndWalk)
+
+/* func_ov004_02226920: the walk's animation by the actor's speed: the rate (0.23 of the speed,
+ * at least 0.5) is taken unless it exceeds the animation's length; above 0x53f the run plays,
+ * else the walk (switched over 3 frames); the body's model is updated and the feet touch the
+ * ground. */
+void FieldActorRooms_AnimateBySpeed(FieldActor *actor)
+{
+    int speed = actor->unk_098;
+    fx32 rate = FX_MulFunc(speed, FIELD_ACTOR_ROOMS_ANIM_FACTOR);
+    if (rate < FIELD_ACTOR_ROOMS_ANIM_MIN) {
+        rate = FIELD_ACTOR_ROOMS_ANIM_MIN;
+    }
+    if (rate <= actor->anim.end) {
+        actor->anim.speed = rate;
+    }
+    int animation = speed > FIELD_ACTOR_ROOMS_RUN_SPEED ? FIELD_ACTOR_ROOMS_RUN_ANIMATION : FIELD_ACTOR_ROOMS_WALK_ANIMATION;
+    if (actor->animation != animation) {
+        FieldActor_SwitchAnimation(actor, animation, FIELD_ACTOR_ROOMS_ANIM_BLEND, 0);
+    }
+    LayeredModel_UpdateA((LayeredModel *) (void *) actor->unk_234);
+    FieldActor_Footfall(actor);
+}
+CLEAN_AS(func_ov004_02226920, FieldActorRooms_AnimateBySpeed)
+
+/* ---- State 0x8c, through a door (continued) */
+
+/* func_ov004_022266c4: a step of the walk to the work's point. */
+void FieldActorRooms_StepExit(FieldActor *actor)
+{
+    far_step(actor);
+}
+CLEAN_AS(func_ov004_022266c4, FieldActorRooms_StepExit)
+
+/* func_ov004_022266f0 (state 0x8c's message handler): another console's actor asked for state
+ * 0x8c (priority 6) to the point kept at 0x8f0.
+ * BUG: the point's y is not set: the request carries whatever the stack held there. */
+void FieldActorRooms_ExitMessage(FieldActor *actor, int arg)
+{
+    Vec3 point;
+#ifdef BUGFIX
+    point.y = 0;
+#endif
+    FieldActorRooms_UnpackExitPoint(actor->saved.packed, (u32 *) (void *) &point.x, (u32 *) (void *) &point.z);
+    FieldActorRooms_RequestExit(actor, &point, FIELD_ACTOR_ROOMS_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_022266f0, FieldActorRooms_ExitMessage)
+
+/* func_ov004_0222671c (state 0x8c's entry): the walk's animation loops (blended over 3 frames,
+ * unless it plays already). By the way through the door: a sliding one plays sound 0x4d2, a
+ * door 0x4cb and the scene's door sound, both for another console's actor only; any other
+ * way (0 or 3) this console's actor takes the scene's exit (0x804) at once. The work walks to
+ * the request's point from the actor's speed, at most 0x400, its frames counted from 0 with the
+ * way kept; the point is kept packed at 0x8f0. */
+void FieldActorRooms_EnterExit(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const Vec3 *requested = (const Vec3 *) (const void *) request->payload;
+
+    if (actor->animation != FIELD_ACTOR_ROOMS_WALK_ANIMATION) {
+        FieldActor_PlayAnimationLoop(actor, FIELD_ACTOR_ROOMS_WALK_ANIMATION, FIELD_ACTOR_ROOMS_STEP_OFF_BLEND, 0);
+    }
+    int sound = 0;
+    int kind = Block020b220c_GoneKind();
+    switch (kind) {
+        case FIELD_ACTOR_ROOMS_GONE_DOOR:
+            sound = FIELD_ACTOR_ROOMS_SOUND_DOOR;
+            break;
+        case FIELD_ACTOR_ROOMS_GONE_SLIDE:
+            sound = FIELD_ACTOR_ROOMS_SOUND_SLIDE;
+            break;
+        case 0:
+        case 3:
+            if (far_is_local(actor)) {
+                SceneExit *exits = (SceneExit *) (uintptr_t) SceneTables_EntryRecord();
+                SceneExit_Take(exits, FIELD_ACTOR_ROOMS_EXIT_INDEX(actor));
+            }
+            break;
+        default:
+            break;
+    }
+    if (sound != 0 && !far_is_local(actor)) {
+        far_door_sounds(actor, sound);
+    }
+    Vec3 point = *requested;
+    FieldActorRooms_SetExitWork(far_walk_of(actor), point, actor->unk_098, FIELD_ACTOR_ROOMS_DOOR_SPEED, (u8) kind);
+    FieldActorRooms_PackExitPoint(actor->saved.packed, point.x, point.z);
+}
+CLEAN_AS(func_ov004_0222671c, FieldActorRooms_EnterExit)
+
+/* func_ov004_02226808: the point kept for state 0x8c, unpacked. */
+void FieldActorRooms_UnpackExitPoint(const u8 *packed, u32 *x, u32 *z)
+{
+    PackedBytes_UnpackPoint(packed, x, z);
+}
+CLEAN_AS(func_ov004_02226808, FieldActorRooms_UnpackExitPoint)
+
+/* func_ov004_02226810: the point of state 0x8c kept, packed. */
+void FieldActorRooms_PackExitPoint(u8 *packed, int x, int z)
+{
+    PackedBytes_PackPoint(packed, x, z);
+}
+CLEAN_AS(func_ov004_02226810, FieldActorRooms_PackExitPoint)
+
+/* func_ov004_02226818: state 0x8c's work: the point, the speed and the most, no frames yet and
+ * the way through the door. */
+void FieldActorRooms_SetExitWork(FieldActorRoomsWalk *work, Vec3 point, fx32 speed, fx32 max_speed, u8 kind)
+{
+    work->point = point;
+    work->speed = speed;
+    work->max_speed = max_speed;
+    work->frames = 0;
+    work->kind = kind;
+}
+CLEAN_AS(func_ov004_02226818, FieldActorRooms_SetExitWork)
+
+/* func_ov004_0222683c: state 0x8c asked for to `point`; whether it was queued. */
+int FieldActorRooms_RequestExit(FieldActor *actor, const Vec3 *point, int priority, int arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FIELD_ACTOR_ROOMS_EXIT, priority, arg);
+    FieldActorRooms_PutExitPoint((Vec3 *) (void *) request.payload, *point);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_0222683c, FieldActorRooms_RequestExit)
+
+/* func_ov004_0222687c: a request's point for state 0x8c. */
+void FieldActorRooms_PutExitPoint(Vec3 *payload, Vec3 point)
+{
+    *payload = point;
+}
+CLEAN_AS(func_ov004_0222687c, FieldActorRooms_PutExitPoint)
+
+/* ---- State 0x8b, arriving through a door */
+
+/* func_ov004_02226890 (state 0x8b's update): the walk's step, the animation by the speed, the
+ * move with the collider, the contact bodies and the end of the walk. */
+void FieldActorRooms_UpdateArrive(FieldActor *actor)
+{
+    FieldActorRooms_StepArrive(actor);
+    FieldActorRooms_AnimateBySpeed(actor);
+    FieldActor_MoveFree(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRooms_EndWalk(actor);
+}
+CLEAN_AS(func_ov004_02226890, FieldActorRooms_UpdateArrive)
+
+/* func_ov004_022269a8: the wait behind the door, then a step of the walk to the work's point.
+ * While the count of frames runs down: through a door the actor waits until it reaches 0, when
+ * another console's actor plays the scene's door sound and 0x4cb; any other way it waits
+ * while above 10, at 10 it starts, and at 0 another console's actor plays sound 0x4d3. Where
+ * it starts, the walk is under way at the speed 0x400 (the actor's and the work's). */
+void FieldActorRooms_StepArrive(FieldActor *actor)
+{
+    FieldActorRoomsWalk *walk = far_walk_of(actor);
+
+    if (walk->frames != 0) {
+        walk->frames--;
+        if (walk->kind == FIELD_ACTOR_ROOMS_GONE_DOOR) {
+            if (walk->frames != 0) {
+                return;
+            }
+            if (!far_is_local(actor)) {
+                Block020b220c_PlaySceneSound();
+                FieldActor_PlaySound(actor, FIELD_ACTOR_ROOMS_SOUND_DOOR);
+            }
+            FIELD_ACTOR_ROOMS_WALKING(actor) = 1;
+            FieldActor_SetSpeed(actor, &data_ov004_02254af0);
+            walk->speed = FIELD_ACTOR_ROOMS_DOOR_SPEED;
+        } else {
+            if (walk->frames > FIELD_ACTOR_ROOMS_ARRIVE_GO_FRAME) {
+                return;
+            }
+            if (walk->frames == FIELD_ACTOR_ROOMS_ARRIVE_GO_FRAME) {
+                FIELD_ACTOR_ROOMS_WALKING(actor) = 1;
+                FieldActor_SetSpeed(actor, &data_ov004_02254ae4);
+                walk->speed = FIELD_ACTOR_ROOMS_DOOR_SPEED;
+            } else if (walk->frames == 0 && !far_is_local(actor)) {
+                FieldActor_PlaySound(actor, FIELD_ACTOR_ROOMS_EXIT_SOUND);
+            }
+        }
+    }
+    far_step(actor);
+}
+CLEAN_AS(func_ov004_022269a8, FieldActorRooms_StepArrive)
+
+/* func_ov004_02226a80 (state 0x8b's message handler): another console's actor asked for state
+ * 0x8b (priority 6) to the point kept at 0x8f0.
+ * BUG: the point's y is not set: the request carries whatever the stack held there. */
+void FieldActorRooms_ArriveMessage(FieldActor *actor, int arg)
+{
+    Vec3 point;
+#ifdef BUGFIX
+    point.y = 0;
+#endif
+    FieldActorRooms_UnpackArrivePoint(actor->saved.packed, (u32 *) (void *) &point.x, (u32 *) (void *) &point.z);
+    FieldActorRooms_RequestArrive(actor, &point, FIELD_ACTOR_ROOMS_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_02226a80, FieldActorRooms_ArriveMessage)
+
+/* func_ov004_02226aac (state 0x8b's entry): the walk's animation loops from a stop. By the way
+ * through the door: a door with this console's actor linked and not player 0 in a house's
+ * room, or in a scene of group 11, makes the actor wait 20 frames (sound 0x4ca), another door
+ * plays 0x4cb (and the scene's door sound); a sliding one makes it wait 20 frames (sound
+ * 0x4d2). Not waiting, the walk is under way at once. This console's actor walks to where it
+ * stands (kept packed at 0x8f0) from 6.0 further in z; another console's actor plays the sound
+ * and walks to the request's point from 6.0 beyond it in z. The work's most is 0x400, its count
+ * the wait, and the way is kept; flag 5 is set.
+ * QUIRK: another console's actor keeps its own x and y: only its z is set from the request. */
+void FieldActorRooms_EnterArrive(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const Vec3 *requested = (const Vec3 *) (const void *) request->payload;
+    FieldActorRoomsWalk *walk = far_walk_of(actor);
+
+    FieldActor_PlayAnimationLoop(actor, FIELD_ACTOR_ROOMS_WALK_ANIMATION, 0, 0);
+    actor->anim.speed = 0;
+    int wait = 0;
+    int sound = 0;
+    int kind = Block020b220c_GoneKind();
+    FIELD_ACTOR_ROOMS_WALKING(actor) = 1;
+    switch (kind) {
+        case FIELD_ACTOR_ROOMS_GONE_DOOR:
+            if ((FieldActor_LinkedNotPlayer0(actor) && SceneKinds_CurrentIsHouseRoom()) || SceneQuery_CurrentIn11()) {
+                wait = FIELD_ACTOR_ROOMS_ARRIVE_WAIT;
+                sound = FIELD_ACTOR_ROOMS_SOUND_DOOR_HELD;
+                FIELD_ACTOR_ROOMS_WALKING(actor) = 0;
+            } else {
+                sound = FIELD_ACTOR_ROOMS_SOUND_DOOR;
+            }
+            break;
+        case FIELD_ACTOR_ROOMS_GONE_SLIDE:
+            sound = FIELD_ACTOR_ROOMS_SOUND_SLIDE;
+            wait = FIELD_ACTOR_ROOMS_ARRIVE_WAIT;
+            FIELD_ACTOR_ROOMS_WALKING(actor) = 0;
+            break;
+        default:
+            break;
+    }
+
+    Vec3 point;
+    if (far_is_local(actor)) {
+        point = actor->position;
+        FieldActorRooms_PackArrivePoint(actor->saved.packed, point.x, point.z);
+        actor->position.z = (fx32) ((u32) actor->position.z + FIELD_ACTOR_ROOMS_WALK_IN_DISTANCE);
+    } else {
+        if (sound != 0) {
+            far_door_sounds(actor, sound);
+        }
+        point = *requested;
+        actor->position.z = (fx32) ((u32) point.z + FIELD_ACTOR_ROOMS_WALK_IN_DISTANCE);
+    }
+    FieldActorRooms_SetArriveWork(walk, point, FIELD_ACTOR_ROOMS_DOOR_SPEED, (u8) wait, (u8) kind);
+    if (FIELD_ACTOR_ROOMS_WALKING(actor) == 1) {
+        FieldActor_SetSpeed(actor, &data_ov004_02254af4);
+        walk->speed = FIELD_ACTOR_ROOMS_DOOR_SPEED;
+    }
+    FieldActor_SetFlag(actor, FIELD_ACTOR_ROOMS_DOOR_FLAG);
+}
+CLEAN_AS(func_ov004_02226aac, FieldActorRooms_EnterArrive)
+
+/* func_ov004_02226bf8: the point kept for state 0x8b, unpacked. */
+void FieldActorRooms_UnpackArrivePoint(const u8 *packed, u32 *x, u32 *z)
+{
+    PackedBytes_UnpackPoint(packed, x, z);
+}
+CLEAN_AS(func_ov004_02226bf8, FieldActorRooms_UnpackArrivePoint)
+
+/* func_ov004_02226c00: the point of state 0x8b kept, packed. */
+void FieldActorRooms_PackArrivePoint(u8 *packed, int x, int z)
+{
+    PackedBytes_PackPoint(packed, x, z);
+}
+CLEAN_AS(func_ov004_02226c00, FieldActorRooms_PackArrivePoint)
+
+/* func_ov004_02226c08: state 0x8b's work: the point, no speed yet, the most, the frames to wait
+ * and the way through the door. */
+void FieldActorRooms_SetArriveWork(FieldActorRoomsWalk *work, Vec3 point, fx32 max_speed, u8 wait, u8 kind)
+{
+    work->point = point;
+    work->speed = 0;
+    work->max_speed = max_speed;
+    work->frames = wait;
+    work->kind = kind;
+}
+CLEAN_AS(func_ov004_02226c08, FieldActorRooms_SetArriveWork)
+
+/* func_ov004_02226c2c: state 0x8b asked for to `point`; whether it was queued. */
+int FieldActorRooms_RequestArrive(FieldActor *actor, const Vec3 *point, int priority, int arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FIELD_ACTOR_ROOMS_ARRIVE, priority, arg);
+    FieldActorRooms_PutArrivePoint((Vec3 *) (void *) request.payload, *point);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_02226c2c, FieldActorRooms_RequestArrive)
+
+/* func_ov004_02226c6c: a request's point for state 0x8b. */
+void FieldActorRooms_PutArrivePoint(Vec3 *payload, Vec3 point)
+{
+    *payload = point;
+}
+CLEAN_AS(func_ov004_02226c6c, FieldActorRooms_PutArrivePoint)
