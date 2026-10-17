@@ -3,6 +3,19 @@
 static int failed;
 extern void *func_0201c2c8(void *, void *);
 extern int func_ov003_02215f00(void *, const int *, int, int);
+extern int func_ov003_02211d4c(void *, int, const int *, int, short);
+extern int func_ov003_022118f8(void *, const int *, int, int, int, short);
+extern int func_ov003_02211980(void *, const int *, int, int, short);
+int data_020ccf94;
+static int local_actor;
+static int expected_state = 0x4d, expected_arg = 9, expected_item;
+
+int func_02073908(int session, int player)
+{
+    (void) session;
+    (void) player;
+    return local_actor;
+}
 
 int func_02096614(unsigned char *flag, unsigned int *x, unsigned int *z, int a, void *b)
 {
@@ -47,8 +60,26 @@ int func_0200e894(void *self, void *p)
 {
     (void) self;
     int *words = p;
-    if (words[0] != 0x4d || words[1] != 6 || words[2] != 9 || words[3] != 0x11100 || words[4] != 0x33300) {
+    unsigned char *bytes = p;
+    if (words[0] != expected_state || words[1] != 6 || words[2] != expected_arg) {
         failed = 2;
+    }
+    if (expected_state == 0x4d) {
+        if (words[3] != 0x11100 || words[4] != 0x33300) {
+            failed = 2;
+        }
+    } else if (expected_state == 0x5e) {
+        if (bytes[12] != 0x57 || words[4] != 0x11100 || words[5] != 0x22200 ||
+            words[6] != 0x33300) {
+            failed = 5;
+        }
+    } else if (expected_state == 0x5f) {
+        if (words[3] != 0x11100 || words[4] != 0x22200 || words[5] != 0x33300 ||
+            *(unsigned short *)(bytes + 24) != expected_item || bytes[26] != 0x57) {
+            failed = 6;
+        }
+    } else {
+        failed = 7;
     }
     return 7;
 }
@@ -69,6 +100,30 @@ int main(void)
     }
     if (func_ov003_02215f00(self, vector, 6, 9) != 7) {
         return 4;
+    }
+    int actor[0x824 / 4] = {0};
+    unsigned short *items = (unsigned short *) ((char *) actor + 0x820);
+    expected_state = 0x5e;
+    expected_arg = -9;
+    if (func_ov003_02211d4c(actor, 0x57, vector, 6, -9) != 7) {
+        return 8;
+    }
+    expected_state = 0x5f;
+    expected_item = 0xa123;
+    if (func_ov003_022118f8(actor, vector, expected_item, 0x57, 6, -9) != 7 ||
+        items[0] != 0xfff1 || items[1] != 0xfff1) {
+        return 9;
+    }
+    local_actor = 1;
+    items[0] = 0x1234;
+    items[1] = 0x5678;
+    if (func_ov003_022118f8(actor, vector, expected_item, 0x57, 6, -9) != 7 ||
+        items[0] != 0x1234 || items[1] != 0x5678) {
+        return 10;
+    }
+    expected_item = 0xfff1;
+    if (func_ov003_02211980(actor, vector, 0x57, 6, -9) != 7) {
+        return 11;
     }
     return failed;
 }

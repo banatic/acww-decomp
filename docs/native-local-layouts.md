@@ -1,9 +1,9 @@
-# Observable fishing layouts in Native
+# Observable local layouts in Native
 
 Some matching sources declare separate locals even though the ROM passes a
 pointer that covers more than one of them. The ARM stack gives those locals a
 specific order. Independent host locals have no such ordering guarantee.
-tools/native_layout.py groups only the two audited fishing layouts in PC source
+tools/native_layout.py groups only the five audited layouts below in PC source
 copies. Values and calls are unchanged. Source digests and exact declarations
 reject an unaudited source change, and each copy asserts the observed offset.
 
@@ -28,7 +28,28 @@ the first pixel difference to 3490; the caller's local layout must be preserved.
 
 ## Validation
 
-tools/test_native_layout.py compiles both exact copied game functions, the real
-vector consumer and the real request payload writer. Its fixture checks the
-coordinates and payload received by their callees, returned values, and rejection
-of changed source digests. Full recording and scene gates remain required.
+tools/test_native_layout.py compiles all five exact copied game functions, the
+real vector consumer and three real request payload writers. Its fixture checks
+the coordinates, tags, item identifiers and signed header arguments received by
+the request consumer, returned values, and rejection of changed source digests.
+It also checks both branches of the tool request's actor-item clearing logic.
+Full recording and scene gates remain required.
+
+## Tool state requests
+
+The tool-shovel investigation traced invalid particle inputs back to separate
+request header and payload locals. The three audited tool request constructors
+submit the header pointer to func_0200e894, which expects the payload immediately
+after the 12-byte header. Their ARM stack addresses establish that relationship:
+
+| Function | Header construction | Payload destination | Submitted header |
+|---|---|---|---|
+| func_ov003_02211d4c | sp at 02211d58 | sp+12 at 02211d7a | sp at 02211d86 |
+| func_ov003_022118f8 | sp+4 at 02211904 | sp+16 at 02211926 | sp+4 at 02211952 |
+| func_ov003_02211980 | sp at 0221198c | sp+12 at 022119ae | sp at 022119bc |
+
+The first request uses state 0x5e and func_ov003_02211da0 writes its tag and
+three coordinates. The other two use state 0x5f and func_ov003_022119d8 writes
+three coordinates, a 16-bit item and an 8-bit tag. The no-item form supplies
+0xfff1. Grouping only each header/payload pair preserves these fields without
+changing their values, calls, or the independent coordinate-copy local.
