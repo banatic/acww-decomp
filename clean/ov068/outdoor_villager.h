@@ -1,6 +1,6 @@
 /* A villager out walking in the town: actor profile 0x84 (main's spawner.c,
  * Spawner_PlaceTownVillagers), whose profile record (data_ov068_022771a0) makes it with
- * func_ov068_0226da64. It is a town villager scene object (main's villager_scene_slots.h)
+ * OutdoorVillagerObject_New. It is a town villager scene object (main's villager_scene_slots.h)
  * of vtable data_ov068_022771c0, 0xa10 bytes in all, with these parts read here:
  *
  * - 0x838 a byte (villager_scene_object.c) behaviour 18 sets and behaviours 19, 21 and 23
@@ -139,30 +139,32 @@ typedef struct OutdoorVillagerBehaviour {
     u8 unk_f8[4];
 } OutdoorVillagerBehaviour;
 
-/* The behaviour member's functions kept as the game's (outdoor_villager_acts.h has the steps). */
+/* The behaviour member's functions and the villager's used in these files (Clean ones in
+ * outdoor_villager_behaviour.c, outdoor_villager_records.c and outdoor_villager_object.c;
+ * outdoor_villager_acts.h has the steps). */
 /* Starts behaviour `index` (0 to 23; others are ignored): its start runs with `villager`. */
-extern void func_ov068_0226cce8(OutdoorVillagerBehaviour *self, u8 *villager, int index);
+void OutdoorVillagerBehaviour_Start(OutdoorVillagerBehaviour *self, u8 *villager, int index);
 /* Starts the behaviour saved to resume (when one is); whether one was. */
-extern int func_ov068_0226ccb0(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerBehaviour_Resume(OutdoorVillagerBehaviour *self, u8 *villager);
 /* The behaviour running saved to resume, and the one to resume set. */
-extern void func_ov068_0226ccd8(OutdoorVillagerBehaviour *self);
-extern void func_ov068_0226cce4(OutdoorVillagerBehaviour *self, int index);
+void OutdoorVillagerBehaviour_SaveResume(OutdoorVillagerBehaviour *self);
+void OutdoorVillagerBehaviour_SetResume(OutdoorVillagerBehaviour *self, int index);
 /* Whether behaviour `index` runs. */
 extern int func_ov068_0226cbe4(OutdoorVillagerBehaviour *self, int index);
 /* The cooldown set to data_ov068_0227673c (1200). */
 extern void func_ov068_0226cbf4(OutdoorVillagerBehaviour *self);
 /* Whether behaviour 0 runs and the cooldown is out. */
-extern int func_ov068_0226cc00(OutdoorVillagerBehaviour *self);
+int OutdoorVillagerBehaviour_IsIdle(OutdoorVillagerBehaviour *self);
 /* The member's destructor. */
-extern OutdoorVillagerBehaviour *func_ov068_0226ce48(OutdoorVillagerBehaviour *self);
+OutdoorVillagerBehaviour *OutdoorVillagerBehaviour_Destruct(OutdoorVillagerBehaviour *self);
 /* With an act of kind 8 running whose number is not 0, act 0's first part on its act effects. */
-extern void func_ov068_0226cfd4(u8 *villager);
+void OutdoorVillagerObject_ResetActEffects(u8 *villager);
 /* Byte 0x18 of the state entry of its town record (VillagerState_GetByte18), 0 without one. */
-extern u8 func_ov068_0226cf8c(u8 *villager);
+u8 OutdoorVillagerRecords_Byte18(u8 *villager);
 /* The tally of the state entry of its town record (VillagerState_Tally), or null. */
-extern VillagerTally *func_ov068_0226cf58(u8 *villager);
+VillagerTally *OutdoorVillagerRecords_Tally(u8 *villager);
 /* Its memory of this console's player (VillagerMemory_Of), or null. */
-extern VillagerMemory *func_ov068_0226d598(u8 *villager);
+VillagerMemory *OutdoorVillagerRecords_MemoryOfPlayer(u8 *villager);
 /* Whether this console's player shows an insect or a fish (items 0x12b0 to 0x131f). */
 extern int func_ov068_0226c0a4(OutdoorVillagerBehaviour *self);
 /* VillagerMood_Ask(mood, which, units), then VillagerMood_Apply when `apply`. */

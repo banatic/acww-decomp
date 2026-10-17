@@ -11,6 +11,7 @@
 #include "local_join.h"
 #include "local_mp.h"
 #include "local_search.h"
+#include "local_session.h"
 
 static_assert(offsetof(LocalControl, channel_count) == 0x09, "channel count");
 static_assert(offsetof(LocalControl, wm_dma) == 0x0d, "WM_Init's DMA channel");
@@ -50,9 +51,6 @@ extern void OS_InitTick(void);
 extern void OS_InitAlarm(void);
 extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
-
-/* The steps of the other parts of the library. */
-extern void func_ov066_02269a14(void); /* sets up the session once the radio is on */
 
 /* func_ov066_022667e0: `handler` set as the event handler; FALSE without a control block. */
 int LocalWireless_SetEventHandler(LocalEventHandler *handler)
@@ -183,7 +181,7 @@ void LocalWireless_OnPowerOn(LocalWmResult *result)
 {
     if (result->result == LOCAL_WM_RESULT_SUCCESS) {
         data_ov066_0226bdec->state = LOCAL_STATE_WM_IDLE;
-        func_ov066_02269a14();
+        LocalSession_OnRadioOn();
     } else {
         LocalWireless_Fail(result->result);
     }

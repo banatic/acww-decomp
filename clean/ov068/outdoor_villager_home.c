@@ -43,9 +43,9 @@ extern int func_ov003_02220318(int index);
 extern int func_ov003_02220340(int index);
 /* The held item shown at once: the held item link takes it, scale 1.0, the byte at 0x9f0 set
  * (nothing without a held item). */
-extern void func_ov068_0226d5f4(u8 *villager);
+void OutdoorVillagerObject_ShowHeldItem(u8 *villager);
 
-/* The draw hook behaviour 4 sets (func_ov068_0226d808: the villager drawn with its held item
+/* The draw hook behaviour 4 sets (OutdoorVillagerObject_DrawWithItem: the villager drawn with its held item
  * link). */
 extern const MemberPointer data_ov068_02276f50;
 
@@ -248,12 +248,12 @@ void OutdoorVillagerHome_Leave4(OutdoorVillagerBehaviour *self, u8 *villager)
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
     if (item != HOME_NO_ITEM) {
-        func_ov068_0226cce8(self, villager, HOME_DO_ITEM_OUT);
-        func_ov068_0226cce4(self, HOME_DO_WALK);
+        OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_ITEM_OUT);
+        OutdoorVillagerBehaviour_SetResume(self, HOME_DO_WALK);
         s16 *check = (s16 *) (void *) home_at(self, HOME_ITEM_CHECK);
         *check = (s16) (*check + HOME_ITEM_DELAY);
     } else {
-        func_ov068_0226cce8(self, villager, HOME_DO_WALK);
+        OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_WALK);
     }
 }
 CLEAN_AS(func_ov068_0226b0ec, OutdoorVillagerHome_Leave4)
@@ -288,7 +288,7 @@ CLEAN_AS(func_ov068_0226b1d0, OutdoorVillagerHome_Open4)
 int OutdoorVillagerHome_Start4(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     VillagerPlot *home = VillagerHome_Tile(home_record(villager));
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     home_hold_nothing(villager);
     AcreTile_TileCentre(home_position(villager), home->x, (u32) home->z + 1);
     *(s16 *) (void *) home_at(villager, HOME_ANGLE) = 0;
@@ -419,7 +419,7 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
         u8 *player = (u8 *) (uintptr_t) SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
         if (SceneObject_IsNear(villager, player, HOME_PLAYER_NEAR) == 0) {
             PathWalker_Init(home_walker(self));
-            func_ov068_0226cce8(self, villager, HOME_DO_OUT);
+            OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_OUT);
         }
         return;
     }
@@ -430,11 +430,11 @@ void OutdoorVillagerHome_Stay3(OutdoorVillagerBehaviour *self, u8 *villager)
     AcreTile_TileCentre(home_position(villager), home->x, (u32) home->z + 1);
     home_settle(villager);
     PathWalker_Init(home_walker(self));
-    func_ov068_0226cce8(self, villager, HOME_DO_WALK);
+    OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_WALK);
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
     if (item != HOME_NO_ITEM) {
-        func_ov068_0226d5f4(villager);
+        OutdoorVillagerObject_ShowHeldItem(villager);
     }
 }
 CLEAN_AS(func_ov068_0226b4f8, OutdoorVillagerHome_Stay3)
@@ -459,7 +459,7 @@ int OutdoorVillagerHome_Start3(OutdoorVillagerBehaviour *self, u8 *villager)
     int flag_1 = current != NULL ? PlayerRecord_TestFlag(current, HOME_PLAYER_FLAG_1) : 0;
     u8 *record = home_record(villager);
     VillagerState *entry = VillagerStatus_StateEntry(record);
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     home_hold_nothing(villager);
     SceneMotion_RequestStand(home_motion(villager), HOME_PRIORITY, data_020c80f8);
     VillagerState_SetState(entry, HOME_STATE_IN);
@@ -503,7 +503,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_0226b74cEi, OutdoorVillagerHome_Upd
 void OutdoorVillagerHome_Enter2(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     if (SpeakerAnim_Number(home_anim(villager), 0) == HOME_ANIM_IN && SceneMotion_IsDone(home_motion(villager)) != 0) {
-        func_ov068_0226cce8(self, villager, HOME_DO_IN);
+        OutdoorVillagerBehaviour_Start(self, villager, HOME_DO_IN);
         return;
     }
     VillagerPlot *home = VillagerHome_Tile(home_record(villager));
@@ -566,7 +566,7 @@ CLEAN_AS(func_ov068_0226b904, OutdoorVillagerHome_AfterTurn2)
 int OutdoorVillagerHome_Start2(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     home_hold_nothing(villager);
     SceneMotion_Request(home_motion(villager), HOME_MOTION_TURN, HOME_PRIORITY_HIGH, 0, 0, 0, HOME_FACING_HOUSE, 0, 0,
                         data_020c80f8, 0);

@@ -246,8 +246,8 @@ static int moves_done(u8 *villager, int kind)
 /* The behaviour saved to resume started, else behaviour 0. */
 static void moves_resume(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    if (func_ov068_0226ccb0(self, villager) == 0) {
-        func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehaviour_Resume(self, villager) == 0) {
+        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
 }
 
@@ -312,7 +312,7 @@ void OutdoorVillagerMoves_Shrink16(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_022686c4, OutdoorVillagerMoves_Shrink16)
 
 /* func_ov068_02268758: behaviour 16's start: the villager's held item read, a running act's
- * effects reset (func_ov068_0226cfd4), the watch held on nothing. With an item of 0x1380 to
+ * effects reset (OutdoorVillagerObject_ResetActEffects), the watch held on nothing. With an item of 0x1380 to
  * 0x139f: animation 0xcd (mode 3), the link takes the item, its action 0x26, the item's own
  * animation played backwards from its last frame (when the link has a record), scale 1.0,
  * sound 0x858, step 1. Else animation 0xd6, the link takes the item, scale 1.0, the byte at
@@ -322,7 +322,7 @@ int OutdoorVillagerMoves_Start16(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     moves_hold(villager, 0);
     if (item >= MOVES_ITEM_FIRST && item <= MOVES_ITEM_LAST) {
         u16 word = data_020c80f8;
@@ -421,7 +421,7 @@ void OutdoorVillagerMoves_Grow15(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_022689d4, OutdoorVillagerMoves_Grow15)
 
 /* func_ov068_02268a84: behaviour 15's start: the villager's held item read, a running act's
- * effects reset (func_ov068_0226cfd4), the watch held on nothing. With an item of 0x1380 to
+ * effects reset (OutdoorVillagerObject_ResetActEffects), the watch held on nothing. With an item of 0x1380 to
  * 0x139f: animation 0xcd, the link takes the item, its action 0x26 (with the motions' word and
  * 1), scale 1.0, the byte at 0x9f0 cleared, step 1. Else animation 0xd6 (mode 3), the link
  * takes the item, scale 0, the byte at 0x9f0 set, step 0. Then the byte at 0x838 set, sound
@@ -430,7 +430,7 @@ int OutdoorVillagerMoves_Start15(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u16 item;
     VillagerSceneHeld_Item(&item, villager);
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     moves_hold(villager, 0);
     if (item >= MOVES_ITEM_FIRST && item <= MOVES_ITEM_LAST) {
         u16 word = data_020c80f8;
@@ -607,13 +607,13 @@ void OutdoorVillagerMoves_Watch11(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     if (OutdoorVillagerEffect_Countdown(moves_effect(villager)) == 0) {
         self->step = 2;
-        func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     } else if (*(const u16 *) (const void *) moves_at(villager, OUTDOOR_VILLAGER_COUNT_A06) >= data_ov068_02276724[0]) {
         OutdoorVillagerEffect_SetCountdown(moves_effect(villager), 0);
-        func_ov068_0226cce8(self, villager, 21);
+        OutdoorVillagerBehaviour_Start(self, villager, 21);
     } else if (func_ov068_0226c0e0(self, villager) != 0) {
         OutdoorVillagerEffect_SetCountdown(moves_effect(villager), 0);
-        func_ov068_0226cce8(self, villager, 19);
+        OutdoorVillagerBehaviour_Start(self, villager, 19);
     }
 }
 CLEAN_AS(func_ov068_02268fac, OutdoorVillagerMoves_Watch11)
@@ -629,13 +629,13 @@ void OutdoorVillagerMoves_Turn11(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_02269028, OutdoorVillagerMoves_Turn11)
 
 /* func_ov068_0226906c: behaviour 11's start: a running act's effects reset
- * (func_ov068_0226cfd4) after the angle to this console's player is taken, a turn to it, the
+ * (OutdoorVillagerObject_ResetActEffects) after the angle to this console's player is taken, a turn to it, the
  * watch held on the player, the byte at 0x838 cleared and its mood's sounds on. */
 int OutdoorVillagerMoves_Start11(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
     int angle = (int) (intptr_t) SceneObject_YawToActor(villager, OUTDOOR_VILLAGER_PLAYER_ACTOR);
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     moves_request(villager, MOVES_MOTION_TURN, MOVES_PRIORITY, 0, 0, angle);
     moves_hold(villager, 1);
     VillagerSceneObject_ClearByte838(villager);
@@ -654,11 +654,11 @@ int OutdoorVillagerMoves_Update10(void)
 CLEAN_AS(func_ov068_022690f4, OutdoorVillagerMoves_Update10)
 
 /* func_ov068_022690f8: behaviour 10's start: a running act's effects reset
- * (func_ov068_0226cfd4), it stands (priority 2) and the byte at 0x838 is set. */
+ * (OutdoorVillagerObject_ResetActEffects), it stands (priority 2) and the byte at 0x838 is set. */
 int OutdoorVillagerMoves_Start10(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     SceneMotion_RequestStand(moves_motion(villager), MOVES_PRIORITY_HIGH, data_020c80f8);
     VillagerSceneObject_SetByte838(villager);
     return 1;
@@ -690,12 +690,12 @@ void OutdoorVillagerMoves_Turn8(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226918c, OutdoorVillagerMoves_Turn8)
 
 /* func_ov068_022691d0: behaviour 8's start: a running act's effects reset
- * (func_ov068_0226cfd4); paired, with a reaction other than none or with the byte at 0xa04
+ * (OutdoorVillagerObject_ResetActEffects); paired, with a reaction other than none or with the byte at 0xa04
  * set, step 1 (nothing more); else a turn (priority 2) to the event's participant (the byte at
  * 0x560) with the watch held on the player, step 0. */
 int OutdoorVillagerMoves_Start8(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     if (VillagerSceneObject_HasWord644(villager) != 0 ||
         *(const u32 *) (const void *) moves_at(villager, OUTDOOR_VILLAGER_REACTION) != OUTDOOR_VILLAGER_REACTION_NONE ||
         *moves_at(villager, OUTDOOR_VILLAGER_BYTE_A04) != 0) {
@@ -722,7 +722,7 @@ static u8 *moves_target(OutdoorVillagerBehaviour *self)
  * (`halve` 0) or halved. Its record is asked for twice. */
 static void moves_give_up(OutdoorVillagerBehaviour *self, u8 *villager, int halve)
 {
-    func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     self->unk_f4 = MOVES_GIVE_UP_FRAMES;
     if (moves_record(villager) != NULL) {
         if (halve) {
@@ -738,11 +738,11 @@ static void moves_give_up(OutdoorVillagerBehaviour *self, u8 *villager, int halv
 static int moves_taken_over(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     if (*(const u16 *) (const void *) moves_at(villager, OUTDOOR_VILLAGER_COUNT_A06) >= data_ov068_02276724[0]) {
-        func_ov068_0226cce8(self, villager, 21);
+        OutdoorVillagerBehaviour_Start(self, villager, 21);
         return 1;
     }
     if (func_ov068_0226c0e0(self, villager) != 0) {
-        func_ov068_0226cce8(self, villager, 19);
+        OutdoorVillagerBehaviour_Start(self, villager, 19);
         return 1;
     }
     return 0;
@@ -816,7 +816,7 @@ void OutdoorVillagerMoves_Turn7(OutdoorVillagerBehaviour *self, u8 *villager)
         self->step = 4;
         self->wait = MOVES_TURN_WAIT;
     } else if (func_ov068_0226c0e0(self, villager) != 0) {
-        func_ov068_0226cce8(self, villager, 19);
+        OutdoorVillagerBehaviour_Start(self, villager, 19);
     }
 }
 CLEAN_AS(func_ov068_022693f0, OutdoorVillagerMoves_Turn7)
@@ -924,11 +924,11 @@ int OutdoorVillagerMoves_NearStart(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_02269814, OutdoorVillagerMoves_NearStart)
 
 /* func_ov068_0226983c: behaviour 7's start: a running act's effects reset
- * (func_ov068_0226cfd4), the player's object (field actor 4) and its own place kept,
+ * (OutdoorVillagerObject_ResetActEffects), the player's object (field actor 4) and its own place kept,
  * animation 0xdf, the watch held on the player, step 0 and the byte at 0x838 cleared. */
 int OutdoorVillagerMoves_Start7(OutdoorVillagerBehaviour *self, u8 *villager)
 {
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     *(int *) (void *) moves_at(self, MOVES_TARGET) = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
     *(Vec3 *) (void *) moves_at(self, MOVES_START) = *moves_position(villager);
     SceneMotion_RequestAnimation(moves_motion(villager), MOVES_PRIORITY, MOVES_ANIM_7, 1, data_020c80f8, 0);
@@ -970,7 +970,7 @@ void OutdoorVillagerMoves_Wait6(OutdoorVillagerBehaviour *self, u8 *villager)
         return;
     }
     EventQueue_FinishObjectEvent(villager);
-    func_ov068_0226cce4(self, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehaviour_SetResume(self, OUTDOOR_VILLAGER_DO_DEFAULT);
     self->step = 1;
 }
 CLEAN_AS(func_ov068_02269944, OutdoorVillagerMoves_Wait6)
@@ -979,14 +979,14 @@ CLEAN_AS(func_ov068_02269944, OutdoorVillagerMoves_Wait6)
  * for this console's player (its memory of the player, 0 without one) and its personality
  * (of its town record's NpcId): with a fondness of 0 or more, 1 for personalities 0 and 3,
  * else 0; below 0, 2 for 0 and 3, 3 for 1 and 4, else 4. It turns to the player's object (angle 0
- * without one). A running act's effects are reset (func_ov068_0226cfd4) and the player's field
+ * without one). A running act's effects are reset (OutdoorVillagerObject_ResetActEffects) and the player's field
  * actor asked for state 0x11 before the request; then the watch held on the player. */
 int OutdoorVillagerMoves_Start6(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
     int player = SessionPlayers_ActorHandle(OUTDOOR_VILLAGER_PLAYER_ACTOR);
     u8 *record = *(u8 **) (void *) moves_at(villager, OUTDOOR_VILLAGER_RECORD);
-    VillagerMemory *memory = func_ov068_0226d598(villager);
+    VillagerMemory *memory = OutdoorVillagerRecords_MemoryOfPlayer(villager);
     int fondness = 0;
     if (memory != NULL) {
         fondness = VillagerMemoryEntry_Fondness(memory);
@@ -1008,7 +1008,7 @@ int OutdoorVillagerMoves_Start6(OutdoorVillagerBehaviour *self, u8 *villager)
     if (player != 0) {
         angle = SceneObject_YawTo(villager, (u8 *) (uintptr_t) (u32) player);
     }
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     FieldActor_PlayerRequestState11();
     SceneAction_RequestMotion7(moves_action(villager), gesture, 0, angle, 0);
     moves_hold(villager, 1);

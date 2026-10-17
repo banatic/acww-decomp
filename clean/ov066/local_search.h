@@ -136,4 +136,21 @@ void LocalSearch_Destroy(void);
 void LocalSearch_Create(void);
 void LocalSearch_Begin(void);
 
+/* LocalParent.state while the parent is listed (0: a free slot). */
+#define LOCAL_PARENT_LISTED 1
+/* The link levels a listed parent averages (LocalParent.history). */
+#define LOCAL_LINK_HISTORY 6
+/* A list's alarms are tagged its tag plus this (OS_SetAlarmTag, OS_CancelAlarms). */
+#define LOCAL_LIST_ALARM_TAG 0x80
+
+void LocalSearch_RenewExpiry(LocalParentList *list, int milliseconds);
+void LocalSearch_ClearList(LocalParentList *list);
+void LocalSearch_CancelExpiry(LocalParentList *list);
+u32 LocalSearch_ListParentAt(LocalParentList *list, u32 slot);
+u8 LocalSearch_ListCount(LocalParentList *list);
+void LocalSearch_OnParentExpired(LocalParent *parent);
+int LocalSearch_ListParent(LocalParentList *list, int lifetime, const u8 *mac, u16 id, u16 link_level, const void *bss);
+void LocalSearch_FreeList(LocalParentList *list);
+void LocalSearch_InitList(LocalParentList *list, u8 tag, int capacity);
+
 #endif

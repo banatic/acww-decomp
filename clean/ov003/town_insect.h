@@ -109,9 +109,9 @@ typedef struct TownInsect {
     SoundSource source;         /* 0x174: the vtable data_0213f020 */
     Mtx43 matrix;               /* 0x180: a held insect's, from its player's hand */
     u8 unk_1b0[0x1c8 - 0x1b0];
-    Vec3 start;  /* 0x1c8: the position when it was placed */
-    Vec3 target; /* 0x1d4: a linked insect's point from the session */
-    u8 unk_1e0[0x1ec - 0x1e0];
+    Vec3 start;         /* 0x1c8: the position when it was placed */
+    Vec3 target;        /* 0x1d4: a linked insect's point from the session */
+    Vec3 unk_1e0;       /* 0x1e0: kind 8's position when it started (TownInsectKind_Start08) */
     u8 unk_1ec[2][0xc]; /* 0x1ec: two objects of func_020012e8 */
     Vec3 position;      /* 0x204 */
     Vec3 scale;         /* 0x210 */
@@ -122,15 +122,16 @@ typedef struct TownInsect {
     int effect;         /* 0x22c: the handle of effect 0x3a, -1 for none */
     u16 slot;           /* 0x230: its entry of a model pool */
     s16 timer;          /* 0x232 */
-    s16 unk_234;        /* 0x234 */
-    u8 unk_236[2];
-    s16 angle_x; /* 0x238 */
-    s16 angle_y; /* 0x23a */
-    s16 angle_z; /* 0x23c */
-    u8 unk_23e[0x242 - 0x23e];
-    s16 frames_left; /* 0x242: counted up in TOWN_INSECT_STATE_LEAVING */
-    u8 unk_244[2];
-    u8 unk_246; /* 0x246: cleared in TOWN_INSECT_WEATHER_QUIET, else 1 */
+    s16 unk_234;        /* 0x234: a town insect's frames left out of view before it leaves */
+    s16 unk_236;        /* 0x236: kinds 0x36 and 0x37: counted down out of view (TownInsect_CountDown) */
+    s16 angle_x;        /* 0x238 */
+    s16 angle_y;        /* 0x23a */
+    s16 angle_z;        /* 0x23c */
+    s16 unk_23e;        /* 0x23e */
+    s16 unk_240;        /* 0x240 */
+    s16 frames_left;    /* 0x242: counted up in TOWN_INSECT_STATE_LEAVING */
+    s16 unk_244;        /* 0x244: set by TownInsectKind_Begin */
+    u8 unk_246;         /* 0x246: cleared in TOWN_INSECT_WEATHER_QUIET, else 1 */
     u8 unk_247;
     u8 used;    /* 0x248 */
     u8 in_view; /* 0x249: within the box around the camera's point */
@@ -146,9 +147,11 @@ typedef struct TownInsect {
     u8 unk_253;
     u8 unk_254; /* 0x254: TOWN_INSECT_BYTE254_* or a byte of the session's messages */
     u8 unk_255;
-    u8 unk_256[2];
+    u8 unk_256;      /* 0x256: a random 0-17 for some kinds */
+    u8 unk_257;      /* 0x257: set by TownInsectKind_Begin */
     u8 players_near; /* 0x258: a bit for each player whose box holds it */
-    u8 unk_259[3];
+    u8 unk_259;      /* 0x259 */
+    u8 unk_25a[2];
 } TownInsect;
 
 /* What the game keeps for each kind (data_ov003_0223c144, TOWN_INSECT_KINDS entries). */
@@ -230,5 +233,19 @@ int TownInsect_GetPosition(Vec3 *position, int id);
 int TownInsect_KindHighPlace(int id);
 int TownInsect_Byte254Reached(u8 *reached, int id);
 void TownInsect_CheckNear(int unused, TownInsect *insect);
+
+int TownInsect_ProcessUpdate(TownInsectProcess *process);
+void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, int mode);
+void TownInsect_CountDown(int unused, TownInsect *insect);
+void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool);
+int TownInsect_ProcessSetUp(TownInsectProcess *process);
+void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode);
+int TownInsect_StartTown(TownInsectProcess *process, TownInsect *insect);
+int TownInsect_StartEvent(TownInsectProcess *process, int kind, int index);
+int TownInsect_StartHeld(TownInsectProcess *process, TownInsect *insect);
+TownInsectProcess *TownInsect_ProcessDelete(TownInsectProcess *process);
+TownInsectProcess *TownInsect_ProcessDestruct(TownInsectProcess *process);
+TownInsectProcess *TownInsect_ProcessConstruct(TownInsectProcess *process);
+void TownInsect_ProcessCreate(void);
 
 #endif

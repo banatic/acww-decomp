@@ -29,12 +29,12 @@
  *
  * The choice (OutdoorVillagerWalks_Choose), in order: home (2 or 16), a marked item 0x1566
  * under it (17), the count at 0xa06 at its limit (21), the byte at 0xa05 (19), behaviour 7's
- * call (func_ov068_0226cc20), a pairing with a villager near and in view (9, one time in five),
+ * call (OutdoorVillagerBehaviour_CallsPlayer), a pairing with a villager near and in view (9, one time in five),
  * its effect's countdown (11), a change of its held item (15 or 16), this console's player
  * showing an insect or a fish (23), and a step aside around what blocks it.
  *
  * The held item (OutdoorVillagerWalks_ChangeHeldItem), checked while it stands: every 12000
- * frames (the halfword at 0x34) the kind of the moment is redrawn (func_ov068_0226d408), and
+ * frames (the halfword at 0x34) the kind of the moment is redrawn (OutdoorVillagerRecords_RedrawKind), and
  * the item it should hold is the kind's (VillagerModeRecord_KindItem), its umbrella (items
  * 0x1380 to 0x139f, TownVillager_Item1380) when rain falls and the kind has none or item
  * 0x1378; behaviour 15 brings an item out, 16 puts one away. The halfword at 0x36 (300 after

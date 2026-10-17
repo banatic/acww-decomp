@@ -9,6 +9,7 @@
 #include "local_host.h"
 #include "local_mp.h"
 #include "local_search.h"
+#include "local_session.h"
 #include "local_wireless.h"
 
 static_assert(offsetof(LocalConnectResult, state) == 0x08, "WMStartConnectCallback.state");
@@ -23,8 +24,6 @@ extern LocalSession *data_ov066_0226bdf4;
 extern void func_ov066_02268410(void *result);
 extern void func_ov066_02268878(void *result);
 extern void func_ov066_0226890c(void *result);
-
-extern void func_ov066_02269dcc(void); /* the session back to no connection */
 
 extern int WM_Disconnect(void (*callback)(void *), u32 aid);
 extern int WM_StartConnectEx(void (*callback)(void *), const LocalBssDesc *bss, const u8 *ssid, int power_save, u32 auth_mode);
@@ -177,7 +176,7 @@ void LocalJoin_OnDisconnect(LocalWmResult *result)
         return;
     }
     data_ov066_0226bdec->state = LOCAL_STATE_WM_IDLE;
-    func_ov066_02269dcc();
+    LocalSession_Disconnected();
     LocalWireless_Continue();
 }
 CLEAN_AS(func_ov066_02268878, LocalJoin_OnDisconnect)

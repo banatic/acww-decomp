@@ -110,14 +110,14 @@ static u8 *ov_record(u8 *object)
 /* func_ov068_022667e0 (slot 0x40): its members from the last to the first, then the town
  * villager's body (VillagerSceneObject_DestructBody). The held item link's destructor is the
  * function main registers as HeldItemLink_Construct (func_02012588): this class's constructor
- * (func_ov068_0226da64) runs the one main registers as HeldItemLink_Destruct. Returns the
+ * (OutdoorVillagerObject_New) runs the one main registers as HeldItemLink_Destruct. Returns the
  * object. */
 u8 *OutdoorVillager_Destruct(u8 *object)
 {
     *(const u8 **) (void *) object = data_ov068_022771c0;
     OutdoorVillagerEffect_Destruct((OutdoorVillagerEffect *) (void *) ov_at(object, OUTDOOR_VILLAGER_EFFECT));
     HeldItemLink_Construct((HeldItemLink *) (void *) ov_at(object, OUTDOOR_VILLAGER_LINK));
-    func_ov068_0226ce48(ov_behaviour(object));
+    OutdoorVillagerBehaviour_Destruct(ov_behaviour(object));
     OutdoorVillagerWatch_Destruct((OutdoorVillagerWatch *) (void *) ov_at(object, OUTDOOR_VILLAGER_WATCH));
     VillagerSceneObject_DestructBody(object);
     return object;
@@ -141,8 +141,8 @@ void OutdoorVillager_OnTalkEnd(u8 *object)
 {
     OutdoorVillagerBehaviour *behaviour = ov_behaviour(object);
     VillagerMood_Apply((VillagerMood *) (void *) ov_at(object, OUTDOOR_VILLAGER_MOOD));
-    if (func_ov068_0226ccb0(behaviour, object) == 0) {
-        func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
+        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) object, 0);
     VillagerSceneObject_SetByte648(object, 0);
@@ -153,12 +153,12 @@ CLEAN_AS(func_ov068_02266cf4, OutdoorVillager_OnTalkEnd)
 /* func_ov068_02266d40 (slot 0x8c): told it joined a talk as a speaker: behaviour 10. */
 void OutdoorVillager_OnSpeakerJoined(u8 *object)
 {
-    func_ov068_0226cce8(ov_behaviour(object), object, OUTDOOR_VILLAGER_DO_SPEAKER);
+    OutdoorVillagerBehaviour_Start(ov_behaviour(object), object, OUTDOOR_VILLAGER_DO_SPEAKER);
 }
 CLEAN_AS(func_ov068_02266d40, OutdoorVillager_OnSpeakerJoined)
 
 /* func_ov068_02266d54 (slot 0xbc): when paired, the pairing ends: a running act's effects
- * reset (func_ov068_0226cfd4), the saved behaviour resumed (else behaviour 0), the cooldown
+ * reset (OutdoorVillagerObject_ResetActEffects), the saved behaviour resumed (else behaviour 0), the cooldown
  * started, and unpaired; 1. Unpaired already: 0. */
 int OutdoorVillager_Unpair(u8 *object)
 {
@@ -166,9 +166,9 @@ int OutdoorVillager_Unpair(u8 *object)
     if (VillagerSceneObject_HasWord644(object) == 0) {
         return 0;
     }
-    func_ov068_0226cfd4(object);
-    if (func_ov068_0226ccb0(behaviour, object) == 0) {
-        func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerObject_ResetActEffects(object);
+    if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
+        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
     func_ov068_0226cbf4(behaviour);
     VillagerSceneObject_SetWord644((u32 *) (void *) object, 0);
@@ -188,22 +188,22 @@ int OutdoorVillager_Pair(u8 *object, u8 *partner)
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) object, (u32) (uintptr_t) partner);
     VillagerSceneObject_SetByte648(object, 1);
-    func_ov068_0226ccd8(behaviour);
-    func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_PAIRED);
+    OutdoorVillagerBehaviour_SaveResume(behaviour);
+    OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_PAIRED);
     return 1;
 }
 CLEAN_AS(func_ov068_02266da8, OutdoorVillager_Pair)
 
 /* func_ov068_02266df4 (slot 0xb4): whether it may be paired: with a memory of this console's
- * player (func_ov068_0226d598) that is in use, or without one while the player is not within
+ * player (OutdoorVillagerRecords_MemoryOfPlayer) that is in use, or without one while the player is not within
  * 0x6000 of it; and its action idle, behaviour 0 running with the cooldown out, not paired,
  * and no town event (11) when it started.
  * QUIRK: with a current player record the memory is looked up a second time. */
 int OutdoorVillager_CanPair(u8 *object)
 {
-    VillagerMemory *memory = func_ov068_0226d598(object);
+    VillagerMemory *memory = OutdoorVillagerRecords_MemoryOfPlayer(object);
     if (PlayerRecords_Current() != NULL) {
-        memory = func_ov068_0226d598(object);
+        memory = OutdoorVillagerRecords_MemoryOfPlayer(object);
     }
     if (memory == NULL) {
         if (SceneObject_IsNearActor(object, OUTDOOR_VILLAGER_PAIR_PLAYER_NEAR, OUTDOOR_VILLAGER_PLAYER_ACTOR) != 0) {
@@ -215,7 +215,7 @@ int OutdoorVillager_CanPair(u8 *object)
     if (SceneAction_IsBusy((const SceneAction *) (void *) ov_at(object, OUTDOOR_VILLAGER_ACTION)) != 0) {
         return 0;
     }
-    if (func_ov068_0226cc00(ov_behaviour(object)) == 0) {
+    if (OutdoorVillagerBehaviour_IsIdle(ov_behaviour(object)) == 0) {
         return 0;
     }
     if (VillagerSceneObject_HasWord644(object) != 0) {
@@ -263,9 +263,9 @@ static void ov_ended_reaction_0(u8 *object)
     last->z = position->z;
     int named = VillagerState_GetIndex162();
     if (named == VillagerStatus_Index(ov_record(object)) || (unsigned int) (status - 3) <= 4) {
-        func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_12);
+        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_12);
     } else {
-        func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_3);
+        OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_3);
     }
 }
 
@@ -310,12 +310,12 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                 *lines = ov_lines_for_event(object);
             }
             if (*lines == OUTDOOR_VILLAGER_LINES_DEFAULT) {
-                VillagerTally *tally = func_ov068_0226cf58(object);
+                VillagerTally *tally = OutdoorVillagerRecords_Tally(object);
                 if (tally != NULL) {
                     VillagerTally_Count(tally);
                 }
             }
-            func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_STARTS);
+            OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_STARTS);
             break;
         case OUTDOOR_VILLAGER_EVENT_1: {
             int next = OUTDOOR_VILLAGER_DO_TALK;
@@ -336,7 +336,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
                     break;
             }
             ov_start_talk(object, *lines);
-            func_ov068_0226cce8(behaviour, object, next);
+            OutdoorVillagerBehaviour_Start(behaviour, object, next);
             break;
         }
         case OUTDOOR_VILLAGER_EVENT_0:
@@ -345,7 +345,7 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             if (*partner != 0) {
                 SceneBase_SetSecondSpeaker(ov_talk(object), (u8 *) (uintptr_t) *partner);
             }
-            func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_TALK);
+            OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_TALK);
             if (*lines == OUTDOOR_VILLAGER_LINES_DOING_7 && ov_record(object) != NULL) {
                 VillagerEntry_ClearByte1E(ov_record(object));
             }
@@ -354,23 +354,23 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             break;
         case OUTDOOR_VILLAGER_EVENT_5:
             *ov_at(object, OUTDOOR_VILLAGER_PARTICIPANT) = (u8) participant;
-            func_ov068_0226ccd8(behaviour);
-            func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_6);
+            OutdoorVillagerBehaviour_SaveResume(behaviour);
+            OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_6);
             break;
         case OUTDOOR_VILLAGER_EVENT_ENDED:
             if (*reaction == OUTDOOR_VILLAGER_REACTION_0) {
                 ov_ended_reaction_0(object);
                 *reaction = OUTDOOR_VILLAGER_REACTION_NONE;
             } else if (*reaction == OUTDOOR_VILLAGER_REACTION_2) {
-                func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
                 *reaction = OUTDOOR_VILLAGER_REACTION_NONE;
             } else if (*byte_a04 != 0) {
-                func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_18);
+                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_18);
             } else {
-                if (func_ov068_0226ccb0(behaviour, object) == 0) {
-                    func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+                if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
+                    OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
                 }
-                VillagerTally *tally = func_ov068_0226cf58(object);
+                VillagerTally *tally = OutdoorVillagerRecords_Tally(object);
                 if (tally != NULL) {
                     VillagerTally_Start(tally);
                 }
@@ -382,9 +382,9 @@ void OutdoorVillager_OnEvent(u8 *object, int code, int participant)
             break;
         case OUTDOOR_VILLAGER_EVENT_REFUSED:
             if (*byte_a04 != 0) {
-                func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_18);
-            } else if (func_ov068_0226ccb0(behaviour, object) == 0) {
-                func_ov068_0226cce8(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
+                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_18);
+            } else if (OutdoorVillagerBehaviour_Resume(behaviour, object) == 0) {
+                OutdoorVillagerBehaviour_Start(behaviour, object, OUTDOOR_VILLAGER_DO_DEFAULT);
             }
             break;
         default:
@@ -402,7 +402,7 @@ CLEAN_AS(func_ov068_02266f44, OutdoorVillager_OnEvent)
 int OutdoorVillager_Ask54(u8 *object, u8 *other)
 {
     s16 half_angle = data_ov068_02278260;
-    unsigned int level = func_ov068_0226cf8c(object);
+    unsigned int level = OutdoorVillagerRecords_Byte18(object);
     if (((int (*)(u8 *, u8 *)) ov_slot(object, OUTDOOR_VILLAGER_SLOT_MAY_ACT))(object, other) == 0) {
         return 0;
     }

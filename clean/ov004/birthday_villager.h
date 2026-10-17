@@ -36,6 +36,7 @@
 #define CLEAN_OV004_BIRTHDAY_VILLAGER_H
 
 #include "autoload_2/vector.h"
+#include "main/villager_memories.h"
 #include "main/villager_talk.h"
 #include "member_pointer.h"
 #include "types.h"
@@ -126,5 +127,36 @@ void BirthdayVillagerTalk_OnMessageEnded(BirthdayVillagerTalk *talk);
 void BirthdayVillagerTalk_OnMessageBegun(BirthdayVillagerTalk *talk);
 u16 BirthdayVillager_PickGift(int fondness);
 void BirthdayVillagerTalk_Line(BirthdayVillagerTalk *talk, VillagerTalkLine *out);
+
+/* The room's birthday villager (set at its set-up, cleared once it may be deleted), or NULL. */
+extern BirthdayVillager *data_ov004_02257a18;
+
+void BirthdayVillagerTalk_Start(BirthdayVillagerTalk *talk, BirthdayVillager *villager);
+void BirthdayVillagerTalk_TakeItem(BirthdayVillagerTalk *talk);
+void BirthdayVillagerTalk_OnCommandEnd(BirthdayVillagerTalk *talk);
+int BirthdayVillagerTalk_Fondness(BirthdayVillagerTalk *talk);
+int BirthdayVillagerTalk_ChangeFondness(BirthdayVillagerTalk *talk, int delta);
+int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item);
+void BirthdayVillagerTalk_SetMemoryBit7(BirthdayVillagerTalk *talk);
+int BirthdayVillagerTalk_MemoryBit7(BirthdayVillagerTalk *talk);
+void BirthdayVillagerTalk_SetMemoryBit6(BirthdayVillagerTalk *talk);
+int BirthdayVillagerTalk_MemoryBit6Clear(BirthdayVillagerTalk *talk);
+void BirthdayVillagerTalk_SetMemoryBit11(BirthdayVillagerTalk *talk);
+int BirthdayVillagerTalk_MemoryBit11Clear(BirthdayVillagerTalk *talk);
+VillagerMemory *BirthdayVillagerTalk_PlayerMemory(BirthdayVillagerTalk *talk);
+void BirthdayVillager_OnEvent(BirthdayVillager *villager, unsigned int code, int participant);
+int BirthdayVillager_Ask58(BirthdayVillager *villager);
+int BirthdayVillager_MayAct(BirthdayVillager *villager);
+void BirthdayVillager_UpdatePlayerMemory(BirthdayVillager *villager);
+int BirthdayVillager_RunState(BirthdayVillager *villager);
+int BirthdayVillager_CanDelete(BirthdayVillager *villager);
+int BirthdayVillager_RunDraw(BirthdayVillager *villager);
+int BirthdayVillager_Draw(BirthdayVillager *villager);
+int BirthdayVillager_Start(BirthdayVillager *villager);
+int BirthdayVillager_Init(BirthdayVillager *villager);
+int BirthdayVillager_CanOffer(u16 *item, int state);
+int BirthdayVillager_CurrentMemoryBit7(void);
+BirthdayVillager *BirthdayVillager_Current(void);
+BirthdayVillager *BirthdayVillager_New(void);
 
 #endif

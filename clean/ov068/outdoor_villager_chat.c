@@ -66,7 +66,7 @@ extern const u8 data_ov068_02276744[];
 extern const u8 data_ov068_02276754[];
 extern const u8 data_ov068_0227678c[];
 
-/* The behaviour member's functions kept as the game's (outdoor_villager.h has more). */
+/* The behaviour member's and the villager's functions used here (outdoor_villager.h has more). */
 /* Whether the byte at 0xa05 is set. */
 extern int func_ov068_0226c0e0(OutdoorVillagerBehaviour *self, u8 *villager);
 /* The tier of the pair (0 to 4; 2 without the town's villagers). */
@@ -166,7 +166,7 @@ static void chat_part_for_19(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, 0);
     VillagerSceneObject_SetByte648(villager, 0);
-    func_ov068_0226cce8(self, villager, CHAT_DO_19);
+    OutdoorVillagerBehaviour_Start(self, villager, CHAT_DO_19);
     func_ov068_0226cbf4(self);
 }
 
@@ -266,8 +266,8 @@ void OutdoorVillagerChat_End9(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     VillagerSceneObject_SetWord644((u32 *) (void *) villager, 0);
     VillagerSceneObject_SetByte648(villager, 0);
-    if (func_ov068_0226ccb0(self, villager) == 0) {
-        func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    if (OutdoorVillagerBehaviour_Resume(self, villager) == 0) {
+        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
     }
     func_ov068_0226cbf4(self);
 }
@@ -503,14 +503,14 @@ void OutdoorVillagerChat_Turn9(OutdoorVillagerBehaviour *self, u8 *villager)
 CLEAN_AS(func_ov068_0226a114, OutdoorVillagerChat_Turn9)
 
 /* func_ov068_0226a1b8: behaviour 9's start: a turn to the partner (the angle taken before a
- * running act's effects are reset, func_ov068_0226cfd4), the watch on the partner (kind 2),
+ * running act's effects are reset, OutdoorVillagerObject_ResetActEffects), the watch on the partner (kind 2),
  * step 0, the byte at 0x838 cleared, its mood asked for (0, 0, applied) and its mood's sounds
  * on. */
 int OutdoorVillagerChat_Start9(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     u8 *partner = chat_partner(villager);
     int angle = SceneObject_YawTo(villager, partner);
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     SceneMotion_Request(chat_motion(villager), CHAT_MOTION_TURN, CHAT_PRIORITY, 0, 0, 0, (s16) angle, 0, 0, data_020c80f8, 0);
     OutdoorVillagerWatch_Hold((OutdoorVillagerWatch *) (void *) chat_at(villager, OUTDOOR_VILLAGER_WATCH), villager, 2, 0,
                               (int) (uintptr_t) partner, &data_021fbee8, OUTDOOR_VILLAGER_PLAYER_ACTOR, data_020c814c, 1);

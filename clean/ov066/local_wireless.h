@@ -104,7 +104,8 @@ typedef struct LocalControl {
     u16 child_max_size;  /* WMParentParam.childMaxSize */
     u16 search_time;     /* the milliseconds each search of the automatic pairing lasts */
     u16 scan_time;       /* the time spent on each channel (WMScanParam.maxChannelTime) */
-    u8 unk_24[4];
+    u16 unk_24;          /* 200 from LocalRelay_Configure */
+    u8 unk_26[2];
     u32 ggid; /* the parents' game group id (LOCAL_FLAG_MATCH_GGID) */
     u8 unk_2c[4];
     LocalDoneHandler *on_done; /* called once the request is reached */

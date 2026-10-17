@@ -7,19 +7,26 @@
 #include "autoload_2/fx_math.h"  /* Math_Atan2 */
 #include "autoload_2/heap.h"
 #include "clean.h"
-#include "main/actor.h" /* Vec_YawTo */
+#include "itcm/vector.h" /* Vec_Add */
+#include "main/actor.h"  /* Vec_YawTo */
 #include "main/actor_table.h"
+#include "main/camera_modes.h"
 #include "main/current_pockets.h"
+#include "main/footsteps.h"
 #include "main/event_queue.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/item_lists.h"
+#include "main/item_traits.h"
 #include "main/main_random.h"
 #include "main/npc_id.h"
 #include "main/player_actor_ops.h"
+#include "main/player_record.h"
 #include "main/player_records.h"
 #include "main/pockets.h"
 #include "main/scene_action.h"
 #include "main/scene_base.h"
+#include "main/scene_command.h"
 #include "main/scene_look.h"
 #include "main/scene_motion_request.h"
 #include "main/scene_mover.h"
@@ -28,7 +35,13 @@
 #include "main/talk_answers.h"
 #include "main/talk_object.h"
 #include "main/town_villager.h"
+#include "main/villager_memories.h"
+#include "main/villager_memory_bits.h"
+#include "main/villager_memory_entry.h"
+#include "main/villager_mode_record.h"
+#include "main/villager_object.h"
 #include "main/villager_scene_slots.h"
+#include "main/villager_status.h"
 #include "main/villager_talk_scene.h"
 
 static_assert(sizeof(VillagerTalk) == 0x1a4, "the town villager's talk scene");
@@ -118,15 +131,6 @@ extern int func_ov004_0221d468(u16 *item, int state);
 extern u8 *func_ov004_0221e2c0(void);
 /* A point of the room to walk to (into `goal`) from `from`, and the direction to it. */
 extern int func_ov004_0221e1e0(Vec3 *goal, Vec3 *from, int yaw);
-/* The villager's fondness of this console's player (VillagerMemoryEntry_Fondness of its memory;
- * 0 without one). */
-extern int func_ov004_0221cec8(BirthdayVillagerTalk *talk);
-/* Its memory of the player: bit 7 set; whether bit 6 is clear, whether bit 7 is set; bit 6
- * set (VillagerMemoryEntry_*; nothing, or 0, without a memory). */
-extern void func_ov004_0221cfe0(BirthdayVillagerTalk *talk);
-extern int func_ov004_0221d02c(BirthdayVillagerTalk *talk);
-extern int func_ov004_0221cff8(BirthdayVillagerTalk *talk);
-extern void func_ov004_0221d014(BirthdayVillagerTalk *talk);
 
 static u8 *part(BirthdayVillager *villager, u32 offset)
 {
@@ -753,7 +757,7 @@ static void end_talk(BirthdayVillagerTalk *talk)
  * - 11 to 14: message 15 or 16 at random;
  * - 15, 16: the scene's command 3 hands the villager's item over (priority 5), the item goes
  *   into the player's pockets and the villager goes to state 13;
- * - 17, 18: bit 7 of its memory of the player is set (func_ov004_0221cfe0);
+ * - 17, 18: bit 7 of its memory of the player is set (BirthdayVillagerTalk_SetMemoryBit7);
  * - others (4 to 6 among them): nothing. */
 void BirthdayVillagerTalk_OnMessageEnded(BirthdayVillagerTalk *talk)
 {
@@ -787,7 +791,7 @@ void BirthdayVillagerTalk_OnMessageEnded(BirthdayVillagerTalk *talk)
             break;
         case 17:
         case 18:
-            func_ov004_0221cfe0(talk);
+            BirthdayVillagerTalk_SetMemoryBit7(talk);
             break;
         default:
             break;
@@ -803,7 +807,7 @@ void BirthdayVillagerTalk_OnMessageBegun(BirthdayVillagerTalk *talk)
     switch (message_of(talk)) {
         case 15:
         case 16: {
-            u16 gift = BirthdayVillager_PickGift(func_ov004_0221cec8(talk));
+            u16 gift = BirthdayVillager_PickGift(BirthdayVillagerTalk_Fondness(talk));
             talk->villager->gift = gift;
             SceneBase_PutItemName(scene_of(talk), (int) (uintptr_t) &gift, 1, BIRTHDAY_VILLAGER_ITEM_NAME_KIND);
             break;
@@ -872,9 +876,9 @@ void BirthdayVillagerTalk_Line(BirthdayVillagerTalk *talk, VillagerTalkLine *out
         return;
     }
 
-    int first_time = func_ov004_0221d02c(talk);
-    int marked = !first_time && func_ov004_0221cff8(talk);
-    func_ov004_0221d014(talk);
+    int first_time = BirthdayVillagerTalk_MemoryBit6Clear(talk);
+    int marked = !first_time && BirthdayVillagerTalk_MemoryBit7(talk);
+    BirthdayVillagerTalk_SetMemoryBit6(talk);
     if (first_time) {
         out->message = (u8) (MainRandom_Below(2) + 2);
     } else if (marked) {
@@ -901,3 +905,519 @@ void BirthdayVillagerTalk_Line(BirthdayVillagerTalk *talk, VillagerTalkLine *out
     SceneBase_PutItemName(scene_of(talk), (int) (uintptr_t) &item, 1, BIRTHDAY_VILLAGER_ITEM_NAME_KIND);
 }
 CLEAN_AS(func_ov004_0221cc14, BirthdayVillagerTalk_Line)
+
+/* The lines table VillagerTalkScene_Start is given: 17 and above leave the line members as they
+ * are (the talk scene's own vtable slot 0x78 says the line). */
+#define BIRTHDAY_VILLAGER_TALK_OWN_LINES 0x11
+
+/* func_ov004_0221cd48: its talk scene started for `villager`, and kept pointing back at it. */
+void BirthdayVillagerTalk_Start(BirthdayVillagerTalk *talk, BirthdayVillager *villager)
+{
+    VillagerTalkScene_Start(&talk->base, villager->base, BIRTHDAY_VILLAGER_TALK_OWN_LINES);
+    talk->villager = villager;
+}
+CLEAN_AS(func_ov004_0221cd48, BirthdayVillagerTalk_Start)
+
+/* The prices from which an item handed over adds more fondness. */
+#define BIRTHDAY_VILLAGER_PRICE_HIGH 1000
+#define BIRTHDAY_VILLAGER_PRICE_HIGHER 2000
+
+/* The talk window of a talk scene (read through it each time). */
+static TalkObject *birthday_villager_window(BirthdayVillagerTalk *talk)
+{
+    return (TalkObject *) (void *) talk->base.scene.talk;
+}
+
+/* func_ov004_0221cd68 (the talk scene's vtable slot 0x80, each step): in state 11, once the
+ * pockets screen has closed:
+ * - when nothing was picked, the talk window opens again on message 7 or 8 (at random) and the
+ *   villager goes to state 6;
+ * - else the picked pocket's item is taken out of the pockets (its price read first), its name
+ *   becomes the talk's value 0 and, for an item that goes with the villager's mode
+ *   (BirthdayVillagerTalk_LikesItem), the message is 0xd or 0xe and the villager's fondness of
+ *   the player grows by 5, 5 more from a price of 1000 and 10 more from 2000; for another item
+ *   the message is 0xb or 0xc and the fondness grows by 2, 5 and 5. The scene's command 14
+ *   takes the item (priority 5) and the villager goes to state 12. */
+void BirthdayVillagerTalk_TakeItem(BirthdayVillagerTalk *talk)
+{
+    u8 message;
+
+    if (talk->villager->state != BIRTHDAY_VILLAGER_CHOOSING || !GroupParams_CanOpen()) {
+        return;
+    }
+    if (!GroupParams_C4CIs1()) {
+        birthday_villager_window(talk)->next_state = TALK_OBJECT_OPENING;
+        message = (u8) (MainRandom_Below(2) + 7);
+        TalkObject_SetMessage(birthday_villager_window(talk), &message, NULL);
+        BirthdayVillager_SetState(talk->villager, BIRTHDAY_VILLAGER_TALK);
+        return;
+    }
+
+    u8 slot = GroupParams_Arg();
+    ItemCode item = CurrentPockets_Item(slot);
+    int price = ItemTraits_Price(&item);
+    CurrentPockets_Empty(slot);
+    SceneBase_PutItemName(scene_of(talk), (int) (uintptr_t) &item, 0, BIRTHDAY_VILLAGER_ITEM_NAME_KIND);
+    if (BirthdayVillagerTalk_LikesItem(talk, &item)) {
+        message = (u8) (MainRandom_Below(2) + 0xd);
+        TalkObject_SetMessage(birthday_villager_window(talk), &message, NULL);
+        BirthdayVillagerTalk_ChangeFondness(talk, 5);
+        if (price >= BIRTHDAY_VILLAGER_PRICE_HIGH) {
+            BirthdayVillagerTalk_ChangeFondness(talk, 5);
+        }
+        if (price >= BIRTHDAY_VILLAGER_PRICE_HIGHER) {
+            BirthdayVillagerTalk_ChangeFondness(talk, 10);
+        }
+    } else {
+        message = (u8) (MainRandom_Below(2) + 0xb);
+        TalkObject_SetMessage(birthday_villager_window(talk), &message, NULL);
+        BirthdayVillagerTalk_ChangeFondness(talk, 2);
+        if (price >= BIRTHDAY_VILLAGER_PRICE_HIGH) {
+            BirthdayVillagerTalk_ChangeFondness(talk, 5);
+        }
+        if (price >= BIRTHDAY_VILLAGER_PRICE_HIGHER) {
+            BirthdayVillagerTalk_ChangeFondness(talk, 5);
+        }
+    }
+    SceneCommand_RequestMotion14(&talk->base.scene, &item, 0, 5, 0);
+    BirthdayVillager_SetState(talk->villager, BIRTHDAY_VILLAGER_STATE_12);
+}
+CLEAN_AS(func_ov004_0221cd68, BirthdayVillagerTalk_TakeItem)
+
+/* func_ov004_0221ceac (the talk scene's vtable slot 0x84, a command ended): in state 12 (the
+ * item taken) the talk window opens again. */
+void BirthdayVillagerTalk_OnCommandEnd(BirthdayVillagerTalk *talk)
+{
+    if (talk->villager->state == BIRTHDAY_VILLAGER_STATE_12) {
+        birthday_villager_window(talk)->next_state = TALK_OBJECT_OPENING;
+    }
+}
+CLEAN_AS(func_ov004_0221ceac, BirthdayVillagerTalk_OnCommandEnd)
+
+/* func_ov004_0221cec8: the villager's fondness of this console's player; 0 without a memory of
+ * the player. */
+int BirthdayVillagerTalk_Fondness(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        return VillagerMemoryEntry_Fondness(memory);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221cec8, BirthdayVillagerTalk_Fondness)
+
+/* func_ov004_0221cee4: the villager's fondness of this console's player changed by `delta`; its
+ * answer, 0 without a memory.
+ * QUIRK: `delta` is taken as a signed byte. */
+int BirthdayVillagerTalk_ChangeFondness(BirthdayVillagerTalk *talk, int delta)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        return VillagerMemoryEntry_ChangeFondness(memory, (s8) delta);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221cee4, BirthdayVillagerTalk_ChangeFondness)
+
+/* The items that go with the villager's modes 0 to 3 (insects and fish for 0 and 1, see
+ * ov098/pockets_town.c); mode 4 takes items with a variant outside mode 2's range. */
+#define BIRTHDAY_VILLAGER_MODE0_FIRST 0x12b0
+#define BIRTHDAY_VILLAGER_MODE0_LAST 0x12e7
+#define BIRTHDAY_VILLAGER_MODE1_FIRST 0x12e8
+#define BIRTHDAY_VILLAGER_MODE1_LAST 0x131f
+#define BIRTHDAY_VILLAGER_MODE2_FIRST 0x450c
+#define BIRTHDAY_VILLAGER_MODE2_LAST 0x45db
+#define BIRTHDAY_VILLAGER_MODE3_FIRST 0x11a8
+#define BIRTHDAY_VILLAGER_MODE3_LAST 0x12a7
+
+static int birthday_villager_item_in(const u16 *item, u16 first, u16 last)
+{
+    return *item >= first && *item <= last;
+}
+
+/* func_ov004_0221cf00: whether `item` goes with the mode of the villager's record: mode 0 an
+ * insect (0x12b0-0x12e7), 1 a fish (0x12e8-0x131f), 2 an item 0x450c-0x45db, 3 an item
+ * 0x11a8-0x12a7, 4 an item with a variant (ItemCode_HasVariant) outside 0x450c-0x45db; other
+ * modes, a villager without a record or a talk scene without a villager, none. */
+int BirthdayVillagerTalk_LikesItem(BirthdayVillagerTalk *talk, u16 *item)
+{
+    BirthdayVillager *villager = talk->villager;
+    if (villager == NULL || record_of(villager->base) == NULL) {
+        return 0;
+    }
+    VillagerModeRecord *status = VillagerStatus_ModeRecord(record_of(villager->base));
+    switch (VillagerModeRecord_Mode(VillagerObject_RecordMode((VillagerRecord *) (void *) status))) {
+        case 0:
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE0_FIRST, BIRTHDAY_VILLAGER_MODE0_LAST);
+        case 1:
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE1_FIRST, BIRTHDAY_VILLAGER_MODE1_LAST);
+        case 2:
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE2_FIRST, BIRTHDAY_VILLAGER_MODE2_LAST);
+        case 3:
+            return birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE3_FIRST, BIRTHDAY_VILLAGER_MODE3_LAST);
+        case 4:
+            return ItemCode_HasVariant(item) &&
+                   !birthday_villager_item_in(item, BIRTHDAY_VILLAGER_MODE2_FIRST, BIRTHDAY_VILLAGER_MODE2_LAST);
+        default:
+            return 0;
+    }
+}
+CLEAN_AS(func_ov004_0221cf00, BirthdayVillagerTalk_LikesItem)
+
+/* func_ov004_0221cfe0: bit 7 of the villager's memory of the player set (none without one). */
+void BirthdayVillagerTalk_SetMemoryBit7(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        VillagerMemoryEntry_SetBit7(memory);
+    }
+}
+CLEAN_AS(func_ov004_0221cfe0, BirthdayVillagerTalk_SetMemoryBit7)
+
+/* func_ov004_0221cff8: bit 7 of the villager's memory of the player; 0 without one. */
+int BirthdayVillagerTalk_MemoryBit7(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        return VillagerMemoryEntry_Bit7(memory);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221cff8, BirthdayVillagerTalk_MemoryBit7)
+
+/* func_ov004_0221d014: bit 6 of the villager's memory of the player set (none without one). */
+void BirthdayVillagerTalk_SetMemoryBit6(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        VillagerMemoryEntry_SetBit6(memory);
+    }
+}
+CLEAN_AS(func_ov004_0221d014, BirthdayVillagerTalk_SetMemoryBit6)
+
+/* func_ov004_0221d02c: whether bit 6 of the villager's memory of the player is clear; 0 without
+ * a memory. */
+int BirthdayVillagerTalk_MemoryBit6Clear(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        return VillagerMemoryEntry_Bit6(memory) == 0;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221d02c, BirthdayVillagerTalk_MemoryBit6Clear)
+
+/* func_ov004_0221d050: bit 11 of the villager's memory of the player set (none without one). */
+void BirthdayVillagerTalk_SetMemoryBit11(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        VillagerMemoryBits_SetBit11(memory);
+    }
+}
+CLEAN_AS(func_ov004_0221d050, BirthdayVillagerTalk_SetMemoryBit11)
+
+/* func_ov004_0221d068: whether bit 11 of the villager's memory of the player is clear; 0 without
+ * a memory. */
+int BirthdayVillagerTalk_MemoryBit11Clear(BirthdayVillagerTalk *talk)
+{
+    VillagerMemory *memory = BirthdayVillagerTalk_PlayerMemory(talk);
+    if (memory != NULL) {
+        return VillagerMemoryBits_Bit11(memory) == 0;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221d068, BirthdayVillagerTalk_MemoryBit11Clear)
+
+/* func_ov004_0221d08c: the villager's memory of the current player (VillagerMemory_Meet); NULL
+ * for a talk scene without a villager or a villager without a record. */
+VillagerMemory *BirthdayVillagerTalk_PlayerMemory(BirthdayVillagerTalk *talk)
+{
+    if (talk->villager != NULL && record_of(talk->villager->base) != NULL) {
+        return VillagerMemory_Meet(record_of(talk->villager->base), PlayerRecord_Player(PlayerRecords_Current()));
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov004_0221d08c, BirthdayVillagerTalk_PlayerMemory)
+
+/* How far above its position the camera looks at it in a talk. */
+#define BIRTHDAY_VILLAGER_FOCUS_HEIGHT 0x2000
+
+/* The codes of its vtable slot 0x4c (main's event_kinds.h). */
+#define BIRTHDAY_VILLAGER_EVENT_TALK 0
+#define BIRTHDAY_VILLAGER_EVENT_CALLED 1
+#define BIRTHDAY_VILLAGER_EVENT_STARTS 3
+#define BIRTHDAY_VILLAGER_EVENT_REFUSED 4
+#define BIRTHDAY_VILLAGER_EVENT_ENDED 8
+
+/* The byte of the scene object the event's participant is kept in. */
+#define BIRTHDAY_VILLAGER_PARTICIPANT 0x560
+
+/* An event's participant kept, this console's player's object made its talk scene's motion
+ * argument and the camera turned to `focus`. */
+static void birthday_villager_begin_talk(BirthdayVillager *villager, int participant, const Vec3 *focus)
+{
+    *part(villager, BIRTHDAY_VILLAGER_PARTICIPANT) = (u8) participant;
+    SceneBase_SetMotionArg(scene_of(&villager->talk), SceneObject_ActorObject(villager->base, BIRTHDAY_VILLAGER_PLAYER_ACTOR));
+    CameraControl_FocusOn(focus);
+}
+
+/* func_ov004_0221d0c8 (vtable slot 0x4c, told of an event):
+ * - 3, an event starts: the participant kept, state 4;
+ * - 0 (the player talks to it) and 1 (the event it asked for in state 7 runs): the participant
+ *   kept, this console's player's object becomes its talk scene's motion argument, the camera
+ *   looks at a point 0x2000 above it, then state 5 (it turns to the player) or 8 (it comes to
+ *   the player);
+ * - 8, the event ended: the camera's mode reset, its memory of the player updated, state 0;
+ * - 4, refused: state 0. */
+void BirthdayVillager_OnEvent(BirthdayVillager *villager, unsigned int code, int participant)
+{
+    Vec3 focus = *position_of(villager);
+    focus.y += BIRTHDAY_VILLAGER_FOCUS_HEIGHT;
+
+    switch (code) {
+        case BIRTHDAY_VILLAGER_EVENT_STARTS:
+            *part(villager, BIRTHDAY_VILLAGER_PARTICIPANT) = (u8) participant;
+            BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_HALT);
+            break;
+        case BIRTHDAY_VILLAGER_EVENT_TALK:
+            birthday_villager_begin_talk(villager, participant, &focus);
+            BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_TURN);
+            break;
+        case BIRTHDAY_VILLAGER_EVENT_CALLED:
+            birthday_villager_begin_talk(villager, participant, &focus);
+            BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_APPROACH);
+            break;
+        case BIRTHDAY_VILLAGER_EVENT_ENDED:
+            CameraControl_ResetMode();
+            BirthdayVillager_UpdatePlayerMemory(villager);
+            BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_WANDER);
+            break;
+        case BIRTHDAY_VILLAGER_EVENT_REFUSED:
+            BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_WANDER);
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov004_0221d0c8, BirthdayVillager_OnEvent)
+
+/* func_ov004_0221d188 (vtable slot 0x58): whether its action is idle. */
+int BirthdayVillager_Ask58(BirthdayVillager *villager)
+{
+    return SceneAction_IsBusy(action_of(villager)) == 0;
+}
+CLEAN_AS(func_ov004_0221d188, BirthdayVillager_Ask58)
+
+/* func_ov004_0221d1a8 (vtable slot 0x48): whether the player may talk to it: its action idle and
+ * it wanders, faces or acts (states 0 to 3). */
+int BirthdayVillager_MayAct(BirthdayVillager *villager)
+{
+    if (SceneAction_IsBusy(action_of(villager))) {
+        return 0;
+    }
+    return villager->state <= BIRTHDAY_VILLAGER_ACT_LONG;
+}
+CLEAN_AS(func_ov004_0221d1a8, BirthdayVillager_MayAct)
+
+/* func_ov004_0221d1d8: its memory of the current player updated (VillagerMemoryEntry_Update
+ * with no player, town or date); nothing without a current player or a record. */
+void BirthdayVillager_UpdatePlayerMemory(BirthdayVillager *villager)
+{
+    u8 *player = PlayerRecords_Current();
+    if (player == NULL || record_of(villager->base) == NULL) {
+        return;
+    }
+    VillagerMemoryEntry_Update(VillagerMemory_Meet(record_of(villager->base), PlayerRecord_Player(player)), NULL, NULL, NULL);
+}
+CLEAN_AS(func_ov004_0221d1d8, BirthdayVillager_UpdatePlayerMemory)
+
+/* _ZN18Obj_ov004_0225367419func_ov004_0221d210Ev (vtable slot 0x68, its update): the current
+ * state's update; always 1. */
+int BirthdayVillager_RunState(BirthdayVillager *villager)
+{
+    BirthdayVillager_Update(villager);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_0225367419func_ov004_0221d210Ev, BirthdayVillager_RunState)
+
+/* func_ov004_0221d220 (vtable slot 0x10, the deletion check): the town villager's; once it may
+ * be deleted, the room's birthday villager is forgotten. */
+int BirthdayVillager_CanDelete(BirthdayVillager *villager)
+{
+    if (VillagerSceneObject_CanDelete(villager->base) == 0) {
+        return 0;
+    }
+    data_ov004_02257a18 = NULL;
+    return 1;
+}
+CLEAN_AS(func_ov004_0221d220, BirthdayVillager_CanDelete)
+
+/* func_ov004_0221d244 (vtable slot 0x24, the drawing): the member at 0xa48 run (BirthdayVillager_
+ * Draw once started); 1 while its function is not set. */
+int BirthdayVillager_RunDraw(BirthdayVillager *villager)
+{
+    if (villager->unk_a48.function != 0) {
+        return MemberPointer_CallInt(&villager->unk_a48, villager);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221d244, BirthdayVillager_RunDraw)
+
+/* func_ov004_0221d278 (the member data_ov004_0225353c names): the scene object drawn; whether
+ * it was. */
+int BirthdayVillager_Draw(BirthdayVillager *villager)
+{
+    return SceneObject_Draw(villager->base) != 0;
+}
+CLEAN_AS(func_ov004_0221d278, BirthdayVillager_Draw)
+
+/* The member pointer to func_ov004_0221d278. */
+extern const MemberPointer data_ov004_0225353c;
+
+/* Its footsteps, in the town villager scene object. */
+#define BIRTHDAY_VILLAGER_FOOTSTEPS 0x558
+
+/* func_ov004_0221d290 (vtable slot 0x00, its start): the town villager's start; then its drawing
+ * member is func_ov004_0221d278 and its footsteps are on. */
+int BirthdayVillager_Start(BirthdayVillager *villager)
+{
+    if (!VillagerSceneObject_Start(villager->base)) {
+        return 0;
+    }
+    villager->unk_a48 = data_ov004_0225353c;
+    Footsteps_Enable((Footsteps *) (void *) part(villager, BIRTHDAY_VILLAGER_FOOTSTEPS));
+    return 1;
+}
+CLEAN_AS(func_ov004_0221d290, BirthdayVillager_Start)
+
+/* The point it starts from is (data_020ca0e4 + 0x1000, its height, data_020ca0e8 - 0x7000). */
+extern int data_020ca0e4;
+extern int data_020ca0e8;
+#define BIRTHDAY_VILLAGER_START_X 0x1000
+#define BIRTHDAY_VILLAGER_START_Z (-0x7000)
+/* The steps tried from the start point, in order, until one leads to a point
+ * func_ov004_0223c5a4 answers 0 for: a function-local static built once (bit 0 of
+ * data_ov004_02257a08 says it was), each vector registered for destruction with its record. */
+#define BIRTHDAY_VILLAGER_START_STEPS 6
+#define BIRTHDAY_VILLAGER_STEP 0x2000
+#define BIRTHDAY_VILLAGER_STEP_RECORD_SIZE 12
+extern u32 data_ov004_02257a08;
+extern Vec3 data_ov004_02257a94[BIRTHDAY_VILLAGER_START_STEPS];
+extern u8 data_ov004_02257a24[BIRTHDAY_VILLAGER_START_STEPS][BIRTHDAY_VILLAGER_STEP_RECORD_SIZE];
+/* What stands at the room's cell under a point (0: nothing). */
+extern int func_ov004_0223c5a4(Vec3 *point);
+extern void __register_global_object(void *object, void *destruct, void *record);
+extern void func_020012dc(void *object);
+
+/* The six steps built and registered (with func_020012dc, which does nothing) the first time. */
+static void birthday_villager_init_steps(void)
+{
+    static const Vec3 steps[BIRTHDAY_VILLAGER_START_STEPS] = {
+        {0, 0, 0},
+        {-BIRTHDAY_VILLAGER_STEP, 0, 0},
+        {-2 * BIRTHDAY_VILLAGER_STEP, 0, 0},
+        {BIRTHDAY_VILLAGER_STEP, 0, 0},
+        {0, 0, BIRTHDAY_VILLAGER_STEP},
+        {-BIRTHDAY_VILLAGER_STEP, 0, BIRTHDAY_VILLAGER_STEP},
+    };
+    if ((data_ov004_02257a08 & 1) != 0) {
+        return;
+    }
+    for (int i = 0; i < BIRTHDAY_VILLAGER_START_STEPS; i++) {
+        data_ov004_02257a94[i] = steps[i];
+        __register_global_object(&data_ov004_02257a94[i], (void *) func_020012dc, data_ov004_02257a24[i]);
+    }
+    data_ov004_02257a08 |= 1;
+}
+
+/* func_ov004_0221d2d0 (vtable slot 0x04, its set-up): the town villager's set-up; it stands at
+ * the start point moved by the first of six steps that leads to a free point (not moved when
+ * none does), facing yaw 0. Its talk scene is started and becomes its scene; when bit 11 of its
+ * memory of the player is clear it calls the player (state 7) and sets the bit, else it
+ * wanders (state 0). It becomes the room's birthday villager.
+ * QUIRK: the first call builds the steps and registers them for destruction. */
+int BirthdayVillager_Init(BirthdayVillager *villager)
+{
+    if (!VillagerSceneObject_Init(villager->base)) {
+        return 0;
+    }
+    Vec3 *position = position_of(villager);
+    position->x = data_020ca0e4 + BIRTHDAY_VILLAGER_START_X;
+    position->z = data_020ca0e8 + BIRTHDAY_VILLAGER_START_Z;
+    birthday_villager_init_steps();
+    for (int i = 0; i < BIRTHDAY_VILLAGER_START_STEPS; i++) {
+        Vec3 candidate;
+        Vec_Add(&candidate, position, &data_ov004_02257a94[i]);
+        if (!func_ov004_0223c5a4(&candidate)) {
+            *position = candidate;
+            break;
+        }
+    }
+    *(s16 *) (void *) part(villager, BIRTHDAY_VILLAGER_YAW) = 0;
+    SceneObject_SetScene(villager->base, (struct SceneBase *) (void *) &villager->talk);
+    BirthdayVillagerTalk_Start(&villager->talk, villager);
+    if (!BirthdayVillagerTalk_MemoryBit11Clear(&villager->talk)) {
+        BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_WANDER);
+    } else {
+        BirthdayVillager_SetState(villager, BIRTHDAY_VILLAGER_CALL);
+        BirthdayVillagerTalk_SetMemoryBit11(&villager->talk);
+    }
+    data_ov004_02257a18 = villager;
+    return 1;
+}
+CLEAN_AS(func_ov004_0221d2d0, BirthdayVillager_Init)
+
+/* func_ov004_0221d468 (the pockets screen's predicate, given to Pockets_Select): a slot in state
+ * 0 holding an item (for an item with a variant, one whose variant item is not that of "no
+ * item"); no slot in another state. */
+int BirthdayVillager_CanOffer(u16 *item, int state)
+{
+    if (state != 0) {
+        return 0;
+    }
+    int empty;
+    if (ItemCode_HasVariant(item)) {
+        ItemCode none = BIRTHDAY_VILLAGER_NO_ITEM;
+        int variant = ItemCode_VariantItem(item);
+        empty = variant == ItemCode_VariantItem(&none);
+    } else {
+        empty = *item == BIRTHDAY_VILLAGER_NO_ITEM;
+    }
+    return !empty;
+}
+CLEAN_AS(func_ov004_0221d468, BirthdayVillager_CanOffer)
+
+/* func_ov004_0221d4c0: bit 7 of the room's birthday villager's memory of the player; 0 without
+ * the villager. */
+int BirthdayVillager_CurrentMemoryBit7(void)
+{
+    if (data_ov004_02257a18 != NULL) {
+        return BirthdayVillagerTalk_MemoryBit7(&data_ov004_02257a18->talk);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221d4c0, BirthdayVillager_CurrentMemoryBit7)
+
+/* func_ov004_0221d4e8: the room's birthday villager, or NULL. */
+BirthdayVillager *BirthdayVillager_Current(void)
+{
+    return data_ov004_02257a18;
+}
+CLEAN_AS(func_ov004_0221d4e8, BirthdayVillager_Current)
+
+/* func_ov004_0221d4f4 (its entry in the overlay's table of profiles): allocates (zeroed) and
+ * builds a villager: the town villager scene object, its talk scene, no item to give. */
+BirthdayVillager *BirthdayVillager_New(void)
+{
+    BirthdayVillager *villager = Heap_AllocAuxZeroed(sizeof(BirthdayVillager));
+    if (villager != NULL) {
+        VillagerSceneObject_Construct(villager->base);
+        *(const u8 **) (void *) villager->base = data_ov004_02253674;
+        VillagerTalkScene_ConstructAlt(&villager->talk.base);
+        villager->talk.base.scene.vtable = data_ov004_022535e4;
+        villager->gift = BIRTHDAY_VILLAGER_NO_ITEM;
+    }
+    return villager;
+}
+CLEAN_AS(func_ov004_0221d4f4, BirthdayVillager_New)

@@ -166,11 +166,11 @@ static void acts_turn_to_player(u8 *villager)
 }
 
 /* What the starts of behaviours 18, 19, 21 and 23 do first: a running act's effects reset
- * (func_ov068_0226cfd4), the body animation's speed following the villager's again, and the
+ * (OutdoorVillagerObject_ResetActEffects), the body animation's speed following the villager's again, and the
  * watch held on `kind` (1, the player; 0, nothing). */
 static void acts_begin(u8 *villager, int kind)
 {
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     SpeakerAnim_SetKeepSpeed(acts_anim(villager), 0);
     OutdoorVillagerWatch_Hold(acts_watch(villager), villager, kind, 0, 0, &data_021fbee8, OUTDOOR_VILLAGER_PLAYER_ACTOR,
                               data_020c814c, 1);
@@ -214,7 +214,7 @@ void OutdoorVillagerActs_Watch23(OutdoorVillagerBehaviour *self, u8 *villager)
         return;
     }
     SceneMotion_RequestStand(acts_motion(villager), ACTS_PRIORITY, data_020c80f8);
-    func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
 }
 CLEAN_AS(func_ov068_02267400, OutdoorVillagerActs_Watch23)
 
@@ -306,7 +306,7 @@ void OutdoorVillagerActs_Talk22(OutdoorVillagerBehaviour *self, u8 *villager)
         return;
     }
     acts_talk_ended(self, villager);
-    func_ov068_0226cce4(self, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehaviour_SetResume(self, OUTDOOR_VILLAGER_DO_DEFAULT);
     VillagerSceneObject_SetByte648(villager, 0);
     *acts_reaction(villager) = OUTDOOR_VILLAGER_REACTION_NONE;
     self->unk_f4 = ACTS_REACTION_FRAMES;
@@ -356,7 +356,7 @@ void OutdoorVillagerActs_Talk20(OutdoorVillagerBehaviour *self, u8 *villager)
     }
     acts_talk_ended(self, villager);
     VillagerSceneObject_SetByte648(villager, 0);
-    func_ov068_0226cce4(self, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehaviour_SetResume(self, OUTDOOR_VILLAGER_DO_DEFAULT);
     self->count_38 = 0;
     self->hold_3a = 0;
     *acts_reaction(villager) = OUTDOOR_VILLAGER_REACTION_NONE;
@@ -417,7 +417,7 @@ CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_022678d0Ei, OutdoorVillagerActs_Upd
 void OutdoorVillagerActs_Wait21(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     if (self->wait == 0) {
-        func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
         SceneObjectBase_DefaultApproach((SceneObjectBase *) (void *) villager);
     } else {
         EventQueue_RequestKind6(villager, 0);
@@ -490,7 +490,7 @@ void OutdoorVillagerActs_Wait19(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     if (self->wait == 0) {
         self->hold_3a = ACTS_REACTION_FRAMES;
-        func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
         SceneObjectBase_DefaultApproach((SceneObjectBase *) (void *) villager);
     } else {
         EventQueue_RequestKind6(villager, 0);
@@ -526,7 +526,7 @@ void OutdoorVillagerActs_React19(OutdoorVillagerBehaviour *self, u8 *villager)
         self->step = 1;
     } else {
         SceneObjectBase_DefaultApproach((SceneObjectBase *) (void *) villager);
-        func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+        OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
         self->hold_3a = ACTS_REACTION_FRAMES;
     }
 }
@@ -743,7 +743,7 @@ void OutdoorVillagerActs_Leave17(OutdoorVillagerBehaviour *self, u8 *villager)
     *(u32 *) (void *) acts_at(villager, OUTDOOR_VILLAGER_FLAGS) &= ~(u32) ACTS_FLAG_18;
     self->step = 5;
     SpeakerAnim_PlayItemPose(acts_anim(villager), villager, &acts_link(villager)->item, ACTS_POSE_NONE, ACTS_POSE_ARG);
-    func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+    OutdoorVillagerBehaviour_Start(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
 }
 CLEAN_AS(func_ov068_02268020, OutdoorVillagerActs_Leave17)
 
@@ -912,13 +912,13 @@ void OutdoorVillagerActs_Approach(fx32 *value, fx32 target, fx32 rate, fx32 most
 CLEAN_AS(func_ov068_022684a4, OutdoorVillagerActs_Approach)
 
 /* func_ov068_02268514: behaviour 17's start: a running act's effects reset
- * (func_ov068_0226cfd4), animation 0x127, the watch held on nothing, its link's action 15,
+ * (OutdoorVillagerObject_ResetActEffects), animation 0x127, the watch held on nothing, its link's action 15,
  * flag 2 at 0x4e8 set, the byte at 0x838 set, footsteps off, sound 0x7ee and its mood's
  * sounds off. */
 int OutdoorVillagerActs_Start17(OutdoorVillagerBehaviour *self, u8 *villager)
 {
     (void) self;
-    func_ov068_0226cfd4(villager);
+    OutdoorVillagerObject_ResetActEffects(villager);
     u16 word = data_020c80f8;
     SceneMotion_RequestAnimation(acts_motion(villager), ACTS_PRIORITY, ACTS_ANIM_17_STEP, 0, word, 0);
     OutdoorVillagerWatch_Hold(acts_watch(villager), villager, 0, 0, 0, &data_021fbee8, OUTDOOR_VILLAGER_PLAYER_ACTOR,

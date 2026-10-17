@@ -6,8 +6,10 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "local_channel.h"
 #include "local_mp.h"
 #include "local_search.h"
+#include "local_session.h"
 #include "local_wireless.h"
 
 static_assert(offsetof(LocalParentParam, ggid) == 0x08, "WMParentParam.ggid");
@@ -35,10 +37,6 @@ extern void func_ov066_02268a60(void *result);
 extern void func_ov066_02268b04(void *result);
 extern void func_ov066_02268c18(void *result);
 
-/* The rest of the library. */
-extern void func_ov066_0226a00c(void); /* measures the channels, then the request goes on */
-extern void func_ov066_02269dcc(void); /* the session back to no connection */
-
 extern int WM_SetEntry(void (*callback)(void *), u32 open);
 extern int WM_SetGameInfo(void (*callback)(void *), const void *info, u32 length, u32 ggid, u32 tgid, u32 attribute);
 extern int WM_EndParent(void (*callback)(void *));
@@ -64,7 +62,7 @@ static u32 aid_bit(int aid)
 void LocalHost_Start(int game_id)
 {
     if (data_ov066_0226bdf4->flags & LOCAL_SESSION_MEASURE_FIRST) {
-        func_ov066_0226a00c();
+        LocalChannel_Measure();
     } else {
         LocalHost_StartNow(game_id);
     }
@@ -143,7 +141,7 @@ void LocalHost_OnEnd(LocalWmResult *result)
     }
     data_ov066_0226bdec->state = LOCAL_STATE_WM_IDLE;
     if (data_ov066_0226bdf4->flags & LOCAL_SESSION_ENDING_MP) {
-        func_ov066_02269dcc();
+        LocalSession_Disconnected();
     }
     LocalWireless_Continue();
 }

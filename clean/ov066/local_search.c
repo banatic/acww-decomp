@@ -6,6 +6,8 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "local_join.h"
+#include "local_session.h"
 #include "local_wireless.h"
 
 static_assert(sizeof(LocalGameHeader) == 8, "the header copied from a beacon");
@@ -51,20 +53,13 @@ extern void DC_InvalidateRange(void *start, u32 size);
 extern void DC_StoreRange(void *start, u32 size);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
-/* The parent lists. */
-extern void func_ov066_0226a810(LocalParentList *list, u8 tag, int capacity); /* sets one up */
-extern void func_ov066_0226a7d8(LocalParentList *list);                       /* frees one */
-extern void func_ov066_0226a3b0(LocalParentList *list);                       /* empties one */
-/* the listed parents' expiry set to `milliseconds` from now */
-extern void func_ov066_0226a2e8(LocalParentList *list, int milliseconds);
-extern void func_ov066_0226a404(LocalParentList *list);          /* its expiry alarms cancelled */
-extern u32 func_ov066_0226a418(LocalParentList *list, u32 slot); /* the parent in `slot` */
-extern u8 func_ov066_0226a434(LocalParentList *list);            /* the parents listed */
-/* `mac` listed (or updated) with `id`, `link_level` and the beacon `bss`, to expire after
- * `lifetime` milliseconds; FALSE when the list is full. */
-extern int func_ov066_0226a494(LocalParentList *list, int lifetime, const u8 *mac, u16 id, u16 link_level, const void *bss);
-/* The next channel after `channel` that WM allows (1 to 14, round), `channel` when none. */
-extern u16 func_ov066_0226a1b0(u16 channel);
+/* The game's symbol of the parent lists' expiry handler below, handed to alarms. */
+extern void func_ov066_0226a43c(void *parent);
+
+extern void OS_SetAlarmTag(LocalAlarm *alarm, u32 tag);
+extern void OS_CancelAlarms(u32 tag);
+extern void MIi_CpuClearFast(u32 data, void *dest, u32 size);
+extern void MIi_CpuCopyFast(const void *src, void *dest, u32 size);
 
 /* A parent stays listed this long after its last beacon. */
 #define LOCAL_PARENT_LIFETIME_MS 4000
@@ -168,7 +163,7 @@ void LocalSearch_OnScan(LocalScanResult *result)
         LocalSearch_ScanNextChannel();
         return;
     }
-    func_ov066_0226a404(current_list());
+    LocalSearch_CancelExpiry(current_list());
     LocalSearch_EndScan();
 }
 CLEAN_AS(func_ov066_022676a0, LocalSearch_OnScan)
@@ -192,7 +187,7 @@ void *LocalSearch_ParentAt(u32 list, int slot)
     if (data_ov066_0226bdf0 == NULL || list >= data_ov066_0226bdec->channel_count) {
         return NULL;
     }
-    return (void *) (uintptr_t) func_ov066_0226a418(&data_ov066_0226bdf0->lists[list], (u32) slot);
+    return (void *) (uintptr_t) LocalSearch_ListParentAt(&data_ov066_0226bdf0->lists[list], (u32) slot);
 }
 CLEAN_AS(func_ov066_02267784, LocalSearch_ParentAt)
 
@@ -203,7 +198,7 @@ u32 LocalSearch_CountParents(u32 list)
     if (data_ov066_0226bdf0 == NULL || list >= data_ov066_0226bdec->channel_count) {
         return 0;
     }
-    return func_ov066_0226a434(&data_ov066_0226bdf0->lists[list]);
+    return LocalSearch_ListCount(&data_ov066_0226bdf0->lists[list]);
 }
 CLEAN_AS(func_ov066_022677e0, LocalSearch_CountParents)
 
@@ -261,8 +256,8 @@ void LocalSearch_OnParentFound(LocalScanResult *parent)
         if (data_ov066_0226bdec->flags & LOCAL_FLAG_SKIP_NO_GAME_INFO) {
             return;
         }
-        func_ov066_0226a494(current_list(), LOCAL_PARENT_LIFETIME_MS, parent->mac, LOCAL_GAME_NO_INFO, parent->link_level,
-                            bss);
+        LocalSearch_ListParent(current_list(), LOCAL_PARENT_LIFETIME_MS, parent->mac, LOCAL_GAME_NO_INFO, parent->link_level,
+                               bss);
         return;
     }
     if ((bss->attribute & LOCAL_ATTR_ENTRY) == 0) {
@@ -274,8 +269,8 @@ void LocalSearch_OnParentFound(LocalScanResult *parent)
     if (!LocalSearch_AcceptParent(parent, &header)) {
         return;
     }
-    func_ov066_0226a494(current_list(), LOCAL_PARENT_LIFETIME_MS, parent->mac, header.id, parent->link_level,
-                        data_ov066_0226bdf0->bss);
+    LocalSearch_ListParent(current_list(), LOCAL_PARENT_LIFETIME_MS, parent->mac, header.id, parent->link_level,
+                           data_ov066_0226bdf0->bss);
     if ((data_ov066_0226bdec->flags & LOCAL_FLAG_08) == 0) {
         return;
     }
@@ -350,9 +345,9 @@ CLEAN_AS(func_ov066_02267c74, LocalSearch_OnTimeout)
 void LocalSearch_Start(int milliseconds)
 {
     if (data_ov066_0226bdec->flags & LOCAL_FLAG_08) {
-        func_ov066_0226a3b0(current_list());
+        LocalSearch_ClearList(current_list());
     } else {
-        func_ov066_0226a2e8(current_list(), LOCAL_SEARCH_KEEP_MS);
+        LocalSearch_RenewExpiry(current_list(), LOCAL_SEARCH_KEEP_MS);
         LocalSearch_SetFilter(0);
     }
     data_ov066_0226bdf0->flags |= LOCAL_SEARCH_ACTIVE;
@@ -374,7 +369,7 @@ int LocalSearch_ChannelAt(int index)
     if (data_ov066_0226bdec->channels != NULL) {
         return data_ov066_0226bdec->channels[index];
     }
-    return func_ov066_0226a1b0(data_ov066_0226bdf4->channel);
+    return LocalSession_NextAllowedChannel(data_ov066_0226bdf4->channel);
 }
 CLEAN_AS(func_ov066_02267db4, LocalSearch_ChannelAt)
 
@@ -393,7 +388,7 @@ CLEAN_AS(func_ov066_02267e00, LocalSearch_SetFilter)
 void LocalSearch_Destroy(void)
 {
     for (int i = data_ov066_0226bdec->channel_count - 1; i >= 0; i--) {
-        func_ov066_0226a7d8(&data_ov066_0226bdf0->lists[i]);
+        LocalSearch_FreeList(&data_ov066_0226bdf0->lists[i]);
     }
     LocalWireless_Free(data_ov066_0226bdf0->lists);
     LocalWireless_Free(data_ov066_0226bdf0->bss);
@@ -418,7 +413,7 @@ void LocalSearch_Create(void)
     data_ov066_0226bdf0->bss = LocalWireless_Alloc(sizeof(LocalBssDesc), 0x20);
     data_ov066_0226bdf0->lists = LocalWireless_Alloc(data_ov066_0226bdec->channel_count * (int) sizeof(LocalParentList), 4);
     for (int i = 0; i < data_ov066_0226bdec->channel_count; i++) {
-        func_ov066_0226a810(&data_ov066_0226bdf0->lists[i], (u8) i, data_ov066_0226bdec->parents_per_list);
+        LocalSearch_InitList(&data_ov066_0226bdf0->lists[i], (u8) i, data_ov066_0226bdec->parents_per_list);
     }
     OS_CreateAlarm(&data_ov066_0226bdf0->timeout_alarm);
     OS_CreateAlarm(&data_ov066_0226bdf0->stop_alarm);
@@ -433,3 +428,180 @@ void LocalSearch_Begin(void)
     LocalWireless_Continue();
 }
 CLEAN_AS(func_ov066_022682cc, LocalSearch_Begin)
+
+/* ---- The parent lists ---- */
+
+/* A parent's expiry alarm in its list. */
+static LocalAlarm *list_alarm(LocalParentList *list, int slot)
+{
+    return &((LocalAlarm *) list->alarms)[slot];
+}
+
+/* func_ov066_0226a2e8: every listed parent of `list` to expire `milliseconds` from now. */
+void LocalSearch_RenewExpiry(LocalParentList *list, int milliseconds)
+{
+    for (int i = 0; i < list->capacity; i++) {
+        if (list->parents[i].state != LOCAL_PARENT_LISTED) {
+            continue;
+        }
+        OS_CancelAlarm(list_alarm(list, i));
+        OS_SetAlarm(list_alarm(list, i), ms_to_ticks(milliseconds), func_ov066_0226a43c, &list->parents[i]);
+        OS_SetAlarmTag(list_alarm(list, i), list->tag + LOCAL_LIST_ALARM_TAG);
+    }
+}
+CLEAN_AS(func_ov066_0226a2e8, LocalSearch_RenewExpiry)
+
+/* func_ov066_0226a3b0: `list` emptied: its alarms cancelled, its parents zeroed and the zeros
+ * stored from the cache to memory. */
+void LocalSearch_ClearList(LocalParentList *list)
+{
+    LocalSearch_CancelExpiry(list);
+    list->count = 0;
+    MIi_CpuClearFast(0, list->parents, list->capacity * (u32) sizeof(LocalParent));
+    DC_StoreRange(list->parents, list->capacity * (u32) sizeof(LocalParent));
+}
+CLEAN_AS(func_ov066_0226a3b0, LocalSearch_ClearList)
+
+/* func_ov066_0226a404: the expiry alarms of `list` cancelled, by their tag. */
+void LocalSearch_CancelExpiry(LocalParentList *list)
+{
+    OS_CancelAlarms(list->tag + LOCAL_LIST_ALARM_TAG);
+}
+CLEAN_AS(func_ov066_0226a404, LocalSearch_CancelExpiry)
+
+/* func_ov066_0226a418: the address of the parent in `slot` of `list` (listed or not); 0 for a
+ * slot past its capacity. */
+u32 LocalSearch_ListParentAt(LocalParentList *list, u32 slot)
+{
+    if (slot < list->capacity) {
+        return (u32) (uintptr_t) list->parents + slot * (u32) sizeof(LocalParent);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov066_0226a418, LocalSearch_ListParentAt)
+
+/* func_ov066_0226a434: the parents listed in `list`. */
+u8 LocalSearch_ListCount(LocalParentList *list)
+{
+    return list->count;
+}
+CLEAN_AS(func_ov066_0226a434, LocalSearch_ListCount)
+
+/* func_ov066_0226a43c: a parent's expiry alarm: a parent still listed leaves its list, whose
+ * handler (LocalParentList.on_added, also called when a parent is added) is told. */
+void LocalSearch_OnParentExpired(LocalParent *parent)
+{
+    LocalParentList *list = parent->owner;
+    if (parent->state != LOCAL_PARENT_LISTED) {
+        return;
+    }
+    list->count--;
+    parent->state = 0;
+    if (list->on_added != NULL) {
+        list->on_added(parent);
+    }
+}
+CLEAN_AS(func_ov066_0226a43c, LocalSearch_OnParentExpired)
+
+/* func_ov066_0226a494: the parent of MAC address `mac` listed in `list` with the header id `id`,
+ * its link level (at most 255) and a copy of its beacon `bss`, to expire `lifetime`
+ * milliseconds from now. A parent already listed keeps its slot and its link level becomes the
+ * average of its last LOCAL_LINK_HISTORY; a new one takes the first free slot, its history
+ * filled with this level, and the list's handler is told. The parent is written with the
+ * interrupts disabled, and the copied beacon stored from the cache to memory. FALSE when the
+ * list is full. */
+int LocalSearch_ListParent(LocalParentList *list, int lifetime, const u8 *mac, u16 id, u16 link_level, const void *bss)
+{
+    u8 level = (u8) (link_level > 0xff ? 0xff : link_level);
+
+    if (list->count != 0) {
+        for (int i = 0; i < list->capacity; i++) {
+            LocalParent *parent = &list->parents[i];
+            if (parent->state != LOCAL_PARENT_LISTED || LocalJoin_CompareMac(parent->mac, mac) != 0) {
+                continue;
+            }
+            OS_CancelAlarm(list_alarm(list, i));
+            u32 interrupts = OS_DisableInterrupts();
+            parent = &list->parents[i];
+            parent->id = id;
+            parent->history_index = (u8) ((u8) (parent->history_index + 1) % LOCAL_LINK_HISTORY);
+            parent->history[parent->history_index] = level;
+            int sum = 0;
+            for (int k = 0; k < LOCAL_LINK_HISTORY; k++) {
+                sum += parent->history[k];
+            }
+            parent->link_level = (u8) (sum / LOCAL_LINK_HISTORY);
+            MIi_CpuCopyFast(bss, &list->parents[i].bss, sizeof(LocalBssDesc));
+            DC_StoreRange(&list->parents[i].bss, sizeof(LocalBssDesc));
+            OS_RestoreInterrupts(interrupts);
+            OS_SetAlarm(list_alarm(list, i), ms_to_ticks(lifetime), func_ov066_0226a43c, &list->parents[i]);
+            OS_SetAlarmTag(list_alarm(list, i), list->tag + LOCAL_LIST_ALARM_TAG);
+            return TRUE;
+        }
+    }
+
+    for (int i = 0; i < list->capacity; i++) {
+        LocalParent *parent = &list->parents[i];
+        if (parent->state != 0) {
+            continue;
+        }
+        u32 interrupts = OS_DisableInterrupts();
+        list->count++;
+        parent->state = LOCAL_PARENT_LISTED;
+        for (int k = 0; k < 6; k++) {
+            parent->mac[k] = mac[k];
+        }
+        parent->id = id;
+        parent->owner = list;
+        parent->history_index = 0;
+        for (int k = 0; k < LOCAL_LINK_HISTORY; k++) {
+            parent->history[k] = level;
+        }
+        parent->link_level = level;
+        MIi_CpuCopyFast(bss, &parent->bss, sizeof(LocalBssDesc));
+        DC_StoreRange(&parent->bss, sizeof(LocalBssDesc));
+        OS_RestoreInterrupts(interrupts);
+        OS_CancelAlarm(list_alarm(list, i));
+        OS_SetAlarm(list_alarm(list, i), ms_to_ticks(lifetime), func_ov066_0226a43c, &list->parents[i]);
+        OS_SetAlarmTag(list_alarm(list, i), list->tag + LOCAL_LIST_ALARM_TAG);
+        if (list->on_added != NULL) {
+            list->on_added(&list->parents[i]);
+        }
+        return TRUE;
+    }
+    return FALSE;
+}
+CLEAN_AS(func_ov066_0226a494, LocalSearch_ListParent)
+
+/* func_ov066_0226a7d8: `list` freed: emptied to no capacity, its alarms cancelled, its alarms
+ * and parents handed back. */
+void LocalSearch_FreeList(LocalParentList *list)
+{
+    list->count = 0;
+    list->capacity = 0;
+    OS_CancelAlarms(list->tag + LOCAL_LIST_ALARM_TAG);
+    LocalWireless_Free(list->alarms);
+    LocalWireless_Free(list->parents);
+}
+CLEAN_AS(func_ov066_0226a7d8, LocalSearch_FreeList)
+
+/* func_ov066_0226a810: `list` set up, empty, for `capacity` parents with the alarm tag `tag`
+ * (plus LOCAL_LIST_ALARM_TAG) and no handler: its parents (aligned to the cache's 32 bytes)
+ * zeroed and stored to memory, and an alarm created for each.
+ * REQUIRES: the allocations succeed. */
+void LocalSearch_InitList(LocalParentList *list, u8 tag, int capacity)
+{
+    u32 size = (u32) capacity * (u32) sizeof(LocalParent);
+    list->tag = tag;
+    list->count = 0;
+    list->capacity = (u8) capacity;
+    list->on_added = NULL;
+    list->parents = LocalWireless_Alloc((int) size, 0x20);
+    list->alarms = LocalWireless_Alloc(capacity * (int) sizeof(LocalAlarm), 0x20);
+    MIi_CpuClearFast(0, list->parents, size);
+    DC_StoreRange(list->parents, size);
+    for (int i = 0; i < capacity; i++) {
+        OS_CreateAlarm(list_alarm(list, i));
+    }
+}
+CLEAN_AS(func_ov066_0226a810, LocalSearch_InitList)

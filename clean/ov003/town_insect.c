@@ -2,13 +2,16 @@
 #include "town_insect.h"
 
 #include "autoload_2/heap.h"
+#include "autoload_2/process.h"
 #include "clean.h"
 #include "main/acre_record.h"
 #include "main/acre_tile.h"   /* AcreTile_IsMarked, AcreTile_ItemInAcre */
 #include "main/actor.h"       /* Actor, Vec_YawTo */
 #include "main/actor_table.h" /* Position_Tile, Actors_GetEByIndex */
+#include "main/block_02042200.h"
 #include "main/building_shapes.h"
 #include "main/calendar.h"
+#include "main/c_library.h"
 #include "main/camera_control.h"
 #include "main/clock.h"
 #include "main/collision_query.h"
@@ -20,6 +23,7 @@
 #include "main/main_random.h"
 #include "main/map_code.h"
 #include "main/player_actor_ops.h"
+#include "main/rom_file.h"
 #include "main/session.h"
 #include "main/session_players.h"
 #include "main/shadow.h"
@@ -2230,3 +2234,517 @@ void TownInsect_CheckNear(int unused, TownInsect *insect)
     }
 }
 CLEAN_AS(func_ov003_0222f570, TownInsect_CheckNear)
+
+/* ---- The process: its frame, and each insect loaded, run and removed */
+
+/* The process's vtable, and its base class's (Process). */
+extern const u32 data_ov003_0223c0fc[];
+extern const u32 data_020da13c[];
+/* The current heap (heap.h). */
+extern Heap *data_021fbe94;
+/* An insect's file name by the tens of its kind ("/insect/01/bug0%d" for 0-9, "/insect/11/bug%d"
+ * for 10-19, ... "/insect/51/bug%d" from 50), and the files: the model "%s.nsbmd", its
+ * visibility animation "%s.nsbva" or joint animation "%s.nsbca", and kinds 0x3a and 0x3b's
+ * texture animation "/insect/51/bug%d.nsbta". */
+extern const char data_ov003_0223c48c[];
+extern const char data_ov003_0223c4a0[];
+extern const char data_ov003_0223c4b4[];
+extern const char data_ov003_0223c4c8[];
+extern const char data_ov003_0223c4dc[];
+extern const char data_ov003_0223c4f0[];
+extern const char data_ov003_0223c504[];
+extern const char data_ov003_0223c510[];
+extern const char data_ov003_0223c51c[];
+extern const char data_ov003_0223c528[];
+
+/* `size` bytes cleared. */
+extern void *func_02137550(void *dst, u32 size);
+/* NitroSystem's G3D: an animation file's set of visibility, joint or texture SRT animations,
+ * and the animation of a set by its number. */
+extern void *NNS_G3dGetVisAnmSet(u8 *file);
+extern void *NNS_G3dGetJntAnmSet(u8 *file);
+extern void *NNS_G3dGetTexSRTAnmSet(u8 *file);
+extern u8 *func_02107cf0(void *set, u32 index);
+extern u8 *func_02107b44(void *set, u32 index);
+extern u8 *func_02107bbc(void *set, u32 index);
+/* The hooks the three model pools are given (scene_heaps.h): the game's own functions. */
+extern int func_0205c9c8(int size, int parent);
+extern void func_0205c9ac(void);
+extern int func_0205ca30(int size, int parent);
+extern void func_0205ca14(void);
+extern int func_0205c9fc(int size, int parent);
+extern void func_0205c9e0(void);
+/* Two members of the process with nothing to do: the destructor and the constructor. */
+extern void func_ov003_02235d58(TownInsectProcess *process);
+extern void func_ov003_02235d5c(TownInsectProcess *process);
+/* The insect fades out: it leaves (TOWN_INSECT_STATE_LEAVING) with its model's alpha 0. */
+extern void func_ov003_02230f60(TownInsect *insect);
+
+/* The insect kinds' start and update functions (data_ov003_0223c2ac): the first is run once its
+ * files are loaded, the second is kept in TownInsect.unk_170 and run each frame. */
+typedef void (*TownInsectKindFn)(TownInsect *insect);
+
+/* Whether a kind animates by visibility ("%s.nsbva", stepped by the model's own frames) rather
+ * than by its joints ("%s.nsbca", stepped each frame here): byte 0 of its entry. */
+static int town_insect_kind_visibility(int kind)
+{
+    return (u8) town_insect_kind_info(kind)->unk_0 != 0;
+}
+
+static AnimatedModel *town_insect_animated(TownInsect *insect)
+{
+    return (AnimatedModel *) &insect->model;
+}
+
+/* func_ov003_0222f67c (vtable slot 6): the process's frame: the town insects while linked, the
+ * event insects outside a session, the held insects, then the town's frame. */
+int TownInsect_ProcessUpdate(TownInsectProcess *process)
+{
+    TownInsect_UpdateLinked(process);
+    if (town_insect_in_session() == 0) {
+        TownInsect_UpdateEvent(process);
+    }
+    TownInsect_UpdateHeld(process);
+    TownInsect_UpdateTown(process);
+    return 1;
+}
+CLEAN_AS(func_ov003_0222f67c, TownInsect_ProcessUpdate)
+
+/* func_ov003_0222f6b0: an active insect's frame, `index` its index in the table of `mode`
+ * (TOWN_INSECT_MODE_*). It counts as in view when within the camera's box, or in a session when
+ * a player's box holds it. Out of view its timers run down (TownInsect_CountDown). A town insect
+ * outside a session (or holding the scene) stays 1200 frames while in view; out of view that
+ * many frames run down and then it leaves.
+ *
+ * An insect with an update function, in view or of the event or held table, then runs: its
+ * counter steps; unless hidden, without a kind or ending, it checks what comes near, runs its
+ * kind's update and, when it can be caught, moves by the collisions from where it was (with the
+ * radius of its kind; a held insect over ground above 4.0 with flags 0xa, else 0xb); kind 0x33's
+ * first record has its word 0x21c set; and it adds its catch sphere (the reach of its kind,
+ * radius 0xd48) named by its index with bit 3 + mode, kind 0x35's 1.5 lower on frames 30-39 of
+ * its animation. A kind animated by its joints steps its frames (kinds 0x3a and 0x3b also their
+ * texture animation); a hidden or kindless insect steps them only for kinds 0x14 and 0x37.
+ * Last, an ending insect is removed; any other has its matrix built (as held when it is a
+ * hidden held insect) and its sound placed. */
+void TownInsect_Run(TownInsectProcess *process, TownInsect *insect, int index, int mode)
+{
+    int in_view = insect->in_view;
+    int linked = town_insect_in_session();
+    if (linked != 0 && insect->players_near != 0) {
+        in_view = 1;
+    }
+    if (in_view == 0) {
+        TownInsect_CountDown((int) (uintptr_t) process, insect);
+    }
+    if (mode == TOWN_INSECT_MODE_TOWN && (linked == 0 || LinkGlobal_HoldsScene() != 0)) {
+        if (in_view != 0) {
+            insect->unk_234 = 1200;
+        } else if (insect->unk_234 > 0) {
+            insect->unk_234--;
+            if (insect->unk_234 == 0) {
+                insect->state = TOWN_INSECT_STATE_LEAVING;
+                return;
+            }
+        }
+    }
+    if (insect->unk_170 == 0) {
+        return;
+    }
+    if (in_view == 0 && mode != TOWN_INSECT_MODE_EVENT && mode != TOWN_INSECT_MODE_HELD) {
+        return;
+    }
+    s8 kind = insect->kind;
+    u8 action = insect->action;
+    TownInsect_StepCounter(insect);
+    if (action == TOWN_INSECT_ACTION_HIDDEN || kind < 0) {
+        if (kind == 0x14 || kind == 0x37) {
+            AnimatedModel_StepFrames(town_insect_animated(insect));
+        }
+    } else {
+        if (action != TOWN_INSECT_ACTION_END) {
+            Vec3 previous = insect->position;
+            TownInsect_CheckNear((int) (uintptr_t) process, insect);
+            ((TownInsectKindFn) (uintptr_t) (u32) insect->unk_170)(insect);
+            if (TownInsect_CanBeCaught((int) (uintptr_t) process, insect) != 0) {
+                int flags = 0xb;
+                if (mode == TOWN_INSECT_MODE_HELD) {
+                    CollisionGround ground;
+                    CollisionGround_Init(&ground, &insect->position, 0, 0);
+                    int high = CollisionGround_GetHeight(&ground, 0) > 0x4000;
+                    CollisionGround_Destroy(&ground);
+                    if (high) {
+                        flags = 0xa;
+                    }
+                }
+                CollisionQuery_Move(&insect->contacts, &insect->position, &previous, insect->angle_y,
+                                    town_insect_kind_info(kind)->size, NULL, flags);
+            }
+            if (insect->kind == 0x33 && index == 0) {
+                insect->unk_21c = 1;
+            }
+            u32 id = (u32) index | town_insect_shl(1, mode + 3);
+            Vec3 centre = insect->position;
+            if (insect->kind == 0x35) {
+                u32 frame = ((u32) insect->model.frames.frame << 4) >> 16;
+                if (frame >= 30 && frame < 40) {
+                    centre.y -= 0x1800;
+                }
+            }
+            CatchSphere_Add(&insect->sphere, &centre, town_insect_kind_info(kind)->unk_4, 0xd48, (u8) id);
+        }
+        if (town_insect_kind_visibility(kind) == 0) {
+            AnimatedModel_StepFrames(town_insect_animated(insect));
+            if (kind == TOWN_INSECT_KIND_3A || kind == TOWN_INSECT_KIND_3B) {
+                FrameCtrl_Step(&insect->anim.ctrl);
+                insect->anim.anim->frame = insect->anim.ctrl.frame;
+            }
+        }
+    }
+    if (action == TOWN_INSECT_ACTION_END) {
+        TownInsect_Remove(process, insect, mode);
+        return;
+    }
+    TownInsect_SetMatrix((int) (uintptr_t) process, insect,
+                         mode == TOWN_INSECT_MODE_HELD && action == TOWN_INSECT_ACTION_HIDDEN);
+    Vec3 position = insect->position;
+    SoundSource_UpdateAt(&insect->source, &position);
+}
+CLEAN_AS(func_ov003_0222f6b0, TownInsect_Run)
+
+/* func_ov003_0222f958: an insect out of view running down to leaving (func_ov003_02230f60):
+ * kind 0x1e in actions 4, 5 and 0x11 while its timer is above 5, kind 0x31 in actions 4, 5, 7
+ * and 0x11 while it is above 0, kinds 0x36 and 0x37 with the word 0x236 at 1-300 while it is
+ * above 31. Nothing without an update function. */
+void TownInsect_CountDown(int unused, TownInsect *insect)
+{
+    (void) unused;
+    if (insect->unk_170 == 0) {
+        return;
+    }
+    u8 action = insect->action;
+    switch (insect->kind) {
+        case 0x1e:
+            if (action == 4 || action == 5 || action == TOWN_INSECT_ACTION_11) {
+                if (insect->timer > 5) {
+                    insect->timer--;
+                } else {
+                    func_ov003_02230f60(insect);
+                }
+            }
+            break;
+        case 0x31:
+            if (action == 4 || action == 5 || action == 7 || action == TOWN_INSECT_ACTION_11) {
+                if (insect->timer > 0) {
+                    insect->timer--;
+                } else {
+                    func_ov003_02230f60(insect);
+                }
+            }
+            break;
+        case 0x36:
+        case 0x37:
+            if (insect->unk_236 > 0 && insect->unk_236 <= 300) {
+                if (insect->unk_236 > 0x1f) {
+                    insect->unk_236--;
+                } else {
+                    func_ov003_02230f60(insect);
+                }
+            }
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov003_0222f958, TownInsect_CountDown)
+
+/* func_ov003_0222fa20: an insect of TOWN_INSECT_STATE_2 loaded into the process's model pool
+ * `pool` (0 the town's, 1 the event's, else the held insects'), and started. Its kind (0-0x3b)
+ * names its files (see above); it stops at any file missing or not loaded. The model goes to its
+ * model object; the animation file is read into the pool entry's heap, but for the event insects
+ * into the current heap, kept in the process's block 0 (kind 0x3a) or 1. Its first animation
+ * starts at speed 1.0 (0 for kinds 9 and 0x35; kind 9 then holds frame 9 of 9), and kinds 0x3a
+ * and 0x3b also need their texture animation. Once loaded, its sound is set up, its kind's start
+ * function runs, the kind's update function is kept, and it becomes active with its matrix
+ * built; a held insect keeps the scale it had.
+ * QUIRK: the texture animation's file is not checked; the check made is of the first
+ * animation's file, which is never NULL there. */
+void TownInsect_Load(TownInsectProcess *process, TownInsect *insect, int pool)
+{
+    char name[0x11];
+    char path[0x17];
+    func_02137550(name, sizeof name);
+    func_02137550(path, sizeof path);
+    int kind = insect->kind;
+    if (kind < 0 || kind >= TOWN_INSECT_KINDS) {
+        return;
+    }
+    const char *format;
+    if (kind < 10) {
+        format = data_ov003_0223c48c;
+    } else if (kind < 20) {
+        format = data_ov003_0223c4a0;
+    } else if (kind < 30) {
+        format = data_ov003_0223c4b4;
+    } else if (kind < 40) {
+        format = data_ov003_0223c4c8;
+    } else if (kind < 50) {
+        format = data_ov003_0223c4dc;
+    } else {
+        format = data_ov003_0223c4f0;
+    }
+    CLib_SPrintf(name, format, kind);
+    CLib_SPrintf(path, data_ov003_0223c504, name);
+    if (RomFile_Exists(path) == 0) {
+        return;
+    }
+    int which = pool == 0 ? 0 : pool == 1 ? 1 : 2;
+    ModelPoolEntry *entry = ModelPool_Take(&process->pools[which], &insect->slot);
+    if (ModelPoolFiles_Load(&insect->files, entry, path) == 0) {
+        return;
+    }
+    AnimatedModel *model = town_insect_animated(insect);
+    ModelObject_SetModel(&model->object, (u8 *) (uintptr_t) ModelPoolFiles_Model(&insect->files), NULL);
+    int visibility = town_insect_kind_visibility(kind);
+    CLib_SPrintf(path, visibility ? data_ov003_0223c510 : data_ov003_0223c51c, name);
+    if (RomFile_Exists(path) == 0) {
+        return;
+    }
+    Heap *heap = (Heap *) (uintptr_t) ModelPoolEntry_Heap(entry);
+    u8 *file;
+    if (pool == 1) {
+        int block = kind == TOWN_INSECT_KIND_3A ? 0 : 1;
+        process->blocks[block] = RomFile_Load(path, data_021fbe94, 4, NULL);
+        file = process->blocks[block];
+    } else {
+        file = RomFile_Load(path, heap, 4, NULL);
+    }
+    if (file == NULL) {
+        return;
+    }
+    u8 *anim;
+    if (visibility) {
+        anim = func_02107cf0(NNS_G3dGetVisAnmSet(file), 0);
+    } else {
+        anim = func_02107b44(NNS_G3dGetJntAnmSet(file), 0);
+    }
+    if (AnimatedModel_LoadAnim(model, heap) == 0) {
+        return;
+    }
+    int loaded = 1;
+    fx32 speed = (kind == 0x35 || kind == 9) ? 0 : 0x1000;
+    AnimatedModel_Start(model, anim, 0, speed, 0, 0);
+    AnimatedModel_Attach(model);
+    if (kind == 9) {
+        FrameCtrl_Init(&insect->model.frames, 9, FRAME_CTRL_ONCE, 0, 9);
+    }
+    if (kind == TOWN_INSECT_KIND_3A || kind == TOWN_INSECT_KIND_3B) {
+        CLib_SPrintf(path, data_ov003_0223c528, kind);
+        loaded = 0;
+        if (RomFile_Exists(path) != 0) {
+            u8 *texture_file = RomFile_Load(path, heap, 4, NULL);
+            if (file != NULL) {
+                u8 *texture_anim = func_02107bbc(NNS_G3dGetTexSRTAnmSet(texture_file), 0);
+                if (ModelAnim_AllocMaterialAnim(&insect->anim, model->object.model, heap) != 0) {
+                    ModelAnim_Start(&insect->anim, texture_anim, 0, 0x1000, 0);
+                    ModelAnim_Attach(&insect->anim, ModelObject_RenderObject(&model->object));
+                    loaded = 1;
+                }
+            }
+        }
+    }
+    if (loaded == 0) {
+        return;
+    }
+    Vec3 scale = insect->scale;
+    SoundSource_Init(&insect->source);
+    ((TownInsectKindFn) (uintptr_t) data_ov003_0223c2ac[kind].function)(insect);
+    insect->unk_170 = (int) data_ov003_0223c2ac[kind].unk_04;
+    insect->state = TOWN_INSECT_STATE_ACTIVE;
+    insect->unk_24a = 0;
+    TownInsect_SetMatrix((int) (uintptr_t) process, insect, 0);
+    if (pool == 2) {
+        /* a word at a time, as the original copies */
+        insect->scale.x = scale.x;
+        insect->scale.y = scale.y;
+        insect->scale.z = scale.z;
+    }
+}
+CLEAN_AS(func_ov003_0222fa20, TownInsect_Load)
+
+/* func_ov003_0222fd60 (vtable slot 0): the process set up: its three model pools (eight town
+ * insects, two event insects, four held ones, each with its heap of scene_heaps.h), the two
+ * event insects of kinds 0x3a and 0x3b outside a session, and the town's tile masks. */
+int TownInsect_ProcessSetUp(TownInsectProcess *process)
+{
+    ModelPool_Create(&process->pools[0], TOWN_INSECT_TOWN_COUNT, 0x400, 0x40, 0x9c4, func_0205c9c8, func_0205c9ac, NULL);
+    ModelPool_Create(&process->pools[1], TOWN_INSECT_EVENT_COUNT, 0x400, 0x40, 0x6e8, func_0205ca30, func_0205ca14, NULL);
+    ModelPool_Create(&process->pools[2], TOWN_INSECT_HELD_COUNT, 0x400, 0x40, 0x9c4, func_0205c9fc, func_0205c9e0, NULL);
+    if (town_insect_in_session() == 0) {
+        TownInsect_StartEvent(process, TOWN_INSECT_KIND_3A, 0);
+        TownInsect_StartEvent(process, TOWN_INSECT_KIND_3B, 1);
+    }
+    TownTileMask_Build();
+    return 1;
+}
+CLEAN_AS(func_ov003_0222fd60, TownInsect_ProcessSetUp)
+
+/* func_ov003_0222fe18: an insect removed from the table of `mode` (TOWN_INSECT_MODE_*, any
+ * other the held insects'): kind 0x33's end told to main (Block02042200_Update), its animation
+ * detached, its sound released, its files released and its pool entry given back; it is left
+ * with no kind or state, shown, at (1, 1, 1). */
+void TownInsect_Remove(TownInsectProcess *process, TownInsect *insect, int mode)
+{
+    if (insect->kind == 0x33) {
+        Block02042200_Update();
+    }
+    if (insect->kind >= 0) {
+        AnimatedModel_DetachAnim(town_insect_animated(insect));
+    }
+    insect->state = TOWN_INSECT_STATE_NONE;
+    insect->unk_21c = 0;
+    SoundSource_Release(&insect->source);
+    insect->position.x = 1;
+    insect->position.y = 1;
+    insect->position.z = 1;
+    insect->target.x = 1;
+    insect->target.y = 1;
+    insect->target.z = 1;
+    insect->used = 0;
+    insect->in_view = 0;
+    insect->players_near = 0;
+    insect->kind = TOWN_INSECT_NO_KIND;
+    insect->angle_y = 0;
+    insect->frames_left = 0;
+    insect->action = TOWN_INSECT_ACTION_SHOWN;
+    ModelPoolFiles_Release(&insect->files);
+    insect->anim.anim = NULL;
+    insect->anim.model = NULL;
+    insect->unk_254 = 0;
+    insect->unk_24a = 0;
+    insect->unk_236 = 0;
+    int which = mode == TOWN_INSECT_MODE_TOWN ? 0 : mode == TOWN_INSECT_MODE_EVENT ? 1 : 2;
+    ModelPool_Release(&process->pools[which], &insect->slot);
+    insect->unk_170 = 0;
+}
+CLEAN_AS(func_ov003_0222fe18, TownInsect_Remove)
+
+/* func_ov003_0222ff2c: a free town insect taken up for loading (TOWN_INSECT_STATE_2, an entry of
+ * the town's pool, its files reset, out of view); whether it was free. */
+int TownInsect_StartTown(TownInsectProcess *process, TownInsect *insect)
+{
+    if (insect->state != TOWN_INSECT_STATE_NONE) {
+        return 0;
+    }
+    insect->state = TOWN_INSECT_STATE_2;
+    ModelPool_Take(&process->pools[0], &insect->slot);
+    ModelPoolFiles_Reset(&insect->files);
+    insect->in_view = 0;
+    return 1;
+}
+CLEAN_AS(func_ov003_0222ff2c, TownInsect_StartTown)
+
+/* func_ov003_0222ff74: event insect `index` taken up for loading as `kind` when free (an entry
+ * of the event's pool, its files reset, in view, no texture animation); whether it was free. */
+int TownInsect_StartEvent(TownInsectProcess *process, int kind, int index)
+{
+    TownInsect *insect = town_insect_at(data_ov003_02260994, index);
+    if (insect->state != TOWN_INSECT_STATE_NONE) {
+        return 0;
+    }
+    ModelPool_Take(&process->pools[1], &insect->slot);
+    ModelPoolFiles_Reset(&insect->files);
+    insect->in_view = 1;
+    insect->anim.anim = NULL;
+    insect->anim.model = NULL;
+    insect->kind = (s8) kind;
+    insect->state = TOWN_INSECT_STATE_2;
+    return 1;
+}
+CLEAN_AS(func_ov003_0222ff74, TownInsect_StartEvent)
+
+/* func_ov003_0222ffdc: a held insect taken up for loading (an entry of the held insects' pool,
+ * its files reset, in view). One in use is removed first, keeping its kind, action, position,
+ * point and angle about y. Always 1. */
+int TownInsect_StartHeld(TownInsectProcess *process, TownInsect *insect)
+{
+    if (insect->state != TOWN_INSECT_STATE_NONE) {
+        s8 kind = insect->kind;
+        u8 action = insect->action;
+        Vec3 position = insect->position;
+        Vec3 target = insect->target;
+        s16 angle_y = insect->angle_y;
+        TownInsect_Remove(process, insect, TOWN_INSECT_MODE_HELD);
+        insect->kind = kind;
+        insect->action = action;
+        insect->position.x = position.x;
+        insect->position.y = position.y;
+        insect->position.z = position.z;
+        insect->angle_y = angle_y;
+        insect->target.x = target.x;
+        insect->target.y = target.y;
+        insect->target.z = target.z;
+    }
+    insect->state = TOWN_INSECT_STATE_2;
+    ModelPool_Take(&process->pools[2], &insect->slot);
+    ModelPoolFiles_Reset(&insect->files);
+    insect->in_view = 1;
+    return 1;
+}
+CLEAN_AS(func_ov003_0222ffdc, TownInsect_StartHeld)
+
+/* The process's members destroyed, last to first, then the process. */
+static void town_insect_process_destroy(TownInsectProcess *process)
+{
+    Process *base = (Process *) (void *) process;
+    base->vtable = data_ov003_0223c0fc;
+    ModelPool_Destruct(&process->pools[2]);
+    ModelPool_Destruct(&process->pools[1]);
+    ModelPool_Destruct(&process->pools[0]);
+    func_ov003_02235d58(process);
+    base->vtable = data_020da13c;
+    Process_Destruct(base);
+}
+
+/* func_ov003_02230098 (vtable slot 17): the process destroyed and freed; returns it. */
+TownInsectProcess *TownInsect_ProcessDelete(TownInsectProcess *process)
+{
+    town_insect_process_destroy(process);
+    Heap_FreeAux(process);
+    return process;
+}
+CLEAN_AS(func_ov003_02230098, TownInsect_ProcessDelete)
+
+/* func_ov003_022300e0 (vtable slot 16): the process destroyed; returns it. */
+TownInsectProcess *TownInsect_ProcessDestruct(TownInsectProcess *process)
+{
+    town_insect_process_destroy(process);
+    return process;
+}
+CLEAN_AS(func_ov003_022300e0, TownInsect_ProcessDestruct)
+
+/* func_ov003_02230120: the process's constructor: the process, its three model pools, and the
+ * flag of the point ahead of this console's player cleared; returns it. */
+TownInsectProcess *TownInsect_ProcessConstruct(TownInsectProcess *process)
+{
+    Process *base = (Process *) (void *) process;
+    Process_Construct(base);
+    base->vtable = data_020da13c;
+    func_ov003_02235d5c(process);
+    base->vtable = data_ov003_0223c0fc;
+    ModelPool_Init(&process->pools[0]);
+    ModelPool_Init(&process->pools[1]);
+    ModelPool_Init(&process->pools[2]);
+    data_ov003_02260540 = 0;
+    return process;
+}
+CLEAN_AS(func_ov003_02230120, TownInsect_ProcessConstruct)
+
+/* func_ov003_02230168: the process made (0xa0 bytes, cleared) when there is room. */
+void TownInsect_ProcessCreate(void)
+{
+    TownInsectProcess *process = Heap_AllocAuxZeroed(0xa0);
+    if (process != NULL) {
+        TownInsect_ProcessConstruct(process);
+    }
+}
+CLEAN_AS(func_ov003_02230168, TownInsect_ProcessCreate)
