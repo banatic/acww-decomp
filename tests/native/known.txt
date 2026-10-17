@@ -53,6 +53,7 @@
 020ff8ec word accesses at misaligned addresses read the aligned word on ARM and the unaligned one on x86; list members are SPL particles and emitters, allocated word-aligned
 02211394 bits 29-31 of the returned word are padding neither version writes (each returns what its stack slot held); the readers take fields from bits 8-27 (func_ov004_02211388, func_ov004_0221137c)
 022179e8 (ov004) halfword accesses at odd addresses read the aligned halfword on ARM and the unaligned one on x86; the object is a room object the game allocates word-aligned
+0221c0bc (ov004) word stores through a misaligned talk pointer write the aligned word on ARM and the unaligned one on x86; the talk is allocated word-aligned (aligning the pointer makes every case agree)
 0222daf0 no return value when data_ov004_02258310 is null (the ROM returns self, the PC 0xef7); the only caller, func_ov068_022748f0, ignores it
 02261f94 index of 5 or more reads past the static table of five member-function pointers (the PC's copy is elsewhere); the only callers, func_ov047_02261f74 and func_ov047_02261f84, pass their callers' constants 0-4
 02278f4c index idx of 8 or more reads past the static table (the PC's copy is elsewhere); the only caller, func_ov073_02278ca4, passes 0

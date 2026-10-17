@@ -8,9 +8,11 @@
 #include "autoload_2/vector.h"
 #include "clean.h"
 #include "main/animated_model.h"
+#include "main/event_queue.h"
 #include "main/frame_ctrl.h"
 #include "main/group_params.h"
 #include "main/room_object_state.h"
+#include "main/scene_object_base.h"
 #include "main/scene_query.h"
 #include "main/talk_flow.h"
 #include "member_pointer.h"
@@ -100,12 +102,6 @@ extern const MemberPointer data_ov004_02255350, data_ov004_02255338, data_ov004_
 extern u32 data_ov004_022584a8;
 extern MemberPointer data_ov004_022584b4[TRASH_BOX_LID_COUNT];
 extern const MemberPointer data_ov004_02255380, data_ov004_02255378, data_ov004_02255370, data_ov004_02255368;
-
-/* The scene object base (main/scene_object_base.h) and main's event queue (event_queue.h),
- * declared here with this class's types (their headers' MessageReceiver is another class). */
-void SceneObjectBase_ReleaseReceiver(TrashBox *object, TalkReceiver *receiver);
-void SceneObjectBase_TakeReceiver(TrashBox *object, TalkReceiver *receiver);
-int EventQueue_FinishObjectEvent(void *object);
 
 /* The RMO family's base class (rmo_object.h). */
 extern int func_ov004_0222c5c8(RmoObject *object, const char *name); /* loads /roomObj/<name> */
@@ -252,7 +248,7 @@ void TrashBox_UpdateTalkEnd(TrashBox *self)
 {
     struct TalkFlowTalk *talk = self->receiver.talk;
     if (talk != NULL && talk->state == TALK_FLOW_CLOSED) {
-        SceneObjectBase_ReleaseReceiver(self, TrashBox_receiver(self));
+        SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) self, TrashBox_receiver(self));
         TrashBox_EnterState(self, TRASH_BOX_OPEN_LID);
     }
 }
@@ -281,7 +277,7 @@ CLEAN_AS(func_ov004_0222f5cc, TrashBox_UpdateTalk)
  * REQUIRES: the receiver has a talk once SceneObjectBase_TakeReceiver has taken it. */
 int TrashBox_EnterTalk(TrashBox *self)
 {
-    SceneObjectBase_TakeReceiver(self, TrashBox_receiver(self));
+    SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) self, TrashBox_receiver(self));
     MessageReceiver_SetName(&self->receiver.base, data_ov004_02255304);
     self->receiver.base.message = 0;
     self->receiver.talk->next = TRASH_BOX_TALK_OPEN;

@@ -27,7 +27,7 @@
 #define CLEAN_MAIN_EVENT_ANNOUNCE_H
 
 #include "autoload_2/process.h"
-#include "ov002/error_message.h" /* MessageReceiver */
+#include "main/talk_receiver.h"
 #include "types.h"
 
 #define EVENT_ANNOUNCE_EVENTS 11      /* the events of data_020ca508 */
@@ -67,7 +67,7 @@ typedef struct EventAnnounceState {
 typedef struct EventAnnounceProcess {
     Process base;
     u32 unk_50;
-    MessageReceiver receiver; /* 0x54: vtable data_020df008 */
+    TalkReceiver receiver; /* 0x54: vtable data_020df008 */
 } EventAnnounceProcess;
 
 int EventAnnounce_SceneIsExcluded(void);

@@ -6,6 +6,7 @@
 
 #include "autoload_2/heap.h" /* Heap, Heap_FreeAux, Heap_AllocAuxZeroed */
 #include "clean.h"
+#include "house_files.h"
 #include "itcm/vector.h"         /* Vec_Add */
 #include "main/actor.h"          /* Actor_Spawn */
 #include "main/npc_id.h"         /* NpcId, NpcId_Personality, NpcId_FormatName */
@@ -78,39 +79,16 @@ extern void func_020a8164(void *receiver, const char *name);
 extern void *func_02094fd4(void *text);
 extern void *func_02094fbc(void *text);
 extern void func_02068404(void *link, int line, void *text);
-/* Overlay 3's set of house textures and animations (data_ov003_0223cea0, which
- * func_ov003_022203c0 gives). */
-typedef struct VillagerHouseTextures {
-    void *house[4]; /* "/str/npcHsTex/.../house_*.nsbtx" by variant */
-    void *light[4]; /* "/str/npcHsTex/.../light_*.nsbtx" by variant */
-    void *anim_i;   /* "/str/obj_house_i.nsbca" */
-    void *anim_o;   /* "/str/obj_house_o.nsbca" */
-} VillagerHouseTextures;
+/* Overlay 3's set of house textures and animations (data_ov003_0223cea0, HouseTextures of
+ * house_files.h, which HouseFiles_Textures gives) and its set from "/str/npcHsX.arc"
+ * (data_ov003_0223ce80, HouseXFiles, which HouseFiles_XFiles gives). */
+typedef HouseXFiles VillagerHouseXFiles;
 
-/* Overlay 3's set from "/str/npcHsX.arc" (data_ov003_0223ce80, which func_ov003_022203b8
- * gives). */
-typedef struct VillagerHouseXFiles {
-    void *texture;   /* "obj_x_house0.nsbtx" */
-    void *models[5]; /* "obj_x_house<kind>.nsbmd" */
-    void *deco;      /* "obj_x_deco.nsbtp": the texture pattern animation */
-    u8 loaded;
-} VillagerHouseXFiles;
-
-extern VillagerHouseTextures *func_ov003_022203c0(void);
-extern VillagerHouseXFiles *func_ov003_022203b8(void);
-/* The textures' and the animations' accessors: house[variant & 3], light[variant & 3], anim_i
- * and anim_o. */
-extern void *func_ov003_0221ffc0(VillagerHouseTextures *set, int variant);
-extern void *func_ov003_0221ffb4(VillagerHouseTextures *set, int variant);
-extern void *func_ov003_0221ffb0(VillagerHouseTextures *set);
-extern void *func_ov003_0221ffac(VillagerHouseTextures *set);
 /* The X files' accessors: loaded, models[kind] (NULL from kind 5 on), deco and texture. */
 extern int func_ov003_0221fe9c(VillagerHouseXFiles *files);
 extern void *func_ov003_0221fea4(VillagerHouseXFiles *files, unsigned int kind);
 extern void *func_ov003_0221fea0(VillagerHouseXFiles *files);
 extern void *func_ov003_0221feb4(VillagerHouseXFiles *files);
-/* The letter overlay 3 picks for the files' names. */
-extern signed char func_ov003_022203dc(void);
 
 /* The villager's house look byte (0x28 bytes into a record of the villager), NULL when there is
  * none. */
@@ -294,7 +272,7 @@ CLEAN_AS(func_ov003_0221d43c, VillagerHouse_PrepareTalk)
  * the caller of the slot gets it. The same holds for VillagerHouse_GetAnimI. */
 void VillagerHouse_GetAnimO(void)
 {
-    func_ov003_0221ffac(func_ov003_022203c0());
+    HouseTextures_AnimO(HouseFiles_Textures());
 }
 CLEAN_AS(func_ov003_0221d530, VillagerHouse_GetAnimO)
 
@@ -302,7 +280,7 @@ CLEAN_AS(func_ov003_0221d530, VillagerHouse_GetAnimO)
  * animation "/str/obj_house_i.nsbca" of overlay 3's house set and drops it. */
 void VillagerHouse_GetAnimI(void)
 {
-    func_ov003_0221ffb0(func_ov003_022203c0());
+    HouseTextures_AnimI(HouseFiles_Textures());
 }
 CLEAN_AS(func_ov003_0221d544, VillagerHouse_GetAnimI)
 
@@ -320,7 +298,7 @@ char *VillagerHouse_TexturePath(VillagerHouse *house)
 {
     int look = VillagerHouse_Look(house);
     char *name = VillagerHouse_ModelName(house);
-    int letter = func_ov003_022203dc();
+    int letter = HouseFiles_SeasonLetter();
     func_02064328(data_ov003_0223c970, data_ov003_02239084, look >> VILLAGER_HOUSE_KIND_SHIFT, name, letter);
     return data_ov003_0223c970;
 }
@@ -333,7 +311,7 @@ char *VillagerHouse_ArchivePath(VillagerHouse *house)
 {
     int look = VillagerHouse_Look(house);
     char *name = VillagerHouse_ModelName(house);
-    int letter = func_ov003_022203dc();
+    int letter = HouseFiles_SeasonLetter();
     func_02064328(data_ov003_0223c948, data_ov003_022390a0, look >> VILLAGER_HOUSE_KIND_SHIFT, name, letter);
     return data_ov003_0223c948;
 }
@@ -387,7 +365,7 @@ CLEAN_AS(func_ov003_0221d69c, VillagerHouse_Leave)
  * always 1. */
 int VillagerHouse_Draw(VillagerHouse *house)
 {
-    if (func_ov003_0221fe9c(func_ov003_022203b8())) {
+    if (func_ov003_0221fe9c(HouseFiles_XFiles())) {
         func_0205510c(&house->x_model, 0);
     }
     return 1;
@@ -400,7 +378,7 @@ CLEAN_AS(func_ov003_0221d6dc, VillagerHouse_Draw)
  * REQUIRES: the X model's animation was bound (VillagerHouse_Init), so it has a target. */
 int VillagerHouse_Update(VillagerHouse *house)
 {
-    if (func_ov003_0221fe9c(func_ov003_022203b8())) {
+    if (func_ov003_0221fe9c(HouseFiles_XFiles())) {
         house->x_model.matrix = house->matrix;
         if (!(house->flags_235 & 1)) {
             func_02056ffc(&house->x_anim);
@@ -436,8 +414,8 @@ int VillagerHouse_Init(VillagerHouse *house)
     data_ov003_0223c928[index] = house;
 
     int variant = VillagerHouse_Variant(house);
-    void *house_texture = func_ov003_0221ffc0(func_ov003_022203c0(), variant);
-    void *light_texture = func_ov003_0221ffb4(func_ov003_022203c0(), variant);
+    void *house_texture = HouseTextures_House(HouseFiles_Textures(), variant);
+    void *light_texture = HouseTextures_Light(HouseFiles_Textures(), variant);
     void *model = house->model;
     if (house_texture != NULL) {
         NNS_G3dBindMdlTex(model, house_texture);
@@ -447,20 +425,20 @@ int VillagerHouse_Init(VillagerHouse *house)
         NNS_G3dBindMdlPltt(model, light_texture);
     }
 
-    if (!func_ov003_0221fe9c(func_ov003_022203b8())) {
+    if (!func_ov003_0221fe9c(HouseFiles_XFiles())) {
         return 1;
     }
     unsigned int kind = (unsigned int) VillagerHouse_Look(house) >> VILLAGER_HOUSE_KIND_SHIFT;
-    if (!func_02055f2c(&house->x_model, func_ov003_0221fea4(func_ov003_022203b8(), kind), NULL)) {
+    if (!func_02055f2c(&house->x_model, func_ov003_0221fea4(HouseFiles_XFiles(), kind), NULL)) {
         return 1;
     }
-    void *x_model = func_ov003_0221fea4(func_ov003_022203b8(), kind);
-    NNS_G3dBindMdlTex(x_model, func_ov003_0221feb4(func_ov003_022203b8()));
-    x_model = func_ov003_0221fea4(func_ov003_022203b8(), kind);
-    NNS_G3dBindMdlPltt(x_model, func_ov003_0221feb4(func_ov003_022203b8()));
+    void *x_model = func_ov003_0221fea4(HouseFiles_XFiles(), kind);
+    NNS_G3dBindMdlTex(x_model, func_ov003_0221feb4(HouseFiles_XFiles()));
+    x_model = func_ov003_0221fea4(HouseFiles_XFiles(), kind);
+    NNS_G3dBindMdlPltt(x_model, func_ov003_0221feb4(HouseFiles_XFiles()));
     if (func_0205650c(&house->x_anim, house->x_model.resource, data_021c9b1c)) {
-        void *deco = func_ov003_0221fea0(func_ov003_022203b8());
-        void *texture = func_ov003_0221feb4(func_ov003_022203b8());
+        void *deco = func_ov003_0221fea0(HouseFiles_XFiles());
+        void *texture = func_ov003_0221feb4(HouseFiles_XFiles());
         func_02056424(&house->x_anim, deco, texture, 0, VILLAGER_HOUSE_ONE, 0);
         func_020563dc(&house->x_anim, func_02055e00(&house->x_model));
         house->x_model.matrix = house->matrix;

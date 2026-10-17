@@ -10,9 +10,10 @@
 #include "main/actor.h"
 #include "main/event_queue.h"
 #include "main/scene_query.h"
+#include "main/talk_flow.h"
 
 static_assert(offsetof(RoomEtcBoard, receiver) == 0xec, "receiver");
-static_assert(offsetof(RoomEtcBoard, receiver.message) == 0x10a, "receiver's message");
+static_assert(offsetof(RoomEtcBoard, receiver.base.message) == 0x10a, "receiver's message");
 static_assert(offsetof(RoomEtcBoard, receiver.talk) == 0x12c, "receiver's talk");
 static_assert(offsetof(RoomEtcBoard, state) == 0x134, "state");
 static_assert(offsetof(RoomEtcBoard, touch_sphere) == 0x138, "touch sphere");
@@ -29,8 +30,8 @@ static_assert(sizeof(RoomEtcBoard) == 0x15c, "the size RoomEtcBoard_New allocate
  * opposite of the board's own direction) the viewer may turn. */
 #define ROOM_ETC_BOARD_TALK_DISTANCE 0x2ccd
 #define ROOM_ETC_BOARD_TALK_ANGLE 0x1300
-/* What a talk's next state is set to to open it (TalkObject.next_state, TALK_OBJECT_OPENING). */
-#define ROOM_ETC_BOARD_TALK_OPENING 1
+/* What a talk's next state is set to to open it (TalkFlowTalk.next). */
+#define ROOM_ETC_BOARD_TALK_OPENING TALK_OBJECT_OPENING
 
 /* The boards by index, and how many there are. */
 extern RoomEtcBoard *data_ov004_02257804[ROOM_ETC_BOARD_MAX];
@@ -46,15 +47,8 @@ extern const u8 data_ov004_022532f4[];
 /* "obj_etc_board" */
 extern const char data_ov004_0225336c[];
 
-/* The receiver part's name (MessageReceiver_SetName), destructor (TalkReceiver_Destruct) and
- * constructor (TalkReceiver_ConstructBase), by symbol: their headers declare another
- * MessageReceiver than scene_object_base.h's. */
-extern void func_020a8164(void *receiver, const char *name);
-extern void func_02066994(void *receiver);
-extern void func_02066a30(void *receiver);
-
 /* The receiver part of a board, as a C++ conversion makes it: null stays null. */
-static MessageReceiver *receiver_of(RoomEtcBoard *board)
+static TalkReceiver *receiver_of(RoomEtcBoard *board)
 {
     return board != NULL ? &board->receiver : NULL;
 }
@@ -89,7 +83,7 @@ CLEAN_AS(func_ov004_0221ad40, RoomEtcBoard_Get)
  * the event ends. */
 void RoomEtcBoard_UpdateOpen(RoomEtcBoard *board)
 {
-    if (board->receiver.talk != NULL && board->receiver.talk->state == TALK_CLOSED) {
+    if (board->receiver.talk != NULL && board->receiver.talk->state == TALK_FLOW_CLOSED) {
         SceneObjectBase_ReleaseReceiver(&board->base, receiver_of(board));
         EventQueue_FinishObjectEvent(board);
     }
@@ -107,7 +101,7 @@ CLEAN_AS(func_ov004_0221ad88, RoomEtcBoard_EnterOpen)
 /* func_ov004_0221ad8c: state 1's update: on to state 2 once the talk is up. */
 void RoomEtcBoard_UpdateWaiting(RoomEtcBoard *board)
 {
-    if (board->receiver.talk != NULL && board->receiver.talk->state != TALK_CLOSED) {
+    if (board->receiver.talk != NULL && board->receiver.talk->state != TALK_FLOW_CLOSED) {
         RoomEtcBoard_SetState(board, ROOM_ETC_BOARD_OPEN);
     }
 }
@@ -119,9 +113,9 @@ CLEAN_AS(func_ov004_0221ad8c, RoomEtcBoard_UpdateWaiting)
 int RoomEtcBoard_EnterWaiting(RoomEtcBoard *board)
 {
     SceneObjectBase_TakeReceiver(&board->base, receiver_of(board));
-    func_020a8164(&board->receiver, data_ov004_0225336c);
-    board->receiver.message = (u8) board->message;
-    board->receiver.talk->request = ROOM_ETC_BOARD_TALK_OPENING;
+    MessageReceiver_SetName(&board->receiver.base, data_ov004_0225336c);
+    board->receiver.base.message = (u8) board->message;
+    board->receiver.talk->next = ROOM_ETC_BOARD_TALK_OPENING;
     return 1;
 }
 CLEAN_AS(func_ov004_0221adb0, RoomEtcBoard_EnterWaiting)
@@ -308,7 +302,7 @@ CLEAN_AS(func_ov004_0221b060, RoomEtcBoard_OnCreate)
 static void set_vtables(RoomEtcBoard *board)
 {
     board->base.process.vtable = data_ov004_0225328c;
-    board->receiver.vtable = data_ov004_022532f4;
+    board->receiver.base.vtable = data_ov004_022532f4;
 }
 
 /* func_ov004_0221b0c4: the deleting destructor: the sphere, the receiver part and the base
@@ -317,7 +311,7 @@ RoomEtcBoard *RoomEtcBoard_Delete(RoomEtcBoard *board)
 {
     set_vtables(board);
     TouchPickSphere_Destruct2(&board->touch_sphere);
-    func_02066994(&board->receiver);
+    TalkReceiver_Destruct(&board->receiver);
     SceneObjectBase_DestructBase(&board->base);
     Heap_FreeAux(board);
     return board;
@@ -329,7 +323,7 @@ RoomEtcBoard *RoomEtcBoard_Destroy(RoomEtcBoard *board)
 {
     set_vtables(board);
     TouchPickSphere_Destruct2(&board->touch_sphere);
-    func_02066994(&board->receiver);
+    TalkReceiver_Destruct(&board->receiver);
     SceneObjectBase_DestructBase(&board->base);
     return board;
 }
@@ -340,7 +334,7 @@ CLEAN_AS(func_ov004_0221b104, RoomEtcBoard_Destroy)
 RoomEtcBoard *RoomEtcBoard_Construct(RoomEtcBoard *board)
 {
     SceneObjectBase_Construct(&board->base);
-    func_02066a30(&board->receiver);
+    TalkReceiver_ConstructBase(&board->receiver);
     set_vtables(board);
     TouchPickSphere_Construct(&board->touch_sphere);
     return board;

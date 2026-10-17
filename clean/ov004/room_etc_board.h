@@ -19,7 +19,8 @@
 #ifndef CLEAN_OV004_ROOM_ETC_BOARD_H
 #define CLEAN_OV004_ROOM_ETC_BOARD_H
 
-#include "main/scene_object_base.h" /* SceneObjectBase, MessageReceiver */
+#include "main/scene_object_base.h"
+#include "main/talk_receiver.h"
 #include "main/touch_pick_shapes.h"
 #include "types.h"
 
@@ -31,7 +32,7 @@ enum RoomEtcBoardState { ROOM_ETC_BOARD_IDLE, ROOM_ETC_BOARD_WAITING, ROOM_ETC_B
 
 typedef struct RoomEtcBoard {
     SceneObjectBase base;         /* 0x000: its vtable data_ov004_0225328c */
-    MessageReceiver receiver;     /* 0x0ec: its vtable data_ov004_022532f4 */
+    TalkReceiver receiver;        /* 0x0ec: its vtable data_ov004_022532f4 */
     s32 state;                    /* 0x134: enum RoomEtcBoardState */
     TouchPickSphere touch_sphere; /* 0x138: where the pen picks it */
     u8 index;                     /* 0x154: its entry in the table, ROOM_ETC_BOARD_NO_INDEX for none */

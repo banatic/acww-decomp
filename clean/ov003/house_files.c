@@ -4,8 +4,10 @@
 #include "autoload_2/heap.h" /* Heap, Heap_FreeCurrent */
 #include "clean.h"
 #include "main/c_library.h" /* CLib_SPrintf */
+#include "main/house_looks.h"
 #include "main/model_cache.h"
 #include "main/rom_file.h"
+#include "main/scene_query.h"
 #include "main/town_record.h"
 #include "main/vram_region.h"
 
@@ -34,9 +36,6 @@ extern const char data_ov003_02239ba8[];
 extern const char data_ov003_02239bc4[];
 extern const char data_ov003_02239be0[];
 extern char data_ov003_0223cec8[];
-
-/* The letter overlay 3 picks for the files' names. */
-extern int func_ov003_022203dc(void);
 
 /* NitroSystem's archive (NNSFndArchive, 0x6c bytes): mounted over a file in memory, a file of
  * it by path, and unmounted. */
@@ -81,7 +80,7 @@ CLEAN_AS(func_ov003_0221fe30, HousePalette_Release)
 int HousePalette_Load(HousePalette *palette)
 {
     Heap *heap = data_021fbe94;
-    int letter = func_ov003_022203dc();
+    int letter = HouseFiles_SeasonLetter();
     u8 *file = RomFile_LoadFormattedOn(heap, HOUSE_PALETTE_FROM_END, data_ov003_02239b74, letter);
     if (file == NULL) {
         return 0;
@@ -190,3 +189,166 @@ CLEAN_AS(func_ov003_0221ff80, HouseXFiles_Clear)
  * nothing. */
 void HouseXFiles_Destruct(void) {}
 CLEAN_AS(func_ov003_0221ff98, HouseXFiles_Destruct)
+
+/* func_ov003_0221ff9c: the X files' constructor (for data_ov003_0223ce80): nothing loaded. */
+HouseXFiles *HouseXFiles_Construct(HouseXFiles *files)
+{
+    HouseXFiles_Clear(files);
+    return files;
+}
+CLEAN_AS(func_ov003_0221ff9c, HouseXFiles_Construct)
+
+/* ---- The house textures (HouseTextures) ---- */
+
+static_assert(offsetof(HouseTextures, light) == 0x10, "light");
+static_assert(offsetof(HouseTextures, anim_i) == 0x20, "anim_i");
+static_assert(offsetof(HouseTextures, anim_o) == 0x24, "anim_o");
+
+/* The houses' look is a number 0-24: set (look / 5, a letter from 'A') and variant (look % 5). */
+#define HOUSE_TEXTURES_VARIANTS 5
+#define HOUSE_TEXTURES_FIRST_SET 'A'
+
+/* The town's record of the houses' looks. */
+extern HouseLooksRecord data_021f34b0;
+/* "/str/npcHsTex/%c/house_%c%d%c.nsbtx" (set, set, variant, season letter),
+ * "/str/npcHsTex/%c/light_%c%d.nsbtx" (set, set, variant), "/str/obj_house_i.nsbca" and
+ * "/str/obj_house_o.nsbca". */
+extern const char data_ov003_02239bf8[];
+extern const char data_ov003_02239c1c[];
+extern const char data_ov003_02239c40[];
+extern const char data_ov003_02239c58[];
+/* The season letters, 's' and 'w', by SceneQuery_IsSnowSeason. */
+extern const signed char data_ov003_0223666c[];
+/* The three sets of files (house_files.h). */
+extern HousePalette data_ov003_0223ce58;
+extern HouseXFiles data_ov003_0223ce80;
+extern HouseTextures data_ov003_0223cea0;
+/* NitroSystem's 3D files: a .nsbca's set of joint animations, and the animation `index` of
+ * such a set. */
+extern void *NNS_G3dGetJntAnmSet(u8 *file);
+extern u8 *func_02107b44(void *set, u32 index);
+
+/* func_ov003_0221ffac */
+void *HouseTextures_AnimO(HouseTextures *textures)
+{
+    return textures->anim_o;
+}
+CLEAN_AS(func_ov003_0221ffac, HouseTextures_AnimO)
+
+/* func_ov003_0221ffb0 */
+void *HouseTextures_AnimI(HouseTextures *textures)
+{
+    return textures->anim_i;
+}
+CLEAN_AS(func_ov003_0221ffb0, HouseTextures_AnimI)
+
+/* func_ov003_0221ffb4: the light's texture of house look `look`, taken modulo 4. */
+void *HouseTextures_Light(HouseTextures *textures, int look)
+{
+    return textures->light[look & (HOUSE_TEXTURES_LOOKS - 1)];
+}
+CLEAN_AS(func_ov003_0221ffb4, HouseTextures_Light)
+
+/* func_ov003_0221ffc0: the house's texture of house look `look`, taken modulo 4. */
+void *HouseTextures_House(HouseTextures *textures, int look)
+{
+    return textures->house[look & (HOUSE_TEXTURES_LOOKS - 1)];
+}
+CLEAN_AS(func_ov003_0221ffc0, HouseTextures_House)
+
+/* func_ov003_0221ffcc: nothing loaded. */
+void HouseTextures_Clear(HouseTextures *textures)
+{
+    for (unsigned int i = 0; i < HOUSE_TEXTURES_LOOKS; i++) {
+        textures->house[i] = NULL;
+        textures->light[i] = NULL;
+    }
+    textures->anim_o = NULL;
+    textures->anim_i = NULL;
+}
+CLEAN_AS(func_ov003_0221ffcc, HouseTextures_Clear)
+
+/* func_ov003_0221ffec: for each of the town's four house looks, loads the house's texture (in
+ * the season's letter) and the light's from the end of the heap files are loaded on; each one's
+ * texture resource is kept, and when its images go to VRAM (VramRegion_LoadImages and
+ * VramRegion_LoadTexture say nonzero) a copy of it in main's heap is kept instead; the files are
+ * freed. Then the two joint animations are loaded into main's heap and their first animations
+ * kept. 1.
+ * QUIRK: main's heap is read once at the start for the lights and the animations, but again
+ * for each house's copy. */
+int HouseTextures_Load(HouseTextures *textures)
+{
+    Heap *heap = data_021c9b1c;
+
+    for (u8 i = 0; i < HOUSE_TEXTURES_LOOKS; i++) {
+        int look = HouseLooks_Look(HouseLooks_Looks(&data_021f34b0), i);
+        signed char set = (signed char) (look / HOUSE_TEXTURES_VARIANTS + HOUSE_TEXTURES_FIRST_SET);
+        int variant = look % HOUSE_TEXTURES_VARIANTS;
+
+        int season = HouseFiles_SeasonLetter();
+        u8 *file =
+            RomFile_LoadFormattedOn(data_021fbe94, HOUSE_PALETTE_FROM_END, data_ov003_02239bf8, set, set, variant, season);
+        textures->house[i] = func_021077e8(file);
+        if (VramRegion_LoadImages(textures->house[i], NULL) != 0) {
+            textures->house[i] = ModelCache_CopyTexture(textures->house[i], data_021c9b1c);
+        }
+        Heap_FreeCurrent(file);
+
+        file = RomFile_LoadFormattedOn(data_021fbe94, HOUSE_PALETTE_FROM_END, data_ov003_02239c1c, set, set, variant);
+        textures->light[i] = func_021077e8(file);
+        if (VramRegion_LoadTexture(textures->light[i], NULL) != 0) {
+            textures->light[i] = ModelCache_CopyTexture(textures->light[i], heap);
+        }
+        Heap_FreeCurrent(file);
+    }
+    textures->anim_i =
+        func_02107b44(NNS_G3dGetJntAnmSet(RomFile_Load(data_ov003_02239c40, heap, HOUSE_X_FILES_ALIGN, NULL)), 0);
+    textures->anim_o =
+        func_02107b44(NNS_G3dGetJntAnmSet(RomFile_Load(data_ov003_02239c58, heap, HOUSE_X_FILES_ALIGN, NULL)), 0);
+    return 1;
+}
+CLEAN_AS(func_ov003_0221ffec, HouseTextures_Load)
+
+/* func_ov003_0222010c: the textures' destructor, registered for data_ov003_0223cea0; does
+ * nothing. */
+void HouseTextures_Destruct(void) {}
+CLEAN_AS(func_ov003_0222010c, HouseTextures_Destruct)
+
+/* func_ov003_02220110: the textures' constructor: nothing loaded. */
+HouseTextures *HouseTextures_Construct(HouseTextures *textures)
+{
+    HouseTextures_Clear(textures);
+    return textures;
+}
+CLEAN_AS(func_ov003_02220110, HouseTextures_Construct)
+
+/* ---- The sets themselves ---- */
+
+/* func_ov003_022203b8 */
+HouseXFiles *HouseFiles_XFiles(void)
+{
+    return &data_ov003_0223ce80;
+}
+CLEAN_AS(func_ov003_022203b8, HouseFiles_XFiles)
+
+/* func_ov003_022203c0 */
+HouseTextures *HouseFiles_Textures(void)
+{
+    return &data_ov003_0223cea0;
+}
+CLEAN_AS(func_ov003_022203c0, HouseFiles_Textures)
+
+/* func_ov003_022203c8 */
+HousePalette *HouseFiles_Palette(void)
+{
+    return &data_ov003_0223ce58;
+}
+CLEAN_AS(func_ov003_022203c8, HouseFiles_Palette)
+
+/* func_ov003_022203dc: the letter of the season in the houses' file names: 'w' while it is the
+ * snow season (SceneQuery_IsSnowSeason), else 's'. */
+signed char HouseFiles_SeasonLetter(void)
+{
+    return data_ov003_0223666c[SceneQuery_IsSnowSeason()];
+}
+CLEAN_AS(func_ov003_022203dc, HouseFiles_SeasonLetter)

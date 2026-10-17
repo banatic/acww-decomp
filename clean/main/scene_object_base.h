@@ -28,7 +28,7 @@
 #include "autoload_2/links.h"
 #include "autoload_2/process.h"
 #include "autoload_2/vector.h"
-#include "ov002/error_message.h" /* MessageReceiver */
+#include "main/talk_receiver.h"
 #include "types.h"
 
 struct SceneObjectBase;
@@ -87,8 +87,8 @@ int SceneObjectBase_ApproachKind(SceneObjectBase *object);
 void SceneObjectBase_ClearApproach(SceneObjectBase *object);
 void SceneObjectBase_DefaultApproach(SceneObjectBase *object);
 void SceneObjectBase_SetReach(SceneObjectBase *object, int distance);
-void SceneObjectBase_ReleaseReceiver(SceneObjectBase *object, MessageReceiver *receiver);
-void SceneObjectBase_TakeReceiver(SceneObjectBase *object, MessageReceiver *receiver);
+void SceneObjectBase_ReleaseReceiver(SceneObjectBase *object, TalkReceiver *receiver);
+void SceneObjectBase_TakeReceiver(SceneObjectBase *object, TalkReceiver *receiver);
 int SceneObjectBase_Slot5c(void);
 int SceneObjectBase_Ask58(void);
 int SceneObjectBase_Ask54(void);

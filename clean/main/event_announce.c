@@ -18,23 +18,22 @@
 #include "scene_query.h"
 #include "scene_tables.h"
 #include "session.h"
+#include "talk_flow.h"
 #include "town_objects.h"
 
 static_assert(offsetof(EventAnnounceState, message) == 0x04, "EventAnnounceState.message");
 static_assert(offsetof(EventAnnounceState, event) == 0x08, "EventAnnounceState.event");
 static_assert(offsetof(EventAnnounceProcess, receiver) == 0x54, "EventAnnounceProcess.receiver");
-static_assert(offsetof(MessageReceiver, message) == 0x1e, "MessageReceiver.message");
+static_assert(offsetof(TalkReceiver, base.message) == 0x1e, "TalkReceiver.base.message");
 static_assert(sizeof(EventAnnounceProcess) == 0x9c, "EventAnnounceProcess");
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
 /* Talk `index` (0x1e9c-byte entries at data_021cda88), its receiver taken off it, and a
  * receiver handed to it. */
-extern Talk *func_020682e0(int index);
-extern void func_02068320(Talk *talk);
-extern void func_02068340(Talk *talk, MessageReceiver *receiver);
-/* The name of a receiver's message file set (25 characters at most). */
-extern void func_020a8164(MessageReceiver *receiver, const char *name);
+extern TalkFlowTalk *func_020682e0(int index);
+extern void func_02068320(TalkFlowTalk *talk);
+extern void func_02068340(TalkFlowTalk *talk, TalkReceiver *receiver);
 /* Nonzero while data_021cfbac is set or func_02004130 says data_021cfbcc is busy: the field is
  * not ready for an announcement. */
 extern int func_0206e980(void);
@@ -42,9 +41,6 @@ extern int func_0206e980(void);
  * handled there (func_02046a74). */
 extern void func_0204762c(void);
 extern void func_02046a74(int arg);
-/* The message receiver's (vtable data_020df008) destructor and constructor. */
-extern MessageReceiver *func_020669e0(MessageReceiver *receiver);
-extern MessageReceiver *func_02066a04(MessageReceiver *receiver);
 
 extern EventAnnounceState data_021c75a0;
 extern int data_021c758c; /* the music's part in it: 0 (event 0x44, the day), 1 start, 2 end */
@@ -179,8 +175,8 @@ CLEAN_AS(func_020413f8, EventAnnounce_SetStep)
 void EventAnnounce_StepTalking(void *unused)
 {
     (void) unused;
-    Talk *talk = func_020682e0(0);
-    if (talk->state != TALK_CLOSED) {
+    TalkFlowTalk *talk = func_020682e0(0);
+    if (talk->state != TALK_FLOW_CLOSED) {
         return;
     }
     func_02068320(talk);
@@ -199,14 +195,14 @@ void EventAnnounce_StepShow(EventAnnounceProcess *process)
     if (data_021c75b8 != SCREEN_SHOWN) {
         return;
     }
-    Talk *talk = func_020682e0(0);
-    MessageReceiver *receiver = &process->receiver;
-    void (*const *vtable)(MessageReceiver *) = (void (*const *)(MessageReceiver *)) receiver->vtable;
+    TalkFlowTalk *talk = func_020682e0(0);
+    TalkReceiver *receiver = &process->receiver;
+    void (*const *vtable)(TalkReceiver *) = (void (*const *)(TalkReceiver *)) receiver->base.vtable;
     vtable[2](receiver);
-    func_020a8164(receiver, data_020db6f0[data_021c75a0.ending]);
-    receiver->message = data_021c75a0.message;
+    MessageReceiver_SetName(&receiver->base, data_020db6f0[data_021c75a0.ending]);
+    receiver->base.message = data_021c75a0.message;
     func_02068340(talk, receiver);
-    talk->request = 1;
+    talk->next = TALK_OBJECT_OPENING;
     data_021c75a0.step = EVENT_ANNOUNCE_TALKING;
 }
 CLEAN_AS(func_02041470, EventAnnounce_StepShow)
@@ -573,7 +569,7 @@ CLEAN_AS(func_020418d0, EventAnnounceProcess_Create)
 EventAnnounceProcess *EventAnnounceProcess_DestructFree(EventAnnounceProcess *process)
 {
     process->base.vtable = data_020db71c;
-    func_020669e0(&process->receiver);
+    TalkReceiver_DestructSlot(&process->receiver);
     process->base.vtable = data_020da13c;
     Process_Destruct(&process->base);
     Heap_FreeAux(process);
@@ -585,7 +581,7 @@ CLEAN_AS(func_02041a00, EventAnnounceProcess_DestructFree)
 EventAnnounceProcess *EventAnnounceProcess_Destruct(EventAnnounceProcess *process)
 {
     process->base.vtable = data_020db71c;
-    func_020669e0(&process->receiver);
+    TalkReceiver_DestructSlot(&process->receiver);
     process->base.vtable = data_020da13c;
     Process_Destruct(&process->base);
     return process;
@@ -598,7 +594,7 @@ EventAnnounceProcess *EventAnnounceProcess_Construct(EventAnnounceProcess *proce
     Process_Construct(&process->base);
     process->base.vtable = data_020da13c;
     process->base.vtable = data_020db71c;
-    func_02066a04(&process->receiver);
+    TalkReceiver_Construct(&process->receiver);
     return process;
 }
 CLEAN_AS(func_02041a5c, EventAnnounceProcess_Construct)

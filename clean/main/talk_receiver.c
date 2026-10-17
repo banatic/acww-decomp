@@ -11,6 +11,8 @@ static_assert(sizeof(TalkReceiverName) == 0x20, "name");
 static_assert(offsetof(TalkReceiver, speaker) == 0x20, "receiver speaker");
 static_assert(offsetof(TalkReceiver, talk) == 0x40, "receiver talk");
 static_assert(offsetof(TalkReceiver, nameless) == 0x44, "receiver nameless");
+static_assert(offsetof(TalkReceiver, base.message) == 0x1e, "receiver message");
+static_assert(sizeof(TalkReceiver) == 0x48, "receiver");
 
 /* The vtables: the receiver's and its speaker name's. */
 extern const u8 data_020df008[];

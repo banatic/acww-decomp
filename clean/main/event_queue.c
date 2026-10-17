@@ -33,11 +33,11 @@ extern int func_02095f28(void);
 extern int func_02095f08(int on);
 extern void func_0206f5cc(void);
 /* The talk showing a receiver lets it go. */
-extern void func_02068320(Talk *talk);
+extern void func_02068320(struct TalkFlowTalk *talk);
 /* Talk `index` (0x1e9c bytes each). */
-extern Talk *func_020682e0(int index);
+extern struct TalkFlowTalk *func_020682e0(int index);
 /* The talk handed a receiver whose message it shows. */
-extern void func_02068340(Talk *talk, MessageReceiver *receiver);
+extern void func_02068340(struct TalkFlowTalk *talk, TalkReceiver *receiver);
 
 static_assert(sizeof(EventQueueEntry) == 0x1c, "EventQueueEntry size");
 static_assert(offsetof(EventQueueEntry, priority) == 0x08, "EventQueueEntry layout");
@@ -133,14 +133,14 @@ void EventQueue_EndCurrent(void)
 CLEAN_AS(func_0203df6c, EventQueue_EndCurrent)
 
 /* func_0203df88 (from func_0203ee08): the talk showing the receiver lets it go. */
-void EventQueue_ReceiverLeaveTalk(MessageReceiver *receiver)
+void EventQueue_ReceiverLeaveTalk(TalkReceiver *receiver)
 {
     func_02068320(receiver->talk);
 }
 CLEAN_AS(func_0203df88, EventQueue_ReceiverLeaveTalk)
 
 /* func_0203df94 (from func_0203ee14): the receiver handed to talk 0. */
-void EventQueue_ReceiverToTalk(MessageReceiver *receiver)
+void EventQueue_ReceiverToTalk(TalkReceiver *receiver)
 {
     func_02068340(func_020682e0(0), receiver);
 }

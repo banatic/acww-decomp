@@ -31,8 +31,8 @@
 #ifndef CLEAN_OV004_ETC_MUSEUM_H
 #define CLEAN_OV004_ETC_MUSEUM_H
 
-#include "autoload_2/process.h"
 #include "autoload_2/vector.h"
+#include "main/scene_object_base.h"
 #include "main/talk_receiver.h"
 #include "main/touch_pick_shapes.h"
 #include "types.h"
@@ -53,14 +53,7 @@ enum EtcMuseumKind {
 #define ETC_MUSEUM_NO_INDEX 0xff
 
 typedef struct EtcMuseum {
-    /* The scene object (SceneObjectBase of main/scene_object_base.h, whose MessageReceiver is
-     * not main/talk_receiver.h's). */
-    Process process;        /* 0x000: its vtable data_ov004_022533e0 */
-    u8 unk_050[0x0c];       /* 0x050 */
-    Vec3 position;          /* 0x05c */
-    u8 unk_068[0x26];       /* 0x068 */
-    s16 yaw;                /* 0x08e */
-    u8 unk_090[0x5c];       /* 0x090 */
+    SceneObjectBase base;   /* 0x000: its vtable data_ov004_022533e0 */
     TalkReceiver receiver;  /* 0x0ec: its vtable data_ov004_02253454 */
     s32 state;              /* 0x134: enum EtcMuseumState */
     TouchPickSphere sphere; /* 0x138: where the pen picks it */
@@ -76,14 +69,6 @@ typedef struct EtcMuseum {
     u8 talks;               /* 0x16c: the lone one's talks */
     u8 unk_16d[3];          /* 0x16d */
 } EtcMuseum;
-
-/* What EtcMuseum_IsFacedBy reads of the other object (a SceneObjectBase). */
-typedef struct EtcMuseumViewer {
-    u8 unk_00[0x5c];
-    Vec3 position;
-    u8 unk_68[0x8e - 0x68];
-    s16 yaw;
-} EtcMuseumViewer;
 
 int EtcMuseum_SpawnLone(void);
 void EtcMuseum_Spawn(int kind, Vec3 *position, int yaw, int face_angle, s16 complete_message, const u8 *exhibits, int count);
@@ -102,9 +87,28 @@ void EtcMuseum_OnAnswer(EtcMuseum *museum);
 void EtcMuseum_OnMessageEnded(EtcMuseum *museum);
 void EtcMuseum_OnMessageBegun(EtcMuseum *museum);
 void EtcMuseum_HandleEvent(EtcMuseum *museum, int event);
-int EtcMuseum_IsFacedBy(EtcMuseum *museum, const EtcMuseumViewer *viewer);
+int EtcMuseum_IsFacedBy(EtcMuseum *museum, const SceneObjectBase *viewer);
 int EtcMuseum_IsLone(EtcMuseum *museum);
 void EtcMuseum_NextGiven(EtcMuseum *museum);
 int EtcMuseum_CountGivenLeft(EtcMuseum *museum);
+int EtcMuseum_AllGiven(EtcMuseum *museum);
+int EtcMuseum_AnyGiven(EtcMuseum *museum);
+int EtcMuseum_MakeItems(EtcMuseum *museum);
+int EtcMuseum_Unregister(EtcMuseum *museum);
+int EtcMuseum_Register(EtcMuseum *museum);
+void EtcMuseum_ClearTableIfEmpty(void);
+int EtcMuseum_OnDelete(EtcMuseum *museum);
+int EtcMuseum_Draw(void);
+int EtcMuseum_Execute(EtcMuseum *museum);
+int EtcMuseum_OnCreate(EtcMuseum *museum);
+EtcMuseum *EtcMuseum_Delete(EtcMuseum *museum);
+EtcMuseum *EtcMuseum_Destroy(EtcMuseum *museum);
+EtcMuseum *EtcMuseum_Construct(EtcMuseum *museum);
+void EtcMuseum_New(void);
+EtcMuseum *EtcMuseumReceiver_Delete(void *receiver);
+void EtcMuseumReceiver_OnAnswer(void *receiver);
+void EtcMuseumReceiver_OnMessageEnded(void *receiver);
+void EtcMuseumReceiver_OnMessageBegun(void *receiver);
+EtcMuseum *EtcMuseumReceiver_Destroy(void *receiver);
 
 #endif

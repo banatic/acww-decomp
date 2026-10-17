@@ -106,7 +106,7 @@ CLEAN_AS(func_0203edf4, SceneObjectBase_SetReach)
 /* ---- The object's message receiver ---- */
 
 /* func_0203ee08: the talk showing the object's receiver lets it go. */
-void SceneObjectBase_ReleaseReceiver(SceneObjectBase *object, MessageReceiver *receiver)
+void SceneObjectBase_ReleaseReceiver(SceneObjectBase *object, TalkReceiver *receiver)
 {
     (void) object;
     EventQueue_ReceiverLeaveTalk(receiver);
@@ -114,7 +114,7 @@ void SceneObjectBase_ReleaseReceiver(SceneObjectBase *object, MessageReceiver *r
 CLEAN_AS(func_0203ee08, SceneObjectBase_ReleaseReceiver)
 
 /* func_0203ee14: the object's receiver handed to talk 0. */
-void SceneObjectBase_TakeReceiver(SceneObjectBase *object, MessageReceiver *receiver)
+void SceneObjectBase_TakeReceiver(SceneObjectBase *object, TalkReceiver *receiver)
 {
     (void) object;
     EventQueue_ReceiverToTalk(receiver);

@@ -41,4 +41,31 @@ int HouseXFiles_Load(HouseXFiles *files);
 void HouseXFiles_Clear(HouseXFiles *files);
 void HouseXFiles_Destruct(void);
 
+/* The third set, data_ov003_0223cea0 (HouseTextures): for each of the four house looks of the
+ * town (main/house_looks.h) the house's and the light's textures from "/str/npcHsTex/", copied
+ * into main's heap, and the houses' two joint animations "/str/obj_house_i.nsbca" and
+ * "/str/obj_house_o.nsbca" (villager_house.h's textures). */
+#define HOUSE_TEXTURES_LOOKS 4
+
+typedef struct HouseTextures {
+    void *house[HOUSE_TEXTURES_LOOKS]; /* 0x00: "house_<set><variant><season>.nsbtx", texture resources */
+    void *light[HOUSE_TEXTURES_LOOKS]; /* 0x10: "light_<set><variant>.nsbtx", texture resources */
+    void *anim_i;                      /* 0x20: "obj_house_i.nsbca", its first joint animation */
+    void *anim_o;                      /* 0x24: "obj_house_o.nsbca", its first joint animation */
+} HouseTextures;
+
+HouseXFiles *HouseXFiles_Construct(HouseXFiles *files);
+void *HouseTextures_AnimO(HouseTextures *textures);
+void *HouseTextures_AnimI(HouseTextures *textures);
+void *HouseTextures_Light(HouseTextures *textures, int look);
+void *HouseTextures_House(HouseTextures *textures, int look);
+void HouseTextures_Clear(HouseTextures *textures);
+int HouseTextures_Load(HouseTextures *textures);
+void HouseTextures_Destruct(void);
+HouseTextures *HouseTextures_Construct(HouseTextures *textures);
+HouseXFiles *HouseFiles_XFiles(void);
+HouseTextures *HouseFiles_Textures(void);
+HousePalette *HouseFiles_Palette(void);
+signed char HouseFiles_SeasonLetter(void);
+
 #endif

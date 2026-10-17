@@ -1,16 +1,24 @@
 /* The "obj_etc_museum" scene object (etc_museum.h). */
 #include "etc_museum.h"
 
+#include <stdint.h>
+
 #include "autoload_2/approach.h" /* Math_AbsDiff16 */
+#include "autoload_2/heap.h"
 #include "clean.h"
+#include "itcm/vector.h" /* Vec_Add */
 #include "main/actor.h"
+#include "main/event_queue.h"
 #include "main/museum_record.h"
 #include "main/name_texts.h"
 #include "main/player_id.h"
+#include "main/scene_query.h"
+#include "main/session.h"
+#include "main/session_players.h"
 #include "main/talk_object.h"
 
-static_assert(offsetof(EtcMuseum, position) == 0x5c, "position");
-static_assert(offsetof(EtcMuseum, yaw) == 0x8e, "yaw");
+static_assert(offsetof(EtcMuseum, base.position) == 0x5c, "position");
+static_assert(offsetof(EtcMuseum, base.yaw) == 0x8e, "yaw");
 static_assert(offsetof(EtcMuseum, receiver) == 0xec, "receiver");
 static_assert(offsetof(EtcMuseum, receiver.base.message) == 0x10a, "receiver's message");
 static_assert(offsetof(EtcMuseum, receiver.talk) == 0x12c, "receiver's talk");
@@ -25,8 +33,6 @@ static_assert(offsetof(EtcMuseum, items) == 0x164, "items");
 static_assert(offsetof(EtcMuseum, count) == 0x168, "count");
 static_assert(offsetof(EtcMuseum, talks) == 0x16c, "talks");
 static_assert(sizeof(EtcMuseum) == 0x170, "the size its constructor's caller allocates");
-static_assert(offsetof(EtcMuseumViewer, position) == 0x5c, "viewer's position");
-static_assert(offsetof(EtcMuseumViewer, yaw) == 0x8e, "viewer's yaw");
 
 /* The profile (class id) Actor_Spawn makes one from. */
 #define ETC_MUSEUM_PROFILE 0x19
@@ -73,20 +79,8 @@ extern const char data_ov004_022534cc[];
 extern u8 data_021f43e8;
 extern u8 data_021f43f8;
 
-/* Whether any, or every, exhibit of the list has been given. */
-extern int func_ov004_0221ba88(EtcMuseum *museum);
-extern int func_ov004_0221ba40(EtcMuseum *museum);
-/* The scene object's receiver taken (SceneObjectBase_TakeReceiver) and released
- * (SceneObjectBase_ReleaseReceiver), its event ended (EventQueue_FinishObjectEvent) and asked
- * for (EventQueue_RequestKind6), by symbol: their headers declare another MessageReceiver than
- * talk_receiver.h's. */
-extern void func_0203ee14(EtcMuseum *museum, void *receiver);
-extern void func_0203ee08(EtcMuseum *museum, void *receiver);
-extern int func_0203e020(EtcMuseum *museum);
-extern int func_0203e0a8(EtcMuseum *museum, int blocked);
-
 /* The receiver part, as a C++ conversion makes it: null stays null. */
-static void *receiver_of(EtcMuseum *museum)
+static TalkReceiver *receiver_of(EtcMuseum *museum)
 {
     return museum != NULL ? &museum->receiver : NULL;
 }
@@ -182,7 +176,7 @@ int EtcMuseum_EnterLoneTalk(EtcMuseum *museum)
 {
     u16 item;
 
-    func_0203ee14(museum, receiver_of(museum));
+    SceneObjectBase_TakeReceiver(&museum->base, receiver_of(museum));
     MessageReceiver_SetName(&museum->receiver.base, data_ov004_022534cc);
     item = ETC_MUSEUM_LONE_ITEM;
     /* The ROM compares the answer unsigned. */
@@ -208,8 +202,8 @@ CLEAN_AS(func_ov004_0221b2b8, EtcMuseum_EnterLoneTalk)
 void EtcMuseum_UpdateOpen(EtcMuseum *museum)
 {
     if (museum->receiver.talk != NULL && talk_of(museum)->state == TALK_OBJECT_CLOSED) {
-        func_0203ee08(museum, receiver_of(museum));
-        func_0203e020(museum);
+        SceneObjectBase_ReleaseReceiver(&museum->base, receiver_of(museum));
+        EventQueue_FinishObjectEvent(museum);
     }
 }
 CLEAN_AS(func_ov004_0221b354, EtcMuseum_UpdateOpen)
@@ -249,9 +243,9 @@ int EtcMuseum_EnterTalk(EtcMuseum *museum)
             break;
         }
     }
-    func_0203ee14(museum, receiver_of(museum));
+    SceneObjectBase_TakeReceiver(&museum->base, receiver_of(museum));
     MessageReceiver_SetName(&museum->receiver.base, data_ov004_022534cc);
-    if (func_ov004_0221ba88(museum) == 0) {
+    if (EtcMuseum_AnyGiven(museum) == 0) {
         museum->receiver.base.message = ETC_MUSEUM_MESSAGE_NONE_GIVEN;
     } else if (museum->kind == ETC_MUSEUM_GROUP_A) {
         if (museum->count == 1) {
@@ -275,9 +269,9 @@ void EtcMuseum_UpdateIdle(EtcMuseum *museum)
 {
     if (EtcMuseum_IsLone(museum)) {
         if (museum->talks == 0) {
-            func_0203e0a8(museum, 0);
+            EventQueue_RequestKind6(museum, 0);
         } else {
-            Process_RequestDelete(&museum->process);
+            Process_RequestDelete(&museum->base.process);
         }
     }
 }
@@ -384,7 +378,7 @@ void EtcMuseum_OnMessageEnded(EtcMuseum *museum)
     }
     if (museum->kind == ETC_MUSEUM_GROUP_A) {
         u8 shown = museum->receiver.base.message;
-        if (shown != ETC_MUSEUM_MESSAGE_ONE && func_ov004_0221ba40(museum) && museum->complete_message == shown) {
+        if (shown != ETC_MUSEUM_MESSAGE_ONE && EtcMuseum_AllGiven(museum) && museum->complete_message == shown) {
             message = (u8) (shown + 1);
         } else {
             message = data_021f43e8;
@@ -487,10 +481,10 @@ CLEAN_AS(func_ov004_0221b908, EtcMuseum_HandleEvent)
 
 /* func_ov004_0221b938 (vtable slot 0x48): whether `viewer` stands closer than 0x2333 and faces
  * it: its direction less than the face angle from the object's own turned half a turn. */
-int EtcMuseum_IsFacedBy(EtcMuseum *museum, const EtcMuseumViewer *viewer)
+int EtcMuseum_IsFacedBy(EtcMuseum *museum, const SceneObjectBase *viewer)
 {
-    return viewer != NULL && Vec_DistanceXZ(&viewer->position, &museum->position) < ETC_MUSEUM_TALK_DISTANCE &&
-           Math_AbsDiff16((s16) (museum->yaw + 0x8000), viewer->yaw) < museum->face_angle;
+    return viewer != NULL && Vec_DistanceXZ(&viewer->position, &museum->base.position) < ETC_MUSEUM_TALK_DISTANCE &&
+           Math_AbsDiff16((s16) (museum->base.yaw + 0x8000), viewer->yaw) < museum->face_angle;
 }
 CLEAN_AS(func_ov004_0221b938, EtcMuseum_IsFacedBy)
 
@@ -530,3 +524,330 @@ int EtcMuseum_CountGivenLeft(EtcMuseum *museum)
     return given;
 }
 CLEAN_AS(func_ov004_0221b9f4, EtcMuseum_CountGivenLeft)
+
+/* func_ov004_0221ba40: whether every exhibit of the list has been given (also for an empty
+ * list). */
+int EtcMuseum_AllGiven(EtcMuseum *museum)
+{
+    for (u32 i = 0; i < museum->count; i++) {
+        u16 item = museum->items[i];
+        if (!MuseumRecord_IsGiven(&data_021f38f8, &item)) {
+            return 0;
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221ba40, EtcMuseum_AllGiven)
+
+/* func_ov004_0221ba88: whether any exhibit of the list has been given. */
+int EtcMuseum_AnyGiven(EtcMuseum *museum)
+{
+    for (u32 i = 0; i < museum->count; i++) {
+        u16 item = museum->items[i];
+        if (MuseumRecord_IsGiven(&data_021f38f8, &item) != 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221ba88, EtcMuseum_AnyGiven)
+
+/* The first item code of each group (EtcMuseumKind 0-3) and how many numbers the group has;
+ * the codes of groups D and A are 4 apart. */
+#define ETC_MUSEUM_GROUP_C_FIRST 0x12b0
+#define ETC_MUSEUM_GROUP_B_FIRST 0x12e8
+#define ETC_MUSEUM_GROUP_D_FIRST 0x3894
+#define ETC_MUSEUM_GROUP_A_FIRST 0x450c
+#define ETC_MUSEUM_GROUP_C_COUNT 0x38
+#define ETC_MUSEUM_GROUP_B_COUNT 0x38
+#define ETC_MUSEUM_GROUP_D_COUNT 0x14
+#define ETC_MUSEUM_GROUP_A_COUNT 0x34
+#define ETC_MUSEUM_WIDE_STEP 4
+
+/* The item code of exhibit `number` of a group: `first` plus `number` steps.
+ * QUIRK: a number out of the group names the group's first item. */
+static u16 exhibit_code(u8 number, unsigned int count, unsigned int step, unsigned int first)
+{
+    if (number < count) {
+        return (u16) (first + number * step);
+    }
+    return (u16) first;
+}
+
+/* func_ov004_0221bad0: makes the list of item codes from the exhibit numbers the spawn left
+ * (data_ov004_02257918), in a block of the current heap; whether it did. The lone one has no
+ * list and succeeds.
+ * QUIRK: for a kind other than 0-3 the block is kept (the object's `items`) but left unfilled,
+ * and it fails. */
+int EtcMuseum_MakeItems(EtcMuseum *museum)
+{
+    if (EtcMuseum_IsLone(museum)) {
+        return 1;
+    }
+    museum->items = Heap_AllocCurrent((int) museum->count * (int) sizeof(u16));
+    if (museum->items == NULL) {
+        return 0;
+    }
+    switch (museum->kind) {
+        case ETC_MUSEUM_GROUP_C:
+            for (u32 i = 0; i < museum->count; i++) {
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_C_COUNT, 1, ETC_MUSEUM_GROUP_C_FIRST);
+            }
+            return 1;
+        case ETC_MUSEUM_GROUP_B:
+            for (u32 i = 0; i < museum->count; i++) {
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_B_COUNT, 1, ETC_MUSEUM_GROUP_B_FIRST);
+            }
+            return 1;
+        case ETC_MUSEUM_GROUP_D:
+            for (u32 i = 0; i < museum->count; i++) {
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_D_COUNT, ETC_MUSEUM_WIDE_STEP,
+                                                ETC_MUSEUM_GROUP_D_FIRST);
+            }
+            return 1;
+        case ETC_MUSEUM_GROUP_A:
+            for (u32 i = 0; i < museum->count; i++) {
+                museum->items[i] = exhibit_code(data_ov004_02257918[i], ETC_MUSEUM_GROUP_A_COUNT, ETC_MUSEUM_WIDE_STEP,
+                                                ETC_MUSEUM_GROUP_A_FIRST);
+            }
+            return 1;
+        default:
+            return 0;
+    }
+}
+CLEAN_AS(func_ov004_0221bad0, EtcMuseum_MakeItems)
+
+/* func_ov004_0221bbf8: takes it out of the table; whether it was in it. For the lone one it
+ * only notes that the lone one is gone (and answers 0).
+ * QUIRK: the count is a byte and wraps below 0. */
+int EtcMuseum_Unregister(EtcMuseum *museum)
+{
+    if (EtcMuseum_IsLone(museum)) {
+        data_ov004_02257904 = 0;
+        return 0;
+    }
+    if (museum->index < ETC_MUSEUM_MAX) {
+        data_ov004_0225797c[museum->index] = NULL;
+        data_ov004_02257908--;
+        museum->index = ETC_MUSEUM_NO_INDEX;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221bbf8, EtcMuseum_Unregister)
+
+/* func_ov004_0221bc44: enters it in the table under the next index (the count); whether there
+ * was room (the index is kept even when there was not). The lone one gets no index and only
+ * notes that it exists. */
+int EtcMuseum_Register(EtcMuseum *museum)
+{
+    if (EtcMuseum_IsLone(museum)) {
+        museum->index = ETC_MUSEUM_NO_INDEX;
+        data_ov004_02257904 = 1;
+        return 1;
+    }
+    museum->index = data_ov004_02257908;
+    if (museum->index < ETC_MUSEUM_MAX) {
+        data_ov004_0225797c[museum->index] = museum;
+        data_ov004_02257908++;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0221bc44, EtcMuseum_Register)
+
+/* func_ov004_0221bc98: empties the table when none is counted in it. */
+void EtcMuseum_ClearTableIfEmpty(void)
+{
+    if (data_ov004_02257908 != 0) {
+        return;
+    }
+    for (int i = 0; i < ETC_MUSEUM_MAX; i++) {
+        data_ov004_0225797c[i] = NULL;
+    }
+}
+CLEAN_AS(func_ov004_0221bc98, EtcMuseum_ClearTableIfEmpty)
+
+/* func_ov004_0221bcbc (vtable slot 0x0c, the deletion's work): takes it out of the table and
+ * frees its list of item codes; done at once. The pointer to the list is left as it was. */
+int EtcMuseum_OnDelete(EtcMuseum *museum)
+{
+    EtcMuseum_Unregister(museum);
+    if (museum->items != NULL) {
+        Heap_FreeCurrent(museum->items);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221bcbc, EtcMuseum_OnDelete)
+
+/* func_ov004_0221bcdc (vtable slot 0x24, the drawing): nothing to draw; done. */
+int EtcMuseum_Draw(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_0221bcdc, EtcMuseum_Draw)
+
+/* The radius it is picked in, and its touch pick kind (TouchPick_RoomEntry20). */
+#define ETC_MUSEUM_PICK_RADIUS 0xc00
+#define ETC_MUSEUM_TOUCH_KIND 14
+
+/* func_ov004_0221bce0 (vtable slot 0x18, each frame): the state's update, then (but for the lone
+ * one) its sphere of radius 0xc00 at its position put in the field's pen picking (kind 14, its
+ * index); always 1. */
+int EtcMuseum_Execute(EtcMuseum *museum)
+{
+    EtcMuseum_Update(museum);
+    if (!EtcMuseum_IsLone(museum)) {
+        TouchPick_SetSphereAndAdd((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &museum->sphere, &museum->base.position,
+                                  ETC_MUSEUM_PICK_RADIUS, ETC_MUSEUM_TOUCH_KIND, museum->index);
+    }
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_022533e019func_ov004_0221bce0Ev, EtcMuseum_Execute)
+
+/* The field actor of this console's player (SessionPlayers_ActorHandle). */
+#define ETC_MUSEUM_PLAYER_ACTOR 4
+
+/* The sines and cosines of 4096 angles (NitroSDK's FX_SinCosTable_). */
+extern const fx16 FX_SinCosTable_[];
+/* The session, whose slot of this system goes into the object's id. */
+extern NetSession *data_020ccf94;
+
+/* func_ov004_0221bd28 (vtable slot 0x00, the creation's work): takes what the spawn left (kind,
+ * group A's message, count and face angle) and enters it in the table (emptying the table first
+ * when it holds none). When there was room: the lone one moves one unit before this console's
+ * player, along the player's direction (when the player has a field actor); its id becomes its
+ * session slot (2 bits), the current scene (6 bits) and its index (8 bits); it starts idle and
+ * makes its list of item codes, whose success it answers. Fails when the table is full. */
+int EtcMuseum_OnCreate(EtcMuseum *museum)
+{
+    EtcMuseum_ClearTableIfEmpty();
+    museum->kind = (u32) data_ov004_02257914;
+    museum->complete_message = data_ov004_0225337c;
+    museum->count = (u32) data_ov004_02257928;
+    museum->face_angle = data_ov004_02257938;
+    if (!EtcMuseum_Register(museum)) {
+        return 0;
+    }
+    if (EtcMuseum_IsLone(museum)) {
+        int handle = SessionPlayers_ActorHandle(ETC_MUSEUM_PLAYER_ACTOR);
+        if (handle != 0) {
+            const SceneObjectBase *player = (const SceneObjectBase *) (uintptr_t) handle;
+            unsigned int angle = (u16) player->yaw >> 4;
+            Vec3 ahead;
+            Vec3 point;
+            ahead.x = FX_SinCosTable_[angle * 2];
+            ahead.y = 0;
+            ahead.z = FX_SinCosTable_[angle * 2 + 1];
+            Vec_Add(&point, &player->position, &ahead);
+            museum->base.position = point;
+        }
+    }
+    u32 id = (u32) data_020ccf94->local_slot & 3;
+    id |= ((u32) SceneQuery_Current() & 0x3f) << 2;
+    id |= (u32) museum->index << 8;
+    SceneObjectBase_SetId(&museum->base, id);
+    EtcMuseum_SetState(museum, ETC_MUSEUM_IDLE);
+    return EtcMuseum_MakeItems(museum);
+}
+CLEAN_AS(func_ov004_0221bd28, EtcMuseum_OnCreate)
+
+/* The vtables: the class's, and its receiver part's. */
+extern const u32 data_ov004_022533e0[];
+extern const u8 data_ov004_02253454[];
+
+static void set_vtables(EtcMuseum *museum)
+{
+    museum->base.process.vtable = data_ov004_022533e0;
+    museum->receiver.base.vtable = data_ov004_02253454;
+}
+
+/* func_ov004_0221be28 (vtable slot 0x44, the deleting destructor): the sphere, the receiver part
+ * and the base destroyed in turn, then the memory freed. */
+EtcMuseum *EtcMuseum_Delete(EtcMuseum *museum)
+{
+    set_vtables(museum);
+    TouchPickSphere_Destruct2(&museum->sphere);
+    TalkReceiver_Destruct(&museum->receiver);
+    SceneObjectBase_DestructBase(&museum->base);
+    Heap_FreeAux(museum);
+    return museum;
+}
+CLEAN_AS(func_ov004_0221be28, EtcMuseum_Delete)
+
+/* func_ov004_0221be68 (vtable slot 0x40): the destructor, without freeing. */
+EtcMuseum *EtcMuseum_Destroy(EtcMuseum *museum)
+{
+    set_vtables(museum);
+    TouchPickSphere_Destruct2(&museum->sphere);
+    TalkReceiver_Destruct(&museum->receiver);
+    SceneObjectBase_DestructBase(&museum->base);
+    return museum;
+}
+CLEAN_AS(func_ov004_0221be68, EtcMuseum_Destroy)
+
+/* func_ov004_0221bea4: the constructor: the base and the receiver part, then the vtables and the
+ * sphere. Its own fields are left as the allocation zeroed them. */
+EtcMuseum *EtcMuseum_Construct(EtcMuseum *museum)
+{
+    SceneObjectBase_Construct(&museum->base);
+    TalkReceiver_ConstructBase(&museum->receiver);
+    set_vtables(museum);
+    TouchPickSphere_Construct(&museum->sphere);
+    return museum;
+}
+CLEAN_AS(func_ov004_0221bea4, EtcMuseum_Construct)
+
+/* func_ov004_0221bedc: allocates (zeroed) and constructs one; nothing keeps the pointer here. */
+void EtcMuseum_New(void)
+{
+    EtcMuseum *museum = Heap_AllocAuxZeroed(sizeof(EtcMuseum));
+    if (museum != NULL) {
+        EtcMuseum_Construct(museum);
+    }
+}
+CLEAN_AS(func_ov004_0221bedc, EtcMuseum_New)
+
+/* The object a pointer to its receiver part belongs to (the receiver vtable's entries move the
+ * pointer back by 0xec, without a null check). */
+static EtcMuseum *museum_of(void *receiver)
+{
+    return (EtcMuseum *) (void *) ((u8 *) receiver - offsetof(EtcMuseum, receiver));
+}
+
+/* func_ov004_0221bef8 (the receiver vtable's deleting destructor): EtcMuseum_Delete on the
+ * object around `receiver`. */
+EtcMuseum *EtcMuseumReceiver_Delete(void *receiver)
+{
+    return EtcMuseum_Delete(museum_of(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022533e0D0Ev, EtcMuseumReceiver_Delete)
+
+/* func_ov004_0221bf14 (the receiver's slot 0x18, the player's answer): EtcMuseum_OnAnswer. */
+void EtcMuseumReceiver_OnAnswer(void *receiver)
+{
+    EtcMuseum_OnAnswer(museum_of(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022533e017vfunc_02066994_18Ev, EtcMuseumReceiver_OnAnswer)
+
+/* func_ov004_0221bf30 (the receiver's slot 0x14, a message ended): EtcMuseum_OnMessageEnded. */
+void EtcMuseumReceiver_OnMessageEnded(void *receiver)
+{
+    EtcMuseum_OnMessageEnded(museum_of(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022533e017vfunc_02066994_14Ev, EtcMuseumReceiver_OnMessageEnded)
+
+/* func_ov004_0221bf4c (the receiver's slot 0x10, a message begins): EtcMuseum_OnMessageBegun. */
+void EtcMuseumReceiver_OnMessageBegun(void *receiver)
+{
+    EtcMuseum_OnMessageBegun(museum_of(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022533e017vfunc_02066994_10Ev, EtcMuseumReceiver_OnMessageBegun)
+
+/* func_ov004_0221bf68 (the receiver vtable's destructor): EtcMuseum_Destroy on the object around
+ * `receiver`. */
+EtcMuseum *EtcMuseumReceiver_Destroy(void *receiver)
+{
+    return EtcMuseum_Destroy(museum_of(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022533e0D1Ev, EtcMuseumReceiver_Destroy)

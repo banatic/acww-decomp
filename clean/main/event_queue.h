@@ -35,7 +35,7 @@
 
 #include "autoload_2/links.h"
 #include "autoload_2/process.h"
-#include "ov002/error_message.h" /* MessageReceiver */
+#include "main/talk_receiver.h"
 #include "types.h"
 
 /* EventQueueEntry.state */
@@ -96,8 +96,8 @@ int EventQueue_TestFlag2(void);
 int EventQueue_FinishKind13(void);
 int EventQueue_StartKind13(void);
 void EventQueue_EndCurrent(void);
-void EventQueue_ReceiverLeaveTalk(MessageReceiver *receiver);
-void EventQueue_ReceiverToTalk(MessageReceiver *receiver);
+void EventQueue_ReceiverLeaveTalk(TalkReceiver *receiver);
+void EventQueue_ReceiverToTalk(TalkReceiver *receiver);
 int EventQueue_TargetObjectAddress(void);
 void EventQueue_SetTargetId(u32 id);
 int EventQueue_IsObjectEvent(void);

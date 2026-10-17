@@ -10,33 +10,9 @@
 #ifndef CLEAN_OV002_ERROR_MESSAGE_H
 #define CLEAN_OV002_ERROR_MESSAGE_H
 
+#include "main/talk_receiver.h"
 #include "popup.h"
 #include "types.h"
-
-/* The first words of a talk, one of the 0x1e9c-byte entries at the word 0x021cda88 points to
- * (func_020682e0 gives one). */
-typedef struct Talk {
-    u32 unk_00;
-    s32 state;   /* 0x04: TalkState */
-    s32 request; /* 0x08: set to 1 to start the talk */
-} Talk;
-
-/* The values of a talk's `state` read here. */
-enum TalkState { TALK_CLOSED = 0, TALK_UP = 2 };
-
-/* A message receiver of main (class vtable 0x020df008: constructor func_02066a04, destructor
- * func_020669e0; the receiver of Base_02066994): the name of a message file and the number
- * of a message in it, which a talk shows. */
-typedef struct MessageReceiver {
-    const void *vtable; /* data_020df008 */
-    char name[26];      /* 0x04: the file, written by func_020a8164 (25 characters at most) */
-    u8 message;         /* 0x1e: the message's number in it */
-    u8 unk_1f;
-    u8 member_20[0x20]; /* 0x20: constructed by func_02066a9c */
-    Talk *talk;         /* 0x40: the talk showing it, set by func_02068340 */
-    u8 unk_44;
-    u8 pad_45[3];
-} MessageReceiver;
 
 /* The error message's steps, in `step`. */
 enum ErrorMessageStep {
@@ -46,11 +22,14 @@ enum ErrorMessageStep {
     ERROR_MESSAGE_DONE = 3      /* also the step after construction */
 };
 
+/* Its message receiver is a talk's receiver (main/talk_receiver.h: class data_020df008, 0x48
+ * bytes, the message receiver of main/message_receiver.h at its start); the talk showing it
+ * (TalkReceiver.talk) is a talk of main/talk_flow.h. */
 typedef struct ErrorMessage {
-    Popup popup;              /* 0x00 */
-    MessageReceiver receiver; /* 0xd0 */
-    u8 step;                  /* 0x118: ErrorMessageStep */
-    u8 fatal;                 /* 0x119: not 0: the message never closes */
+    Popup popup;           /* 0x00 */
+    TalkReceiver receiver; /* 0xd0: vtable data_020df008 */
+    u8 step;               /* 0x118: ErrorMessageStep */
+    u8 fatal;              /* 0x119: not 0: the message never closes */
 } ErrorMessage;
 
 void ErrorMessage_Undim(ErrorMessage *error);
