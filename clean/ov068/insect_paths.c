@@ -679,3 +679,819 @@ void InsectPath_Chase(TownInsect *insect)
     InsectPath_Flap(&insect->scale, &insect->model, (before - angle) * 5);
 }
 CLEAN_AS(func_ov068_02270b00, InsectPath_Chase)
+
+/* ---- The behaviours of more kinds (insect_paths.h) */
+
+#include "autoload_2/fx_math.h"
+#include "main/actor.h"
+#include "main/animated_model.h"
+#include "main/building_shapes.h"
+#include "main/effect_system.h"
+#include "main/map_code.h"
+#include "main/music_queue.h"
+#include "main/player_actor_ops.h"
+#include "main/unit_type_info.h"
+#include "ov003/object_actors.h"
+#include "ov003/snowman.h"
+#include "ov009/scene_actor.h"
+
+static_assert(offsetof(TownInsect, unk_1b0) == 0x1b0, "box");
+static_assert(offsetof(TownInsect, unk_1e0) == 0x1e0, "perch");
+static_assert(offsetof(TownInsect, scale) == 0x210, "scale");
+static_assert(offsetof(TownInsect, reach) == 0x224, "reach");
+static_assert(offsetof(TownInsect, timer) == 0x232, "timer");
+static_assert(offsetof(TownInsect, angle_x) == 0x238, "angle_x");
+static_assert(offsetof(TownInsect, unk_240) == 0x240, "unk_240");
+static_assert(offsetof(TownInsect, frames_left) == 0x242, "frames_left");
+static_assert(offsetof(TownInsect, unk_254) == 0x254, "byte 0x254");
+static_assert(offsetof(Snowman, position) == 0x5c, "snowball position");
+static_assert(offsetof(Actor, speed) == 0x98, "actor speed");
+
+/* Actions of the kinds here (their meaning is the kind's). */
+#define INSECT_PATH_CHASE 0          /* kinds 0xb and 0x3a: InsectPath_Chase */
+#define INSECT_PATH_GLIDE 4          /* kind 0x19 */
+#define INSECT_PATH_RESTING 5        /* kind 0x23: InsectPath_Rest */
+#define INSECT_PATH_KIND_HOVERS 8    /* InsectPath_Hover, InsectPath_ToBuilding */
+#define INSECT_PATH_SCALE_MIN 0x1000 /* InsectPath_StretchScale keeps its z within these */
+#define INSECT_PATH_SCALE_MAX 0x2000
+#define INSECT_PATH_STRETCH 0x52
+
+/* What InsectPath_StartGrow and InsectPath_Grow ask of the music and the player. */
+#define INSECT_PATH_MUSIC_GROW 25 /* the priority given a value of 0 as it starts growing */
+#define INSECT_PATH_MUSIC_DROPPED 0x19
+#define INSECT_PATH_MUSIC_CHASE_PRIORITY 0x1a
+#define INSECT_PATH_MUSIC_CHASE 0x3f
+#define INSECT_PATH_PLAYER_FLAG_CHASED 0x1a
+
+/* The tiles a perch may be on: item 0x500a (building 0xa's tile) and items 0xe3-0xe7, with
+ * the height the insect perches at on each. */
+#define INSECT_PATH_PERCH_BUILDING 0x500a
+#define INSECT_PATH_PERCH_FIRST 0xe3
+#define INSECT_PATH_PERCH_LAST 0xe7
+#define INSECT_PATH_PERCH_BUILDING_HEIGHT 0x27ae
+#define INSECT_PATH_PERCH_ITEM_HEIGHT 0x191f
+#define INSECT_PATH_PERCH_TILE_FIRST 0x10 /* the tiles searched: within the town's inner acres */
+#define INSECT_PATH_PERCH_TILE_LAST 0x50
+
+#define INSECT_PATH_BUILDINGS 0x22 /* the codes 0x5000-0x5021 */
+
+/* Kind 0x23's ring around its snowball (InsectPath_CircleSnowball): the range of the balls'
+ * sizes (a function-local static computed once; bit 0 of data_ov068_022786c4 says it was). */
+extern fx32 data_ov068_022786c0;
+extern u32 data_ov068_022786c4;
+
+/* Loose snowball `index` when it is at rest, else NULL. */
+extern Snowman *func_ov003_02236164(int index);
+/* An angle of `steps` steps of 5 degrees at random, either side when `both`. */
+extern short func_ov003_02233c70(int steps, int both);
+/* The model's animation set to frame 2 when it is at frame 1, else to frame 1. */
+extern void func_ov003_02234cc4(TownInsect *insect);
+/* The alarm counted and the insect turned with what it found; 2 when alarmed out of reach. */
+extern int func_ov003_02234d70(TownInsect *insect);
+/* Its height by its frame counter: `frame` stepped over `divisor` up to `limit`. */
+extern void func_ov003_02234dac(TownInsect *insect, int frame, int limit, fx32 divisor);
+/* Which sides of the heading something stands on (0 for none), `reach` percent of a feeler
+ * ahead and `spread` either side. */
+extern int func_ov003_02235b54(TownInsect *insect, int reach, int spread);
+/* BuildingShapes_MTile with the shape and the tile's place as pointers. */
+extern int func_020b3e8c(void *shape, int *x, int *z, unsigned int index);
+
+/* A shift left by 12 done on the bits, as the ARM does it. */
+static int shift_12(int value)
+{
+    return (int) ((u32) value << 12);
+}
+
+static const Vec3 *actor_position(const u8 *actor)
+{
+    return (const Vec3 *) (const void *) (actor + 0x5c);
+}
+
+/* func_ov068_02270d24: the z of `scale` stretched by 0x52 (`stretch` nonzero) or squeezed, kept
+ * within 1.0 and 2.0. */
+void InsectPath_StretchScale(Vec3 *scale, int stretch)
+{
+    if (stretch == 0) {
+        scale->z -= INSECT_PATH_STRETCH;
+    } else {
+        scale->z += INSECT_PATH_STRETCH;
+    }
+    if (scale->z < INSECT_PATH_SCALE_MIN) {
+        scale->z = INSECT_PATH_SCALE_MIN;
+    } else if (scale->z > INSECT_PATH_SCALE_MAX) {
+        scale->z = INSECT_PATH_SCALE_MAX;
+    }
+}
+CLEAN_AS(func_ov068_02270d24, InsectPath_StretchScale)
+
+/* func_ov068_02270d54 (kinds 0xb and 0x3a, INSECT_PATH_GROWING): its scale's x eases towards
+ * 1.0 and all three take it; its height eases towards 2.5. Once both are there it chases
+ * (INSECT_PATH_CHASE) at scale 1.0, the music of priority 0x19 is dropped for music 0x3f, and
+ * this console's player gets flag 0x1a. */
+void InsectPath_Grow(TownInsect *insect)
+{
+    Vec3 *scale = &insect->scale;
+    int size = scale->x;
+    int grown = Approach_EaseS32MinMax(&size, 0x1000, 0x200, 0x1000, 0x19a) == 0;
+    scale->x = size;
+    scale->y = size;
+    scale->z = size;
+    if (Approach_EaseS32MinMax((int *) (void *) &insect->position.y, 0x2800, 0x199, 0x1000, 0x400) == 0 && grown) {
+        insect->action = INSECT_PATH_CHASE;
+        scale->x = 0x1000;
+        scale->y = 0x1000;
+        scale->z = 0x1000;
+        Music_DropPriority(INSECT_PATH_MUSIC_DROPPED);
+        Music_Add(INSECT_PATH_MUSIC_CHASE_PRIORITY, INSECT_PATH_MUSIC_CHASE, 0x7f, 0);
+        PlayerActorOps_SetFlag(INSECT_PATH_PLAYER_FLAG_CHASED, INSECT_PATH_PLAYER);
+    }
+}
+CLEAN_AS(func_ov068_02270d54, InsectPath_Grow)
+
+/* func_ov068_02270df8 (kinds 0xb and 0x3a, INSECT_PATH_EMERGING): it faces the player (when
+ * there is one), is made opaque and starts growing (INSECT_PATH_GROWING) from the smallest
+ * scale, its timer at 40, its animation at frame 0x2d and its speed (unk_21c) 0xf0; the music
+ * of priority 25 is given a value of 0. */
+void InsectPath_StartGrow(TownInsect *insect)
+{
+    const u8 *player = (const u8 *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
+    if (player != NULL) {
+        insect->angle_y = Vec_YawTo(&insect->position, actor_position(player));
+    }
+    NNS_G3dMdlSetMdlAlpha(insect_model(insect), 0, INSECT_PATH_OPAQUE);
+    insect->action = INSECT_PATH_GROWING;
+    insect->scale.x = 1;
+    insect->scale.y = 1;
+    insect->scale.z = 1;
+    insect->timer = 0x28;
+    insect->model.frames.frame = 0x2d000;
+    insect->unk_21c = 0xf0;
+    Music_AddValue(INSECT_PATH_MUSIC_GROW, 0, 0);
+}
+CLEAN_AS(func_ov068_02270df8, InsectPath_StartGrow)
+
+/* func_ov068_02270e80 (kind 0x32, action 0): a frame of following the player. *phase (its frame
+ * count, 0x242) steps by 0xaaa; its sound is off and it flaps (func_ov003_02234cc4).
+ *
+ * With a player: while it follows (unk_24a), its alarm (unk_254) counts up to 0xfe; from 60 on,
+ * within 1/16 of the player when the player takes state 0x79 (PlayerActorOps_RequestState79),
+ * it stops following and leaves (INSECT_PATH_LEAVE, *phase 0). Within 2.0 it starts following
+ * within 1/4 (the alarm from 0) and turns towards the player by at most 0x555; farther, beyond
+ * 1/2 a follow that has not reached 60 stops (the alarm back to 0), and it turns by at most
+ * 0x1554. A turn beyond the limit is the limit by a chance of 84 in 100 (79 in 100 farther),
+ * else none.
+ *
+ * Then it moves 8.0 steps of 0x29 along its facing, and its height follows *phase
+ * (func_ov003_02234dac, a divisor of 18-25). */
+void InsectPath_FollowPlayer(TownInsect *insect, s16 *phase)
+{
+    const u8 *player = (const u8 *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
+    Vec3 *position = &insect->position;
+    s16 turn = 0;
+    *phase = (s16) (*phase + 0xaaa);
+    func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
+    func_ov003_02234cc4(insect);
+    if (player != NULL) {
+        const Vec3 *at = actor_position(player);
+        fx32 distance = Vec_DistanceXZ(at, position);
+        u32 draw = (u8) MainRandom_Below(100);
+        s16 alarm = insect->unk_254;
+        s16 limit;
+        u32 bar;
+        turn = (s16) (Vec_YawTo(position, at) - insect->angle_y);
+        if (insect->unk_24a != 0) {
+            if (alarm < 0xfe) {
+                alarm++;
+                insect->unk_254 = (u8) alarm;
+            }
+            if (alarm >= 0x3c && distance < FX_Div(0x1000, 0x10000) && PlayerActorOps_RequestState79() != 0) {
+                insect->unk_24a = 0;
+                *phase = 0;
+                insect->action = INSECT_PATH_LEAVE;
+            }
+        }
+        if (distance < 0x2000) {
+            if (distance < FX_Div(0x1000, 0x4000) && insect->unk_24a == 0) {
+                insect->unk_24a = 1;
+                insect->unk_254 = 0;
+            }
+            limit = 0x555;
+            bar = 0xf;
+        } else {
+            if (distance > FX_Div(0x1000, 0x2000) && insect->unk_24a != 0 && alarm < 0x3c) {
+                insect->unk_24a = 0;
+                insect->unk_254 = 0;
+            }
+            limit = (s16) FX_Div(0x555, 0x4000);
+            bar = 0x14;
+        }
+        if (turn < (s16) -limit || turn > limit) {
+            if (turn > 0 && draw > bar) {
+                turn = limit;
+            } else if (turn < 0 && draw > bar) {
+                turn = (s16) -limit;
+            } else {
+                turn = 0;
+            }
+        }
+    }
+    s16 heading = (s16) (turn + insect->angle_y);
+    insect->angle_y = heading;
+    Vec3 way;
+    func_ov003_0223597c(&way, heading);
+    position->x += FX_MulFunc(way.x, 0x8000);
+    position->z += FX_MulFunc(way.z, 0x8000);
+    int divisor = (int) MainRandom_Below(8) + 0x12;
+    func_ov003_02234dac(insect, *phase, 0x2800, shift_12(divisor));
+}
+CLEAN_AS(func_ov068_02270e80, InsectPath_FollowPlayer)
+
+/* func_ov068_02271068 (kind 0x35, action 0x12): 1 once its timer (0x232) has run out. Before,
+ * it sways: its facing swings by 546 a frame between about 15 degrees either side (unk_24c the
+ * way it swings), and the timer counts down. QUIRK: the timer is counted in 16 bits, so -0x8000
+ * counts on to 0x7fff. */
+int InsectPath_Sway(TownInsect *insect)
+{
+    s16 angle = insect->angle_y;
+    s16 left = (s16) (insect->timer - 1);
+    if (left < 0) {
+        return 1;
+    }
+    if (insect->unk_24c != 0) {
+        if (angle > 2730) {
+            insect->unk_24c = 0;
+        }
+    } else if (angle < -2730) {
+        insect->unk_24c = 1;
+    }
+    if (insect->unk_24c != 0) {
+        angle = (s16) (angle + 546);
+    } else {
+        angle = (s16) (angle - 546);
+    }
+    insect->angle_y = angle;
+    insect->timer = left;
+    return 0;
+}
+CLEAN_AS(func_ov068_02271068, InsectPath_Sway)
+
+/* func_ov068_022710e4 (kind 0x35, action 0x13): when the player strikes its tile
+ * (FieldActor_PlayerStrikesTile) and there is a player, it is knocked 1.25 along x away from
+ * the player, swings either way (unk_24c) by an even chance, and gives 1; else 0. */
+int InsectPath_KnockedAside(TownInsect *insect)
+{
+    Vec3 *position = &insect->position;
+    if (FieldActor_PlayerStrikesTile(position) == 0) {
+        return 0;
+    }
+    const u8 *player = (const u8 *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
+    if (player == NULL) {
+        return 0;
+    }
+    if (position->x < actor_position(player)->x) {
+        position->x -= FX_Div(0x14000, 0x10000);
+    } else {
+        position->x += FX_Div(0x14000, 0x10000);
+    }
+    insect->unk_24c = MainRandom_Below(100) > 50 ? 0 : 1;
+    return 1;
+}
+CLEAN_AS(func_ov068_022710e4, InsectPath_KnockedAside)
+
+/* Kind 0x23 comes to rest: action INSECT_PATH_RESTING, its animation at frame 0, and a wait of
+ * 40-59 frames. */
+static void insect_rest(TownInsect *insect)
+{
+    insect->action = INSECT_PATH_RESTING;
+    AnimatedModel_SetFrame((AnimatedModel *) (void *) &insect->model, 0);
+    insect->timer = (s16) (MainRandom_Below(0x14) + 0x28);
+}
+
+/* func_ov068_02271160 (kind 0x23, action 4): a frame of circling the loose snowball it was
+ * placed by (unk_21c), which must be at rest; without one it rests.
+ *
+ * It keeps to a ring around the ball: the ball's size less 0.3 times how far its size is above
+ * the smallest, over the whole range of sizes (computed once). Every 20th frame (by its
+ * counter) the way round turns by a random 10 degrees either way (kept in its timer), on the
+ * others by that amount again; it faces the ball 5 degrees off one way on every fourth frame
+ * and the other way on the other even frames. The point 2.4 steps of 0x29 back from the ball
+ * along the way round is where the ring lies: inside it, the insect moves one step outwards,
+ * beyond the ring and 0.2 more three steps, else 2.4. Then the ball is placed there
+ * (Snowman_Place); when it refuses, the insect rests. */
+void InsectPath_CircleSnowball(TownInsect *insect)
+{
+    Snowman *ball = func_ov003_02236164(insect->unk_21c);
+    Vec3 *position = &insect->position;
+    if (ball == NULL) {
+        insect_rest(insect);
+        return;
+    }
+    const Vec3 *centre = &ball->position;
+    fx32 ring = Snowman_Size(ball);
+    s16 round = Vec_YawTo(centre, position);
+    s16 facing = round;
+    Vec3 point = *centre;
+    if ((data_ov068_022786c4 & 1) == 0) {
+        int largest = Snowman_MaxSize();
+        data_ov068_022786c0 = largest - Snowman_MinSize();
+        data_ov068_022786c4 |= 1;
+    }
+    ring -= FX_MulFunc(0x4cd, FX_Div(ring - Snowman_MinSize(), data_ov068_022786c0));
+    if (insect->counter % 0x14 == 0) {
+        s16 swing = (s16) (func_ov003_02233c70(6, 1) * 2);
+        round = (s16) (round + swing);
+        insect->timer = swing;
+    } else {
+        round = (s16) (round + insect->timer);
+    }
+    int counter = insect->counter;
+    if (counter % 4 == 0) {
+        facing = (s16) (facing + INSECT_PATH_TURN_LIMIT);
+    } else if (counter % 2 == 0) {
+        facing = (s16) (facing - INSECT_PATH_TURN_LIMIT);
+    }
+    insect->angle_y = facing;
+    Vec3 way;
+    func_ov003_0223597c(&way, round);
+    point.x -= FX_MulFunc(way.x, 0x2666);
+    point.z -= FX_MulFunc(way.z, 0x2666);
+    fx32 distance = Vec_DistanceXZ(&point, position);
+    if (distance < ring) {
+        position->x -= way.x;
+        position->z -= way.z;
+    } else if (distance > ring + 0x333) {
+        position->x -= FX_MulFunc(way.x, 0x3000);
+        position->z -= FX_MulFunc(way.z, 0x3000);
+    } else {
+        position->x -= FX_MulFunc(way.x, 0x2666);
+        position->z -= FX_MulFunc(way.z, 0x2666);
+    }
+    if (Snowman_Place(ball, &point) == 0) {
+        insect_rest(insect);
+    }
+}
+CLEAN_AS(func_ov068_02271160, InsectPath_CircleSnowball)
+
+/* func_ov068_02271358 (kind 0x23, INSECT_PATH_RESTING): while it stands on the ground
+ * (func_ov003_02232414), its wait counts down, and once out it leaves (INSECT_PATH_LEAVE). */
+void InsectPath_Rest(TownInsect *insect)
+{
+    s16 left = insect->timer;
+    if (func_ov003_02232414(insect) == 0) {
+        return;
+    }
+    if (left <= 0) {
+        insect->action = INSECT_PATH_LEAVE;
+        insect->frames_left = 0;
+    } else {
+        insect->timer = (s16) (left - 1);
+    }
+}
+CLEAN_AS(func_ov068_02271358, InsectPath_Rest)
+
+/* func_ov068_02271398 (kinds 0xa and 0x33, action 0): it flaps; alarmed out of reach
+ * (func_ov003_02234d70 gives 2) it stops fleeing; its sound is off. Unless fleeing it goes to
+ * its spot (InsectPath_GoToSpot), and kind 0xa without one leaves (INSECT_PATH_LEAVE). Then it
+ * wanders (steps of 0xaaa, every 30th frame by a chance of 29 in 100, at its scale unk_257) and
+ * its height follows its timer: for kind 0xa up to 1.125 with a divisor of 10-17 and the timer
+ * stepping by 0xaaa, for kind 0x33 up to 0.1 with a divisor of 18-25 and steps of 0x1554. */
+void InsectPath_Roam(TownInsect *insect)
+{
+    s16 heading = insect->angle_y;
+    s16 phase = insect->timer;
+    func_ov003_02234cc4(insect);
+    if (func_ov003_02234d70(insect) == 2) {
+        insect->unk_24a = 0;
+    }
+    func_ov003_022353a4(insect, INSECT_PATH_SOUND_IDLE, 1);
+    if (insect->unk_24a == 0 && InsectPath_GoToSpot(insect, &heading) == 0 && insect->kind == INSECT_PATH_KIND_0A) {
+        insect->frames_left = 0;
+        insect->action = INSECT_PATH_LEAVE;
+        return;
+    }
+    InsectPath_Wander(insect, &heading, 0xaaa, 0x1e, 0x46, insect->unk_257 << 12);
+    if (insect->kind == INSECT_PATH_KIND_0A) {
+        fx32 limit = FX_Div(0x12000, 0x10000);
+        int divisor = (int) MainRandom_Below(8) + 0xa;
+        func_ov003_02234dac(insect, phase, limit, shift_12(divisor));
+        insect->timer = (s16) (phase + 0xaaa);
+    } else {
+        int divisor = (int) MainRandom_Below(8) + 0x12;
+        func_ov003_02234dac(insect, phase, 0x19a, shift_12(divisor));
+        insect->timer = (s16) (phase + 0x1554);
+    }
+}
+CLEAN_AS(func_ov068_02271398, InsectPath_Roam)
+
+/* func_ov068_02271494: the tile of a town building nearest to the insect's tile: of the 'M'
+ * tiles of each building's shape (BuildingShapes_MTile) whose scene actor stands
+ * (SceneActor_Member1F4IsSet gives 1), at the actor's tile. Gives its distance in tiles, or -1
+ * for none; with one, *tile's x and z are its tile numbers.
+ * QUIRK: the first tile found is taken only when it lies no farther north than the insect;
+ * after that any nearer one.
+ * BUG: the middle of the tile is worked out (AcreTile_TileCentre) and dropped: *tile gets the
+ * tile's numbers, which InsectPath_ToBuilding then heads for as a point near the map's corner.
+ * BUGFIX gives the middle instead. */
+int InsectPath_NearestBuildingTile(TownInsect *insect, Vec3 *tile)
+{
+    int best = -1;
+    int best_x = 0;
+    int best_z = 0;
+    int x = 0;
+    int z = 0;
+    Vec3 centre = {-1, 0, -1};
+    Position_Tile(&x, &z, (const Position *) (const void *) &insect->position);
+    Vec3 here = {x, 0, z};
+    for (u32 i = 0; i < INSECT_PATH_BUILDINGS; i++) {
+        u16 code = MapCode_Building(i);
+        BuildingShapeEntry *shape = (BuildingShapeEntry *) BuildingShapes_Of(&code);
+        if (shape == NULL) {
+            continue;
+        }
+        u32 count = (u32) BuildingShapes_MCount(shape);
+        int shape_x = 0;
+        int shape_z = 0;
+        if (count == 0) {
+            continue;
+        }
+        SceneActor *building = ObjectActors_FindByCode(code);
+        if (building == NULL) {
+            continue;
+        }
+        for (u32 j = 0; j < count; j++) {
+            if (func_020b3e8c(shape, &shape_x, &shape_z, j) == 0) {
+                continue;
+            }
+            if (SceneActor_Member1F4IsSet(building) != 1) {
+                continue;
+            }
+            int tile_x = shape_x + SceneActor_TileX(building);
+            int tile_z = shape_z + (int) SceneActor_TileZ(building);
+            Vec3 there = {tile_x, 0, tile_z};
+            int distance = Vec_DistanceXZ(&here, &there);
+            if ((here.z <= tile_z && best < 0) || distance < best) {
+                best = distance;
+                best_x = tile_x;
+                best_z = tile_z;
+            }
+        }
+    }
+    if (best >= 0) {
+        AcreTile_TileCentre(&centre, (u32) best_x, (u32) best_z);
+#ifdef BUGFIX
+        tile->x = centre.x;
+        tile->z = centre.z;
+#else
+        tile->x = best_x;
+        tile->z = best_z;
+#endif
+    }
+    return best;
+}
+CLEAN_AS(func_ov068_02271494, InsectPath_NearestBuildingTile)
+
+/* func_ov068_022715a0 (kind 8, action 7 while not fleeing): on the nearest building's tile
+ * (InsectPath_NearestBuildingTile gives 0) it turns to angle 0x8000 (angle_x 1) and hovers again
+ * (action 0) with its animation at 1.0. Within 5 tiles it moves towards the tile, at most 2/64
+ * along x and z (*step the move), and gives 1; farther or without one it leaves
+ * (INSECT_PATH_LEAVE, *frames 0). Gives 0 but for a move. */
+int InsectPath_ToBuilding(TownInsect *insect, s16 *frames, Vec3 *step)
+{
+    Vec3 tile = {0, 0, 0};
+    Vec3 *position = &insect->position;
+    int distance = InsectPath_NearestBuildingTile(insect, &tile);
+    if (distance == 0) {
+        insect->angle_y = (s16) -0x8000;
+        insect->angle_x = 1;
+        insect->action = 0;
+        TownInsect_SetAnimSpeed(insect, 0x1000);
+    } else if (distance > 0 && distance < 5) {
+        Vec3 way;
+        Vec_Subtract(&way, position, &tile);
+        *step = way;
+        step->y = 0;
+        func_ov003_022321b8(step, step, 2);
+        VEC_Subtract(position, step, position);
+        return 1;
+    } else {
+        insect->action = INSECT_PATH_LEAVE;
+        *frames = 0;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov068_022715a0, InsectPath_ToBuilding)
+
+/* func_ov068_02271644 (kind 8, action 0): it counts its alarm (func_ov003_02234d70). Fleeing
+ * (unk_24a), with a player, kind 8 while angle_x is 1 turns 60 degrees from the player's side
+ * (angle_x back to 0) and its animation runs at 1.1.
+ *
+ * Otherwise it hovers: on every tenth frame (by its counter) by a chance of 69 in 100 it turns
+ * up and down the other way (unk_24c), else on every fifth frame across (unk_24b); it moves
+ * 0x30 times unk_257 along x and y by the ways it had. A building's tile found
+ * (InsectPath_NearestBuildingTile into unk_1e0) turns it back across to the x it had; below
+ * 1.3125 or above 3.125 it turns up and down and keeps the height it had.
+ * QUIRK: no tile found (-1) turns it back as a tile does; only a distance of 0 does not. */
+void InsectPath_Hover(TownInsect *insect)
+{
+    int across = insect->unk_24b;
+    u32 draw = (u8) MainRandom_Below(100);
+    Vec3 *position = &insect->position;
+    int up = insect->unk_24c;
+    Vec3 before = *position;
+    func_ov003_02234d70(insect);
+    if (insect->unk_24a != 0) {
+        const u8 *player = (const u8 *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
+        if (player == NULL || insect->angle_x != 1 || insect->kind != INSECT_PATH_KIND_HOVERS) {
+            return;
+        }
+        s16 turn = (s16) (position->x > actor_position(player)->x ? 0x2aaa : -0x2aaa);
+        insect->angle_x = 0;
+        insect->angle_y = turn;
+        TownInsect_SetAnimSpeed(insect, 0x119a);
+        return;
+    }
+    int counter = insect->counter;
+    if (counter % 10 == 0 && draw > 0x1e) {
+        insect->unk_24c = (u8) (up == 0);
+    } else if (counter % 5 == 0 && draw > 0x1e) {
+        insect->unk_24b = (u8) (across == 0);
+    }
+    if (across != 0) {
+        position->x += insect->unk_257 * 0x30;
+    } else {
+        position->x -= insect->unk_257 * 0x30;
+    }
+    if (up != 0) {
+        position->y += insect->unk_257 * 0x30;
+    } else {
+        position->y -= insect->unk_257 * 0x30;
+    }
+    if (InsectPath_NearestBuildingTile(insect, &insect->unk_1e0) != 0) {
+        insect->unk_24b = (u8) (across == 0);
+        position->x = before.x;
+    }
+    if (FX_Div(0x15000, 0x10000) > position->y || FX_Div(0x32000, 0x10000) < position->y) {
+        insect->unk_24c = (u8) (up == 0);
+        position->y = before.y;
+    }
+}
+CLEAN_AS(func_ov068_02271644, InsectPath_Hover)
+
+/* The height an insect perches at on what lies at `item`, 0 for nothing to perch on. */
+static fx32 perch_height(const u16 *item)
+{
+    if (item == NULL) {
+        return 0;
+    }
+    if (*item == INSECT_PATH_PERCH_BUILDING) {
+        return INSECT_PATH_PERCH_BUILDING_HEIGHT;
+    }
+    if (*item >= INSECT_PATH_PERCH_FIRST && *item <= INSECT_PATH_PERCH_LAST) {
+        return INSECT_PATH_PERCH_ITEM_HEIGHT;
+    }
+    return 0;
+}
+
+static u16 *item_on_tile(AcreMap *map, int x, int z)
+{
+    int acre_x = x >> 4;
+    int acre_z = z >> 4;
+    return AcreTile_ItemInAcre(map, (u32) acre_x, (u32) acre_z, x - acre_x * 16, z - acre_z * 16, 0);
+}
+
+/* func_ov068_022717e0 (kinds 0x15-0x17, action 4 with a perch): while the perch (unk_1e0) still
+ * holds something to perch on and it is not fleeing, it flies at it (10.0 steps a frame,
+ * facing it) until within 0.15, and comes down by 0.05 a frame until within 0.1 above the
+ * perch's height; there it is calm again (action 0x13). Otherwise it forgets the perch (bits 4-7
+ * of unk_21c cleared) and is calm. */
+void InsectPath_GoToPerch(TownInsect *insect)
+{
+    Vec3 *position = &insect->position;
+    Vec3 *perch = &insect->unk_1e0;
+    AcreMap *map = data_021c80bc;
+    int x = 0;
+    int z = 0;
+    fx32 distance = Vec_DistanceXZ(position, perch);
+    u8 there = 0;
+    Position_Tile(&x, &z, (const Position *) (const void *) perch);
+    fx32 height = perch_height(item_on_tile(map, x, z));
+    if (height > 0 && insect->unk_24a == 0) {
+        if (distance > 0x266) {
+            s16 angle = Vec_YawTo(position, perch);
+            Vec3 way;
+            func_ov003_0223597c(&way, angle);
+            insect->angle_y = angle;
+            position->x += FX_MulFunc(way.x, 0xa000);
+            position->z += FX_MulFunc(way.z, 0xa000);
+        } else {
+            there++;
+        }
+        if (height < position->y - 0x19a) {
+            position->y -= 0xcd;
+        } else {
+            there++;
+        }
+        if (there >= 2) {
+            insect->action = INSECT_PATH_CALM;
+        }
+    } else {
+        insect->unk_21c &= 0xff0f;
+        insect->action = INSECT_PATH_CALM;
+    }
+}
+CLEAN_AS(func_ov068_022717e0, InsectPath_GoToPerch)
+
+/* func_ov068_0227191c (kind 0x19, while gliding): something ahead (func_ov003_02235b54, 160
+ * percent of a feeler, 20 degrees either side) turns it round within 60 degrees
+ * (INSECT_PATH_TURNING to unk_240) and ends the glide (*frames 0). */
+void InsectPath_TurnFromObstacle(TownInsect *insect, u16 *frames)
+{
+    if (func_ov003_02235b54(insect, 0xa0, 0xe38) != 0) {
+        int back = -0x8000;
+        back += func_ov003_02233c70(0xc, 1);
+        insect->unk_240 = (s16) back;
+        insect->action = INSECT_PATH_TURNING;
+        *frames = 0;
+    }
+}
+CLEAN_AS(func_ov068_0227191c, InsectPath_TurnFromObstacle)
+
+/* func_ov068_02271960 (kind 0x19, actions 3 and INSECT_PATH_TURNING): it takes a new heading:
+ * turned by unk_240 after a turn, else by a random number of steps of 15 degrees (a new number
+ * below 5 drawn for each step) either way by an even chance. Then it glides
+ * (INSECT_PATH_GLIDE) for 8-15 frames, and effect set 0x1f starts 1/16 above it, turned as it
+ * faced before. */
+void InsectPath_PickHeading(TownInsect *insect, s16 *frames)
+{
+    s16 facing = insect->angle_y;
+    s16 heading = 0;
+    if (insect->action == INSECT_PATH_TURNING) {
+        heading = (s16) (facing + insect->unk_240);
+    } else {
+        for (u8 i = 0; i < MainRandom_Below(5); i++) {
+            heading = (s16) (heading + 0xaaa);
+        }
+        if (MainRandom_Below(100) > 0x32) {
+            heading = (s16) -heading;
+        }
+        heading = (s16) (heading + facing);
+    }
+    insect->action = INSECT_PATH_GLIDE;
+    insect->angle_y = heading;
+    *frames = (s16) (MainRandom_Below(8) + 8);
+    Vec3 at = insect->position;
+    at.y += 0x100;
+    EffectSystem_StartOneShotSetNumber(0x1f, &at, &facing, NULL);
+}
+CLEAN_AS(func_ov068_02271960, InsectPath_PickHeading)
+
+/* func_ov068_02271a14 (kind 0x19, INSECT_PATH_GLIDE): it glides along its facing, *frames times
+ * unk_257 steps of 0x29 (fewer each frame, *frames counting down). On ground of group 2
+ * (UnitTypeInfo_GroupAt) within its box (the south-west corner at 0x1b0, the north-east one at
+ * 0x1bc) it goes on until *frames is out, then is calm (action 0x13) with a wait of 3 times a
+ * random number below 20. Elsewhere it goes back to where it was and turns round within 60
+ * degrees (INSECT_PATH_TURNING, *frames 0). */
+void InsectPath_Glide(TownInsect *insect, s16 *frames)
+{
+    Vec3 *position = &insect->position;
+    Vec3 before = *position;
+    const Vec3 *north_east = (const Vec3 *) (const void *) (insect->unk_1b0 + 0xc);
+    const Vec3 *south_west = (const Vec3 *) (const void *) insect->unk_1b0;
+    int x = 0;
+    int z = 0;
+    Vec3 way = {0, 0, 0x29};
+    Vec_RotateY(&way, insect->angle_y);
+    position->x += FX_MulFunc(shift_12(*frames * insect->unk_257), way.x);
+    position->z += FX_MulFunc(shift_12(*frames * insect->unk_257), way.z);
+    *frames = (s16) (*frames - 1);
+    Position_Tile(&x, &z, (const Position *) (const void *) position);
+    if (UnitTypeInfo_GroupAt(x, z) == 2 && position->x >= south_west->x && position->x <= north_east->x &&
+        position->z <= south_west->z && position->z >= north_east->z) {
+        if (*frames > 0) {
+            return;
+        }
+        insect->action = INSECT_PATH_CALM;
+        insect->timer = (s16) (3 * MainRandom_Below(0x14));
+        return;
+    }
+    *position = before;
+    insect->unk_240 = (s16) (func_ov003_02233c70(0xc, 1) + -0x8000);
+    insect->action = INSECT_PATH_TURNING;
+    *frames = 0;
+}
+CLEAN_AS(func_ov068_02271a14, InsectPath_Glide)
+
+/* func_ov068_02271b30 (kinds 0x15-0x17): a perch among the tiles around the insect's (within
+ * the tiles 0x10-0x50): the first, by columns west to east, holding something to perch on.
+ * Found, it becomes the perch (unk_1e0, the tile's middle, 0.35 farther south on item 0x500a),
+ * unk_21c counts one up in bits 4-7, unk_240 is the facing plus the way to it, and the insect
+ * takes INSECT_PATH_PERCHING; gives 1, else 0.
+ * QUIRK: the tile numbers are kept in bytes; a tile below -1 makes the last row or column 0xff
+ * or more, and that loop never ends. */
+int InsectPath_FindPerch(TownInsect *insect)
+{
+    Vec3 *perch = &insect->unk_1e0;
+    Vec3 *position = &insect->position;
+    int x = 0;
+    int z = 0;
+    AcreMap *map = data_021c80bc;
+    Position_Tile(&x, &z, (const Position *) (const void *) position);
+    int first_x = x - 1 < INSECT_PATH_PERCH_TILE_FIRST ? INSECT_PATH_PERCH_TILE_FIRST : x - 1;
+    int first_z = z - 1 < INSECT_PATH_PERCH_TILE_FIRST ? INSECT_PATH_PERCH_TILE_FIRST : z - 1;
+    int last_x = x + 1 > INSECT_PATH_PERCH_TILE_LAST ? INSECT_PATH_PERCH_TILE_LAST : x + 1;
+    int last_z = z + 1 > INSECT_PATH_PERCH_TILE_LAST ? INSECT_PATH_PERCH_TILE_LAST : z + 1;
+    u8 z_first = (u8) first_z;
+    u8 x_last = (u8) last_x;
+    u8 z_last = (u8) last_z;
+    for (u8 i = (u8) first_x; i <= x_last; i++) {
+        for (u8 j = z_first; j <= z_last; j++) {
+            const u16 *item = item_on_tile(map, i, j);
+            if (item == NULL) {
+                continue;
+            }
+            int on_building;
+            if (*item == INSECT_PATH_PERCH_BUILDING) {
+                on_building = 1;
+            } else if (*item >= INSECT_PATH_PERCH_FIRST && *item <= INSECT_PATH_PERCH_LAST) {
+                on_building = 0;
+            } else {
+                continue;
+            }
+            AcreTile_TileCentre(perch, i, j);
+            if (on_building) {
+                perch->z += 0x59a;
+            }
+            insect->unk_21c += 0x10;
+            s16 facing = insect->angle_y;
+            insect->unk_240 = (s16) (Vec_YawTo(position, perch) + facing);
+            insect->action = INSECT_PATH_PERCHING;
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov068_02271b30, InsectPath_FindPerch)
+
+/* func_ov068_02271c58: the alarm (unk_254, at most 0xfe) one actor raises, from its `speed`
+ * and its `distance`: within 2.0 by 25; beyond the insect's reach, or standing still, not at
+ * all and *calm is 1 (else 0); otherwise by 1 at a speed up to 1000, 3 up to 1100, 5 up to
+ * 1168, 8 at 1169, else 15. */
+void InsectPath_Alarm(TownInsect *insect, u8 *calm, int speed, int distance)
+{
+    s16 alarm = insect->unk_254;
+    fx32 reach = insect->reach;
+    *calm = 0;
+    if (distance < 0x2000) {
+        alarm += 25;
+    } else if (distance > reach || speed == 0) {
+        *calm = 1;
+    } else if (speed <= 1000) {
+        alarm += 1;
+    } else if (speed <= 1100) {
+        alarm += 3;
+    } else if (speed <= 1168) {
+        alarm += 5;
+    } else if (speed == 1169) {
+        alarm += 8;
+    } else {
+        alarm += 15;
+    }
+    if (alarm > 254) {
+        alarm = 254;
+    }
+    insect->unk_254 = (u8) alarm;
+}
+CLEAN_AS(func_ov068_02271c58, InsectPath_Alarm)
+
+/* func_ov068_02271cec (outside a session): the alarm from this console's player and from each
+ * actor of main's table (InsectPath_Alarm); *calm stays 1 only while none raised it.
+ * *nearest is the player's position (when there is a player), then that of any actor
+ * nearer. */
+void InsectPath_SensePlayers(TownInsect *insect, u8 *calm, Vec3 *nearest)
+{
+    fx32 least = 0x0fffffff;
+    u8 unmoved = 1;
+    const Actor *player = (const Actor *) SessionPlayers_ActorOf(INSECT_PATH_PLAYER);
+    Vec3 *position = &insect->position;
+    if (player != NULL) {
+        *nearest = player->position;
+        least = Vec_DistanceXZ(nearest, position);
+        InsectPath_Alarm(insect, &unmoved, player->speed, least);
+        *calm = (*calm & unmoved) ? 1 : 0;
+    }
+    for (u8 i = 0; i < Actors_SlotCount(); i++) {
+        const Actor *actor = (const Actor *) Actors_Slot(i);
+        if (actor == NULL) {
+            continue;
+        }
+        Vec3 at = actor->position;
+        fx32 distance = Vec_DistanceXZ(&at, position);
+        InsectPath_Alarm(insect, &unmoved, actor->speed, distance);
+        *calm = (*calm & unmoved) ? 1 : 0;
+        if (least > distance) {
+            least = distance;
+            *nearest = at;
+        }
+    }
+}
+CLEAN_AS(func_ov068_02271cec, InsectPath_SensePlayers)

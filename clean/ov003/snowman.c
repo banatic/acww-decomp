@@ -370,9 +370,6 @@ extern int func_0205556c(SnowmanModel *model, u32 tag, const char *path);
 extern void func_02055e7c(SnowmanModel *model, const Vec3 *scale);
 extern void func_020acc0c(Vec3 *position, int size, int a, int b);
 extern void func_0203efb0(Snowman *snowman, u16 value);
-/* Overlay 3's table of balls: leaving it and entering it under the index's low three bits. */
-extern int func_ov003_02236230(Snowman *snowman);
-extern int func_ov003_02236254(Snowman *snowman);
 /* Destructors and constructors of the parts: the collider, a model, the receiver part, the
  * base, and the body's base. */
 extern void func_02032c50(void *collider);
@@ -1088,7 +1085,7 @@ void Snowman_Leave(Snowman *snowman)
         saved[snowman->index & 1].size = size;
     }
     SoundEmitter_Vfunc10B(snowman_sound(snowman));
-    func_ov003_02236230(snowman);
+    Snowman_Unregister(snowman);
 }
 CLEAN_AS(func_ov003_0221b174, Snowman_Leave)
 
@@ -1179,7 +1176,7 @@ void Snowman_Init(Snowman *snowman)
     Snowman_UpdateModels(snowman, 0, 0);
     SoundEmitter_StopB(snowman_sound(snowman));
     func_0203edd0(snowman);
-    func_ov003_02236254(snowman);
+    Snowman_Register(snowman);
 }
 CLEAN_AS(func_ov003_0221b414, Snowman_Init)
 
@@ -1334,3 +1331,92 @@ Snowman *Snowman_ReceiverDestroy(void *receiver)
     return Snowman_Destroy(snowman_of(receiver));
 }
 CLEAN_AS(_ZThn236_N18Obj_ov003_022382acD1Ev, Snowman_ReceiverDestroy)
+
+/* ---- Overlay 3's table of balls */
+
+/* The balls by the low three bits of their index (snowman.h); a free entry is NULL. */
+extern Snowman *data_ov003_02262b38[8];
+
+#define SNOWMAN_TABLE_SIZE 8
+
+/* func_ov003_02236128: the first ball of the table other than `ball` that can roll
+ * (Snowman_CanRoll), or NULL. */
+Snowman *Snowman_OtherRollable(Snowman *ball)
+{
+    for (u32 i = 0; i < SNOWMAN_TABLE_SIZE; i++) {
+        Snowman *other = data_ov003_02262b38[i];
+        if (other == NULL || other == ball) {
+            continue;
+        }
+        if (Snowman_CanRoll(other) != 0) {
+            return other;
+        }
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov003_02236128, Snowman_OtherRollable)
+
+/* func_ov003_02236164: loose ball `index & 1` when it is at rest: in the first machine's state
+ * 0, not talking, not pushed this frame and not hit; else NULL. */
+Snowman *Snowman_IdleLooseBall(int index)
+{
+    Snowman *ball = Snowman_Find(index & 1);
+    if (ball != NULL && ball->talk_state == SNOWMAN_TALK_IDLE && ball->scene_state == SNOWMAN_STATE_LOOSE &&
+        (ball->flags & SNOWMAN_FLAG_PUSHED) == 0 && ball->body.body.hit == 0) {
+        return ball;
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov003_02236164, Snowman_IdleLooseBall)
+
+/* func_ov003_022361bc: each ball of the table offered the push (Snowman_Push) in turn, until
+ * one takes it; whether one did. */
+int Snowman_PushAny(Vec3 *behind, s16 *angle, int *speed, int force, int direction)
+{
+    for (u32 i = 0; i < SNOWMAN_TABLE_SIZE; i++) {
+        if (data_ov003_02262b38[i] != NULL &&
+            Snowman_Push(data_ov003_02262b38[i], behind, angle, speed, force, direction) != 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_022361bc, Snowman_PushAny)
+
+/* func_ov003_02236204: the ball of the table whose index is `index`, or NULL. */
+Snowman *Snowman_Find(int index)
+{
+    for (u32 i = 0; i < SNOWMAN_TABLE_SIZE; i++) {
+        Snowman *ball = data_ov003_02262b38[i];
+        if (ball != NULL && (u32) index == ball->index) {
+            return ball;
+        }
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov003_02236204, Snowman_Find)
+
+/* func_ov003_02236230: the ball taken out of its entry of the table (the low three bits of its
+ * index); whether it was there. */
+int Snowman_Unregister(Snowman *ball)
+{
+    u32 slot = ball->index & 7;
+    if (data_ov003_02262b38[slot] == ball) {
+        data_ov003_02262b38[slot] = NULL;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_02236230, Snowman_Unregister)
+
+/* func_ov003_02236254: the ball put in its entry of the table; 0 when the entry is taken. */
+int Snowman_Register(Snowman *ball)
+{
+    u32 slot = ball->index & 7;
+    if (data_ov003_02262b38[slot] != NULL) {
+        return 0;
+    }
+    data_ov003_02262b38[slot] = ball;
+    return 1;
+}
+CLEAN_AS(func_ov003_02236254, Snowman_Register)

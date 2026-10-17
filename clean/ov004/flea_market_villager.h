@@ -10,6 +10,23 @@
  * the list of spots of its house's items (0xa58, with its count at 0xa5c,
  * main's villager_furniture.h).
  *
+ * Its state (0x8a4) picks an entry and an update function (C++ members taking the villager) from
+ * the table data_ov004_02257d58, filled at start-up (__sinit_ov004_0224e39c):
+ *   0  call:   it stands, and asks for an event of kind 6 about it each frame;
+ *   1  talk:   it turns to the talk's partner and talks; once its action is idle the trade's
+ *              stage 0 becomes 1, the item asked about none, its event ends: state 2;
+ *   2  wait:   nothing;
+ *   3  bye:    it turns to the partner and talks (the camera kept); once idle the room's exit
+ *              0 is taken: state 2;
+ *   4  watch:  it stands looking at the player: far from them on a path it may take, state 6;
+ *              turned away from them by more than an eighth of a turn, state 5; then it asks
+ *              for the event of the player at the room's start point or of an item asked about;
+ *   5  turn:   it turns to the player; far again, state 6; the turn done, state 4;
+ *   6  follow: it walks (runs when far) to the player, asking first for the events of state 4;
+ *              close or blocked, state 4;
+ *   7  come:   it walks (runs when far) to the player for at most 50 frames, then readies its
+ *              talk: state 1.
+ *
  * The stages, as the code here reads them: 1 the villager asks whether the player wants to
  * buy ("q11_trade1"); 2 the player looks about the room and may ask about the item ahead of
  * them; 3 the player stands at the room's start point. The states of its machine are set by
@@ -21,7 +38,17 @@
 #include "main/villager_talk.h"
 #include "types.h"
 
+#include "member_pointer.h"
+
 struct FleaMarketVillager;
+
+/* A state's functions in data_ov004_02257d58. */
+typedef struct FleaMarketVillagerStep {
+    MemberPointer enter;  /* 0x00: int (villager) */
+    MemberPointer update; /* 0x08: int (villager) */
+} FleaMarketVillagerStep;
+
+#define FLEA_MARKET_VILLAGER_STATES 8
 
 /* Its talk scene (0x1ac bytes, vtable data_ov004_02253b24). */
 typedef struct FleaMarketTalk {
@@ -38,10 +65,10 @@ typedef struct FleaMarketVillager {
     u16 item;                                /* 0x898: the item asked about, 0xfff1 for none */
     u8 unk_89a[2];                           /* 0x89a */
     VillagerFurnitureTile tile;              /* 0x89c: its tile, (-1, -1) when not for sale */
-    u8 unk_8a4[4];                           /* 0x8a4 */
+    s32 state;                               /* 0x8a4: its state, FleaMarketVillager_SetState */
     FleaMarketTalk talk;                     /* 0x8a8 */
     u8 stage;                                /* 0xa54 */
-    u8 unk_a55;                              /* 0xa55 */
+    u8 walk_wait;                            /* 0xa55: frames left of state 7's walk */
     u8 sound_played;                         /* 0xa56 */
     u8 unk_a57;                              /* 0xa57 */
     const VillagerFurnitureSpot *spots;      /* 0xa58: the spots of its house's items */
@@ -66,5 +93,26 @@ void FleaMarketTalk_Start(FleaMarketTalk *talk, FleaMarketVillager *villager);
 FleaMarketTalk *FleaMarketTalk_Delete(FleaMarketTalk *talk);
 FleaMarketTalk *FleaMarketTalk_Destroy(FleaMarketTalk *talk);
 FleaMarketTalk *FleaMarketTalk_Construct(FleaMarketTalk *talk);
+int FleaMarketVillager_UpdateCome(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterCome(FleaMarketVillager *villager);
+int FleaMarketVillager_UpdateWait(void);
+int FleaMarketVillager_UpdateTalk(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterTalk(FleaMarketVillager *villager);
+int FleaMarketVillager_UpdateBye(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterBye(FleaMarketVillager *villager);
+int FleaMarketVillager_UpdateFollow(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterFollow(FleaMarketVillager *villager);
+int FleaMarketVillager_UpdateTurn(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterTurn(FleaMarketVillager *villager);
+int FleaMarketVillager_UpdateWatch(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterWatch(FleaMarketVillager *villager);
+int FleaMarketVillager_UpdateCall(FleaMarketVillager *villager);
+int FleaMarketVillager_EnterCall(FleaMarketVillager *villager);
+void FleaMarketVillager_SetState(FleaMarketVillager *villager, int state);
+int FleaMarketVillager_RunState(FleaMarketVillager *villager);
+int FleaMarketVillager_Leave(FleaMarketVillager *villager);
+int FleaMarketVillager_Start(FleaMarketVillager *villager);
+int FleaMarketVillager_Init(FleaMarketVillager *villager);
+FleaMarketVillager *FleaMarketVillager_New(void);
 
 #endif

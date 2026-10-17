@@ -6,6 +6,7 @@
 #include "main/frame_ctrl.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"
+#include "ov003/town_insect_moves.h"
 
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 extern void NNS_G3dMdlSetMdlAlpha(void *model, int material, int alpha);
@@ -28,7 +29,6 @@ extern void func_ov003_02233d68(TownInsect *insect);
 extern void func_ov003_02233890(TownInsect *insect);
 extern void func_ov003_022337d8(TownInsect *insect);
 extern void func_ov003_02232a44(TownInsect *insect);
-extern void func_ov003_02234b80(TownInsect *insect);
 /* The box the insect keeps to (its words 0x1b0-0x1c7), set around where it is by its kind. */
 extern void func_ov003_02230f88(TownInsect *insect);
 /* The insect moved to a side of where it is, at random, and 3.0 up. */
@@ -545,7 +545,7 @@ CLEAN_AS(func_ov003_02230c3c, TownInsectKind_BeginPaced)
 /* func_ov003_02230cb8 (kinds 0-7's update). */
 void TownInsectKind_Update00To07(TownInsect *insect)
 {
-    func_ov003_02234b80(insect);
+    TownInsectMove_Update00To07(insect);
 }
 CLEAN_AS(func_ov003_02230cb8, TownInsectKind_Update00To07)
 

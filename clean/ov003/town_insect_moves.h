@@ -34,6 +34,7 @@
 #define CLEAN_OV003_TOWN_INSECT_MOVES_H
 
 #include "autoload_2/vector.h"
+#include "main/actor.h"
 #include "ov003/town_insect.h"
 #include "types.h"
 
@@ -97,5 +98,36 @@ void TownInsectMove_FlyToTarget(TownInsect *insect);
 void TownInsectMove_Hover(TownInsect *insect, short *frames);
 void TownInsectMove_UpdateTurned(TownInsect *insect);
 int TownInsectMove_TestFlags(int value);
+void TownInsectMove_FlapCycle(TownInsect *insect, short *frames);
+void TownInsectMove_Escape(TownInsect *insect, fx32 speed);
+int TownInsectMove_WaitOver(TownInsect *insect);
+void TownInsectMove_FlyBobbing(TownInsect *insect);
+void TownInsectMove_Update00To07(TownInsect *insect);
+void TownInsectMove_ToggleFrame(TownInsect *insect);
+void TownInsectMove_AlarmTurn(TownInsect *insect, const Vec3 *nearest);
+int TownInsectMove_Sense(TownInsect *insect);
+void TownInsectMove_Bob(TownInsect *insect, int frame, int limit, fx32 divisor);
+void TownInsectMove_Meander(TownInsect *insect, short *heading, int step, int divisor, u8 threshold, fx32 scale);
+int TownInsectMove_KindSpeed(TownInsect *insect);
+int TownInsectMove_KindReach(TownInsect *insect);
+int TownInsectMove_KindLeash(TownInsect *insect);
+void TownInsectMove_SetTurnDelay(TownInsect *insect);
+void TownInsectMove_TurnBack(TownInsect *insect, const Vec3 *point, int step);
+int TownInsectMove_SoundNumber(int kind, int which);
+void TownInsectMove_PlaySound(TownInsect *insect, int which, int play);
+int TownInsectMove_CountStand(TownInsect *insect, const Vec3 *point);
+int TownInsectMove_Splash(TownInsect *insect);
+int TownInsectMove_SuitsCode(int kind, const u16 *code);
+void TownInsectMove_OnSpot(TownInsect *insect);
+Actor *TownInsectMove_NearestPlayer(const Vec3 *point);
+int TownInsectMove_TargetAhead(TownInsect *insect, int angle, int steps);
+int TownInsectMove_SetTarget(TownInsect *insect, int angle, fx32 distance);
+void TownInsectMove_FleeIfFlagged(TownInsect *insect, int most);
+int TownInsectMove_OnGroupTile(const Vec3 *point);
+void TownInsectMove_StepAlong(Vec3 *step, int angle);
+int TownInsectMove_PlaceFeelers(TownInsect *insect, int percent, int spread);
+int TownInsectMove_FeelersOffGround(TownInsect *insect);
+int TownInsectMove_FeelersBlocked(TownInsect *insect);
+int TownInsectMove_FeelObstacles(TownInsect *insect, int reach, int spread);
 
 #endif

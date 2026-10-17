@@ -3,14 +3,19 @@
 
 #include <stdint.h>
 
+#include "autoload_2/approach.h"
 #include "autoload_2/heap.h"
 #include "autoload_2/input.h"
 #include "autoload_2/vector.h"
 #include "clean.h"
+#include "main/acre_templates.h"
+#include "main/acre_tile.h"
+#include "main/actor.h"
 #include "main/actor_table.h"
 #include "main/collision_map.h"
 #include "main/current_pockets.h"
 #include "main/event_queue.h"
+#include "main/footsteps.h"
 #include "main/item_code.h"
 #include "main/item_traits.h"
 #include "main/main_random.h"
@@ -22,8 +27,13 @@
 #include "main/scene_action.h"
 #include "main/scene_base.h"
 #include "main/scene_bells.h"
+#include "main/scene_exit.h"
+#include "main/scene_motion_request.h"
+#include "main/scene_mover.h"
+#include "main/scene_path_step.h"
 #include "main/scene_object.h"
 #include "main/scene_query.h"
+#include "main/scene_tables.h"
 #include "main/screen_panels.h"
 #include "main/session_players.h"
 #include "main/talk_answers.h"
@@ -48,6 +58,9 @@ static_assert(offsetof(FleaMarketVillager, stage) == 0xa54, "stage");
 static_assert(offsetof(FleaMarketVillager, sound_played) == 0xa56, "sound played");
 static_assert(offsetof(FleaMarketVillager, spots) == 0xa58, "spots");
 static_assert(offsetof(FleaMarketVillager, spot_count) == 0xa5c, "spot count");
+static_assert(offsetof(FleaMarketVillager, state) == 0x8a4, "state");
+static_assert(offsetof(FleaMarketVillager, walk_wait) == 0xa55, "walk wait");
+static_assert(sizeof(FleaMarketVillagerStep) == 0x10, "a state's functions");
 static_assert(sizeof(FleaMarketVillager) == 0xa60, "the size func_ov004_0221ff70 allocates");
 
 /* The parts of the town villager scene object used here, by place (main's scene_object.h). */
@@ -105,8 +118,6 @@ extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
 /* The class's functions kept as the game's. */
-/* Its state (machine of the class). */
-extern void func_ov004_0221fdf4(FleaMarketVillager *villager, int state);
 /* The grid of the room's objects, the number at a cell of it (-1 for none) and the object
  * there (NULL for none); the room object taken away by number. */
 extern void *func_ov004_0223cd50(void);
@@ -289,7 +300,7 @@ int FleaMarketVillager_PickItemAhead(FleaMarketVillager *villager)
 }
 CLEAN_AS(func_ov004_0221ef90, FleaMarketVillager_PickItemAhead)
 
-/* The states func_ov004_0221fdf4 is asked for here. */
+/* The states asked for here (FleaMarketVillager_SetState). */
 #define FLEA_MARKET_STATE_1 1
 #define FLEA_MARKET_STATE_3 3
 #define FLEA_MARKET_STATE_4 4
@@ -318,19 +329,19 @@ void FleaMarketVillager_OnEvent(FleaMarketVillager *villager, int code)
         case FLEA_MARKET_EVENT_1:
             fm_ready_talk(villager);
             if (villager->stage == FLEA_MARKET_STAGE_NONE) {
-                func_ov004_0221fdf4(villager, FLEA_MARKET_STATE_1);
+                FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_1);
             } else if (villager->stage == FLEA_MARKET_STAGE_AT_START) {
-                func_ov004_0221fdf4(villager, FLEA_MARKET_STATE_3);
+                FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_3);
             } else {
-                func_ov004_0221fdf4(villager, FLEA_MARKET_STATE_7);
+                FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_7);
             }
             break;
         case FLEA_MARKET_EVENT_TALK:
             fm_ready_talk(villager);
-            func_ov004_0221fdf4(villager, FLEA_MARKET_STATE_1);
+            FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_1);
             break;
         case FLEA_MARKET_EVENT_ENDED:
-            func_ov004_0221fdf4(villager, FLEA_MARKET_STATE_4);
+            FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_4);
             break;
         default:
             break;
@@ -611,3 +622,392 @@ FleaMarketTalk *FleaMarketTalk_Construct(FleaMarketTalk *talk)
     return talk;
 }
 CLEAN_AS(func_ov004_0221f860, FleaMarketTalk_Construct)
+
+/* The parts of the town villager scene object its states use, by place (main's scene_object.h). */
+#define FLEA_MARKET_MOVER 0x350     /* SceneMover */
+#define FLEA_MARKET_FOOTSTEPS 0x558 /* Footsteps */
+#define FLEA_MARKET_MOTION 0x564    /* SceneMotion */
+
+/* Its states (FleaMarketVillager_SetState, flea_market_villager.h). */
+#define FLEA_MARKET_STATE_CALL 0
+#define FLEA_MARKET_STATE_TALK 1
+#define FLEA_MARKET_STATE_WAIT 2
+#define FLEA_MARKET_STATE_WATCH 4
+#define FLEA_MARKET_STATE_TURN 5
+#define FLEA_MARKET_STATE_FOLLOW 6
+
+/* The kinds of motion asked for (scene_motion_request.h) and the rate of its run. */
+#define FLEA_MARKET_MOTION_STAND 0
+#define FLEA_MARKET_MOTION_WALK 1
+#define FLEA_MARKET_MOTION_RUN 2
+#define FLEA_MARKET_MOTION_TURN 3
+#define FLEA_MARKET_RUN_RATE 0x800
+
+/* Farther from the player than this it runs, and than this it follows them (20.12). */
+#define FLEA_MARKET_RUN_DISTANCE 0x4000
+#define FLEA_MARKET_FOLLOW_DISTANCE 0x3000
+/* Turned away from the player by more than this (an eighth of a turn) it turns to them. */
+#define FLEA_MARKET_TURN_ANGLE 0x2000
+/* The frames of state 7's walk. */
+#define FLEA_MARKET_COME_FRAMES 0x32
+
+/* The word its motion requests carry, and the map of the scene. */
+extern u16 data_020c80f8;
+extern AcreMap *data_021c80bc;
+/* The current heap. */
+extern Heap *data_021fbe94;
+/* Its states' functions (filled at start-up from the overlay's constants). */
+extern FleaMarketVillagerStep data_ov004_02257d58[FLEA_MARKET_VILLAGER_STATES];
+
+/* Notes that a villager of the flea market is in the room (sets data_ov004_022595b4). */
+extern void func_ov004_0223d33c(void);
+
+static Actor *fm_actor_of(FleaMarketVillager *villager)
+{
+    return (Actor *) (void *) villager->base;
+}
+
+static SceneMotion *fm_motion_of(FleaMarketVillager *villager)
+{
+    return (SceneMotion *) (void *) fm_part(villager, FLEA_MARKET_MOTION);
+}
+
+static SceneMover *fm_mover_of(FleaMarketVillager *villager)
+{
+    return (SceneMover *) (void *) fm_part(villager, FLEA_MARKET_MOVER);
+}
+
+/* A motion of `kind` (priority 1) asked for with no arguments but `rate`. */
+static void fm_request_motion(FleaMarketVillager *villager, int kind, s16 rate)
+{
+    SceneMotion_Request(fm_motion_of(villager), kind, 1, 0, 0, rate, 0, 0, 0, data_020c80f8, 0);
+}
+
+/* Running when farther than FLEA_MARKET_RUN_DISTANCE from the player, else walking: a walk becomes
+ * a run and a run a walk, other motions are left alone. */
+static void fm_walk_or_run(FleaMarketVillager *villager, int distance)
+{
+    if (distance > FLEA_MARKET_RUN_DISTANCE) {
+        if (SceneMotion_Kind(fm_motion_of(villager)) == FLEA_MARKET_MOTION_WALK) {
+            fm_request_motion(villager, FLEA_MARKET_MOTION_RUN, FLEA_MARKET_RUN_RATE);
+        }
+    } else if (SceneMotion_Kind(fm_motion_of(villager)) == FLEA_MARKET_MOTION_RUN) {
+        fm_request_motion(villager, FLEA_MARKET_MOTION_WALK, 0);
+    }
+}
+
+/* The turn of its action to the talk's partner (none: angle 0), then talking; `keep_camera` as
+ * SceneAction_RequestTurnAndTalk takes it. */
+static void fm_turn_and_talk(FleaMarketVillager *villager, int keep_camera)
+{
+    int partner = SceneBase_MotionArg(fm_scene_of(&villager->talk));
+    int angle = 0;
+    if (partner != 0) {
+        angle = SceneObject_YawTo(villager->base, (u8 *) (uintptr_t) partner);
+    }
+    SceneAction_RequestTurnAndTalk(fm_action_of(villager), 0, angle, keep_camera);
+}
+
+/* func_ov004_0221f878 (state 7's update): it steps along the paths to the player (as they were
+ * when their frame began), running when far (fm_walk_or_run). Close to them (0x3000 or less),
+ * with no step to take, or once the walk's frames have run out, its talk is told through its
+ * vtable slot 0x08, given the player's object, and it talks (state 1). 1.
+ * QUIRK: the map's path directions at its position are asked for and not used.
+ * REQUIRES: the player has a field actor (PlayerActorOps_StartPosition is not NULL), here and in
+ * the other states that read the player's position. */
+int FleaMarketVillager_UpdateCome(FleaMarketVillager *villager)
+{
+    Vec3 player = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
+    Vec3 step;
+    ScenePathStep_Choose(&step, villager->base, &player);
+    int distance = SceneObject_DistanceToActor(villager->base, FLEA_MARKET_PLAYER_ACTOR);
+    AcreTile_PathDirectionsAt(data_021c80bc, &fm_actor_of(villager)->position);
+    fm_walk_or_run(villager, distance);
+    SceneMover_SetStart(fm_mover_of(villager), &step);
+    if (distance <= FLEA_MARKET_FOLLOW_DISTANCE || Vec_Equal(&step, &fm_actor_of(villager)->position) ||
+        Countdown_Tick8(&villager->walk_wait) == 0) {
+        fm_ready_talk(villager);
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_TALK);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221f878, FleaMarketVillager_UpdateCome)
+
+/* func_ov004_0221f990 (state 7's entry): 50 frames to walk, and a walk. 1. */
+int FleaMarketVillager_EnterCome(FleaMarketVillager *villager)
+{
+    villager->walk_wait = FLEA_MARKET_COME_FRAMES;
+    fm_request_motion(villager, FLEA_MARKET_MOTION_WALK, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221f990, FleaMarketVillager_EnterCome)
+
+/* func_ov004_0221f9d0 (state 2's update): nothing. 1. */
+int FleaMarketVillager_UpdateWait(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_0221f9d0, FleaMarketVillager_UpdateWait)
+
+/* func_ov004_0221f9d4 (state 1's update): once its action is idle, the trade's stage 0 becomes 1,
+ * the item asked about is none, the object's event ends and it waits (state 2). 1. */
+int FleaMarketVillager_UpdateTalk(FleaMarketVillager *villager)
+{
+    if (SceneAction_IsBusy(fm_action_of(villager)) == 0) {
+        if (villager->stage == FLEA_MARKET_STAGE_NONE) {
+            villager->stage = FLEA_MARKET_STAGE_ASK;
+        }
+        villager->item = FLEA_MARKET_NO_ITEM;
+        EventQueue_FinishObjectEvent(villager);
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WAIT);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221f9d4, FleaMarketVillager_UpdateTalk)
+
+/* func_ov004_0221fa20 (state 1's entry): it turns to the talk's partner and talks. 1. */
+int FleaMarketVillager_EnterTalk(FleaMarketVillager *villager)
+{
+    fm_turn_and_talk(villager, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fa20, FleaMarketVillager_EnterTalk)
+
+/* func_ov004_0221fa58 (state 3's update): once its action is idle, the room's exit 0 is taken
+ * into main's entry record and it waits (state 2). 1.
+ * QUIRK: the player's position is fetched and not used. */
+int FleaMarketVillager_UpdateBye(FleaMarketVillager *villager)
+{
+    (void) PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
+    if (SceneAction_IsBusy(fm_action_of(villager)) == 0) {
+        SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), 0);
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WAIT);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fa58, FleaMarketVillager_UpdateBye)
+
+/* func_ov004_0221fa9c (state 3's entry): it turns to the talk's partner and talks, the camera
+ * kept. 1. */
+int FleaMarketVillager_EnterBye(FleaMarketVillager *villager)
+{
+    fm_turn_and_talk(villager, 1);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fa9c, FleaMarketVillager_EnterBye)
+
+/* func_ov004_0221fad4 (state 6's update): nothing more once the event of the player at the
+ * room's start point or of an item asked about is asked for. Else it steps along the paths to
+ * the player, running when far, and watches them (state 4) when close (0x3000 or less) or with
+ * no step to take. 1. */
+int FleaMarketVillager_UpdateFollow(FleaMarketVillager *villager)
+{
+    if (FleaMarketVillager_RequestIfStartClaimed(villager) || FleaMarketVillager_RequestItemTalk(villager)) {
+        return 1;
+    }
+    Vec3 player = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
+    int distance = SceneObject_DistanceToActor(villager->base, FLEA_MARKET_PLAYER_ACTOR);
+    Vec3 step;
+    ScenePathStep_Choose(&step, villager->base, &player);
+    fm_walk_or_run(villager, distance);
+    SceneMover_SetStart(fm_mover_of(villager), &step);
+    if (distance <= FLEA_MARKET_FOLLOW_DISTANCE || Vec_Equal(&step, &fm_actor_of(villager)->position)) {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WATCH);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fad4, FleaMarketVillager_UpdateFollow)
+
+/* func_ov004_0221fbc4 (state 6's entry): a walk. 1. */
+int FleaMarketVillager_EnterFollow(FleaMarketVillager *villager)
+{
+    fm_request_motion(villager, FLEA_MARKET_MOTION_WALK, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fbc4, FleaMarketVillager_EnterFollow)
+
+/* func_ov004_0221fbf8 (state 5's update): nothing more once the events of state 6 are asked for.
+ * Farther than 0x3000 from the player with a step to take towards them, it follows them (state
+ * 6); else its mover turns to them, and with its turn done it watches them (state 4). 1. */
+int FleaMarketVillager_UpdateTurn(FleaMarketVillager *villager)
+{
+    if (FleaMarketVillager_RequestIfStartClaimed(villager) || FleaMarketVillager_RequestItemTalk(villager)) {
+        return 1;
+    }
+    Vec3 player = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
+    int distance = SceneObject_DistanceToActor(villager->base, FLEA_MARKET_PLAYER_ACTOR);
+    int yaw = (int) (uintptr_t) SceneObject_YawToActor(villager->base, FLEA_MARKET_PLAYER_ACTOR);
+    Vec3 step;
+    ScenePathStep_Choose(&step, villager->base, &player);
+    if (distance > FLEA_MARKET_FOLLOW_DISTANCE && Vec_Differ(&step, &fm_actor_of(villager)->position)) {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_FOLLOW);
+        return 1;
+    }
+    SceneMover_SetAngle(fm_mover_of(villager), yaw);
+    if (SceneMotion_Kind(fm_motion_of(villager)) == FLEA_MARKET_MOTION_TURN && SceneMotion_IsDone(fm_motion_of(villager))) {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WATCH);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fbf8, FleaMarketVillager_UpdateTurn)
+
+/* func_ov004_0221fca8 (state 5's entry): a turn. 1. */
+int FleaMarketVillager_EnterTurn(FleaMarketVillager *villager)
+{
+    fm_request_motion(villager, FLEA_MARKET_MOTION_TURN, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fca8, FleaMarketVillager_EnterTurn)
+
+/* func_ov004_0221fcdc (state 4's update): farther than 0x3000 from the player with a step to take
+ * towards them, it follows them (state 6); else turned away from them by more than 0x2000 it
+ * turns (state 5). Then the event of the player at the room's start point is asked for, or when
+ * it is not, that of an item asked about. 1. */
+int FleaMarketVillager_UpdateWatch(FleaMarketVillager *villager)
+{
+    Vec3 player = *PlayerActorOps_StartPosition(FLEA_MARKET_PLAYER_ACTOR);
+    int distance = SceneObject_DistanceToActor(villager->base, FLEA_MARKET_PLAYER_ACTOR);
+    int yaw = fm_actor_of(villager)->angle[1];
+    int away = Math_AbsDiff16(yaw, (int) (uintptr_t) SceneObject_YawToActor(villager->base, FLEA_MARKET_PLAYER_ACTOR));
+    Vec3 step;
+    ScenePathStep_Choose(&step, villager->base, &player);
+    if (distance > FLEA_MARKET_FOLLOW_DISTANCE && Vec_Differ(&step, &fm_actor_of(villager)->position)) {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_FOLLOW);
+    } else if (away > FLEA_MARKET_TURN_ANGLE) {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_TURN);
+    }
+    if (FleaMarketVillager_RequestIfStartClaimed(villager) == 0) {
+        FleaMarketVillager_RequestItemTalk(villager);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fcdc, FleaMarketVillager_UpdateWatch)
+
+/* func_ov004_0221fd70 (state 4's entry): it stands. 1. */
+int FleaMarketVillager_EnterWatch(FleaMarketVillager *villager)
+{
+    fm_request_motion(villager, FLEA_MARKET_MOTION_STAND, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fd70, FleaMarketVillager_EnterWatch)
+
+/* func_ov004_0221fda4 (state 0's update): an event of kind 6 about it is asked for. 1. */
+int FleaMarketVillager_UpdateCall(FleaMarketVillager *villager)
+{
+    EventQueue_RequestKind6(villager, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fda4, FleaMarketVillager_UpdateCall)
+
+/* func_ov004_0221fdb8 (state 0's entry): the trade's stage back to 0, and it stands. 1. */
+int FleaMarketVillager_EnterCall(FleaMarketVillager *villager)
+{
+    villager->stage = FLEA_MARKET_STAGE_NONE;
+    fm_request_motion(villager, FLEA_MARKET_MOTION_STAND, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fdb8, FleaMarketVillager_EnterCall)
+
+/* func_ov004_0221fdf4: state `state` taken when its entry function, if it has one, answers
+ * nonzero.
+ * REQUIRES: `state` is 0 to 7 (the table is not bounded). */
+void FleaMarketVillager_SetState(FleaMarketVillager *villager, int state)
+{
+    const FleaMarketVillagerStep *step = &data_ov004_02257d58[state];
+    int taken = 1;
+    if (step->enter.function != 0) {
+        taken = MemberPointer_CallInt(&step->enter, villager);
+    }
+    if (taken != 0) {
+        villager->state = state;
+    }
+}
+CLEAN_AS(func_ov004_0221fdf4, FleaMarketVillager_SetState)
+
+/* func_ov004_0221fe38 (vtable slot 0x68, its update): its state's update when it has one, and
+ * its answer; else 0.
+ * REQUIRES: its state is 0 to 7. */
+int FleaMarketVillager_RunState(FleaMarketVillager *villager)
+{
+    const FleaMarketVillagerStep *step = &data_ov004_02257d58[(u32) villager->state];
+    if (step->update.function == 0) {
+        return 0;
+    }
+    return MemberPointer_CallInt(&step->update, villager);
+}
+CLEAN_AS(func_ov004_0221fe38, FleaMarketVillager_RunState)
+
+/* func_ov004_0221fe84 (vtable slot 0x0c): the town villager's leaving; when it agrees, the list
+ * of its house's spots is freed (when there is one) and forgotten. Whether it agreed. */
+int FleaMarketVillager_Leave(FleaMarketVillager *villager)
+{
+    if (VillagerSceneObject_Leave(villager->base) == 0) {
+        return 0;
+    }
+    if (villager->spots != NULL) {
+        Heap_FreeCurrent((void *) (uintptr_t) villager->spots);
+        villager->spots = NULL;
+        villager->spot_count = 0;
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221fe84, FleaMarketVillager_Leave)
+
+/* func_ov004_0221febc (vtable slot 0x00, its start): the town villager's start; then the room
+ * notes a villager of the flea market (func_ov004_0223d33c), no item is asked about, its
+ * footsteps are on, and it watches the player (state 4) when the previous scene is one
+ * SceneQuery_Is31 names, else calls them (state 0). The collision map's claim is set to 0, and
+ * the spots of its house's items are read for its person (AcreTemplates_VillagerRecords, from
+ * the current heap). Whether the start was done. */
+int FleaMarketVillager_Start(FleaMarketVillager *villager)
+{
+    if (VillagerSceneObject_Start(villager->base) == 0) {
+        return 0;
+    }
+    func_ov004_0223d33c();
+    villager->item = FLEA_MARKET_NO_ITEM;
+    Footsteps_Enable((Footsteps *) (void *) fm_part(villager, FLEA_MARKET_FOOTSTEPS));
+    if (SceneQuery_Is31(SceneQuery_Previous())) {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_WATCH);
+    } else {
+        FleaMarketVillager_SetState(villager, FLEA_MARKET_STATE_CALL);
+    }
+    CollisionMap_Claim(0);
+    villager->spot_count = 0;
+    int person = SceneObject_PersonIndex(villager->base);
+    villager->spots = (const VillagerFurnitureSpot *) (uintptr_t) AcreTemplates_VillagerRecords(
+        (int *) (void *) &villager->spot_count, person, (int) (uintptr_t) data_021fbe94);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221febc, FleaMarketVillager_Start)
+
+/* func_ov004_0221ff40 (vtable slot 0x04, its set-up): the town villager's set-up; then its talk
+ * scene becomes its scene and is started (FleaMarketTalk_Start). Whether the set-up was done. */
+int FleaMarketVillager_Init(FleaMarketVillager *villager)
+{
+    if (VillagerSceneObject_Init(villager->base) == 0) {
+        return 0;
+    }
+    SceneObject_SetScene(villager->base, fm_scene_of(&villager->talk));
+    FleaMarketTalk_Start(&villager->talk, villager);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221ff40, FleaMarketVillager_Init)
+
+/* func_ov004_0221ff70 (its entry in the overlay's table of profiles): allocates (zeroed) and
+ * builds a villager: the town villager scene object, no item asked about, its tile (0, 0) and its
+ * talk scene. */
+FleaMarketVillager *FleaMarketVillager_New(void)
+{
+    FleaMarketVillager *villager = Heap_AllocAuxZeroed(sizeof(FleaMarketVillager));
+    if (villager != NULL) {
+        VillagerSceneObject_Construct(villager->base);
+        *(const u8 **) (void *) villager->base = data_ov004_02253bb4;
+        villager->item = FLEA_MARKET_NO_ITEM;
+        villager->tile.x = 0;
+        villager->tile.z = 0;
+        FleaMarketTalk_Construct(&villager->talk);
+    }
+    return villager;
+}
+CLEAN_AS(func_ov004_0221ff70, FleaMarketVillager_New)

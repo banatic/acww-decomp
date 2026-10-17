@@ -193,4 +193,107 @@ void LetterStorage_HighlightPlace(LetterStorage *self, int place);
 void LetterStorage_ClearHighlights(LetterStorage *self);
 void LetterStorage_SelectPlace(LetterStorage *self, int place);
 
+/* More of `flags`: the touched place's letter may be dragged, as it is not marked
+ * (LetterStorage_TouchPlace); the held letter glides to a tab (LetterStorage_GlideHeldTo). */
+#define LETTER_STORAGE_FLAG_DRAGGABLE 0x04
+#define LETTER_STORAGE_FLAG_GLIDE_TO_TAB 0x2000
+
+/* The sub states, run from the table of func_ov105_0229f25c; the ones handled here are named
+ * by what their handler does. */
+enum LetterStorageSubState {
+    LETTER_STORAGE_SUB_TOUCH_IDLE = 0x00,      /* func_ov105_0229e90c: waiting for a touch */
+    LETTER_STORAGE_SUB_TOUCH_HOLD = 0x01,      /* func_ov105_0229e860: a place is touched */
+    LETTER_STORAGE_SUB_TOUCH_CHOICE = 0x02,    /* func_ov105_0229e804: its choice is open, pen down */
+    LETTER_STORAGE_SUB_OPEN_TOUCHED = 0x03,    /* LetterStorage_OpenTouchedChoice */
+    LETTER_STORAGE_SUB_DRAG = 0x04,            /* LetterStorage_DragHeld */
+    LETTER_STORAGE_SUB_LABEL_BY_TOUCH = 0x05,  /* LetterStorage_LabelByTouch */
+    LETTER_STORAGE_SUB_CHOICE_BY_TOUCH = 0x06, /* LetterStorage_ChooseByTouch */
+    LETTER_STORAGE_SUB_BROWSE = 0x07,          /* LetterStorage_BrowseByKeys */
+    LETTER_STORAGE_SUB_HOLD = 0x08,            /* LetterStorage_MoveHeldByKeys */
+    LETTER_STORAGE_SUB_LABEL_BY_KEYS = 0x09,   /* LetterStorage_LabelByKeys */
+    LETTER_STORAGE_SUB_LABEL_PRESS = 0x0a,     /* LetterStorage_WaitLabelPress */
+    LETTER_STORAGE_SUB_CHOICE_BY_KEYS = 0x0b,  /* LetterStorage_ChooseByKeys */
+    LETTER_STORAGE_SUB_CHOICE_PICK = 0x0c,     /* LetterStorage_PickChoiceRow */
+    LETTER_STORAGE_SUB_SPRITE_MOVE = 0x0d,     /* LetterStorage_WaitCursorSprite */
+    LETTER_STORAGE_SUB_PLACE_PRESS = 0x0e,     /* LetterStorage_PressPlace */
+    LETTER_STORAGE_SUB_PRESS_END = 0x0f,       /* LetterStorage_FinishPlacePress */
+    LETTER_STORAGE_SUB_PICK_UP = 0x10,         /* LetterStorage_PickUpAtCursor */
+    LETTER_STORAGE_SUB_PICK_UP_END = 0x11,     /* LetterStorage_FinishPickUp */
+    LETTER_STORAGE_SUB_PUT_DOWN = 0x12,        /* LetterStorage_PutDown */
+    LETTER_STORAGE_SUB_SWAP = 0x13,            /* LetterStorage_Swap */
+    LETTER_STORAGE_SUB_SWAP_END = 0x14,        /* LetterStorage_FinishSwap */
+    LETTER_STORAGE_SUB_HELD_GLIDE = 0x15,      /* LetterStorage_StepHeldGlide */
+    LETTER_STORAGE_SUB_CHOICE_OPEN = 0x16,     /* LetterStorage_WaitChoiceShown */
+    LETTER_STORAGE_SUB_CHOICE_CLOSE = 0x17,    /* LetterStorage_CloseChoice */
+    LETTER_STORAGE_SUB_CHOICE_RUN = 0x18,      /* LetterStorage_RunActionWhenIdle */
+    LETTER_STORAGE_SUB_ERROR = 0x19,           /* LetterStorage_WaitError */
+    LETTER_STORAGE_SUB_LABEL_PRESSED = 0x1a,   /* LetterStorage_FollowLabelPress */
+    LETTER_STORAGE_SUB_PANEL_PRESSED = 0x1b,   /* LetterStorage_FollowPanelPress */
+    LETTER_STORAGE_SUB_LET_GO = 0x1c,          /* LetterStorage_WaitLetGo */
+    LETTER_STORAGE_SUB_PANEL_BY_TOUCH = 0x1d,  /* LetterStorage_ChoosePanelButtonByTouch */
+    LETTER_STORAGE_SUB_PANEL_BY_KEYS = 0x1e,   /* LetterStorage_ChoosePanelButtonByKeys */
+    LETTER_STORAGE_SUB_PANEL_PRESS = 0x1f      /* LetterStorage_PressChosenPanelButton */
+};
+
+void LetterStorage_ClearSelection(LetterStorage *self);
+int LetterStorage_PlaceIsEmpty(LetterStorage *self, int place);
+int LetterStorage_PlaceIsMarked(LetterStorage *self, int place);
+void LetterStorage_MarkCarriedLetters(LetterStorage *self);
+int LetterStorage_PlaceY(LetterStorage *self, int place);
+int LetterStorage_PlaceX(LetterStorage *self, int place);
+Letter *LetterStorage_PlaceLetter(LetterStorage *self, int place);
+void LetterStorage_PutLetterAt(LetterStorage *self, int place, Letter *letter);
+int LetterStorage_PutHeldLetterAt(LetterStorage *self, int place);
+int LetterStorage_LetterPlaceAtTouch(LetterStorage *self, int x, int y, int with_letter);
+u8 LetterStorage_LetterPlace(LetterStorage *self, unsigned int index);
+u8 LetterStorage_LetterIndex(LetterStorage *self, unsigned int place);
+int LetterStorage_IsTabPlace(LetterStorage *self, int place);
+int LetterStorage_IsBelowPlace(LetterStorage *self, int place);
+int LetterStorage_IsPagePlace(LetterStorage *self, unsigned int place);
+int LetterStorage_IsCarriedPlace(LetterStorage *self, unsigned int place);
+void LetterStorage_EndLayerTask(LetterStorage *self);
+u8 LetterStorage_FirstEmptyPagePlace(LetterStorage *self);
+int LetterStorage_FreeCarriedPlace(LetterStorage *self);
+void LetterStorage_HoldAndGlide(LetterStorage *self, int from, int to);
+void LetterStorage_DropHeldAtTouch(LetterStorage *self, int place, int x);
+void LetterStorage_GlideHeldTo(LetterStorage *self, int place, int steps);
+void LetterStorage_PickUpWithCursor(LetterStorage *self, u8 place);
+void LetterStorage_PickUpWithTouch(LetterStorage *self, u8 place);
+void LetterStorage_TouchPlace(LetterStorage *self, int place);
+void LetterStorage_OfferPanelButtons(LetterStorage *self);
+void LetterStorage_OfferPanelButtonsByKeys(LetterStorage *self);
+void LetterStorage_OfferPanelButtonsByTouch(LetterStorage *self);
+void LetterStorage_EndAction(LetterStorage *self);
+void LetterStorage_EndActionAtCursor(LetterStorage *self);
+void LetterStorage_EndActionHidden(LetterStorage *self);
+void LetterStorage_PressChosenPanelButton(LetterStorage *self);
+void LetterStorage_ChoosePanelButtonByKeys(LetterStorage *self);
+void LetterStorage_ChoosePanelButtonByTouch(LetterStorage *self);
+void LetterStorage_WaitLetGo(LetterStorage *self);
+void LetterStorage_FollowPanelPress(LetterStorage *self);
+void LetterStorage_FollowLabelPress(LetterStorage *self);
+void LetterStorage_WaitError(LetterStorage *self);
+void LetterStorage_RunActionWhenIdle(LetterStorage *self);
+void LetterStorage_CloseChoice(LetterStorage *self);
+void LetterStorage_WaitChoiceShown(LetterStorage *self);
+void LetterStorage_StepHeldGlide(LetterStorage *self);
+void LetterStorage_FinishSwap(LetterStorage *self);
+void LetterStorage_Swap(LetterStorage *self);
+void LetterStorage_PutDown(LetterStorage *self);
+void LetterStorage_FinishPickUp(LetterStorage *self);
+void LetterStorage_PickUpAtCursor(LetterStorage *self);
+void LetterStorage_FinishPlacePress(LetterStorage *self);
+void LetterStorage_PressPlace(LetterStorage *self);
+void LetterStorage_WaitCursorSprite(LetterStorage *self);
+void LetterStorage_PickChoiceRow(LetterStorage *self);
+void LetterStorage_ChooseByKeys(LetterStorage *self);
+void LetterStorage_WaitLabelPress(LetterStorage *self);
+void LetterStorage_LabelByKeys(LetterStorage *self);
+void LetterStorage_MoveHeldByKeys(LetterStorage *self);
+void LetterStorage_BrowseByKeys(LetterStorage *self);
+void LetterStorage_ChooseByTouch(LetterStorage *self);
+void LetterStorage_LabelByTouch(LetterStorage *self);
+void LetterStorage_DragHeld(LetterStorage *self);
+void LetterStorage_OpenTouchedChoice(LetterStorage *self);
+
 #endif

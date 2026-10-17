@@ -18,8 +18,11 @@
 #include "main/model_pool.h"
 #include "main/session.h"
 #include "main/session_players.h"
+#include "main/sound_emitter.h"
+#include "main/town_family.h"
 #include "main/unit_type_info.h"
 #include "ov003/field_actor.h"
+#include "ov068/insect_paths.h"
 
 static_assert(offsetof(TownInsect, unk_1b0) == 0x1b0, "TownInsect.unk_1b0");
 static_assert(offsetof(TownInsect, timer) == 0x232, "TownInsect.timer");
@@ -42,40 +45,6 @@ extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
 extern int NNS_G3dMdlGetMdlAlpha(void *model, int material);
 extern void NNS_G3dMdlSetMdlAlpha(void *model, int material, int alpha);
 extern int func_02070070(void);
-
-/* A step of 0x29 along heading `angle` (the vector (0, 0, 0x29) turned by Vec_RotateY). */
-extern void func_ov003_0223597c(Vec3 *step, int angle);
-/* Which sides of the heading something stands on, 0x50 percent of a feeler ahead and `spread`
- * either side: 0 for none, 1 the one side, 2 the other, 3 both. Only outside a session, or
- * holding the scene, or fleeing or let go; else 0. */
-extern int func_ov003_02235b54(TownInsect *insect, int reach, int spread);
-/* The model's animation set to frame 2 when it is at frame 1, else to frame 1. */
-extern void func_ov003_02234cc4(TownInsect *insect);
-/* The kind's sound `which` on the insect's sound source: SoundSource_Play when `play`, else
- * SoundSource_PlayHeld. */
-extern void func_ov003_022353a4(TownInsect *insect, int which, int play);
-/* The alarm counted (TownInsectMove_SensePlayers) and the insect turned with what it found. */
-extern int func_ov003_02234d70(TownInsect *insect);
-/* The splash where it fell into water: 1 when it did. */
-extern int func_ov003_02235454(TownInsect *insect);
-/* Its point (TownInsect.target) set `distance` ahead along `angle`; 1 when it could be. */
-extern int func_ov003_02235834(TownInsect *insect, int angle, fx32 distance);
-/* The player nearest to `point` in x plus z, or NULL. */
-extern Actor *func_ov003_022356ec(const Vec3 *point);
-/* The byte 0x24e counted down from how long a player has stood on the insect's tile; 1 when it
- * reaches 0. */
-extern int func_ov003_022353e0(TownInsect *insect, const Vec3 *point);
-/* The word 0x244 counted down; 1 once it is 0. */
-extern int func_ov003_02234984(TownInsect *insect);
-/* Flown up and away at `speed` from its heading, through frame TownInsect.frames_left. */
-extern void func_ov003_022348dc(TownInsect *insect, fx32 speed);
-extern void func_ov003_022349a0(TownInsect *insect);
-extern void func_ov003_022355d4(TownInsect *insect);
-extern void func_ov003_02234e28(TownInsect *insect, short *angle, int step, int divisor, u8 threshold, fx32 scale);
-extern void func_ov003_02234dac(TownInsect *insect, int frame, int limit, fx32 divisor);
-extern int func_ov003_022350cc(TownInsect *insect);
-/* Action 9 (fleeing) when the low four bits of the word 0x21c are above `most`. */
-extern void func_ov003_02235934(TownInsect *insect, int most);
 
 /* The behaviours of overlay 68. */
 extern void func_ov068_02271160(TownInsect *insect);
@@ -201,7 +170,7 @@ static short town_insect_moves_zigzag(short angle, int frames, int step, fx32 fi
 
 /* func_ov003_02230e18: flies up and away along its heading (10.0 steps let go, 15.0 otherwise;
  * none where something stands ahead), rising by 2n(n + 12) at frame n; kinds 0xe and 0xf hold
- * their wings out (frame 9 of an 11-frame animation), the others flap (func_ov003_02234cc4). It
+ * their wings out (frame 9 of an 11-frame animation), the others flap (TownInsectMove_ToggleFrame). It
  * plays its sound 1 on the first frame and leaves once faded. Kind 0x1a flees on the ground
  * instead (TownInsectMove_Flee), going from frame 0 to 1 and from 1 to 2. */
 void TownInsectMove_FlyUpAway(TownInsect *insect, short *frames)
@@ -218,8 +187,8 @@ void TownInsectMove_FlyUpAway(TownInsect *insect, short *frames)
     }
     Vec3 *position = &insect->position;
     Vec3 step;
-    if (func_ov003_02235b54(insect, 0x50, 0xe38) == 0) {
-        func_ov003_0223597c(&step, insect->angle_y);
+    if (TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) == 0) {
+        TownInsectMove_StepAlong(&step, insect->angle_y);
         fx32 speed = insect->action == TOWN_INSECT_ACTION_LET_GO ? 0xa000 : 0xf000;
         step.x = FX_MulFunc(step.x, speed);
         step.z = FX_MulFunc(step.z, speed);
@@ -236,10 +205,10 @@ void TownInsectMove_FlyUpAway(TownInsect *insect, short *frames)
             insect->model.frames.frame = 0x9000;
         }
     } else {
-        func_ov003_02234cc4(insect);
+        TownInsectMove_ToggleFrame(insect);
     }
     if (*frames == 0) {
-        func_ov003_022353a4(insect, 1, 0);
+        TownInsectMove_PlaySound(insect, 1, 0);
     }
     if (TownInsectMove_FadeStep(insect, 1) != 0) {
         TownInsectMove_Leave(insect);
@@ -330,7 +299,7 @@ void TownInsectMove_WanderInBox(TownInsect *insect)
             angle = insect->kind == 0x33 ? (short) (angle + 0xaaa) : (short) (angle - (short) insect->unk_21c);
         }
     }
-    func_ov003_0223597c(&step, angle);
+    TownInsectMove_StepAlong(&step, angle);
     insect->angle_y = angle;
     position->z += FX_Div(FX_MulFunc(town_insect_moves_fx(insect->unk_257), step.z), 0x20000);
     position->x += FX_Div(FX_MulFunc(town_insect_moves_fx(insect->unk_257), step.x), 0x20000);
@@ -353,7 +322,7 @@ CLEAN_AS(func_ov003_02231104, TownInsectMove_WanderInBox)
 
 /* func_ov003_0223126c: watches this console's player. Off a tile of set B
  * (TownInsectMove_OnSetBTile) its alarm is at its height (TOWN_INSECT_BYTE254_NEAR); then the
- * alarm is counted (func_ov003_02234d70). A player within 0.8 makes it fly off (action 9).
+ * alarm is counted (TownInsectMove_Sense). A player within 0.8 makes it fly off (action 9).
  * Kinds 0xe and 0xf: alarmed above 20, they close their wings (animation 9 from where it is) for
  * 60 frames; then within reach of the player they open them (animation 4), else close them
  * again (animation 0 from where it is). Kind 0x1a: alarmed above 20, it goes from frame 2 to 1
@@ -367,7 +336,7 @@ void TownInsectMove_WatchPlayer(TownInsect *insect, u16 *frames)
         insect->unk_254 = TOWN_INSECT_BYTE254_NEAR;
     }
     insect->unk_24a = 0;
-    func_ov003_02234d70(insect);
+    TownInsectMove_Sense(insect);
     if (player == NULL) {
         return;
     }
@@ -535,7 +504,7 @@ void TownInsectMove_CheckStartle(TownInsect *insect, short *frames)
         insect->unk_24a = 1;
         town_insect_moves_set_frame(insect, 1);
         *frames = 0;
-        func_ov003_022353a4(insect, 1, 0);
+        TownInsectMove_PlaySound(insect, 1, 0);
         if (insect->kind == 9) {
             town_insect_moves_play(insect, 9, 0, 0x1000, 0);
         }
@@ -595,7 +564,7 @@ void TownInsectMove_TakeOff(TownInsect *insect, short *frames)
     Vec3 *position = &insect->position;
     s8 kind = insect->kind;
     if (kind != 0x10 && kind != 0x11 && kind != 0x12 && kind != 0x13) {
-        func_ov003_022353a4(insect, 0, 1);
+        TownInsectMove_PlaySound(insect, 0, 1);
     }
     if (insect->angle_y >= 0) {
         position->x += 0x200;
@@ -621,7 +590,7 @@ void TownInsectMove_TakeOff(TownInsect *insect, short *frames)
             insect->model.frames.frame = 0x18000;
         }
     } else {
-        func_ov003_02234cc4(insect);
+        TownInsectMove_ToggleFrame(insect);
     }
 }
 CLEAN_AS(func_ov003_0223189c, TownInsectMove_TakeOff)
@@ -637,12 +606,12 @@ void TownInsectMove_FlyOff(TownInsect *insect, short *frames)
     s8 kind = insect->kind;
     fx32 t = FX_Div(town_insect_moves_fx(*frames), 0x4000);
     Vec3 step;
-    func_ov003_0223597c(&step, insect->angle_y);
+    TownInsectMove_StepAlong(&step, insect->angle_y);
     if (*frames == 0) {
-        func_ov003_022353a4(insect, 1, 0);
+        TownInsectMove_PlaySound(insect, 1, 0);
     }
     step.y = FX_MulFunc(FX_MulFunc(0x100, t), t);
-    if (func_ov003_02235b54(insect, 0x50, 0xe38) == 0) {
+    if (TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) == 0) {
         step.x = (fx32) ((u32) step.x << 4);
         step.z = (fx32) ((u32) step.z << 4);
     }
@@ -778,7 +747,7 @@ void TownInsectMove_Rest(TownInsect *insect, short *frames)
         if (calling != 0 && insect->unk_254 < 0xa) {
             u8 wait = insect->unk_252;
             if (wait == 0) {
-                func_ov003_022353a4(insect, 0, 1);
+                TownInsectMove_PlaySound(insect, 0, 1);
             } else {
                 insect->unk_252 = (u8) (wait - 1);
             }
@@ -980,7 +949,7 @@ CLEAN_AS(func_ov003_022321b8, TownInsectMove_ClampXZ)
  * limit, splashes and leaves (2 returned). Something ahead turns it away (a point 12.0 ahead
  * along its zigzag set, 0 returned). Else it moves towards its point (kind 0x1e faster) and
  * heads there, zigzagging as it goes; arrived and holding the scene it sets its point one step
- * on (if func_ov003_02235834 could not) and 0 is returned. The byte 0x24b is set while it walks.
+ * on (if TownInsectMove_SetTarget could not) and 0 is returned. The byte 0x24b is set while it walks.
  * BUG: turned away on an even frame from 2 on, the original passes an angle it never set (a word
  * of its stack); this takes its heading. */
 int TownInsectMove_WalkLinked(TownInsect *insect)
@@ -992,11 +961,11 @@ int TownInsectMove_WalkLinked(TownInsect *insect)
     CollisionGround_Init(&ground, position, 0, 1);
     Vec3 *target = &insect->target;
     Vec3 step;
-    func_ov003_0223597c(&step, insect->angle_y);
+    TownInsectMove_StepAlong(&step, insect->angle_y);
     if ((LinkGlobal_HoldsScene() != 0 || insect->action == 0x11) && ground.unk_30 != 0) {
         if (CollisionGround_IsBelowLimit(&ground, position->y) != 0) {
             TownInsectMove_Leave(insect);
-            func_ov003_02235454(insect);
+            TownInsectMove_Splash(insect);
             result = 2;
         } else {
             position->y -= 0x200;
@@ -1014,7 +983,7 @@ int TownInsectMove_WalkLinked(TownInsect *insect)
         } else if ((n + 1) % 2 == 0) {
             angle = (short) (angle - 0xaaa);
         }
-        func_ov003_02235834(insect, angle, 0xc000);
+        TownInsectMove_SetTarget(insect, angle, 0xc000);
         CollisionGround_Destroy(&ground);
         return 0;
     }
@@ -1025,7 +994,7 @@ int TownInsectMove_WalkLinked(TownInsect *insect)
         moving = Approach_PointXZ(position, target, 8, 0x1000, 0x52);
     }
     if (moving == 0) {
-        if (LinkGlobal_HoldsScene() != 0 && func_ov003_02235834(insect, insect->angle_y, 0xc000) == 0) {
+        if (LinkGlobal_HoldsScene() != 0 && TownInsectMove_SetTarget(insect, insect->angle_y, 0xc000) == 0) {
             int index = ((u16) insect->angle_y >> 4) * 2;
             target->x += FX_SinCosTable_[index];
             target->z += FX_SinCosTable_[index + 1];
@@ -1061,10 +1030,10 @@ int TownInsectMove_Walk(TownInsect *insect)
     CollisionGround_Init(&ground, position, 0, 1);
     s8 kind = insect->kind;
     Vec3 step;
-    func_ov003_0223597c(&step, insect->angle_y);
+    TownInsectMove_StepAlong(&step, insect->angle_y);
     if (ground.unk_30 != 0 && CollisionGround_IsBelowLimit(&ground, position->y) != 0) {
         TownInsectMove_Leave(insect);
-        func_ov003_02235454(insect);
+        TownInsectMove_Splash(insect);
         result = 0;
     } else {
         position->y -= 0x200;
@@ -1179,7 +1148,7 @@ void TownInsectMove_Update36(TownInsect *insect)
             TownInsectMove_Hop(insect, &insect->frames_left);
             break;
         case 9:
-            func_ov003_022353a4(insect, 0, 1);
+            TownInsectMove_PlaySound(insect, 0, 1);
             TownInsectMove_Flee(insect, &insect->frames_left);
             break;
         case 3: {
@@ -1207,7 +1176,7 @@ void TownInsectMove_Update36(TownInsect *insect)
                         *fall = 0;
                     }
                 }
-            } else if (func_ov003_02234984(insect) != 0) {
+            } else if (TownInsectMove_WaitOver(insect) != 0) {
                 insect->action = 3;
                 insect->unk_244 = (short) (20 * MainRandom_Below(3));
                 int heading = insect->angle_y;
@@ -1233,7 +1202,7 @@ void TownInsectMove_Update30(TownInsect *insect)
     switch (insect->action) {
         case 6:
             TownInsectMove_TurnFromObstacle(insect);
-            if (func_ov003_02234984(insect) != 0) {
+            if (TownInsectMove_WaitOver(insect) != 0) {
                 insect->action = TOWN_INSECT_ACTION_LET_GO;
             }
             break;
@@ -1248,7 +1217,7 @@ void TownInsectMove_Update30(TownInsect *insect)
             TownInsect_SetScale(insect, 0xc8);
             if (TownInsectMove_TurnFromObstacle(insect) == 0) {
                 Vec3 step;
-                func_ov003_0223597c(&step, insect->angle_y);
+                TownInsectMove_StepAlong(&step, insect->angle_y);
                 position->x += FX_MulFunc(town_insect_moves_fx(insect->unk_257), step.x);
                 position->z += FX_MulFunc(town_insect_moves_fx(insect->unk_257), step.z);
             }
@@ -1279,7 +1248,7 @@ void TownInsectMove_Update30(TownInsect *insect)
                 position->y = floor;
                 if (CollisionGround_IsBelowLimit(&ground, position->y) != 0) {
                     TownInsectMove_Leave(insect);
-                    func_ov003_02235454(insect);
+                    TownInsectMove_Splash(insect);
                 } else {
                     insect->action = 6;
                     insect->unk_244 = 4;
@@ -1306,7 +1275,7 @@ void TownInsectMove_Update30(TownInsect *insect)
 CLEAN_AS(func_ov003_02232874, TownInsectMove_Update30)
 
 /* func_ov003_02232a44 (kind 8): overlay 68 runs action 0; fleeing or let go it flies up and
- * away (func_ov003_022348dc at 1.8); startled (action 7) func_ov003_022349a0; at rest it starts
+ * away (TownInsectMove_Escape at 1.8); startled (action 7) TownInsectMove_FlyBobbing; at rest it starts
  * (action 0). */
 void TownInsectMove_Update08(TownInsect *insect)
 {
@@ -1316,10 +1285,10 @@ void TownInsectMove_Update08(TownInsect *insect)
             break;
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
-            func_ov003_022348dc(insect, 0x1ccd);
+            TownInsectMove_Escape(insect, 0x1ccd);
             break;
         case 7:
-            func_ov003_022349a0(insect);
+            TownInsectMove_FlyBobbing(insect);
             break;
         case 0x13:
             insect->unk_24a = 0;
@@ -1354,7 +1323,7 @@ int TownInsectMove_AppearFromTile(TownInsect *insect, short *frames)
     if (*count > 0) {
         *count = (s8) (*count - 1);
         if (*count == 0) {
-            Actor *nearest = func_ov003_022356ec(position);
+            Actor *nearest = TownInsectMove_NearestPlayer(position);
             if (nearest != NULL) {
                 int angle = Vec_YawTo(position, &nearest->position);
                 insect->action = 5;
@@ -1400,7 +1369,7 @@ void TownInsectMove_Walk31(TownInsect *insect)
             TownInsectMove_Leave(insect);
         }
     } else {
-        if (func_ov003_022353e0(insect, position) != 0) {
+        if (TownInsectMove_CountStand(insect, position) != 0) {
             timer = 1;
         }
         insect->timer = (short) (timer - 1);
@@ -1416,7 +1385,7 @@ void TownInsectMove_Wait31(TownInsect *insect)
 {
     short timer = insect->timer;
     Vec3 *position = &insect->position;
-    if (func_ov003_022353e0(insect, position) != 0) {
+    if (TownInsectMove_CountStand(insect, position) != 0) {
         timer = 1;
     }
     if (timer <= 0) {
@@ -1436,7 +1405,7 @@ void TownInsectMove_Wait31(TownInsect *insect)
         town_insect_moves_set_frame(insect, 1);
         insect->angle_y = (short) (Vec_YawTo(position, &nearest) + 0x8000);
         if (town_insect_moves_in_session() && LinkGlobal_HoldsScene() != 0) {
-            func_ov003_02235834(insect, insect->angle_y, 0xc000);
+            TownInsectMove_SetTarget(insect, insect->angle_y, 0xc000);
         }
     }
 }
@@ -1486,7 +1455,7 @@ CLEAN_AS(func_ov003_02232d30, TownInsectMove_Update31)
  * something stands ahead. With nothing ahead, a last turn of 1 or 2 becomes 10 or 20. */
 int TownInsectMove_TurnFromObstacle(TownInsect *insect)
 {
-    int side = func_ov003_02235b54(insect, 0x50, 0xe38);
+    int side = TownInsectMove_FeelObstacles(insect, 0x50, 0xe38);
     u8 last = insect->unk_252;
     if (side == 0) {
         if (last < 0xa) {
@@ -1581,7 +1550,7 @@ void TownInsectMove_Flee(TownInsect *insect, short *frames)
     if (ground.unk_30 != 0) {
         if (CollisionGround_IsBelowLimit(&ground, position->y) != 0) {
             TownInsectMove_Leave(insect);
-            func_ov003_02235454(insect);
+            TownInsectMove_Splash(insect);
         } else {
             position->y -= 0x100;
         }
@@ -1593,13 +1562,13 @@ void TownInsectMove_Flee(TownInsect *insect, short *frames)
     Vec3 step;
     if (kind == 0x35) {
         angle = insect->angle_z;
-        func_ov003_0223597c(&step, angle);
+        TownInsectMove_StepAlong(&step, angle);
     } else {
         if (town_insect_moves_kind_36_or_37(kind)) {
             speed = 4;
         }
         angle = insect->angle_y;
-        func_ov003_0223597c(&step, angle);
+        TownInsectMove_StepAlong(&step, angle);
     }
     int n = *frames;
     if (kind == 0x1f) {
@@ -1652,11 +1621,11 @@ void TownInsectMove_Hop(TownInsect *insect, short *frames)
     Vec3 step;
     if (insect->kind == 0x35) {
         insect->angle_y = 0;
-        func_ov003_0223597c(&step, insect->angle_z);
+        TownInsectMove_StepAlong(&step, insect->angle_z);
     } else {
-        func_ov003_0223597c(&step, insect->angle_y);
+        TownInsectMove_StepAlong(&step, insect->angle_y);
     }
-    if (insect->action == 5 || func_ov003_02235b54(insect, 0x50, 0xe38) == 0) {
+    if (insect->action == 5 || TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) == 0) {
         position->x += FX_MulFunc(town_insect_moves_fx(insect->unk_257 + 2), step.x);
         position->z += FX_MulFunc(town_insect_moves_fx(insect->unk_257 + 2), step.z);
     }
@@ -1692,7 +1661,7 @@ void TownInsectMove_Hop(TownInsect *insect, short *frames)
     if (position->y <= floor && *frames > 0) {
         if (CollisionGround_IsBelowLimit(&ground, position->y) != 0) {
             TownInsectMove_Leave(insect);
-            func_ov003_02235454(insect);
+            TownInsectMove_Splash(insect);
         } else {
             if (insect->action == TOWN_INSECT_ACTION_LET_GO) {
                 s8 kind = insect->kind;
@@ -1712,7 +1681,7 @@ void TownInsectMove_Hop(TownInsect *insect, short *frames)
                 }
                 s8 kind = insect->kind;
                 if ((kind == 0x31 || kind == 0x1e) && town_insect_moves_in_session() && LinkGlobal_HoldsScene() != 0) {
-                    func_ov003_02235834(insect, insect->angle_y, 0xc000);
+                    TownInsectMove_SetTarget(insect, insect->angle_y, 0xc000);
                 }
             }
             insect->unk_254 = 0;
@@ -1735,8 +1704,8 @@ CLEAN_AS(func_ov003_02233178, TownInsectMove_Hop)
 void TownInsectMove_Wait1E(TownInsect *insect, short *frames)
 {
     const Vec3 *position = &insect->position;
-    Actor *nearest = func_ov003_022356ec(position);
-    if (func_ov003_022353e0(insect, position) != 0) {
+    Actor *nearest = TownInsectMove_NearestPlayer(position);
+    if (TownInsectMove_CountStand(insect, position) != 0) {
         if (nearest != NULL) {
             int angle = Vec_YawTo(position, &nearest->position);
             insect->action = 5;
@@ -1751,7 +1720,7 @@ void TownInsectMove_Wait1E(TownInsect *insect, short *frames)
     }
     int calling = insect->unk_252;
     if (calling > 0) {
-        func_ov003_022353a4(insect, 0, 1);
+        TownInsectMove_PlaySound(insect, 0, 1);
         insect->unk_252 = (u8) (calling - 1);
     }
 }
@@ -1765,7 +1734,7 @@ void TownInsectMove_Update1E(TownInsect *insect)
     switch (insect->action) {
         case 4:
         case 0x11:
-            func_ov003_022353a4(insect, 1, 1);
+            TownInsectMove_PlaySound(insect, 1, 1);
             TownInsectMove_Walk1E(insect, frames);
             break;
         case 5:
@@ -1829,7 +1798,7 @@ void TownInsectMove_Update18(TownInsect *insect)
 CLEAN_AS(func_ov003_022334d8, TownInsectMove_Update18)
 
 /* func_ov003_022335cc (kinds 0xa and 0x33): overlay 68 runs action 0; action 6 wanders in its box
- * (and func_ov003_022355d4); fleeing or let go it flaps, plays its sound 0 and flies up and away
+ * (and TownInsectMove_OnSpot); fleeing or let go it flaps, plays its sound 0 and flies up and away
  * (at 1.8); startled (7) or at rest it starts again (action 0), startled turned by its word
  * 0x240 when its byte 0x24a is set. */
 void TownInsectMove_Update0A(TownInsect *insect)
@@ -1840,13 +1809,13 @@ void TownInsectMove_Update0A(TownInsect *insect)
             break;
         case 6:
             TownInsectMove_WanderInBox(insect);
-            func_ov003_022355d4(insect);
+            TownInsectMove_OnSpot(insect);
             break;
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
-            func_ov003_02234cc4(insect);
-            func_ov003_022353a4(insect, 0, 1);
-            func_ov003_022348dc(insect, 0x1ccd);
+            TownInsectMove_ToggleFrame(insect);
+            TownInsectMove_PlaySound(insect, 0, 1);
+            TownInsectMove_Escape(insect, 0x1ccd);
             break;
         case 7:
             insect->action = 0;
@@ -1871,11 +1840,11 @@ void TownInsectMove_Update0B(TownInsect *insect)
 {
     switch (insect->action) {
         case 0:
-            func_ov003_022353a4(insect, 0, 1);
+            TownInsectMove_PlaySound(insect, 0, 1);
             func_ov068_02270b00(insect);
             break;
         case 2:
-            func_ov003_022353a4(insect, 0, 1);
+            TownInsectMove_PlaySound(insect, 0, 1);
             func_ov068_02270d54(insect);
             break;
         case 3:
@@ -1885,9 +1854,9 @@ void TownInsectMove_Update0B(TownInsect *insect)
             func_ov068_02270890(insect);
             break;
         case TOWN_INSECT_ACTION_LET_GO:
-            func_ov003_022353a4(insect, 0, 1);
-            func_ov003_02234cc4(insect);
-            func_ov003_022348dc(insect, 0x1333);
+            TownInsectMove_PlaySound(insect, 0, 1);
+            TownInsectMove_ToggleFrame(insect);
+            TownInsectMove_Escape(insect, 0x1333);
             break;
         case 4:
             func_ov068_02270df8(insect);
@@ -1900,29 +1869,29 @@ void TownInsectMove_Update0B(TownInsect *insect)
 CLEAN_AS(func_ov003_02233674, TownInsectMove_Update0B)
 
 /* func_ov003_02233720 (kinds 0x25 and 0x39 at action 0): outside a session or holding the scene,
- * alarmed out of reach (func_ov003_02234d70 gives 2) its animation runs at 1.0 again. It moves
- * on (func_ov003_02234e28 at its byte 0x257) and its frame counter steps by 2 over 5-8, which
- * func_ov003_02234dac takes with a divisor of 10-13.
- * QUIRK: func_ov003_02234e28 is handed a copy of its heading, which is not stored back. */
+ * alarmed out of reach (TownInsectMove_Sense gives 2) its animation runs at 1.0 again. It moves
+ * on (TownInsectMove_Meander at its byte 0x257) and its frame counter steps by 2 over 5-8, which
+ * TownInsectMove_Bob takes with a divisor of 10-13.
+ * QUIRK: TownInsectMove_Meander is handed a copy of its heading, which is not stored back. */
 void TownInsectMove_Crawl25(TownInsect *insect)
 {
     short heading = insect->angle_y;
     short *frames = &insect->frames_left;
     if (!town_insect_moves_in_session() || LinkGlobal_HoldsScene() != 0) {
-        if (func_ov003_02234d70(insect) == 2) {
+        if (TownInsectMove_Sense(insect) == 2) {
             TownInsect_SetAnimSpeed(insect, 0x1000);
             insect->unk_24a = 0;
         }
     }
-    func_ov003_02234e28(insect, &heading, 0x38e, 0x28, 0x50, town_insect_moves_fx(insect->unk_257));
+    TownInsectMove_Meander(insect, &heading, 0x38e, 0x28, 0x50, town_insect_moves_fx(insect->unk_257));
     *frames = (short) (*frames + (short) FX_Div(0x2000, town_insect_moves_fx((int) MainRandom_Below(4) + 5)));
-    func_ov003_02234dac(insect, *frames, 0x1000, town_insect_moves_fx((int) MainRandom_Below(4) + 0xa));
+    TownInsectMove_Bob(insect, *frames, 0x1000, town_insect_moves_fx((int) MainRandom_Below(4) + 0xa));
 }
 CLEAN_AS(func_ov003_02233720, TownInsectMove_Crawl25)
 
 /* func_ov003_022337d8 (kinds 0x25 and 0x39): crawls (action 0); fleeing or let go it flies off
  * (its sound 1 first); startled (7) it turns by its word 0x240 and crawls on; at rest it starts
- * with a point ahead (func_ov003_022350cc far) and its start where it is. */
+ * with a point ahead (TownInsectMove_KindReach far) and its start where it is. */
 void TownInsectMove_Update25(TownInsect *insect)
 {
     switch (insect->action) {
@@ -1932,7 +1901,7 @@ void TownInsectMove_Update25(TownInsect *insect)
         case 9:
         case TOWN_INSECT_ACTION_LET_GO:
             if (insect->frames_left == 0) {
-                func_ov003_022353a4(insect, 1, 0);
+                TownInsectMove_PlaySound(insect, 1, 0);
             }
             TownInsectMove_FlyOff(insect, &insect->frames_left);
             break;
@@ -1944,7 +1913,7 @@ void TownInsectMove_Update25(TownInsect *insect)
             insect->unk_24a = 0;
             insect->action = 0;
             short heading = insect->angle_y;
-            func_ov003_02235834(insect, heading, func_ov003_022350cc(insect));
+            TownInsectMove_SetTarget(insect, heading, TownInsectMove_KindReach(insect));
             town_insect_moves_copy(&insect->start, &insect->position);
             break;
         }
@@ -1969,7 +1938,7 @@ void TownInsectMove_Update32(TownInsect *insect)
             if (Approach_S16Wrapped(&heading, insect->unk_240, 0x5b0) != 0) {
                 insect->action = 0;
             }
-            func_ov003_022353a4(insect, 0, 1);
+            TownInsectMove_PlaySound(insect, 0, 1);
             insect->angle_y = heading;
             break;
         }
@@ -2026,7 +1995,7 @@ void TownInsectMove_Sound1BTo1D(TownInsect *insect)
         case 0x1c:
         case 0x1d:
             if (insect->unk_254 < 5) {
-                func_ov003_022353a4(insect, 0, 1);
+                TownInsectMove_PlaySound(insect, 0, 1);
             }
             break;
         default:
@@ -2041,7 +2010,7 @@ void TownInsectMove_SoundCD(TownInsect *insect)
     switch (insect->kind) {
         case 0xc:
         case 0xd:
-            func_ov003_022353a4(insect, 0, 1);
+            TownInsectMove_PlaySound(insect, 0, 1);
             break;
         default:
             break;
@@ -2058,7 +2027,7 @@ int TownInsectMove_TurnAtObstacle(TownInsect *insect, short *frames)
     if (town_insect_moves_in_session() && LinkGlobal_HoldsScene() == 0) {
         return 0;
     }
-    int side = func_ov003_02235b54(insect, 0x50, 0xe38);
+    int side = TownInsectMove_FeelObstacles(insect, 0x50, 0xe38);
     if (side != 0) {
         *frames = 0;
         insect->action = 0xf;
@@ -2084,10 +2053,10 @@ void TownInsectMove_FlyWaiting(TownInsect *insect)
     int arrived = 0;
     u8 action = insect->action;
     if (insect->unk_24a != 0) {
-        func_ov003_02234cc4(insect);
+        TownInsectMove_ToggleFrame(insect);
         TownInsectMove_SoundCD(insect);
     }
-    if (func_ov003_02235b54(insect, 0x50, 0xe38) == 0) {
+    if (TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) == 0) {
         if (Approach_PointXZ(position, target, pace, 0x14000, 0x333) == 0) {
             arrived = 1;
         } else {
@@ -2108,7 +2077,7 @@ void TownInsectMove_FlyWaiting(TownInsect *insect)
         if (ground.unk_30 != 0) {
             floor = ground.limit;
             if (insect->action == 0x11) {
-                func_ov003_02235454(insect);
+                TownInsectMove_Splash(insect);
                 insect->frames_left = 0;
                 TownInsectMove_Leave(insect);
                 CollisionGround_Destroy(&ground);
@@ -2129,7 +2098,7 @@ void TownInsectMove_FlyWaiting(TownInsect *insect)
             insect->action = 0x13;
             town_insect_moves_set_frame(insect, 0);
             if (floor < 0) {
-                func_ov003_02235454(insect);
+                TownInsectMove_Splash(insect);
                 insect->frames_left = 0;
                 TownInsectMove_Leave(insect);
             } else if (insect->unk_24a != 0) {
@@ -2195,9 +2164,9 @@ void TownInsectMove_UpdateWaiting(TownInsect *insect)
     short *frames = &insect->frames_left;
     u8 action = insect->action;
     if (action != TOWN_INSECT_ACTION_LET_GO && action != 9 && action != 4) {
-        func_ov003_02234d70(insect);
+        TownInsectMove_Sense(insect);
     }
-    func_ov003_02235934(insect, 4);
+    TownInsectMove_FleeIfFlagged(insect, 4);
     switch (action) {
         case 3:
         case 0xf:
@@ -2340,7 +2309,7 @@ int TownInsectMove_TurnToHeading(TownInsect *insect, int byte24c)
     int result = 0;
     s16 heading = insect->angle_y;
     if (insect->action == TOWN_INSECT_ACTION_LET_GO) {
-        func_ov003_02235834(insect, insect->angle_y, town_insect_moves_fx((u8) (insect->unk_259 * 2)));
+        TownInsectMove_SetTarget(insect, insect->angle_y, town_insect_moves_fx((u8) (insect->unk_259 * 2)));
         insect->unk_24c = (u8) byte24c;
         return result;
     }
@@ -2357,7 +2326,7 @@ int TownInsectMove_TurnToHeading(TownInsect *insect, int byte24c)
         if (insect->unk_24a != 0) {
             steps = (u8) (steps + (u8) (MainRandom_Below(2) + 2));
         }
-        if (func_ov003_02235834(insect, insect->unk_240, town_insect_moves_fx(steps)) != 0) {
+        if (TownInsectMove_SetTarget(insect, insect->unk_240, town_insect_moves_fx(steps)) != 0) {
             insect->unk_240 = Vec_YawTo(&insect->position, &insect->target);
         }
         insect->unk_21c = flags & 0xf0ff;
@@ -2410,7 +2379,7 @@ CLEAN_AS(func_ov003_0223418c, TownInsectMove_HeadingOff)
  * and its point where it is. */
 void TownInsectMove_CheckObstacle(TownInsect *insect)
 {
-    int side = func_ov003_02235b54(insect, 0x50, 0xe38);
+    int side = TownInsectMove_FeelObstacles(insect, 0x50, 0xe38);
     if (side == 0) {
         return;
     }
@@ -2433,9 +2402,9 @@ CLEAN_AS(func_ov003_02234264, TownInsectMove_CheckObstacle)
 void TownInsectMove_RiseAway(TownInsect *insect, short *frames)
 {
     Vec3 *position = &insect->position;
-    if (insect->action == TOWN_INSECT_ACTION_LET_GO && func_ov003_02235b54(insect, 0x50, 0xe38) == 0) {
+    if (insect->action == TOWN_INSECT_ACTION_LET_GO && TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) == 0) {
         Vec3 step;
-        func_ov003_0223597c(&step, insect->angle_y);
+        TownInsectMove_StepAlong(&step, insect->angle_y);
         position->x += FX_MulFunc(step.x, 0x10000);
         position->z += FX_MulFunc(step.z, 0x10000);
     }
@@ -2564,15 +2533,15 @@ void TownInsectMove_UpdateTurned(TownInsect *insect)
                 town_insect_moves_set_frame(insect, 0);
             }
         } else if (town_insect_moves_frame(insect) != 0) {
-            func_ov003_02234cc4(insect);
+            TownInsectMove_ToggleFrame(insect);
         }
     } else {
-        func_ov003_02234cc4(insect);
+        TownInsectMove_ToggleFrame(insect);
     }
     if (insect->action != TOWN_INSECT_ACTION_LET_GO && insect->action != 9) {
-        func_ov003_02234d70(insect);
+        TownInsectMove_Sense(insect);
     }
-    func_ov003_02235934(insect, 5);
+    TownInsectMove_FleeIfFlagged(insect, 5);
     switch (insect->action) {
         case 0xf:
             waits = 1;
@@ -2618,7 +2587,7 @@ void TownInsectMove_UpdateTurned(TownInsect *insect)
                     insect->unk_244 = 0x64;
                 }
             } else {
-                int ran_out = func_ov003_02234984(insect);
+                int ran_out = TownInsectMove_WaitOver(insect);
                 *frames = 0;
                 if (insect->unk_24a == 0 && ran_out != 0 && !town_insect_moves_in_session()) {
                     func_ov068_02271b30(insect);
@@ -2643,3 +2612,974 @@ int TownInsectMove_TestFlags(int value)
     return value == 2 || value == 3 ? 0xf : 0x3f;
 }
 CLEAN_AS(func_ov003_0223482c, TownInsectMove_TestFlags)
+
+/* ---- Kinds 0-7, and the moves the kinds share */
+
+/* The ROM's float-to-integer conversion (the float's bits in, as the soft-float code takes
+ * them). */
+extern int _ffix(int bits);
+/* The SDK's difference of two points: a minus b into the third. */
+extern void VEC_Subtract(const Vec3 *a, const Vec3 *b, Vec3 *difference);
+/* Kind 8's flight while it is not alarmed (overlay 68); 0 to stop the frame there. */
+extern int func_ov068_022715a0(TownInsect *insect, s16 *frames, Vec3 *step);
+
+/* The float 5120.5 as its bits: _ffix makes it 0x1400, 1.25 in 20.12 fixed point. */
+#define TOWN_INSECT_MOVES_FLEE_BOOST_BITS 0x45a00400
+
+/* The ARM's ASR by a register: only the shift's low byte counts, and from 32 on every bit is
+ * the sign. */
+static fx32 town_insect_moves_asr_register(fx32 value, int shift)
+{
+    int amount = shift & 0xff;
+    if (amount >= 32) {
+        return value < 0 ? -1 : 0;
+    }
+    return value >> amount;
+}
+
+/* The two feelers ahead of the insect (TownInsectMove_PlaceFeelers): its two points at 0x1ec. */
+static Vec3 *town_insect_moves_feelers(TownInsect *insect)
+{
+    return (Vec3 *) (void *) insect->unk_1ec;
+}
+
+/* A new target ahead along the heading, at the kind's reach; the start point moves to where the
+ * insect is when there was one. */
+static void town_insect_moves_retarget(TownInsect *insect)
+{
+    fx32 reach = TownInsectMove_KindReach(insect);
+    if (TownInsectMove_SetTarget(insect, insect->angle_y, reach) != 0) {
+        town_insect_moves_copy(&insect->start, &insect->position);
+    }
+}
+
+/* func_ov003_02234840: the flap cycle of kinds 0-7 (TownInsectMove_FlyBobbing), run after
+ * `frames` (TownInsect.frames_left) was stepped. Once `frames` is past the byte 0x256 the cycle
+ * starts again: at 0 for 0x10 frames when the byte 0x24c (down) is set, else at 8 for 0x14. The
+ * byte 0x24c is cleared once the insect is more than 0x300 above the word 0x220 (its floor), and
+ * set when it is below the floor; within 0x320 below, it is put back on it. */
+void TownInsectMove_FlapCycle(TownInsect *insect, short *frames)
+{
+    u8 down = insect->unk_24c;
+    /* QUIRK: the original picks the floor as the word 0x220 when it differs from the word 0x228
+     * and as the word 0x228 when they are equal: the word 0x220 either way. */
+    int floor = insect->unk_220;
+    int top = floor + 0x300;
+
+    if (insect->unk_256 < *frames) {
+        if (down != 0) {
+            *frames = 0;
+            insect->unk_256 = 0x10;
+        } else {
+            *frames = 8;
+            insect->unk_256 = 0x14;
+        }
+    }
+    if (down != 0 && insect->position.y > top) {
+        insect->unk_24c = 0;
+    }
+    if (insect->position.y < floor) {
+        if (insect->position.y > floor - 0x320) {
+            insect->position.y = floor;
+        }
+        insect->unk_24c = 1;
+    }
+}
+CLEAN_AS(func_ov003_02234840, TownInsectMove_FlapCycle)
+
+/* func_ov003_022348dc: flown up and away along its heading: a step of 0x29 along it (at 16 times
+ * the length when nothing stands ahead), and up by `speed` times 0x44 times TownInsect.frames_left
+ * (shifted down 12), which counts up by one a frame. Leaves once it has faded out
+ * (TownInsectMove_FadeStep).
+ * QUIRK: the rise is shifted right by FX_Div(frames squared, 1.0) + 12 as an ARM register shift,
+ * whose low byte is 12 for every frame count; FX_Div is still called. */
+void TownInsectMove_Escape(TownInsect *insect, fx32 speed)
+{
+    Vec3 step;
+    TownInsectMove_StepAlong(&step, insect->angle_y);
+    if (TownInsectMove_FadeStep(insect, 1) != 0) {
+        TownInsectMove_Leave(insect);
+    }
+    int n = insect->frames_left;
+    fx32 rise = FX_MulFunc(speed, (fx32) ((u32) (0x44 * n) << 12));
+    int shift = FX_Div((fx32) ((u32) (n * n) << 12), 0x1000) + 12;
+    step.y = town_insect_moves_asr_register(rise, shift);
+    if (TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) == 0) {
+        step.x = FX_MulFunc(step.x, 0x10000);
+        step.z = FX_MulFunc(step.z, 0x10000);
+    }
+    insect->frames_left = (s16) (insect->frames_left + 1);
+    VEC_Add(&insect->position, &step, &insect->position);
+}
+CLEAN_AS(func_ov003_022348dc, TownInsectMove_Escape)
+
+/* func_ov003_02234984: the word 0x244 counted down; 1 once it is 0 (or below). */
+int TownInsectMove_WaitOver(TownInsect *insect)
+{
+    if (insect->unk_244 > 0) {
+        insect->unk_244--;
+        return 0;
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_02234984, TownInsectMove_WaitOver)
+
+/* func_ov003_022349a0: action 0 of kinds 0-7 (and kind 8): flying with a bob. Its animation is
+ * cut to 9 frames (not kind 8) and the players are sensed (TownInsectMove_Sense); when the alarm
+ * fell, the animation runs at its speed again and the byte 0x24a (alarmed) is cleared.
+ *   alarmed:     the animation runs at 0x1333 times the word 0x21c; kind 8 moves away from this
+ *                console's player by up to 3 across;
+ *   not alarmed: kind 8 flies as overlay 68 says (func_ov068_022715a0, which may stop the frame
+ *                there); the others go to a spot to settle on outside a session
+ *                (InsectPath_GoToSpot).
+ * Then the bob: up by 0x44 n - 5 n^2 for n = TownInsect.frames_left, at least -0x333 (unless the
+ * byte 0x24c is set and the rise is not negative), with n stepped by 4 and the flap cycle run
+ * (TownInsectMove_FlapCycle); and the heading wanders (TownInsectMove_Meander, overlay 68's
+ * InsectPath_Wander for kind 8) at the byte 0x257 for scale.
+ * QUIRK: with the byte 0x24c set and the rise not negative, FX_MulFunc(rise, 2.0) is called and
+ * its result dropped. */
+void TownInsectMove_FlyBobbing(TownInsect *insect)
+{
+    s16 heading = insect->angle_y;
+    Vec3 *position = &insect->position;
+    s16 *frames = &insect->frames_left;
+    Vec3 step;
+
+    if (insect->kind != 8 && town_insect_moves_frame_count(insect) > 9) {
+        town_insect_moves_play(insect, 9, 0, (u32) insect->unk_21c, 0);
+    }
+    if (TownInsectMove_Sense(insect) == 2) {
+        if (insect->kind != 8) {
+            TownInsect_SetAnimSpeed(insect, (unsigned long) insect->unk_21c);
+        } else {
+            TownInsect_SetAnimSpeed(insect, 0x1000);
+        }
+        insect->unk_24a = 0;
+    }
+    if (insect->unk_24a != 0) {
+        if (insect->kind != 8) {
+            fx32 speed = FX_MulFunc(insect->unk_21c, 0x1333);
+            if (speed != insect->model.frames.speed) {
+                TownInsect_SetAnimSpeed(insect, (unsigned long) speed);
+            }
+        } else {
+            Actor *player = SessionPlayers_ActorOf(TOWN_INSECT_MOVES_THIS_PLAYER);
+            if (player != NULL) {
+                Vec3 away;
+                Vec_Subtract(&away, position, &player->position);
+                town_insect_moves_copy(&step, &away);
+                TownInsectMove_ClampXZ(&step, &step, 3);
+                VEC_Add(position, &step, position);
+            }
+        }
+    } else if (insect->kind == 8) {
+        if (func_ov068_022715a0(insect, frames, &step) == 0) {
+            return;
+        }
+    } else {
+        if (insect->unk_21c != insect->model.frames.speed) {
+            TownInsect_SetAnimSpeed(insect, (unsigned long) insect->unk_21c);
+        }
+        if (!town_insect_moves_in_session()) {
+            InsectPath_GoToSpot(insect, &heading);
+        }
+    }
+
+    int n = *frames;
+    fx32 rise = 0x44 * n + -10 * (n * n) / 2;
+    if (insect->unk_24c != 0 && rise >= 0) {
+        FX_MulFunc(rise, 0x2000);
+    } else if (rise < -0x333) {
+        rise = -0x333;
+    }
+    *frames = (s16) (*frames + 4);
+    TownInsectMove_FlapCycle(insect, frames);
+    position->y += rise;
+    if (insect->kind == 8) {
+        InsectPath_Wander(insect, &heading, 0xaaa, 0x14, 0x3c, town_insect_moves_fx(insect->unk_257));
+    } else {
+        TownInsectMove_Meander(insect, &heading, 0x38e, 0x14, 0x3c, town_insect_moves_fx(insect->unk_257));
+    }
+}
+CLEAN_AS(func_ov003_022349a0, TownInsectMove_FlyBobbing)
+
+/* func_ov003_02234b80: the update of kinds 0-7 (TownInsectKind_Start00To07). A timer (the word
+ * 0x232) counts the frames something stands ahead (TownInsectMove_FeelObstacles); past 0x8c the
+ * insect flees (action 9). Then by its action:
+ *   0         flying (TownInsectMove_FlyBobbing);
+ *   6         on its spot (TownInsectMove_OnSpot);
+ *   9, 0xb    fleeing or let go: its animation cut to 9 frames, flown up and away at 0x1ccd
+ *             (TownInsectMove_Escape);
+ *   7         alarmed: the heading turned by the word 0x240 and flying again with a new target;
+ *   0x13      started: flying, not alarmed, with a new target. */
+void TownInsectMove_Update00To07(TownInsect *insect)
+{
+    s16 timer = insect->timer;
+    if (timer > 0x8c) {
+        insect->action = 9;
+    } else if (TownInsectMove_FeelObstacles(insect, 0x50, 0xe38) != 0) {
+        insect->timer = (s16) (timer + 1);
+    } else {
+        insect->timer = 0;
+    }
+
+    switch (insect->action) {
+        case 0:
+            TownInsectMove_FlyBobbing(insect);
+            break;
+        case 6:
+            TownInsectMove_OnSpot(insect);
+            break;
+        case 9:
+        case TOWN_INSECT_ACTION_LET_GO:
+            if (town_insect_moves_frame_count(insect) > 9) {
+                town_insect_moves_play(insect, 9, 0, 0x1000, 0);
+            }
+            TownInsectMove_Escape(insect, 0x1ccd);
+            break;
+        case 7:
+            insect->action = 0;
+            insect->angle_y = (s16) (insect->angle_y + insect->unk_240);
+            town_insect_moves_retarget(insect);
+            break;
+        case TOWN_INSECT_ACTION_SHOWN:
+            insect->unk_24a = 0;
+            insect->action = 0;
+            town_insect_moves_retarget(insect);
+            break;
+    }
+}
+CLEAN_AS(func_ov003_02234b80, TownInsectMove_Update00To07)
+
+/* func_ov003_02234cc4: the model's animation set to frame 2 when it is at frame 1, else to frame
+ * 1. */
+void TownInsectMove_ToggleFrame(TownInsect *insect)
+{
+    if (town_insect_moves_frame(insect) == 1) {
+        town_insect_moves_set_frame(insect, 2);
+    } else {
+        town_insect_moves_set_frame(insect, 1);
+    }
+}
+CLEAN_AS(func_ov003_02234cc4, TownInsectMove_ToggleFrame)
+
+/* func_ov003_02234cf0: in a session, the insect alarmed (the byte 0x24a set, action 7) once its
+ * alarm (the byte 0x254) has reached the kind's byte 0x255. Holding the scene, only when a
+ * player was found (nearest->x not 0), and the word 0x240 becomes the heading from that player
+ * to the insect. */
+void TownInsectMove_AlarmTurn(TownInsect *insect, const Vec3 *nearest)
+{
+    u32 alarm = insect->unk_254;
+    if (LinkGlobal_HoldsScene() != 0) {
+        if (nearest->x != 0 && insect->unk_24a == 0 && alarm >= insect->unk_255) {
+            insect->unk_240 = Vec_YawTo(nearest, &insect->position);
+            insect->action = 7;
+            insect->unk_24a = 1;
+        }
+    } else if (insect->unk_24a == 0 && alarm >= insect->unk_255) {
+        insect->unk_24a = 1;
+        insect->action = 7;
+    }
+}
+CLEAN_AS(func_ov003_02234cf0, TownInsectMove_AlarmTurn)
+
+/* func_ov003_02234d70: the players sensed (TownInsectMove_SensePlayers) and the insect turned
+ * with what it found: in a session by TownInsectMove_AlarmTurn, outside by overlay 68
+ * (InsectPath_FleeFrom). Returns what TownInsectMove_SensePlayers did. */
+int TownInsectMove_Sense(TownInsect *insect)
+{
+    /* Only x is always set by TownInsectMove_SensePlayers; the original leaves the rest of the
+     * point unset when no player is found. */
+    Vec3 nearest = {0, 0, 0};
+    int result = TownInsectMove_SensePlayers(insect, &nearest);
+    if (town_insect_moves_in_session()) {
+        TownInsectMove_AlarmTurn(insect, &nearest);
+    } else {
+        InsectPath_FleeFrom(insect, &nearest);
+    }
+    return result;
+}
+CLEAN_AS(func_ov003_02234d70, TownInsectMove_Sense)
+
+/* func_ov003_02234dac: the height bobbed by the sine of `frame` over `divisor`, kept within
+ * `limit` of the word 0x220 (within limit / 2.0 when the words 0x220 and 0x228 differ): a step
+ * that would leave that band is not taken. */
+void TownInsectMove_Bob(TownInsect *insect, int frame, int limit, fx32 divisor)
+{
+    fx32 step = FX_Div(FX_SinCosTable_[2 * ((u16) frame >> 4)], divisor);
+    if (insect->unk_220 != insect->unk_228) {
+        limit = FX_Div(limit, 0x2000);
+    }
+    fx32 y = insect->position.y;
+    if ((step > 0 && y + step < limit + insect->unk_220) || (step < 0 && y + step > insect->unk_220 - limit)) {
+        insect->position.y = y + step;
+    }
+}
+CLEAN_AS(func_ov003_02234dac, TownInsectMove_Bob)
+
+/* func_ov003_02234e28: the heading kept wandering while it flies.
+ *   Something ahead (TownInsectMove_FeelObstacles): the heading turned from it
+ *   (TownInsectMove_HeadingOff), the start point moved to the insect and a new target set; that
+ *   is all for the frame.
+ *   Else on every `divisor`th count of the byte 0x24f, when a roll of 100 is above `threshold`,
+ *   the turning side (the byte 0x24b) changes; when the roll is above the byte 0x252, *heading
+ *   turns by `step` to the side it had and becomes the insect's heading. It steps along
+ *   *heading by `scale` (1.25 times that while alarmed, the byte 0x24a); farther from its start
+ *   point than the kind allows (TownInsectMove_KindLeash) it turns back to it
+ *   (TownInsectMove_TurnBack). The start point is brought towards the target
+ *   (Approach_PointXZ); once it is there (outside a session or holding the scene), the
+ *   byte 0x253 counts down, and at 0 the heading turns at random, the start point moves to the
+ *   insect, an alarmed insect heads away from the nearest player (this console's player outside
+ *   a session), and a new target is set.
+ * QUIRK: the heading turns by the side the byte 0x24b had when the frame began; a change of
+ * side shows on the next frame.
+ * REQUIRES: `divisor` is not 0 (the callers pass 0x14 and 0x28). */
+void TownInsectMove_Meander(TownInsect *insect, short *heading, int step, int divisor, u8 threshold, fx32 scale)
+{
+    Vec3 *start = &insect->start;
+    Vec3 *position = &insect->position;
+    int side = TownInsectMove_FeelObstacles(insect, 0x50, 0xe38);
+    u8 turning = insect->unk_24b;
+    int roll = (int) MainRandom_Below(100);
+
+    if (side != 0) {
+        insect->angle_y = TownInsectMove_HeadingOff(insect->angle_y, side);
+        town_insect_moves_copy(start, position);
+        fx32 reach = TownInsectMove_KindReach(insect);
+        TownInsectMove_SetTarget(insect, insect->angle_y, reach);
+        return;
+    }
+    if (insect->counter % divisor == 0 && roll > threshold) {
+        insect->unk_24b = turning == 0 ? 1 : 0;
+    }
+    if (roll > insect->unk_252) {
+        if (turning != 0) {
+            *heading = (short) (*heading + step);
+        } else {
+            *heading = (short) (*heading - step);
+        }
+        insect->angle_y = *heading;
+    }
+
+    Vec3 along;
+    TownInsectMove_StepAlong(&along, *heading);
+    if (insect->unk_24a != 0) {
+        fx32 boost = _ffix(TOWN_INSECT_MOVES_FLEE_BOOST_BITS);
+        position->x += FX_MulFunc(FX_MulFunc(scale, along.x), boost);
+        position->z += FX_MulFunc(FX_MulFunc(scale, along.z), boost);
+    } else {
+        position->x += FX_MulFunc(scale, along.x);
+        position->z += FX_MulFunc(scale, along.z);
+    }
+
+    Vec3 offset;
+    Vec_Subtract(&offset, start, position);
+    if (Vec_LengthXZ(&offset) > TownInsectMove_KindLeash(insect)) {
+        TownInsectMove_TurnBack(insect, start, 0xaaa);
+    }
+    fx32 max_step = TownInsectMove_KindSpeed(insect) + 0x19a;
+    fx32 min_step = TownInsectMove_KindSpeed(insect);
+    if (Approach_PointXZ(start, &insect->target, 0x28, max_step, min_step) != 0) {
+        return;
+    }
+    if (town_insect_moves_in_session() && LinkGlobal_HoldsScene() == 0) {
+        return;
+    }
+
+    if (insect->unk_253 != 0) {
+        insect->unk_253--;
+        return;
+    }
+    insect->angle_y = (s16) (insect->angle_y + TownInsectMove_RandomTurn(6, 1));
+    town_insect_moves_copy(start, position);
+    if (insect->unk_24a != 0) {
+        Actor *player;
+        if (town_insect_moves_in_session()) {
+            player = TownInsectMove_NearestPlayer(position);
+        } else {
+            player = SessionPlayers_ActorOf(TOWN_INSECT_MOVES_THIS_PLAYER);
+        }
+        if (player != NULL) {
+            insect->angle_y = Vec_YawTo(&player->position, position);
+        }
+    }
+    fx32 reach = TownInsectMove_KindReach(insect);
+    TownInsectMove_SetTarget(insect, insect->angle_y, reach);
+}
+CLEAN_AS(func_ov003_02234e28, TownInsectMove_Meander)
+
+/* func_ov003_0223506c: the least step by which the start point is brought towards the target
+ * (TownInsectMove_Meander), by kind; 0 for kinds other than 0-7 and 0x25. */
+int TownInsectMove_KindSpeed(TownInsect *insect)
+{
+    switch (insect->kind) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            return 0xf6;
+        case 4:
+            return 0x171;
+        case 5:
+            return 0x1ec;
+        case 6:
+            return 0x2b8;
+        case 7:
+            return 0x266;
+        case 0x25:
+            return 0xcd;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_0223506c, TownInsectMove_KindSpeed)
+
+/* func_ov003_022350cc: how far ahead a new target is set, by kind; 0 for kinds other than 0-7
+ * and 0x25. */
+int TownInsectMove_KindReach(TownInsect *insect)
+{
+    switch (insect->kind) {
+        case 0:
+        case 1:
+            return 0x5000;
+        case 2:
+        case 3:
+            return 0x4600;
+        case 4:
+            return 0x7800;
+        case 5:
+        case 6:
+            return 0x5000;
+        case 7:
+            return 0xc800;
+        case 0x25:
+            return 0x3c00;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_022350cc, TownInsectMove_KindReach)
+
+/* func_ov003_02235130: how far from its start point an insect goes before it turns back, by
+ * kind; 0 for kinds other than 0-7 and 0x25. */
+int TownInsectMove_KindLeash(TownInsect *insect)
+{
+    switch (insect->kind) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+            return 0xccd;
+        case 4:
+            return 0xb33;
+        case 5:
+            return 0xccd;
+        case 6:
+            return 0xb33;
+        case 7:
+        case 0x25:
+            return 0xccd;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_02235130, TownInsectMove_KindLeash)
+
+/* func_ov003_02235184: kinds 0-7 and 0x25 wait 0x14 counts (the byte 0x253) before their next
+ * random turn (TownInsectMove_Meander). */
+void TownInsectMove_SetTurnDelay(TownInsect *insect)
+{
+    switch (insect->kind) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 0x25:
+            insect->unk_253 = 0x14;
+            break;
+    }
+}
+CLEAN_AS(func_ov003_02235184, TownInsectMove_SetTurnDelay)
+
+/* func_ov003_022351c4: the heading turned towards `point` by up to `step`, and the insect moved
+ * towards it by up to 1 across (TownInsectMove_ClampXZ). */
+void TownInsectMove_TurnBack(TownInsect *insect, const Vec3 *point, int step)
+{
+    s16 heading = insect->angle_y;
+    Vec3 back;
+    town_insect_moves_copy(&back, point);
+    Vec3 *position = &insect->position;
+    Approach_S16Wrapped(&heading, Vec_YawTo(position, point), (s16) step);
+    insect->angle_y = heading;
+    VEC_Subtract(&back, position, &back);
+    TownInsectMove_ClampXZ(&back, &back, 1);
+    VEC_Add(position, &back, position);
+}
+CLEAN_AS(func_ov003_022351c4, TownInsectMove_TurnBack)
+
+/* func_ov003_0223522c: the sound of kind `kind` for `which` (0 or 1; some kinds have one sound
+ * for both), or -1 for none. */
+int TownInsectMove_SoundNumber(int kind, int which)
+{
+    switch (kind) {
+        case 51:
+            return 0x823;
+        case 11:
+        case 58:
+            return which == 0 ? 0x830 : 0x837;
+        case 54:
+            return which == 1 ? 0x834 : 0x833;
+        case 55:
+            return which == 1 ? 0x836 : 0x835;
+        case 10:
+            return 0x831;
+        case 50:
+            return 0x828;
+        case 29:
+            return 0x825;
+        case 27:
+            return 0x826;
+        case 28:
+            return 0x82c;
+        case 12:
+            return 0x82b;
+        case 13:
+            return 0x82d;
+        case 15:
+        case 25:
+        case 32:
+        case 57:
+            return 0x812;
+        case 14:
+        case 33:
+        case 34:
+        case 35:
+        case 38:
+        case 39:
+        case 40:
+        case 41:
+        case 42:
+        case 43:
+        case 44:
+        case 52:
+            return 0x811;
+        case 36:
+        case 45:
+        case 46:
+        case 47:
+            return 0x810;
+        case 20:
+            return which != 0 ? 0x811 : -1;
+        case 16:
+            return which == 0 ? 0x822 : 0x80f;
+        case 17:
+            return which == 0 ? 0x827 : 0x80f;
+        case 18:
+            return which == 0 ? 0x82e : 0x80f;
+        case 19:
+            return which == 0 ? 0x824 : 0x80f;
+        case 30:
+            return which == 0 ? 0x829 : 0x82a;
+    }
+    return -1;
+}
+CLEAN_AS(func_ov003_0223522c, TownInsectMove_SoundNumber)
+
+/* func_ov003_022353a4: the kind's sound `which` on the insect's sound source, when it has one:
+ * SoundSource_Play when `play`, else SoundSource_PlayHeld. */
+void TownInsectMove_PlaySound(TownInsect *insect, int which, int play)
+{
+    int number = TownInsectMove_SoundNumber(insect->kind, which);
+    if (number >= 0) {
+        if (play != 0) {
+            SoundSource_Play(&insect->source, number);
+        } else {
+            SoundSource_PlayHeld(&insect->source, number);
+        }
+    }
+}
+CLEAN_AS(func_ov003_022353a4, TownInsectMove_PlaySound)
+
+/* func_ov003_022353e0: the byte 0x24e (signed) counted down from how long a player has been in
+ * state 0x5e at `point` (FieldActor_PlayerFramesToState5E): when it is not above 0 it is
+ * refilled, in a session from the first of players 0-3 with a count above 0, else from this
+ * console's player. Returns 1 when the count reaches 0. */
+int TownInsectMove_CountStand(TownInsect *insect, const Vec3 *point)
+{
+    if ((s8) insect->unk_24e <= 0) {
+        if (town_insect_moves_in_session()) {
+            for (s8 player = 0; player < 4; player++) {
+                insect->unk_24e = (u8) FieldActor_PlayerFramesToState5E(point, player);
+                if ((s8) insect->unk_24e > 0) {
+                    break;
+                }
+            }
+        } else {
+            insect->unk_24e = (u8) FieldActor_PlayerFramesToState5E(point, TOWN_INSECT_MOVES_THIS_PLAYER);
+        }
+    }
+    if ((s8) insect->unk_24e > 0) {
+        insect->unk_24e = (u8) (insect->unk_24e - 1);
+        if (insect->unk_24e == 0) {
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_022353e0, TownInsectMove_CountStand)
+
+/* func_ov003_02235454: the splash where it fell into water: when the ground under it says so
+ * (CollisionGround.unk_30), sound 0x7e5 and effect 0x13 (kinds 0xc, 0xd, 0x1e, 0x1f), 0x14
+ * (kinds 0x36, 0x37) or 0x12 (the others) just above the ground's limit, and 1 is returned. */
+int TownInsectMove_Splash(TownInsect *insect)
+{
+    Vec3 point;
+    CollisionGround ground;
+    town_insect_moves_copy(&point, &insect->position);
+    CollisionGround_Init(&ground, &point, 0, 1);
+    if (ground.unk_30 == 0) {
+        CollisionGround_Destroy(&ground);
+        return 0;
+    }
+    point.y = ground.limit + 0x100;
+    SoundSource_PlayHeld(&insect->source, 0x7e5);
+    switch (insect->kind) {
+        case 0xc:
+        case 0xd:
+        case 0x1e:
+        case 0x1f:
+            EffectSystem_StartKind(0x13, &point, NULL, NULL);
+            break;
+        case 0x36:
+        case 0x37:
+            EffectSystem_StartKind(0x14, &point, NULL, NULL);
+            break;
+        default:
+            EffectSystem_StartKind(0x12, &point, NULL, NULL);
+            break;
+    }
+    CollisionGround_Destroy(&ground);
+    return 1;
+}
+CLEAN_AS(func_ov003_02235454, TownInsectMove_Splash)
+
+/* func_ov003_02235518: whether the code on a tile (main/town_family.h: its line and its stage)
+ * suits kind 0xf, 3 or 2; 0 for other kinds. */
+int TownInsectMove_SuitsCode(int kind, const u16 *code)
+{
+    int stage = TownFamily_Stage(code);
+    int line = TownFamily_Line(code);
+    switch (kind) {
+        case 0xf:
+            if (line == 0 || line == 3) {
+                return stage == 2;
+            }
+            if (line == 5) {
+                return 0;
+            }
+            return line == 4 || stage == 1;
+        case 3:
+            switch (line) {
+                case 0:
+                    return stage == 5 || stage == 6;
+                case 1:
+                    return stage == 4 || stage == 6;
+                case 2:
+                    return stage == 6;
+                case 3:
+                    return stage == 6 || stage == 7 || stage == 8;
+            }
+            return 0;
+        case 2:
+            switch (line) {
+                case 0:
+                    return stage == 1 || stage == 4;
+                case 1:
+                    return stage == 3;
+                case 2:
+                    return stage == 2 || stage == 4;
+                case 3:
+                    return stage == 1 || stage == 4;
+            }
+            return 0;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_02235518, TownInsectMove_SuitsCode)
+
+/* func_ov003_022355d4: action 6 of kinds 0-7 (and 0xa, 0x33): on its spot, with the players
+ * sensed (TownInsectMove_Sense), until the word 0x244 has counted down
+ * (TownInsectMove_WaitOver).
+ *   Waiting, kinds 0xa and 0x33 stay at frame 0 and wander in their box
+ *   (TownInsectMove_WanderInBox); the others are alarmed (byte 0x254 NEAR) off a tile of set B
+ *   (TownInsectMove_OnSetBTile) and play their resting animation (0x11 frames from frame 9),
+ *   started again now and then (4 times in 100) when at frame 0x10.
+ *   Done, the insect starts again (action 0x13) at the floor of the word 0x228, waiting
+ *   (7 to 12) times 0x14 frames next time, with its flying animation (frame 1 for kinds 0xa and
+ *   0x33). */
+void TownInsectMove_OnSpot(TownInsect *insect)
+{
+    TownInsectMove_Sense(insect);
+    if (TownInsectMove_WaitOver(insect) == 0) {
+        s8 kind = insect->kind;
+        if (kind == 0xa || kind == 0x33) {
+            if (town_insect_moves_frame(insect) != 0) {
+                town_insect_moves_set_frame(insect, 0);
+            }
+            TownInsectMove_WanderInBox(insect);
+        } else {
+            if (TownInsectMove_OnSetBTile(&insect->position) == 0) {
+                insect->unk_254 = TOWN_INSECT_BYTE254_NEAR;
+            }
+            if (town_insect_moves_frame_count(insect) < 0xc) {
+                town_insect_moves_play(insect, 0x11, 1, 0x1000, 9);
+            } else if (town_insect_moves_frame(insect) == 0x10) {
+                if ((int) MainRandom_Below(100) > 0x5f) {
+                    town_insect_moves_play(insect, 0x11, 1, 0x1000, 9);
+                }
+            }
+        }
+    } else {
+        insect->action = TOWN_INSECT_ACTION_SHOWN;
+        insect->unk_220 = insect->unk_228;
+        insect->unk_244 = (s16) (((int) MainRandom_Below(6) + 7) * 0x14);
+        s8 kind = insect->kind;
+        if (kind != 0xa && kind != 0x33) {
+            town_insect_moves_play(insect, 9, 0, (u32) insect->unk_21c, 0);
+        } else {
+            town_insect_moves_set_frame(insect, 1);
+        }
+    }
+}
+CLEAN_AS(func_ov003_022355d4, TownInsectMove_OnSpot)
+
+/* func_ov003_022356ec: the player (0-3) nearest to `point` in x plus z, or NULL. */
+Actor *TownInsectMove_NearestPlayer(const Vec3 *point)
+{
+    Actor *best = NULL;
+    int best_distance = 0x0fffffff;
+    u8 player = 0;
+    do {
+        Actor *actor = SessionPlayers_ActorOf(player);
+        if (actor != NULL) {
+            int dx = point->x - actor->position.x;
+            if (dx < 0) {
+                dx = -dx;
+            }
+            int dz = point->z - actor->position.z;
+            if (dz < 0) {
+                dz = -dz;
+            }
+            if (dx + dz < best_distance) {
+                best_distance = dx + dz;
+                best = actor;
+            }
+        }
+        player++;
+    } while (player < 4);
+    return best;
+}
+CLEAN_AS(func_ov003_022356ec, TownInsectMove_NearestPlayer)
+
+/* func_ov003_02235744: the target set as far ahead along `angle` as the ground lets it, in
+ * steps of 1.0 up to `steps`: the first step where the ground (with posts) stands above the
+ * insect's height (or the floor, CollisionQuery_FloorHeight, when that is higher) stops it, one
+ * step short. Returns 1, with the turn delay set (TownInsectMove_SetTurnDelay), when at least
+ * one step was free. */
+int TownInsectMove_TargetAhead(TownInsect *insect, int angle, int steps)
+{
+    int index = (u16) angle >> 4;
+    fx32 sin = FX_SinCosTable_[2 * index];
+    fx32 cos = FX_SinCosTable_[2 * index + 1];
+    Vec3 *position = &insect->position;
+    fx32 floor = position->y;
+    if (floor < CollisionQuery_FloorHeight(0)) {
+        floor = CollisionQuery_FloorHeight(0);
+    }
+
+    u8 i;
+    for (i = 1; i < steps + 1; i++) {
+        fx32 t = (fx32) ((u32) i << 12);
+        Vec3 probe;
+        probe.x = position->x + FX_MulFunc(t, sin);
+        /* The original leaves y unset; the ground query does not use it. */
+        probe.y = 0;
+        probe.z = position->z + FX_MulFunc(t, cos);
+        CollisionGround ground;
+        CollisionGround_Init(&ground, &probe, 0, 0);
+        int blocked = CollisionGround_GetHeight(&ground, 1) > floor;
+        CollisionGround_Destroy(&ground);
+        if (blocked) {
+            break;
+        }
+    }
+    i = (u8) (i - 1);
+    if (i == 0) {
+        return 0;
+    }
+    fx32 t = (fx32) ((u32) i << 12);
+    insect->target.x = position->x + FX_MulFunc(t, sin);
+    insect->target.z = position->z + FX_MulFunc(t, cos);
+    TownInsectMove_SetTurnDelay(insect);
+    return 1;
+}
+CLEAN_AS(func_ov003_02235744, TownInsectMove_TargetAhead)
+
+/* func_ov003_02235834: the target set `distance` ahead along `angle`. Kinds 0-7, 0x1e, 0x25 and
+ * 0x31 (and in a session kinds 0xc, 0xd and 0x1b-0x1d) go only as far as the ground lets them
+ * (TownInsectMove_TargetAhead, in whole steps) and return whether they could; the others are
+ * set straight and return 1. */
+int TownInsectMove_SetTarget(TownInsect *insect, int angle, fx32 distance)
+{
+    switch (insect->kind) {
+        case 0:
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+        case 7:
+        case 0x25:
+        case 0x1e:
+        case 0x31:
+            return TownInsectMove_TargetAhead(insect, angle, (u8) (distance >> 12));
+        case 0xc:
+        case 0xd:
+        case 0x1b:
+        case 0x1c:
+        case 0x1d:
+            if (town_insect_moves_in_session()) {
+                return TownInsectMove_TargetAhead(insect, angle, (u8) (distance >> 12));
+            }
+            break;
+    }
+    int index = (u16) angle >> 4;
+    insect->target.x = insect->position.x + FX_MulFunc(distance, FX_SinCosTable_[2 * index]);
+    insect->target.z = insect->position.z + FX_MulFunc(distance, FX_SinCosTable_[2 * index + 1]);
+    return 1;
+}
+CLEAN_AS(func_ov003_02235834, TownInsectMove_SetTarget)
+
+/* func_ov003_02235934: action 9 (fleeing) when the low four bits of the word 0x21c are above
+ * `most`. */
+void TownInsectMove_FleeIfFlagged(TownInsect *insect, int most)
+{
+    if ((insect->unk_21c & 0xf) > most) {
+        insect->action = 9;
+    }
+}
+CLEAN_AS(func_ov003_02235934, TownInsectMove_FleeIfFlagged)
+
+/* func_ov003_02235950: whether the unit type of the tile under `point` has a group
+ * (UnitTypeInfo_GroupAt). */
+int TownInsectMove_OnGroupTile(const Vec3 *point)
+{
+    int x = 0;
+    int z = 0;
+    Position_Tile(&x, &z, (const Position *) (const void *) point);
+    return UnitTypeInfo_GroupAt(x, z) != 0;
+}
+CLEAN_AS(func_ov003_02235950, TownInsectMove_OnGroupTile)
+
+/* func_ov003_0223597c: a step of 0x29 along heading `angle`: the vector (0, 0, 0x29) turned by
+ * Vec_RotateY. */
+void TownInsectMove_StepAlong(Vec3 *step, int angle)
+{
+    step->x = 0;
+    step->y = 0;
+    step->z = 0x29;
+    Vec_RotateY(step, angle);
+}
+CLEAN_AS(func_ov003_0223597c, TownInsectMove_StepAlong)
+
+/* func_ov003_02235990: the two feelers placed `percent` percent of 1.0 ahead of the insect, at
+ * `spread` either side of its heading (the word 0x23c for kind 0x35, else 0x23a). Returns 1. */
+int TownInsectMove_PlaceFeelers(TownInsect *insect, int percent, int spread)
+{
+    Vec3 *feelers = town_insect_moves_feelers(insect);
+    const Vec3 *position = &insect->position;
+    s16 heading = insect->kind == 0x35 ? insect->angle_z : insect->angle_y;
+
+    town_insect_moves_copy(&feelers[0], position);
+    int left = (u16) (heading + spread) >> 4;
+    feelers[0].x += FX_SinCosTable_[2 * left] * percent / 100;
+    feelers[0].z += FX_SinCosTable_[2 * left + 1] * percent / 100;
+
+    town_insect_moves_copy(&feelers[1], position);
+    int right = (u16) (heading - spread) >> 4;
+    feelers[1].x += FX_SinCosTable_[2 * right] * percent / 100;
+    feelers[1].z += FX_SinCosTable_[2 * right + 1] * percent / 100;
+    return 1;
+}
+CLEAN_AS(func_ov003_02235990, TownInsectMove_PlaceFeelers)
+
+/* func_ov003_02235a74: which feelers find ground (with posts) above the insect's height or below
+ * 0: 1 for the first, 2 for the second, 3 for both. */
+int TownInsectMove_FeelersOffGround(TownInsect *insect)
+{
+    u8 sides = 0;
+    Vec3 *feelers = town_insect_moves_feelers(insect);
+    fx32 top = insect->position.y;
+    CollisionGround first;
+    CollisionGround second;
+
+    CollisionGround_Init(&first, &feelers[0], 0, 0);
+    fx32 height = CollisionGround_GetHeight(&first, 1);
+    if (height < 0 || height > top) {
+        sides = (u8) (sides + 1);
+    }
+    CollisionGround_Init(&second, &feelers[1], 0, 0);
+    height = CollisionGround_GetHeight(&second, 1);
+    if (height < 0 || height > top) {
+        sides = (u8) (sides + 2);
+    }
+    CollisionGround_Destroy(&second);
+    CollisionGround_Destroy(&first);
+    return sides;
+}
+CLEAN_AS(func_ov003_02235a74, TownInsectMove_FeelersOffGround)
+
+/* func_ov003_02235ae8: which feelers find ground (with posts) above the insect's height: 1 for
+ * the first, 2 for the second, 3 for both. */
+int TownInsectMove_FeelersBlocked(TownInsect *insect)
+{
+    u8 sides = 0;
+    Vec3 *feelers = town_insect_moves_feelers(insect);
+    fx32 top = insect->position.y;
+    CollisionGround first;
+    CollisionGround second;
+
+    CollisionGround_Init(&first, &feelers[0], 0, 0);
+    if (CollisionGround_GetHeight(&first, 1) > top) {
+        sides = (u8) (sides + 1);
+    }
+    CollisionGround_Init(&second, &feelers[1], 0, 0);
+    if (CollisionGround_GetHeight(&second, 1) > top) {
+        sides = (u8) (sides + 2);
+    }
+    CollisionGround_Destroy(&second);
+    CollisionGround_Destroy(&first);
+    return sides;
+}
+CLEAN_AS(func_ov003_02235ae8, TownInsectMove_FeelersBlocked)
+
+/* func_ov003_02235b54: which sides of the heading something stands on, `reach` percent of 1.0
+ * ahead and `spread` either side (TownInsectMove_PlaceFeelers): 0 for none, 1 the one side, 2
+ * the other, 3 both. Kinds 0x36 and 0x37 in action 4 also count ground below 0
+ * (TownInsectMove_FeelersOffGround). Only outside a session, or holding the scene, or fleeing
+ * or let go; else 0. */
+int TownInsectMove_FeelObstacles(TownInsect *insect, int reach, int spread)
+{
+    if (!town_insect_moves_in_session() || LinkGlobal_HoldsScene() != 0 || insect->action == 9 ||
+        insect->action == TOWN_INSECT_ACTION_LET_GO) {
+        TownInsectMove_PlaceFeelers(insect, reach, spread);
+        if (town_insect_moves_kind_36_or_37(insect->kind) && insect->action == 4) {
+            return TownInsectMove_FeelersOffGround(insect);
+        }
+        return TownInsectMove_FeelersBlocked(insect);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov003_02235b54, TownInsectMove_FeelObstacles)

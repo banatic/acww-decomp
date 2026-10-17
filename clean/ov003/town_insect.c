@@ -33,6 +33,8 @@
 #include "main/unit_type_info.h"
 #include "ov003/field_actor.h" /* FieldActor_PlayerFlag9 */
 #include "ov003/snowman.h"
+#include "ov003/town_insect_moves.h"
+#include "ov003/town_insect_tables.h"
 #include "ov003/town_tile_mask.h"
 #include "ov009/scene_actor.h"
 
@@ -137,9 +139,7 @@ extern void func_020012dc(void *object);
 /* An actor of overlay 3 by its map code. */
 extern SceneActor *func_ov003_02220174(u16 code);
 /* Whether the tile's item code suits insect kind 2 or 3 of place 1. */
-extern int func_ov003_02235518(int kind, u16 *code);
 /* Loose snowball `index` (0 or 1) when it is idle, else NULL. */
-extern Snowman *func_ov003_02236164(int index);
 /* An angle of `steps` steps of 5 degrees at random, either side when `both`. */
 extern short func_ov003_02233c70(int steps, int both);
 /* The process's functions for one insect. */
@@ -150,8 +150,6 @@ extern int func_ov003_0222ffdc(TownInsectProcess *process, TownInsect *insect);
 extern int func_ov003_0222ff2c(TownInsectProcess *process, TownInsect *insect);
 extern int func_ov003_02234030(TownInsect *insect, int on);
 /* A town insect's message from the session (kind, point, byte 0x254). */
-extern int func_ov003_02235ce8(TownInsectProcess *process, int index, int kind, Vec3 *target, int byte254, int unused);
-extern int func_ov003_02235c34(TownInsectProcess *process, int index, s8 *kind, int *x, int *z, u8 *byte254);
 /* Overlay 68: the event insect shown (alpha 0x1f, action 0x12). */
 extern void func_ov068_0226fe00(TownInsect *insect);
 
@@ -237,8 +235,8 @@ static int town_insect_code_in_set_b(u16 code)
  * Places, by the tile (its world tile (wx, wz), its item code):
  *   0  an empty tile (0xfff1);
  *   1  any code but set A; the found flag by a code of set B (for kinds 2 and 3 only when
- *      func_ov003_02235518 also agrees);
- *   2  a code of set B (for kind 0xf only when func_ov003_02235518 agrees);
+ *      TownInsectMove_SuitsCode also agrees);
+ *   2  a code of set B (for kind 0xf only when TownInsectMove_SuitsCode agrees);
  *   3  none;
  *   4  an empty tile of unit type 3;
  *   5  a tile of unit group 2;
@@ -327,7 +325,7 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
                         }
                         if (!found && town_insect_code_in_set_b(id)) {
                             if (kind_minus_2 <= 1) {
-                                if (func_ov003_02235518(kind, code) != 0) {
+                                if (TownInsectMove_SuitsCode(kind, code) != 0) {
                                     found = 1;
                                 }
                             } else {
@@ -338,7 +336,7 @@ int TownInsect_CountTiles(u16 *mask, int kind, int *acre_x, int *acre_z, AcreMap
                         break;
                     }
                     case 2:
-                        if (town_insect_code_in_set_b(*code) && (kind != 0xf || func_ov003_02235518(kind, code) != 0)) {
+                        if (town_insect_code_in_set_b(*code) && (kind != 0xf || TownInsectMove_SuitsCode(kind, code) != 0)) {
                             count++;
                         }
                         break;
@@ -1123,7 +1121,7 @@ int TownInsect_Place(TownInsectProcess *process, int kind, int place, int mode)
     }
     if (kind == 0x23 && !town_insect_in_session()) {
         for (u32 n = 0; n < 2; n++) {
-            Snowman *ball = func_ov003_02236164((int) n);
+            Snowman *ball = Snowman_IdleLooseBall((int) n);
             if (ball == NULL) {
                 continue;
             }
@@ -1944,7 +1942,7 @@ int TownInsect_CheckTarget(int unused, TownInsect *insect, int kind, int x, int 
 CLEAN_AS(func_ov003_0222ef80, TownInsect_CheckTarget)
 
 /* func_ov003_0222efc0: the town insects run while linked. For each, in a session, the
- * session's message of it is read (func_ov003_02235ce8, then func_ov003_02235c34 with its kind,
+ * session's message of it is read (TownInsectTables_PublishRecord, then TownInsectTables_ReadRecord with its kind,
  * point and byte 0x254): a free record whose message names a kind and a point (x above 1)
  * becomes that insect, in state 2; a message of byte 0xff or x 1 removes it (not kind 0x1e in
  * actions 9 and 0x11); another moves its target. Then by its state:
@@ -1958,7 +1956,7 @@ CLEAN_AS(func_ov003_0222ef80, TownInsect_CheckTarget)
  *      (handler 0x30, kind 7), then removed after 200 frames; else its sound moved and removed
  *      when its byte 0x254 is 0xff.
  * QUIRK: the x and z and the kind of the message are those of the last insect read when this
- * one's was not (func_ov003_02235ce8 answered).
+ * one's was not (TownInsectTables_PublishRecord answered).
  * QUIRK: sending an id (bit 4 set) ends the loop, so the insects after it wait a frame.
  * REQUIRES: whether this system is in the session does not change during the loop (the original
  * reads the message's kind uninitialised otherwise). */
@@ -1973,9 +1971,9 @@ void TownInsect_UpdateLinked(TownInsectProcess *process)
         int state = insect->state;
         if (Session_IsSlotTaken(session, session->local_slot) != 0) {
             kind = -1;
-            if (func_ov003_02235ce8(process, i, insect->kind, &insect->target, insect->unk_254, 1) == 0) {
+            if (TownInsectTables_PublishRecord(process, i, insect->kind, &insect->target, insect->unk_254, 1) == 0) {
                 u8 byte254 = 0;
-                if (func_ov003_02235c34(process, i, &kind, &x, &z, &byte254) != 0) {
+                if (TownInsectTables_ReadRecord(process, i, &kind, &x, &z, &byte254) != 0) {
                     if (state == TOWN_INSECT_STATE_NONE) {
                         if (x > 1 && kind >= 0) {
                             insect->position.x = x;
@@ -2275,8 +2273,6 @@ extern void func_0205ca14(void);
 extern int func_0205c9fc(int size, int parent);
 extern void func_0205c9e0(void);
 /* Two members of the process with nothing to do: the destructor and the constructor. */
-extern void func_ov003_02235d58(TownInsectProcess *process);
-extern void func_ov003_02235d5c(TownInsectProcess *process);
 /* The insect fades out: it leaves (TOWN_INSECT_STATE_LEAVING) with its model's alpha 0. */
 extern void func_ov003_02230f60(TownInsect *insect);
 
@@ -2700,7 +2696,7 @@ static void town_insect_process_destroy(TownInsectProcess *process)
     ModelPool_Destruct(&process->pools[2]);
     ModelPool_Destruct(&process->pools[1]);
     ModelPool_Destruct(&process->pools[0]);
-    func_ov003_02235d58(process);
+    TownInsectTables_DestroyProcessPart(process);
     base->vtable = data_020da13c;
     Process_Destruct(base);
 }
@@ -2729,7 +2725,7 @@ TownInsectProcess *TownInsect_ProcessConstruct(TownInsectProcess *process)
     Process *base = (Process *) (void *) process;
     Process_Construct(base);
     base->vtable = data_020da13c;
-    func_ov003_02235d5c(process);
+    TownInsectTables_ConstructProcessPart(process);
     base->vtable = data_ov003_0223c0fc;
     ModelPool_Init(&process->pools[0]);
     ModelPool_Init(&process->pools[1]);

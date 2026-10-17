@@ -213,4 +213,11 @@ void Snowman_New(void);
 Snowman *Snowman_ReceiverDestroyAndFree(void *receiver);
 Snowman *Snowman_ReceiverDestroy(void *receiver);
 
+Snowman *Snowman_OtherRollable(Snowman *ball);
+Snowman *Snowman_IdleLooseBall(int index);
+int Snowman_PushAny(Vec3 *behind, s16 *angle, int *speed, int force, int direction);
+Snowman *Snowman_Find(int index);
+int Snowman_Unregister(Snowman *ball);
+int Snowman_Register(Snowman *ball);
+
 #endif
