@@ -219,3 +219,25 @@ void SwitchShown_Create(void)
     }
 }
 CLEAN_AS(func_ov004_02212694, SwitchShown_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters SwitchShownObject's destructors through
+ * its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static SwitchShownObject *SwitchShown_from_receiver(void *receiver)
+{
+    return (SwitchShownObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221abf4: the deleting destructor, entered from the receiver part. */
+SwitchShownObject *SwitchShownReceiver_Delete(void *receiver)
+{
+    return SwitchShown_Delete(SwitchShown_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250ad8D0Ev, SwitchShownReceiver_Delete)
+
+/* func_ov004_0221ac10: the destructor, entered from the receiver part. */
+SwitchShownObject *SwitchShownReceiver_Destroy(void *receiver)
+{
+    return SwitchShown_Destroy(SwitchShown_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02250ad8D1Ev, SwitchShownReceiver_Destroy)

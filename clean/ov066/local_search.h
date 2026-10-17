@@ -12,18 +12,19 @@
 /* The first 8 bytes of the user game info this game's parents send in their beacons; the data
  * follows them. */
 typedef struct LocalGameHeader {
-    u16 id; /* LOCAL_GAME_ */
-    u8 unk_02[2];
+    u16 id;           /* LOCAL_GAME_ */
+    u16 nonce;        /* random, new each time the parent sets it */
     u8 channel_index; /* the search index it is meant for (LOCAL_FLAG_MATCH_CHANNEL) */
-    u8 unk_05;
-    u8 kind;      /* compared with 5 (LOCAL_FLAG_MATCH_KIND_5) */
-    u8 data_size; /* the bytes of data that follow */
+    u8 players;       /* the parent's player count */
+    u8 kind;          /* compared with 5 (LOCAL_FLAG_MATCH_KIND_5) */
+    u8 data_size;     /* the bytes of data that follow */
 } LocalGameHeader;
 
 /* Header ids with a meaning to the search (LocalSearch_OnParentFound). */
 #define LOCAL_GAME_NO_INFO 0xacce /* recorded for a parent whose beacon has no game info */
 #define LOCAL_GAME_BD8A 0xbd8a    /* the id LocalWireless_StepIdle starts a parent with */
-#define LOCAL_GAME_2348 0x2348
+#define LOCAL_GAME_2348 0x2348    /* the id the automatic pairing starts a parent with */
+#define LOCAL_GAME_KEEP 0xe34d    /* to LocalHost_UpdateGameInfo: the id is kept */
 
 /* A parent's beacon (WM's WMBssDesc, 0xc0 bytes): the fields this code reads. */
 typedef struct LocalBssDesc {
@@ -133,5 +134,6 @@ int LocalSearch_ChannelAt(int index);
 void LocalSearch_SetFilter(u32 filter);
 void LocalSearch_Destroy(void);
 void LocalSearch_Create(void);
+void LocalSearch_Begin(void);
 
 #endif

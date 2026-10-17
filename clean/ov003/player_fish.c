@@ -714,3 +714,232 @@ void PlayerFish_Update(PlayerFish *self, int player)
     }
 }
 CLEAN_AS(func_ov003_02229ca8, PlayerFish_Update)
+
+#include "main/collision_query.h" /* CollisionQuery_FindWaterAhead */
+
+/* The kinds that are not fish (fish_disp.h): they are not thrown back. */
+#define PLAYER_FISH_JUNK_FIRST 0x38
+#define PLAYER_FISH_JUNK_LAST 0x3a
+#define PLAYER_FISH_KINDS 0x3b
+#define PLAYER_FISH_MESSAGE 0x2a /* player message 42 (FishDisp_HandleMessage) */
+#define PLAYER_FISH_THROW_REACH 0x7800
+#define PLAYER_FISH_THROW_RADIUS 0x2000
+#define PLAYER_FISH_THROW_STEPS 12
+
+/* A size class's row (data_ov003_0223c014) from its byte 0x12, the fish's scale in percent. */
+extern const u8 data_ov003_0223c026[];
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+/* The fish's destructor, handed to __cxa_vec_cleanup: the game's symbol (PlayerFish_Destruct). */
+extern void func_ov003_02228ec4(void *fish);
+
+/* Message 42 with the one byte `state` (1: the fish is in the hand, 2: thrown back). */
+static void player_fish_send(u8 state)
+{
+    NetSession *session = data_020ccf94;
+    Session_BeginMessage(session);
+    Session_AppendMessage(session, &state, 1);
+    Session_EndMessage(session, PLAYER_FISH_MESSAGE, 4);
+}
+
+/* func_ov003_0222a7bc: the fish turned to be thrown back towards `yaw`, by its kind: most turn
+ * a quarter about z and take the yaw (plus a quarter) about x; the kinds 0xa, 0xb and 0x2d-0x30
+ * turn a half about z (less one unit) and a quarter about x with the yaw reversed about y; 0xf
+ * turns 3/8 about z and a quarter about x; 0x35 and 0x36 a quarter about x; 0x23-0x25 only take
+ * the yaw about y.
+ * QUIRK: most kinds take the yaw about x, not y. */
+void PlayerFish_TurnForThrow(PlayerFish *self, int yaw, int kind)
+{
+    switch (kind) {
+        case 0xa:
+        case 0xb:
+        case 0x2d:
+        case 0x2e:
+        case 0x2f:
+        case 0x30:
+            self->rotation[2] = (s16) (self->rotation[2] + 0x7fff);
+            self->rotation[1] = (s16) -yaw;
+            self->rotation[0] = (s16) (self->rotation[0] + 0x4000);
+            break;
+        case 0xf:
+            self->rotation[2] = (s16) (self->rotation[2] + 0x6000);
+            self->rotation[1] = (s16) yaw;
+            self->rotation[0] = (s16) (self->rotation[0] + 0x4000);
+            break;
+        case 0x23:
+        case 0x24:
+        case 0x25:
+            self->rotation[1] = (s16) yaw;
+            break;
+        case 0x35:
+        case 0x36:
+            self->rotation[0] = (s16) (self->rotation[0] + 0x4000);
+            self->rotation[1] = (s16) yaw;
+            break;
+        default:
+            self->rotation[2] = (s16) (self->rotation[2] + 0x4000);
+            self->rotation[0] = (s16) (yaw + 0x4000);
+            break;
+    }
+}
+CLEAN_AS(func_ov003_0222a7bc, PlayerFish_TurnForThrow)
+
+/* func_ov003_0222a88c: whether the fish's model is past its first frame. */
+int PlayerFish_ModelPastFirst(PlayerFish *self, int player)
+{
+    (void) player;
+    return FishDisp_ModelPassedFrame(self->model, 1) != 0;
+}
+CLEAN_AS(func_ov003_0222a88c, PlayerFish_ModelPastFirst)
+
+/* func_ov003_0222a8a8: player `player`'s (0-3) fish, shown or waiting, tells the other consoles
+ * once that it is in the hand (message 42 with byte 1); whether it did now. */
+int PlayerFish_AnnounceHeld(int player)
+{
+    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+        return 0;
+    }
+    PlayerFish *fish = &data_ov003_0225f4dc[player];
+    if (fish->state != PLAYER_FISH_SHOW && fish->state != PLAYER_FISH_WAIT) {
+        return 0;
+    }
+    if (fish->unk_a0 != 0) {
+        return 0;
+    }
+    player_fish_send(1);
+    fish->unk_a0 = 1;
+    return 1;
+}
+CLEAN_AS(func_ov003_0222a8a8, PlayerFish_AnnounceHeld)
+
+/* func_ov003_0222a918: player `player`'s fish's position.
+ * QUIRK: for a player outside 0-3 it is player 0's fish's. */
+Vec3 *PlayerFish_PositionOf(int player)
+{
+    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+        return &data_ov003_0225f4dc[0].position;
+    }
+    return &data_ov003_0225f4dc[player].position;
+}
+CLEAN_AS(func_ov003_0222a918, PlayerFish_PositionOf)
+
+/* func_ov003_0222a938: whether player `player`'s fish is doing anything (not idle); 1 for a
+ * player outside 0-3. */
+int PlayerFish_IsBusy(int player)
+{
+    if (player < 0 || player >= PLAYER_FISH_COUNT) {
+        return 1;
+    }
+    return data_ov003_0225f4dc[player].state != PLAYER_FISH_IDLE;
+}
+CLEAN_AS(func_ov003_0222a938, PlayerFish_IsBusy)
+
+/* func_ov003_0222a960: player `player`'s (0-3) fish is thrown back into the water from the
+ * hand (PLAYER_FISH_ARC_BACK): it flies back towards where it came from, to the first water up
+ * to 7.5 ahead of the player (CollisionQuery_FindWaterAhead; else where it came from), turned
+ * for its kind; `start` also starts it (PLAYER_FISH_TAKE). In a session, the player at this
+ * console tells the other consoles (message 42 with byte 2). Something that is not a fish
+ * (0x38-0x3a) only ends, when not to be started. 0 for another player or one without an actor,
+ * else 1. */
+int PlayerFish_ThrowBack(int player, int start)
+{
+    if (player < 0 || player > 3) {
+        return 0;
+    }
+    Actor *actor = SessionPlayers_ActorOf(player);
+    if (actor == NULL) {
+        return 0;
+    }
+    PlayerFish *fish = &data_ov003_0225f4dc[player];
+    int kind = fish->kind;
+    if (kind >= PLAYER_FISH_JUNK_FIRST && kind <= PLAYER_FISH_JUNK_LAST) {
+        if (!start) {
+            fish->state = PLAYER_FISH_END;
+        }
+        return 1;
+    }
+    int yaw = Vec_YawTo(&fish->point_b, &fish->point_a);
+    Vec3 water;
+    if (CollisionQuery_FindWaterAhead(&water, &actor->position, yaw, PLAYER_FISH_THROW_REACH, PLAYER_FISH_THROW_RADIUS,
+                                      PLAYER_FISH_THROW_STEPS)) {
+        fish->point_a = water;
+    }
+    PlayerFish_TurnForThrow(fish, yaw, kind);
+    if (start) {
+        fish->state = PLAYER_FISH_TAKE;
+    }
+    fish->mode = PLAYER_FISH_ARC_BACK;
+    NetSession *session = data_020ccf94;
+    if (Session_IsLinked(session) && Session_IsLocalSlot(session, player)) {
+        player_fish_send(2);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_0222a960, PlayerFish_ThrowBack)
+
+/* func_ov003_0222aa50: the fish of the player shadow `shadow` is hooked by (none, or no shadow:
+ * 0) placed at `at` with the scale `scale`; 1.
+ * QUIRK: the player number is not checked. */
+int PlayerFish_PlaceForShadow(FishShadow *shadow, Vec3 *at, Vec3 *scale)
+{
+    if (shadow == NULL || shadow->player == FISH_SHADOW_NO_PLAYER) {
+        return 0;
+    }
+    PlayerFish *fish = player_fish_at(shadow->player);
+    fish->position = *at;
+    fish->scale = *scale;
+    return 1;
+}
+CLEAN_AS(func_ov003_0222aa50, PlayerFish_PlaceForShadow)
+
+/* func_ov003_0222aaa0: the scale of a fish of kind `kind` (0-0x3a; 1.0 for another): its size
+ * class's percentage (byte 0x12 of data_ov003_0223c014's row).
+ * QUIRK: the size class is not checked. */
+void PlayerFish_KindScale(Vec3 *out, int kind)
+{
+    if (kind < 0 || kind >= PLAYER_FISH_KINDS) {
+        out->x = 0x1000;
+        out->y = 0x1000;
+        out->z = 0x1000;
+        return;
+    }
+    u32 size = player_fish_creature(kind)->offset_class;
+    int percent = *(const u8 *) (uintptr_t) ((u32) (uintptr_t) data_ov003_0223c026 + size * 0x14);
+    fx32 scale = (percent << 12) / 100;
+    out->x = scale;
+    out->y = scale;
+    out->z = scale;
+}
+CLEAN_AS(func_ov003_0222aaa0, PlayerFish_KindScale)
+
+/* func_ov003_0222aae8: the fish of the player shadow `shadow` is hooked by ends (the float's
+ * FishingFloat_LetFishGo); 0 without a shadow or player.
+ * QUIRK: the player number is not checked. */
+int PlayerFish_EndForShadow(FishShadow *shadow)
+{
+    if (shadow == NULL || shadow->player == FISH_SHADOW_NO_PLAYER) {
+        return 0;
+    }
+    player_fish_at(shadow->player)->state = PLAYER_FISH_END;
+    return 1;
+}
+CLEAN_AS(func_ov003_0222aae8, PlayerFish_EndForShadow)
+
+/* func_ov003_0222ab14: whether the fish of the player shadow `shadow` is hooked by has reached
+ * the hand (the float's FishingFloat_FishFlag80); 0 without a shadow or player.
+ * QUIRK: the player number is not checked. */
+int PlayerFish_ArrivedForShadow(FishShadow *shadow)
+{
+    if (shadow == NULL || shadow->player == FISH_SHADOW_NO_PLAYER) {
+        return 0;
+    }
+    return player_fish_at(shadow->player)->arrived != 0;
+}
+CLEAN_AS(func_ov003_0222ab14, PlayerFish_ArrivedForShadow)
+
+/* func_ov003_0222c474 (registered at the overlay's start): the four players' fish destroyed. */
+void PlayerFish_DestroyAll(void *object)
+{
+    (void) object;
+    __cxa_vec_cleanup(data_ov003_0225f4dc, PLAYER_FISH_COUNT, sizeof(PlayerFish), func_ov003_02228ec4);
+}
+CLEAN_AS(func_ov003_0222c474, PlayerFish_DestroyAll)

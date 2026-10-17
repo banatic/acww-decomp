@@ -7,5 +7,9 @@
 #include "main/sound_emitter.h"
 
 void SoundSourceMember_Release(SoundSource *source);
+void SoundSourceMember_PlayAt(SoundSource *source, const Vec3 *position, int number);
+void SoundSourceMember_Init(SoundSource *source);
+void SoundSourceMember_Destruct(SoundSource *source);
+void SoundSourceMember_Construct(SoundSource *source);
 
 #endif

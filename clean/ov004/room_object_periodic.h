@@ -46,4 +46,7 @@ PeriodicRoomObject *PeriodicRoomObject_Destroy(PeriodicRoomObject *object);
 PeriodicRoomObject *PeriodicRoomObject_Construct(PeriodicRoomObject *object);
 void PeriodicRoomObject_Create(void);
 
+PeriodicRoomObject *PeriodicRoomObjectReceiver_Delete(void *receiver);
+PeriodicRoomObject *PeriodicRoomObjectReceiver_Destroy(void *receiver);
+
 #endif

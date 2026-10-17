@@ -225,3 +225,25 @@ void GlowingRoomObject_Create(void)
     }
 }
 CLEAN_AS(func_ov004_022123a8, GlowingRoomObject_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters GlowingRoomObject's destructors through
+ * its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static GlowingRoomObject *GlowingRoomObject_from_receiver(void *receiver)
+{
+    return (GlowingRoomObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221ac2c: the deleting destructor, entered from the receiver part. */
+GlowingRoomObject *GlowingRoomObjectReceiver_Delete(void *receiver)
+{
+    return GlowingRoomObject_Delete(GlowingRoomObject_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022509acD0Ev, GlowingRoomObjectReceiver_Delete)
+
+/* func_ov004_0221ac48: the destructor, entered from the receiver part. */
+GlowingRoomObject *GlowingRoomObjectReceiver_Destroy(void *receiver)
+{
+    return GlowingRoomObject_Destroy(GlowingRoomObject_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_022509acD1Ev, GlowingRoomObjectReceiver_Destroy)

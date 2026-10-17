@@ -911,3 +911,56 @@ int FishShadow_FleeFromPlayer(FishShadow *fish)
     return func_ov003_02228150(fish, from) != 0;
 }
 CLEAN_AS(func_ov003_0222a784, FishShadow_FleeFromPlayer)
+
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+/* A shadow's destructor, handed to __cxa_vec_cleanup: the game's symbol
+ * (FishShadow_DestructRecord). */
+extern void func_ov003_02228fe8(void *fish);
+
+/* func_ov003_0222c41c: a new process (0x88 bytes, cleared), constructed; NULL when there is no
+ * memory. */
+FishShadowProcess *FishShadow_New(void)
+{
+    FishShadowProcess *self = Heap_AllocAuxZeroed(sizeof(FishShadowProcess));
+    if (self != NULL) {
+        self = FishShadow_Construct(self);
+    }
+    return self;
+}
+CLEAN_AS(func_ov003_0222c41c, FishShadow_New)
+
+/* func_ov003_0222c434 (slot 1 of vtable data_ov003_0223c0d4): the fin animation destroyed and
+ * freed. */
+ModelAnim *FishFinAnim_DestructDelete(ModelAnim *anim)
+{
+    anim->ctrl.vtable = data_ov003_0223c0d4;
+    ModelAnim_Destruct(anim);
+    Heap_OperatorDeleteB(anim);
+    return anim;
+}
+CLEAN_AS(func_ov003_0222c434, FishFinAnim_DestructDelete)
+
+/* func_ov003_0222c494 (registered at the overlay's start): the six shadows destroyed. */
+void FishShadow_DestroyAll(void *object)
+{
+    (void) object;
+    __cxa_vec_cleanup(data_ov003_0225f76c, FISH_SHADOW_COUNT, sizeof(FishShadow), func_ov003_02228fe8);
+}
+CLEAN_AS(func_ov003_0222c494, FishShadow_DestroyAll)
+
+/* func_ov003_0222c414: the destructor of the global object at data_ov003_0225f0b4, registered
+ * at the overlay's start: nothing. */
+void FishShadowGlobal0225f0b4_Destruct(void *object)
+{
+    (void) object;
+}
+CLEAN_AS(func_ov003_0222c414, FishShadowGlobal0225f0b4_Destruct)
+
+/* func_ov003_0222c418: that object's constructor, handed the field's acre map (data_021c80bc):
+ * nothing. */
+void FishShadowGlobal0225f0b4_Construct(void *object, int map)
+{
+    (void) object;
+    (void) map;
+}
+CLEAN_AS(func_ov003_0222c418, FishShadowGlobal0225f0b4_Construct)

@@ -424,3 +424,12 @@ void LocalSearch_Create(void)
     OS_CreateAlarm(&data_ov066_0226bdf0->stop_alarm);
 }
 CLEAN_AS(func_ov066_02267ef8, LocalSearch_Create)
+
+/* func_ov066_022682cc: LOCAL_REQUEST_SEARCH from an idle radio: a search started until it is
+ * stopped, and the request goes on (it is reached once the search is on). */
+void LocalSearch_Begin(void)
+{
+    LocalSearch_Start(0);
+    LocalWireless_Continue();
+}
+CLEAN_AS(func_ov066_022682cc, LocalSearch_Begin)

@@ -42,4 +42,7 @@ SwitchShownObject *SwitchShown_Destroy(SwitchShownObject *object);
 SwitchShownObject *SwitchShown_Construct(SwitchShownObject *object);
 void SwitchShown_Create(void);
 
+SwitchShownObject *SwitchShownReceiver_Delete(void *receiver);
+SwitchShownObject *SwitchShownReceiver_Destroy(void *receiver);
+
 #endif

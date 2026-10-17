@@ -26,7 +26,10 @@
  *   whose link gets action 18), effect 0x90 at its place (0x91 on ground of attribute 0x13),
  *   func_ov003_02220b44 with the place, and sound 0x7e9: what the player's field actor does in
  *   state 0x75 (clean/ov003/field_actor.c). Its update runs one step, as behaviour 17's last.
- * - 17: its update's five steps (its start and steps are elsewhere in the overlay). */
+ * - 17: what the player's field actor does in states 0x73 to 0x75: animation 0x127 while it
+ *   steps onto the middle of its tile, 0x128 with effect 0x8e (0x8f on ground of attribute
+ *   0x13) and sound 0x7e8, then 0x129 at speed 0x1400 with effect 0x4c following it for 100
+ *   frames, the byte at 0xa04 set meanwhile, then behaviour 18's leaving. */
 #ifndef CLEAN_OV068_OUTDOOR_VILLAGER_ACTS_H
 #define CLEAN_OV068_OUTDOOR_VILLAGER_ACTS_H
 
@@ -58,5 +61,12 @@ int OutdoorVillagerActs_Start19(OutdoorVillagerBehaviour *self, u8 *villager);
 int OutdoorVillagerActs_Update18(OutdoorVillagerBehaviour *self, u8 *villager);
 int OutdoorVillagerActs_Start18(OutdoorVillagerBehaviour *self, u8 *villager);
 int OutdoorVillagerActs_Update17(OutdoorVillagerBehaviour *self, u8 *villager);
+int OutdoorVillagerActs_Start17(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerActs_Approach(fx32 *value, fx32 target, fx32 rate, fx32 most, fx32 least);
+void OutdoorVillagerActs_StepOnto17(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerActs_Enter17(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerActs_Begin17(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerActs_Stay17(OutdoorVillagerBehaviour *self, u8 *villager);
+void OutdoorVillagerActs_Leave17(OutdoorVillagerBehaviour *self, u8 *villager);
 
 #endif

@@ -161,3 +161,65 @@ void MuseumDisplay_SetModelHooks(MuseumDisplayHookState *state)
     state->hook_timings[G3D_COMMAND_NODE] = G3D_TIMING_B;
 }
 CLEAN_AS(func_ov004_0222f2f4, MuseumDisplay_SetModelHooks)
+
+/* The model being drawn (NitroSystem's NNSG3dRenderObj): its user word is the display case,
+ * set by ModelObject_SetInitHook in MuseumDisplay_Start. */
+typedef struct MuseumDisplayRenderObject {
+    u8 unk_00[0x2c];
+    MuseumDisplay *user; /* 0x2c */
+} MuseumDisplayRenderObject;
+
+static_assert(offsetof(MuseumDisplayHookState, render_object) == 0x04, "render object");
+static_assert(sizeof(MuseumDisplay) == 0x294, "the size MuseumDisplay_Create allocates");
+
+/* The cases of data_ov004_022478a8: the paintings, then the insects. */
+#define MUSEUM_DISPLAY_KINDS 2
+#define MUSEUM_DISPLAY_PAINTINGS 20
+/* The first painting's item code; each painting has four codes. */
+#define MUSEUM_DISPLAY_PAINTING_FIRST 0x3894
+#define MUSEUM_DISPLAY_PAINTING_CODES 4
+
+extern const MuseumDisplayKind data_ov004_022478a8[MUSEUM_DISPLAY_KINDS];
+
+/* func_ov004_0222f304 (the node hook MuseumDisplay_SetModelHooks sets): shows the node being
+ * drawn (the command's byte 1) when it is one of the case's, else hides it; nothing for a
+ * model without a case. */
+void MuseumDisplay_NodeHook(MuseumDisplayHookState *state)
+{
+    MuseumDisplay *self = ((const MuseumDisplayRenderObject *) state->render_object)->user;
+    if (self != NULL) {
+        MuseumDisplay_SetNodeVisibility(self, state->command[1], state);
+    }
+}
+CLEAN_AS(func_ov004_0222f304, MuseumDisplay_NodeHook)
+
+/* func_ov004_0222f320: the case of `kind`; a kind past them gives the first (the paintings). */
+const MuseumDisplayKind *MuseumDisplay_Kind(u32 kind)
+{
+    if (kind < MUSEUM_DISPLAY_KINDS) {
+        return &data_ov004_022478a8[kind];
+    }
+    return &data_ov004_022478a8[0];
+}
+CLEAN_AS(func_ov004_0222f320, MuseumDisplay_Kind)
+
+/* func_ov004_0222f334 (the paintings' MuseumDisplayKind.item): the item code of painting
+ * `index`, its first of four; an index past them gives the first painting's. */
+u16 MuseumDisplay_PaintingItem(u32 index)
+{
+    if (index < MUSEUM_DISPLAY_PAINTINGS) {
+        return (u16) (MUSEUM_DISPLAY_PAINTING_FIRST + index * MUSEUM_DISPLAY_PAINTING_CODES);
+    }
+    return MUSEUM_DISPLAY_PAINTING_FIRST;
+}
+CLEAN_AS(func_ov004_0222f334, MuseumDisplay_PaintingItem)
+
+/* func_ov004_0222f34c: a new display case from the room's heap; nothing when it has no room. */
+void MuseumDisplay_Create(void)
+{
+    MuseumDisplay *self = Heap_AllocAuxZeroed(sizeof(MuseumDisplay));
+    if (self != NULL) {
+        MuseumDisplay_Construct(self);
+    }
+}
+CLEAN_AS(func_ov004_0222f34c, MuseumDisplay_Create)

@@ -7,6 +7,9 @@
 #include <stdint.h>
 
 #include "clean.h"
+#include "local_host.h"
+#include "local_join.h"
+#include "local_mp.h"
 #include "local_search.h"
 
 static_assert(offsetof(LocalControl, channel_count) == 0x09, "channel count");
@@ -49,12 +52,7 @@ extern u32 OS_DisableInterrupts(void);
 extern u32 OS_RestoreInterrupts(u32 state);
 
 /* The steps of the other parts of the library. */
-extern void func_ov066_02269a14(void);        /* sets up the session once the radio is on */
-extern void func_ov066_02268d08(void);        /* asks the MP communication to end */
-extern void func_ov066_02268370(int game_id); /* starts a parent */
-extern void func_ov066_022682cc(void);        /* starts the search for parents */
-extern void func_ov066_02269728(void);        /* connects to the parent chosen */
-extern void func_ov066_02268098(void);        /* starts a parent or a child, as found */
+extern void func_ov066_02269a14(void); /* sets up the session once the radio is on */
 
 /* func_ov066_022667e0: `handler` set as the event handler; FALSE without a control block. */
 int LocalWireless_SetEventHandler(LocalEventHandler *handler)
@@ -390,7 +388,7 @@ void LocalWireless_StepChild(void)
             LocalWireless_StepReset();
             break;
         case LOCAL_REQUEST_PARENT:
-            func_ov066_02268d08();
+            LocalMp_AskEnd();
             break;
     }
 }
@@ -409,7 +407,7 @@ void LocalWireless_StepParent(void)
             LocalWireless_StepReset();
             break;
         case LOCAL_REQUEST_CHILD:
-            func_ov066_02268d08();
+            LocalMp_AskEnd();
             break;
     }
 }
@@ -489,16 +487,16 @@ void LocalWireless_StepIdle(void)
             LocalWireless_CallWm(3); /* WM_PowerOff */
             break;
         case LOCAL_REQUEST_PARENT:
-            func_ov066_02268370(LOCAL_GAME_BD8A);
+            LocalHost_Start(LOCAL_GAME_BD8A);
             break;
         case LOCAL_REQUEST_SEARCH:
-            func_ov066_022682cc();
+            LocalSearch_Begin();
             break;
         case LOCAL_REQUEST_CHILD:
-            func_ov066_02269728();
+            LocalJoin_ConnectChosen();
             break;
         case LOCAL_REQUEST_CONNECTED:
-            func_ov066_02268098();
+            LocalJoin_StepAuto();
             break;
     }
 }
@@ -641,10 +639,10 @@ void LocalWireless_ResetControl(u8 wm_dma)
     LocalControl *control = data_ov066_0226bdec;
     control->request = LOCAL_REQUEST_NONE;
     control->state = LOCAL_STATE_SET_UP;
-    control->unk_08 = 0xfe;
+    control->parent_channel = LOCAL_CHANNEL_MEASURE_ONCE;
     control->channel_count = 1;
-    control->unk_0a = 0;
-    control->unk_0b = 0;
+    control->max_children = 0;
+    control->max_players = 0;
     control->parents_per_list = 0;
     control->wm_dma = wm_dma;
     control->channels = NULL;

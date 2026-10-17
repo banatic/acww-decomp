@@ -5,10 +5,12 @@
 
 #include "autoload_2/vector.h"
 #include "clean.h"
+#include "main/acre_tile.h"
 #include "main/effect_system.h"
 #include "main/event_queue.h"
 #include "main/field_collision.h"
 #include "main/footsteps.h"
+#include "main/frame_ctrl.h"
 #include "main/held_item_link.h"
 #include "main/obj_020d8c64.h"
 #include "main/scene_action.h"
@@ -656,3 +658,277 @@ int OutdoorVillagerActs_Update17(OutdoorVillagerBehaviour *self, u8 *villager)
     return 0;
 }
 CLEAN_AS(_ZN18Obj_ov068_022771c019func_ov068_02267f84Ei, OutdoorVillagerActs_Update17)
+
+/* ---- Behaviour 17: its start and its update's steps
+ *
+ * What the player's field actor does in states 0x73 to 0x75 (clean/ov003/field_actor.c), with
+ * the villager's animations: 0x127 while it steps onto the middle of its tile, 0x128 with
+ * effect 0x8e (0x8f on ground of attribute 0x13) and sound 0x7e8 once there, then 0x129 at a
+ * set speed with effect 0x4c following it for 100 frames (the countdown at 0x2c, which the
+ * behaviour member counts down), then behaviour 18's leaving (0x12a or 0x12b). */
+
+/* Overlay 3 (the town's field): what the player's field actor runs with its place when its
+ * animation 0x91 starts in state 0x73 (clean/ov003/field_actor.c). */
+extern int func_ov003_02221228(int player, Vec3 *at);
+extern fx32 FX_MulFunc(fx32 a, fx32 b);
+
+/* The villager's body animation's frames (a FrameCtrl: its speed at 0x198, its flags at
+ * 0x19c). */
+#define ACTS_ANIM_CTRL 0x188
+#define ACTS_ANIM_SPEED 0x198
+/* Behaviour 17's animations, effects, sounds, speed and frames. */
+#define ACTS_ANIM_17_STEP 0x127
+#define ACTS_ANIM_17_ENTER 0x128
+#define ACTS_ANIM_17_STAY 0x129
+#define ACTS_EFFECT_17 0x8e
+#define ACTS_EFFECT_17_GROUND 0x8f
+#define ACTS_EFFECT_17_STAY 0x4c
+#define ACTS_SOUND_17_START 0x7ee
+#define ACTS_SOUND_17 0x7e8
+#define ACTS_SPEED_17 0x1400
+#define ACTS_STAY_17 100
+/* How it steps onto the middle of its tile (OutdoorVillagerActs_Approach): the part of the
+ * way it goes each frame, the most and the least. */
+#define ACTS_APPROACH_RATE 0xe66
+#define ACTS_APPROACH_MOST 0x1ec
+#define ACTS_APPROACH_LEAST 0x31
+/* The held item's pose behaviour 17 leaves with, and the argument of its poses. */
+#define ACTS_POSE_NONE 0
+#define ACTS_POSE_ARG 3
+
+/* Behaviour 17's countdown (s16) and the animation speed it keeps (fx32). */
+static s16 *acts_count_17(OutdoorVillagerBehaviour *self)
+{
+    return (s16 *) (void *) ((u8 *) self + 0x2c);
+}
+
+static fx32 *acts_speed_17(OutdoorVillagerBehaviour *self)
+{
+    return (fx32 *) (void *) ((u8 *) self + 0x30);
+}
+
+static HeldItemLink *acts_link(u8 *villager)
+{
+    return (HeldItemLink *) (void *) acts_at(villager, OUTDOOR_VILLAGER_LINK);
+}
+
+static Vec3 *acts_position(u8 *villager)
+{
+    return (Vec3 *) (void *) acts_at(villager, OUTDOOR_VILLAGER_POSITION);
+}
+
+static SoundEmitter *acts_emitter(u8 *villager)
+{
+    return (SoundEmitter *) (void *) acts_at(villager, OUTDOOR_VILLAGER_EMITTER);
+}
+
+static FrameCtrl *acts_anim_ctrl(u8 *villager)
+{
+    return (FrameCtrl *) (void *) acts_at(villager, ACTS_ANIM_CTRL);
+}
+
+/* func_ov068_02268020: behaviour 17's last step and behaviour 18's only one: once animation
+ * 0x12b or 0x12a is done, flag 2 at 0x4e8 cleared, step 5, the held item's pose 0 and
+ * behaviour 0.
+ * QUIRK: the animation's number is asked for again when it is not 0x12b. */
+void OutdoorVillagerActs_Leave17(OutdoorVillagerBehaviour *self, u8 *villager)
+{
+    if (SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_18_HOLDING &&
+        SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_18) {
+        return;
+    }
+    if (SceneMotion_IsDone(acts_motion(villager)) == 0) {
+        return;
+    }
+    *(u32 *) (void *) acts_at(villager, OUTDOOR_VILLAGER_FLAGS) &= ~(u32) ACTS_FLAG_18;
+    self->step = 5;
+    SpeakerAnim_PlayItemPose(acts_anim(villager), villager, &acts_link(villager)->item, ACTS_POSE_NONE, ACTS_POSE_ARG);
+    func_ov068_0226cce8(self, villager, OUTDOOR_VILLAGER_DO_DEFAULT);
+}
+CLEAN_AS(func_ov068_02268020, OutdoorVillagerActs_Leave17)
+
+/* func_ov068_022680a4: during animation 0x129: while the countdown runs the body animation
+ * keeps the speed kept and the effect at 0xa00 (when there is one) follows the villager;
+ * once it is out, what behaviour 18's start does after its first steps: the animation's speed
+ * its own again, the byte at 0x838 set, the byte at 0xa04 cleared, the effect ended, animation
+ * 0x12b (its link's action 18) or 0x12a, effect 0x90 or 0x91 with func_ov003_02220b44 on its
+ * place, sound 0x7e9; step 4. */
+void OutdoorVillagerActs_Stay17(OutdoorVillagerBehaviour *self, u8 *villager)
+{
+    if (SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_17_STAY) {
+        return;
+    }
+    s32 *handle = (s32 *) (void *) acts_at(villager, OUTDOOR_VILLAGER_EFFECT_HANDLE);
+    if (*acts_count_17(self) != 0) {
+        *(fx32 *) (void *) acts_at(villager, ACTS_ANIM_SPEED) = *acts_speed_17(self);
+        if (*handle != ACTS_NO_EFFECT) {
+            EffectSystem_MoveHandle(*handle, acts_position(villager), NULL, NULL);
+        }
+        return;
+    }
+
+    SpeakerAnim_SetKeepSpeed(acts_anim(villager), 0);
+    VillagerSceneObject_SetByte838(villager);
+    *acts_at(villager, OUTDOOR_VILLAGER_BYTE_A04) = 0;
+    if (*handle != ACTS_NO_EFFECT) {
+        EffectSystem_EndHandle(*handle);
+        *handle = ACTS_NO_EFFECT;
+    }
+
+    u16 item;
+    VillagerSceneHeld_Item(&item, villager);
+    if (acts_holds_18_item(item)) {
+        u16 word = data_020c80f8;
+        SceneMotion_RequestAnimation(acts_motion(villager), ACTS_PRIORITY, ACTS_ANIM_18_HOLDING, 1, word, 0);
+        HeldItemLink_Action18(acts_link(villager), word, 0);
+    } else {
+        SceneMotion_RequestAnimation(acts_motion(villager), ACTS_PRIORITY, ACTS_ANIM_18, 1, data_020c80f8, 0);
+    }
+
+    Vec3 at = *acts_position(villager);
+    CollisionGround ground;
+    CollisionGround_Init(&ground, &at, 0, 0);
+    int attribute = ground.attr;
+    Vec3 place = at;
+    func_ov003_02220b44(0, &place);
+    EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_18 ? ACTS_EFFECT_18_GROUND : ACTS_EFFECT_18, &at, NULL,
+                                           NULL);
+    SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_18, ACTS_SOUND_VOLUME, 0);
+    self->step = 4;
+    CollisionGround_Destroy(&ground);
+}
+CLEAN_AS(func_ov068_022680a4, OutdoorVillagerActs_Stay17)
+
+/* func_ov068_02268254: once animation 0x128 is done: animation 0x129 at speed 0x1400, kept
+ * as the animation's own (its link's action 17 and the link's record value the same speed),
+ * the countdown 100, effect 0x4c started at its place (its handle at 0xa00), the byte at
+ * 0xa04 set and the byte at 0x838 cleared; step 3. The speed is read back from where it is
+ * kept each time. */
+void OutdoorVillagerActs_Begin17(OutdoorVillagerBehaviour *self, u8 *villager)
+{
+    if (SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_17_ENTER) {
+        return;
+    }
+    if (SceneMotion_IsDone(acts_motion(villager)) == 0) {
+        return;
+    }
+    *acts_speed_17(self) = ACTS_SPEED_17;
+    u16 word = data_020c80f8;
+    SceneMotion_RequestAnimation(acts_motion(villager), ACTS_PRIORITY, ACTS_ANIM_17_STAY, 0, word, 0);
+    *(fx32 *) (void *) acts_at(villager, ACTS_ANIM_SPEED) = *acts_speed_17(self);
+    SpeakerAnim_SetKeepSpeed(acts_anim(villager), 1);
+    HeldItemLink_Action17(acts_link(villager), word, 0);
+    HeldItemLink_SetRecordValue(acts_link(villager), *acts_speed_17(self));
+    *acts_count_17(self) = ACTS_STAY_17;
+    Vec3 at = *acts_position(villager);
+    int handle = EffectSystem_StartKind(ACTS_EFFECT_17_STAY, &at, NULL, NULL);
+    *(s32 *) (void *) acts_at(villager, OUTDOOR_VILLAGER_EFFECT_HANDLE) = handle;
+    *acts_at(villager, OUTDOOR_VILLAGER_BYTE_A04) = 1;
+    VillagerSceneObject_ClearByte838(villager);
+    self->step = 3;
+}
+CLEAN_AS(func_ov068_02268254, OutdoorVillagerActs_Begin17)
+
+/* func_ov068_0226831c: once animation 0x127 has played to its end: animation 0x128, effect
+ * 0x8e at its place (0x8f on ground of attribute 0x13) with func_ov003_02221228 on the place
+ * between the ground's reading and the effect, sound 0x7e8, its link's action 16 and the
+ * held item's pose 0x128; step 2. */
+void OutdoorVillagerActs_Enter17(OutdoorVillagerBehaviour *self, u8 *villager)
+{
+    if (SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_17_STEP) {
+        return;
+    }
+    if (FrameCtrl_IsDone(acts_anim_ctrl(villager)) == 0) {
+        return;
+    }
+    u16 word = data_020c80f8;
+    SceneMotion_RequestAnimation(acts_motion(villager), ACTS_PRIORITY, ACTS_ANIM_17_ENTER, 1, word, 0);
+
+    Vec3 at = *acts_position(villager);
+    CollisionGround ground;
+    CollisionGround_Init(&ground, &at, 0, 0);
+    int attribute = ground.attr;
+    Vec3 place = at;
+    func_ov003_02221228(0, &place);
+    EffectSystem_StartOneShotSetNumberCopy(attribute == ACTS_GROUND_18 ? ACTS_EFFECT_17_GROUND : ACTS_EFFECT_17, &at, NULL,
+                                           NULL);
+    SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_17, ACTS_SOUND_VOLUME, 0);
+    HeldItemLink_Action16(acts_link(villager), word, 1);
+    SpeakerAnim_PlayItemPose(acts_anim(villager), villager, &acts_link(villager)->item, ACTS_ANIM_17_ENTER, ACTS_POSE_ARG);
+    self->step = 2;
+    CollisionGround_Destroy(&ground);
+}
+CLEAN_AS(func_ov068_0226831c, OutdoorVillagerActs_Enter17)
+
+/* func_ov068_0226840c: during animation 0x127 the villager steps towards the middle of its
+ * tile (OutdoorVillagerActs_Approach on x, then z) and the animation is made to stop at its
+ * end; once it is there, OutdoorVillagerActs_Enter17 at once when the animation has ended,
+ * else step 1 (which waits for it). */
+void OutdoorVillagerActs_StepOnto17(OutdoorVillagerBehaviour *self, u8 *villager)
+{
+    if (SpeakerAnim_Number(acts_anim(villager), 0) != ACTS_ANIM_17_STEP) {
+        return;
+    }
+    Vec3 *position = acts_position(villager);
+    Vec3 centre;
+    AcreTile_SnapToTileCentre(&centre, position);
+    OutdoorVillagerActs_Approach(&position->x, centre.x, ACTS_APPROACH_RATE, ACTS_APPROACH_MOST, ACTS_APPROACH_LEAST);
+    OutdoorVillagerActs_Approach(&position->z, centre.z, ACTS_APPROACH_RATE, ACTS_APPROACH_MOST, ACTS_APPROACH_LEAST);
+    acts_anim_ctrl(villager)->flags = FRAME_CTRL_ONCE;
+    if (position->x != centre.x || position->z != centre.z) {
+        return;
+    }
+    if (FrameCtrl_IsDone(acts_anim_ctrl(villager)) != 0) {
+        OutdoorVillagerActs_Enter17(self, villager);
+    } else {
+        self->step = 1;
+    }
+}
+CLEAN_AS(func_ov068_0226840c, OutdoorVillagerActs_StepOnto17)
+
+/* func_ov068_022684a4: `*value` moved towards `target` by the part `rate` of the way left
+ * (FX_MulFunc), at most `most` and at least `least`; when less than `least` is left it
+ * arrives. */
+void OutdoorVillagerActs_Approach(fx32 *value, fx32 target, fx32 rate, fx32 most, fx32 least)
+{
+    if (*value == target) {
+        return;
+    }
+    fx32 left = target - *value;
+    fx32 left_size = left < 0 ? -left : left;
+    if (left_size < least) {
+        *value = target;
+        return;
+    }
+    fx32 step = FX_MulFunc(left, rate);
+    fx32 step_size = step < 0 ? -step : step;
+    if (step_size > most) {
+        step = step >= 0 ? most : -most;
+    } else if (step_size < least) {
+        step = step >= 0 ? least : -least;
+    }
+    *value += step;
+}
+CLEAN_AS(func_ov068_022684a4, OutdoorVillagerActs_Approach)
+
+/* func_ov068_02268514: behaviour 17's start: a running act's effects reset
+ * (func_ov068_0226cfd4), animation 0x127, the watch held on nothing, its link's action 15,
+ * flag 2 at 0x4e8 set, the byte at 0x838 set, footsteps off, sound 0x7ee and its mood's
+ * sounds off. */
+int OutdoorVillagerActs_Start17(OutdoorVillagerBehaviour *self, u8 *villager)
+{
+    (void) self;
+    func_ov068_0226cfd4(villager);
+    u16 word = data_020c80f8;
+    SceneMotion_RequestAnimation(acts_motion(villager), ACTS_PRIORITY, ACTS_ANIM_17_STEP, 0, word, 0);
+    OutdoorVillagerWatch_Hold(acts_watch(villager), villager, 0, 0, 0, &data_021fbee8, OUTDOOR_VILLAGER_PLAYER_ACTOR,
+                              data_020c814c, 1);
+    HeldItemLink_Action15(acts_link(villager), word, 0);
+    *(u32 *) (void *) acts_at(villager, OUTDOOR_VILLAGER_FLAGS) |= ACTS_FLAG_18;
+    VillagerSceneObject_SetByte838(villager);
+    Footsteps_Disable((Footsteps *) (void *) acts_at(villager, OUTDOOR_VILLAGER_FOOTSTEPS));
+    SoundEmitter_Play(acts_emitter(villager), ACTS_SOUND_17_START, ACTS_SOUND_VOLUME, 0);
+    VillagerMood_SoundsOff(acts_mood(villager));
+    return 1;
+}
+CLEAN_AS(func_ov068_02268514, OutdoorVillagerActs_Start17)

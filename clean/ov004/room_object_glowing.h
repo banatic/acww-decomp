@@ -44,4 +44,7 @@ GlowingRoomObject *GlowingRoomObject_Destroy(GlowingRoomObject *object);
 GlowingRoomObject *GlowingRoomObject_Construct(GlowingRoomObject *object);
 void GlowingRoomObject_Create(void);
 
+GlowingRoomObject *GlowingRoomObjectReceiver_Delete(void *receiver);
+GlowingRoomObject *GlowingRoomObjectReceiver_Destroy(void *receiver);
+
 #endif

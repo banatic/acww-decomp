@@ -126,7 +126,7 @@ typedef struct FishShadow {
     u8 pad_13a[2];               /* 0x13a */
     int unk_13c;                 /* 0x13c */
     s16 unk_140;                 /* 0x140 */
-    u8 pad_142[2];               /* 0x142 */
+    s16 wobble;                  /* 0x142: the side-to-side swing of its swimming */
     FishShadowModel model;       /* 0x144 */
     u8 group_state;              /* 0x1fc: FISH_SHADOW_IN_GROUP0 ... */
     u8 alpha;                    /* 0x1fd: the model's alpha, 1-0x1f */
@@ -144,14 +144,18 @@ typedef struct FishShadow {
     u8 pad_214[4];               /* 0x214 */
     Vec3 last_position;          /* 0x218: where it was before the last move */
     u8 hook_state;               /* 0x224: FISH_SHADOW_HOOK_* */
-    u8 pad_225[2];               /* 0x225 */
+    u8 hook_step;                /* 0x225: the step within the hook state (FishShadowHook_*) */
+    u8 pad_226;                  /* 0x226 */
     s8 player;                   /* 0x227: the player it is hooked by, FISH_SHADOW_NO_PLAYER for none */
     u8 pad_228[4];               /* 0x228 */
     FishingFloat *fishing_float; /* 0x22c: the float it is on, NULL for none */
-    u8 pad_230[0xc];             /* 0x230 */
+    Vec3 pull_point;             /* 0x230: where the float was when it was pulled under */
     u8 hooked;                   /* 0x23c */
     u8 unk_23d;                  /* 0x23d */
-    u8 pad_23e[6];               /* 0x23e */
+    u8 pull_left;                /* 0x23e: it pulls to the left (else to the right) */
+    u8 pull_frames;              /* 0x23f: how long it pulls before it can be landed */
+    u8 nibble_wait;              /* 0x240: frames it nibbles before it may bite */
+    u8 pad_241[3];               /* 0x241 */
     int timer;                   /* 0x244: -1 for none */
     FishShadowSense sense;       /* 0x248 */
 } FishShadow;
@@ -262,5 +266,46 @@ void FishShadow_NoteSplash(void);
 int FishShadow_InBiteRange(const Vec3 *point, int yaw, int player, int kind);
 int FishShadow_TryBite(FishShadow *fish);
 int FishShadow_FleeFromPlayer(FishShadow *fish);
+int FishShadowHook_TryLand(FishShadow *fish);
+int FishShadowHook_Strike(FishShadow *fish);
+void FishShadowHook_LetGo(FishShadow *fish);
+int FishShadowHook_StepFlee(FishShadow *fish);
+int FishShadowHook_StepPull(FishShadow *fish);
+int FishShadowHook_StepBite(FishShadow *fish);
+int FishShadowHook_StepNibble(FishShadow *fish);
+int FishShadowHook_StepHesitate(FishShadow *fish);
+int FishShadowHook_StepApproach(FishShadow *fish);
+int FishShadowHook_StepWait(FishShadow *fish);
+void FishShadowHook_Update(FishShadow *fish);
+void FishShadowHook_StepPlacing(void);
+void FishShadowSwim_Flee(FishShadow *fish);
+void FishShadowSwim_Drift(FishShadow *fish);
+void FishShadowSwim_SlowDown(FishShadow *fish);
+void FishShadowSwim_Cruise(FishShadow *fish);
+void FishShadowSwim_SpeedUp(FishShadow *fish);
+void FishShadowSwim_Start(FishShadow *fish);
+void FishShadowSwim_Update(FishShadow *fish);
+void FishShadowSwim_Settle(FishShadow *fish);
+void FishShadow_StepShown(FishShadow *fish);
+void FishShadow_StepPlacing(FishShadow *fish);
+void FishShadow_MoveAlong(Vec3 *position, int distance, u16 angle);
+void FishShadow_MoveCos(fx32 *value, int distance, int angle);
+void FishShadow_MoveSin(fx32 *value, int distance, int angle);
+FishShadowProcess *FishShadow_New(void);
+ModelAnim *FishFinAnim_DestructDelete(ModelAnim *anim);
+void FishShadow_DestroyAll(void *object);
+void FishShadowGlobal0225f0b4_Destruct(void *object);
+void FishShadowGlobal0225f0b4_Construct(void *object, int map);
+void PlayerFish_TurnForThrow(PlayerFish *self, int yaw, int kind);
+int PlayerFish_ModelPastFirst(PlayerFish *self, int player);
+int PlayerFish_AnnounceHeld(int player);
+Vec3 *PlayerFish_PositionOf(int player);
+int PlayerFish_IsBusy(int player);
+int PlayerFish_ThrowBack(int player, int start);
+int PlayerFish_PlaceForShadow(FishShadow *shadow, Vec3 *at, Vec3 *scale);
+void PlayerFish_KindScale(Vec3 *out, int kind);
+int PlayerFish_EndForShadow(FishShadow *shadow);
+int PlayerFish_ArrivedForShadow(FishShadow *shadow);
+void PlayerFish_DestroyAll(void *object);
 
 #endif

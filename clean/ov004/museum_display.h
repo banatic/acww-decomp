@@ -50,4 +50,9 @@ MuseumDisplay *MuseumDisplay_Destruct(MuseumDisplay *self);
 MuseumDisplay *MuseumDisplay_Construct(MuseumDisplay *self);
 void MuseumDisplay_SetModelHooks(MuseumDisplayHookState *state);
 
+void MuseumDisplay_NodeHook(MuseumDisplayHookState *state);
+const MuseumDisplayKind *MuseumDisplay_Kind(u32 kind);
+u16 MuseumDisplay_PaintingItem(u32 index);
+void MuseumDisplay_Create(void);
+
 #endif

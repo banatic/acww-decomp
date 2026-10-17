@@ -224,3 +224,25 @@ void PeriodicRoomObject_Create(void)
     }
 }
 CLEAN_AS(func_ov004_02212050, PeriodicRoomObject_Create)
+
+/* The receiver part (at 0xec, RoomObject.receiver_vtable) enters PeriodicRoomObject's destructors through
+ * its vtable with these: each moves the pointer back to the object and goes on with the
+ * object's function. */
+static PeriodicRoomObject *PeriodicRoomObject_from_receiver(void *receiver)
+{
+    return (PeriodicRoomObject *) (void *) ((u8 *) receiver - offsetof(RoomObject, receiver_vtable));
+}
+
+/* func_ov004_0221ac64: the deleting destructor, entered from the receiver part. */
+PeriodicRoomObject *PeriodicRoomObjectReceiver_Delete(void *receiver)
+{
+    return PeriodicRoomObject_Delete(PeriodicRoomObject_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252a7cD0Ev, PeriodicRoomObjectReceiver_Delete)
+
+/* func_ov004_0221ac80: the destructor, entered from the receiver part. */
+PeriodicRoomObject *PeriodicRoomObjectReceiver_Destroy(void *receiver)
+{
+    return PeriodicRoomObject_Destroy(PeriodicRoomObject_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov004_02252a7cD1Ev, PeriodicRoomObjectReceiver_Destroy)

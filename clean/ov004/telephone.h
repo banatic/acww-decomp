@@ -79,4 +79,7 @@ Telephone *Telephone_Destroy(Telephone *phone);
 Telephone *Telephone_Construct(Telephone *phone);
 void Telephone_Create(void);
 
+Telephone *TelephoneReceiver_Delete(void *receiver);
+Telephone *TelephoneReceiver_Destroy(void *receiver);
+
 #endif

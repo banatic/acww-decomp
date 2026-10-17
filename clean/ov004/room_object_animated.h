@@ -21,4 +21,7 @@ AnimatedRoomObject *AnimatedRoomObject_Destroy(AnimatedRoomObject *object);
 AnimatedRoomObject *AnimatedRoomObject_Construct(AnimatedRoomObject *object);
 void AnimatedRoomObject_Create(void);
 
+AnimatedRoomObject *AnimatedRoomObjectReceiver_Delete(void *receiver);
+AnimatedRoomObject *AnimatedRoomObjectReceiver_Destroy(void *receiver);
+
 #endif
