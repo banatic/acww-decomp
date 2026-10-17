@@ -24,6 +24,7 @@
 #include "main/session.h"
 #include "main/session_players.h"
 #include "main/town_objects.h"
+#include "ov004/field_actor_room_states2.h"
 
 static_assert(offsetof(FieldActor, position) == 0x5c, "position");
 static_assert(offsetof(FieldActor, yaw) == 0x8e, "yaw");
@@ -124,8 +125,6 @@ extern void *func_ov004_0223cadc(void *entries, int index);
 extern int *func_ov004_0223cb24(void *entry);
 extern int func_ov004_0223cb18(void *entry);
 /* Requests for states 0x1d (a point and an angle) and 0x1c (a tile and an object). */
-extern int func_ov004_0222a494(FieldActor *actor, int x, int z, int angle, int priority, s16 arg);
-extern int func_ov004_0222ac24(FieldActor *actor, const int *tile, int index, int priority, s16 arg);
 /* The rest of the door states' frame, elsewhere in the overlay: the walk of state 0x8c, the
  * animation by the speed, and the end of the walk. */
 extern void func_ov004_022266c4(FieldActor *actor);
@@ -208,8 +207,8 @@ int FieldActorRooms_TryTool(FieldActor *actor)
         const int *point = func_ov004_0223cb24(entry);
         int x = point[0];
         int z = point[2];
-        return func_ov004_0222a494(actor, x, z, func_ov004_0223cb18(entry), FIELD_ACTOR_ROOMS_ENTRY_PRIORITY,
-                                   FIELD_ACTOR_ROOMS_NO_ARG);
+        return FieldActorRoomStates2_RequestFurnitureReach(actor, x, z, func_ov004_0223cb18(entry),
+                                                           FIELD_ACTOR_ROOMS_ENTRY_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
     }
     if (actor->unk_148 != 0) {
         return FieldActor_TryTargetInScene(actor, FieldActor_HeldTool(actor));
@@ -285,7 +284,7 @@ int FieldActorRooms_TryTarget(FieldActor *actor, int tool, int mode)
             FieldActor_RequestState18(actor, none, index, FIELD_ACTOR_ROOMS_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
         } else {
             int tile[2] = {(u8) x, (u8) z};
-            func_ov004_0222ac24(actor, tile, index, FIELD_ACTOR_ROOMS_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
+            FieldActorRoomStates2_RequestTakeItem(actor, tile, index, FIELD_ACTOR_ROOMS_PRIORITY, FIELD_ACTOR_ROOMS_NO_ARG);
         }
         return 1;
     }

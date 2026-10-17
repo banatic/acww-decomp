@@ -59,6 +59,7 @@
 0222daf0 no return value when data_ov004_02258310 is null (the ROM returns self, the PC 0xef7); the only caller, func_ov068_022748f0, ignores it
 022359c8 (ov004) word accesses through a misaligned other-fish pointer use the aligned word on ARM and the unaligned one on x86; fish are allocated word-aligned (aligning the pointer makes every case agree)
 02261f94 index of 5 or more reads past the static table of five member-function pointers (the PC's copy is elsewhere); the only callers, func_ov047_02261f74 and func_ov047_02261f84, pass their callers' constants 0-4
+022624f4 (ov047) word stores through a misaligned owl pointer write the aligned word on ARM and the unaligned one on x86; the owl is allocated word-aligned (aligning the pointer makes every case agree)
 0226bb7c (ov066) word accesses through a misaligned ring node use the aligned word on ARM and the unaligned one on x86; ring nodes are allocated word-aligned (aligning the pointer makes every case agree)
 02278f4c index idx of 8 or more reads past the static table (the PC's copy is elsewhere); the only caller, func_ov073_02278ca4, passes 0
 02279528 index idx of 3 or more reads past the static table (the PC's copy is elsewhere); callers pass 0-2 (func_ov079_02279508, func_ov079_02279518)

@@ -26,6 +26,7 @@
 #include "main/player_records.h"
 #include "main/scene_claim.h"
 #include "main/scene_exit.h"
+#include "main/scene_kinds.h"
 #include "main/scene_object_base.h"
 #include "main/scene_query.h"
 #include "main/scene_tables.h"
@@ -1723,9 +1724,6 @@ extern const fx32 data_ov004_02247780;
 /* The yaw subtracted for each way off a spot (FieldActorSpotWay): 0, -0x4000, 0x4000. */
 extern const s16 data_ov004_0224776c[];
 
-/* State 0x27's request, elsewhere in the overlay. */
-extern int func_ov004_02228fc4(FieldActor *actor, int *x, int *z, short *yaw, int priority, short arg);
-
 static int fars_in_room(void)
 {
     return data_020e54a8 == 1;
@@ -2425,7 +2423,8 @@ void FieldActorRoomStates_SpotEnterMessage(FieldActor *actor, int arg)
     u32 z;
     s16 yaw;
     FieldActorRoomStates_GetSpotEnterSaved(actor->saved.packed, &x, &z, &yaw);
-    func_ov004_02228fc4(actor, (int *) (void *) &x, (int *) (void *) &z, &yaw, FARS_PRIORITY, (short) arg);
+    FieldActorRoomStates_RequestSpotEnter(actor, (const int *) (void *) &x, (const int *) (void *) &z, &yaw, FARS_PRIORITY,
+                                          (s16) arg);
 }
 CLEAN_AS(func_ov004_02228ef4, FieldActorRoomStates_SpotEnterMessage)
 
@@ -2467,3 +2466,841 @@ void FieldActorRoomStates_SetSpotEnterWork(FieldActorSpotEnter *work, int x, int
     work->yaw = (s16) yaw;
 }
 CLEAN_AS(func_ov004_02228fbc, FieldActorRoomStates_SetSpotEnterWork)
+
+/* func_ov004_02228fc4: state 0x27 asked for with a point and a yaw; whether it was queued. */
+int FieldActorRoomStates_RequestSpotEnter(FieldActor *actor, const int *x, const int *z, const s16 *yaw, int priority, s16 arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_SPOT_ENTER, priority, arg);
+    FieldActorRoomStates_PutSpotEnterArgs((FieldActorSpotEnter *) (void *) request.payload, *x, *z, *yaw);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_02228fc4, FieldActorRoomStates_RequestSpotEnter)
+
+/* ---- States 0x24 to 0x26, onto a spot */
+
+static_assert(sizeof(FieldActorSpotApproach) <= sizeof(FieldActorWork), "state 0x24's work");
+static_assert(sizeof(FieldActorSpotApproach) <= sizeof(((StateRequest *) 0)->payload), "state 0x24's arguments");
+static_assert(offsetof(FieldActorSpotApproach, way) == 0x0a, "the way");
+
+#define FARS_SPOT_APPROACH 0x24
+#define FARS_SPOT_ENTER_STRAIGHT 0x25
+#define FARS_SPOT_ENTER_MINUS 0x26
+#define FARS_ANIM_SPOT_ENTER_STRAIGHT 0x21
+#define FARS_ANIM_SPOT_ENTER_MINUS 0x22
+
+/* The yaw turns of the requests for states 0x27, 0x26 and 0x25 that state 0x24 makes: the
+ * actor comes from one side of the spot and ends facing away from the spot's yaw. */
+#define FARS_SPOT_ENTER_TURN (-0x4000)
+#define FARS_SPOT_ENTER_MINUS_TURN 0x4000
+#define FARS_SPOT_ENTER_STRAIGHT_TURN 0x8000
+
+/* The distance from a spot to where state 0x24 stands (-2.0). */
+extern const fx32 data_ov004_02254af8;
+
+static FieldActorSpotApproach *fars_spot_approach_of(FieldActor *actor)
+{
+    return (FieldActorSpotApproach *) (void *) &actor->work;
+}
+
+/* A request for state 0x27, 0x26 or 0x25 (`state`) carrying the point 2.0 ahead and the yaw
+ * turned by `turn`; whether it was queued. The three put their arguments the same way. */
+static int fars_request_spot_ahead(FieldActor *actor, int state, int turn, int priority, int arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, state, priority, arg);
+    Vec3 ahead;
+    FieldActor_PointAhead(&ahead, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov004_02247780);
+    FieldActorSpotEnter *args = (FieldActorSpotEnter *) (void *) request.payload;
+    int yaw = (s16) (actor->yaw + turn);
+    if (state == FARS_SPOT_ENTER) {
+        FieldActorRoomStates_PutSpotEnterArgs(args, ahead.x, ahead.z, yaw);
+    } else if (state == FARS_SPOT_ENTER_MINUS) {
+        FieldActorRoomStates_PutSpotEnterMinusArgs(args, ahead.x, ahead.z, yaw);
+    } else {
+        FieldActorRoomStates_PutSpotEnterStraightArgs(args, ahead.x, ahead.z, yaw);
+    }
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+
+/* func_ov004_02229010: state 0x27 asked for with the point 2.0 ahead and the yaw less 0x4000;
+ * whether it was queued. */
+int FieldActorRoomStates_RequestSpotEnterAhead(FieldActor *actor, int priority, int arg)
+{
+    return fars_request_spot_ahead(actor, FARS_SPOT_ENTER, FARS_SPOT_ENTER_TURN, priority, arg);
+}
+CLEAN_AS(func_ov004_02229010, FieldActorRoomStates_RequestSpotEnterAhead)
+
+/* func_ov004_02229078: a request's point and yaw for state 0x27. */
+void FieldActorRoomStates_PutSpotEnterArgs(FieldActorSpotEnter *args, int x, int z, int yaw)
+{
+    args->x = x;
+    args->z = z;
+    args->yaw = (s16) yaw;
+}
+CLEAN_AS(func_ov004_02229078, FieldActorRoomStates_PutSpotEnterArgs)
+
+/* The step of states 0x26 and 0x25, as StepSpotEnter: the body updated; as the animation
+ * passes frame 12 in a room the object at the work's point (at the actor's height) plays its
+ * sound 1. */
+static void fars_step_spot_enter(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    if (FrameCtrl_Passed(&actor->anim, FARS_SPOT_ENTER_SOUND_FRAME) && fars_in_room()) {
+        const FieldActorSpotEnter *work = fars_spot_enter_of(actor);
+        Vec3 point = {work->x, actor->position.y, work->z};
+        RoomPointSound_Play1(&point);
+    }
+}
+
+/* The end of states 0x26 and 0x25: once the animation is over, state 0x28 (0, priority 6). */
+static void fars_end_spot_enter(FieldActor *actor)
+{
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        FieldActorRoomStates_RequestSpotStay(actor, FARS_SPOT_STAY_AFTER_ENTER, FARS_PRIORITY, FARS_NO_ARG);
+    }
+}
+
+/* The exit of states 0x26 and 0x25: the actor stands at the work's point at its yaw. */
+static void fars_leave_spot_enter(FieldActor *actor)
+{
+    FieldActorSpotEnter *work = fars_spot_enter_of(actor);
+    actor->position.x = work->x;
+    actor->position.z = work->z;
+    FieldActor_SetYaw(actor, &work->yaw);
+}
+
+/* func_ov004_02229080 (state 0x26's update): the body and its sound, what is reported, the
+ * contact bodies and the end of the animation. */
+void FieldActorRoomStates_UpdateSpotEnterMinus(FieldActor *actor)
+{
+    FieldActorRoomStates_StepSpotEnterMinus(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_EndSpotEnterMinus(actor);
+}
+CLEAN_AS(func_ov004_02229080, FieldActorRoomStates_UpdateSpotEnterMinus)
+
+/* func_ov004_022290a0: once the animation is over, state 0x28 is asked for (0, priority 6). */
+void FieldActorRoomStates_EndSpotEnterMinus(FieldActor *actor)
+{
+    fars_end_spot_enter(actor);
+}
+CLEAN_AS(func_ov004_022290a0, FieldActorRoomStates_EndSpotEnterMinus)
+
+/* func_ov004_022290c8: the body updated; as the animation passes frame 12 in a room the object
+ * at the work's point (at the actor's height) plays its sound 1. */
+void FieldActorRoomStates_StepSpotEnterMinus(FieldActor *actor)
+{
+    fars_step_spot_enter(actor);
+}
+CLEAN_AS(func_ov004_022290c8, FieldActorRoomStates_StepSpotEnterMinus)
+
+/* func_ov004_0222911c (state 0x26's exit): the actor stands at the work's point at its yaw. */
+void FieldActorRoomStates_LeaveSpotEnterMinus(FieldActor *actor, int next)
+{
+    (void) next;
+    fars_leave_spot_enter(actor);
+}
+CLEAN_AS(func_ov004_0222911c, FieldActorRoomStates_LeaveSpotEnterMinus)
+
+/* func_ov004_0222913c (state 0x26's message handler): state 0x26 asked for (priority 6) with the
+ * point and yaw kept at 0x8f0. */
+void FieldActorRoomStates_SpotEnterMinusMessage(FieldActor *actor, int arg)
+{
+    u32 x;
+    u32 z;
+    s16 yaw;
+    FieldActorRoomStates_GetSpotEnterMinusSaved(actor->saved.packed, &x, &z, &yaw);
+    FieldActorRoomStates_RequestSpotEnterMinus(actor, (const int *) (void *) &x, (const int *) (void *) &z, &yaw,
+                                               FARS_PRIORITY, (s16) arg);
+}
+CLEAN_AS(func_ov004_0222913c, FieldActorRoomStates_SpotEnterMinusMessage)
+
+/* func_ov004_02229170 (state 0x26's entry): animation 0x22 plays once (no blend), sound 0x4c5;
+ * the request's point and yaw go to the work and to 0x8f0. */
+void FieldActorRoomStates_EnterSpotEnterMinus(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_SPOT_ENTER_MINUS, 0, 0);
+    FieldActor_PlaySound(actor, FARS_SPOT_ENTER_SOUND);
+    const FieldActorSpotEnter *args = (const FieldActorSpotEnter *) (const void *) request->payload;
+    s16 yaw = args->yaw;
+    FieldActorRoomStates_SetSpotEnterMinusWork(fars_spot_enter_of(actor), args->x, args->z, yaw);
+    FieldActorRoomStates_PutSpotEnterMinusSaved(actor->saved.packed, args->x, args->z, yaw);
+}
+CLEAN_AS(func_ov004_02229170, FieldActorRoomStates_EnterSpotEnterMinus)
+
+/* func_ov004_022291cc: the point (bytes 0 to 4) and yaw (bytes 5 and 6) kept for state 0x26. */
+void FieldActorRoomStates_GetSpotEnterMinusSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw)
+{
+    PackedBytes_UnpackPoint(saved, x, z);
+    *yaw = PackedBytes_ReadS16(saved + 5);
+}
+CLEAN_AS(func_ov004_022291cc, FieldActorRoomStates_GetSpotEnterMinusSaved)
+
+/* func_ov004_022291e8: the point and yaw of state 0x26 kept. */
+void FieldActorRoomStates_PutSpotEnterMinusSaved(u8 *saved, int x, int z, int yaw)
+{
+    PackedBytes_PackPoint(saved, x, z);
+    PackedBytes_WriteS16(saved + 5, yaw);
+}
+CLEAN_AS(func_ov004_022291e8, FieldActorRoomStates_PutSpotEnterMinusSaved)
+
+/* func_ov004_02229204: state 0x26's work: the point and the yaw. */
+void FieldActorRoomStates_SetSpotEnterMinusWork(FieldActorSpotEnter *work, int x, int z, int yaw)
+{
+    work->x = x;
+    work->z = z;
+    work->yaw = (s16) yaw;
+}
+CLEAN_AS(func_ov004_02229204, FieldActorRoomStates_SetSpotEnterMinusWork)
+
+/* func_ov004_0222920c: state 0x26 asked for with a point and a yaw; whether it was queued. */
+int FieldActorRoomStates_RequestSpotEnterMinus(FieldActor *actor, const int *x, const int *z, const s16 *yaw, int priority,
+                                               s16 arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_SPOT_ENTER_MINUS, priority, arg);
+    FieldActorRoomStates_PutSpotEnterMinusArgs((FieldActorSpotEnter *) (void *) request.payload, *x, *z, *yaw);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_0222920c, FieldActorRoomStates_RequestSpotEnterMinus)
+
+/* func_ov004_02229258: state 0x26 asked for with the point 2.0 ahead and the yaw plus 0x4000;
+ * whether it was queued. */
+int FieldActorRoomStates_RequestSpotEnterMinusAhead(FieldActor *actor, int priority, int arg)
+{
+    return fars_request_spot_ahead(actor, FARS_SPOT_ENTER_MINUS, FARS_SPOT_ENTER_MINUS_TURN, priority, arg);
+}
+CLEAN_AS(func_ov004_02229258, FieldActorRoomStates_RequestSpotEnterMinusAhead)
+
+/* func_ov004_022292c0: a request's point and yaw for state 0x26. */
+void FieldActorRoomStates_PutSpotEnterMinusArgs(FieldActorSpotEnter *args, int x, int z, int yaw)
+{
+    args->x = x;
+    args->z = z;
+    args->yaw = (s16) yaw;
+}
+CLEAN_AS(func_ov004_022292c0, FieldActorRoomStates_PutSpotEnterMinusArgs)
+
+/* func_ov004_022292c8 (state 0x25's update): the body and its sound, what is reported, the
+ * contact bodies and the end of the animation. */
+void FieldActorRoomStates_UpdateSpotEnterStraight(FieldActor *actor)
+{
+    FieldActorRoomStates_StepSpotEnterStraight(actor);
+    FieldActor_FollowReported(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_EndSpotEnterStraight(actor);
+}
+CLEAN_AS(func_ov004_022292c8, FieldActorRoomStates_UpdateSpotEnterStraight)
+
+/* func_ov004_022292e8: once the animation is over, state 0x28 is asked for (0, priority 6). */
+void FieldActorRoomStates_EndSpotEnterStraight(FieldActor *actor)
+{
+    fars_end_spot_enter(actor);
+}
+CLEAN_AS(func_ov004_022292e8, FieldActorRoomStates_EndSpotEnterStraight)
+
+/* func_ov004_02229310: the body updated; as the animation passes frame 12 in a room the object
+ * at the work's point (at the actor's height) plays its sound 1. */
+void FieldActorRoomStates_StepSpotEnterStraight(FieldActor *actor)
+{
+    fars_step_spot_enter(actor);
+}
+CLEAN_AS(func_ov004_02229310, FieldActorRoomStates_StepSpotEnterStraight)
+
+/* func_ov004_02229364 (state 0x25's exit): the actor stands at the work's point at its yaw. */
+void FieldActorRoomStates_LeaveSpotEnterStraight(FieldActor *actor, int next)
+{
+    (void) next;
+    fars_leave_spot_enter(actor);
+}
+CLEAN_AS(func_ov004_02229364, FieldActorRoomStates_LeaveSpotEnterStraight)
+
+/* func_ov004_02229384 (state 0x25's message handler): state 0x25 asked for (priority 6) with the
+ * point and yaw kept at 0x8f0. */
+void FieldActorRoomStates_SpotEnterStraightMessage(FieldActor *actor, int arg)
+{
+    u32 x;
+    u32 z;
+    s16 yaw;
+    FieldActorRoomStates_GetSpotEnterStraightSaved(actor->saved.packed, &x, &z, &yaw);
+    FieldActorRoomStates_RequestSpotEnterStraight(actor, (const int *) (void *) &x, (const int *) (void *) &z, &yaw,
+                                                  FARS_PRIORITY, (s16) arg);
+}
+CLEAN_AS(func_ov004_02229384, FieldActorRoomStates_SpotEnterStraightMessage)
+
+/* func_ov004_022293b8 (state 0x25's entry): animation 0x21 plays once (blended over 3 frames),
+ * sound 0x4c5; the request's point and yaw go to the work and to 0x8f0. */
+void FieldActorRoomStates_EnterSpotEnterStraight(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_SPOT_ENTER_STRAIGHT, FARS_BLEND, 0);
+    FieldActor_PlaySound(actor, FARS_SPOT_ENTER_SOUND);
+    const FieldActorSpotEnter *args = (const FieldActorSpotEnter *) (const void *) request->payload;
+    s16 yaw = args->yaw;
+    FieldActorRoomStates_SetSpotEnterStraightWork(fars_spot_enter_of(actor), args->x, args->z, yaw);
+    FieldActorRoomStates_PutSpotEnterStraightSaved(actor->saved.packed, args->x, args->z, yaw);
+}
+CLEAN_AS(func_ov004_022293b8, FieldActorRoomStates_EnterSpotEnterStraight)
+
+/* func_ov004_02229414: the point (bytes 0 to 4) and yaw (bytes 5 and 6) kept for state 0x25. */
+void FieldActorRoomStates_GetSpotEnterStraightSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw)
+{
+    PackedBytes_UnpackPoint(saved, x, z);
+    *yaw = PackedBytes_ReadS16(saved + 5);
+}
+CLEAN_AS(func_ov004_02229414, FieldActorRoomStates_GetSpotEnterStraightSaved)
+
+/* func_ov004_02229430: the point and yaw of state 0x25 kept. */
+void FieldActorRoomStates_PutSpotEnterStraightSaved(u8 *saved, int x, int z, int yaw)
+{
+    PackedBytes_PackPoint(saved, x, z);
+    PackedBytes_WriteS16(saved + 5, yaw);
+}
+CLEAN_AS(func_ov004_02229430, FieldActorRoomStates_PutSpotEnterStraightSaved)
+
+/* func_ov004_0222944c: state 0x25's work: the point and the yaw. */
+void FieldActorRoomStates_SetSpotEnterStraightWork(FieldActorSpotEnter *work, int x, int z, int yaw)
+{
+    work->x = x;
+    work->z = z;
+    work->yaw = (s16) yaw;
+}
+CLEAN_AS(func_ov004_0222944c, FieldActorRoomStates_SetSpotEnterStraightWork)
+
+/* func_ov004_02229454: state 0x25 asked for with a point and a yaw; whether it was queued. */
+int FieldActorRoomStates_RequestSpotEnterStraight(FieldActor *actor, const int *x, const int *z, const s16 *yaw, int priority,
+                                                  s16 arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_SPOT_ENTER_STRAIGHT, priority, arg);
+    FieldActorRoomStates_PutSpotEnterStraightArgs((FieldActorSpotEnter *) (void *) request.payload, *x, *z, *yaw);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_02229454, FieldActorRoomStates_RequestSpotEnterStraight)
+
+/* func_ov004_022294a0: state 0x25 asked for with the point 2.0 ahead and the yaw turned round;
+ * whether it was queued. */
+int FieldActorRoomStates_RequestSpotEnterStraightAhead(FieldActor *actor, int priority, int arg)
+{
+    return fars_request_spot_ahead(actor, FARS_SPOT_ENTER_STRAIGHT, FARS_SPOT_ENTER_STRAIGHT_TURN, priority, arg);
+}
+CLEAN_AS(func_ov004_022294a0, FieldActorRoomStates_RequestSpotEnterStraightAhead)
+
+/* func_ov004_02229508: a request's point and yaw for state 0x25. */
+void FieldActorRoomStates_PutSpotEnterStraightArgs(FieldActorSpotEnter *args, int x, int z, int yaw)
+{
+    args->x = x;
+    args->z = z;
+    args->yaw = (s16) yaw;
+}
+CLEAN_AS(func_ov004_02229508, FieldActorRoomStates_PutSpotEnterStraightArgs)
+
+/* ---- State 0x24, to a spot */
+
+/* func_ov004_02229510 (state 0x24's update): the ease to the work's point and yaw, the body, the
+ * contact bodies and the claim's answer. */
+void FieldActorRoomStates_UpdateSpotApproach(FieldActor *actor)
+{
+    FieldActorRoomStates_StandSpotApproach(actor);
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_RunSpotApproach(actor);
+}
+CLEAN_AS(func_ov004_02229510, FieldActorRoomStates_UpdateSpotApproach)
+
+/* func_ov004_02229530: another console's actor has the state's bar for requests at its end
+ * value. For this console's: while the claim's answer is not known nothing; refused, the bar
+ * is its end value and state 2 is asked for (3, priority 1); given (or any other answer), once
+ * the actor stands exactly at the work's point and yaw, by the way state 0x25, 0x27 or 0x26 with
+ * the point 2.0 ahead (priority 6). */
+void FieldActorRoomStates_RunSpotApproach(FieldActor *actor)
+{
+    if (!fars_is_local(actor)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        return;
+    }
+    switch (PlaceClaim_Answer()) {
+        case PLACE_CLAIM_WAITING:
+            return;
+        case PLACE_CLAIM_REFUSED:
+            actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+            FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
+            return;
+        default:
+            break;
+    }
+    const FieldActorSpotApproach *work = fars_spot_approach_of(actor);
+    if (actor->position.x != work->x || actor->position.z != work->z || work->yaw != actor->yaw) {
+        return;
+    }
+    switch (work->way) {
+        case FIELD_ACTOR_SPOT_STRAIGHT:
+            FieldActorRoomStates_RequestSpotEnterStraightAhead(actor, FARS_PRIORITY, FARS_NO_ARG);
+            break;
+        case FIELD_ACTOR_SPOT_PLUS:
+            FieldActorRoomStates_RequestSpotEnterAhead(actor, FARS_PRIORITY, FARS_NO_ARG);
+            break;
+        case FIELD_ACTOR_SPOT_MINUS:
+            FieldActorRoomStates_RequestSpotEnterMinusAhead(actor, FARS_PRIORITY, FARS_NO_ARG);
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov004_02229530, FieldActorRoomStates_RunSpotApproach)
+
+/* func_ov004_022295f8: the actor eased to the work's point and yaw. */
+void FieldActorRoomStates_StandSpotApproach(FieldActor *actor)
+{
+    const FieldActorSpotApproach *work = fars_spot_approach_of(actor);
+    FieldActor_MoveToPose(actor, work->x, work->z, work->yaw);
+}
+CLEAN_AS(func_ov004_022295f8, FieldActorRoomStates_StandSpotApproach)
+
+/* func_ov004_02229614 (state 0x24's exit): the actor stands at the work's point at its yaw. */
+void FieldActorRoomStates_LeaveSpotApproach(FieldActor *actor, int next)
+{
+    (void) next;
+    FieldActorSpotApproach *work = fars_spot_approach_of(actor);
+    actor->position.x = work->x;
+    actor->position.z = work->z;
+    FieldActor_SetYaw(actor, &work->yaw);
+}
+CLEAN_AS(func_ov004_02229614, FieldActorRoomStates_LeaveSpotApproach)
+
+/* func_ov004_02229634 (state 0x24's message handler): state 0x24 asked for (priority 6) with the
+ * spot's point, yaw and way kept at 0x8f0. */
+void FieldActorRoomStates_SpotApproachMessage(FieldActor *actor, s16 arg)
+{
+    u32 x;
+    u32 z;
+    s16 yaw;
+    u8 way;
+    FieldActorRoomStates_GetSpotApproachSaved(actor->saved.packed, &x, &z, &yaw, &way);
+    FieldActorRoomStates_RequestSpotApproach(actor, (int) x, (int) z, yaw, way, FARS_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_02229634, FieldActorRoomStates_SpotApproachMessage)
+
+/* func_ov004_02229678 (state 0x24's entry): the work is the point 2.0 from the request's spot
+ * (at the actor's height) on the way's side, the yaw towards the spot from there and the way;
+ * the spot's point, yaw and way are kept at 0x8f0; this console's actor claims the spot's
+ * place; animation 0x1a loops (blended over 3 frames). */
+void FieldActorRoomStates_EnterSpotApproach(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const FieldActorSpotApproach *args = (const FieldActorSpotApproach *) (const void *) request->payload;
+    s16 spot_yaw = args->yaw;
+    u8 way = args->way;
+    Vec3 spot = {args->x, actor->position.y, args->z};
+    s16 yaw = (s16) (spot_yaw + data_ov004_0224776c[way]);
+    Vec3 stand;
+    FieldActor_PointAhead(&stand, actor, &spot, (const u16 *) &yaw, &data_ov004_02254af8);
+    FieldActorRoomStates_SetSpotApproachWork(fars_spot_approach_of(actor), stand.x, stand.z, yaw, way);
+    FieldActorRoomStates_PutSpotApproachSaved(actor->saved.packed, spot.x, spot.z, spot_yaw, way);
+    if (fars_is_local(actor)) {
+        PlaceClaim_Request(&spot);
+    }
+    FieldActor_PlayAnimationLoop(actor, FARS_ANIM_1A, FARS_BLEND, 0);
+}
+CLEAN_AS(func_ov004_02229678, FieldActorRoomStates_EnterSpotApproach)
+
+/* func_ov004_02229718: the point (bytes 0 to 4), yaw (bytes 5 and 6) and way (byte 7) kept for
+ * state 0x24. */
+void FieldActorRoomStates_GetSpotApproachSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw, u8 *way)
+{
+    PackedBytes_UnpackPoint(saved, x, z);
+    *yaw = PackedBytes_ReadS16(saved + 5);
+    *way = saved[7];
+}
+CLEAN_AS(func_ov004_02229718, FieldActorRoomStates_GetSpotApproachSaved)
+
+/* func_ov004_0222973c: the spot's point, yaw and way of state 0x24 kept. */
+void FieldActorRoomStates_PutSpotApproachSaved(u8 *saved, int x, int z, int yaw, u8 way)
+{
+    PackedBytes_PackPoint(saved, x, z);
+    PackedBytes_WriteS16(saved + 5, yaw);
+    saved[7] = way;
+}
+CLEAN_AS(func_ov004_0222973c, FieldActorRoomStates_PutSpotApproachSaved)
+
+/* func_ov004_02229760: state 0x24's work: the point, the yaw and the way. */
+void FieldActorRoomStates_SetSpotApproachWork(FieldActorSpotApproach *work, int x, int z, s16 yaw, u8 way)
+{
+    work->x = x;
+    work->z = z;
+    work->yaw = yaw;
+    work->way = way;
+}
+CLEAN_AS(func_ov004_02229760, FieldActorRoomStates_SetSpotApproachWork)
+
+/* func_ov004_02229774: state 0x24 asked for with a spot's point, yaw and way; whether it was
+ * queued. */
+int FieldActorRoomStates_RequestSpotApproach(FieldActor *actor, int x, int z, int yaw, u8 way, int priority, s16 arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_SPOT_APPROACH, priority, arg);
+    FieldActorRoomStates_PutSpotApproachArgs((FieldActorSpotApproach *) (void *) request.payload, x, z, (s16) yaw, way);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_02229774, FieldActorRoomStates_RequestSpotApproach)
+
+/* func_ov004_022297c4: a request's arguments for state 0x24. */
+void FieldActorRoomStates_PutSpotApproachArgs(FieldActorSpotApproach *args, int x, int z, s16 yaw, u8 way)
+{
+    args->x = x;
+    args->z = z;
+    args->yaw = yaw;
+    args->way = way;
+}
+CLEAN_AS(func_ov004_022297c4, FieldActorRoomStates_PutSpotApproachArgs)
+
+/* ---- States 0x23 to 0x20, moving a room object */
+
+static_assert(sizeof(FieldActorObjectStep) <= sizeof(FieldActorWork), "the steps' work");
+static_assert(sizeof(FieldActorObjectMove) <= sizeof(FieldActorWork), "the moves' work");
+static_assert(offsetof(FieldActor, player) == 0x800, "player");
+
+#define FARS_PULL 0x21
+#define FARS_PUSH_STEP 0x22
+#define FARS_PULL_STEP 0x23
+#define FARS_ANIM_PULL 0x1e
+#define FARS_ANIM_PUSH_STEP 0x1f
+#define FARS_ANIM_PULL_STEP 0x20
+
+/* State 0x1e (holding the object) is asked for with two flags and priority 5. */
+#define FARS_HOLD_PRIORITY 5
+
+/* The sound of a move only the room's objects stop. */
+#define FARS_MOVE_BLOCKED_SOUND 0x6d
+
+/* Why a move is refused (bits). */
+#define FARS_MOVE_BLOCKED 1     /* the object cannot move that way */
+#define FARS_MOVE_NOT_ALLOWED 2 /* not a house's room, or not player 0 */
+
+/* The quadrants of FieldActor_PushQuadrant that keep a refused push or pull going. */
+#define FARS_PUSH_AHEAD 0
+#define FARS_PULL_BACK 2
+
+/* How far behind the step back ends (-2.0). */
+extern const fx32 data_ov004_02254afc;
+
+/* The room's object being moved (data_ov004_02259784) and what it answers: whether it can move
+ * ahead (func_ov004_0223c8a8) or back (func_ov004_0223c85c, half a turn round), and its move
+ * ahead (func_ov004_0223c86c) or back (func_ov004_0223c820). */
+extern void *func_ov004_0223cb10(void);
+extern int func_ov004_0223c8a8(void *mover);
+extern int func_ov004_0223c85c(void *mover);
+extern int func_ov004_0223c86c(void *mover);
+extern int func_ov004_0223c820(void *mover);
+
+/* State 0x1e's request (elsewhere in the overlay). */
+extern int func_ov004_0222a23c(FieldActor *actor, int a, int b, int priority, short arg);
+
+static FieldActorObjectStep *fars_object_step_of(FieldActor *actor)
+{
+    return (FieldActorObjectStep *) (void *) &actor->work;
+}
+
+static FieldActorObjectMove *fars_object_move_of(FieldActor *actor)
+{
+    return (FieldActorObjectMove *) (void *) &actor->work;
+}
+
+/* The end of a step: once the animation is over, the state's bar for requests is its end
+ * value; while A is held state 0x1e is asked for (1, 0, priority 5), else state 2 (3, priority
+ * 1). */
+static void fars_end_object_step(FieldActor *actor)
+{
+    if (!FrameCtrl_IsDone(&actor->anim)) {
+        return;
+    }
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    if (FIELD_ACTOR_HOLD(actor) != 0) {
+        func_ov004_0222a23c(actor, 1, 0, FARS_HOLD_PRIORITY, FARS_NO_ARG);
+    } else {
+        FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
+    }
+}
+
+/* A push (`pull` 0) or a pull once its animation is over. Another console's actor has the
+ * state's bar for requests at its end value. This console's, where the object can move that
+ * way and it is player 0 in a house's room, asks for the step (priority 6) and moves the
+ * object; else the first time sound 0x6d plays when only the room's objects stop it, and
+ * unless the stick is still pushed that way the bar is its end value and state 0x1e is asked
+ * for (0, 1, priority 5). */
+static void fars_run_object_move(FieldActor *actor, int pull)
+{
+    if (!FrameCtrl_IsDone(&actor->anim)) {
+        return;
+    }
+    if (!fars_is_local(actor)) {
+        actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+        return;
+    }
+    u8 refused = 0;
+    int can_move = pull ? func_ov004_0223c85c(func_ov004_0223cb10()) : func_ov004_0223c8a8(func_ov004_0223cb10());
+    if (can_move == 0) {
+        refused = FARS_MOVE_BLOCKED;
+    }
+    if (SceneKinds_CurrentIsHouseRoom() == 0 || actor->player != 0) {
+        refused |= FARS_MOVE_NOT_ALLOWED;
+    }
+    if (refused == 0) {
+        if (pull) {
+            FieldActorRoomStates_RequestPullStep(actor, FARS_PRIORITY, FARS_NO_ARG);
+            func_ov004_0223c820(func_ov004_0223cb10());
+        } else {
+            FieldActorRoomStates_RequestPushStep(actor, FARS_PRIORITY, FARS_NO_ARG);
+            func_ov004_0223c86c(func_ov004_0223cb10());
+        }
+        return;
+    }
+    FieldActorObjectMove *work = fars_object_move_of(actor);
+    if (work->warned == 0) {
+        work->warned = 1;
+        if (refused == FARS_MOVE_BLOCKED) {
+            FieldActor_PlaySound(actor, FARS_MOVE_BLOCKED_SOUND);
+        }
+    }
+    int pushed_to = FieldActor_PushQuadrant(actor);
+    if ((int) FieldActor_Push(actor) > 0 && pushed_to == (pull ? FARS_PULL_BACK : FARS_PUSH_AHEAD)) {
+        return;
+    }
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    func_ov004_0222a23c(actor, 0, 1, FARS_HOLD_PRIORITY, FARS_NO_ARG);
+}
+
+/* func_ov004_022297d8 (state 0x23's update): the body, the move, the contact bodies, the shadow
+ * and the end of the animation. */
+void FieldActorRoomStates_UpdatePullStep(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActorRoomStates_MovePullStep(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
+    FieldActorRoomStates_EndPullStep(actor);
+}
+CLEAN_AS(func_ov004_022297d8, FieldActorRoomStates_UpdatePullStep)
+
+/* func_ov004_02229800: once the animation is over, state 0x1e while A is held, else state 2. */
+void FieldActorRoomStates_EndPullStep(FieldActor *actor)
+{
+    fars_end_object_step(actor);
+}
+CLEAN_AS(func_ov004_02229800, FieldActorRoomStates_EndPullStep)
+
+/* func_ov004_02229860: the actor set back to where the frame began (its height kept), which is
+ * also its last position, and moved from there with the walls; then of where it was before,
+ * the z comes back when the x was the frame's start x, else the x.
+ * QUIRK: the comparison reads the frame's start x after the move. */
+void FieldActorRoomStates_MovePullStep(FieldActor *actor)
+{
+    Vec3 before = actor->position;
+    actor->position.x = actor->start_position.x;
+    actor->position.y = before.y;
+    actor->position.z = actor->start_position.z;
+    FieldActor_Base(actor)->last_position = actor->position;
+    FieldActor_MoveWithCollision(actor);
+    if (before.x == actor->start_position.x) {
+        actor->position.z = before.z;
+    } else {
+        actor->position.x = before.x;
+    }
+}
+CLEAN_AS(func_ov004_02229860, FieldActorRoomStates_MovePullStep)
+
+/* func_ov004_022298b8 (state 0x23's exit): the actor stands at the work's point, which is also
+ * its last position. */
+void FieldActorRoomStates_LeavePullStep(FieldActor *actor)
+{
+    const FieldActorObjectStep *work = fars_object_step_of(actor);
+    actor->position.x = work->x;
+    actor->position.z = work->z;
+    FieldActor_Base(actor)->last_position = actor->position;
+}
+CLEAN_AS(func_ov004_022298b8, FieldActorRoomStates_LeavePullStep)
+
+/* func_ov004_022298dc (state 0x23's message handler): nothing. */
+void FieldActorRoomStates_PullStepMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_ov004_022298dc, FieldActorRoomStates_PullStepMessage)
+
+/* func_ov004_022298e0 (state 0x23's entry): animation 0x20 plays once (blended over 3 frames);
+ * the work is the point 2.0 behind. */
+void FieldActorRoomStates_EnterPullStep(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_PULL_STEP, FARS_BLEND, 0);
+    Vec3 end;
+    FieldActor_PointAhead(&end, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov004_02254afc);
+    FieldActorRoomStates_SetPullStepWork(fars_object_step_of(actor), end.x, end.z);
+}
+CLEAN_AS(func_ov004_022298e0, FieldActorRoomStates_EnterPullStep)
+
+/* func_ov004_02229920: state 0x23's work: where the step ends. */
+void FieldActorRoomStates_SetPullStepWork(FieldActorObjectStep *work, int x, int z)
+{
+    work->x = x;
+    work->z = z;
+}
+CLEAN_AS(func_ov004_02229920, FieldActorRoomStates_SetPullStepWork)
+
+/* func_ov004_02229928: state 0x23 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestPullStep(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_PULL_STEP, priority, arg);
+}
+CLEAN_AS(func_ov004_02229928, FieldActorRoomStates_RequestPullStep)
+
+/* func_ov004_02229960 (state 0x22's update): the body, the contact bodies, the shadow and the
+ * end of the animation. */
+void FieldActorRoomStates_UpdatePushStep(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
+    FieldActorRoomStates_EndPushStep(actor);
+}
+CLEAN_AS(func_ov004_02229960, FieldActorRoomStates_UpdatePushStep)
+
+/* func_ov004_02229980: once the animation is over, state 0x1e while A is held, else state 2. */
+void FieldActorRoomStates_EndPushStep(FieldActor *actor)
+{
+    fars_end_object_step(actor);
+}
+CLEAN_AS(func_ov004_02229980, FieldActorRoomStates_EndPushStep)
+
+/* func_ov004_022299e0 (state 0x22's exit): the actor stands at the work's point. */
+void FieldActorRoomStates_LeavePushStep(FieldActor *actor)
+{
+    const FieldActorObjectStep *work = fars_object_step_of(actor);
+    actor->position.x = work->x;
+    actor->position.z = work->z;
+}
+CLEAN_AS(func_ov004_022299e0, FieldActorRoomStates_LeavePushStep)
+
+/* func_ov004_022299f8 (state 0x22's message handler): nothing. */
+void FieldActorRoomStates_PushStepMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_ov004_022299f8, FieldActorRoomStates_PushStepMessage)
+
+/* func_ov004_022299fc (state 0x22's entry): animation 0x1f plays once (blended over 3 frames);
+ * the work is the point 2.0 ahead. */
+void FieldActorRoomStates_EnterPushStep(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_PUSH_STEP, FARS_BLEND, 0);
+    Vec3 end;
+    FieldActor_PointAhead(&end, actor, &actor->position, (const u16 *) &actor->yaw, &data_ov004_02247780);
+    FieldActorRoomStates_SetPushStepWork(fars_object_step_of(actor), end.x, end.z);
+}
+CLEAN_AS(func_ov004_022299fc, FieldActorRoomStates_EnterPushStep)
+
+/* func_ov004_02229a3c: state 0x22's work: where the step ends. */
+void FieldActorRoomStates_SetPushStepWork(FieldActorObjectStep *work, int x, int z)
+{
+    work->x = x;
+    work->z = z;
+}
+CLEAN_AS(func_ov004_02229a3c, FieldActorRoomStates_SetPushStepWork)
+
+/* func_ov004_02229a44: state 0x22 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestPushStep(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_PUSH_STEP, priority, arg);
+}
+CLEAN_AS(func_ov004_02229a44, FieldActorRoomStates_RequestPushStep)
+
+/* func_ov004_02229a7c (state 0x21's update): the body, the move with the walls, the contact
+ * bodies, the shadow and the pull. */
+void FieldActorRoomStates_UpdatePull(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
+    FieldActorRoomStates_RunPull(actor);
+}
+CLEAN_AS(func_ov004_02229a7c, FieldActorRoomStates_UpdatePull)
+
+/* func_ov004_02229aa4: once the animation is over, the object pulled back with the actor (state
+ * 0x23) where it can be; else sound 0x6d the first time when only the room's objects stop it,
+ * and while the stick is still pulled back nothing more, else state 0x1e (0, 1, priority 5). */
+void FieldActorRoomStates_RunPull(FieldActor *actor)
+{
+    fars_run_object_move(actor, 1);
+}
+CLEAN_AS(func_ov004_02229aa4, FieldActorRoomStates_RunPull)
+
+/* func_ov004_02229b88 (state 0x21's message handler): state 0x21 asked for (priority 6). */
+void FieldActorRoomStates_PullMessage(FieldActor *actor, int arg)
+{
+    FieldActorRoomStates_RequestPull(actor, FARS_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_02229b88, FieldActorRoomStates_PullMessage)
+
+/* func_ov004_02229b94 (state 0x21's entry): animation 0x1e plays once (blended over 3 frames);
+ * no refusal yet. */
+void FieldActorRoomStates_EnterPull(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_PULL, FARS_BLEND, 0);
+    fars_object_move_of(actor)->warned = 0;
+}
+CLEAN_AS(func_ov004_02229b94, FieldActorRoomStates_EnterPull)
+
+/* func_ov004_02229bb4: state 0x21 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestPull(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_PULL, priority, arg);
+}
+CLEAN_AS(func_ov004_02229bb4, FieldActorRoomStates_RequestPull)
+
+/* func_ov004_02229bec (state 0x20's update): the body, the move with the walls, the contact
+ * bodies, the shadow and the push. */
+void FieldActorRoomStates_UpdatePush(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActor_MoveWithCollision(actor);
+    FieldActor_EnterContact(actor);
+    FieldActor_PlaceShadow(actor);
+    FieldActorRoomStates_RunPush(actor);
+}
+CLEAN_AS(func_ov004_02229bec, FieldActorRoomStates_UpdatePush)
+
+/* func_ov004_02229c14: once the animation is over, the object pushed ahead with the actor
+ * (state 0x22) where it can be; else sound 0x6d the first time when only the room's objects
+ * stop it, and while the stick still pushes ahead nothing more, else state 0x1e (0, 1,
+ * priority 5). */
+void FieldActorRoomStates_RunPush(FieldActor *actor)
+{
+    fars_run_object_move(actor, 0);
+}
+CLEAN_AS(func_ov004_02229c14, FieldActorRoomStates_RunPush)

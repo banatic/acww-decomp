@@ -334,5 +334,116 @@ void FieldActorRoomStates_EnterSpotEnter(struct FieldActor *actor, const struct 
 void FieldActorRoomStates_GetSpotEnterSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw);
 void FieldActorRoomStates_PutSpotEnterSaved(u8 *saved, int x, int z, int yaw);
 void FieldActorRoomStates_SetSpotEnterWork(FieldActorSpotEnter *work, int x, int z, int yaw);
+int FieldActorRoomStates_RequestSpotEnter(struct FieldActor *actor, const int *x, const int *z, const s16 *yaw, int priority,
+                                          s16 arg);
+int FieldActorRoomStates_RequestSpotEnterAhead(struct FieldActor *actor, int priority, int arg);
+void FieldActorRoomStates_PutSpotEnterArgs(FieldActorSpotEnter *args, int x, int z, int yaw);
+
+/* The way onto a spot and the moves of a room object (each message handler asks for its
+ * state again with priority 6; those of 0x22 and 0x23 do nothing):
+ *   0x24  to a spot: the request names the spot's point and yaw and the side the actor comes
+ *         from (FieldActorSpotWay; data_ov004_0224776c's entry is added to the yaw). The actor
+ *         eases to the point 2.0 from the spot that way (data_ov004_02254af8 is -2.0) while
+ *         animation 0x1a loops, and this console's actor claims the spot's place (main's
+ *         place_claim.h). Refused, state 2; given, and once the actor is there, state 0x25
+ *         (straight), 0x27 (way 1) or 0x26 (way 2), each asked for with the point 2.0 ahead and
+ *         the yaw turned so that the actor ends at the spot's yaw plus 0x8000;
+ *   0x26  as 0x27 with animation 0x22; 0x25 as 0x27 with animation 0x21 blended over 3 frames;
+ *   0x20  pushing the room object data_ov004_02259784 holds: once the animation is over, where
+ *         the object can move ahead and this console's actor is player 0 in a house's room, the
+ *         object moves and state 0x22 is asked for; else sound 0x6d the first time when only the
+ *         room's objects stop it, and while the stick still pushes ahead nothing more, else
+ *         state 0x1e;
+ *   0x21  pulling it the same way (backwards, the stick pulled back): animation 0x1e, then
+ *         state 0x23;
+ *   0x22  a step ahead with the object: animation 0x1f, the actor taken to the point 2.0 ahead
+ *         on leaving; at its end state 0x1e while A is held, else state 2;
+ *   0x23  a step back: animation 0x20, the actor kept by the walls from where the frame began
+ *         and taken to the point 2.0 behind on leaving; its end as 0x22's. */
+
+/* State 0x24's work and a request's arguments for it. */
+typedef struct FieldActorSpotApproach {
+    fx32 x;  /* 0x00: where the actor stands (the request: the spot) */
+    fx32 z;  /* 0x04 */
+    s16 yaw; /* 0x08 */
+    u8 way;  /* 0x0a: FieldActorSpotWay */
+} FieldActorSpotApproach;
+
+/* The work of states 0x22 and 0x23: where the step ends. */
+typedef struct FieldActorObjectStep {
+    fx32 x;
+    fx32 z;
+} FieldActorObjectStep;
+
+/* The work of states 0x20 and 0x21. */
+typedef struct FieldActorObjectMove {
+    u8 warned; /* the move was refused once (with sound 0x6d when only objects stopped it) */
+} FieldActorObjectMove;
+
+void FieldActorRoomStates_UpdateSpotEnterMinus(struct FieldActor *actor);
+void FieldActorRoomStates_EndSpotEnterMinus(struct FieldActor *actor);
+void FieldActorRoomStates_StepSpotEnterMinus(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotEnterMinus(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotEnterMinusMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotEnterMinus(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRoomStates_GetSpotEnterMinusSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw);
+void FieldActorRoomStates_PutSpotEnterMinusSaved(u8 *saved, int x, int z, int yaw);
+void FieldActorRoomStates_SetSpotEnterMinusWork(FieldActorSpotEnter *work, int x, int z, int yaw);
+int FieldActorRoomStates_RequestSpotEnterMinus(struct FieldActor *actor, const int *x, const int *z, const s16 *yaw,
+                                               int priority, s16 arg);
+int FieldActorRoomStates_RequestSpotEnterMinusAhead(struct FieldActor *actor, int priority, int arg);
+void FieldActorRoomStates_PutSpotEnterMinusArgs(FieldActorSpotEnter *args, int x, int z, int yaw);
+
+void FieldActorRoomStates_UpdateSpotEnterStraight(struct FieldActor *actor);
+void FieldActorRoomStates_EndSpotEnterStraight(struct FieldActor *actor);
+void FieldActorRoomStates_StepSpotEnterStraight(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotEnterStraight(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotEnterStraightMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotEnterStraight(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRoomStates_GetSpotEnterStraightSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw);
+void FieldActorRoomStates_PutSpotEnterStraightSaved(u8 *saved, int x, int z, int yaw);
+void FieldActorRoomStates_SetSpotEnterStraightWork(FieldActorSpotEnter *work, int x, int z, int yaw);
+int FieldActorRoomStates_RequestSpotEnterStraight(struct FieldActor *actor, const int *x, const int *z, const s16 *yaw,
+                                                  int priority, s16 arg);
+int FieldActorRoomStates_RequestSpotEnterStraightAhead(struct FieldActor *actor, int priority, int arg);
+void FieldActorRoomStates_PutSpotEnterStraightArgs(FieldActorSpotEnter *args, int x, int z, int yaw);
+
+void FieldActorRoomStates_UpdateSpotApproach(struct FieldActor *actor);
+void FieldActorRoomStates_RunSpotApproach(struct FieldActor *actor);
+void FieldActorRoomStates_StandSpotApproach(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotApproach(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotApproachMessage(struct FieldActor *actor, s16 arg);
+void FieldActorRoomStates_EnterSpotApproach(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRoomStates_GetSpotApproachSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw, u8 *way);
+void FieldActorRoomStates_PutSpotApproachSaved(u8 *saved, int x, int z, int yaw, u8 way);
+void FieldActorRoomStates_SetSpotApproachWork(FieldActorSpotApproach *work, int x, int z, s16 yaw, u8 way);
+int FieldActorRoomStates_RequestSpotApproach(struct FieldActor *actor, int x, int z, int yaw, u8 way, int priority, s16 arg);
+void FieldActorRoomStates_PutSpotApproachArgs(FieldActorSpotApproach *args, int x, int z, s16 yaw, u8 way);
+
+void FieldActorRoomStates_UpdatePullStep(struct FieldActor *actor);
+void FieldActorRoomStates_EndPullStep(struct FieldActor *actor);
+void FieldActorRoomStates_MovePullStep(struct FieldActor *actor);
+void FieldActorRoomStates_LeavePullStep(struct FieldActor *actor);
+void FieldActorRoomStates_PullStepMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterPullStep(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRoomStates_SetPullStepWork(FieldActorObjectStep *work, int x, int z);
+int FieldActorRoomStates_RequestPullStep(struct FieldActor *actor, int priority, int arg);
+
+void FieldActorRoomStates_UpdatePushStep(struct FieldActor *actor);
+void FieldActorRoomStates_EndPushStep(struct FieldActor *actor);
+void FieldActorRoomStates_LeavePushStep(struct FieldActor *actor);
+void FieldActorRoomStates_PushStepMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterPushStep(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRoomStates_SetPushStepWork(FieldActorObjectStep *work, int x, int z);
+int FieldActorRoomStates_RequestPushStep(struct FieldActor *actor, int priority, int arg);
+
+void FieldActorRoomStates_UpdatePull(struct FieldActor *actor);
+void FieldActorRoomStates_RunPull(struct FieldActor *actor);
+void FieldActorRoomStates_PullMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterPull(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActorRoomStates_RequestPull(struct FieldActor *actor, int priority, int arg);
+
+void FieldActorRoomStates_UpdatePush(struct FieldActor *actor);
+void FieldActorRoomStates_RunPush(struct FieldActor *actor);
 
 #endif
