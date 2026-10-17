@@ -1,6 +1,33 @@
 /* Helpers the PC's compiler calls from Native code on 32-bit x86 that the host's C runtime
  * does not provide under these names (they come from libgcc / compiler-rt elsewhere). */
 #include <stdint.h>
+#include <stdlib.h>
+#include "native_guest.h"
+
+void (*native_guest_enter_hook)(uint32_t index, uintptr_t caller, const uint32_t *args);
+uintptr_t (*native_guest_return_hook)(uint32_t index);
+uint32_t (*native_guest_slot_hook)(uint32_t owner, uint32_t offset, uint32_t size);
+
+uint32_t native_guest_stack_slot(uint32_t owner, uint32_t offset, uint32_t size)
+{
+    if (native_guest_slot_hook == NULL) {
+        abort();
+    }
+    return native_guest_slot_hook(owner, offset, size);
+}
+
+void native_guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
+{
+    native_guest_enter_hook(index, caller, args);
+}
+
+__attribute__((target("general-regs-only"))) uintptr_t native_guest_return(uint32_t index)
+{
+    if (native_guest_return_hook == NULL) {
+        abort();
+    }
+    return native_guest_return_hook(index);
+}
 
 /* Elsewhere libgcc has these; defined there, `a / b` below would call itself. */
 #ifdef _WIN32

@@ -29,7 +29,7 @@ import struct
 
 NATIVE = "native_"
 # Functions whose definition is renamed `native_body_<name>`: tools/native.py puts a wrapper
-# under `native_<name>` that widens their narrow result (see native.py, WIDEN).
+# under `native_<name>` that observes calls and widens narrow results.
 BODY: set[str] = set()
 
 # relocation types meaning "relative branch target"
@@ -143,7 +143,7 @@ def rewrite_coff(data: bytes, known: set[str], native: set[str], prefix: str,
             if p is None or p not in known:
                 continue
             if rtype == COFF_REL32 and p in native:
-                target = symidx if symidx in renamed else symbol_for(prefix + NATIVE + p)
+                target = symidx if symidx in renamed and p not in BODY else symbol_for(prefix + NATIVE + p)
             elif rtype == COFF_DIR32 and p in pmf:
                 target = symbol_for(prefix + PMF + p)
             else:
@@ -215,7 +215,7 @@ def rewrite_elf(data: bytes, known: set[str], native: set[str], pmf: set[str] = 
             if name not in known:
                 continue
             if rtype in (ELF_R_386_PC32, ELF_R_386_PLT32) and name in native:
-                target = symidx if symidx in renamed else symbol_for(NATIVE + name)
+                target = symidx if symidx in renamed and name not in BODY else symbol_for(NATIVE + name)
             elif rtype == ELF_R_386_32 and name in pmf:
                 target = symbol_for(PMF + name)
             else:

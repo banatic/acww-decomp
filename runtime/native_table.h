@@ -42,6 +42,8 @@ typedef struct NativeBody {
 
 extern const NativeBody native_bodies[];
 extern const uint32_t native_body_count;
+extern const NativeBody clean_bodies[];
+extern const uint32_t clean_body_count;
 /* A function's own static data in the ROM: writes there are its private state. */
 typedef struct NativePrivate {
     uint32_t function; /* DS address, bit 0 clear */

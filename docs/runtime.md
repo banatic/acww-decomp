@@ -144,6 +144,11 @@ callee takes, undefined behaviour, a source that relies on mwccarm's stack layou
 - The same recording run with Native for every function that has a source gives the same frames
   and the same RAM at chosen points as the Reference run.
 
+Observable reuse of ROM stack storage needs explicit PC-side effects. The house collider uses
+audited guest frame extents and an incoming-argument spill, with wrappers tracking both Native
+and Clean entries. See [the audited guest-stack boundary](native-guest-stack.md) for its proof
+guards, supported effects and tests.
+
 **M5: Clean, one subsystem at a time.** Done: every one of the 25,247 game functions has a Clean
 version in `clean/`. With all of them in place of their Native ones (`tools/run.py --clean`), the
 M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do eight

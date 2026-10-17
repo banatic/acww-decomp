@@ -9,6 +9,7 @@
 #include "host.h"
 #include "io.h"
 #include "memory.h"
+#include "native_guest.h"
 #include "native_os.h"
 #include "native_table.h"
 
@@ -58,6 +59,9 @@ typedef struct Fn {
     const NativeFunction *native;
     char *name;
     int params;         /* parameters with `this`, as the source declares them; -1 unknown */
+    int arg_words;      /* proven scalar/pointer argument words; -1 for an unknown ABI */
+    int guest_frame;    /* audited constant ROM call extent; -1 when unproved */
+    int guest_spill_arg, guest_spill_offset; /* audited entry spill; -1 when absent */
     uint64_t calls_in;  /* from the interpreter, run as Native */
     uint64_t calls_out; /* from Native code, run by the interpreter */
 } Fn;
@@ -76,6 +80,7 @@ static Fn *fns; /* sorted by address (bit 0 clear) */
 static int fn_count;
 static const NativeFunction **by_host; /* the Native functions by host address */
 static uint32_t by_host_count;
+static Fn **guest_functions; /* Native/Clean table index to policy function, including its module */
 
 /* One bit per halfword from ITCM to the end of main RAM: a function starts there. Every
  * branch target is looked up, so most must be rejected without a search. */
@@ -159,8 +164,9 @@ static int load_policy(const char *path)
     char line[512], module[32], status[4], name[400];
     unsigned address, size;
     while (fgets(line, sizeof(line), f) != NULL) {
-        int params = -1;
-        if (sscanf(line, "%x %31s %x %3s %399s %d", &address, module, &size, status, name, &params) < 5) {
+        int params = -1, arg_words = -1, guest_frame = -1, spill_arg = -1, spill_offset = -1;
+        if (sscanf(line, "%x %31s %x %3s %399s %d %d %d %d %d", &address, module, &size, status, name, &params,
+                   &arg_words, &guest_frame, &spill_arg, &spill_offset) < 5) {
             continue;
         }
         int m = module_index(module);
@@ -179,6 +185,10 @@ static int load_policy(const char *path)
         fn->status = status[0];
         fn->name = strdup(name);
         fn->params = params;
+        fn->arg_words = arg_words;
+        fn->guest_frame = guest_frame;
+        fn->guest_spill_arg = spill_arg;
+        fn->guest_spill_offset = spill_offset;
     }
     fclose(f);
     qsort(fns, (size_t) fn_count, sizeof(Fn), fn_compare);
@@ -386,6 +396,169 @@ typedef struct Stream {
 static Stream streams[MAX_STREAMS];
 static int stream_count;
 static int diverged;
+static uint32_t frame_now;
+
+/* Actual host calls carry only audited ROM frame extents. Unknown ancestors
+ * invalidate a slot calculation; no first-call estimate or Reference value
+ * substitutes for proof. Interpreter re-entry establishes a fresh anchor.
+ * IRQ and each host fiber have independent call stacks. */
+typedef struct GuestFrame {
+    uint32_t index;
+    uintptr_t caller;
+    uint32_t sp;
+    int valid;
+} GuestFrame;
+
+typedef struct GuestContext {
+    GuestFrame *frames;
+    unsigned depth, capacity, anchor_depth;
+    uint32_t anchor_sp;
+    Fn *anchor;
+} GuestContext;
+
+static GuestContext guest_contexts[MAX_STREAMS + 1];
+__attribute__((target("general-regs-only"))) static GuestContext *guest_current(void);
+static uint32_t guest_trace_targets[16];
+static unsigned guest_trace_count;
+
+static const NativeFunction *guest_entry(uint32_t index)
+{
+    return index < native_function_count ? &native_functions[index] : &clean_functions[index - native_function_count];
+}
+
+static void guest_trace(GuestContext *g, const uint32_t *args)
+{
+    Fn *f = guest_functions[g->frames[g->depth - 1].index];
+    unsigned target = 0;
+    while (target < guest_trace_count && guest_trace_targets[target] != (f->address & ~1u)) {
+        ++target;
+    }
+    if (target == guest_trace_count) {
+        return;
+    }
+    /* Log each exact path and interpreter SP once; bound diagnostics without
+     * merging paths on a hash collision or treating stack data as return PCs. */
+    static struct SeenPath {
+        uint32_t *indices, sp;
+        unsigned count;
+        Fn *anchor;
+    } seen[128];
+    static unsigned seen_count;
+    unsigned count = g->depth - g->anchor_depth;
+    for (unsigned p = 0; p < seen_count; ++p) {
+        if (seen[p].count != count || seen[p].sp != g->anchor_sp || seen[p].anchor != g->anchor) {
+            continue;
+        }
+        unsigned i = 0;
+        while (i < count && seen[p].indices[i] == g->frames[g->anchor_depth + i].index) {
+            ++i;
+        }
+        if (i == count) {
+            return;
+        }
+    }
+    if (seen_count == 128) {
+        fprintf(stderr, "native: guest trace exceeds 128 distinct paths\n");
+        exit(2);
+    }
+    struct SeenPath *path = &seen[seen_count++];
+    path->indices = malloc(count * sizeof(*path->indices));
+    if (path->indices == NULL) {
+        abort();
+    }
+    path->count = count;
+    path->sp = g->anchor_sp;
+    path->anchor = g->anchor;
+    printf("native: GUEST_PATH frame %u root %s sp %08x", frame_now,
+           g->anchor != NULL ? g->anchor->name : "unknown", g->anchor_sp);
+    for (unsigned i = 0; i < count; ++i) {
+        uint32_t index = g->frames[g->anchor_depth + i].index;
+        path->indices[i] = index;
+        Fn *entry = guest_functions[index];
+        printf(" -> %s:%08x", modules[entry->module].name, entry->address & ~1u);
+    }
+    printf(" body %08x valid %d args", g->frames[g->depth - 1].sp, g->frames[g->depth - 1].valid);
+    unsigned words = native_params(guest_entry(g->frames[g->depth - 1].index));
+    for (unsigned i = 0; i < words && i < 4; ++i) {
+        printf(" %08x", args[i]);
+    }
+    printf("\n");
+    fflush(stdout);
+}
+
+static void guest_stack_failure(GuestContext *g, const char *why)
+{
+    fprintf(stderr, "native: unproved guest stack (%s), frame %u, root %s sp %08x", why, frame_now,
+            g->anchor ? g->anchor->name : "unknown", g->anchor_sp);
+    for (unsigned i = g->anchor_depth; i < g->depth; ++i) {
+        Fn *f = guest_functions[g->frames[i].index];
+        fprintf(stderr, " -> %s[extent=%d]", f->name, f->guest_frame);
+    }
+    fprintf(stderr, "\n");
+    exit(7);
+}
+
+static uint32_t guest_stack_slot(uint32_t owner, uint32_t offset, uint32_t size)
+{
+    GuestContext *g = guest_current();
+    if (g->depth <= g->anchor_depth) {
+        guest_stack_failure(g, "no active owner");
+    }
+    GuestFrame *frame = &g->frames[g->depth - 1];
+    Fn *f = guest_functions[frame->index];
+    if (!frame->valid || (f->address & ~1u) != (owner & ~1u) || f->guest_frame < 0
+        || offset > (uint32_t) f->guest_frame || size > (uint32_t) f->guest_frame - offset) {
+        guest_stack_failure(g, "slot outside a proved frame");
+    }
+    return frame->sp + offset;
+}
+
+static void guest_enter(uint32_t index, uintptr_t caller, const uint32_t *args)
+{
+    GuestContext *g = guest_current();
+    if (index >= native_function_count + clean_function_count || guest_functions[index] == NULL) {
+        fprintf(stderr, "native: invalid guest function index %u\n", index);
+        exit(2);
+    }
+    if (g->depth == g->capacity) {
+        unsigned capacity = g->capacity ? 2 * g->capacity : 64;
+        GuestFrame *frames = realloc(g->frames, capacity * sizeof(*frames));
+        if (frames == NULL || capacity > 4096) {
+            abort();
+        }
+        g->frames = frames;
+        g->capacity = capacity;
+    }
+    Fn *f = guest_functions[index];
+    uint32_t sp = g->anchor_sp;
+    int valid = f == g->anchor;
+    if (g->depth > g->anchor_depth) {
+        sp = g->frames[g->depth - 1].sp;
+        valid = g->frames[g->depth - 1].valid;
+    }
+    valid = valid && f->guest_frame >= 0 && sp >= (uint32_t) f->guest_frame;
+    if (valid) {
+        sp -= (uint32_t) f->guest_frame;
+    }
+    g->frames[g->depth++] = (GuestFrame) {index, caller, sp, valid};
+    guest_trace(g, args);
+    if (f->guest_spill_arg >= 0) {
+        if (f->guest_spill_arg >= ARG_WORDS || f->guest_spill_offset < 0) {
+            guest_stack_failure(g, "invalid entry spill");
+        }
+        uint32_t slot = guest_stack_slot(f->address, (uint32_t) f->guest_spill_offset, 4);
+        bus_write(slot, 4, args[f->guest_spill_arg]);
+    }
+}
+
+__attribute__((target("general-regs-only"))) static uintptr_t guest_return(uint32_t index)
+{
+    GuestContext *g = guest_current();
+    if (g->depth == 0 || g->frames[g->depth - 1].index != index) {
+        abort();
+    }
+    return g->frames[--g->depth].caller;
+}
 
 static uint32_t stream_key(void)
 {
@@ -539,7 +712,6 @@ static int load_replay(const char *path)
 
 static uint32_t *hash_frames;
 static int hash_frame_count, hash_next;
-static uint32_t frame_now;
 static const char *dump_dir;
 
 /* Main RAM, ITCM and DTCM, with what cannot agree between a Native and a Reference run
@@ -738,7 +910,7 @@ static const char *caller_of(uint32_t host_return)
     }
     Fn *f = first_at(n->address);
     for (Fn *end = fns + fn_count; f != NULL && f < end && (f->address & ~1u) == (n->address & ~1u); f++) {
-        if (f->native == n) {
+        if (f->module == module_index(native_module(n))) {
             return f->name;
         }
     }
@@ -1198,7 +1370,21 @@ static int call_native(ArmCpu *c, void *user)
        (calls out, interrupts during their stalls) starts one step later. Count it now. */
     int inside = !c->hook_between;
     c->steps += (uint64_t) inside;
+    GuestContext *guest = guest_current();
+    unsigned saved_anchor_depth = guest->anchor_depth;
+    uint32_t saved_anchor_sp = guest->anchor_sp;
+    Fn *saved_anchor = guest->anchor;
+    guest->anchor_depth = guest->depth;
+    guest->anchor_sp = c->r[13];
+    guest->anchor = f;
     uint64_t v = host_invoke(f->native->host, args, ARG_WORDS, is_member(f->native));
+    if (guest->depth != guest->anchor_depth) {
+        fprintf(stderr, "native: unbalanced guest call stack at %s\n", f->name);
+        abort();
+    }
+    guest->anchor_depth = saved_anchor_depth;
+    guest->anchor_sp = saved_anchor_sp;
+    guest->anchor = saved_anchor;
     c->steps -= (uint64_t) inside;
     c->hook_between = !inside;
     depth--;
@@ -1361,8 +1547,17 @@ uint64_t native_call_reference(uint32_t target, const uint32_t *args, uint32_t s
            are where the Reference has them. */
         sp = same_sp;
     }
-    /* the arguments past the fourth, as many as fit below the interpreted caller's frame */
-    for (uint32_t i = 0; i < STACK_WORDS && sp + 4u * i < cpu->r[13]; i++) {
+    /* Write only proven arguments past r0-r3. Copying the unused host words
+       overwrites ROM stack residue that later game code can observe. Unknown
+       signatures retain the legacy extent until their ABI is audited. */
+    uint32_t stack_words = STACK_WORDS;
+    if (f != NULL && f->arg_words >= 0) {
+        stack_words = f->arg_words > 4 ? (uint32_t) f->arg_words - 4 : 0;
+        if (stack_words > STACK_WORDS) {
+            stack_words = STACK_WORDS;
+        }
+    }
+    for (uint32_t i = 0; i < stack_words && sp + 4u * i < cpu->r[13]; i++) {
         bus_write(sp + 4u * i, 4, words[4 + i]);
     }
     memcpy(cpu->r, words, 16);
@@ -1438,10 +1633,9 @@ uintptr_t native_fault_execute(uint32_t target, uint32_t *eax, uint32_t ecx)
 
 /* Hardware ---------------------------------------------------------------------------------- */
 
-/* The bodies of the functions with a widening wrapper, as entries of by_host (each a copy of
- * its function's entry with the body's address), and the function each stands for. */
+/* Each body's copy keeps the actual host start for fault-offset bounds. Its
+ * address and module still identify the original Native function. */
 static NativeFunction *body_entries;
-static const NativeFunction **body_functions;
 
 static const NativeFunction *native_by_host(uint32_t eip)
 {
@@ -1454,11 +1648,7 @@ static const NativeFunction *native_by_host(uint32_t eip)
             hi = mid;
         }
     }
-    const NativeFunction *n = lo ? by_host[lo - 1] : NULL;
-    if (n != NULL && n >= body_entries && n < body_entries + native_body_count) {
-        n = body_functions[n - body_entries];
-    }
-    return n;
+    return lo ? by_host[lo - 1] : NULL;
 }
 
 int native_fault_data(uint32_t eip, uint32_t address, uint32_t esp)
@@ -1579,6 +1769,12 @@ typedef struct Flow {
 
 static Flow flows[MAX_STREAMS];
 static int flow_count, flow_now;
+
+__attribute__((target("general-regs-only"))) static GuestContext *guest_current(void)
+{
+    int irq = (cpu->cpsr & ARM_MODE_MASK) == ARM_MODE_IRQ;
+    return &guest_contexts[irq ? MAX_STREAMS : flow_now];
+}
 
 static void fiber_main(void)
 {
@@ -1939,37 +2135,47 @@ int native_init(ArmCpu *c, const char *manifest)
         return -1;
     }
     /* the Native functions of the policy's functions, by DS address and module */
-    by_host = malloc(sizeof(*by_host) * (native_function_count + clean_function_count + native_body_count + 1));
+    uint32_t body_count = native_body_count + clean_body_count;
+    by_host = malloc(sizeof(*by_host) * (native_function_count + clean_function_count + body_count + 1));
+    guest_functions = calloc(native_function_count + clean_function_count, sizeof(*guest_functions));
     for (uint32_t i = 0; i < native_function_count + clean_function_count; i++) {
         /* a Clean function comes after its Native one and takes its place */
         const NativeFunction *n =
             i < native_function_count ? &native_functions[i] : &clean_functions[i - native_function_count];
-        if (n->info & CLEAN_STANDBY) {
-            continue; /* registered, not selected: patch_clean sends calls on */
-        }
         int m = module_index(native_module(n));
         Fn *f = first_at(n->address);
         for (; f && f < fns + fn_count && (f->address & ~1u) == (n->address & ~1u); f++) {
             if (f->module == m) {
-                f->native = n;
+                if (!(n->info & CLEAN_STANDBY)) {
+                    f->native = n;
+                }
+                guest_functions[i] = f;
             }
         }
         by_host[by_host_count++] = n;
     }
     /* the bodies: the code a fault or a return address is in belongs to the wrapper's function */
-    body_entries = calloc(native_body_count + 1, sizeof(*body_entries));
-    body_functions = calloc(native_body_count + 1, sizeof(*body_functions));
+    body_entries = calloc(body_count + 1, sizeof(*body_entries));
     uint32_t tables = by_host_count;
-    for (uint32_t b = 0; b < native_body_count; b++) {
-        for (uint32_t i = 0; i < tables; i++) {
-            if (by_host[i]->host == native_bodies[b].wrapper) {
-                body_entries[b] = *by_host[i];
-                body_entries[b].host = native_bodies[b].body;
-                body_functions[b] = by_host[i];
-                by_host[by_host_count++] = &body_entries[b];
-                break;
+    qsort(by_host, tables, sizeof(*by_host), host_compare);
+    for (uint32_t b = 0; b < body_count; b++) {
+        const NativeBody *body = b < native_body_count ? &native_bodies[b] : &clean_bodies[b - native_body_count];
+        uint32_t lo = 0, hi = tables;
+        while (lo < hi) {
+            uint32_t mid = (lo + hi) / 2;
+            if ((uintptr_t) by_host[mid]->host < (uintptr_t) body->wrapper) {
+                lo = mid + 1;
+            } else {
+                hi = mid;
             }
         }
+        if (lo == tables || by_host[lo]->host != body->wrapper) {
+            fprintf(stderr, "native: missing wrapper for body %u\n", b);
+            return -1;
+        }
+        body_entries[b] = *by_host[lo];
+        body_entries[b].host = body->body;
+        by_host[by_host_count++] = &body_entries[b];
     }
     qsort(by_host, by_host_count, sizeof(*by_host), host_compare);
     if (record != NULL && *record) {
@@ -1994,6 +2200,20 @@ int native_init(ArmCpu *c, const char *manifest)
             return -1;
         }
         flow_count = 1;
+        const char *trace = getenv("RUN_NATIVE_CALL_TRACE");
+        while (trace != NULL && *trace != 0 && guest_trace_count < 16) {
+            char *end;
+            uint32_t target = (uint32_t) strtoul(trace, &end, 16);
+            if (end == trace || (*end != 0 && *end != ',')) {
+                fprintf(stderr, "native: invalid RUN_NATIVE_CALL_TRACE address list\n");
+                return -1;
+            }
+            guest_trace_targets[guest_trace_count++] = target & ~1u;
+            trace = *end == ',' ? end + 1 : end;
+        }
+        native_guest_return_hook = guest_return;
+        native_guest_slot_hook = guest_stack_slot;
+        native_guest_enter_hook = guest_enter;
         io_unmapped = host_access;
         if (native_os_watchdog(10, making_progress, stuck_in) != 0) {
             fprintf(stderr, "native: cannot start the watchdog\n");

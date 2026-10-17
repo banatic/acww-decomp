@@ -81,6 +81,9 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 import diffcheck  # noqa: E402
 import native as native_build  # noqa: E402
+import native_abi  # noqa: E402
+import native_clean_profile  # noqa: E402
+import native_stack  # noqa: E402
 import objrewrite  # noqa: E402
 
 WINDOWS = os.name == "nt"
@@ -193,6 +196,12 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
     names = {m: int(i) for i, m in
              re.findall(r"native_module_name_(\d+):\s*\.asciz \"(\w+)\"", (NATIVE / "natives.s").read_text())}
     syms = C.SymbolTable(C.modules())
+    prefix = "_" if WINDOWS else ""
+    text = (NATIVE / "natives.s").read_text()
+    count_match = re.search(r"\bnative_function_count:\s*\.long (\d+)", text.replace("_native_function_count:", "native_function_count:"))
+    assert count_match is not None
+    native_count = int(count_match[1])
+    profiles = []
     lines = ['#include "diffcheck.h"', '#include "native_table.h"', "", "const uint32_t *diff_stack;", ""]
     rows = []
     for i, (test, module, address, bits) in enumerate(clean_checks(clean) if clean else []):
@@ -201,14 +210,15 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
             raise SystemExit(f"{test}: no function at {address:#010x} in {module}")
         ret = {0: "NATIVE_RET_VOID", 8: "NATIVE_RET_U8", 16: "NATIVE_RET_U16"}.get(bits, "NATIVE_RET_32")
         lines += [f"extern const DiffTest {test};",
-                  f"static uint32_t clean_{i}({', '.join(f'uint32_t a{k}' for k in range(16))})",
+                  f"uint32_t native_body_clean_{i}({', '.join(f'uint32_t a{k}' for k in range(16))})",
                   "{",
                   "    const uint32_t args[4] = {a0, a1, a2, a3};",
                   f"    const uint32_t stack[12] = {{{', '.join(f'a{k}' for k in range(4, 16))}}};",
                   "    diff_stack = stack;",
                   f"    return {test}.run_clean(args);",
-                  "}", ""]
-        rows.append(f"    {{0x{address:08x}u, 0x{fn.size:x}u, (const void *) clean_{i}, "
+                  "}", f"extern void native_clean_{i}(void);", ""]
+        profiles.append(native_clean_profile.Entry(f"clean_{i}", native_count + len(rows), alias=False))
+        rows.append(f"    {{0x{address:08x}u, 0x{fn.size:x}u, (const void *) native_clean_{i}, "
                     f"(uint32_t) {ret} | 4u << 4 | (uint32_t) {names[module]} << 16}},")
     # Functions registered with CLEAN_AS have their matching source's signature: the table calls
     # them as it calls the Native version, with its result kind and parameter count (a source
@@ -226,9 +236,17 @@ def write_clean_table(clean: str | None) -> pathlib.Path:
         if symbol not in selected:
             info |= 1 << 11
         lines += [f"extern void {function}(void);"]
+        profiles.append(native_clean_profile.Entry(function, native_count + len(rows), native_build.WIDEN.get(info & 15)))
         rows.append(f"    {{0x{address:08x}u, 0x{size:x}u, (const void *) {function}, 0x{info:08x}u}},")
     lines += ["const NativeFunction clean_functions[] = {", *(rows or ["    {0, 0, 0, 0},"]), "};",
               f"const uint32_t clean_function_count = {len(rows)};", ""]
+    if clean:
+        assembly = native_clean_profile.assembly(profiles, prefix)
+        if not WINDOWS:
+            assembly += ['\t.section .note.GNU-stack,"",@progbits']
+        (OUT / "clean-profile.s").write_text("\n".join(assembly) + "\n", newline="\n")
+    else:
+        lines += ["const NativeBody clean_bodies[1];", "const uint32_t clean_body_count = 0;", ""]
     path = OUT / "clean_table.c"
     path.write_text("\n".join(lines), newline="\n")
     return path
@@ -247,12 +265,13 @@ def build_clean(flags: list[str]) -> list[str]:
     # Each Clean function stays a function of its own, as each Native one is (one per source):
     # the runtime redirects a function at its entry, which a call inlined into its caller, or
     # two identical functions folded into one, would get round.
-    flags = [*flags, "-fno-inline"] + ([] if "clang" in " ".join(diffcheck.compiler()) else ["-fno-ipa-icf"])
+    flags = [*flags, "-fno-inline", "-ffunction-sections"] + ([] if "clang" in " ".join(diffcheck.compiler()) else ["-fno-ipa-icf"])
     # uninitialized locals filled as the Native objects' are (tools/native.py), so the memory
     # comparison tells the bytes a structure filled in part passes on from the game's values
     flags += ["-ftrivial-auto-var-init=pattern"]
     tree = OUT / "clean"
     objects = []
+    profiles = {r[1] for r in clean_registrations("all")}
     for src in sorted((C.ROOT / "clean").rglob("*.c")) + sorted((C.ROOT / "tests" / "clean").rglob("*.c")):
         obj = tree / src.relative_to(C.ROOT).with_suffix(".o")
         obj.parent.mkdir(parents=True, exist_ok=True)
@@ -261,9 +280,10 @@ def build_clean(flags: list[str]) -> list[str]:
                            capture_output=True, text=True)
         if p.returncode != 0:
             raise SystemExit(p.stdout + p.stderr)
-        data, _ = objrewrite.rewrite(obj.read_bytes(), known, native, prefix)
+        data, _ = native_clean_profile.rewrite(obj.read_bytes(), known, native, prefix, profiles)
         obj.write_bytes(data)
         objects.append(obj)
+    objects.append(compile_asm(OUT / "clean-profile.s", OUT / "clean-profile.o"))
     names = diffcheck.game_names(objects)
     # Through a response file, as the Native objects are: the paths would pass Windows's limit
     # on a command line.
@@ -409,6 +429,8 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     mods = C.modules()
     syms = C.SymbolTable(mods)
     table = natives_table()
+    for relative in native_stack.SOURCES:
+        native_stack.validate_source(relative, (C.SRC / relative).read_bytes().decode())
     kept = kept_reference()
     # what tools/native.py finds Native code cannot do (keep-reference.txt)
     found = NATIVE / "keep-reference.txt"
@@ -418,12 +440,15 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
     # every source's parameter count (with `this`), libraries' too: the Native run compares
     # the arguments of the calls Native code makes into the ROM's code
     params: dict[tuple[str, int], int] = {}
+    arg_words: dict[tuple[str, int], int] = {}
     helpers: dict[tuple[str, int], str] = {}
     for path in C.all_sources():
         src = C.parse_source(path)
         if src:
             _kind, count, member, _floating = native_build.signature(path, src.name)
             params[(src.module, src.address)] = count + int(member) if _kind != native_build.RET_SKIP or count else -1
+            words = native_abi.word_arguments(path.read_text(encoding="utf-8", errors="replace"), src.name)
+            arg_words[(src.module, src.address)] = words if words is not None else -1
         if src and (C.LIBS / "Runtime" in path.parents or (C.LIBS / "MSL" in path.parents and path.stem in HOST_NAMES)):
             helpers[(src.module, src.address)] = src.name
     helpers = compiler_helpers(helpers)
@@ -468,7 +493,15 @@ def write_policy(policy: str, clean: str | None = None) -> pathlib.Path:
             if (mod, s.address) in cleaned and s.name not in kept:
                 status = "C" if native and (native[1] & 15) == RET_SKIP else "N"
             counts[status] = counts.get(status, 0) + 1
-            rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)}\n")
+            frame, spill_arg, spill_offset = -1, -1, -1
+            if (mod, s.address) in native_stack.FRAMES:
+                if mod not in images:
+                    images[mod] = C.module_image(mod)
+                start = s.address - mods[mod]["base"]
+                frame = native_stack.frame_extent(mod, s.address, images[mod][start:start + s.size])
+                spill_arg, spill_offset = native_stack.SPILLS.get((mod, s.address), (-1, -1))
+            rows.append(f"{address:08x} {mod} {s.size:x} {status} {s.name} {params.get((mod, s.address), -1)} "
+                        f"{arg_words.get((mod, s.address), -1)} {frame} {spill_arg} {spill_offset}\n")
     path = OUT / "native-policy.txt"
     path.write_text("".join(rows), newline="\n")
     print(f"native policy {policy}{' with Clean' if clean else ''}: {counts.get('N', 0)} Native, {counts.get('C', 0)} Native for Native callers "

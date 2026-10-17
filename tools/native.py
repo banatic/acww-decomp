@@ -38,6 +38,8 @@ import objrewrite  # noqa: E402
 import native_layout  # noqa: E402
 import native_pmf  # noqa: E402
 import native_virtual  # noqa: E402
+import native_profile  # noqa: E402
+import native_stack  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -53,7 +55,8 @@ RELAX = ["-Wno-error=implicit-int", "-Wno-error=implicit-function-declaration",
 # Names the PC's own C library and compiler helpers provide (runtime/native_rt*): the game
 # has its own memcpy and so on in the ROM, with the same behaviour, but the host's must win.
 HOST_NAMES = {"memcmp", "memcpy", "memmove", "memset", "strcat", "strchr", "strcmp", "strcpy", "strlen",
-              "strncmp", "strncpy", "__udivdi3", "__umoddi3", "__divdi3", "__moddi3", "_alloca"}
+              "strncmp", "strncpy", "__udivdi3", "__umoddi3", "__divdi3", "__moddi3", "_alloca",
+              "native_guest_stack_slot"}
 
 # How a function returns its value, as runtime/native_table.h numbers them.
 RET_VOID, RET_U8, RET_S8, RET_U16, RET_S16, RET_32, RET_64, RET_SKIP = range(8)
@@ -82,7 +85,9 @@ def flags_for(path: pathlib.Path) -> list[str]:
     pic = [] if WINDOWS else ["-fno-pic", "-fno-pie"]
     # no stack canaries (Ubuntu's gcc adds them by default): the ROM's code has none, and some
     # of it writes past a local array, harmlessly on the DS and in the PC's frame alike
-    pic += ["-fno-stack-protector"]
+    # Separate functions so the assembler keeps inter-function branches as
+    # relocations, including tail jumps that must go through Native wrappers.
+    pic += ["-fno-stack-protector", "-ffunction-sections"]
     # structures as the DS lays them out (runtime/native.h): GCC's bit-fields on Windows too
     layout = ["-mno-ms-bitfields"] if WINDOWS else []
     relax = RELAX if "clang" in " ".join(compiler()) else []  # gcc only warns about these
@@ -211,13 +216,15 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
     member = native_pmf.translate(relative, text.decode("utf-8")) if relative in native_pmf.paths() else None
     virtual = native_virtual.translate(relative, text.decode("utf-8")) if relative in native_virtual.paths() else None
-    copies = [copy for copy in (layout, member, virtual) if copy is not None]
+    stack = native_stack.translate(relative, text.decode("utf-8")) if relative in native_stack.paths() else None
+    copies = [copy for copy in (layout, member, virtual, stack) if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
     if NARROWED.get(path) or copies:
         wide = copies[0] if copies else text.decode("utf-8")
         if member is not None:
             PMF_TRANSLATED.add(path)
+        if member is not None or stack is not None:
             flags = [*flags, "-I" + str(C.ROOT / "runtime")]
         if NARROWED.get(path):
             wide, done = protos.widen_declarations(wide, NARROWED[path])
@@ -232,6 +239,8 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     key.update((C.ROOT / "runtime" / "native.h").read_bytes())  # included first, by -include
     if member is not None:
         key.update((C.ROOT / "runtime" / "native_member.h").read_bytes())
+    if stack is not None:
+        key.update((C.ROOT / "runtime" / "native_guest.h").read_bytes())
     for inc in C.included_files(path):
         key.update(inc.read_bytes())
     stamp = obj.with_suffix(".key")
@@ -633,8 +642,9 @@ def main() -> None:
         kind = signature(path, src.name)[0]
         if kind in WIDEN and src.object_symbol in native:
             widen[src.object_symbol] = WIDEN[kind]
-    objrewrite.BODY = set(widen)
-    names_key = hashlib.sha1(" ".join(sorted(native) + ["|"] + sorted(known) + ["|"] + sorted(widen)).encode()
+    profile_names = {C.parse_source(path).object_symbol for path, _ in objects} & native
+    objrewrite.BODY = profile_names
+    names_key = hashlib.sha1(" ".join(sorted(native) + ["|"] + sorted(known) + ["|"] + sorted(profile_names)).encode()
                              + pathlib.Path(objrewrite.__file__).read_bytes()).hexdigest()
     # Sources whose member-function pointers only Native code builds and reads (pmf_unsafe):
     # their tables refer to the methods through native_pmf_ jumps at even addresses.
@@ -698,6 +708,7 @@ def main() -> None:
     lines += [f"native_module_name_{i}:\n\t.asciz \"{m}\"" for i, m in enumerate(modules)]
     lines += ["\t.p2align 2", f"\t.globl {PREFIX}native_functions", f"{PREFIX}native_functions:"]
     count = 0
+    profile_ids = {}
     for path, _ in objects:
         src = C.parse_source(path)
         host = PREFIX + (objrewrite.NATIVE if src.object_symbol in known else "") + src.object_symbol
@@ -707,11 +718,15 @@ def main() -> None:
         info = (kind | (min(params, 15) << 4) | (int(member) << 8) | (floating << 9)
                 | (modules.index(src.module) << 16))
         lines.append(f"\t.long 0x{src.address | (1 if src.thumb else 0):08x}, 0x{src.size:x}, {host}, 0x{info:08x}")
+        if src.object_symbol in profile_names:
+            assert src.object_symbol not in profile_ids, src.object_symbol
+            profile_ids[src.object_symbol] = count
         count += 1
+    assert set(profile_ids) == profile_names
     lines += [f"\t.globl {PREFIX}native_function_count", f"{PREFIX}native_function_count:", f"\t.long {count}"]
 
-    # the wrappers that widen narrow results: the arguments (16 words, more than any function
-    # takes) are copied down for the body, whose result is then extended
+    # Public entries observe calls when hooks are installed, and preserve the
+    # existing narrow-result ABI even when the hooks are disabled.
     lines += ["\t.text"]
     # the jumps the tables of member-function pointers hold (tools/objrewrite.py), at even
     # addresses: to the method's Native, or to its DS address (the ROM's code)
@@ -721,18 +736,14 @@ def main() -> None:
         method = thunk[len(objrewrite.PMF):]
         target = PREFIX + (objrewrite.NATIVE if method in native else "") + method
         lines += ["\t.p2align 4", f"\t.globl {PREFIX}{thunk}", f"{PREFIX}{thunk}:", f"\tjmp {target}"]
-    for name, extend in sorted(widen.items()):
-        wrapper, body = PREFIX + objrewrite.NATIVE + name, PREFIX + objrewrite.NATIVE + "body_" + name
-        lines += [f"\t.globl {wrapper}", f"{wrapper}:", "\tpushl %ebp", "\tmovl %esp, %ebp", "\tpushl %esi",
-                  "\tpushl %edi", "\tsubl $64, %esp", "\tleal 8(%ebp), %esi", "\tmovl %esp, %edi",
-                  "\tmovl $16, %ecx", "\trep movsl", f"\tcalll {body}", f"\t{extend}", "\taddl $64, %esp",
-                  "\tpopl %edi", "\tpopl %esi", "\tpopl %ebp", "\tretl"]
+    for name, index in sorted(profile_ids.items()):
+        lines += native_profile.wrapper(name, index, PREFIX, widen.get(name))
     lines += ["\t.data"]
     # each body with its wrapper, so the runtime can name the function a fault in a body is in
     lines += [f"\t.globl {PREFIX}native_bodies", f"{PREFIX}native_bodies:"]
     lines += [f"\t.long {PREFIX}{objrewrite.NATIVE}body_{name}, {PREFIX}{objrewrite.NATIVE}{name}"
-              for name in sorted(widen)] or ["\t.long 0, 0"]
-    lines += [f"\t.globl {PREFIX}native_body_count", f"{PREFIX}native_body_count:", f"\t.long {len(widen)}"]
+              for name in sorted(profile_ids)] or ["\t.long 0, 0"]
+    lines += [f"\t.globl {PREFIX}native_body_count", f"{PREFIX}native_body_count:", f"\t.long {len(profile_ids)}"]
 
     # Each function's own static data in the ROM (from tools/link.py's placement). The PC
     # version keeps its statics in its own memory, so writes there are not compared.
