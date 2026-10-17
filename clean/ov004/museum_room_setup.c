@@ -1,7 +1,8 @@
 /* The processes that set up the scenes with obj_etc_museum spots (museum_room_setup.h). */
 #include "museum_room_setup.h"
 
-#include "autoload_2/heap.h" /* Heap_AllocAuxZeroed, Heap_FreeAux */
+#include "autoload_2/approach.h" /* Math_AbsDiff16 */
+#include "autoload_2/heap.h"     /* Heap_AllocAuxZeroed, Heap_FreeAux */
 #include "clean.h"
 #include "etc_museum.h"
 #include "main/acre_map.h"
@@ -43,9 +44,6 @@ extern u8 data_ov004_0225f634[];
 extern void __register_global_object(void *object, void *destruct, void *record);
 /* The destructor of an item code (TrivialObject_DestructItemCode), as the game registers it. */
 extern void func_020051b0(void *item);
-
-/* A spot's position (the spot itself). */
-extern Vec3 *func_ov004_02245554(const MuseumSetupSpot *spot);
 
 /* func_ov004_022451c0 (class 83's slot 18): nothing to set up. */
 int MuseumSetupPlain_SetUpScene(void)
@@ -191,7 +189,7 @@ void MuseumSetup_SpawnSpots(void)
             const MuseumSetupSpot *spot = &row->spots[j];
             /* Each value is read by its own call, in this order. */
             int kind = MuseumSetupSpot_Kind(spot);
-            Vec3 *position = func_ov004_02245554(spot);
+            Vec3 *position = MuseumSetupSpot_Position(spot);
             int yaw = MuseumSetupSpot_Yaw(spot);
             int face_angle = (int) MuseumSetupSpot_FaceAngle(spot);
             s16 complete_message = MuseumSetupSpot_CompleteMessage(spot);
@@ -331,3 +329,82 @@ int MuseumSetupSpot_Yaw(const MuseumSetupSpot *spot)
     return spot->yaw;
 }
 CLEAN_AS(func_ov004_0224554c, MuseumSetupSpot_Yaw)
+
+/* func_ov004_02245554: a spot's position (the spot itself). */
+Vec3 *MuseumSetupSpot_Position(const MuseumSetupSpot *spot)
+{
+    return (Vec3 *) (uintptr_t) &spot->position;
+}
+CLEAN_AS(func_ov004_02245554, MuseumSetupSpot_Position)
+
+static_assert(sizeof(MuseumSetupSpotSource) == 0x18, "a spot's description");
+
+/* A quarter turn, in the game's 16-bit angles. */
+#define MUSEUM_SETUP_QUARTER_TURN 0x4000
+/* What is added to the widest angle between the spot's yaw and its directions. */
+#define MUSEUM_SETUP_FACE_MARGIN 0x1300
+
+/* FX_Div: the SDK's 20.12 fixed-point division. */
+extern int FX_Div(int numerator, int denominator);
+
+/* func_ov004_02245558: a spot built from its description (the position copied first). */
+MuseumSetupSpot *MuseumSetupSpot_Construct(MuseumSetupSpot *spot, const MuseumSetupSpotSource *source)
+{
+    Vec3 position = source->position;
+    MuseumSetupSpot_Init(spot, &position, source->directions, source->kind, source->complete_message, source->exhibits,
+                         source->count);
+    return spot;
+}
+CLEAN_AS(func_ov004_02245558, MuseumSetupSpot_Construct)
+
+/* func_ov004_02245590: a spot set up. Its yaw is the mean of the directions it is faced from
+ * (bit i of `directions` for the yaw i * 0x4000), turned round when there are two and the mean
+ * is a quarter turn or more from the last one (the two lie across angle 0, or face each other);
+ * its face angle is the widest angle between that yaw and one of the directions, plus 0x1300.
+ * QUIRK: with no direction the mean is FX_Div(0, 0), whatever the SDK answers. */
+void MuseumSetupSpot_Init(MuseumSetupSpot *spot, const Vec3 *position, int directions, int kind, short complete_message,
+                          const u8 *exhibits, unsigned char count)
+{
+    spot->position.x = position->x;
+    spot->position.y = position->y;
+    spot->position.z = position->z;
+    spot->kind = (u8) kind;
+    spot->complete_message = complete_message;
+    spot->exhibits = exhibits;
+    spot->count = count;
+
+    int sum = 0;
+    int n = 0;
+    int last = 0;
+    for (u32 i = 0; i < 4; i++) {
+        if (((directions >> i) & 1) != 0) {
+            sum += (int) (i * MUSEUM_SETUP_QUARTER_TURN);
+            last = (s16) (u16) (i * MUSEUM_SETUP_QUARTER_TURN);
+            n++;
+        }
+    }
+    /* The mean, in 20.12 fixed point and back (the yaw keeps 16 bits). */
+    spot->yaw = (s16) (FX_Div(sum << 12, n << 12) >> 12);
+    if (n == 2 && Math_AbsDiff16(last, spot->yaw) >= MUSEUM_SETUP_QUARTER_TURN) {
+        spot->yaw = (s16) (u16) (spot->yaw + 0x8000);
+    }
+
+    int widest = 0;
+    for (u32 i = 0; i < 4; i++) {
+        if (((directions >> i) & 1) != 0) {
+            int angle = Math_AbsDiff16((s16) (u16) (i * MUSEUM_SETUP_QUARTER_TURN), spot->yaw);
+            if (angle > widest) {
+                widest = angle;
+            }
+        }
+    }
+    spot->face_angle = (u32) (widest + MUSEUM_SETUP_FACE_MARGIN);
+}
+CLEAN_AS(func_ov004_02245590, MuseumSetupSpot_Init)
+
+/* func_ov004_02245648: a spot's destructor (the static initialiser registers it): nothing. */
+void MuseumSetupSpot_Destruct(MuseumSetupSpot *spot)
+{
+    (void) spot;
+}
+CLEAN_AS(func_ov004_02245648, MuseumSetupSpot_Destruct)

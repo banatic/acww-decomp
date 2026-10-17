@@ -1,6 +1,7 @@
 /* The room's objects as a whole (room_objects.h). */
 #include "room_objects.h"
 
+#include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/acre_tile.h"
 #include "main/actor.h"
@@ -56,15 +57,6 @@ static_assert(offsetof(MapActor, angle) == 0x8e, "actor angle");
 #define CELL_SHIFT 13
 #define HALF_CELL 0x1000
 
-/* The table of the room's objects and the grid of its cells. */
-extern void *func_ov004_0223ce84(void);
-extern RoomObject *func_ov004_0223cd58(void *objects, unsigned int index);
-extern int func_ov004_0223cd78(void *objects, RoomObject *object);
-extern int func_ov004_0223cda4(void *objects); /* the entries still free */
-extern void *func_ov004_0223cd50(void);
-extern RoomObject *func_ov004_0223cc10(void *grid, int x, int z, int layer);
-extern RoomObject *func_ov004_0223cbe8(void *grid, const Vec3 *point, int layer);
-
 /* The town's map, the room being its only acre. */
 extern AcreMap *data_021c80bc;
 
@@ -111,7 +103,7 @@ extern int func_ov004_02211280(RoomObject *object);
 
 static RoomObject *object_of(unsigned int index)
 {
-    return func_ov004_0223cd58(func_ov004_0223ce84(), index);
+    return RoomObjects_At(RoomObjects_Table(), index);
 }
 
 /* func_ov004_0223b334: 1. */
@@ -144,7 +136,7 @@ CLEAN_AS(func_ov004_0223b33c, RoomObjects_Stub0223b33c)
 /* func_ov004_0223b340: RoomObjects_RequestOn for the object on the floor at cell (x, z). */
 int RoomObjects_RequestOnAt(int x, int z)
 {
-    return RoomObjects_RequestOn(func_ov004_0223cc10(func_ov004_0223cd50(), x, z, ROOM_OBJECTS_LAYER_FLOOR));
+    return RoomObjects_RequestOn(RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, ROOM_OBJECTS_LAYER_FLOOR));
 }
 CLEAN_AS(func_ov004_0223b340, RoomObjects_RequestOnAt)
 
@@ -168,7 +160,7 @@ CLEAN_AS(func_ov004_0223b364, RoomObjects_RequestOn)
 /* func_ov004_0223b39c: RoomObjects_RequestOff for the object on the floor at cell (x, z). */
 int RoomObjects_RequestOffAt(int x, int z)
 {
-    return RoomObjects_RequestOff(func_ov004_0223cc10(func_ov004_0223cd50(), x, z, ROOM_OBJECTS_LAYER_FLOOR));
+    return RoomObjects_RequestOff(RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, ROOM_OBJECTS_LAYER_FLOOR));
 }
 CLEAN_AS(func_ov004_0223b39c, RoomObjects_RequestOffAt)
 
@@ -253,7 +245,7 @@ CLEAN_AS(func_ov004_0223bac8, RoomObjects_SetVanishPoint)
  * gone or has shrunk below 0.3 (its scale_x), else NULL. */
 const Vec3 *RoomObjects_VanishPoint(int index)
 {
-    RoomObject *object = func_ov004_0223cd58(func_ov004_0223ce84(), (unsigned int) index);
+    RoomObject *object = RoomObjects_At(RoomObjects_Table(), (unsigned int) index);
     if (object == NULL || object->scale_x < 0x4cd) {
         return &data_ov004_0225967c;
     }
@@ -365,7 +357,7 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
             if (Vec_DistanceXZ(position, &centre) > data_ov004_02247cec[layer & 1]) {
                 continue;
             }
-            RoomObject *object = func_ov004_0223cc10(func_ov004_0223cd50(), cell_x, cell_z, (u8) layer);
+            RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), cell_x, cell_z, (u8) layer);
             *x = cell_x;
             *z = cell_z;
             if (object != NULL && object->vtable->is_idle(object) != 0 && RoomObject_HasItemsOnTop(object) == 0) {
@@ -377,7 +369,7 @@ int RoomObjects_FindAhead(int *x, int *z, const Vec3 *position, int angle, ItemC
                 if (item_copy != NULL) {
                     *item_copy = ItemCode_MakeVariant(RoomObject_Number(object), 0);
                 }
-                return func_ov004_0223cd78(func_ov004_0223ce84(), object);
+                return RoomObjects_IndexOf(RoomObjects_Table(), object);
             }
             if (layer == ROOM_OBJECTS_LAYER_ON_TOP && object == NULL) {
                 int acre_x = cell_x >> 4;
@@ -421,10 +413,10 @@ CLEAN_AS(func_ov004_0223c130, RoomObjects_Capacity)
 int RoomObjects_PickUnk778(int key)
 {
     unsigned int count = (unsigned int) RoomObjects_Capacity();
-    void *objects = func_ov004_0223ce84();
+    RoomObject **objects = RoomObjects_Table();
     int matches = 0;
     for (unsigned int i = 0; i < count; i++) {
-        RoomObject *object = func_ov004_0223cd58(objects, i);
+        RoomObject *object = RoomObjects_At(objects, i);
         if (object != NULL && object->unk_778 != -1 && object->unk_774 == key) {
             matches++;
         }
@@ -435,7 +427,7 @@ int RoomObjects_PickUnk778(int key)
     int pick = (int) MainRandom_Below(matches);
     int seen = 0;
     for (unsigned int i = 0; i < count; i++) {
-        RoomObject *object = func_ov004_0223cd58(objects, i);
+        RoomObject *object = RoomObjects_At(objects, i);
         if (object != NULL && object->unk_778 != -1 && object->unk_774 == key) {
             if (seen == pick) {
                 return object->unk_778;
@@ -543,7 +535,7 @@ CLEAN_AS(func_ov004_0223c310, RoomObjects_SyncKind3AOn)
 /* The object on the floor under `position` is none or of kind 0x26 (RoomObject.unk_780). */
 static int floor_is_plain(Vec3 *position)
 {
-    RoomObject *below = func_ov004_0223cbe8(func_ov004_0223cd50(), position, ROOM_OBJECTS_LAYER_FLOOR);
+    RoomObject *below = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), position, ROOM_OBJECTS_LAYER_FLOOR);
     return below == NULL || below->unk_780 == KIND_780_ROOM_FLOOR;
 }
 
@@ -637,7 +629,7 @@ CLEAN_AS(func_ov004_0223c510, RoomObjects_CheckStepXPlus)
  * `angle` with `offset` (RoomObject02253058_CheckStep), when it is of kind 0x37; else 0. */
 int RoomObjects_CheckStep(Vec3 *point, int angle, Vec3 *offset)
 {
-    RoomObject *object = func_ov004_0223cbe8(func_ov004_0223cd50(), point, ROOM_OBJECTS_LAYER_FLOOR);
+    RoomObject *object = RoomObjects_GridObjectAtPoint(RoomObjects_Grid(), point, ROOM_OBJECTS_LAYER_FLOOR);
     if (object != NULL && object->unk_00C == KIND_00C_STEP) {
         return RoomObject02253058_CheckStep((RoomObject02253058 *) (void *) object, point, angle, offset);
     }
@@ -656,7 +648,7 @@ CLEAN_AS(func_ov004_0223c5a4, RoomObjects_HeightAtPoint)
  * (with its top height unless unk_78C is 1); else the ground's at the cell's centre. */
 fx32 RoomObjects_HeightAtCell(int x, int z)
 {
-    RoomObject *object = func_ov004_0223cc10(func_ov004_0223cd50(), x, z, ROOM_OBJECTS_LAYER_FLOOR);
+    RoomObject *object = RoomObjects_GridObjectAt(RoomObjects_Grid(), x, z, ROOM_OBJECTS_LAYER_FLOOR);
     if (object != NULL) {
         if (object->unk_78C == 1) {
             return object->position.y;
@@ -694,7 +686,7 @@ CLEAN_AS(func_ov004_0223c62c, RoomObjects_Place)
  * (RoomSync_ToggleSwitchAtPoint). */
 int RoomObjects_Spawn(u32 placement)
 {
-    if (func_ov004_0223cda4(func_ov004_0223ce84()) == 0) {
+    if (RoomObjects_FreeCount(RoomObjects_Table()) == 0) {
         return 0;
     }
     int kind = FurnitureInfo_DmaUnk18((int) Placement_Number(placement));
@@ -712,3 +704,307 @@ int RoomObjects_Spawn(u32 placement)
     return Actor_Spawn(profile, (int) placement, NULL, NULL, data_ov004_022595c0);
 }
 CLEAN_AS(func_ov004_0223c660, RoomObjects_Spawn)
+
+/* ---- The grid of the cells: for each of the two layers, 16 rows (z) of 16 cells (x), each
+ * holding the index of the object on it in the table of the room's objects, or
+ * ROOM_OBJECTS_NO_INDEX. Cell coordinates are taken modulo 16, the layer modulo 2. */
+
+static u8 *grid_cell(u8 *grid, int x, int z, int layer)
+{
+    return grid + ((layer & 1) << 8) + ((z & 0xf) << 4) + (x & 0xf);
+}
+
+/* func_ov004_0223cbe8: RoomObjects_GridObjectAt of the cell of `point` (Position_Tile). */
+RoomObject *RoomObjects_GridObjectAtPoint(u8 *grid, const Vec3 *point, int layer)
+{
+    int x;
+    int z;
+    Position_Tile(&x, &z, (const Position *) (const void *) point);
+    return RoomObjects_GridObjectAt(grid, x, z, layer);
+}
+CLEAN_AS(func_ov004_0223cbe8, RoomObjects_GridObjectAtPoint)
+
+/* func_ov004_0223cc10: the object on cell (x, z) of `layer`, NULL when the cell is empty, its
+ * index is past the table's entries or the entry is empty.
+ * QUIRK: the entry is looked up twice. */
+RoomObject *RoomObjects_GridObjectAt(u8 *grid, int x, int z, int layer)
+{
+    u8 *cell = grid_cell(grid, x, z, layer);
+    u8 index = *cell;
+    if (index != ROOM_OBJECTS_NO_INDEX && (unsigned int) index < (unsigned int) RoomObjects_Capacity() &&
+        RoomObjects_At(RoomObjects_Table(), index) != NULL) {
+        return RoomObjects_At(RoomObjects_Table(), *cell);
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov004_0223cc10, RoomObjects_GridObjectAt)
+
+/* func_ov004_0223cc5c: the index on cell (x, z) of `layer`, -1 when it is empty. */
+int RoomObjects_GridIndexAt(u8 *grid, int x, int z, int layer)
+{
+    u8 index = *grid_cell(grid, x, z, layer);
+    if (index == ROOM_OBJECTS_NO_INDEX) {
+        return -1;
+    }
+    return index;
+}
+CLEAN_AS(func_ov004_0223cc5c, RoomObjects_GridIndexAt)
+
+/* func_ov004_0223cc80: empties cell (x, z) of `layer` when `object` is in the table of the
+ * room's objects; whether it is.
+ * QUIRK: the cell is emptied whatever object it holds. */
+int RoomObjects_GridClearCell(u8 *grid, RoomObject *object, int x, int z, u8 layer)
+{
+    u8 *cell = grid_cell(grid, x, z, layer);
+    if (RoomObjects_IndexOf(RoomObjects_Table(), object) != -1) {
+        *cell = ROOM_OBJECTS_NO_INDEX;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0223cc80, RoomObjects_GridClearCell)
+
+/* func_ov004_0223ccc4: puts the index of `object` on cell (x, z) of `layer` when it is in the
+ * table of the room's objects; whether it is. */
+int RoomObjects_GridSetCell(u8 *grid, RoomObject *object, int x, int z, u8 layer)
+{
+    u8 *cell = grid_cell(grid, x, z, layer);
+    int index = RoomObjects_IndexOf(RoomObjects_Table(), object);
+    if (index != -1) {
+        *cell = (u8) index;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0223ccc4, RoomObjects_GridSetCell)
+
+/* func_ov004_0223cd04: empties every cell of both layers. */
+void RoomObjects_GridClear(u8 *grid)
+{
+    for (int layer = 0; layer < ROOM_OBJECTS_LAYERS; layer++) {
+        for (int z = 0; z < ROOM_OBJECTS_CELLS; z++) {
+            for (int x = 0; x < ROOM_OBJECTS_CELLS; x++) {
+                *grid_cell(grid, x, z, layer) = ROOM_OBJECTS_NO_INDEX;
+            }
+        }
+    }
+}
+CLEAN_AS(func_ov004_0223cd04, RoomObjects_GridClear)
+
+/* func_ov004_0223cd3c: the C++ destructor of the grid; does nothing. */
+void RoomObjects_GridDestruct(void *grid)
+{
+    (void) grid;
+}
+CLEAN_AS(func_ov004_0223cd3c, RoomObjects_GridDestruct)
+
+/* func_ov004_0223cd40: the C++ constructor of the grid, which empties it. */
+u8 *RoomObjects_GridConstruct(u8 *grid)
+{
+    RoomObjects_GridClear(grid);
+    return grid;
+}
+CLEAN_AS(func_ov004_0223cd40, RoomObjects_GridConstruct)
+
+/* The grid of the room's cells. */
+extern u8 data_ov004_02259804[ROOM_OBJECTS_LAYERS * ROOM_OBJECTS_CELLS * ROOM_OBJECTS_CELLS];
+
+/* func_ov004_0223cd50 */
+u8 *RoomObjects_Grid(void)
+{
+    return data_ov004_02259804;
+}
+CLEAN_AS(func_ov004_0223cd50, RoomObjects_Grid)
+
+/* ---- The table of the room's objects: ROOM_OBJECTS_TABLE_SIZE entries, of which the scene uses
+ * RoomObjects_Capacity, NULL when free. The searches below ask RoomObjects_Capacity again before
+ * each entry. */
+
+/* func_ov004_0223cd58: the object of entry `index`, NULL past the scene's entries. */
+RoomObject *RoomObjects_At(RoomObject **table, unsigned int index)
+{
+    if (index < (unsigned int) RoomObjects_Capacity()) {
+        return table[index];
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov004_0223cd58, RoomObjects_At)
+
+/* func_ov004_0223cd78: the entry holding `object`, -1 for none. */
+int RoomObjects_IndexOf(RoomObject **table, RoomObject *object)
+{
+    for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
+        if (table[i] == object) {
+            return (int) i;
+        }
+    }
+    return -1;
+}
+CLEAN_AS(func_ov004_0223cd78, RoomObjects_IndexOf)
+
+/* func_ov004_0223cda4: the entries still free. */
+int RoomObjects_FreeCount(RoomObject **table)
+{
+    int capacity = RoomObjects_Capacity();
+    return capacity - RoomObjects_UsedCount(table);
+}
+CLEAN_AS(func_ov004_0223cda4, RoomObjects_FreeCount)
+
+/* func_ov004_0223cdc0: the entries holding an object. */
+int RoomObjects_UsedCount(RoomObject **table)
+{
+    int count = 0;
+    for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
+        if (table[i] != NULL) {
+            count++;
+        }
+    }
+    return count;
+}
+CLEAN_AS(func_ov004_0223cdc0, RoomObjects_UsedCount)
+
+/* func_ov004_0223cde8: frees the entry of `object`; whether there was one. */
+int RoomObjects_Remove(RoomObject **table, RoomObject *object)
+{
+    for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
+        if (table[i] == object) {
+            table[i] = NULL;
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0223cde8, RoomObjects_Remove)
+
+/* func_ov004_0223ce18: puts `object` in the first free entry unless it has one already; whether
+ * it is in the table. */
+int RoomObjects_Add(RoomObject **table, RoomObject *object)
+{
+    for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
+        if (table[i] == object) {
+            return 1;
+        }
+    }
+    for (unsigned int i = 0; i < (unsigned int) RoomObjects_Capacity(); i++) {
+        if (table[i] == NULL) {
+            table[i] = object;
+            return 1;
+        }
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0223ce18, RoomObjects_Add)
+
+/* func_ov004_0223ce60: frees every entry of the table (all ROOM_OBJECTS_TABLE_SIZE). */
+void RoomObjects_TableClear(RoomObject **table)
+{
+    for (u32 i = 0; i < ROOM_OBJECTS_TABLE_SIZE; i++) {
+        table[i] = NULL;
+    }
+}
+CLEAN_AS(func_ov004_0223ce60, RoomObjects_TableClear)
+
+/* func_ov004_0223ce70: the C++ destructor of the table; does nothing. */
+void RoomObjects_TableDestruct(void *table)
+{
+    (void) table;
+}
+CLEAN_AS(func_ov004_0223ce70, RoomObjects_TableDestruct)
+
+/* func_ov004_0223ce74: the C++ constructor of the table, which frees every entry. */
+RoomObject **RoomObjects_TableConstruct(RoomObject **table)
+{
+    RoomObjects_TableClear(table);
+    return table;
+}
+CLEAN_AS(func_ov004_0223ce74, RoomObjects_TableConstruct)
+
+/* The table of the room's objects. */
+extern RoomObject *data_ov004_02259714[ROOM_OBJECTS_TABLE_SIZE];
+
+/* func_ov004_0223ce84 */
+RoomObject **RoomObjects_Table(void)
+{
+    return data_ov004_02259714;
+}
+CLEAN_AS(func_ov004_0223ce84, RoomObjects_Table)
+
+/* ---- The room's heap, where the room's objects are made (room_object_life.h): an expanded heap
+ * of one block for each entry of the table, made by the room's start and deleted by its end. */
+
+/* The size of a block of the room's heap, and the room taken in the heap for each. */
+#define ROOM_OBJECTS_BLOCK_SIZE 0x8da
+#define ROOM_OBJECTS_HEAP_PER_BLOCK 0x93e
+
+/* The heap the room's heap is made in. */
+extern Heap *data_021fbe94;
+
+/* func_ov004_0223ce8c: gives `block` back to the room's heap (Heap_Free). */
+void RoomObjects_HeapFree(Heap **heap, void *block)
+{
+    Heap_Free(*heap, block);
+}
+CLEAN_AS(func_ov004_0223ce8c, RoomObjects_HeapFree)
+
+/* func_ov004_0223ce98: a block of the room's heap (Heap_Alloc), NULL when there is none left.
+ * QUIRK: `size` is not used: a block is always ROOM_OBJECTS_BLOCK_SIZE bytes. */
+void *RoomObjects_HeapAlloc(Heap **heap, int size)
+{
+    (void) size;
+    return Heap_Alloc(*heap, ROOM_OBJECTS_BLOCK_SIZE);
+}
+CLEAN_AS(func_ov004_0223ce98, RoomObjects_HeapAlloc)
+
+/* func_ov004_0223cea8: deletes the room's heap if there is one (Heap_Delete), and forgets it. */
+void RoomObjects_HeapDelete(Heap **heap)
+{
+    if (*heap != NULL) {
+        Heap_Delete(*heap);
+    }
+    RoomObjects_HeapForget(heap);
+}
+CLEAN_AS(func_ov004_0223cea8, RoomObjects_HeapDelete)
+
+/* func_ov004_0223cec4: unless there is one, makes the room's heap for `count` blocks
+ * (ExpHeap_Create in data_021fbe94, NULL when it cannot); whether it was made now. */
+int RoomObjects_HeapCreate(Heap **heap, int count)
+{
+    if (*heap == NULL) {
+        *heap = ExpHeap_Create(ROOM_OBJECTS_HEAP_PER_BLOCK * count, data_021fbe94);
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_0223cec4, RoomObjects_HeapCreate)
+
+/* func_ov004_0223cef4 */
+void RoomObjects_HeapForget(Heap **heap)
+{
+    *heap = NULL;
+}
+CLEAN_AS(func_ov004_0223cef4, RoomObjects_HeapForget)
+
+/* func_ov004_0223cefc: the C++ destructor of the heap's holder; does nothing. */
+void RoomObjects_HeapDestruct(void *heap)
+{
+    (void) heap;
+}
+CLEAN_AS(func_ov004_0223cefc, RoomObjects_HeapDestruct)
+
+/* func_ov004_0223cf00: the C++ constructor of the heap's holder: no heap. */
+Heap **RoomObjects_HeapConstruct(Heap **heap)
+{
+    RoomObjects_HeapForget(heap);
+    return heap;
+}
+CLEAN_AS(func_ov004_0223cf00, RoomObjects_HeapConstruct)
+
+/* The room's heap, NULL while there is none. */
+extern Heap *data_ov004_022595c4;
+
+/* func_ov004_0223cf10 */
+Heap **RoomObjects_Heap(void)
+{
+    return &data_ov004_022595c4;
+}
+CLEAN_AS(func_ov004_0223cf10, RoomObjects_Heap)

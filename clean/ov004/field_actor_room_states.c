@@ -1,18 +1,32 @@
 /* More of overlay 4's states of the field actor (field_actor_room_states.h). */
 #include "field_actor_room_states.h"
 
+#include <stdint.h>
+
+#include "autoload_2/vector.h"
 #include "clean.h"
+#include "main/actor.h"
 #include "main/angle_sector.h"
+#include "main/collision_query.h"
 #include "main/effect_system.h"
 #include "main/event_queue.h"
 #include "main/field_actor.h"
 #include "main/field_actor_parts.h"
+#include "main/field_collision.h"
 #include "main/frame_ctrl.h"
+#include "main/message_receiver.h"
+#include "main/obj_020dd33c.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
+#include "main/scene_claim.h"
+#include "main/scene_exit.h"
+#include "main/scene_object_base.h"
+#include "main/scene_query.h"
+#include "main/scene_tables.h"
 #include "main/session.h"
 #include "ov004/field_actor_rooms.h"
 #include "ov004/rmo_telephone.h"
+#include "ov004/room_objects.h"
 
 static_assert(offsetof(FieldActor, anim) == 0x2d0, "animation control");
 static_assert(offsetof(FieldActor, anim.end) == 0x2d4, "animation length");
@@ -611,3 +625,996 @@ int FieldActorRoomStates_RequestSequence8A(FieldActor *actor, int priority, int 
     return fars_request(actor, FARS_SEQUENCE_8A, priority, arg);
 }
 CLEAN_AS(func_ov004_02226d14, FieldActorRoomStates_RequestSequence8A)
+
+/* ---- The states around the exits, the chests and the item shown */
+
+static_assert(offsetof(FieldActor, receiver) == 0xec, "receiver");
+static_assert(offsetof(FieldActor, receiver_unk_1E) == 0x10a, "receiver's byte 0x1e");
+static_assert(offsetof(FieldActor, link) == 0x12c, "receiver's link");
+static_assert(offsetof(FieldActor, anim.speed) == 0x2e0, "animation speed");
+static_assert(offsetof(FieldActor, animation) == 0x704, "animation");
+static_assert(offsetof(FieldActor, player) == 0x800, "player");
+static_assert(offsetof(FieldActor, item) == 0x820, "item");
+static_assert(offsetof(FieldActor, unk_822) == 0x822, "0x822");
+static_assert(offsetof(FieldActor, saved) == 0x8f0, "saved");
+static_assert(offsetof(Actor, last_position) == 0x68, "last position");
+static_assert(sizeof(FieldActorExitWalk) <= sizeof(FieldActorWork), "state 0x40's work");
+static_assert(offsetof(FieldActorExitWalk, x) == 0x08, "x");
+static_assert(offsetof(FieldActorExitWalk, phase) == 0x10, "phase");
+static_assert(sizeof(FieldActorExitWalkArgs) <= sizeof(((StateRequest *) 0)->payload), "state 0x40's arguments");
+static_assert(sizeof(FieldActorItemOutArgs) <= sizeof(((StateRequest *) 0)->payload), "state 0x36's arguments");
+static_assert(offsetof(FieldActorItemOutArgs, kind) == 0x08, "kind");
+static_assert(offsetof(FieldActorItemOutArgs, second) == 0x0c, "second");
+
+#define FARS_AT_CHEST 0x2e
+#define FARS_CHEST_CLOSE 0x2f
+#define FARS_ITEM_OUT 0x36
+#define FARS_ITEM_BACK 0x37
+#define FARS_EXIT_WALK 0x40
+#define FARS_EXIT_RISE 0x41
+#define FARS_EXIT_SINK 0x42
+#define FARS_FADE_IN_43 0x43
+#define FARS_FADE_IN 0x44
+
+/* The priority the message handlers of states 0x41 to 0x44 ask for their state with. */
+#define FARS_MESSAGE_PRIORITY 9
+
+/* The animations: standing (loops), walking, the fade-ins of states 0x43 and 0x44, through an
+ * exit rising and sinking, the item, the chests' first closing and looking ones. */
+#define FARS_ANIM_STAND 0
+#define FARS_ANIM_WALK 1
+#define FARS_ANIM_FADE_IN_43 0x40
+#define FARS_ANIM_FADE_IN 0x41
+#define FARS_ANIM_EXIT_RISE 0x3e
+#define FARS_ANIM_EXIT_SINK 0x3f
+#define FARS_ANIM_ITEM 0x2e
+#define FARS_ANIM_CHEST_CLOSE 0x38
+#define FARS_ANIM_AT_CHEST 0x3b
+#define FARS_CHESTS 3
+
+/* The frames from which the models fade out (by 6 to alpha 0) and the exit is taken. */
+#define FARS_EXIT_RISE_FADE_FRAME 6
+#define FARS_EXIT_SINK_FADE_FRAME 9
+#define FARS_EXIT_FADE_STEP 6
+#define FARS_EXIT_TAKE_FRAME 5
+
+/* State 0x40: the door kinds, how far beyond the door's point kind 2 stands (1.0) and the yaw
+ * of kind 0; the walk's animation rate (0.23 of the distance moved, times 4), the move's
+ * radius and flags, the height of the rise or sink near the point (at most 6/32 of 1.0). */
+#define FARS_DOOR_PLAIN 0
+#define FARS_DOOR_RISE 1
+#define FARS_DOOR_SINK 2
+#define FARS_DOOR_BEYOND 0x1000
+#define FARS_DOOR_PLAIN_YAW (-0x8000)
+#define FARS_WALK_ANIM_FACTOR 0x3ae1
+#define FARS_WALK_RADIUS 0xfd7
+#define FARS_WALK_FLAGS 0xf
+#define FARS_WALK_NEAR 0x1000
+#define FARS_WALK_SLOPE 6
+/* Its flags: 3 on entering it, 0x18 (the walk keeps the actor's x) for a claimed exit, 0x11
+ * while the refusal's talk holds the receiver. */
+#define FARS_FLAG_EXIT 3
+#define FARS_FLAG_CLAIMED 0x18
+#define FARS_FLAG_TALK 0x11
+/* The refusal's talk: the receiver's byte 0x1e, and the walk back (state 0x6f) at 0x333,
+ * priority 5. */
+#define FARS_TALK_KIND 0x15
+#define FARS_WALK_BACK_ACCEL 0x333
+#define FARS_WALK_BACK_PRIORITY 5
+
+/* States 0x36 and 0x37: the scene with their sounds, the sounds, the frame of 0x63; state 0x10
+ * asked for at their end (3, priority 5); the item that makes the byte at 0x8eb 4. */
+#define FARS_ITEM_SCENE 9
+#define FARS_ITEM_OUT_SOUND 0x4f
+#define FARS_ITEM_OUT_LATE_SOUND 0x63
+#define FARS_ITEM_OUT_LATE_FRAME 8
+#define FARS_ITEM_BACK_SOUND 0x52
+#define FARS_ITEM_END_FRAMES 3
+#define FARS_ITEM_END_PRIORITY 5
+#define FARS_ITEM_MARKED 0x1379
+#define FARS_ITEM_MARK 4
+#define FARS_ITEM_START_MODE 1
+
+/* Animations played backwards (flags 3) at one frame a step from their last whole frame. */
+#define FARS_BACK_FLAGS 3
+#define FARS_BACK_SPEED 0x1000
+
+/* The exit the actor takes (an index into the scene's exits). */
+#define FARS_EXIT_INDEX(actor) FIELD_ACTOR_FIELD(actor, int, 0x804)
+#define FARS_NO_EXIT (-1)
+
+/* The screen's transition (main/screen_transition.h): its state, 0 while the screen is
+ * closed. */
+extern u8 data_021c75b8;
+/* "obj_etc_player": the receiver's name for the refusal's talk. */
+extern const char data_ov004_02254b00[];
+
+extern int FX_MulFunc(int a, int b);
+extern int FX_Div(int numerator, int denominator);
+
+/* The rest of state 0x2e, elsewhere in the overlay: its work and saved index, and its
+ * request. */
+extern void func_ov004_022283c8(u32 *work, u32 index);
+extern void func_ov004_022283c4(u8 *saved, u8 index);
+extern int func_ov004_022283cc(FieldActor *actor, int index, int priority, int arg);
+
+static FieldActorExitWalk *fars_exit_of(FieldActor *actor)
+{
+    return (FieldActorExitWalk *) (void *) &actor->work;
+}
+
+static SceneExit *fars_exits(void)
+{
+    return (SceneExit *) (uintptr_t) SceneTables_EntryRecord();
+}
+
+/* A footstep as the animation passes frame 1, 6, 11 or 16. */
+static void fars_steps(FieldActor *actor)
+{
+    if (FrameCtrl_Passed(&actor->anim, 1) || FrameCtrl_Passed(&actor->anim, 6) || FrameCtrl_Passed(&actor->anim, 11) ||
+        FrameCtrl_Passed(&actor->anim, 16)) {
+        FieldActor_PlayFootstep(actor);
+    }
+}
+
+/* From `frame` of the animation the exit (0x804) is taken, unless the screen is closed. */
+static void fars_take_exit(FieldActor *actor)
+{
+    if (data_021c75b8 == 0) {
+        return;
+    }
+    if (fars_whole_frames(actor->anim.frame) >= FARS_EXIT_TAKE_FRAME) {
+        SceneExit_Take(fars_exits(), FARS_EXIT_INDEX(actor));
+    }
+}
+
+/* While `animation` plays, from `frame` the models fade out. */
+static void fars_fade_out(FieldActor *actor, int animation, unsigned int frame)
+{
+    if (actor->animation == animation && fars_whole_frames(actor->anim.frame) >= frame) {
+        FieldActorRooms_FadeAlpha(actor, 0, FARS_EXIT_FADE_STEP);
+    }
+}
+
+/* Another console's actor: once it moves, `animation` plays (unless it does already); the body;
+ * footsteps while `stepping` plays. */
+static void fars_follow_exit(FieldActor *actor, int moved, int animation, int stepping)
+{
+    if (moved != 0 && actor->animation != animation) {
+        FieldActor_PlayAnimationOnce(actor, animation, FARS_BLEND, 0);
+    }
+    FieldActor_UpdateBody(actor);
+    if (actor->animation == stepping) {
+        fars_steps(actor);
+    }
+}
+
+/* The animation just started played backwards from its last whole frame. */
+static void fars_play_backwards(FieldActor *actor)
+{
+    unsigned int frames = fars_whole_frames(actor->anim.end);
+    FrameCtrl_Init(&actor->anim, frames, FARS_BACK_FLAGS, FARS_BACK_SPEED, (u16) (frames - 1));
+}
+
+/* The state's bar for requests at its end value, and state 0x10 asked for (3, priority 5). */
+static void fars_end_item(FieldActor *actor)
+{
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState10(actor, FARS_ITEM_END_FRAMES, FARS_ITEM_END_PRIORITY, FARS_NO_ARG);
+}
+
+/* ---- State 0x44, fading in (continued) */
+
+/* func_ov004_0222743c (state 0x44's message handler): state 0x44 asked for (priority 9). */
+void FieldActorRoomStates_FadeInMessage(FieldActor *actor, int arg)
+{
+    FieldActorRoomStates_RequestFadeIn(actor, FARS_MESSAGE_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_0222743c, FieldActorRoomStates_FadeInMessage)
+
+/* func_ov004_02227448 (state 0x44's entry): animation 0x41 plays once (no blend); the models'
+ * alpha is 0. */
+void FieldActorRoomStates_EnterFadeIn(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_FADE_IN, 0, 0);
+    FIELD_ACTOR_BODY_ARG(actor) = 0;
+}
+CLEAN_AS(func_ov004_02227448, FieldActorRoomStates_EnterFadeIn)
+
+/* func_ov004_02227468: state 0x44 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestFadeIn(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_FADE_IN, priority, arg);
+}
+CLEAN_AS(func_ov004_02227468, FieldActorRoomStates_RequestFadeIn)
+
+/* ---- State 0x43, fading in with animation 0x40 */
+
+/* func_ov004_022274a0 (state 0x43's update): the body and its footsteps, the models' alpha up
+ * to 31 by 6, the contact bodies and the end of the animation. */
+void FieldActorRoomStates_UpdateFadeIn43(FieldActor *actor)
+{
+    FieldActorRoomStates_FadeIn43Steps(actor);
+    FieldActorRooms_FadeAlpha(actor, FARS_FADE_IN_ALPHA, FARS_FADE_IN_STEP);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_EndFadeIn43(actor);
+}
+CLEAN_AS(func_ov004_022274a0, FieldActorRoomStates_UpdateFadeIn43)
+
+/* func_ov004_022274c4: once the animation is over: one thing nudged, the state's bar for
+ * requests at its end value, state 2 asked for (3, priority 1), and for this console's actor
+ * the event of kind 4 or 12 finished. 0 while the animation plays or for another console's
+ * actor, else what finishing the event answered. */
+int FieldActorRoomStates_EndFadeIn43(FieldActor *actor)
+{
+    if (!FrameCtrl_IsDone(&actor->anim)) {
+        return 0;
+    }
+    FieldActor_NudgeOne(actor);
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+    FieldActor_RequestState2(actor, FARS_END_STATE2_ARG, FARS_END_PRIORITY, FARS_NO_ARG);
+    if (!fars_is_local(actor)) {
+        return 0;
+    }
+    return EventQueue_FinishKind4Or12();
+}
+CLEAN_AS(func_ov004_022274c4, FieldActorRoomStates_EndFadeIn43)
+
+/* func_ov004_02227524: the body updated, and a footstep as the animation passes frame 1, 6, 12
+ * or 20. */
+void FieldActorRoomStates_FadeIn43Steps(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    if (FrameCtrl_Passed(&actor->anim, 1) || FrameCtrl_Passed(&actor->anim, 6) || FrameCtrl_Passed(&actor->anim, 12) ||
+        FrameCtrl_Passed(&actor->anim, 20)) {
+        FieldActor_PlayFootstep(actor);
+    }
+}
+CLEAN_AS(func_ov004_02227524, FieldActorRoomStates_FadeIn43Steps)
+
+/* func_ov004_02227574 (state 0x43's message handler): state 0x43 asked for (priority 9). */
+void FieldActorRoomStates_FadeIn43Message(FieldActor *actor, int arg)
+{
+    FieldActorRoomStates_RequestFadeIn43(actor, FARS_MESSAGE_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_02227574, FieldActorRoomStates_FadeIn43Message)
+
+/* func_ov004_02227580 (state 0x43's entry): animation 0x40 plays once (no blend); the models'
+ * alpha is 0. */
+void FieldActorRoomStates_EnterFadeIn43(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_FADE_IN_43, 0, 0);
+    FIELD_ACTOR_BODY_ARG(actor) = 0;
+}
+CLEAN_AS(func_ov004_02227580, FieldActorRoomStates_EnterFadeIn43)
+
+/* func_ov004_022275a0: state 0x43 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestFadeIn43(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_FADE_IN_43, priority, arg);
+}
+CLEAN_AS(func_ov004_022275a0, FieldActorRoomStates_RequestFadeIn43)
+
+/* ---- State 0x42, through an exit sinking */
+
+/* func_ov004_022275d8 (state 0x42's update): this console's actor: the body and its
+ * footsteps, the fading out and the exit; another console's: it follows what is reported,
+ * then the fading out. */
+void FieldActorRoomStates_UpdateExitSink(FieldActor *actor)
+{
+    if (fars_is_local(actor)) {
+        FieldActorRoomStates_StepExitSink(actor);
+        FieldActorRoomStates_FadeExitSink(actor);
+        FieldActorRoomStates_TakeExitSink(actor);
+    } else {
+        FieldActorRoomStates_FollowExitSink(actor, FieldActor_StepTowardReported(actor));
+        FieldActorRoomStates_FadeExitSink(actor);
+    }
+}
+CLEAN_AS(func_ov004_022275d8, FieldActorRoomStates_UpdateExitSink)
+
+/* func_ov004_02227624: from frame 5, unless the screen is closed, the scene's exit (0x804) is
+ * taken. */
+void FieldActorRoomStates_TakeExitSink(FieldActor *actor)
+{
+    fars_take_exit(actor);
+}
+CLEAN_AS(func_ov004_02227624, FieldActorRoomStates_TakeExitSink)
+
+/* func_ov004_02227664: while animation 0x3f plays, from frame 9 the models fade out by 6. */
+void FieldActorRoomStates_FadeExitSink(FieldActor *actor)
+{
+    fars_fade_out(actor, FARS_ANIM_EXIT_SINK, FARS_EXIT_SINK_FADE_FRAME);
+}
+CLEAN_AS(func_ov004_02227664, FieldActorRoomStates_FadeExitSink)
+
+/* func_ov004_02227694: another console's actor: once it moves, animation 0x3f plays (blended
+ * over 3 frames, unless it plays already); the body; the footsteps at frames 1, 6, 11 and 16.
+ * QUIRK: the footsteps are those of animation 0x3e, which this state does not play. */
+void FieldActorRoomStates_FollowExitSink(FieldActor *actor, int moved)
+{
+    fars_follow_exit(actor, moved, FARS_ANIM_EXIT_SINK, FARS_ANIM_EXIT_RISE);
+}
+CLEAN_AS(func_ov004_02227694, FieldActorRoomStates_FollowExitSink)
+
+/* func_ov004_02227708: the body, and the footsteps at frames 1, 6, 11 and 16. */
+void FieldActorRoomStates_StepExitSink(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    fars_steps(actor);
+}
+CLEAN_AS(func_ov004_02227708, FieldActorRoomStates_StepExitSink)
+
+/* func_ov004_02227758 (state 0x42's message handler): state 0x42 asked for (priority 9). */
+void FieldActorRoomStates_ExitSinkMessage(FieldActor *actor, int arg)
+{
+    FieldActorRoomStates_RequestExitSink(actor, FARS_MESSAGE_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_02227758, FieldActorRoomStates_ExitSinkMessage)
+
+/* func_ov004_02227764 (state 0x42's entry): another console's actor stands (the standing
+ * animation loops, blended over 3 frames); this console's goes on with what state 0x40
+ * started. */
+void FieldActorRoomStates_EnterExitSink(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    if (!fars_is_local(actor)) {
+        FieldActor_PlayAnimationLoop(actor, FARS_ANIM_STAND, FARS_BLEND, FARS_BLEND);
+    }
+}
+CLEAN_AS(func_ov004_02227764, FieldActorRoomStates_EnterExitSink)
+
+/* func_ov004_02227794: state 0x42 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestExitSink(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_EXIT_SINK, priority, arg);
+}
+CLEAN_AS(func_ov004_02227794, FieldActorRoomStates_RequestExitSink)
+
+/* ---- State 0x41, through an exit rising */
+
+/* func_ov004_022277cc (state 0x41's update): this console's actor: the body and its
+ * footsteps, the fading out and the exit; another console's: it follows what is reported,
+ * then the fading out. */
+void FieldActorRoomStates_UpdateExitRise(FieldActor *actor)
+{
+    if (fars_is_local(actor)) {
+        FieldActorRoomStates_StepExitRise(actor);
+        FieldActorRoomStates_FadeExitRise(actor);
+        FieldActorRoomStates_TakeExitRise(actor);
+    } else {
+        FieldActorRoomStates_FollowExitRise(actor, FieldActor_StepTowardReported(actor));
+        FieldActorRoomStates_FadeExitRise(actor);
+    }
+}
+CLEAN_AS(func_ov004_022277cc, FieldActorRoomStates_UpdateExitRise)
+
+/* func_ov004_02227818: from frame 5, unless the screen is closed, the scene's exit (0x804) is
+ * taken. */
+void FieldActorRoomStates_TakeExitRise(FieldActor *actor)
+{
+    fars_take_exit(actor);
+}
+CLEAN_AS(func_ov004_02227818, FieldActorRoomStates_TakeExitRise)
+
+/* func_ov004_02227858: while animation 0x3e plays, from frame 6 the models fade out by 6. */
+void FieldActorRoomStates_FadeExitRise(FieldActor *actor)
+{
+    fars_fade_out(actor, FARS_ANIM_EXIT_RISE, FARS_EXIT_RISE_FADE_FRAME);
+}
+CLEAN_AS(func_ov004_02227858, FieldActorRoomStates_FadeExitRise)
+
+/* func_ov004_02227888: another console's actor: once it moves, animation 0x3e plays (blended
+ * over 3 frames, unless it plays already); the body; while 0x3e plays, the footsteps at frames
+ * 1, 6, 11 and 16. */
+void FieldActorRoomStates_FollowExitRise(FieldActor *actor, int moved)
+{
+    fars_follow_exit(actor, moved, FARS_ANIM_EXIT_RISE, FARS_ANIM_EXIT_RISE);
+}
+CLEAN_AS(func_ov004_02227888, FieldActorRoomStates_FollowExitRise)
+
+/* func_ov004_022278fc: the body, and the footsteps at frames 1, 6, 11 and 16. */
+void FieldActorRoomStates_StepExitRise(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    fars_steps(actor);
+}
+CLEAN_AS(func_ov004_022278fc, FieldActorRoomStates_StepExitRise)
+
+/* func_ov004_0222794c (state 0x41's message handler): state 0x41 asked for (priority 9). */
+void FieldActorRoomStates_ExitRiseMessage(FieldActor *actor, int arg)
+{
+    FieldActorRoomStates_RequestExitRise(actor, FARS_MESSAGE_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_0222794c, FieldActorRoomStates_ExitRiseMessage)
+
+/* func_ov004_02227958 (state 0x41's entry): for this console's actor animation 0x3e loops
+ * (blended over 3 frames, unless it plays already); another console's stands (the standing
+ * animation loops). */
+void FieldActorRoomStates_EnterExitRise(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    if (fars_is_local(actor)) {
+        if (actor->animation != FARS_ANIM_EXIT_RISE) {
+            FieldActor_PlayAnimationLoop(actor, FARS_ANIM_EXIT_RISE, FARS_BLEND, 0);
+        }
+    } else {
+        FieldActor_PlayAnimationLoop(actor, FARS_ANIM_STAND, FARS_BLEND, FARS_BLEND);
+    }
+}
+CLEAN_AS(func_ov004_02227958, FieldActorRoomStates_EnterExitRise)
+
+/* func_ov004_022279a0: state 0x41 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestExitRise(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_EXIT_RISE, priority, arg);
+}
+CLEAN_AS(func_ov004_022279a0, FieldActorRoomStates_RequestExitRise)
+
+/* ---- State 0x40, walking to an exit */
+
+/* func_ov004_022279d8 (state 0x40's update): the ease to the exit's point and yaw, the
+ * animation, the move with the collider and the rise or sink, the contact bodies, then the
+ * phase. */
+void FieldActorRoomStates_UpdateExitWalk(FieldActor *actor)
+{
+    FieldActorRoomStates_StandExitWalk(actor);
+    FieldActorRoomStates_AnimateExitWalk(actor);
+    FieldActorRoomStates_MoveExitWalk(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_RunExitWalk(actor);
+}
+CLEAN_AS(func_ov004_022279d8, FieldActorRoomStates_UpdateExitWalk)
+
+/* func_ov004_02227a00: state 0x40's phase.
+ * At the point: once the actor stands at the work's point at its yaw, state 0x41 (door kind 1)
+ * or 0x42 is asked for (priority 6). Unless it walks (animation 1), while animation 0x3e
+ * plays from frame 6 the models fade out by 6; then from frame 5, unless the screen is closed,
+ * the scene's exit (0x804) is taken.
+ * A claim (main's scene_claim.h): the exit is claimed (until SceneClaim_TakeExit agrees), then
+ * its answer waited for. Given, the exit is taken, or, when the claimed exit is placed, the
+ * phase is "at the point" again with animation 0x3e (blended over 3 frames). Refused, the
+ * actor takes its receiver (flag 0x11, named "obj_etc_player", byte 0x1e 0x15) and asks its
+ * link for the talk; once the talk has opened and closed, the receiver is let go (flag 0x11
+ * cleared), the state's bar for requests is its end value and state 0x6f is asked for to the
+ * claimed exit's next tile (0x333, priority 5), each frame until it is taken. */
+void FieldActorRoomStates_RunExitWalk(FieldActor *actor)
+{
+    FieldActorExitWalk *work = fars_exit_of(actor);
+    if (work->phase == FIELD_ACTOR_EXIT_AT_POINT) {
+        if (actor->position.x == work->x && actor->position.z == work->z && work->yaw == actor->yaw) {
+            if (work->door_kind == FARS_DOOR_RISE) {
+                FieldActorRoomStates_RequestExitRise(actor, FARS_PRIORITY, FARS_NO_ARG);
+            } else {
+                FieldActorRoomStates_RequestExitSink(actor, FARS_PRIORITY, FARS_NO_ARG);
+            }
+        }
+        if (actor->animation == FARS_ANIM_WALK) {
+            return;
+        }
+        fars_fade_out(actor, FARS_ANIM_EXIT_RISE, FARS_EXIT_RISE_FADE_FRAME);
+        fars_take_exit(actor);
+        return;
+    }
+
+    SceneClaimExit *claim = (SceneClaimExit *) (uintptr_t) SceneClaim_Exit();
+    switch (work->phase) {
+        case FIELD_ACTOR_EXIT_CLAIM:
+            if (!SceneClaim_TakeExit(FARS_EXIT_INDEX(actor))) {
+                break;
+            }
+            work->phase++;
+            /* fall through */
+        case FIELD_ACTOR_EXIT_ANSWER:
+            switch (SceneClaimExit_Answer(claim)) {
+                case SCENE_CLAIM_WAITING:
+                    break;
+                case SCENE_CLAIM_GIVEN:
+                    if (!SceneClaimExit_Placed(claim)) {
+                        SceneExit_Take(fars_exits(), FARS_EXIT_INDEX(actor));
+                    } else {
+                        work->phase = FIELD_ACTOR_EXIT_AT_POINT;
+                        FieldActor_PlayAnimationOnce(actor, FARS_ANIM_EXIT_RISE, FARS_BLEND, 0);
+                    }
+                    break;
+                case SCENE_CLAIM_REFUSED:
+                    SceneObjectBase_TakeReceiver((SceneObjectBase *) (void *) actor,
+                                                 (TalkReceiver *) (void *) actor->receiver);
+                    FieldActor_SetFlag(actor, FARS_FLAG_TALK);
+                    MessageReceiver_SetName((MessageReceiver *) (void *) actor->receiver, data_ov004_02254b00);
+                    actor->receiver_unk_1E = FARS_TALK_KIND;
+                    actor->link->requested = 1;
+                    work->phase++;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case FIELD_ACTOR_EXIT_TALK:
+            if (actor->link != NULL && actor->link->open != 0) {
+                work->phase++;
+            }
+            break;
+        case FIELD_ACTOR_EXIT_TALKING:
+            if (actor->link != NULL && actor->link->open == 0) {
+                Vec3 tile = *(const Vec3 *) (uintptr_t) SceneClaimExit_NextTile(claim);
+                SceneObjectBase_ReleaseReceiver((SceneObjectBase *) (void *) actor, (TalkReceiver *) (void *) actor->receiver);
+                FieldActor_ClearFlag(actor, FARS_FLAG_TALK);
+                actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+                FieldActor_RequestState6F(actor, &tile, FARS_WALK_BACK_ACCEL, FARS_WALK_BACK_PRIORITY, FARS_NO_ARG);
+            }
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov004_02227a00, FieldActorRoomStates_RunExitWalk)
+
+/* func_ov004_02227bf4: the move with the collider (the actor's own, 0x7a4, when the state's
+ * flag at 0xb48 is set, else one made for the move; radius 0xfd7, flags 0xf), the height the
+ * floor's; for door kinds 1 and 2, within 1.0 of the work's point the actor is raised (kind 1)
+ * or lowered by 6/32 of how much nearer than 1.0 it is. */
+void FieldActorRoomStates_MoveExitWalk(FieldActor *actor)
+{
+    Vec3 *position = &actor->position;
+    CollisionContacts made;
+    CollisionContacts_Construct(&made);
+    s16 yaw = actor->yaw;
+    CollisionContacts *contacts = &made;
+    if (FieldActor_StateFlagB48(actor, actor->state) != 0) {
+        contacts = (CollisionContacts *) (void *) ((u8 *) actor + FIELD_ACTOR_COLLIDER);
+    }
+    CollisionQuery_Move(contacts, position, &FieldActor_Base(actor)->last_position, yaw, FARS_WALK_RADIUS, actor,
+                        FARS_WALK_FLAGS);
+    CollisionContacts_Destroy(&made);
+    position->y = CollisionQuery_FloorHeight(0);
+
+    const FieldActorExitWalk *work = fars_exit_of(actor);
+    int kind = work->door_kind;
+    if (kind != FARS_DOOR_RISE && kind != FARS_DOOR_SINK) {
+        return;
+    }
+    Vec3 point = {work->x, position->y, work->z};
+    if (Vec_DistanceXZ(&point, position) >= FARS_WALK_NEAR) {
+        return;
+    }
+    int height = FARS_WALK_SLOPE * FX_Div(FARS_WALK_NEAR - Vec_DistanceXZ(&point, position), FARS_WALK_NEAR);
+    if (kind == FARS_DOOR_RISE) {
+        position->y += height >> 5;
+    } else {
+        position->y -= height >> 5;
+    }
+}
+CLEAN_AS(func_ov004_02227bf4, FieldActorRoomStates_MoveExitWalk)
+
+/* func_ov004_02227cb0: the body; while walking (animation 1) the animation's rate is 0.23 of
+ * the distance moved this frame, times 4 (taken unless it exceeds the animation's length), the
+ * feet touch the ground, and once the actor does not move it stands (the standing animation
+ * loops, blended over 3 frames); while another animation than standing plays, the footsteps at
+ * frames 1, 6, 11 and 16. */
+void FieldActorRoomStates_AnimateExitWalk(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    int animation = actor->animation;
+    if (animation == FARS_ANIM_WALK) {
+        Vec3 moved;
+        Vec_Subtract(&moved, &actor->position, &FieldActor_Base(actor)->last_position);
+        fx32 rate = (fx32) ((u32) FX_MulFunc(Vec_LengthXZ(&moved), FARS_WALK_ANIM_FACTOR) << 2);
+        if (rate <= actor->anim.end) {
+            actor->anim.speed = rate;
+        }
+        FieldActor_Footfall(actor);
+        if (rate == 0) {
+            FieldActor_PlayAnimationLoop(actor, FARS_ANIM_STAND, FARS_BLEND, 0);
+        }
+    } else if (animation != FARS_ANIM_STAND) {
+        fars_steps(actor);
+    }
+}
+CLEAN_AS(func_ov004_02227cb0, FieldActorRoomStates_AnimateExitWalk)
+
+/* func_ov004_02227d60: the actor eased to the work's point and yaw. */
+void FieldActorRoomStates_StandExitWalk(FieldActor *actor)
+{
+    const FieldActorExitWalk *work = fars_exit_of(actor);
+    FieldActor_MoveToPose(actor, work->x, work->z, work->yaw);
+}
+CLEAN_AS(func_ov004_02227d60, FieldActorRoomStates_StandExitWalk)
+
+/* func_ov004_02227d7c (state 0x40's message handler): nothing. */
+void FieldActorRoomStates_ExitWalkMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_ov004_02227d7c, FieldActorRoomStates_ExitWalkMessage)
+
+/* func_ov004_02227d80 (state 0x40's entry): flag 3 set; the point is the exit's door point
+ * (0x804) seen from the actor; for door kind 2 it is 1.0 further the way the door faces (by its
+ * four sectors), for kind 0 it is where the actor stands, at yaw 0x8000. The work keeps the
+ * kind, the yaw, the point and whether the exit must be claimed. Unclaimed, animation 0x3e
+ * (kind 1) or 0x3f plays (blended over 3 frames); claimed, flag 0x18 is set and the walk
+ * (animation 1) plays. */
+void FieldActorRoomStates_EnterExitWalk(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const FieldActorExitWalkArgs *args = (const FieldActorExitWalkArgs *) (const void *) request->payload;
+    Vec3 point;
+
+    FieldActor_SetFlag(actor, FARS_FLAG_EXIT);
+    SceneExit_DoorPoint(fars_exits(), FARS_EXIT_INDEX(actor), &point, &actor->position);
+    int kind = args->door_kind;
+    int yaw = args->door_angle;
+    if (kind == FARS_DOOR_SINK) {
+        switch (AngleSector_Four(yaw)) {
+            case 2:
+                point.z = (fx32) ((u32) point.z + FARS_DOOR_BEYOND);
+                break;
+            case 0:
+                point.z = (fx32) ((u32) point.z - FARS_DOOR_BEYOND);
+                break;
+            case 3:
+                point.x = (fx32) ((u32) point.x + FARS_DOOR_BEYOND);
+                break;
+            case 1:
+                point.x = (fx32) ((u32) point.x - FARS_DOOR_BEYOND);
+                break;
+            default:
+                break;
+        }
+    } else if (kind == FARS_DOOR_PLAIN) {
+        yaw = FARS_DOOR_PLAIN_YAW;
+        point.x = actor->position.x;
+        point.z = actor->position.z;
+    }
+    u8 claimed = 0;
+    if (SceneClaim_IsClaimedExit(FARS_EXIT_INDEX(actor)) != 0) {
+        claimed = 1;
+    }
+    FieldActorRoomStates_SetExitWalkWork(fars_exit_of(actor), kind, (s16) yaw, point.x, point.z, claimed);
+    if (!claimed) {
+        FieldActor_PlayAnimationOnce(actor, kind == FARS_DOOR_RISE ? FARS_ANIM_EXIT_RISE : FARS_ANIM_EXIT_SINK, FARS_BLEND, 0);
+    } else {
+        FieldActor_SetFlag(actor, FARS_FLAG_CLAIMED);
+        FieldActor_PlayAnimationOnce(actor, FARS_ANIM_WALK, FARS_BLEND, 0);
+    }
+}
+CLEAN_AS(func_ov004_02227d80, FieldActorRoomStates_EnterExitWalk)
+
+/* func_ov004_02227e7c: state 0x40's work: the door kind, the yaw, the point and the phase
+ * (FIELD_ACTOR_EXIT_CLAIM for an exit to claim). */
+void FieldActorRoomStates_SetExitWalkWork(FieldActorExitWalk *work, int door_kind, s16 yaw, fx32 x, fx32 z, u8 phase)
+{
+    work->door_kind = door_kind;
+    work->yaw = yaw;
+    work->x = x;
+    work->z = z;
+    work->phase = phase;
+}
+CLEAN_AS(func_ov004_02227e7c, FieldActorRoomStates_SetExitWalkWork)
+
+/* func_ov004_02227e94: state 0x40 asked for with the kind and angle of the exit's door (0x804);
+ * 0 without an exit or when the scene has no such door, else whether it was queued. */
+int FieldActorRoomStates_RequestExitWalk(FieldActor *actor, int priority, s16 arg)
+{
+    int exit = FARS_EXIT_INDEX(actor);
+    if (exit == FARS_NO_EXIT) {
+        return 0;
+    }
+    int kind;
+    s16 angle;
+    if (SceneExit_DoorInfo(fars_exits(), exit, &kind, &angle) == 0) {
+        return 0;
+    }
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_EXIT_WALK, priority, arg);
+    FieldActorRoomStates_PutExitWalkArgs((FieldActorExitWalkArgs *) (void *) request.payload, kind, (u16) angle);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_02227e94, FieldActorRoomStates_RequestExitWalk)
+
+/* func_ov004_02227f00: a request's arguments for state 0x40. */
+void FieldActorRoomStates_PutExitWalkArgs(FieldActorExitWalkArgs *args, int door_kind, u16 door_angle)
+{
+    args->door_kind = door_kind;
+    args->door_angle = (s16) door_angle;
+}
+CLEAN_AS(func_ov004_02227f00, FieldActorRoomStates_PutExitWalkArgs)
+
+/* ---- State 0x37, the item put back */
+
+/* func_ov004_02227f08 (state 0x37's update): the body, the contact bodies and the end of the
+ * animation. */
+void FieldActorRoomStates_UpdateItemBack(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_EndItemBack(actor);
+}
+CLEAN_AS(func_ov004_02227f08, FieldActorRoomStates_UpdateItemBack)
+
+/* func_ov004_02227f24: once the animation is over, the state's bar for requests is its end
+ * value and state 0x10 is asked for (3, priority 5); for the object's item 0x1379 the byte at
+ * 0x8eb becomes 4; the object is finished. */
+void FieldActorRoomStates_EndItemBack(FieldActor *actor)
+{
+    if (!FrameCtrl_IsDone(&actor->anim)) {
+        return;
+    }
+    fars_end_item(actor);
+    u16 item[2];
+    Obj020dd33c_Item(item);
+    if (item[0] == FARS_ITEM_MARKED) {
+        FIELD_ACTOR_UNK_8EB(actor) = FARS_ITEM_MARK;
+    }
+    Obj020dd33c_Finish(actor);
+}
+CLEAN_AS(func_ov004_02227f24, FieldActorRoomStates_EndItemBack)
+
+/* func_ov004_02227f8c (state 0x37's message handler): nothing. */
+void FieldActorRoomStates_ItemBackMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_ov004_02227f8c, FieldActorRoomStates_ItemBackMessage)
+
+/* func_ov004_02227f90 (state 0x37's entry): animation 0x2e (blended over 3 frames) plays
+ * backwards from its last whole frame; the actor is handed to the object in the mode of its
+ * stage; sound 0x52 plays. */
+void FieldActorRoomStates_EnterItemBack(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) request;
+    (void) previous;
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_ITEM, FARS_BLEND, 0);
+    fars_play_backwards(actor);
+    Obj020dd33c_SetActorMode(Obj020dd33c_Stage(), actor);
+    FieldActor_PlaySound(actor, FARS_ITEM_BACK_SOUND);
+}
+CLEAN_AS(func_ov004_02227f90, FieldActorRoomStates_EnterItemBack)
+
+/* func_ov004_02227fe4: state 0x37 asked for; whether it was queued. */
+int FieldActorRoomStates_RequestItemBack(FieldActor *actor, int priority, int arg)
+{
+    return fars_request(actor, FARS_ITEM_BACK, priority, arg);
+}
+CLEAN_AS(func_ov004_02227fe4, FieldActorRoomStates_RequestItemBack)
+
+/* ---- State 0x36, an item taken out */
+
+/* func_ov004_0222801c (state 0x36's update): the sound and the body, the contact bodies and the
+ * end of the animation. */
+void FieldActorRoomStates_UpdateItemOut(FieldActor *actor)
+{
+    FieldActorRoomStates_ItemOutSounds(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_EndItemOut(actor);
+}
+CLEAN_AS(func_ov004_0222801c, FieldActorRoomStates_UpdateItemOut)
+
+/* func_ov004_02228038: once the animation is over, the state's bar for requests is its end
+ * value and state 0x10 is asked for (3, priority 5). */
+void FieldActorRoomStates_EndItemOut(FieldActor *actor)
+{
+    if (FrameCtrl_IsDone(&actor->anim)) {
+        fars_end_item(actor);
+    }
+}
+CLEAN_AS(func_ov004_02228038, FieldActorRoomStates_EndItemOut)
+
+/* func_ov004_02228078: as the animation passes frame 8 in scene 9 sound 0x63 plays; the body is
+ * updated. */
+void FieldActorRoomStates_ItemOutSounds(FieldActor *actor)
+{
+    if (FrameCtrl_Passed(&actor->anim, FARS_ITEM_OUT_LATE_FRAME) && SceneQuery_Current() == FARS_ITEM_SCENE) {
+        FieldActor_PlaySound(actor, FARS_ITEM_OUT_LATE_SOUND);
+    }
+    FieldActor_UpdateBody(actor);
+}
+CLEAN_AS(func_ov004_02228078, FieldActorRoomStates_ItemOutSounds)
+
+/* func_ov004_022280ac (state 0x36's message handler): nothing. */
+void FieldActorRoomStates_ItemOutMessage(FieldActor *actor, int arg)
+{
+    (void) actor;
+    (void) arg;
+}
+CLEAN_AS(func_ov004_022280ac, FieldActorRoomStates_ItemOutMessage)
+
+/* func_ov004_022280b0 (state 0x36's entry): the object starts with the actor's item, the
+ * request's look, stage and kind, the actor and the request's second actor; animation 0x2e
+ * plays once (blended over 3 frames); the actor is handed to the object in mode 1; in scene 9
+ * sound 0x4f plays. */
+void FieldActorRoomStates_EnterItemOut(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    const FieldActorItemOutArgs *args = (const FieldActorItemOutArgs *) (const void *) request->payload;
+    Obj020dd33c_Start(&actor->item, (int) args->look, args->stage, (int) args->kind, (Actor *) (void *) actor,
+                      (Actor *) (uintptr_t) args->second);
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_ITEM, FARS_BLEND, 0);
+    Obj020dd33c_SetActorMode(FARS_ITEM_START_MODE, actor);
+    if (SceneQuery_Current() == FARS_ITEM_SCENE) {
+        FieldActor_PlaySound(actor, FARS_ITEM_OUT_SOUND);
+    }
+}
+CLEAN_AS(func_ov004_022280b0, FieldActorRoomStates_EnterItemOut)
+
+/* func_ov004_02228100: state 0x36 asked for with an item and four values; whether it was
+ * queued.
+ * QUIRK: the item becomes the actor's (0x822, then 0x820) at once, taken or not. */
+int FieldActorRoomStates_RequestItemOut(FieldActor *actor, const u16 *item, int look, int stage, int kind, int second,
+                                        int priority, s16 arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_ITEM_OUT, priority, arg);
+    actor->unk_822 = *item;
+    actor->item = actor->unk_822;
+    FieldActorRoomStates_SetItemOutArgs((FieldActorItemOutArgs *) (void *) request.payload, look, (u8) stage, kind, second);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_02228100, FieldActorRoomStates_RequestItemOut)
+
+/* func_ov004_02228164: a request's values for state 0x36. */
+void FieldActorRoomStates_SetItemOutArgs(FieldActorItemOutArgs *args, int look, u8 stage, int kind, int second)
+{
+    args->look = (u32) look;
+    args->stage = stage;
+    args->kind = (u32) kind;
+    args->second = (u32) second;
+}
+CLEAN_AS(func_ov004_02228164, FieldActorRoomStates_SetItemOutArgs)
+
+/* ---- State 0x2f, closing a chest */
+
+/* func_ov004_02228170 (state 0x2f's update): the body, the contact bodies and the end of the
+ * animation. */
+void FieldActorRoomStates_UpdateChestClose(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
+    FieldActorRoomStates_EndChestClose(actor);
+}
+CLEAN_AS(func_ov004_02228170, FieldActorRoomStates_UpdateChestClose)
+
+/* func_ov004_0222818c: once the animation is over the actor stands (the standing animation
+ * loops, blended over 3 frames); for another console's actor the state's bar for requests is
+ * its end value. */
+void FieldActorRoomStates_EndChestClose(FieldActor *actor)
+{
+    if (!FrameCtrl_IsDone(&actor->anim)) {
+        return;
+    }
+    FieldActor_PlayAnimationLoop(actor, FARS_ANIM_STAND, FARS_BLEND, FARS_BLEND);
+    if (fars_is_local(actor)) {
+        return;
+    }
+    actor->next_state = FieldActor_StateEndPriority(actor, actor->state);
+}
+CLEAN_AS(func_ov004_0222818c, FieldActorRoomStates_EndChestClose)
+
+/* func_ov004_022281e0 (state 0x2f's message handler): state 0x2f asked for (priority 6) with the
+ * chest's index kept at 0x8f0. */
+void FieldActorRoomStates_ChestCloseMessage(FieldActor *actor, int arg)
+{
+    u8 index;
+    FieldActorRoomStates_GetChestCloseSaved(actor->saved.packed, &index);
+    FieldActorRoomStates_RequestChestClose(actor, index, FARS_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_022281e0, FieldActorRoomStates_ChestCloseMessage)
+
+/* func_ov004_0222820c (state 0x2f's entry): the request's chest index goes to the work and to
+ * 0x8f0; animation 0x38 plus the index (blended over 3 frames) plays backwards from its last
+ * whole frame; for another console's actor func_ov004_0223b334 is told its position and yaw.
+ * REQUIRES: the index is 0 to 2 (the ROM picks no animation for others and plays whatever its
+ * register held). */
+void FieldActorRoomStates_EnterChestClose(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    u32 index = *(const u32 *) (const void *) request->payload;
+    FieldActorRoomStates_PutChestCloseWork((u32 *) (void *) &actor->work, index);
+    FieldActorRoomStates_PutChestCloseSaved(actor->saved.packed, (u8) index);
+    FieldActor_PlayAnimationOnce(actor, FARS_ANIM_CHEST_CLOSE + (int) index, FARS_BLEND, 0);
+    fars_play_backwards(actor);
+    if (!fars_is_local(actor)) {
+        RoomObjects_Stub0223b334(&actor->position, actor->yaw);
+    }
+}
+CLEAN_AS(func_ov004_0222820c, FieldActorRoomStates_EnterChestClose)
+
+/* func_ov004_022282b0: the chest's index kept for state 0x2f. */
+void FieldActorRoomStates_GetChestCloseSaved(const u8 *saved, u8 *index)
+{
+    *index = *saved;
+}
+CLEAN_AS(func_ov004_022282b0, FieldActorRoomStates_GetChestCloseSaved)
+
+/* func_ov004_022282b8: the chest's index of state 0x2f kept. */
+void FieldActorRoomStates_PutChestCloseSaved(u8 *saved, u8 index)
+{
+    *saved = index;
+}
+CLEAN_AS(func_ov004_022282b8, FieldActorRoomStates_PutChestCloseSaved)
+
+/* func_ov004_022282bc: state 0x2f's work: the chest's index. */
+void FieldActorRoomStates_PutChestCloseWork(u32 *work, u32 index)
+{
+    *work = index;
+}
+CLEAN_AS(func_ov004_022282bc, FieldActorRoomStates_PutChestCloseWork)
+
+/* func_ov004_022282c0: state 0x2f asked for with a chest's index; whether it was queued. */
+int FieldActorRoomStates_RequestChestClose(FieldActor *actor, int index, int priority, int arg)
+{
+    StateRequest request;
+    StateRequest_Construct(&request);
+    StateRequest_Set(&request, FARS_CHEST_CLOSE, priority, arg);
+    FieldActorRoomStates_PutChestCloseArgs((u32 *) (void *) request.payload, (u32) index);
+    int queued = FieldActor_QueueRequest(actor, &request);
+    StateRequest_Destruct(&request);
+    return queued;
+}
+CLEAN_AS(func_ov004_022282c0, FieldActorRoomStates_RequestChestClose)
+
+/* func_ov004_02228300: a request's chest index for state 0x2f. */
+void FieldActorRoomStates_PutChestCloseArgs(u32 *payload, u32 index)
+{
+    *payload = index;
+}
+CLEAN_AS(func_ov004_02228300, FieldActorRoomStates_PutChestCloseArgs)
+
+/* ---- State 0x2e, at a chest */
+
+/* func_ov004_02228304 (state 0x2e's update): the body and the contact bodies. */
+void FieldActorRoomStates_UpdateAtChest(FieldActor *actor)
+{
+    FieldActor_UpdateBody(actor);
+    FieldActor_EnterContact(actor);
+}
+CLEAN_AS(func_ov004_02228304, FieldActorRoomStates_UpdateAtChest)
+
+/* func_ov004_02228318 (state 0x2e's message handler): state 0x2e asked for (priority 6) with the
+ * chest's index kept at 0x8f0. */
+void FieldActorRoomStates_AtChestMessage(FieldActor *actor, int arg)
+{
+    u8 index;
+    FieldActorRoomStates_GetAtChestSaved(actor->saved.packed, &index);
+    func_ov004_022283cc(actor, index, FARS_PRIORITY, arg);
+}
+CLEAN_AS(func_ov004_02228318, FieldActorRoomStates_AtChestMessage)
+
+/* func_ov004_02228344 (state 0x2e's entry): the request's chest index (its first byte) goes to
+ * the work and to 0x8f0; animation 0x3b plus the index loops (blended over 3 frames); for
+ * another console's actor func_ov004_0223b338 is told its position and yaw.
+ * REQUIRES: the index is 0 to 2 (the ROM picks no animation for others and plays whatever its
+ * register held). */
+void FieldActorRoomStates_EnterAtChest(FieldActor *actor, const StateRequest *request, int previous)
+{
+    (void) previous;
+    u8 index = request->payload[0];
+    func_ov004_022283c8((u32 *) (void *) &actor->work, index);
+    func_ov004_022283c4(actor->saved.packed, index);
+    FieldActor_PlayAnimationLoop(actor, FARS_ANIM_AT_CHEST + index, FARS_BLEND, 0);
+    if (!fars_is_local(actor)) {
+        RoomObjects_Stub0223b338(&actor->position, actor->yaw);
+    }
+}
+CLEAN_AS(func_ov004_02228344, FieldActorRoomStates_EnterAtChest)
+
+/* func_ov004_022283bc: the chest's index kept for state 0x2e. */
+void FieldActorRoomStates_GetAtChestSaved(const u8 *saved, u8 *index)
+{
+    *index = *saved;
+}
+CLEAN_AS(func_ov004_022283bc, FieldActorRoomStates_GetAtChestSaved)

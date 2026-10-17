@@ -1,7 +1,8 @@
 /* The room's objects as a whole (room_object.h for one of them): the table of the room's
- * objects (func_ov004_0223ce84, as many entries as RoomObjects_Capacity gives for the scene) and
- * the grid of the cells they stand on (func_ov004_0223cd50, two layers of 16 x 16 cells, the
- * floor and on top of other furniture). Here are the queries over them: the one in front of the
+ * objects (RoomObjects_Table, as many entries as RoomObjects_Capacity gives for the scene), the
+ * grid of the cells they stand on (RoomObjects_Grid, two layers of 16 x 16 cells, the floor and
+ * on top of other furniture) and the heap they are made in (RoomObjects_Heap). Here are the
+ * queries over them: the one in front of the
  * player, the ones switched on, the height at a cell, whether a point ahead of an actor is free,
  * switching or taking one away, and spawning the actor of a newly placed object.
  *
@@ -68,5 +69,47 @@ fx32 RoomObjects_HeightAtPoint(const Vec3 *point);
 fx32 RoomObjects_HeightAtCell(int x, int z);
 void RoomObjects_Place(int x, int z, int number, int side, u8 layer, int mode);
 int RoomObjects_Spawn(u32 placement);
+
+/* The grid of the cells (RoomObjects_Grid): ROOM_OBJECTS_LAYERS layers of ROOM_OBJECTS_CELLS
+ * rows of ROOM_OBJECTS_CELLS cells, a byte each. */
+#define ROOM_OBJECTS_LAYERS 2
+#define ROOM_OBJECTS_CELLS 16
+#define ROOM_OBJECTS_NO_INDEX 0xff /* a cell without an object */
+
+RoomObject *RoomObjects_GridObjectAtPoint(u8 *grid, const Vec3 *point, int layer);
+RoomObject *RoomObjects_GridObjectAt(u8 *grid, int x, int z, int layer);
+int RoomObjects_GridIndexAt(u8 *grid, int x, int z, int layer);
+int RoomObjects_GridClearCell(u8 *grid, RoomObject *object, int x, int z, u8 layer);
+int RoomObjects_GridSetCell(u8 *grid, RoomObject *object, int x, int z, u8 layer);
+void RoomObjects_GridClear(u8 *grid);
+void RoomObjects_GridDestruct(void *grid);
+u8 *RoomObjects_GridConstruct(u8 *grid);
+u8 *RoomObjects_Grid(void);
+
+/* The table of the room's objects (RoomObjects_Table). Its size is fixed; the scene uses the
+ * first RoomObjects_Capacity entries. */
+#define ROOM_OBJECTS_TABLE_SIZE 0x1c
+
+RoomObject *RoomObjects_At(RoomObject **table, unsigned int index);
+int RoomObjects_IndexOf(RoomObject **table, RoomObject *object);
+int RoomObjects_FreeCount(RoomObject **table);
+int RoomObjects_UsedCount(RoomObject **table);
+int RoomObjects_Remove(RoomObject **table, RoomObject *object);
+int RoomObjects_Add(RoomObject **table, RoomObject *object);
+void RoomObjects_TableClear(RoomObject **table);
+void RoomObjects_TableDestruct(void *table);
+RoomObject **RoomObjects_TableConstruct(RoomObject **table);
+RoomObject **RoomObjects_Table(void);
+
+/* The room's heap (RoomObjects_Heap), where the room's objects are made. */
+struct Heap;
+void RoomObjects_HeapFree(struct Heap **heap, void *block);
+void *RoomObjects_HeapAlloc(struct Heap **heap, int size);
+void RoomObjects_HeapDelete(struct Heap **heap);
+int RoomObjects_HeapCreate(struct Heap **heap, int count);
+void RoomObjects_HeapForget(struct Heap **heap);
+void RoomObjects_HeapDestruct(void *heap);
+struct Heap **RoomObjects_HeapConstruct(struct Heap **heap);
+struct Heap **RoomObjects_Heap(void);
 
 #endif

@@ -107,7 +107,7 @@ enum LetterSendAction {
     LETTER_SEND_ACTION_1 = 1,       /* LetterSend_RunAction1 */
     LETTER_SEND_ACTION_PICK_UP = 2, /* LetterSend_PickUpSlotLetter */
     LETTER_SEND_ACTION_MENU = 3,    /* LetterSend_RunActionMenu */
-    LETTER_SEND_ACTION_CANCEL = 4   /* func_ov104_0229dd00 */
+    LETTER_SEND_ACTION_CANCEL = 4   /* LetterSend_EndAction */
 };
 
 typedef struct LetterSendScene {
@@ -213,5 +213,108 @@ int LetterSend_TouchMoved(LetterSendScene *self);
 void LetterSend_HighlightPlace(LetterSendScene *self, int place);
 void LetterSend_ClearHighlights(LetterSendScene *self);
 void LetterSend_SelectPlace(LetterSendScene *self, int place);
+
+/* More of `flags`: the touched place's letter may be dragged, as it is not dimmed
+ * (LetterSend_TouchPlace). */
+#define LETTER_SEND_FLAG_DRAGGABLE 0x04
+
+/* More of the fields, as the touch and the held letter use them: `unk_b5` is the place touched,
+ * `unk_b7` the place the held letter was taken from (or glides to), `unk_bf` the frames before
+ * a touched place's choice opens. */
+
+/* The sub states, run from the table of func_ov104_0229f05c and named by what their handler
+ * does. */
+enum LetterSendSubState {
+    LETTER_SEND_SUB_TOUCH_IDLE = 0x00,      /* LetterSend_IdleByTouch */
+    LETTER_SEND_SUB_TOUCH_HOLD = 0x01,      /* LetterSend_HoldTouchOnPlace */
+    LETTER_SEND_SUB_TOUCH_CHOICE = 0x02,    /* LetterSend_WatchChoiceTouch */
+    LETTER_SEND_SUB_OPEN_TOUCHED = 0x03,    /* LetterSend_OpenTouchedChoice */
+    LETTER_SEND_SUB_DRAG = 0x04,            /* LetterSend_DragHeld */
+    LETTER_SEND_SUB_LABEL_BY_TOUCH = 0x05,  /* LetterSend_LabelByTouch */
+    LETTER_SEND_SUB_CHOICE_BY_TOUCH = 0x06, /* LetterSend_ChooseByTouch */
+    LETTER_SEND_SUB_BROWSE = 0x07,          /* LetterSend_BrowseByKeys */
+    LETTER_SEND_SUB_HOLD = 0x08,            /* LetterSend_MoveHeldByKeys */
+    LETTER_SEND_SUB_LABEL_BY_KEYS = 0x09,   /* LetterSend_LabelByKeys */
+    LETTER_SEND_SUB_LABEL_PRESS = 0x0a,     /* LetterSend_WaitLabelPress */
+    LETTER_SEND_SUB_CHOICE_BY_KEYS = 0x0b,  /* LetterSend_ChooseByKeys */
+    LETTER_SEND_SUB_CHOICE_PICK = 0x0c,     /* LetterSend_PickChoiceRow */
+    LETTER_SEND_SUB_SPRITE_MOVE = 0x0d,     /* LetterSend_WaitCursorSprite */
+    LETTER_SEND_SUB_PLACE_PRESS = 0x0e,     /* LetterSend_PressPlace */
+    LETTER_SEND_SUB_PRESS_END = 0x0f,       /* LetterSend_FinishPlacePress */
+    LETTER_SEND_SUB_PICK_UP = 0x10,         /* LetterSend_PickUpAtCursor */
+    LETTER_SEND_SUB_PICK_UP_END = 0x11,     /* LetterSend_FinishPickUp */
+    LETTER_SEND_SUB_PUT_DOWN = 0x12,        /* LetterSend_PutDown */
+    LETTER_SEND_SUB_SWAP = 0x13,            /* LetterSend_Swap */
+    LETTER_SEND_SUB_SWAP_END = 0x14,        /* LetterSend_FinishSwap */
+    LETTER_SEND_SUB_HELD_GLIDE = 0x15,      /* LetterSend_StepHeldGlide */
+    LETTER_SEND_SUB_CHOICE_OPEN = 0x16,     /* LetterSend_WaitChoiceShown */
+    LETTER_SEND_SUB_CHOICE_CLOSE = 0x17,    /* LetterSend_CloseChoice */
+    LETTER_SEND_SUB_CHOICE_RUN = 0x18,      /* LetterSend_RunActionWhenIdle */
+    LETTER_SEND_SUB_ERROR = 0x19,           /* LetterSend_WaitError */
+    LETTER_SEND_SUB_LABEL_PRESSED = 0x1a,   /* LetterSend_FollowLabelPress */
+    LETTER_SEND_SUB_PANEL_PRESSED = 0x1b,   /* LetterSend_FollowPanelPress */
+    LETTER_SEND_SUB_LET_GO = 0x1c           /* LetterSend_WaitLetGo */
+};
+
+void LetterSend_ClearSelection(LetterSendScene *self);
+int LetterSend_PlaceIsEmpty(LetterSendScene *self, int place);
+int LetterSend_PlaceIsDimmed(LetterSendScene *self, int place);
+void LetterSend_DimUnpostable(LetterSendScene *self);
+int LetterSend_PlaceY(LetterSendScene *self, int place);
+int LetterSend_PlaceX(LetterSendScene *self, int place);
+Letter *LetterSend_PlaceLetter(LetterSendScene *self, int place);
+void LetterSend_PutLetterAt(LetterSendScene *self, int place, const Letter *letter);
+int LetterSend_PutHeldLetterAt(LetterSendScene *self, int place);
+int LetterSend_LetterPlaceAtTouch(LetterSendScene *self, int x, int y, int with_letter);
+u8 LetterSend_LetterPlace(LetterSendScene *self, unsigned int index);
+u8 LetterSend_LetterIndex(LetterSendScene *self, unsigned int place);
+int LetterSend_IsBelowPlace(LetterSendScene *self, int place);
+int LetterSend_IsOutboxPlace(LetterSendScene *self, unsigned int place);
+int LetterSend_IsCarriedPlace(LetterSendScene *self, unsigned int place);
+void LetterSend_EndLayerTask(LetterSendScene *self);
+u8 LetterSend_FreeOutboxPlace(LetterSendScene *self);
+int LetterSend_FreeCarriedPlace(LetterSendScene *self);
+void LetterSend_HoldAndGlide(LetterSendScene *self, int from, int to);
+int LetterSend_DropHeldAtTouch(LetterSendScene *self, int place, int x);
+u8 *LetterSend_GlideHeldTo(LetterSendScene *self, int place, int steps);
+void LetterSend_PickUpWithCursor(LetterSendScene *self, int place);
+void LetterSend_PickUpWithTouch(LetterSendScene *self, int place);
+void LetterSend_TouchPlace(LetterSendScene *self, int place);
+void LetterSend_EndAction(LetterSendScene *self);
+void LetterSend_EndActionAtCursor(LetterSendScene *self);
+void LetterSend_EndActionHidden(LetterSendScene *self);
+void LetterSend_WaitLetGo(LetterSendScene *self);
+void LetterSend_FollowPanelPress(LetterSendScene *self);
+void LetterSend_FollowLabelPress(LetterSendScene *self);
+void LetterSend_WaitError(LetterSendScene *self);
+void LetterSend_RunActionWhenIdle(LetterSendScene *self);
+void LetterSend_CloseChoice(LetterSendScene *self);
+void LetterSend_WaitChoiceShown(LetterSendScene *self);
+void LetterSend_StepHeldGlide(LetterSendScene *self);
+void LetterSend_FinishSwap(LetterSendScene *self);
+void LetterSend_Swap(LetterSendScene *self);
+void LetterSend_PutDown(LetterSendScene *self);
+void LetterSend_FinishPickUp(LetterSendScene *self);
+void LetterSend_PickUpAtCursor(LetterSendScene *self);
+void LetterSend_FinishPlacePress(LetterSendScene *self);
+void LetterSend_PressPlace(LetterSendScene *self);
+void LetterSend_WaitCursorSprite(LetterSendScene *self);
+void LetterSend_PickChoiceRow(LetterSendScene *self);
+void LetterSend_ChooseByKeys(LetterSendScene *self);
+void LetterSend_WaitLabelPress(LetterSendScene *self);
+void LetterSend_LabelByKeys(LetterSendScene *self);
+void LetterSend_MoveHeldByKeys(LetterSendScene *self);
+void LetterSend_BrowseByKeys(LetterSendScene *self);
+void LetterSend_ChooseByTouch(LetterSendScene *self);
+void LetterSend_LabelByTouch(LetterSendScene *self);
+void LetterSend_DragHeld(LetterSendScene *self);
+void LetterSend_OpenTouchedChoice(LetterSendScene *self);
+void LetterSend_WatchChoiceTouch(LetterSendScene *self);
+void LetterSend_HoldTouchOnPlace(LetterSendScene *self);
+void LetterSend_IdleByTouch(LetterSendScene *self);
+void LetterSend_PreparePanel(LetterSendScene *self);
+void LetterSend_LoadPageLayer(LetterSendScene *self);
+void LetterSend_PrepareWallet(LetterSendScene *self);
+void LetterSend_SetUpLayers(void);
 
 #endif

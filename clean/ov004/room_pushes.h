@@ -35,4 +35,41 @@ void RoomPushes_Reset(RoomPush *pushes);
 RoomPush *RoomPushes_Destruct(RoomPush *pushes);
 RoomPush *RoomPushes_Construct(RoomPush *pushes);
 
+/* What a pushing or pulling actor does to the object on the floor it pushes (record 0): the
+ * moves and turns of room_object.h, along the actor's facing as recorded. */
+int RoomPushes_TryPull(RoomPush *pushes);
+int RoomPushes_CanPull(RoomPush *pushes);
+int RoomPushes_TryPush(RoomPush *pushes);
+int RoomPushes_CanPush(RoomPush *pushes);
+Vec3 *RoomPushes_StepAlong(void *unused, int angle);
+int RoomPushes_CanMoveTurned(RoomPush *pushes, int turn);
+void RoomPushes_TryTurnPlus(RoomPush *pushes);
+int RoomPushes_CanTurnPlus(RoomPush *pushes);
+void RoomPushes_TryTurnMinus(RoomPush *pushes);
+int RoomPushes_CanTurnMinus(RoomPush *pushes);
+int RoomPushes_TryTurn(RoomPush *pushes, int turn);
+int RoomPushes_CanTurn(RoomPush *pushes, int turn);
+void RoomPushes_ToggleSwitch(RoomPush *pushes);
+
+/* The records and their fields. */
+struct RoomObject;
+struct RoomObject *RoomPushes_ObjectOf(RoomPush *pushes, int index);
+RoomPush *RoomPushes_FindObject(RoomPush *pushes, struct RoomObject *object);
+RoomPush *RoomPushes_Get(RoomPush *pushes, int index);
+RoomPush *RoomPushes_Records(void);
+int RoomPushes_Facing(RoomPush *push);
+u32 RoomPushes_Side(RoomPush *push);
+Vec3 *RoomPushes_Destination(RoomPush *push);
+Vec3 *RoomPushes_Centre(RoomPush *push);
+u32 RoomPushes_Standoff(RoomPush *push);
+fx32 RoomPushes_Moved(RoomPush *push);
+Vec3 *RoomPushes_Position(RoomPush *push);
+Vec3 *RoomPushes_From(RoomPush *push);
+u32 RoomPushes_Object(RoomPush *push);
+void RoomPushes_Set(RoomPush *push, s32 object, Vec3 *from, Vec3 *position, s32 standoff, Vec3 *centre, Vec3 *destination,
+                    short facing, s32 side);
+RoomPush *RoomPushes_Clear(RoomPush *push);
+void RoomPushes_DestructOne(void *push);
+void RoomPushes_ConstructOne(void *push);
+
 #endif

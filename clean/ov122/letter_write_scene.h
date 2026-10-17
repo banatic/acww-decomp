@@ -45,7 +45,8 @@ enum LetterWriteFlag {
     LETTER_WRITE_FLAG_DIMMED = 0x0020,            /* the screen is dimmed: scrolled past 0x40 */
     LETTER_WRITE_FLAG_POINTER_ON_TEXT = 0x0100,   /* the pointer is at the text cursor, not at a key */
     LETTER_WRITE_FLAG_POINTER_ON_BUTTON = 0x0200, /* the pointer follows the scroll button */
-    LETTER_WRITE_FLAG_KEY_0C_SHOWN = 0x0400,      /* the keyboard's key 12 is shown (func_ov122_022a14c0) */
+    LETTER_WRITE_FLAG_COPIED = 0x0400,            /* `clipboard` holds copied text: the keyboard's key 12 (paste)
+                                                   * is enabled (LetterWrite_UpdateKeys) */
     LETTER_WRITE_FLAG_SCROLLING = 0x0800,         /* `scroll` moves toward `scroll_target` */
     LETTER_WRITE_FLAG_1000 = 0x1000,              /* set whenever the cursor's part is set */
     LETTER_WRITE_FLAG_CLOSE_ASKED = 0x2000        /* main asked the menu to close (StateFlags_MenuCloseAsked) */
@@ -63,20 +64,62 @@ enum LetterWritePart {
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
  * func_ov122_022a1f40. Only those set here are named. */
 enum LetterWriteSubState {
-    LETTER_WRITE_SUB_TOUCH = 0,             /* func_ov122_022a1380: the pen on the keyboard and the letter */
-    LETTER_WRITE_SUB_04 = 4,                /* func_ov122_022a1220 */
-    LETTER_WRITE_SUB_CHOICE_TOUCH = 5,      /* func_ov122_022a116c: the choice's rows, by the pen */
-    LETTER_WRITE_SUB_KEYS = 6,              /* func_ov122_022a0afc: the keyboard, by the buttons */
-    LETTER_WRITE_SUB_POINTER_GLIDE = 7,     /* func_ov122_022a0ad0: until the pointer stops, then
-                                           * `return_sub_state` */
-    LETTER_WRITE_SUB_08 = 8,                /* func_ov122_022a09f4: a key pressed */
-    LETTER_WRITE_SUB_0A = 10,               /* func_ov122_022a0974 */
-    LETTER_WRITE_SUB_0C = 12,               /* func_ov122_022a0848 */
-    LETTER_WRITE_SUB_PANEL_KEYS = 0x13,     /* func_ov122_022a05d0: the panel, by the buttons */
-    LETTER_WRITE_SUB_CHOICE_KEYS = 0x14,    /* func_ov122_022a053c: the choice, by the buttons */
-    LETTER_WRITE_SUB_CHOICE_OPENING = 0x16, /* func_ov122_022a04bc */
-    LETTER_WRITE_SUB_CHOICE_CLOSING = 0x18, /* func_ov122_022a03b0: then what was picked */
-    LETTER_WRITE_SUB_BUTTON = 0x19          /* func_ov122_022a02c8: a button of the panel pressed */
+    LETTER_WRITE_SUB_TOUCH = 0,               /* func_ov122_022a1380: the pen on the keyboard and the letter */
+    LETTER_WRITE_SUB_KEY_TOUCH_HELD = 1,      /* func_ov122_022a132c: a key held down by the pen repeats */
+    LETTER_WRITE_SUB_SCROLL_DRAG = 2,         /* func_ov122_022a12f0: the pen drags the scroll button */
+    LETTER_WRITE_SUB_MARK_DRAG = 3,           /* func_ov122_022a1290: the pen marks characters */
+    LETTER_WRITE_SUB_04 = 4,                  /* func_ov122_022a1220: the panel's buttons 3 and 4, by the pen */
+    LETTER_WRITE_SUB_CHOICE_TOUCH = 5,        /* func_ov122_022a116c: the choice's rows, by the pen */
+    LETTER_WRITE_SUB_KEYS = 6,                /* func_ov122_022a0afc: the keyboard, by the buttons */
+    LETTER_WRITE_SUB_POINTER_GLIDE = 7,       /* func_ov122_022a0ad0: until the pointer stops, then
+                                               * `return_sub_state` */
+    LETTER_WRITE_SUB_08 = 8,                  /* func_ov122_022a09f4: a key pressed by A */
+    LETTER_WRITE_SUB_KEY_REPEAT = 9,          /* func_ov122_022a099c: a key held down by A repeats */
+    LETTER_WRITE_SUB_0A = 10,                 /* func_ov122_022a0974: back to the keyboard */
+    LETTER_WRITE_SUB_BACKSPACE_REPEAT = 11,   /* func_ov122_022a0928: B held down deletes again */
+    LETTER_WRITE_SUB_0C = 12,                 /* func_ov122_022a0848: the pointer at the text cursor, by the
+                                               * buttons */
+    LETTER_WRITE_SUB_MARK_KEYS = 13,          /* func_ov122_022a07d4: A held down marks with the d-pad */
+    LETTER_WRITE_SUB_WHILE_L = 14,            /* func_ov122_022a07a4: until L is let go */
+    LETTER_WRITE_SUB_WHILE_R = 15,            /* func_ov122_022a0774: until R is let go */
+    LETTER_WRITE_SUB_SCROLL_PRESS = 0x10,     /* func_ov122_022a0750: the scroll button's press plays */
+    LETTER_WRITE_SUB_SCROLL_HELD = 0x11,      /* func_ov122_022a0714: the d-pad scrolls while A is held */
+    LETTER_WRITE_SUB_SCROLL_RELEASE = 0x12,   /* func_ov122_022a06e8: the scroll button's release plays */
+    LETTER_WRITE_SUB_PANEL_KEYS = 0x13,       /* func_ov122_022a05d0: the panel, by the buttons */
+    LETTER_WRITE_SUB_CHOICE_KEYS = 0x14,      /* func_ov122_022a053c: the choice, by the buttons */
+    LETTER_WRITE_SUB_CHOICE_ROW_PRESS = 0x15, /* func_ov122_022a04ec: the pointer's press on a row plays */
+    LETTER_WRITE_SUB_CHOICE_OPENING = 0x16,   /* func_ov122_022a04bc */
+    LETTER_WRITE_SUB_CHOICE_PICKED = 0x17,    /* func_ov122_022a0488: the picked row shown, then closing */
+    LETTER_WRITE_SUB_CHOICE_CLOSING = 0x18,   /* func_ov122_022a03b0: then what was picked */
+    LETTER_WRITE_SUB_BUTTON = 0x19,           /* func_ov122_022a02c8: a button of the panel pressed */
+    LETTER_WRITE_SUB_ERROR = 0x1a             /* func_ov122_022a02a0: an error message, then the input */
+};
+
+/* The scene's states (MenuScene.state), each run by its handler of the table of
+ * func_ov122_022a2110. Only those set here are named. */
+enum LetterWriteState {
+    LETTER_WRITE_STATE_LEAVE = 4,         /* func_ov122_022a1c24: the keyboard wiped out, then 5 and
+                                           * `next_state` */
+    LETTER_WRITE_STATE_PANEL_MESSAGE = 6, /* func_ov122_022a1ba4: the panel's message 0x22 */
+    LETTER_WRITE_STATE_08 = 8,            /* func_ov122_022a1b50 */
+    LETTER_WRITE_STATE_BACK = 10,         /* func_ov122_022a1ac4: the keyboard back */
+    LETTER_WRITE_STATE_CHOICE = 12,       /* func_ov122_022a1a58: the choice opened */
+    LETTER_WRITE_STATE_WIPE_OUT = 14      /* func_ov122_022a1998: the scene wiped out */
+};
+
+/* The codes of the keyboard's keys (func_ov095_0229c448) the scene acts on; others are
+ * characters or the keyboard's own (func_ov095_0229ba44). */
+enum LetterWriteCode {
+    LETTER_WRITE_CODE_NEWLINE = 0x0a,
+    LETTER_WRITE_CODE_BACKSPACE = 0x100,
+    LETTER_WRITE_CODE_CONVERT_1 = 0x103, /* the character before the cursor converted (func_ov095_0229bb9c) */
+    LETTER_WRITE_CODE_CONVERT_2 = 0x104, /* (func_ov095_0229bb98) */
+    LETTER_WRITE_CODE_CONVERT_3 = 0x105, /* (func_ov095_0229bb94) */
+    LETTER_WRITE_CODE_SCROLL = 0x112,    /* the scroll button pressed: the d-pad scrolls */
+    LETTER_WRITE_CODE_BUTTON_1 = 0x113,  /* the panel's button 1 */
+    LETTER_WRITE_CODE_BUTTON_0 = 0x114,  /* the panel's button 0 */
+    LETTER_WRITE_CODE_COPY = 0x118,
+    LETTER_WRITE_CODE_PASTE = 0x119
 };
 
 #define LETTER_WRITE_SCROLL_MAX 0x58
@@ -88,7 +131,7 @@ typedef struct LetterWriteScene {
     s32 unk_98;                                        /* 0x98 */
     s32 cursor_x;                                      /* 0x9c: in pixels of the letter */
     s32 cursor_y;                                      /* 0xa0 */
-    u8 unk_a4[4];                                      /* 0xa4 */
+    u32 unk_a4;                                        /* 0xa4 */
     u16 flags;                                         /* 0xa8: LetterWriteFlag */
     u8 part;                                           /* 0xaa: LetterWritePart */
     u8 blink;                                          /* 0xab: counts frames; the cursor is drawn while bit 4 is set */
@@ -101,7 +144,7 @@ typedef struct LetterWriteScene {
     u8 scroll;                                         /* 0xb2 */
     u8 scroll_target;                                  /* 0xb3 */
     u8 return_sub_state;                               /* 0xb4: after LETTER_WRITE_SUB_POINTER_GLIDE */
-    u8 unk_b5;                                         /* 0xb5 */
+    u8 next_state;                                     /* 0xb5: the state after LETTER_WRITE_STATE_LEAVE */
     u8 choice_row;                                     /* 0xb6 */
     u8 choice_page;                                    /* 0xb7 */
     u8 button;                                         /* 0xb8: the panel's button pressed (LetterWrite_PressButton) */
@@ -117,7 +160,7 @@ typedef struct LetterWriteScene {
     MailMsgText filter_text;                           /* 0x40bc: the 8-bit text the taboo filter reads */
     LetterBodyText filter_wide;                        /* 0x4150: a text carried through it */
     u16 shown_header[LETTER_WRITE_SHOWN_HEADER_CHARS]; /* 0x41e0: the header as the view shows it */
-    u8 unk_4230[0x80];                                 /* 0x4230 */
+    u16 clipboard[LETTER_BODY_CHARS];                  /* 0x4230: the text copied (LetterWrite_Copy) */
     u8 choice[0x3e8];                                  /* 0x42b0: a PagedChoice */
     ButtonPanel panel;                                 /* 0x4698 */
     ErrorMessage error;                                /* 0x4864 */
@@ -183,5 +226,66 @@ void LetterWrite_BeginPanelKeys(LetterWriteScene *self);
 void LetterWrite_BeginSub04(LetterWriteScene *self);
 unsigned char *LetterWrite_BeginInput(LetterWriteScene *self);
 unsigned char *LetterWrite_BeginKeys(LetterWriteScene *self);
+
+unsigned char *LetterWrite_BeginTouch(LetterWriteScene *self);
+int LetterWrite_StartKey(LetterWriteScene *self);
+int LetterWrite_CopyKey(LetterWriteScene *self);
+int LetterWrite_PasteKey(LetterWriteScene *self);
+int LetterWrite_SwitchPointerKey(LetterWriteScene *self);
+int LetterWrite_BackspaceKey(LetterWriteScene *self);
+int LetterWrite_PressKeyByA(LetterWriteScene *self);
+int LetterWrite_RunError(LetterWriteScene *self);
+void LetterWrite_RunButton(LetterWriteScene *self);
+void LetterWrite_RunChoiceClosing(LetterWriteScene *self);
+void LetterWrite_RunChoicePicked(LetterWriteScene *self);
+void LetterWrite_RunChoiceOpening(LetterWriteScene *self);
+void LetterWrite_RunChoiceRowPress(LetterWriteScene *self);
+void LetterWrite_RunChoiceKeys(LetterWriteScene *self);
+void LetterWrite_RunPanelKeys(LetterWriteScene *self);
+void LetterWrite_RunScrollRelease(LetterWriteScene *self);
+void LetterWrite_RunScrollHeld(LetterWriteScene *self);
+void LetterWrite_RunScrollPress(LetterWriteScene *self);
+void LetterWrite_RunWhileR(LetterWriteScene *self);
+void LetterWrite_RunWhileL(LetterWriteScene *self);
+void LetterWrite_RunMarkKeys(LetterWriteScene *self);
+void LetterWrite_RunTextKeys(LetterWriteScene *self);
+void LetterWrite_RunBackspaceRepeat(LetterWriteScene *self);
+void LetterWrite_RunKeyReleased(LetterWriteScene *self);
+void LetterWrite_RunKeyRepeat(LetterWriteScene *self);
+void LetterWrite_RunKeyPressed(LetterWriteScene *self);
+void LetterWrite_RunPointerGlide(LetterWriteScene *self);
+void LetterWrite_RunKeys(LetterWriteScene *self);
+int LetterWrite_Command(LetterWriteScene *self, int code);
+void LetterWrite_Paste(LetterWriteScene *self);
+void LetterWrite_Copy(LetterWriteScene *self);
+void LetterWrite_PressButton0(LetterWriteScene *self);
+void LetterWrite_PressButton1(LetterWriteScene *self);
+void LetterWrite_Leave(LetterWriteScene *self);
+int LetterWrite_TypeChar(LetterWriteScene *self, int code);
+int LetterWrite_InsertChar(LetterWriteScene *self, int code, int notify);
+int LetterWrite_ConvertChar(LetterWriteScene *self, int code);
+int LetterWrite_Backspace(LetterWriteScene *self, int sound_on_fail);
+int LetterWrite_TouchKey(LetterWriteScene *self);
+void LetterWrite_RunChoiceTouch(LetterWriteScene *self);
+void LetterWrite_RunPanelTouch(LetterWriteScene *self);
+void LetterWrite_RunMarkDrag(LetterWriteScene *self);
+void LetterWrite_RunScrollDrag(LetterWriteScene *self);
+void LetterWrite_RunKeyTouchHeld(LetterWriteScene *self);
+void LetterWrite_RunTouch(LetterWriteScene *self);
+void LetterWrite_UpdateKeys(LetterWriteScene *self);
+void LetterWrite_Refresh(LetterWriteScene *self, int whole, int editing);
+void LetterWrite_ShowPanelMessage(LetterWriteScene *self);
+void LetterWrite_SetPanelLayout(LetterWriteScene *self);
+void LetterWrite_LoadKeyboardScreen(LetterWriteScene *self);
+void LetterWrite_LoadScreens(LetterWriteScene *self);
+void LetterWrite_SetLayers(void);
+void LetterWrite_Idle(LetterWriteScene *self);
+void LetterWrite_ClosePanelTexts(LetterWriteScene *self);
+void LetterWrite_Draw(LetterWriteScene *self);
+int LetterWrite_UpdateSprites(LetterWriteScene *self);
+void LetterWrite_Release(LetterWriteScene *self);
+void LetterWrite_Setup(LetterWriteScene *self);
+void LetterWrite_StepWipeOut(LetterWriteScene *self);
+void LetterWrite_StartWipeOut(LetterWriteScene *self);
 
 #endif

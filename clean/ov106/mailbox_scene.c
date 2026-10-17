@@ -5,22 +5,27 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "autoload_2/heap.h"
 #include "autoload_2/input.h"
 #include "autoload_2/process.h"
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
 #include "main/current_pockets.h"
+#include "main/display_layers.h"
+#include "main/group_params.h"
 #include "main/item_code.h"
 #include "main/item_record.h"
 #include "main/label_sprite.h"
 #include "main/layer_load_task.h"
 #include "main/lookups.h"
+#include "main/mail.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
 #include "main/sliding_window.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
+#include "ov004/member_pointer.h"
 #include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(MailboxScene, flags) == 0x94, "flags");
@@ -993,9 +998,6 @@ extern PadState data_021fbe40;
 /* The message shown when no carried letter is free (MailboxScene_TakeNextLetter). */
 #define MAILBOX_SCENE_MESSAGE_CARRIED_FULL 6
 
-/* The sub state runner (the table of member functions, Obj_ov106_0229f6e0::func_ov106_0229ef8c). */
-extern void _ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv(MailboxScene *self);
-
 static CellLayerSprite *mbx_cursor_cells(MailboxScene *self)
 {
     /* The cursor sprite's base is main's cell layer sprite (glide.h). */
@@ -1703,7 +1705,7 @@ void MailboxScene_WaitCursorSprite(MailboxScene *self)
         if (self->return_state == MAILBOX_SCENE_SUB_BROWSE) {
             MailboxScene_SelectPlace(self, self->cursor);
         }
-        _ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv(self);
+        MailboxScene_RunSubState(self);
     }
     MailboxScene_FollowCursorSprite(self);
 }
@@ -2015,3 +2017,648 @@ void MailboxScene_WatchChoiceTouch(MailboxScene *self)
     }
 }
 CLEAN_AS(func_ov106_0229e6c4, MailboxScene_WatchChoiceTouch)
+
+/* The layers of the scene: the scene's background, the mailbox's letters, and the letter shown
+ * (its text on layer 3, its paper on the mailbox's layer 4). */
+#define MAILBOX_SCENE_SCENE_LAYER 6
+#define MAILBOX_SCENE_MAILBOX_LAYER 4
+#define MAILBOX_SCENE_TEXT_LAYER 3
+#define MAILBOX_SCENE_WIPE_MARGIN 0x30
+
+/* The panel's button below the letters, and its message. */
+#define MAILBOX_SCENE_PANEL_BUTTON_9 9
+#define MAILBOX_SCENE_PANEL_MESSAGE 0x88
+
+/* The heap the scenes load into (autoload_2/heap.c). */
+extern Heap *data_021fbe94;
+
+/* The mailbox layer's files: its palettes ("menu/inventory/b_itm_post.bpl"), its screen
+ * ("menu/inventory/b_itm_bg_ltr2.bsc") and its characters ("menu/inventory/b_itm_post.bch"). */
+extern const char data_ov106_0229f740[];
+extern const char data_ov106_0229f760[];
+extern const char data_ov106_0229f784[];
+
+/* What the parent (overlay 92's) is told when the scene closes. */
+extern void func_ov092_0229929c(Process *parent);
+
+/* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void func_02066694(void *letter);
+
+/* The tables of member functions (member_pointer.h): the guards, the tables and their constants
+ * (the symbol table also names the sub states' table's later parts, at 0x0229f8a0 and
+ * 0x0229f920). */
+extern u32 data_ov106_0229f7c0; /* the states' guard */
+extern u32 data_ov106_0229f7c4; /* the sub states' guard */
+extern MemberPointer data_ov106_0229f7c8[MAILBOX_SCENE_STATES];
+extern MemberPointer data_ov106_0229f820[MAILBOX_SCENE_SUB_STATES];
+extern const MemberPointer data_ov106_0229f548, data_ov106_0229f550, data_ov106_0229f558, data_ov106_0229f560,
+    data_ov106_0229f568, data_ov106_0229f570, data_ov106_0229f578, data_ov106_0229f580, data_ov106_0229f588,
+    data_ov106_0229f590, data_ov106_0229f598, data_ov106_0229f5a0, data_ov106_0229f5a8, data_ov106_0229f5b0,
+    data_ov106_0229f5b8, data_ov106_0229f5c0, data_ov106_0229f5c8, data_ov106_0229f5d0, data_ov106_0229f5d8,
+    data_ov106_0229f5e0, data_ov106_0229f5e8, data_ov106_0229f5f0, data_ov106_0229f5f8, data_ov106_0229f600,
+    data_ov106_0229f608, data_ov106_0229f610, data_ov106_0229f618, data_ov106_0229f620, data_ov106_0229f628,
+    data_ov106_0229f630, data_ov106_0229f638, data_ov106_0229f640, data_ov106_0229f648, data_ov106_0229f650,
+    data_ov106_0229f658, data_ov106_0229f660, data_ov106_0229f668, data_ov106_0229f670, data_ov106_0229f678,
+    data_ov106_0229f680, data_ov106_0229f688, data_ov106_0229f690, data_ov106_0229f698, data_ov106_0229f6a0,
+    data_ov106_0229f6a8, data_ov106_0229f6b0, data_ov106_0229f6b8, data_ov106_0229f6c0, data_ov106_0229f6c8,
+    data_ov106_0229f6d0;
+
+/* The parent process. */
+static Process *mbx_parent(MailboxScene *self)
+{
+    return Process_GetParent((Process *) (void *) self);
+}
+
+/* A member drawn through its class (vtable slot 2). */
+static void mbx_draw_member(void *object)
+{
+    const u32 *vtable = (const u32 *) (uintptr_t) *(const u32 *) object;
+    ((void (*)(void *))(uintptr_t) vtable[2])(object);
+}
+
+/* Obj_ov106_0229f6e0::func_ov106_0229e734 (sub state 1): a place is touched. Let go, a letter
+ * that may be dragged has its choice opened (sub state 3, run at once); else the scene goes back
+ * to sub state 0 with the popup's timer at 60 frames. Held down on a letter that may be
+ * dragged: moving off it picks it up (MailboxScene_PickUpWithTouch); else, once the popup is up
+ * and `open_delay` more frames have passed, the place's choice opens above the popup (sub state
+ * 2). Otherwise a queued popup is shown. */
+void MailboxScene_HoldTouchOnPlace(MailboxScene *self)
+{
+    if (data_021fbdd8 == 0) {
+        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DRAGGABLE) != 0) {
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_OPEN_TOUCHED);
+            MailboxScene_RunSubState(self);
+        } else {
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TOUCH_IDLE);
+            Popup_SetTimer(&self->popup, 0x3c);
+        }
+        return;
+    }
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DRAGGABLE) != 0) {
+        if (MailboxScene_TouchMoved(self) != 0) {
+            MailboxScene_PickUpWithTouch(self, self->touch_place);
+            return;
+        }
+        if (Popup_IsUp(&self->popup) != 0) {
+            if (self->open_delay != 0) {
+                self->open_delay--;
+            } else {
+                MailboxScene_OpenLetterMenu(self, self->touch_place, 1);
+                MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TOUCH_CHOICE);
+            }
+            return;
+        }
+    }
+    Popup_ShowQueued(&self->popup);
+}
+CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229e734Ev, MailboxScene_HoldTouchOnPlace)
+
+/* func_ov106_0229e7e0 (sub state 0): the touch is in use and the cursor sprite hidden. A button
+ * puts the cursor sprite back at the cursor (sub state 7). The pen going down touches the letter
+ * place under it (looked for 16 pixels lower) when it holds a letter; else presses panel button
+ * 9 when on it. */
+void MailboxScene_IdleByTouch(MailboxScene *self)
+{
+    if (MenuScene_TakeButtons(mbx_scene(self), 1) != 0) {
+        MailboxScene_EndActionAtCursor(self);
+        return;
+    }
+    if (!mbx_pen_pressed()) {
+        return;
+    }
+    int place = MailboxScene_LetterPlaceAtTouch(self, data_021f6c58, data_021f6c54 + 0x10, 1);
+    if (place != MAILBOX_SCENE_NO_PLACE) {
+        MailboxScene_TouchPlace(self, place);
+        return;
+    }
+    if (ButtonPanel_IsTouched(&self->panel, MAILBOX_SCENE_PANEL_BUTTON_9) != 0) {
+        MailboxScene_PressPanelButton9(self);
+    }
+}
+CLEAN_AS(func_ov106_0229e7e0, MailboxScene_IdleByTouch)
+
+/* func_ov106_0229e860: a step of the wallet display's setup (its answer unused), the panel's
+ * text colours loaded and its layout 5 with message 0x88. */
+void MailboxScene_PreparePanel(MailboxScene *self)
+{
+    PocketsWallet_LoadObjFiles(&self->wallet);
+    ButtonPanel_LoadTextColors(&self->panel);
+    ButtonPanel_SetLayout5(&self->panel, MAILBOX_SCENE_PANEL_MESSAGE);
+}
+CLEAN_AS(func_ov106_0229e860, MailboxScene_PreparePanel)
+
+/* func_ov106_0229e88c: the mailbox layer's palette 4, its screen and its characters 0x1e2-0x227
+ * loaded from their files. */
+void MailboxScene_LoadMailboxLayer(MailboxScene *self)
+{
+    (void) self;
+    Heap *heap = data_021fbe94;
+    DisplayLayer_LoadPalettesFromFile(data_ov106_0229f740, heap, MAILBOX_SCENE_MAILBOX_LAYER, 4, 4, 4);
+    DisplayLayer_LoadScreenFromFile(data_ov106_0229f760, heap, MAILBOX_SCENE_MAILBOX_LAYER);
+    DisplayLayer_LoadCharsFromFile(data_ov106_0229f784, heap, MAILBOX_SCENE_MAILBOX_LAYER, 0x1e2, 0x1e2, 0x227);
+}
+CLEAN_AS(func_ov106_0229e88c, MailboxScene_LoadMailboxLayer)
+
+/* func_ov106_0229e8e0: the wallet's display started with 0 and prepared. */
+void MailboxScene_PrepareWallet(MailboxScene *self)
+{
+    PocketsWallet_SetUp(&self->wallet, 0);
+}
+CLEAN_AS(func_ov106_0229e8e0, MailboxScene_PrepareWallet)
+
+/* func_ov106_0229e8f4: the scene layer at priority 2 and the mailbox layer at priority 1, both
+ * with their plain background settings. */
+void MailboxScene_SetUpLayers(void)
+{
+    DisplayLayer_SetPriority(MAILBOX_SCENE_SCENE_LAYER, 2);
+    DisplayLayer_SetBgControl(MAILBOX_SCENE_SCENE_LAYER, 0, 0, 0);
+    DisplayLayer_SetPriority(MAILBOX_SCENE_MAILBOX_LAYER, 1);
+    DisplayLayer_SetBgControl(MAILBOX_SCENE_MAILBOX_LAYER, 0, 0, 0);
+}
+CLEAN_AS(func_ov106_0229e8f4, MailboxScene_SetUpLayers)
+
+/* func_ov106_0229e928: the end of a frame: the choice and the wallet's display updated, and the
+ * popup placed when its update asks for it. */
+void MailboxScene_EndFrame(MailboxScene *self)
+{
+    PagedChoice_Update(mbx_choice(self));
+    PocketsWallet_Update(&self->wallet);
+    if (Popup_Update(&self->popup) != 0) {
+        MailboxScene_PlacePopup(self);
+    }
+}
+CLEAN_AS(func_ov106_0229e928, MailboxScene_EndFrame)
+
+/* func_ov106_0229e960: the start of a frame: the layer task ended, the three objects of ov094's
+ * updated and the panel's texts closed. */
+void MailboxScene_BeginFrame(MailboxScene *self)
+{
+    MailboxScene_EndLayerTask(self);
+    PocketsWallet_BeginFrame(&self->wallet);
+    PocketsGrid_BeginFrame(&self->grid);
+    PocketsLetters_BeginFrame(&self->letters);
+    ButtonPanel_CloseTexts(&self->panel);
+}
+CLEAN_AS(func_ov106_0229e960, MailboxScene_BeginFrame)
+
+/* func_ov106_0229e99c */
+void MailboxScene_EndInteractiveFrame(MailboxScene *self)
+{
+    MailboxScene_EndFrame(self);
+}
+CLEAN_AS(func_ov106_0229e99c, MailboxScene_EndInteractiveFrame)
+
+/* func_ov106_0229e9a4: the start of a frame, then the cursor sprite's update through its class
+ * (vtable slot 3). */
+void MailboxScene_BeginInteractiveFrame(MailboxScene *self)
+{
+    MailboxScene_BeginFrame(self);
+    mbx_update_cursor_sprite(&self->cursor_sprite);
+}
+CLEAN_AS(func_ov106_0229e9a4, MailboxScene_BeginInteractiveFrame)
+
+/* func_ov106_0229e9c0: the members' teardown before the scene closes. */
+void MailboxScene_Teardown(MailboxScene *self)
+{
+    MailboxScene_EndLayerTask(self);
+    PocketsWallet_Teardown(&self->wallet);
+    PocketsGrid_Teardown(&self->grid);
+    PagedChoice_Dismiss(mbx_choice(self));
+    LetterView_ReleaseBoxes(&self->view);
+    ButtonPanel_CloseTexts(&self->panel);
+}
+CLEAN_AS(func_ov106_0229e9c0, MailboxScene_Teardown)
+
+/* func_ov106_0229ea08: the scene's setup: no flags, the three objects of ov094's set up, no
+ * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
+ * choice and the letter view on layer 3; the ten letters of the mailbox emptied, then copied
+ * from the current player's mailbox; its letters to be taken once the scene is in
+ * (MAILBOX_SCENE_FLAG_TAKE_LETTERS); no open delay. */
+void MailboxScene_Setup(MailboxScene *self)
+{
+    self->flags = 0;
+    PocketsGrid_Init(&self->grid, 2);
+    PocketsLetters_Init(&self->letters, 1);
+    PocketsWallet_Init(&self->wallet, 6);
+    self->popup_place = MAILBOX_SCENE_NO_PLACE;
+    Glide_Stop(&self->glide);
+    self->held_kind = MAILBOX_SCENE_HELD_NONE;
+    self->cursor = MAILBOX_SCENE_CARRIED_FIRST;
+    PagedChoice_Init(mbx_choice(self), MAILBOX_SCENE_TEXT_LAYER, 0, NULL);
+    LetterView_Init(&self->view, MAILBOX_SCENE_TEXT_LAYER);
+    for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
+        Letter_Clear(&self->mailbox[i]);
+    }
+    MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
+    /* The mailbox's first letter: the other nine follow it. */
+    const Letter *src = (const Letter *) (void *) MailBox_Letter(box, 0);
+    for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
+        Letter_Assign(&self->mailbox[i], &src[i]);
+    }
+    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_TAKE_LETTERS);
+    self->open_delay = 0;
+}
+CLEAN_AS(func_ov106_0229ea08, MailboxScene_Setup)
+
+/* func_ov106_0229eadc: the mailbox layer scrolled by the wipe (16 pixels up), the wipe's x kept
+ * for the mailbox's letters. */
+void MailboxScene_ScrollMailboxLayer(MailboxScene *self)
+{
+    MenuScene_ScrollWipe(mbx_scene(self), MAILBOX_SCENE_MAILBOX_LAYER, 0, -0x10);
+    self->wipe_x = MenuScene_WipeOffsetX(mbx_scene(self));
+}
+CLEAN_AS(func_ov106_0229eadc, MailboxScene_ScrollMailboxLayer)
+
+/* func_ov106_0229eafc: the scene layer scrolled by the wipe (16 pixels up), the wipe's y kept for
+ * the objects and the panel. */
+void MailboxScene_ScrollSceneLayer(MailboxScene *self)
+{
+    MenuScene_ScrollWipe(mbx_scene(self), MAILBOX_SCENE_SCENE_LAYER, 0, -0x10);
+    self->objects_y = MenuScene_WipeOffsetY(mbx_scene(self));
+    self->wipe_y = MenuScene_WipeOffsetY(mbx_scene(self));
+}
+CLEAN_AS(func_ov106_0229eafc, MailboxScene_ScrollSceneLayer)
+
+/* func_ov106_0229eb28: the letter's two layers (text and paper) scrolled by the wipe. */
+void MailboxScene_ScrollLetterLayers(MailboxScene *self)
+{
+    MenuScene_ScrollWipe(mbx_scene(self), MAILBOX_SCENE_TEXT_LAYER, 0, 0);
+    MenuScene_ScrollWipe(mbx_scene(self), MAILBOX_SCENE_MAILBOX_LAYER, 0, 0);
+}
+CLEAN_AS(func_ov106_0229eb28, MailboxScene_ScrollLetterLayers)
+
+/* func_ov106_0229eb48 (state 0x0a): the letter wipes out; when done, its layers hidden and the
+ * label button no longer drawn: when the scene was asked to close, the run phase begins and the
+ * scene is no longer drawn, else it is set up again (MailboxScene_StartSetup). Else its layers
+ * follow the wipe. */
+void MailboxScene_LetterWipeOut(MailboxScene *self)
+{
+    if (MenuScene_StepWipe(mbx_scene(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(MAILBOX_SCENE_TEXT_LAYER);
+        DisplayLayer_HideAndResetScroll(MAILBOX_SCENE_MAILBOX_LAYER);
+        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_LETTER_SHOWN);
+        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_CLOSING) != 0) {
+            MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_RUN);
+            MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_DRAWN);
+        } else {
+            MailboxScene_StartSetup(self);
+        }
+    } else {
+        MailboxScene_ScrollLetterLayers(self);
+    }
+}
+CLEAN_AS(func_ov106_0229eb48, MailboxScene_LetterWipeOut)
+
+/* func_ov106_0229eba0 (state 9, after the label button's press): the letter starts to wipe out
+ * on window 2 (state 0x0a). */
+void MailboxScene_StartLetterWipeOut(MailboxScene *self)
+{
+    MenuScene_StartWipeOnWindow2(mbx_scene(self), 3, 0, 0, MAILBOX_SCENE_WIPE_MARGIN);
+    MailboxScene_ScrollLetterLayers(self);
+    MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_LETTER_WIPE_OUT);
+}
+CLEAN_AS(func_ov106_0229eba0, MailboxScene_StartLetterWipeOut)
+
+/* func_ov106_0229ebcc (state 8): the letter wipes in; when done, phase 2 and its label button by
+ * the touch (sub state 5) while state flag 2 is clear, else by the keys (sub state 9). Else its
+ * layers follow the wipe. */
+void MailboxScene_LetterWipeIn(MailboxScene *self)
+{
+    if (MenuScene_StepWipeBack(mbx_scene(self), 0) != 0) {
+        MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_2);
+        if (StateFlags_IsClear2()) {
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_LABEL_BY_TOUCH);
+        } else {
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_LABEL_BY_KEYS);
+        }
+    } else {
+        MailboxScene_ScrollLetterLayers(self);
+    }
+}
+CLEAN_AS(func_ov106_0229ebcc, MailboxScene_LetterWipeIn)
+
+/* func_ov106_0229ec0c (state 7): the letter of the place whose choice was open is shown: its
+ * paper recorded (MailboxScene_RecordPaper), Letter_AdvanceReceived moves its state on, the
+ * letter view shows it (layers 3 and 4, priority 1), the two layers shown and wiping in on window
+ * 2 (state 8), and the label button is shown with message 0x88 and drawn. */
+void MailboxScene_ShowLetter(MailboxScene *self)
+{
+    Letter *letter = MailboxScene_PlaceLetter(self, self->slot);
+    MailboxScene_RecordPaper(self, letter);
+    Letter_AdvanceReceived(letter);
+    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, MAILBOX_SCENE_TEXT_LAYER,
+                    MAILBOX_SCENE_MAILBOX_LAYER, 1);
+    MenuScene_StartWipeCoveredOnWindow2(mbx_scene(self), 3, 0, 0, MAILBOX_SCENE_WIPE_MARGIN);
+    DisplayLayer_Show(MAILBOX_SCENE_TEXT_LAYER);
+    DisplayLayer_Show(MAILBOX_SCENE_MAILBOX_LAYER);
+    MailboxScene_ScrollLetterLayers(self);
+    MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_LETTER_WIPE_IN);
+    LabelButton_ShowLowerRight(&self->button, 0x88);
+    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_LETTER_SHOWN);
+}
+CLEAN_AS(func_ov106_0229ec0c, MailboxScene_ShowLetter)
+
+/* func_ov106_0229ec8c (state 6): the scene wipes out; when done, its layer hidden and its
+ * objects no longer drawn: with FLAG_100 the letter is shown (state 7, run at once), else the
+ * scene is no longer drawn and the run phase begins. Else the scene layer follows the wipe. */
+void MailboxScene_SceneWipeOut(MailboxScene *self)
+{
+    if (MenuScene_StepWipe(mbx_scene(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(MAILBOX_SCENE_SCENE_LAYER);
+        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_OBJECTS_DRAWN);
+        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_100) != 0) {
+            MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_SHOW_LETTER);
+            MailboxScene_ShowLetter(self);
+        } else {
+            MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_DRAWN);
+            MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_RUN);
+        }
+    } else {
+        MailboxScene_ScrollSceneLayer(self);
+    }
+}
+CLEAN_AS(func_ov106_0229ec8c, MailboxScene_SceneWipeOut)
+
+/* func_ov106_0229ece8 (state 5): the mailbox's letters wipe out; when done, the mailbox layer
+ * hidden, its letters no longer drawn, and the scene starts to wipe out on window 2 (state 6, run
+ * at once). Else the mailbox layer follows the wipe. */
+void MailboxScene_MailboxWipeOut(MailboxScene *self)
+{
+    if (MenuScene_StepWipe(mbx_scene(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(MAILBOX_SCENE_MAILBOX_LAYER);
+        MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_MAILBOX_DRAWN);
+        MenuScene_StartWipeOnWindow2(mbx_scene(self), 8, 0, 0, MAILBOX_SCENE_WIPE_MARGIN);
+        MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_SCENE_WIPE_OUT);
+        MailboxScene_SceneWipeOut(self);
+    } else {
+        MailboxScene_ScrollMailboxLayer(self);
+    }
+}
+CLEAN_AS(func_ov106_0229ece8, MailboxScene_MailboxWipeOut)
+
+/* func_ov106_0229ed38 (state 4, panel button 9 or action 1): the popup hidden (its queue
+ * dropped) and the cursor sprite hidden; the parent told the scene ends (code 0x44) unless a
+ * letter is to be shown (FLAG_100); the mailbox's letters start to wipe out on window 2 over
+ * 0xc0 pixels (state 5). */
+void MailboxScene_StartWipeOut(MailboxScene *self)
+{
+    Popup_Hide(&self->popup, 1);
+    MailboxScene_HideCursorSprite(self);
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_100) == 0) {
+        func_ov092_02299324(mbx_parent(self), MAILBOX_SCENE_PARENT_CODE_END, 1);
+    }
+    MenuScene_StartWipeOnWindow2(mbx_scene(self), 2, 0, 2, MAILBOX_SCENE_WIPE_MARGIN);
+    MenuScene_SetWipeExtent(mbx_scene(self), 0xc0);
+    MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_MAILBOX_WIPE_OUT);
+}
+CLEAN_AS(func_ov106_0229ed38, MailboxScene_StartWipeOut)
+
+/* func_ov106_0229ed98 (state 3): the mailbox's letters wipe in; when done, phase 2, and the
+ * mailbox's letters are taken (sub state 0x24) the first time, else the action ends. The mailbox
+ * layer follows the wipe. */
+void MailboxScene_MailboxWipeIn(MailboxScene *self)
+{
+    if (MenuScene_StepWipeBack(mbx_scene(self), 0) != 0) {
+        MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_2);
+        if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_TAKE_LETTERS) != 0) {
+            MailboxScene_ClearFlags(self, MAILBOX_SCENE_FLAG_TAKE_LETTERS);
+            MenuScene_SetSubState(mbx_scene(self), MAILBOX_SCENE_SUB_TAKE_NEXT);
+        } else {
+            MailboxScene_EndAction(self);
+        }
+    }
+    MailboxScene_ScrollMailboxLayer(self);
+}
+CLEAN_AS(func_ov106_0229ed98, MailboxScene_MailboxWipeIn)
+
+/* func_ov106_0229ede4 (state 2): the scene wipes in, its layer following; when done, the mailbox
+ * layer loaded and shown, its letters drawn and wiping in on window 2 over 0xc0 pixels (state
+ * 3). */
+void MailboxScene_SceneWipeIn(MailboxScene *self)
+{
+    int done = MenuScene_StepWipeBack(mbx_scene(self), 0);
+    MailboxScene_ScrollSceneLayer(self);
+    if (done != 0) {
+        MailboxScene_LoadMailboxLayer(self);
+        MenuScene_StartWipeCoveredOnWindow2(mbx_scene(self), 2, 0, 2, MAILBOX_SCENE_WIPE_MARGIN);
+        MenuScene_SetWipeExtent(mbx_scene(self), 0xc0);
+        DisplayLayer_Show(MAILBOX_SCENE_MAILBOX_LAYER);
+        MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_MAILBOX_DRAWN);
+        MailboxScene_ScrollMailboxLayer(self);
+        MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_MAILBOX_WIPE_IN);
+    }
+}
+CLEAN_AS(func_ov106_0229ede4, MailboxScene_SceneWipeIn)
+
+/* func_ov106_0229ee44 (state 1): the panel prepared, the grid's and the letters' objects
+ * prepared, the mailbox's ten letters given to the letters object at its places 0x23-0x2c, the
+ * carried letters dimmed as they should be, the scene layer shown and wiping in on window 2
+ * (state 2); the scene and its objects drawn. */
+void MailboxScene_StartWipeIn(MailboxScene *self)
+{
+    MailboxScene_PreparePanel(self);
+    PocketsGrid_LoadPockets(&self->grid);
+    PocketsLetters_LoadPockets(&self->letters);
+    PocketsLetters_SetTenAt23(&self->letters, self->mailbox);
+    MailboxScene_DimCarriedLetters(self);
+    MenuScene_StartWipeCoveredOnWindow2(mbx_scene(self), 8, 0, 0, MAILBOX_SCENE_WIPE_MARGIN);
+    DisplayLayer_Show(MAILBOX_SCENE_SCENE_LAYER);
+    MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_SCENE_WIPE_IN);
+    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_DRAWN);
+    MailboxScene_SetFlags(self, MAILBOX_SCENE_FLAG_OBJECTS_DRAWN);
+    MailboxScene_ScrollSceneLayer(self);
+}
+CLEAN_AS(func_ov106_0229ee44, MailboxScene_StartWipeIn)
+
+/* func_ov106_0229eeb4 (state 0): the layers set up and the wallet's display prepared, then
+ * state 1. */
+void MailboxScene_StartSetup(MailboxScene *self)
+{
+    MailboxScene_SetUpLayers();
+    MailboxScene_PrepareWallet(self);
+    MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_START_WIPE_IN);
+}
+CLEAN_AS(func_ov106_0229eeb4, MailboxScene_StartSetup)
+
+/* func_ov106_0229eed0 (vtable slot 0x5c, phase 4): main told the letters changed
+ * (GroupParams_SetC4C(1), always), the scene's ten letters compacted (Mail_Compact, its answer
+ * unused) and copied back to the current player's mailbox. Then the scene asks to be deleted.
+ * Answers 1. */
+int MailboxScene_End(MailboxScene *self)
+{
+    GroupParams_SetC4C(1);
+    Mail_Compact((MailLetter *) (void *) self->mailbox, MAILBOX_SCENE_LETTERS);
+    MailBox *box = PlayerRecord_Mailbox(PlayerRecords_Current());
+    Letter *dst = (Letter *) (void *) MailBox_Letter(box, 0);
+    for (int i = 0; i < MAILBOX_SCENE_LETTERS; i++) {
+        Letter_Assign(&dst[i], &self->mailbox[i]);
+    }
+    Process_RequestDelete((Process *) (void *) self);
+    return 1;
+}
+CLEAN_AS(func_ov106_0229eed0, MailboxScene_End)
+
+/* func_ov106_0229ef28 (vtable slot 0x58, phase 1): nothing. */
+int MailboxScene_Phase1Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov106_0229ef28, MailboxScene_Phase1Idle)
+
+/* func_ov106_0229ef2c (vtable slot 0x54, phase 0): nothing. */
+int MailboxScene_Phase0Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov106_0229ef2c, MailboxScene_Phase0Idle)
+
+/* Obj_ov106_0229f6e0::func_ov106_0229ef30 (vtable slot 0x50, phase 2): a frame of the scene in
+ * use. The menu close's delay is counted first; when the menu is asked to close in sub state 0,
+ * 1 or 7, the cursor sprite is hidden, panel button 9 pressed and the popup hidden (its queue
+ * kept). Else the frame's start, its sub state and its end. Answers 1. */
+int MailboxScene_RunInteractive(MailboxScene *self)
+{
+    StateFlags_CountMenuCloseDelay();
+    if (StateFlags_MenuCloseAsked()) {
+        u8 sub_state = self->base.sub_state;
+        if (sub_state == MAILBOX_SCENE_SUB_TOUCH_IDLE || sub_state == MAILBOX_SCENE_SUB_TOUCH_HOLD ||
+            sub_state == MAILBOX_SCENE_SUB_BROWSE) {
+            MailboxScene_HideCursorSprite(self);
+            MailboxScene_PressPanelButton9(self);
+            Popup_Hide(&self->popup, 0);
+            return 1;
+        }
+    }
+    MailboxScene_BeginInteractiveFrame(self);
+    MailboxScene_RunSubState(self);
+    MailboxScene_EndInteractiveFrame(self);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229ef30Ev, MailboxScene_RunInteractive)
+
+/* Obj_ov106_0229f6e0::func_ov106_0229ef8c: the sub state's function (MailboxSceneSubState)
+ * through the table of member functions, filled once from its constants.
+ * REQUIRES: the sub state is below 0x27; the game reads past the table for others. */
+void MailboxScene_RunSubState(MailboxScene *self)
+{
+    static const MemberPointer *const sub_states[MAILBOX_SCENE_SUB_STATES] = {
+        &data_ov106_0229f670, &data_ov106_0229f668, &data_ov106_0229f5c0, &data_ov106_0229f658, &data_ov106_0229f650,
+        &data_ov106_0229f648, &data_ov106_0229f640, &data_ov106_0229f638, &data_ov106_0229f630, &data_ov106_0229f5a0,
+        &data_ov106_0229f5a8, &data_ov106_0229f618, &data_ov106_0229f610, &data_ov106_0229f608, &data_ov106_0229f600,
+        &data_ov106_0229f5f8, &data_ov106_0229f5f0, &data_ov106_0229f5e8, &data_ov106_0229f5e0, &data_ov106_0229f5d8,
+        &data_ov106_0229f680, &data_ov106_0229f5c8, &data_ov106_0229f570, &data_ov106_0229f5b8, &data_ov106_0229f5b0,
+        &data_ov106_0229f568, &data_ov106_0229f620, &data_ov106_0229f598, &data_ov106_0229f590, &data_ov106_0229f588,
+        &data_ov106_0229f580, &data_ov106_0229f5d0, &data_ov106_0229f548, &data_ov106_0229f560, &data_ov106_0229f628,
+        &data_ov106_0229f558, &data_ov106_0229f550, &data_ov106_0229f578, &data_ov106_0229f660,
+    };
+    MemberTable_InitOnce(&data_ov106_0229f7c4, data_ov106_0229f820, sub_states, MAILBOX_SCENE_SUB_STATES);
+    MemberPointer_CallVoid(&data_ov106_0229f820[self->base.sub_state], self);
+}
+CLEAN_AS(_ZN18Obj_ov106_0229f6e019func_ov106_0229ef8cEv, MailboxScene_RunSubState)
+
+/* func_ov106_0229f208 (vtable slot 0x4c, the run phase): a frame of the scene's states
+ * (MailboxSceneState) between the frame's start and end, through the table of member functions
+ * (filled once from its constants, before the frame's start). Answers 1.
+ * REQUIRES: the state is below 0x0b; the game reads past the table for others. */
+int MailboxScene_RunState(MailboxScene *self)
+{
+    static const MemberPointer *const states[MAILBOX_SCENE_STATES] = {
+        &data_ov106_0229f678, &data_ov106_0229f6d0, &data_ov106_0229f6c8, &data_ov106_0229f6c0,
+        &data_ov106_0229f6b8, &data_ov106_0229f6b0, &data_ov106_0229f6a8, &data_ov106_0229f6a0,
+        &data_ov106_0229f698, &data_ov106_0229f690, &data_ov106_0229f688,
+    };
+    MemberTable_InitOnce(&data_ov106_0229f7c0, data_ov106_0229f7c8, states, MAILBOX_SCENE_STATES);
+    MailboxScene_BeginFrame(self);
+    MemberPointer_CallVoid(&data_ov106_0229f7c8[self->base.state], self);
+    MailboxScene_EndFrame(self);
+    return 1;
+}
+CLEAN_AS(func_ov106_0229f208, MailboxScene_RunState)
+
+/* func_ov106_0229f2fc (vtable slot 0x24): the scene's draw, while it is drawn: the popup
+ * (through its class, slot 2), the cursor sprite (with the keys in use), the held letter. With
+ * the objects drawn: the panel at the wipe's y, and the grid, the carried letters and the wallet
+ * at the objects' y. With the mailbox drawn: its letters at the wipe's x. With a letter shown:
+ * the label button at the wipe's y (through its class, slot 2). Answers 1. */
+int MailboxScene_Draw(MailboxScene *self)
+{
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_DRAWN) == 0) {
+        return 1;
+    }
+    mbx_draw_member(&self->popup);
+    if (StateFlags_Test2()) {
+        Glider_DrawWrapped(&self->cursor_sprite);
+    }
+    MailboxScene_DrawHeld(self);
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_OBJECTS_DRAWN) != 0) {
+        ButtonPanel_Draw(&self->panel, self->wipe_y);
+        int y = (int) ((u32) self->objects_y - 0x10);
+        PocketsGrid_DrawPockets(&self->grid, 0, y);
+        PocketsLetters_DrawPockets(&self->letters, 0, y);
+        PocketsWallet_Draw(&self->wallet, y);
+    }
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_MAILBOX_DRAWN) != 0) {
+        PocketsLetters_DrawTenAt23(&self->letters, self->wipe_x, -0x10);
+    }
+    if (MailboxScene_TestFlags(self, MAILBOX_SCENE_FLAG_LETTER_SHOWN) != 0) {
+        int y = MenuScene_WipeOffsetY(mbx_scene(self));
+        /* The button's base is main's labelled sprite (label_button.h). */
+        LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
+        mbx_draw_member(&self->button);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov106_0229f2fc, MailboxScene_Draw)
+
+/* func_ov106_0229f3e0 (vtable slot 0x0c): the scene closes: the parent told and the members
+ * torn down. Answers 1. */
+int MailboxScene_Close(MailboxScene *self)
+{
+    func_ov092_0229929c(mbx_parent(self));
+    MailboxScene_Teardown(self);
+    return 1;
+}
+CLEAN_AS(func_ov106_0229f3e0, MailboxScene_Close)
+
+/* func_ov106_0229f3fc (vtable slot 0x00): the scene starts: its setup, state 0 and phase 0.
+ * Answers 1. */
+int MailboxScene_Start(MailboxScene *self)
+{
+    MailboxScene_Setup(self);
+    MenuScene_SetState(mbx_scene(self), MAILBOX_SCENE_STATE_START_SETUP);
+    MenuScene_SetPhase(mbx_scene(self), MENU_SCENE_PHASE_0);
+    return 1;
+}
+CLEAN_AS(func_ov106_0229f3fc, MailboxScene_Start)
+
+/* func_ov106_0229f41c (named by the profile at 0x0229f540): a new scene from the menu scenes'
+ * heap (NULL when it has no room): the base, the scene's vtable and its members constructed in
+ * order, the two arrays of ten letters by __cxa_vec_ctor. */
+MailboxScene *MailboxScene_New(void)
+{
+    MailboxScene *self = MenuScene_Alloc(sizeof(MailboxScene));
+    if (self == NULL) {
+        return NULL;
+    }
+    MenuScene_Construct(&self->base);
+    self->base.vtable = data_ov106_0229f6e0;
+    LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_c0);
+    PocketsGrid_Construct(&self->grid);
+    PocketsLetters_Construct(&self->letters);
+    PocketsWallet_Construct(&self->wallet);
+    Popup_Construct(&self->popup);
+    Glide_Construct(&self->glide);
+    Glider0_Construct(&self->cursor_sprite);
+    PagedChoice_Construct(mbx_choice(self));
+    ErrorMessage_Construct(&self->error);
+    LetterView_Construct(&self->view);
+    LabelButton0_Construct(&self->button);
+    __cxa_vec_ctor(self->mailbox, MAILBOX_SCENE_LETTERS, sizeof(Letter), func_02066694, func_02066688);
+    __cxa_vec_ctor(self->unk_35b4, MAILBOX_SCENE_LETTERS, sizeof(Letter), func_02066694, func_02066688);
+    ButtonPanel_Construct(&self->panel);
+    Letter_Construct(&self->held);
+    Letter_Construct(&self->swapped);
+    return self;
+}
+CLEAN_AS(func_ov106_0229f41c, MailboxScene_New)

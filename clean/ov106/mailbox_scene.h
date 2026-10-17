@@ -1,10 +1,10 @@
 /* The scene of overlay 106 (vtable 0x0229f6e0, include/cpp/ov106/Obj_ov106_0229f6e0.h; constructor
- * func_ov106_0229f41c, 0x4380 bytes): a menu scene (ov002/menu_scene.h) that shows the ten letters
+ * MailboxScene_New, 0x4380 bytes): a menu scene (ov002/menu_scene.h) that shows the ten letters
  * of the current player's mailbox (main/mail.h) beside the ten letters they carry, as the evidence
  * says:
  *
- * - its setup (func_ov106_0229ea08) copies the ten letters of PlayerRecord_Mailbox for the
- *   current player into `mailbox`, and its end (func_ov106_0229eed0) compacts them (Mail_Compact)
+ * - its setup (MailboxScene_Setup) copies the ten letters of PlayerRecord_Mailbox for the
+ *   current player into `mailbox`, and its end (MailboxScene_End) compacts them (Mail_Compact)
  *   and copies them back;
  * - its background is "menu/inventory/b_itm_bg_ltr2.bsc" with the post office's characters and
  *   palette ("menu/inventory/b_itm_post.bch", "...post.bpl"), as overlay 105's letter storage
@@ -38,18 +38,20 @@
 
 /* In `flags`. */
 enum MailboxSceneFlag {
-    MAILBOX_SCENE_FLAG_08 = 0x08,            /* the cursor sprite jumps to the cursor instead of easing
-                                                * (MailboxScene_GlideToCursor), once */
-    MAILBOX_SCENE_FLAG_WRAPPED_LEFT = 0x10,  /* this move wrapped the cursor from the mailbox's left
-                                                * column to the carried letters */
-    MAILBOX_SCENE_FLAG_WRAPPED_RIGHT = 0x20, /* this move wrapped it from the carried letters' right
-                                                * column to the mailbox */
-    MAILBOX_SCENE_FLAG_HELD_HIDDEN = 0x40,   /* the held letter is not drawn (MailboxScene_DrawHeld) */
-    MAILBOX_SCENE_FLAG_100 = 0x100,          /* set by action 1 (MailboxScene_RunAction1) */
-    MAILBOX_SCENE_FLAG_4000 = 0x4000,        /* set by the setup */
-    MAILBOX_SCENE_FLAG_CLOSING = 0x8000,     /* the scene was asked to close (MailboxScene_CloseOnRequest) */
-    MAILBOX_SCENE_FLAG_FIXED_MENU = 0x10000  /* the choice is MailboxScene_OpenFixedMenu's: its first
-                                                * row is set apart */
+    MAILBOX_SCENE_FLAG_08 = 0x08,             /* the cursor sprite jumps to the cursor instead of easing
+                                               * (MailboxScene_GlideToCursor), once */
+    MAILBOX_SCENE_FLAG_WRAPPED_LEFT = 0x10,   /* this move wrapped the cursor from the mailbox's left
+                                               * column to the carried letters */
+    MAILBOX_SCENE_FLAG_WRAPPED_RIGHT = 0x20,  /* this move wrapped it from the carried letters' right
+                                               * column to the mailbox */
+    MAILBOX_SCENE_FLAG_HELD_HIDDEN = 0x40,    /* the held letter is not drawn (MailboxScene_DrawHeld) */
+    MAILBOX_SCENE_FLAG_100 = 0x100,           /* set by action 1 (MailboxScene_RunAction1): the letter is
+                                               * shown once the scene has wiped out */
+    MAILBOX_SCENE_FLAG_TAKE_LETTERS = 0x4000, /* set by the setup: once the scene has wiped in, the
+                                               * mailbox's letters are taken (MailboxScene_MailboxWipeIn) */
+    MAILBOX_SCENE_FLAG_CLOSING = 0x8000,      /* the scene was asked to close (MailboxScene_CloseOnRequest) */
+    MAILBOX_SCENE_FLAG_FIXED_MENU = 0x10000   /* the choice is MailboxScene_OpenFixedMenu's: its first
+                                               * row is set apart */
 };
 
 #define MAILBOX_SCENE_FLAGS_WRAPPED (MAILBOX_SCENE_FLAG_WRAPPED_LEFT | MAILBOX_SCENE_FLAG_WRAPPED_RIGHT)
@@ -88,8 +90,8 @@ enum MailboxSceneAction {
 typedef struct MailboxScene {
     MenuScene base;                         /* 0x00 */
     u32 flags;                              /* 0x94: MailboxSceneFlag */
-    s32 unk_98;                             /* 0x98 */
-    s32 unk_9c;                             /* 0x9c */
+    s32 objects_y;                          /* 0x98: the objects' offset, the wipe's y (MailboxScene_ScrollSceneLayer) */
+    s32 wipe_x;                             /* 0x9c: the wipe's x, for the mailbox's letters */
     s32 wipe_y;                             /* 0xa0: MenuScene_WipeOffsetY's while a message wipes */
     s32 grab_dx;                            /* 0xa4: from the touch to the held letter */
     s32 grab_dy;                            /* 0xa8 */
@@ -193,11 +195,11 @@ int MailboxScene_LetterPlaceAtTouch(MailboxScene *self, int x, int y, int with_l
  * (MailboxScene_TouchPlace). */
 #define MAILBOX_SCENE_FLAG_DRAGGABLE 0x04
 
-/* The sub states, run from the table of func_ov106_0229ef8c; the ones handled here are named by
- * what their handler does (0 and 1 are func_ov106_0229e7e0's and func_ov106_0229e734's). */
+/* The sub states, run from the table of MailboxScene_RunSubState (MenuScene_SetSubState), named
+ * by what their handler does. */
 enum MailboxSceneSubState {
-    MAILBOX_SCENE_SUB_TOUCH_IDLE = 0x00,        /* func_ov106_0229e7e0 */
-    MAILBOX_SCENE_SUB_TOUCH_HOLD = 0x01,        /* func_ov106_0229e734 */
+    MAILBOX_SCENE_SUB_TOUCH_IDLE = 0x00,        /* MailboxScene_IdleByTouch */
+    MAILBOX_SCENE_SUB_TOUCH_HOLD = 0x01,        /* MailboxScene_HoldTouchOnPlace */
     MAILBOX_SCENE_SUB_TOUCH_CHOICE = 0x02,      /* MailboxScene_WatchChoiceTouch */
     MAILBOX_SCENE_SUB_OPEN_TOUCHED = 0x03,      /* MailboxScene_OpenTouchedChoice */
     MAILBOX_SCENE_SUB_DRAG = 0x04,              /* MailboxScene_DragHeld */
@@ -234,7 +236,8 @@ enum MailboxSceneSubState {
     MAILBOX_SCENE_SUB_BELOW_PRESSED = 0x23,     /* MailboxScene_FollowPanelPress */
     MAILBOX_SCENE_SUB_TAKE_NEXT = 0x24,         /* MailboxScene_TakeNextLetter */
     MAILBOX_SCENE_SUB_TAKE_GLIDE = 0x25,        /* MailboxScene_StepTakenLetterGlide */
-    MAILBOX_SCENE_SUB_LET_GO = 0x26             /* MailboxScene_WaitLetGo */
+    MAILBOX_SCENE_SUB_LET_GO = 0x26,            /* MailboxScene_WaitLetGo */
+    MAILBOX_SCENE_SUB_STATES = 0x27
 };
 
 u8 MailboxScene_LetterPlace(u8 unused, u8 index);
@@ -297,5 +300,66 @@ void MailboxScene_LabelByTouch(MailboxScene *self);
 void MailboxScene_DragHeld(MailboxScene *self);
 void MailboxScene_OpenTouchedChoice(MailboxScene *self);
 void MailboxScene_WatchChoiceTouch(MailboxScene *self);
+
+/* Still more of `flags`: the scene is drawn (MailboxScene_Draw), and with it the panel and the
+ * objects of ov094's at their offsets; the mailbox's letters are drawn at the wipe's x; the label
+ * button is drawn over a letter shown (MailboxScene_ShowLetter). */
+#define MAILBOX_SCENE_FLAG_DRAWN 0x01
+#define MAILBOX_SCENE_FLAG_OBJECTS_DRAWN 0x02
+#define MAILBOX_SCENE_FLAG_LETTER_SHOWN 0x80
+#define MAILBOX_SCENE_FLAG_MAILBOX_DRAWN 0x200
+
+/* The states, run from the table of MailboxScene_RunState (MenuScene_SetState). */
+enum MailboxSceneState {
+    MAILBOX_SCENE_STATE_START_SETUP = 0x00,           /* MailboxScene_StartSetup */
+    MAILBOX_SCENE_STATE_START_WIPE_IN = 0x01,         /* MailboxScene_StartWipeIn */
+    MAILBOX_SCENE_STATE_SCENE_WIPE_IN = 0x02,         /* MailboxScene_SceneWipeIn */
+    MAILBOX_SCENE_STATE_MAILBOX_WIPE_IN = 0x03,       /* MailboxScene_MailboxWipeIn */
+    MAILBOX_SCENE_STATE_START_WIPE_OUT = 0x04,        /* MailboxScene_StartWipeOut */
+    MAILBOX_SCENE_STATE_MAILBOX_WIPE_OUT = 0x05,      /* MailboxScene_MailboxWipeOut */
+    MAILBOX_SCENE_STATE_SCENE_WIPE_OUT = 0x06,        /* MailboxScene_SceneWipeOut */
+    MAILBOX_SCENE_STATE_SHOW_LETTER = 0x07,           /* MailboxScene_ShowLetter */
+    MAILBOX_SCENE_STATE_LETTER_WIPE_IN = 0x08,        /* MailboxScene_LetterWipeIn */
+    MAILBOX_SCENE_STATE_START_LETTER_WIPE_OUT = 0x09, /* MailboxScene_StartLetterWipeOut */
+    MAILBOX_SCENE_STATE_LETTER_WIPE_OUT = 0x0a,       /* MailboxScene_LetterWipeOut */
+    MAILBOX_SCENE_STATES = 0x0b
+};
+
+void MailboxScene_HoldTouchOnPlace(MailboxScene *self);
+void MailboxScene_IdleByTouch(MailboxScene *self);
+void MailboxScene_PreparePanel(MailboxScene *self);
+void MailboxScene_LoadMailboxLayer(MailboxScene *self);
+void MailboxScene_PrepareWallet(MailboxScene *self);
+void MailboxScene_SetUpLayers(void);
+void MailboxScene_EndFrame(MailboxScene *self);
+void MailboxScene_BeginFrame(MailboxScene *self);
+void MailboxScene_EndInteractiveFrame(MailboxScene *self);
+void MailboxScene_BeginInteractiveFrame(MailboxScene *self);
+void MailboxScene_Teardown(MailboxScene *self);
+void MailboxScene_Setup(MailboxScene *self);
+void MailboxScene_ScrollMailboxLayer(MailboxScene *self);
+void MailboxScene_ScrollSceneLayer(MailboxScene *self);
+void MailboxScene_ScrollLetterLayers(MailboxScene *self);
+void MailboxScene_LetterWipeOut(MailboxScene *self);
+void MailboxScene_StartLetterWipeOut(MailboxScene *self);
+void MailboxScene_LetterWipeIn(MailboxScene *self);
+void MailboxScene_ShowLetter(MailboxScene *self);
+void MailboxScene_SceneWipeOut(MailboxScene *self);
+void MailboxScene_MailboxWipeOut(MailboxScene *self);
+void MailboxScene_StartWipeOut(MailboxScene *self);
+void MailboxScene_MailboxWipeIn(MailboxScene *self);
+void MailboxScene_SceneWipeIn(MailboxScene *self);
+void MailboxScene_StartWipeIn(MailboxScene *self);
+void MailboxScene_StartSetup(MailboxScene *self);
+int MailboxScene_End(MailboxScene *self);
+int MailboxScene_Phase1Idle(void);
+int MailboxScene_Phase0Idle(void);
+int MailboxScene_RunInteractive(MailboxScene *self);
+void MailboxScene_RunSubState(MailboxScene *self);
+int MailboxScene_RunState(MailboxScene *self);
+int MailboxScene_Draw(MailboxScene *self);
+int MailboxScene_Close(MailboxScene *self);
+int MailboxScene_Start(MailboxScene *self);
+MailboxScene *MailboxScene_New(void);
 
 #endif

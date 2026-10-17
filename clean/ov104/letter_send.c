@@ -7,10 +7,14 @@
 #include <stdint.h>
 
 #include "autoload_2/heap.h"
+#include "autoload_2/input.h"
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
+#include "main/current_pockets.h"
+#include "main/display_layers.h"
 #include "main/group_params.h"
 #include "main/label_sprite.h"
+#include "main/layer_load_task.h"
 #include "main/mail.h"
 #include "main/player_id.h"
 #include "main/player_messages.h"
@@ -22,6 +26,7 @@
 #include "main/state_flags.h"
 #include "main/talk_object.h"
 #include "ov002/key_repeat.h"
+#include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterSendScene, flags) == 0x94, "flags");
 static_assert(offsetof(LetterSendScene, grab_dx) == 0xa0 && offsetof(LetterSendScene, held_x) == 0xa8, "places");
@@ -55,22 +60,6 @@ extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)
 extern void func_02066688(void *letter);
 
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
-
-/* The scene's place tests, its places' positions and letters, and the letters object's place of
- * a letter place. */
-extern int func_ov104_0229da80(LetterSendScene *self, unsigned int place); /* a carried letter */
-extern int func_ov104_0229da70(LetterSendScene *self, unsigned int place); /* a letter to post */
-extern int func_ov104_0229da5c(LetterSendScene *self, int place);          /* a place below them */
-extern unsigned char func_ov104_0229da38(LetterSendScene *self, unsigned int place);
-extern int func_ov104_0229d8a8(LetterSendScene *self, int place);                        /* the place's x */
-extern int func_ov104_0229d858(LetterSendScene *self, int place);                        /* the place's y */
-extern Letter *func_ov104_0229d8f8(LetterSendScene *self, int place);                    /* its letter, NULL for none */
-extern int func_ov104_0229d7bc(LetterSendScene *self, int place);                        /* whether it holds no letter */
-extern void func_ov104_0229d938(LetterSendScene *self, int place, const Letter *letter); /* a copy put there */
-extern void func_ov104_0229d798(LetterSendScene *self);                                  /* the lifts dropped */
-extern int func_ov104_0229dad8(LetterSendScene *self); /* a free carried place, LETTER_SEND_NO_PLACE for none */
-/* The cancel action. */
-extern void func_ov104_0229dd00(LetterSendScene *self);
 
 /* The talk object's parts the full mailboxes' owners are named in (TalkObject_SetPart). */
 #define LETTER_SEND_FIRST_NAME_PART 7
@@ -116,12 +105,13 @@ static MailLetter *lsend_mail(Letter *letter)
 /* The place is a letter of the letters object: carried or to post. */
 static int lsend_is_letter_place(LetterSendScene *self, int place)
 {
-    return func_ov104_0229da80(self, (unsigned int) place) != 0 || func_ov104_0229da70(self, (unsigned int) place) != 0;
+    return LetterSend_IsCarriedPlace(self, (unsigned int) place) != 0 ||
+           LetterSend_IsOutboxPlace(self, (unsigned int) place) != 0;
 }
 
 static int lsend_letter_index(LetterSendScene *self, int place)
 {
-    return func_ov104_0229da38(self, (unsigned int) place);
+    return LetterSend_LetterIndex(self, (unsigned int) place);
 }
 
 /* The cursor sprite's update through its class (vtable slot 3, Glider_Update for the base). */
@@ -567,9 +557,9 @@ void LetterSend_ReturnUnsent(LetterSendScene *self, int drop_posted)
         if (drop_posted != 0 && (self->posted & (1u << i)) != 0) {
             Letter_Clear(letter);
         } else if (Letter_State(letter) != LETTER_STATE_NONE) {
-            int place = func_ov104_0229dad8(self);
+            int place = LetterSend_FreeCarriedPlace(self);
             if (place != LETTER_SEND_NO_PLACE) {
-                func_ov104_0229d938(self, place, letter);
+                LetterSend_PutLetterAt(self, place, letter);
             }
         }
     }
@@ -580,7 +570,7 @@ CLEAN_AS(func_ov104_0229caa0, LetterSend_ReturnUnsent)
 void LetterSend_RestoreCarried(LetterSendScene *self)
 {
     for (int i = 0; i < LETTER_SEND_LETTERS; i++) {
-        func_ov104_0229d938(self, LETTER_SEND_CARRIED_FIRST + i, &self->carried_copy[i]);
+        LetterSend_PutLetterAt(self, LETTER_SEND_CARRIED_FIRST + i, &self->carried_copy[i]);
     }
 }
 CLEAN_AS(func_ov104_0229cb04, LetterSend_RestoreCarried)
@@ -589,7 +579,7 @@ CLEAN_AS(func_ov104_0229cb04, LetterSend_RestoreCarried)
 void LetterSend_SaveCarried(LetterSendScene *self)
 {
     for (int i = 0; i < LETTER_SEND_LETTERS; i++) {
-        Letter *letter = func_ov104_0229d8f8(self, LETTER_SEND_CARRIED_FIRST + i);
+        Letter *letter = LetterSend_PlaceLetter(self, LETTER_SEND_CARRIED_FIRST + i);
         Letter_Assign(&self->carried_copy[i], letter);
     }
 }
@@ -608,8 +598,8 @@ void LetterSend_PickUpSlotLetter(LetterSendScene *self)
 {
     u8 place = self->slot;
     LetterSend_PickUpLetter(self, place);
-    self->held_x = func_ov104_0229d8a8(self, place);
-    self->held_y = func_ov104_0229d858(self, place);
+    self->held_x = LetterSend_PlaceX(self, place);
+    self->held_y = LetterSend_PlaceY(self, place);
     if (StateFlags_Test2() != 0) {
         self->held_x -= 2;
         self->held_y -= 2;
@@ -649,11 +639,11 @@ int LetterSend_MoveCursor(LetterSendScene *self, int keys, int mode)
     if (keys == 0) {
         return 0;
     }
-    if (func_ov104_0229da80(self, self->cursor) != 0) {
+    if (LetterSend_IsCarriedPlace(self, self->cursor) != 0) {
         LetterSend_MoveCursorInCarried(self, keys, mode);
-    } else if (func_ov104_0229da70(self, self->cursor) != 0) {
+    } else if (LetterSend_IsOutboxPlace(self, self->cursor) != 0) {
         LetterSend_MoveCursorInOutbox(self, keys, mode);
-    } else if (func_ov104_0229da5c(self, self->cursor) != 0) {
+    } else if (LetterSend_IsBelowPlace(self, self->cursor) != 0) {
         LetterSend_MoveCursorBelow(self, keys);
     }
     return before != self->cursor;
@@ -723,7 +713,7 @@ void LetterSend_MoveCursorInOutbox(LetterSendScene *self, int keys, int mode)
         self->cursor++;
     }
 
-    if (func_ov104_0229da70(self, self->cursor) == 0 || LetterSend_TestFlags(self, LETTER_SEND_FLAGS_WRAPPED) != 0) {
+    if (LetterSend_IsOutboxPlace(self, self->cursor) == 0 || LetterSend_TestFlags(self, LETTER_SEND_FLAGS_WRAPPED) != 0) {
         return;
     }
     lsend_move_in_column(self, keys, mode, row, LETTER_SEND_BELOW_OUTBOX);
@@ -752,7 +742,7 @@ void LetterSend_MoveCursorInCarried(LetterSendScene *self, int keys, int mode)
         }
     }
 
-    if (func_ov104_0229da80(self, self->cursor) == 0 || LetterSend_TestFlags(self, LETTER_SEND_FLAGS_WRAPPED) != 0) {
+    if (LetterSend_IsCarriedPlace(self, self->cursor) == 0 || LetterSend_TestFlags(self, LETTER_SEND_FLAGS_WRAPPED) != 0) {
         return;
     }
     lsend_move_in_column(self, keys, mode, row, LETTER_SEND_BELOW_CARRIED);
@@ -781,7 +771,7 @@ void LetterSend_OpenLetterMenu(LetterSendScene *self, int place, int above_popup
     LetterSend_ClearFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
     self->slot = (u8) place;
     ChoiceEntries_Clear(&self->entries, LETTER_SEND_ACTION_CANCEL);
-    Letter *letter = func_ov104_0229d8f8(self, place);
+    Letter *letter = LetterSend_PlaceLetter(self, place);
     if (StateFlags_Test2() != 0) {
         ChoiceEntries_Add(&self->entries, 0, LETTER_SEND_ACTION_0);
     }
@@ -822,8 +812,8 @@ void LetterSend_ShowChoice(LetterSendScene *self, int above_popup)
 {
     int fixed = LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
     PagedChoice_ShowEntries(lsend_choice(self), &self->entries, fixed);
-    int x = func_ov104_0229d8a8(self, self->slot);
-    int y = func_ov104_0229d858(self, self->slot);
+    int x = LetterSend_PlaceX(self, self->slot);
+    int y = LetterSend_PlaceY(self, self->slot);
     if (above_popup != 0) {
         PagedChoice_PlaceAboveWindow(lsend_choice(self), &self->popup);
     } else {
@@ -851,7 +841,7 @@ void LetterSend_RunAction(LetterSendScene *self)
             LetterSend_RunActionMenu(self);
             break;
         default:
-            func_ov104_0229dd00(self);
+            LetterSend_EndAction(self);
             break;
     }
 }
@@ -983,7 +973,7 @@ CLEAN_AS(func_ov104_0229d378, LetterSend_HideCursorSprite)
 /* func_ov104_0229d39c: the cursor sprite's y, the cursor's place's. */
 int LetterSend_CursorSpriteY(LetterSendScene *self)
 {
-    return func_ov104_0229d858(self, self->cursor);
+    return LetterSend_PlaceY(self, self->cursor);
 }
 CLEAN_AS(func_ov104_0229d39c, LetterSend_CursorSpriteY)
 
@@ -992,7 +982,7 @@ CLEAN_AS(func_ov104_0229d39c, LetterSend_CursorSpriteY)
  * LETTER_SEND_FLAG_WRAPPED_LEFT. */
 int LetterSend_CursorSpriteX(LetterSendScene *self)
 {
-    int x = func_ov104_0229d8a8(self, self->cursor);
+    int x = LetterSend_PlaceX(self, self->cursor);
     if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_WRAPPED_RIGHT) != 0) {
         x += 0x100;
     } else if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_WRAPPED_LEFT) != 0) {
@@ -1009,7 +999,7 @@ void LetterSend_ShowCursorAtCursor(LetterSendScene *self)
     int x = LetterSend_CursorSpriteX(self);
     int y = LetterSend_CursorSpriteY(self);
     Glider_PlaceAt(&self->cursor_sprite, x, y);
-    if (func_ov104_0229da5c(self, self->cursor) != 0) {
+    if (LetterSend_IsBelowPlace(self, self->cursor) != 0) {
         Glider_SetAnim(&self->cursor_sprite, 7);
     } else {
         Glider_SetAnim(&self->cursor_sprite, 1);
@@ -1025,7 +1015,7 @@ void LetterSend_SwapHeldWith(LetterSendScene *self, int place)
     if (self->held_kind == LETTER_SEND_HELD_LETTER) {
         Letter_Assign(&self->swapped, &self->held);
         LetterSend_PickUpLetter(self, place);
-        func_ov104_0229d938(self, place, &self->swapped);
+        LetterSend_PutLetterAt(self, place, &self->swapped);
     }
 }
 CLEAN_AS(func_ov104_0229d448, LetterSend_SwapHeldWith)
@@ -1034,7 +1024,7 @@ CLEAN_AS(func_ov104_0229d448, LetterSend_SwapHeldWith)
 void LetterSend_PutHeldAt(LetterSendScene *self, int place)
 {
     if (self->held_kind == LETTER_SEND_HELD_LETTER) {
-        func_ov104_0229d938(self, place, &self->held);
+        LetterSend_PutLetterAt(self, place, &self->held);
     }
     self->held_kind = LETTER_SEND_HELD_NONE;
 }
@@ -1095,7 +1085,7 @@ CLEAN_AS(func_ov104_0229d580, LetterSend_DrawHeld)
 void LetterSend_UpdatePopup(LetterSendScene *self)
 {
     if (lsend_is_letter_place(self, self->cursor)) {
-        if (func_ov104_0229d7bc(self, self->cursor) != 0) {
+        if (LetterSend_PlaceIsEmpty(self, self->cursor) != 0) {
             Popup_ClearQueued(&self->popup);
         } else {
             self->popup_place = self->cursor;
@@ -1111,8 +1101,8 @@ CLEAN_AS(func_ov104_0229d5c0, LetterSend_UpdatePopup)
  * when state flag 2 is set), and filled by the letters object for a letter place. */
 void LetterSend_PlacePopup(LetterSendScene *self)
 {
-    int x = func_ov104_0229d8a8(self, self->popup_place) - 0x6d;
-    int y = func_ov104_0229d858(self, self->popup_place) - 0x78;
+    int x = LetterSend_PlaceX(self, self->popup_place) - 0x6d;
+    int y = LetterSend_PlaceY(self, self->popup_place) - 0x78;
     if (StateFlags_Test2() != 0) {
         y -= 8;
     }
@@ -1158,7 +1148,7 @@ void LetterSend_ClearHighlights(LetterSendScene *self)
 CLEAN_AS(func_ov104_0229d724, LetterSend_ClearHighlights)
 
 /* func_ov104_0229d748: a letter place lifted in the letters object (the grid's lift dropped);
- * any other place drops both (func_ov104_0229d798). */
+ * any other place drops both (LetterSend_ClearSelection). */
 void LetterSend_SelectPlace(LetterSendScene *self, int place)
 {
     if (lsend_is_letter_place(self, place)) {
@@ -1166,7 +1156,1058 @@ void LetterSend_SelectPlace(LetterSendScene *self, int place)
         PocketsLetters_Lift(&self->letters, index);
         PocketsGrid_Unlift(&self->grid);
     } else {
-        func_ov104_0229d798(self);
+        LetterSend_ClearSelection(self);
     }
 }
 CLEAN_AS(func_ov104_0229d748, LetterSend_SelectPlace)
+
+/* The cursor sprite's base is main's cell layer sprite (glide.h). */
+static CellLayerSprite *lsend_cursor_cells(LetterSendScene *self)
+{
+    return (CellLayerSprite *) (void *) &self->cursor_sprite;
+}
+
+/* func_ov104_0229d798: the lifts of the grid and the letters dropped. */
+void LetterSend_ClearSelection(LetterSendScene *self)
+{
+    PocketsGrid_Unlift(&self->grid);
+    PocketsLetters_Unlift(&self->letters);
+}
+CLEAN_AS(func_ov104_0229d798, LetterSend_ClearSelection)
+
+/* func_ov104_0229d7bc: whether a letter place holds no letter (by the letters object); other
+ * places count as empty. */
+int LetterSend_PlaceIsEmpty(LetterSendScene *self, int place)
+{
+    if (lsend_is_letter_place(self, place)) {
+        return PocketsLetters_IsEmpty(&self->letters, lsend_letter_index(self, place));
+    }
+    return 1;
+}
+CLEAN_AS(func_ov104_0229d7bc, LetterSend_PlaceIsEmpty)
+
+/* func_ov104_0229d7fc: whether a carried letter is dimmed by the letters object
+ * (LetterSend_DimUnpostable); 0 for any other place. */
+int LetterSend_PlaceIsDimmed(LetterSendScene *self, int place)
+{
+    if (LetterSend_IsCarriedPlace(self, (unsigned int) place)) {
+        return PocketsLetters_IsDimmed(&self->letters, lsend_letter_index(self, place));
+    }
+    return 0;
+}
+CLEAN_AS(func_ov104_0229d7fc, LetterSend_PlaceIsDimmed)
+
+/* The carried letters dimmed (PocketsLetters_DimByState's bits): those received, between
+ * villagers or in a bottle; the ones the player wrote (state 1) stay usable. */
+#define LETTER_SEND_DIM_UNPOSTABLE 0xe
+
+/* func_ov104_0229d830: the grid's places 0 to 14 dimmed, and the carried letters that cannot be
+ * posted. */
+void LetterSend_DimUnpostable(LetterSendScene *self)
+{
+    PocketsGrid_DimPlaces(&self->grid, 0, 0xe);
+    PocketsLetters_DimByState(&self->letters, LETTER_SEND_DIM_UNPOSTABLE);
+}
+CLEAN_AS(func_ov104_0229d830, LetterSend_DimUnpostable)
+
+/* The two places below the letters, as the ROM tests them: by the place's low byte. */
+static int lsend_is_below(int place)
+{
+    return (u8) ((u32) place - LETTER_SEND_BELOW_CARRIED) <= 1;
+}
+
+/* func_ov104_0229d858: the y of `place`: a letter's by the letters object less 0x10, 0xb6 for
+ * both places below the letters, else 0. */
+int LetterSend_PlaceY(LetterSendScene *self, int place)
+{
+    if (lsend_is_letter_place(self, place)) {
+        return PocketsLetters_PlaceY(&self->letters, lsend_letter_index(self, place)) - 0x10;
+    }
+    if (lsend_is_below(place)) {
+        return 0xb6;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov104_0229d858, LetterSend_PlaceY)
+
+/* func_ov104_0229d8a8: the x of `place`: a letter's by the letters object, 0xbc below the
+ * carried letters, 0x74 below the letters to post, else 0. */
+int LetterSend_PlaceX(LetterSendScene *self, int place)
+{
+    if (lsend_is_letter_place(self, place)) {
+        return PocketsLetters_PlaceX(&self->letters, lsend_letter_index(self, place));
+    }
+    if (place == LETTER_SEND_BELOW_CARRIED) {
+        return 0xbc;
+    }
+    if (place == LETTER_SEND_BELOW_OUTBOX) {
+        return 0x74;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov104_0229d8a8, LetterSend_PlaceX)
+
+/* func_ov104_0229d8f8: the letter of a letter place (the letters object's), else NULL. */
+Letter *LetterSend_PlaceLetter(LetterSendScene *self, int place)
+{
+    if (lsend_is_letter_place(self, place)) {
+        return PocketsLetters_LetterAt(&self->letters, lsend_letter_index(self, place));
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov104_0229d8f8, LetterSend_PlaceLetter)
+
+/* func_ov104_0229d938: a copy of `letter` put at a letter place by the letters object. */
+void LetterSend_PutLetterAt(LetterSendScene *self, int place, const Letter *letter)
+{
+    if (lsend_is_letter_place(self, place)) {
+        PocketsLetters_SetPlace(&self->letters, lsend_letter_index(self, place), letter);
+    }
+}
+CLEAN_AS(func_ov104_0229d938, LetterSend_PutLetterAt)
+
+/* func_ov104_0229d974: the held letter put down at `place`; a letter there is copied aside
+ * (`swapped`) and put at the held letter's place (`unk_b7`) first. Always 1. */
+int LetterSend_PutHeldLetterAt(LetterSendScene *self, int place)
+{
+    if (LetterSend_PlaceIsEmpty(self, place) == 0) {
+        Letter_Assign(&self->swapped, LetterSend_PlaceLetter(self, place));
+        LetterSend_PutLetterAt(self, self->unk_b7, &self->swapped);
+    }
+    LetterSend_PutHeldAt(self, place);
+    return 1;
+}
+CLEAN_AS(func_ov104_0229d974, LetterSend_PutHeldLetterAt)
+
+/* func_ov104_0229d9bc: the letter place under the touch at (x, y), by the letters object (the
+ * carried letters first, then the letters to post); with `with_letter`, only one holding a
+ * letter. LETTER_SEND_NO_PLACE for none. */
+int LetterSend_LetterPlaceAtTouch(LetterSendScene *self, int x, int y, int with_letter)
+{
+    int index = PocketsLetters_PocketAtTouch(&self->letters, x, y);
+    if (index == POCKETS_LETTERS_NO_PLACE) {
+        index = PocketsLetters_TenAt2dAtTouch(&self->letters, x, y);
+    }
+    if (index == POCKETS_LETTERS_NO_PLACE) {
+        return LETTER_SEND_NO_PLACE;
+    }
+    if (with_letter != 0 && PocketsLetters_IsEmpty(&self->letters, index) != 0) {
+        return LETTER_SEND_NO_PLACE;
+    }
+    return LetterSend_LetterPlace(self, (unsigned int) index);
+}
+CLEAN_AS(func_ov104_0229d9bc, LetterSend_LetterPlaceAtTouch)
+
+/* The letters object's first place of the letters to post (PocketsLetters_SetTenAt2d). */
+#define LETTER_SEND_OUTBOX_INDEX 0x2d
+
+/* func_ov104_0229da18: the place of the letters object's letter `index` (0-9 carried,
+ * 0x2d-0x36 to post), else LETTER_SEND_NO_PLACE. The scene is not read. */
+u8 LetterSend_LetterPlace(LetterSendScene *self, unsigned int index)
+{
+    (void) self;
+    if (index <= 9) {
+        return (u8) (index + LETTER_SEND_CARRIED_FIRST);
+    }
+    if (index >= LETTER_SEND_OUTBOX_INDEX && index <= LETTER_SEND_OUTBOX_INDEX + 9) {
+        return (u8) (index - LETTER_SEND_OUTBOX_INDEX + LETTER_SEND_OUTBOX_FIRST);
+    }
+    return LETTER_SEND_NO_PLACE;
+}
+CLEAN_AS(func_ov104_0229da18, LetterSend_LetterPlace)
+
+/* func_ov104_0229da38: the letters object's index of a letter place, else 0. */
+u8 LetterSend_LetterIndex(LetterSendScene *self, unsigned int place)
+{
+    (void) self;
+    if (place >= LETTER_SEND_CARRIED_FIRST && place <= LETTER_SEND_CARRIED_LAST) {
+        return (u8) (place - LETTER_SEND_CARRIED_FIRST);
+    }
+    if (place >= LETTER_SEND_OUTBOX_FIRST && place <= LETTER_SEND_OUTBOX_LAST) {
+        return (u8) (place - LETTER_SEND_OUTBOX_FIRST + LETTER_SEND_OUTBOX_INDEX);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov104_0229da38, LetterSend_LetterIndex)
+
+/* func_ov104_0229da5c: either place below the letters (by the place's low byte). */
+int LetterSend_IsBelowPlace(LetterSendScene *self, int place)
+{
+    (void) self;
+    return lsend_is_below(place);
+}
+CLEAN_AS(func_ov104_0229da5c, LetterSend_IsBelowPlace)
+
+/* func_ov104_0229da70 */
+int LetterSend_IsOutboxPlace(LetterSendScene *self, unsigned int place)
+{
+    (void) self;
+    return place >= LETTER_SEND_OUTBOX_FIRST && place <= LETTER_SEND_OUTBOX_LAST;
+}
+CLEAN_AS(func_ov104_0229da70, LetterSend_IsOutboxPlace)
+
+/* func_ov104_0229da80 */
+int LetterSend_IsCarriedPlace(LetterSendScene *self, unsigned int place)
+{
+    (void) self;
+    return place >= LETTER_SEND_CARRIED_FIRST && place <= LETTER_SEND_CARRIED_LAST;
+}
+CLEAN_AS(func_ov104_0229da80, LetterSend_IsCarriedPlace)
+
+/* func_ov104_0229da90: the layer load task at 0x2c0 taken off the main loop's queue and reset. */
+void LetterSend_EndLayerTask(LetterSendScene *self)
+{
+    LayerTask_End((LayerTask *) (void *) self->unk_2c0);
+}
+CLEAN_AS(func_ov104_0229da90, LetterSend_EndLayerTask)
+
+/* func_ov104_0229daa0: the place of the first letter to post that is empty (its state is 0),
+ * else LETTER_SEND_NO_PLACE. */
+u8 LetterSend_FreeOutboxPlace(LetterSendScene *self)
+{
+    for (int i = 0; i < LETTER_SEND_LETTERS; i++) {
+        if (Letter_State(&self->outbox[i]) == 0) {
+            return (u8) (i + LETTER_SEND_OUTBOX_FIRST);
+        }
+    }
+    return LETTER_SEND_NO_PLACE;
+}
+CLEAN_AS(func_ov104_0229daa0, LetterSend_FreeOutboxPlace)
+
+/* func_ov104_0229dad8: the carried place of the current player's first free letter slot (their
+ * pockets', not the letters object's), else LETTER_SEND_NO_PLACE. */
+int LetterSend_FreeCarriedPlace(LetterSendScene *self)
+{
+    (void) self;
+    int index = CurrentPockets_FreeLetterIndex();
+    if (index == -1) {
+        return LETTER_SEND_NO_PLACE;
+    }
+    return (u8) (index + LETTER_SEND_CARRIED_FIRST);
+}
+CLEAN_AS(func_ov104_0229dad8, LetterSend_FreeCarriedPlace)
+
+/* func_ov104_0229daf8: the letter at `from` picked up and drawn there, then glided to `to` in 4
+ * steps. */
+void LetterSend_HoldAndGlide(LetterSendScene *self, int from, int to)
+{
+    LetterSend_PickUpLetter(self, from);
+    self->held_x = LetterSend_PlaceX(self, from);
+    self->held_y = LetterSend_PlaceY(self, from);
+    LetterSend_GlideHeldTo(self, to, 4);
+}
+CLEAN_AS(func_ov104_0229daf8, LetterSend_HoldAndGlide)
+
+/* The x from which a letter let go is over the carried letters (they are at the right). */
+#define LETTER_SEND_CARRIED_SIDE_X 0xc0
+
+/* func_ov104_0229db30: the dragged letter let go with the touch at `x`: one to post dropped
+ * over the carried letters goes to the player's first free letter slot, a carried one dropped
+ * over the letters to post to the first empty one of them; else, or when there is none, it
+ * glides back to `place`. 4 steps. QUIRK: the result is the address MenuScene_SetSubState
+ * returns, as an int. */
+int LetterSend_DropHeldAtTouch(LetterSendScene *self, int place, int x)
+{
+    int to = LETTER_SEND_NO_PLACE;
+    if (x >= LETTER_SEND_CARRIED_SIDE_X) {
+        if (LetterSend_IsOutboxPlace(self, (unsigned int) place)) {
+            to = LetterSend_FreeCarriedPlace(self);
+        }
+    } else if (LetterSend_IsCarriedPlace(self, (unsigned int) place)) {
+        to = LetterSend_FreeOutboxPlace(self);
+    }
+    if (to != LETTER_SEND_NO_PLACE) {
+        place = to;
+    }
+    return (int) (uintptr_t) LetterSend_GlideHeldTo(self, place, 4);
+}
+CLEAN_AS(func_ov104_0229db30, LetterSend_DropHeldAtTouch)
+
+/* func_ov104_0229db74: the held letter glides from where it is drawn to `place` (kept in
+ * `unk_b7`) in `steps` steps, the first taken now. Sub state 0x15 follows it. QUIRK: returns
+ * the sub state's address, as MenuScene_SetSubState. */
+u8 *LetterSend_GlideHeldTo(LetterSendScene *self, int place, int steps)
+{
+    self->unk_b7 = (u8) place;
+    Glide_SetPlace(&self->glide, self->held_x, self->held_y);
+    int x = LetterSend_PlaceX(self, place);
+    int y = LetterSend_PlaceY(self, place);
+    Glide_MoveTo(&self->glide, x, y, steps);
+    Glide_Step(&self->glide);
+    LetterSend_FollowGlide(self);
+    return MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_HELD_GLIDE);
+}
+CLEAN_AS(func_ov104_0229db74, LetterSend_GlideHeldTo)
+
+/* func_ov104_0229dbd8: the letter at `place` picked up with the cursor, the popup hidden; when it
+ * is held, the sub state to go back to is 8. It follows the cursor sprite; sound 0xd. */
+void LetterSend_PickUpWithCursor(LetterSendScene *self, int place)
+{
+    self->unk_b7 = (u8) place;
+    Popup_Hide(&self->popup, 1);
+    LetterSend_PickUpLetter(self, place);
+    if (self->held_kind == LETTER_SEND_HELD_LETTER) {
+        self->return_state = LETTER_SEND_SUB_HOLD;
+    }
+    LetterSend_FollowCursorSprite(self);
+    PocketsSound_Play0d();
+}
+CLEAN_AS(func_ov104_0229dbd8, LetterSend_PickUpWithCursor)
+
+/* func_ov104_0229dc20: the letter at `place` picked up with the touch, the popup hidden; when it
+ * is held, sub state 4 drags it. It follows the touch; sound 0xd. */
+void LetterSend_PickUpWithTouch(LetterSendScene *self, int place)
+{
+    self->unk_b7 = (u8) place;
+    Popup_Hide(&self->popup, 1);
+    LetterSend_PickUpLetter(self, place);
+    if (self->held_kind == LETTER_SEND_HELD_LETTER) {
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_DRAG);
+    }
+    LetterSend_FollowTouch(self);
+    PocketsSound_Play0d();
+}
+CLEAN_AS(func_ov104_0229dc20, LetterSend_PickUpWithTouch)
+
+/* func_ov104_0229dc68: `place` touched (kept in `unk_b5`): sub state 1, the offset from the
+ * touch to the place kept, the popup told of the place and shown, its choice opening in 2
+ * frames; the letter may be dragged (LETTER_SEND_FLAG_DRAGGABLE, sound 0xc) unless it is
+ * dimmed. */
+void LetterSend_TouchPlace(LetterSendScene *self, int place)
+{
+    self->unk_b5 = (u8) place;
+    MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_TOUCH_HOLD);
+    u8 touch_x = data_021f6c58;
+    u8 touch_y = data_021f6c54;
+    self->grab_dx = LetterSend_PlaceX(self, self->unk_b5) - touch_x;
+    self->grab_dy = LetterSend_PlaceY(self, self->unk_b5) - touch_y;
+    self->popup_place = (u8) place;
+    Popup_Queue(&self->popup);
+    Popup_ShowQueued(&self->popup);
+    self->unk_bf = 2;
+    if (LetterSend_PlaceIsDimmed(self, place)) {
+        LetterSend_ClearFlags(self, LETTER_SEND_FLAG_DRAGGABLE);
+    } else {
+        LetterSend_SetFlags(self, LETTER_SEND_FLAG_DRAGGABLE);
+        PocketsSound_Play0c();
+    }
+}
+CLEAN_AS(func_ov104_0229dc68, LetterSend_TouchPlace)
+
+/* func_ov104_0229dd00 (the cancel action): back to sub state 0 with the cursor sprite hidden
+ * while state flag 2 is clear, else to sub state 7 with it at the cursor. */
+void LetterSend_EndAction(LetterSendScene *self)
+{
+    if (StateFlags_IsClear2()) {
+        LetterSend_EndActionHidden(self);
+    } else {
+        LetterSend_EndActionAtCursor(self);
+    }
+}
+CLEAN_AS(func_ov104_0229dd00, LetterSend_EndAction)
+
+/* func_ov104_0229dd20: no popup place, the cursor sprite shown at the cursor, the key repeat
+ * reset, the popup told of the cursor's place, sub state 7 and the cursor's place selected. */
+void LetterSend_EndActionAtCursor(LetterSendScene *self)
+{
+    self->popup_place = LETTER_SEND_NO_PLACE;
+    LetterSend_ShowCursorAtCursor(self);
+    MenuScene_ResetKeyRepeat(lsend_scene(self));
+    LetterSend_UpdatePopup(self);
+    MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_BROWSE);
+    LetterSend_SelectPlace(self, self->cursor);
+}
+CLEAN_AS(func_ov104_0229dd20, LetterSend_EndActionAtCursor)
+
+/* func_ov104_0229dd54 */
+void LetterSend_EndActionHidden(LetterSendScene *self)
+{
+    LetterSend_HideCursorSprite(self);
+    LetterSend_ClearSelection(self);
+    MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_TOUCH_IDLE);
+}
+CLEAN_AS(func_ov104_0229dd54, LetterSend_EndActionHidden)
+
+/* func_ov104_0229dd70 (sub state 0x1c, after LetterSend_PickUpSlotLetter): once the letters
+ * object's pick-up is over, the held letter is let go (nothing held) and the action ends. */
+void LetterSend_WaitLetGo(LetterSendScene *self)
+{
+    if (PocketsLetters_StepPickUp(&self->letters)) {
+        self->held_kind = LETTER_SEND_HELD_NONE;
+        LetterSend_EndAction(self);
+    }
+}
+CLEAN_AS(func_ov104_0229dd70, LetterSend_WaitLetGo)
+
+/* The panel's selected button, for its place. */
+#define LETTER_SEND_PANEL_SELECTED (-1)
+
+/* The label button's anchor the cursor sprite points at. */
+#define LETTER_SEND_LABEL_ANCHOR 1
+
+/* func_ov104_0229dd98 (sub state 0x1b, after a panel button): while the selected panel button's
+ * press plays, the cursor sprite (when shown) follows it, offset by the press's frame; after,
+ * the sprite is hidden and phase 1. */
+void LetterSend_FollowPanelPress(LetterSendScene *self)
+{
+    if (ButtonPanel_StepSelectedPress(&self->panel) != 0) {
+        if (CellLayerSprite_AnimNumber(lsend_cursor_cells(self)) != 0) {
+            int frame = ButtonPanel_SelectedPressFrame(&self->panel);
+            int x = ButtonPanel_ButtonX(&self->panel, LETTER_SEND_PANEL_SELECTED);
+            int y = ButtonPanel_ButtonY(&self->panel, LETTER_SEND_PANEL_SELECTED);
+            Glider_PlaceAt(&self->cursor_sprite, frame + x, frame + y);
+        }
+    } else {
+        LetterSend_HideCursorSprite(self);
+        MenuScene_SetPhase(lsend_scene(self), 1);
+    }
+}
+CLEAN_AS(func_ov104_0229dd98, LetterSend_FollowPanelPress)
+
+/* func_ov104_0229de04 (sub state 0x1a, after LetterSend_PressLabelButton): while the label
+ * button's animation plays, the cursor sprite (when shown) follows its anchor; after, the sprite
+ * is hidden, state 9 and phase 1. */
+void LetterSend_FollowLabelPress(LetterSendScene *self)
+{
+    if (LabelButton_StepAnimation(&self->button) != 0) {
+        if (CellLayerSprite_AnimNumber(lsend_cursor_cells(self)) != 0) {
+            int x = LabelButton_AnchorX(&self->button, LETTER_SEND_LABEL_ANCHOR);
+            int y = LabelButton_AnchorY(&self->button, LETTER_SEND_LABEL_ANCHOR);
+            Glider_PlaceAt(&self->cursor_sprite, x, y);
+        }
+    } else {
+        LetterSend_HideCursorSprite(self);
+        MenuScene_SetState(lsend_scene(self), 9);
+        MenuScene_SetPhase(lsend_scene(self), 1);
+    }
+}
+CLEAN_AS(func_ov104_0229de04, LetterSend_FollowLabelPress)
+
+/* func_ov104_0229de6c (sub state 0x19): once the error message is done, back to the sub state
+ * kept, the cursor sprite's window flag set. */
+void LetterSend_WaitError(LetterSendScene *self)
+{
+    if (ErrorMessage_Update(&self->error, 0)) {
+        MenuScene_SetSubState(lsend_scene(self), self->return_state);
+        CellLayerSprite_SetWindow(lsend_cursor_cells(self));
+    }
+}
+CLEAN_AS(func_ov104_0229de6c, LetterSend_WaitError)
+
+/* func_ov104_0229dea0 (sub state 0x18): the action picked runs once the choice is idle. */
+void LetterSend_RunActionWhenIdle(LetterSendScene *self)
+{
+    if (PagedChoice_IsIdle(lsend_choice(self)) != 0) {
+        LetterSend_RunAction(self);
+    }
+}
+CLEAN_AS(func_ov104_0229dea0, LetterSend_RunActionWhenIdle)
+
+/* func_ov104_0229dec0 (sub state 0x17): once the delay after the pick has run out, the choice
+ * asked to close, the popup hidden, the cursor sprite (when shown) put back at the cursor; sub
+ * state 0x18. */
+void LetterSend_CloseChoice(LetterSendScene *self)
+{
+    if (PagedChoice_CountDown(lsend_choice(self)) != 0) {
+        PagedChoice_RequestClose(lsend_choice(self), 0);
+        Popup_Hide(&self->popup, 1);
+        if (CellLayerSprite_AnimNumber(lsend_cursor_cells(self)) != 0) {
+            LetterSend_PlaceCursorSprite(self);
+        }
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_CHOICE_RUN);
+    }
+}
+CLEAN_AS(func_ov104_0229dec0, LetterSend_CloseChoice)
+
+/* func_ov104_0229df10 (sub state 0x16): once the choice is shown, it is run by the keys (the
+ * cursor sprite at its default row, sub state 0x0b) when state flag 2 is set, else by the touch
+ * (sub state 6). */
+void LetterSend_WaitChoiceShown(LetterSendScene *self)
+{
+    if (PagedChoice_IsShown(lsend_choice(self)) != 0) {
+        if (StateFlags_Test2()) {
+            LetterSend_PointAtDefaultRow(self);
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_CHOICE_BY_KEYS);
+        } else {
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_CHOICE_BY_TOUCH);
+        }
+    }
+}
+CLEAN_AS(func_ov104_0229df10, LetterSend_WaitChoiceShown)
+
+/* func_ov104_0229df4c (sub state 0x15): the held letter follows its glide. When the glide is
+ * over the letter is put at its place (`unk_b7`), the action ends, sound 0xe. */
+void LetterSend_StepHeldGlide(LetterSendScene *self)
+{
+    if (Glide_Step(&self->glide) != 0) {
+        LetterSend_PutHeldAt(self, self->unk_b7);
+        LetterSend_EndAction(self);
+        PocketsSound_Play0e();
+    } else {
+        LetterSend_FollowGlide(self);
+    }
+}
+CLEAN_AS(func_ov104_0229df4c, LetterSend_StepHeldGlide)
+
+/* func_ov104_0229df84 (sub state 0x14): back to the sub state kept once the cursor sprite's
+ * animation has ended; once its turn has settled, a hidden held letter is shown again (sound
+ * 0xd) and follows the sprite. */
+void LetterSend_FinishSwap(LetterSendScene *self)
+{
+    if (CellLayerSprite_IsDone(lsend_cursor_cells(self))) {
+        MenuScene_SetSubState(lsend_scene(self), self->return_state);
+    }
+    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+        if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_HELD_HIDDEN)) {
+            LetterSend_ClearFlags(self, LETTER_SEND_FLAG_HELD_HIDDEN);
+            PocketsSound_Play0d();
+        }
+        LetterSend_FollowCursorSprite(self);
+    }
+}
+CLEAN_AS(func_ov104_0229df84, LetterSend_FinishSwap)
+
+/* func_ov104_0229dfd4 (sub state 0x13): unless the cursor sprite's turn is at its frame 2, the
+ * held letter changes places with the one at `target`, the new held letter hidden for now, the
+ * popup updated; sub state 0x14. At frame 2, sub state 7. */
+void LetterSend_Swap(LetterSendScene *self)
+{
+    if (Glider_IsTurnAtFrame2(&self->cursor_sprite) == 0) {
+        LetterSend_SwapHeldWith(self, self->target);
+        LetterSend_SetFlags(self, LETTER_SEND_FLAG_HELD_HIDDEN);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_SWAP_END);
+        LetterSend_UpdatePopup(self);
+    } else {
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_BROWSE);
+    }
+}
+CLEAN_AS(func_ov104_0229dfd4, LetterSend_Swap)
+
+/* func_ov104_0229e01c (sub state 0x12): while the cursor sprite's turn has not settled, the held
+ * letter is put down at `target` when the cursor is on it (the popup updated, sub state 7, sound
+ * 0xe), else glided there in 4 steps; once it has, the letter follows the sprite. */
+void LetterSend_PutDown(LetterSendScene *self)
+{
+    if (Glider_IsTurnSettled(&self->cursor_sprite) == 0) {
+        u8 target = self->target;
+        if (self->cursor == target) {
+            LetterSend_PutHeldLetterAt(self, target);
+            LetterSend_UpdatePopup(self);
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_BROWSE);
+            PocketsSound_Play0e();
+        } else {
+            LetterSend_GlideHeldTo(self, target, 4);
+        }
+    } else {
+        LetterSend_FollowCursorSprite(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e01c, LetterSend_PutDown)
+
+/* func_ov104_0229e070 (sub state 0x11): back to the sub state kept once the cursor sprite's
+ * animation has ended; the held letter follows the sprite. */
+void LetterSend_FinishPickUp(LetterSendScene *self)
+{
+    if (CellLayerSprite_IsDone(lsend_cursor_cells(self))) {
+        MenuScene_SetSubState(lsend_scene(self), self->return_state);
+    }
+    LetterSend_FollowCursorSprite(self);
+}
+CLEAN_AS(func_ov104_0229e070, LetterSend_FinishPickUp)
+
+/* func_ov104_0229e09c (sub state 0x10): once the cursor sprite's turn has settled, the letter at
+ * the cursor is picked up; sub state 0x11. */
+void LetterSend_PickUpAtCursor(LetterSendScene *self)
+{
+    if (Glider_IsTurnSettled(&self->cursor_sprite)) {
+        LetterSend_PickUpWithCursor(self, self->cursor);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_PICK_UP_END);
+    }
+}
+CLEAN_AS(func_ov104_0229e09c, LetterSend_PickUpAtCursor)
+
+/* func_ov104_0229e0cc (sub state 0x0f): once the cursor sprite's animation has ended, its set's
+ * first animation; sub state 7. */
+void LetterSend_FinishPlacePress(LetterSendScene *self)
+{
+    if (CellLayerSprite_IsDone(lsend_cursor_cells(self))) {
+        LetterSend_ShowCursorFirstOfSet(self);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_BROWSE);
+    }
+}
+CLEAN_AS(func_ov104_0229e0cc, LetterSend_FinishPlacePress)
+
+/* func_ov104_0229e0f4 (sub state 0x0e): once the cursor sprite's animation has ended, the place
+ * below the carried letters posts, the one below the letters to post cancels. */
+void LetterSend_PressPlace(LetterSendScene *self)
+{
+    if (CellLayerSprite_IsDone(lsend_cursor_cells(self)) == 0) {
+        return;
+    }
+    if (self->cursor == LETTER_SEND_BELOW_CARRIED) {
+        LetterSend_Post(self);
+    } else {
+        LetterSend_Cancel(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e0f4, LetterSend_PressPlace)
+
+/* The sub state runner (the table of member functions, Obj_ov104_0229f6d0::func_ov104_0229f05c). */
+extern void _ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv(LetterSendScene *self);
+
+/* Obj_ov104_0229f6d0::func_ov104_0229e128 (sub state 0x0d): once the cursor sprite stops moving,
+ * back to the sub state kept (the cursor's place selected for sub state 7), which runs at once;
+ * the held letter follows the sprite. */
+void LetterSend_WaitCursorSprite(LetterSendScene *self)
+{
+    if (Glider_IsMoving(&self->cursor_sprite) == 0) {
+        MenuScene_SetSubState(lsend_scene(self), self->return_state);
+        if (self->return_state == LETTER_SEND_SUB_BROWSE) {
+            LetterSend_SelectPlace(self, self->cursor);
+        }
+        _ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv(self);
+    }
+    LetterSend_FollowCursorSprite(self);
+}
+CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229e128Ev, LetterSend_WaitCursorSprite)
+
+/* The value kept with choice row `row` (ChoiceEntries.values), read as the ROM does at
+ * 0x28f1 + row. */
+static u8 lsend_entry_value(LetterSendScene *self, int row)
+{
+    const u8 *bytes = (const u8 *) self;
+    return bytes[offsetof(LetterSendScene, entries) + offsetof(ChoiceEntries, values) + (size_t) row];
+}
+
+/* A choice row picked with the sound of a pick, except for the row of the pick-up action (sound
+ * 0x24 instead); its action kept; sub state 0x17. */
+static void lsend_pick_choice_row(LetterSendScene *self, int row)
+{
+    self->action = lsend_entry_value(self, row);
+    int with_sound = 1;
+    if (self->action == LETTER_SEND_ACTION_PICK_UP) {
+        with_sound = 0;
+        SoundSys_PlaySe(0x24);
+    }
+    PagedChoice_PickRowWithSound(lsend_choice(self), row, with_sound);
+    MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_CHOICE_CLOSE);
+}
+
+/* func_ov104_0229e170 (sub state 0x0c): once the cursor sprite's animation has ended, the
+ * choice row it points at is picked. */
+void LetterSend_PickChoiceRow(LetterSendScene *self)
+{
+    if (CellLayerSprite_IsDone(lsend_cursor_cells(self)) == 0) {
+        return;
+    }
+    lsend_pick_choice_row(self, self->choice_row);
+}
+CLEAN_AS(func_ov104_0229e170, LetterSend_PickChoiceRow)
+
+/* The pen (autoload_2/input.c): down, and gone down or up this frame. */
+extern u8 data_021fbdd8;
+extern u8 data_021fbddc;
+
+/* The pad (autoload_2/input.h) and the buttons read in `pressed`. */
+extern PadState data_021fbe40;
+#define LETTER_SEND_PAD_A 0x0001
+#define LETTER_SEND_PAD_B 0x0002
+#define LETTER_SEND_PAD_START 0x0008
+#define LETTER_SEND_PAD_Y 0x0800
+
+/* The pen went down this frame. */
+static int lsend_pen_pressed(void)
+{
+    return data_021fbdd8 != 0 && data_021fbddc != 0;
+}
+
+/* func_ov104_0229e1d4 (sub state 0x0b): the choice by the keys. A touch cancels it; the keys
+ * move the row (from row 1 round for the fixed menu), the cursor sprite gliding to it; A plays
+ * the sprite's second animation of its set and picks the row (sub state 0x0c), B points at the
+ * last row. */
+void LetterSend_ChooseByKeys(LetterSendScene *self)
+{
+    if (MenuScene_TakeTouch(lsend_scene(self))) {
+        LetterSend_CancelChoice(self);
+        return;
+    }
+    int keys = (int) MenuScene_LatchRepeatedKeys(lsend_scene(self));
+    u8 first = (u8) LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU);
+    if (PagedChoice_MoveCursor(lsend_choice(self), keys, &self->choice_row, first)) {
+        LetterSend_GlideToRow(self);
+        return;
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if (pressed & LETTER_SEND_PAD_A) {
+        Glider_ShowSecondOfSet(&self->cursor_sprite);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_CHOICE_PICK);
+    } else if (pressed & LETTER_SEND_PAD_B) {
+        LetterSend_PointAtLastRow(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e1d4, LetterSend_ChooseByKeys)
+
+/* func_ov104_0229e260 (sub state 0x0a): the label button pressed once the cursor sprite's
+ * animation has ended. */
+void LetterSend_WaitLabelPress(LetterSendScene *self)
+{
+    if (CellLayerSprite_IsDone(lsend_cursor_cells(self))) {
+        LetterSend_PressLabelButton(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e260, LetterSend_WaitLabelPress)
+
+/* func_ov104_0229e280 (sub state 9): the label button by the keys. A hidden cursor sprite is
+ * shown on the button's anchor (animation 1); a touch hides it (sub state 5); A or B plays the
+ * sprite's second animation of its set, sub state 0x0a. */
+void LetterSend_LabelByKeys(LetterSendScene *self)
+{
+    if (CellLayerSprite_AnimNumber(lsend_cursor_cells(self)) == 0) {
+        int x = LabelButton_AnchorX(&self->button, LETTER_SEND_LABEL_ANCHOR);
+        int y = LabelButton_AnchorY(&self->button, LETTER_SEND_LABEL_ANCHOR);
+        Glider_PlaceAt(&self->cursor_sprite, x, y);
+        Glider_SetAnim(&self->cursor_sprite, 1);
+    }
+    if (MenuScene_TakeTouch(lsend_scene(self))) {
+        LetterSend_HideCursorSprite(self);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_LABEL_BY_TOUCH);
+    } else if (data_021fbe40.pressed & (LETTER_SEND_PAD_A | LETTER_SEND_PAD_B)) {
+        Glider_ShowSecondOfSet(&self->cursor_sprite);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_LABEL_PRESS);
+    }
+}
+CLEAN_AS(func_ov104_0229e280, LetterSend_LabelByKeys)
+
+/* func_ov104_0229e314 (sub state 8): a held letter moved with the cursor. A move of the cursor
+ * updates the popup and moves the sprite (the popup hidden, its queue kept). A puts the letter
+ * down at the cursor (sub state 0x12) when the place is empty, else swaps (sub state 0x13); not
+ * on a dimmed place. B sends the letter back to its place (sub state 0x12). Else the letter
+ * follows the sprite and a queued popup is shown. */
+void LetterSend_MoveHeldByKeys(LetterSendScene *self)
+{
+    int keys = (int) MenuScene_LatchRepeatedKeys(lsend_scene(self));
+    if (LetterSend_MoveCursor(self, keys, 1) != 0) {
+        LetterSend_UpdatePopup(self);
+        LetterSend_GlideToCursor(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if (pressed & LETTER_SEND_PAD_A) {
+        if (LetterSend_PlaceIsDimmed(self, self->cursor)) {
+            return;
+        }
+        if (LetterSend_PlaceIsEmpty(self, self->cursor)) {
+            LetterSend_BeginSubState12(self, self->cursor);
+        } else {
+            LetterSend_BeginSubState13(self, self->cursor);
+        }
+    } else if (pressed & LETTER_SEND_PAD_B) {
+        LetterSend_BeginSubState12(self, self->unk_b7);
+    } else {
+        LetterSend_FollowCursorSprite(self);
+        Popup_ShowQueued(&self->popup);
+    }
+}
+CLEAN_AS(func_ov104_0229e314, LetterSend_MoveHeldByKeys)
+
+/* func_ov104_0229e3b8 (sub state 7): the cursor moved by the keys, nothing held. A touch ends the
+ * action without the sprite. A move updates the popup and moves the sprite (the popup hidden,
+ * its queue kept). Unless the cursor's letter is dimmed: A on a letter opens its choice, A below
+ * the letters presses the place; Y sends a carried letter to the first empty place to post, a
+ * letter to post to the player's first free letter slot. Else B cancels and START posts, or a
+ * queued popup is shown. */
+void LetterSend_BrowseByKeys(LetterSendScene *self)
+{
+    if (MenuScene_TakeTouch(lsend_scene(self))) {
+        LetterSend_EndActionHidden(self);
+        Popup_Hide(&self->popup, 1);
+        return;
+    }
+    if (LetterSend_MoveCursor(self, (int) MenuScene_LatchRepeatedKeys(lsend_scene(self)), 0) != 0) {
+        LetterSend_UpdatePopup(self);
+        LetterSend_GlideToCursor(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    if (LetterSend_PlaceIsDimmed(self, self->cursor) == 0) {
+        u16 pressed = data_021fbe40.pressed;
+        if (pressed & LETTER_SEND_PAD_A) {
+            if (lsend_is_letter_place(self, self->cursor)) {
+                if (LetterSend_PlaceIsEmpty(self, self->cursor) == 0) {
+                    LetterSend_OpenLetterMenu(self, self->cursor, 0);
+                }
+            } else if (LetterSend_IsBelowPlace(self, self->cursor)) {
+                LetterSend_BeginSubState0e(self);
+            }
+            return;
+        }
+        if (pressed & LETTER_SEND_PAD_Y) {
+            if (lsend_is_letter_place(self, self->cursor) && LetterSend_PlaceIsEmpty(self, self->cursor) == 0) {
+                int to;
+                if (LetterSend_IsCarriedPlace(self, self->cursor)) {
+                    to = LetterSend_FreeOutboxPlace(self);
+                } else {
+                    to = LetterSend_FreeCarriedPlace(self);
+                }
+                if (to != LETTER_SEND_NO_PLACE) {
+                    LetterSend_HoldAndGlide(self, self->cursor, to);
+                    Popup_Hide(&self->popup, 1);
+                }
+            }
+            return;
+        }
+    }
+    u16 pressed = data_021fbe40.pressed;
+    if (pressed & LETTER_SEND_PAD_B) {
+        LetterSend_HideCursorSprite(self);
+        LetterSend_Cancel(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    if (pressed & LETTER_SEND_PAD_START) {
+        LetterSend_HideCursorSprite(self);
+        LetterSend_Post(self);
+        Popup_Hide(&self->popup, 0);
+        return;
+    }
+    Popup_ShowQueued(&self->popup);
+}
+CLEAN_AS(func_ov104_0229e3b8, LetterSend_BrowseByKeys)
+
+/* func_ov104_0229e54c (sub state 6): the choice by the touch, once shown. A button cancels it;
+ * the pen going down picks the row under it (the last one outside the window), but not the set
+ * apart first row of the fixed menu. */
+void LetterSend_ChooseByTouch(LetterSendScene *self)
+{
+    if (PagedChoice_IsShown(lsend_choice(self)) == 0) {
+        return;
+    }
+    if (MenuScene_TakeButtons(lsend_scene(self), 1)) {
+        LetterSend_CancelChoice(self);
+        return;
+    }
+    if (!lsend_pen_pressed()) {
+        return;
+    }
+    int row = PagedChoice_RowAtOrLast(lsend_choice(self), data_021f6c58, data_021f6c54);
+    if (row < 0) {
+        return;
+    }
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_FIXED_MENU) != 0 && row == 0) {
+        return;
+    }
+    lsend_pick_choice_row(self, row);
+}
+CLEAN_AS(func_ov104_0229e54c, LetterSend_ChooseByTouch)
+
+/* func_ov104_0229e608 (sub state 5): the label button by the touch. A button gives it to the
+ * keys (sub state 9); a touch on it presses it. */
+void LetterSend_LabelByTouch(LetterSendScene *self)
+{
+    if (MenuScene_TakeButtons(lsend_scene(self), 1)) {
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_LABEL_BY_KEYS);
+        return;
+    }
+    if (LabelButton_IsTouched(&self->button)) {
+        LetterSend_PressLabelButton(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e608, LetterSend_LabelByTouch)
+
+/* func_ov104_0229e63c (sub state 4): the held letter dragged with the touch, the highlights
+ * cleared. The letter place under it (8 right and 0x18 below where it is drawn) is taken, but
+ * not a place of the other set of letters that holds a letter. While the pen is down that place
+ * is highlighted. Let go on it, when it is not dimmed, the letter is put down there (sound 0xe)
+ * and the action ends; else LetterSend_DropHeldAtTouch sends it to its place or to the other
+ * set. */
+void LetterSend_DragHeld(LetterSendScene *self)
+{
+    LetterSend_FollowTouch(self);
+    LetterSend_ClearHighlights(self);
+    int x = (int) ((u32) self->held_x + 8);
+    int place = LetterSend_LetterPlaceAtTouch(self, x, (int) ((u32) self->held_y + 0x18), 0);
+
+    int crosses = (LetterSend_IsCarriedPlace(self, (unsigned int) place) && LetterSend_IsOutboxPlace(self, self->unk_b7)) ||
+                  (LetterSend_IsOutboxPlace(self, (unsigned int) place) && LetterSend_IsCarriedPlace(self, self->unk_b7));
+    if (crosses && LetterSend_PlaceIsEmpty(self, place) == 0) {
+        place = LETTER_SEND_NO_PLACE;
+    }
+
+    if (place == LETTER_SEND_NO_PLACE) {
+        if (data_021fbdd8 == 0) {
+            LetterSend_DropHeldAtTouch(self, self->unk_b7, x);
+        }
+        return;
+    }
+    if (data_021fbdd8 != 0) {
+        LetterSend_HighlightPlace(self, place);
+        return;
+    }
+    if (LetterSend_PlaceIsDimmed(self, place) == 0 && LetterSend_PutHeldLetterAt(self, place) != 0) {
+        PocketsSound_Play0e();
+        LetterSend_EndAction(self);
+        return;
+    }
+    LetterSend_DropHeldAtTouch(self, self->unk_b7, x);
+}
+CLEAN_AS(func_ov104_0229e63c, LetterSend_DragHeld)
+
+/* After `unk_bf` more frames, the touched place's choice opens above the popup; sub state 2. */
+static void lsend_count_down_to_choice(LetterSendScene *self)
+{
+    if (self->unk_bf != 0) {
+        self->unk_bf--;
+    } else {
+        LetterSend_OpenLetterMenu(self, self->unk_b5, 1);
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_TOUCH_CHOICE);
+    }
+}
+
+/* func_ov104_0229e714 (sub state 3): once the popup is up, the count down to the touched place's
+ * choice. */
+void LetterSend_OpenTouchedChoice(LetterSendScene *self)
+{
+    if (Popup_IsUp(&self->popup) == 0) {
+        return;
+    }
+    lsend_count_down_to_choice(self);
+}
+CLEAN_AS(func_ov104_0229e714, LetterSend_OpenTouchedChoice)
+
+/* func_ov104_0229e75c (sub state 2): a touched place's choice is open. The pen let go hands the
+ * choice to the touch (sub state 6); the pen moving off a letter that may be dragged picks it up
+ * (LetterSend_PickUpWithTouch), closing the choice and hiding the popup. */
+void LetterSend_WatchChoiceTouch(LetterSendScene *self)
+{
+    if (data_021fbdd8 == 0) {
+        MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_CHOICE_BY_TOUCH);
+        return;
+    }
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_DRAGGABLE) == 0) {
+        return;
+    }
+    if (LetterSend_TouchMoved(self) == 0) {
+        return;
+    }
+    LetterSend_PickUpWithTouch(self, self->unk_b5);
+    PagedChoice_RequestClose(lsend_choice(self), 0);
+    Popup_Hide(&self->popup, 1);
+}
+CLEAN_AS(func_ov104_0229e75c, LetterSend_WatchChoiceTouch)
+
+/* The frames a popup stays after the pen leaves a place. */
+#define LETTER_SEND_POPUP_FRAMES 0x3c
+
+/* Obj_ov104_0229f6d0::func_ov104_0229e7b8 (sub state 1): the pen holds a touched place. Let go
+ * on a letter that may be dragged, sub state 3 runs at once; else sub state 0 with the popup
+ * staying 0x3c frames. While held, the pen moving off a letter that may be dragged picks it up;
+ * else, once the popup is up, the count down to the place's choice; before that, a queued popup
+ * is shown. */
+void LetterSend_HoldTouchOnPlace(LetterSendScene *self)
+{
+    if (data_021fbdd8 == 0) {
+        if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_DRAGGABLE) != 0) {
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_OPEN_TOUCHED);
+            _ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv(self);
+        } else {
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_TOUCH_IDLE);
+            Popup_SetTimer(&self->popup, LETTER_SEND_POPUP_FRAMES);
+        }
+        return;
+    }
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_DRAGGABLE) != 0) {
+        if (LetterSend_TouchMoved(self) != 0) {
+            LetterSend_PickUpWithTouch(self, self->unk_b5);
+            return;
+        }
+        if (Popup_IsUp(&self->popup) != 0) {
+            lsend_count_down_to_choice(self);
+            return;
+        }
+    }
+    Popup_ShowQueued(&self->popup);
+}
+CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229e7b8Ev, LetterSend_HoldTouchOnPlace)
+
+/* func_ov104_0229e864 (sub state 0): the touch is in use and the cursor sprite hidden. A button
+ * puts the cursor sprite back at the cursor (sub state 7). The pen going down touches the letter
+ * place under it (looked for 16 pixels lower) when it holds a letter; else presses the panel's
+ * post button, else its cancel button, when on it. */
+void LetterSend_IdleByTouch(LetterSendScene *self)
+{
+    if (MenuScene_TakeButtons(lsend_scene(self), 1) != 0) {
+        LetterSend_EndActionAtCursor(self);
+        return;
+    }
+    if (!lsend_pen_pressed()) {
+        return;
+    }
+    int place = LetterSend_LetterPlaceAtTouch(self, data_021f6c58, data_021f6c54 + 0x10, 1);
+    if (place != LETTER_SEND_NO_PLACE) {
+        LetterSend_TouchPlace(self, place);
+        return;
+    }
+    if (ButtonPanel_IsTouched(&self->panel, LETTER_SEND_BUTTON_POST) != 0) {
+        LetterSend_Post(self);
+        return;
+    }
+    if (ButtonPanel_IsTouched(&self->panel, LETTER_SEND_BUTTON_CANCEL) != 0) {
+        LetterSend_Cancel(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e864, LetterSend_IdleByTouch)
+
+/* The panel's message of its layout 6. */
+#define LETTER_SEND_PANEL_MESSAGE 0x65
+
+/* func_ov104_0229e8f8: a step of the wallet display's setup (its answer unused), the panel's
+ * text colours loaded and its layout 6 with message 0x65. */
+void LetterSend_PreparePanel(LetterSendScene *self)
+{
+    PocketsWallet_LoadObjFiles(&self->wallet);
+    ButtonPanel_LoadTextColors(&self->panel);
+    ButtonPanel_SetLayout6(&self->panel, LETTER_SEND_PANEL_MESSAGE);
+}
+CLEAN_AS(func_ov104_0229e8f8, LetterSend_PreparePanel)
+
+/* The scene's layers: 6 the scene, 4 the page. */
+#define LETTER_SEND_SCENE_LAYER 6
+#define LETTER_SEND_PAGE_LAYER 4
+
+/* The files of the page layer: its palettes, its screen and its characters; the heap they are
+ * loaded with. */
+extern const char data_ov104_0229f730[]; /* "menu/inventory/b_itm_post.bpl" */
+extern const char data_ov104_0229f750[]; /* "menu/inventory/b_itm_bg_ltr2.bsc" */
+extern const char data_ov104_0229f774[]; /* "menu/inventory/b_itm_post.bch" */
+extern Heap *data_021fbe94;
+
+/* func_ov104_0229e924: the page layer's palette 4, its screen and its characters 0x1e2-0x227
+ * loaded from their files. */
+void LetterSend_LoadPageLayer(LetterSendScene *self)
+{
+    (void) self;
+    Heap *heap = data_021fbe94;
+    DisplayLayer_LoadPalettesFromFile(data_ov104_0229f730, heap, LETTER_SEND_PAGE_LAYER, 4, 4, 4);
+    DisplayLayer_LoadScreenFromFile(data_ov104_0229f750, heap, LETTER_SEND_PAGE_LAYER);
+    DisplayLayer_LoadCharsFromFile(data_ov104_0229f774, heap, LETTER_SEND_PAGE_LAYER, 0x1e2, 0x1e2, 0x227);
+}
+CLEAN_AS(func_ov104_0229e924, LetterSend_LoadPageLayer)
+
+/* func_ov104_0229e978: the wallet's display set up, its `screen_a` 0. */
+void LetterSend_PrepareWallet(LetterSendScene *self)
+{
+    PocketsWallet_SetUp(&self->wallet, 0);
+}
+CLEAN_AS(func_ov104_0229e978, LetterSend_PrepareWallet)
+
+/* func_ov104_0229e98c: the scene layer at priority 2 and the page layer at priority 1, both with
+ * their plain background settings. */
+void LetterSend_SetUpLayers(void)
+{
+    DisplayLayer_SetPriority(LETTER_SEND_SCENE_LAYER, 2);
+    DisplayLayer_SetBgControl(LETTER_SEND_SCENE_LAYER, 0, 0, 0);
+    DisplayLayer_SetPriority(LETTER_SEND_PAGE_LAYER, 1);
+    DisplayLayer_SetBgControl(LETTER_SEND_PAGE_LAYER, 0, 0, 0);
+}
+CLEAN_AS(func_ov104_0229e98c, LetterSend_SetUpLayers)
