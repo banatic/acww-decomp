@@ -1350,3 +1350,19 @@ int HouseVisitor_Init(HouseVisitor *visitor)
     return 1;
 }
 CLEAN_AS(func_ov068_022766b0, HouseVisitor_Init)
+
+/* func_ov068_022766e8: a new house visitor, zeroed from the auxiliary heap: a town villager
+ * scene object with this class's vtable, and its talk scene constructed with the talk scene's
+ * vtable. Null when the heap has no room. */
+HouseVisitor *HouseVisitor_New(void)
+{
+    HouseVisitor *visitor = Heap_AllocAuxZeroed(sizeof(HouseVisitor));
+    if (visitor != NULL) {
+        VillagerSceneObject_Construct(visitor->base);
+        *(const u8 **) (void *) visitor->base = data_ov068_02278140;
+        VillagerTalkScene_ConstructAlt(&visitor->talk.base);
+        visitor->talk.base.scene.vtable = data_ov068_022780b0;
+    }
+    return visitor;
+}
+CLEAN_AS(func_ov068_022766e8, HouseVisitor_New)

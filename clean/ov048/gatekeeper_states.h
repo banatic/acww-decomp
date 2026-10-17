@@ -1,12 +1,20 @@
-/* The gatekeeper's own states 9 to 0x11 (gatekeeper.h): a table of C++ pointers to member
+/* The gatekeeper's own states 0 to 0x11 (gatekeeper.h): a table of C++ pointers to member
  * functions at data_ov048_022647a8, an entry and a run for each state (filled at start-up by
- * __sinit_ov048_022639b0). func_ov048_022635f4 enters a state (its entry, when it has one, must
- * agree) and func_ov048_02263638 runs it each frame.
+ * __sinit_ov048_022639b0). Gatekeeper_SetState enters a state (its entry, when it has one, must
+ * agree) and Gatekeeper_UpdateState runs it each frame (vtable slot 0x68).
  *
- * - 9 and 10 (0xa) step through four and six steps of their own (Gatekeeper.setup_step), each
- *   step until it agrees; so does 0xb, whose four steps show line 0x7b with the name of the
- *   player the link serves, walk that player to a point, clear its record and take the scene's
- *   exit 1 (Gatekeeper_RunStateB).
+ * - 0: asks for a talk (an event of kind 6) each frame: the player is back from another town.
+ * - 1: stands and calls the player once near (Gatekeeper_CallPlayer); 2: turns to the one it
+ *   talks with and talks; 3: nothing; 4: turns back to the angle it started with, then 1.
+ * - 5: walks the player to (16.0, 0, 17.5), then the event ends; 6: opens the town to visitors
+ *   (hosts the Wi-Fi Connection's game or starts a local session as its parent); 7: closes it.
+ * - 8 and 0xa step through the same six steps (Gatekeeper.setup_step): the player walks through
+ *   the gate while the two gatekeepers (this one and the other, profile 0x73, overlay 4's
+ *   gatekeeper2.h) turn and play animations 0x81 and 0x82; 8 then closes the screen and sets
+ *   the activity's flag 0x3c08, 0xa takes the scene's exit 0.
+ * - 9 and 0xb step through four steps: a player arrives and is named in line 0x67 (9, the
+ *   player of the activity's slot 0x3c1c) or line 0x7b (0xb, the player the link serves), and
+ *   the scene's exit 1 is taken (Gatekeeper_RunState9, Gatekeeper_RunStateB).
  * - 0xc and 0xd leave for scene 0xc or 0x2e once talk 0 is gone, after a connection as a local
  *   child (GatekeeperTalk_WaitStatus0 and GatekeeperTalk_WaitStatus1); 0xe leaves for scene 0x2e.
  * - 0xf and 0x11 wait for the shared slots of the scene object (scene_share.h) to settle after
@@ -16,9 +24,6 @@
 
 #include "gatekeeper.h"
 #include "types.h"
-
-/* States this code asks for, besides gatekeeper.h's. */
-#define GATEKEEPER_STATE_3 3
 
 int Gatekeeper_RunState10(void);
 int Gatekeeper_EnterState10(void);
@@ -41,5 +46,35 @@ int Gatekeeper_StateBSayName(Gatekeeper *self);
 void Gatekeeper_RunStateA(Gatekeeper *self);
 void Gatekeeper_EnterStateA(Gatekeeper *self);
 int Gatekeeper_RunState9(Gatekeeper *self);
+int Gatekeeper_EnterState9(Gatekeeper *self);
+int Gatekeeper_State9TakeExit(void);
+int Gatekeeper_State9CloseTalk(void);
+int Gatekeeper_State9SayName(Gatekeeper *self);
+int Gatekeeper_State9WalkIn(void);
+int Gatekeeper_RunState8(Gatekeeper *self);
+int Gatekeeper_EnterState8(Gatekeeper *self);
+int Gatekeeper_PassLeave(Gatekeeper *self);
+int Gatekeeper_PassAnimate(Gatekeeper *self);
+int Gatekeeper_PassWalkThrough(Gatekeeper *self);
+int Gatekeeper_PassOtherTurns(Gatekeeper *self);
+int Gatekeeper_PassTurn(Gatekeeper *self);
+int Gatekeeper_PassWalkToGate(Gatekeeper *self);
+int Gatekeeper_RunState7(Gatekeeper *self);
+int Gatekeeper_EnterState7(Gatekeeper *self);
+int Gatekeeper_RunState6(Gatekeeper *self);
+int Gatekeeper_EnterState6(Gatekeeper *self);
+int Gatekeeper_RunState5(Gatekeeper *self);
+int Gatekeeper_EnterState5(Gatekeeper *self);
+int Gatekeeper_RunState4(Gatekeeper *self);
+int Gatekeeper_EnterState4(Gatekeeper *self);
+int Gatekeeper_RunState3(void);
+int Gatekeeper_EnterState3(void);
+int Gatekeeper_RunState2(Gatekeeper *self);
+int Gatekeeper_EnterState2(Gatekeeper *self);
+int Gatekeeper_RunState1(Gatekeeper *self);
+int Gatekeeper_EnterState1(Gatekeeper *self);
+int Gatekeeper_RunState0(Gatekeeper *self);
+int Gatekeeper_EnterState0(void);
+void Gatekeeper_InitTables(void);
 
 #endif

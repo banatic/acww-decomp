@@ -103,8 +103,7 @@ extern const MemberPointer data_ov048_02263fbc, data_ov048_022640cc, data_ov048_
     data_ov048_02263fa4, data_ov048_02263e2c, data_ov048_02263e24, data_ov048_02263e1c, data_ov048_02263f6c,
     data_ov048_02263f5c, data_ov048_02263dcc, data_ov048_02263f34, data_ov048_02263ddc;
 
-/* The gatekeeper's state (gatekeeper.h); overlay 4's scene that leaves for the next line. */
-extern void func_ov048_022635f4(Gatekeeper *self, int state);
+/* Overlay 4's scene that leaves for the next line. */
 extern int func_ov004_0222d4d4(void);
 extern int func_ov004_0222d518(void);
 
@@ -431,14 +430,14 @@ CLEAN_AS(func_ov048_022621a0, GatekeeperTalk_SayLine21Or22)
 /* func_ov048_022621c8 (line 0x0d): the gatekeeper's state 0xa. */
 void GatekeeperTalk_SetOwnerStateA(GatekeeperTalk *talk)
 {
-    func_ov048_022635f4(talk->owner, 0xa);
+    Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_A);
 }
 CLEAN_AS(func_ov048_022621c8, GatekeeperTalk_SetOwnerStateA)
 
 /* func_ov048_022621d8 (line 0x68): the gatekeeper's state 8. */
 void GatekeeperTalk_SetOwnerState8(GatekeeperTalk *talk)
 {
-    func_ov048_022635f4(talk->owner, 8);
+    Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_8);
 }
 CLEAN_AS(func_ov048_022621d8, GatekeeperTalk_SetOwnerState8)
 
@@ -522,14 +521,14 @@ CLEAN_AS(func_ov048_02262320, GatekeeperTalk_StartWfc)
 /* func_ov048_02262358 (lines 0x46, 0x6c): the gatekeeper's state 6. */
 void GatekeeperTalk_SetOwnerState6(GatekeeperTalk *talk)
 {
-    func_ov048_022635f4(talk->owner, 6);
+    Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_6);
 }
 CLEAN_AS(func_ov048_02262358, GatekeeperTalk_SetOwnerState6)
 
 /* func_ov048_02262368 (lines 0x47, 0x48, 0x49): the gatekeeper's state 5. */
 void GatekeeperTalk_SetOwnerState5(GatekeeperTalk *talk)
 {
-    func_ov048_022635f4(talk->owner, 5);
+    Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_5);
 }
 CLEAN_AS(func_ov048_02262368, GatekeeperTalk_SetOwnerState5)
 
@@ -556,7 +555,7 @@ CLEAN_AS(func_ov048_02262390, GatekeeperTalk_HoldWithSpinner)
  * over the Wi-Fi Connection GATEKEEPER_TALK_END_WFC, else the session ended. */
 void GatekeeperTalk_EndConnection(GatekeeperTalk *talk)
 {
-    func_ov048_022635f4(talk->owner, 7);
+    Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_7);
     Session_ResetLinkStatus();
     if (Net_GetMode() == GATEKEEPER_LINES_MODE_HOSTING || Net_GetMode() == GATEKEEPER_LINES_MODE_JOINING) {
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_END_WFC);

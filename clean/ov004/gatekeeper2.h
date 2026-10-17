@@ -6,9 +6,18 @@
  *
  * Its states (0x654), each an entry and an update function (C++ members taking it), from the
  * table data_ov004_02258190 (filled at start-up by __sinit_ov004_0224e85c), set by
- * func_ov004_022256ec:
- *   0  stand,  1  talk,  2  talked,  3  turn back,  4  await the session,
- *   5  another system's player talks to it,  6  paused (an event starts).
+ * Gatekeeper2_SetState:
+ *   0  stand:      it stands (priority 1);
+ *   1  talk:       it turns to the talk's partner and talks; once its action is idle the
+ *                  event ends: state 2;
+ *   2  talked:     nothing;
+ *   3  turn back:  it turns to the angle it faced at its start, then stands;
+ *   4  await:      while the session decides who runs it: once this system owns and holds
+ *                  it, it talks; once this system holds the scene and no system holds it, it
+ *                  stands;
+ *   5  other:      another system's player talks to it: once no system owns it and this one
+ *                  holds the scene, it is this system's again and turns back;
+ *   6  paused:     an event starts: nothing.
  * Its vtable slot 0x4c (Gatekeeper2_OnEvent) moves it between them as the cafe's master's
  * does (cafe_master.h).
  *
@@ -102,5 +111,33 @@ Gatekeeper2Talk *Gatekeeper2Talk_Delete(Gatekeeper2Talk *talk);
 Gatekeeper2Talk *Gatekeeper2Talk_Destroy(Gatekeeper2Talk *talk);
 Gatekeeper2Talk *Gatekeeper2Talk_Construct(Gatekeeper2Talk *talk);
 int Gatekeeper2_UpdatePaused(void);
+
+/* A state's functions in data_ov004_02258190. */
+typedef struct Gatekeeper2Step {
+    MemberPointer enter;  /* 0x00: int (keeper); the state is taken unless it answers 0 */
+    MemberPointer update; /* 0x08: int (keeper) */
+} Gatekeeper2Step;
+
+int Gatekeeper2_EnterPaused(void);
+int Gatekeeper2_UpdateOther(Gatekeeper2 *keeper);
+int Gatekeeper2_EnterOther(void);
+int Gatekeeper2_UpdateAwait(Gatekeeper2 *keeper);
+int Gatekeeper2_EnterAwait(void);
+int Gatekeeper2_UpdateTurnBack(Gatekeeper2 *keeper);
+int Gatekeeper2_EnterTurnBack(Gatekeeper2 *keeper);
+int Gatekeeper2_UpdateTalked(void);
+int Gatekeeper2_EnterTalked(void);
+int Gatekeeper2_UpdateTalk(Gatekeeper2 *keeper);
+int Gatekeeper2_EnterTalk(Gatekeeper2 *keeper);
+int Gatekeeper2_UpdateStand(void);
+int Gatekeeper2_EnterStand(Gatekeeper2 *keeper);
+void Gatekeeper2_SetState(Gatekeeper2 *keeper, int state);
+int Gatekeeper2_Update(Gatekeeper2 *keeper);
+unsigned int Gatekeeper2_ModelName(void);
+unsigned int Gatekeeper2_TextureName(void);
+int Gatekeeper2_Leave(Gatekeeper2 *keeper);
+int Gatekeeper2_Start(Gatekeeper2 *keeper);
+int Gatekeeper2_Init(Gatekeeper2 *keeper);
+Gatekeeper2 *Gatekeeper2_Create(void);
 
 #endif

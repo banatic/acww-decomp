@@ -5,8 +5,9 @@
  * marked, whether it is dimmed), a lifted place and a pick-up whose size steps back to full.
  *
  * Its places take letters from lists of 0x100-byte letters (main/letter.h): the current
- * player's ten at places 0-9, a page of 25 at places 10-34 (ov105's letter storage), and ten at
- * places 0x23-0x2c (ov106). */
+ * player's ten at places 0-9, a page of 25 at places 10-34 (ov105's letter storage), ten at
+ * places 0x23-0x2c (ov106) and ten at places 0x2d-0x36. Places 0-9 are drawn in two columns at
+ * the right of the sub screen, the page in five columns, the lists of ten in two in the middle. */
 #ifndef CLEAN_OV094_POCKETS_LETTERS_H
 #define CLEAN_OV094_POCKETS_LETTERS_H
 
@@ -44,5 +45,48 @@ void PocketsLetters_StartPickUp(PocketsLetters *letters);
 int PocketsLetters_IconOf(PocketsLetters *letters, const Letter *letter);
 void PocketsLetters_SetList(PocketsLetters *letters, Letter *list, int first_place, int count);
 void PocketsLetters_SetTenAt23(PocketsLetters *letters, Letter *list);
+
+void PocketsLetters_SetPage(PocketsLetters *letters, Letter *list);
+void PocketsLetters_SetTenAt2d(PocketsLetters *letters, Letter *list);
+void PocketsLetters_LoadPockets(PocketsLetters *letters);
+int PocketsLetters_IsEmpty(PocketsLetters *letters, int place);
+int PocketsLetters_PlaceY(PocketsLetters *letters, int place);
+int PocketsLetters_PlaceX(PocketsLetters *letters, int place);
+void PocketsLetters_DrawPlace(PocketsLetters *letters, const Letter *letter, int place, int x, int y);
+void PocketsLetters_DrawLowered(PocketsLetters *letters, int x, int y, const OamAffine *params);
+void PocketsLetters_DrawSurround(PocketsLetters *letters, int x, int y, int palette, const OamAffine *params);
+int PocketsLetters_DrawMark(PocketsLetters *letters, int x, int y);
+void PocketsLetters_DrawLetter(PocketsLetters *letters, int x, int y, int palette, const Letter *letter,
+                               const OamAffine *params);
+int PocketsLetters_PaletteOf(PocketsLetters *letters, const Letter *letter);
+void PocketsLetters_DrawHeld(PocketsLetters *letters, int x, int y, const Letter *letter);
+void PocketsLetters_DrawTenAt2d(PocketsLetters *letters, int x, int y);
+void PocketsLetters_DrawTenAt23(PocketsLetters *letters, int x, int y);
+void PocketsLetters_DrawPage(PocketsLetters *letters, int x, int y);
+void PocketsLetters_DrawPockets(PocketsLetters *letters, int x, int y);
+void PocketsLetters_DimPlace(PocketsLetters *letters, int place);
+int PocketsLetters_IsDimmed(PocketsLetters *letters, int place);
+void PocketsLetters_DimByState(PocketsLetters *letters, unsigned int states);
+void PocketsLetters_ClearPlace(PocketsLetters *letters, int place);
+void PocketsLetters_SetPlace(PocketsLetters *letters, int place, const Letter *letter);
+Letter *PocketsLetters_LetterAt(PocketsLetters *letters, int place);
+void PocketsLetters_MarkPlace(PocketsLetters *letters, int place);
+void PocketsLetters_ClearMarks(PocketsLetters *letters);
+void PocketsLetters_Lift(PocketsLetters *letters, int place);
+void PocketsLetters_Unlift(PocketsLetters *letters);
+unsigned int PocketsLetters_LiftOffset(PocketsLetters *letters);
+int PocketsLetters_IsLifted(PocketsLetters *letters, u8 place);
+int PocketsLetters_ShowPlaceText(PocketsLetters *letters, Popup *popup, int place);
+TextLabel *PocketsLetters_SetPopupText(PocketsLetters *letters, Popup *popup, Letter *letter);
+u8 PocketsLetters_PlaceNear(PocketsLetters *letters, int x, int y, int first, u8 last);
+int PocketsLetters_TenAt23AtTouch(PocketsLetters *letters, int x, int y);
+int PocketsLetters_PageAtTouch(PocketsLetters *letters, int x, int y);
+int PocketsLetters_TenAt2dAtTouch(PocketsLetters *letters, int x, int y);
+int PocketsLetters_PocketAtTouch(PocketsLetters *letters, int x, int y);
+void PocketsLetters_BeginFrame(PocketsLetters *letters);
+void PocketsLetters_Init(PocketsLetters *letters, int priority);
+PocketsLetters *PocketsLetters_DestructDelete(PocketsLetters *letters);
+void PocketsLetters_Destruct(PocketsLetters *letters);
+void PocketsLetters_Construct(PocketsLetters *letters);
 
 #endif

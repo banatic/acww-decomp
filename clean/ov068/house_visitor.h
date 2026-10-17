@@ -163,5 +163,6 @@ int HouseVisitor_RunDraw(HouseVisitor *visitor);
 int HouseVisitor_Draw(HouseVisitor *visitor);
 int HouseVisitor_Start(HouseVisitor *visitor);
 int HouseVisitor_Init(HouseVisitor *visitor);
+HouseVisitor *HouseVisitor_New(void);
 
 #endif

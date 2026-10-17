@@ -93,14 +93,6 @@ extern const char *const data_ov048_02263d20;
 /* "sp_etc_sequence2", the archive of the line shown when job 0x13 has reached its step 3. */
 extern const char data_ov048_02264704[];
 
-/* A state: its function and whether it runs before the scene's steps. */
-typedef struct GatekeeperTalkState {
-    MemberPointer run;
-    u8 network; /* run by slot 0x80 when set, by slot 0x84 when not */
-    u8 unk_09[3];
-} GatekeeperTalkState;
-extern GatekeeperTalkState data_ov048_02264344[GATEKEEPER_TALK_STATES];
-
 /* An answer's handler, for the line shown; GatekeeperTalk_OnAnswer fills the handlers from
  * the constants below on its first call (a function-local static, data_ov048_02264734 bit 0). */
 typedef struct GatekeeperAnswer {
@@ -116,8 +108,7 @@ extern const MemberPointer data_ov048_02263edc, data_ov048_02263f44, data_ov048_
     data_ov048_02263d3c, data_ov048_02263d2c, data_ov048_02263d44, data_ov048_02263e4c, data_ov048_02263e34,
     data_ov048_02263d74, data_ov048_02263dec, data_ov048_02263ecc, data_ov048_02263d34, data_ov048_02263e44;
 
-/* The gatekeeper's state; the scene that leaves for the next line (overlay 4). */
-extern void func_ov048_022635f4(Gatekeeper *self, int state);
+/* The scene that leaves for the next line (overlay 4). */
 extern int func_ov004_0222d4f4(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
 
@@ -681,7 +672,7 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
             talk_object(talk)->mode = GATEKEEPER_TALK_MODE_DONE;
             GatekeeperTalk_Release(talk);
             GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
-            func_ov048_022635f4(talk->owner, GATEKEEPER_STATE_C);
+            Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_C);
         }
         return;
     }
@@ -723,7 +714,7 @@ void GatekeeperTalk_WaitStatus1(GatekeeperTalk *talk)
     GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
     if (status == GATEKEEPER_STATUS_ACCEPTED) {
         object->mode = GATEKEEPER_TALK_MODE_DONE;
-        func_ov048_022635f4(talk->owner, GATEKEEPER_STATE_D);
+        Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_D);
         LinkGlobal_SetKind(1);
         LinkGlobal_SetDoneKind(1);
     } else {
@@ -1110,7 +1101,7 @@ void GatekeeperTalk_OnAnswer2c(GatekeeperTalk *talk, int answer)
     TalkObject *object = talk_object(talk);
     if (answer == 0) {
         object->mode = GATEKEEPER_TALK_MODE_DONE;
-        func_ov048_022635f4(talk->owner, GATEKEEPER_STATE_E);
+        Gatekeeper_SetState(talk->owner, GATEKEEPER_STATE_E);
     } else if (answer == 1) {
         say_on(object, GatekeeperTalk_Line21Or22(talk));
     }

@@ -6,27 +6,11 @@
 #include "main/frame_ctrl.h"
 #include "main/main_random.h"
 #include "main/model_pool.h"
+#include "museum_insect_motions.h"
 
-/* The motions shared by several kinds. func_ov004_02240f2c starts a motion: the position kept,
- * at rest, its pitch and yaw, its speeds and its height above the position. */
-extern int func_ov004_02240f2c(MuseumInsect *insect, short a, int b, short pitch, short yaw, int height, int f);
-extern void func_ov004_02240fc0(MuseumInsect *insect);
-/* The bounds an insect is kept within (MuseumInsect.low and high), from two corners in 1/16
- * units, x then z. */
-extern void func_ov004_02241008(MuseumInsect *insect, const int *low, const int *high);
-extern void func_ov004_02242df8(Vec3 *position, unsigned int index);
-extern void func_ov004_02242e84(MuseumInsect *insect);
+/* The motions shared by several kinds are in museum_insect_motions.h. */
 /* A random yaw: one of sixteen steps of 0xaaa either way. */
 extern short func_ov004_02244f90(void);
-/* The frame functions. */
-extern void func_ov004_02241f88(MuseumInsect *insect);
-extern void func_ov004_02243544(MuseumInsect *insect);
-extern void func_ov004_02241894(MuseumInsect *insect);
-extern void func_ov004_02242ae4(MuseumInsect *insect);
-extern void func_ov004_022419f8(MuseumInsect *insect);
-extern void func_ov004_02243694(MuseumInsect *insect);
-extern void func_ov004_02243048(MuseumInsect *insect);
-extern void func_ov004_022433c8(MuseumInsect *insect);
 
 extern void NNS_G3dMdlSetMdlAlpha(int model, int material, int alpha);
 
@@ -42,7 +26,7 @@ static void InsectKind_room_bounds(MuseumInsect *insect)
 {
     int low[2] = {0x104, 0xc2};
     int high[2] = {0x1be, 0x15a};
-    func_ov004_02241008(insect, low, high);
+    InsectMotion_SetBounds(insect, low, high);
 }
 
 /* A rest of 20-120 frames awake, 100-680 asleep. */
@@ -54,7 +38,7 @@ static s16 InsectKind_pair_rest(const MuseumInsect *insect)
 /* func_ov004_02240124 (kinds 35 and 56's frame) */
 void InsectKind_Frame35(MuseumInsect *insect)
 {
-    func_ov004_02241f88(insect);
+    InsectMotion_UpdatePartners(insect);
 }
 CLEAN_AS(func_ov004_02240124, InsectKind_Frame35)
 
@@ -98,7 +82,7 @@ CLEAN_AS(func_ov004_022401c8, InsectKind_Frame24)
  * its base animation (its frame control's speed) becomes 0x666. The awake byte, or 0x666. */
 int InsectKind_Init24(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x28, 0x1e, 0, 0, 0, 0xf);
+    InsectMotion_Start(insect, 0x28, 0x1e, 0, 0, 0, 0xf);
     if (insect->awake == 0) {
         insect->anim.ctrl.speed = 0x666;
         return 0x666;
@@ -110,14 +94,14 @@ CLEAN_AS(func_ov004_022401cc, InsectKind_Init24)
 /* func_ov004_02240200 (kind 48's frame) */
 void InsectKind_Frame48(MuseumInsect *insect)
 {
-    func_ov004_02243544(insect);
+    InsectMotion_UpdateJumper(insect);
 }
 CLEAN_AS(func_ov004_02240200, InsectKind_Frame48)
 
 /* func_ov004_02240208 (kind 48's initialiser): its motion started, and 10-39 frames to go. */
 void InsectKind_Init48(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x28, 0x1e, 0, 0, 0, 0xf);
+    InsectMotion_Start(insect, 0x28, 0x1e, 0, 0, 0, 0xf);
     insect->timer = (s16) MainRandom_Below(30) + 10;
 }
 CLEAN_AS(func_ov004_02240208, InsectKind_Init48)
@@ -125,7 +109,7 @@ CLEAN_AS(func_ov004_02240208, InsectKind_Init48)
 /* func_ov004_0224023c (kind 11's frame) */
 void InsectKind_Frame11(MuseumInsect *insect)
 {
-    func_ov004_02241894(insect);
+    InsectMotion_UpdateHoverer(insect);
 }
 CLEAN_AS(func_ov004_0224023c, InsectKind_Frame11)
 
@@ -141,7 +125,7 @@ CLEAN_AS(func_ov004_02240244, InsectKind_Init11)
 void InsectKind_Init55(MuseumInsect *insect)
 {
     short yaw = func_ov004_02244f90();
-    func_ov004_02240f2c(insect, 0x50, 0x50, 0, yaw, 0, 5);
+    InsectMotion_Start(insect, 0x50, 0x50, 0, yaw, 0, 5);
     insect->unk_170 = 0;
     FrameCtrl_Init(&insect->model.frames, 3, 0, 0x1000, 0);
     InsectKind_room_bounds(insect);
@@ -154,7 +138,7 @@ CLEAN_AS(func_ov004_02240250, InsectKind_Init55)
  * the room's bounds. */
 void InsectKind_Init54(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x50, 0x50, 0, func_ov004_02244f90(), 0, 5);
+    InsectMotion_Start(insect, 0x50, 0x50, 0, func_ov004_02244f90(), 0, 5);
     insect->unk_170 = 0;
     MuseumInsect *other = InsectRoom_FindPairSecond();
     if (other != NULL) {
@@ -162,7 +146,7 @@ void InsectKind_Init54(MuseumInsect *insect)
         other->paired = 1;
         int low[2] = {0x110, 0x10c};
         int high[2] = {0x14c, 0x148};
-        func_ov004_02241008(insect, low, high);
+        InsectMotion_SetBounds(insect, low, high);
     } else {
         insect->timer = InsectKind_pair_rest(insect);
         InsectKind_room_bounds(insect);
@@ -173,21 +157,21 @@ CLEAN_AS(func_ov004_022402f4, InsectKind_Init54)
 /* func_ov004_022403c4 (kinds 54 and 55's frame) */
 void InsectKind_FramePair(MuseumInsect *insect)
 {
-    func_ov004_02242ae4(insect);
+    InsectMotion_UpdatePair(insect);
 }
 CLEAN_AS(func_ov004_022403c4, InsectKind_FramePair)
 
 /* func_ov004_022403cc (kind 53's frame) */
 void InsectKind_Frame53(MuseumInsect *insect)
 {
-    func_ov004_022419f8(insect);
+    InsectMotion_UpdateKind53(insect);
 }
 CLEAN_AS(func_ov004_022403cc, InsectKind_Frame53)
 
 /* func_ov004_022403d4 (kind 53's initialiser): its motion started, its x noted at 0x4c. */
 void InsectKind_Init53(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x5a, 0x40, 0, 0, 0, 0xf);
+    InsectMotion_Start(insect, 0x5a, 0x40, 0, 0, 0, 0xf);
     insect->unk_4c = insect->position.x;
 }
 CLEAN_AS(func_ov004_022403d4, InsectKind_Init53)
@@ -195,7 +179,7 @@ CLEAN_AS(func_ov004_022403d4, InsectKind_Init53)
 /* func_ov004_02240400 (kind 51's frame) */
 void InsectKind_Frame51(MuseumInsect *insect)
 {
-    func_ov004_02243694(insect);
+    InsectMotion_UpdateFlier(insect);
 }
 CLEAN_AS(func_ov004_02240400, InsectKind_Frame51)
 
@@ -213,7 +197,7 @@ CLEAN_AS(func_ov004_02240408, InsectKind_Init51)
 /* func_ov004_02240454 (kind 10's frame) */
 void InsectKind_Frame10(MuseumInsect *insect)
 {
-    func_ov004_02243694(insect);
+    InsectMotion_UpdateFlier(insect);
 }
 CLEAN_AS(func_ov004_02240454, InsectKind_Frame10)
 
@@ -221,14 +205,14 @@ CLEAN_AS(func_ov004_02240454, InsectKind_Frame10)
 void InsectKind_Init10(MuseumInsect *insect)
 {
     InsectKind_StartAtHeight(insect, 0x78, 0x3c, 0x25, 8, 0x1000);
-    func_ov004_02240fc0(insect);
+    InsectMotion_BoundAroundPosition(insect);
 }
 CLEAN_AS(func_ov004_0224045c, InsectKind_Init10)
 
 /* func_ov004_02240488 (kind 49's frame) */
 void InsectKind_Frame49(MuseumInsect *insect)
 {
-    func_ov004_02243048(insect);
+    InsectMotion_UpdateVisitor(insect);
 }
 CLEAN_AS(func_ov004_02240488, InsectKind_Frame49)
 
@@ -240,9 +224,9 @@ void InsectKind_Init49(MuseumInsect *insect)
     int place = (u8) MainRandom_Below(5);
     insect->unk_170 = MainRandom_Below(100) > 50 ? 0 : 1;
     insect->unk_4c = place;
-    func_ov004_02240f2c(insect, 0x50, 0x50, 0, 0, 0, 1);
-    func_ov004_02242df8(&insect->position, (unsigned int) place);
-    func_ov004_02242e84(insect);
+    InsectMotion_Start(insect, 0x50, 0x50, 0, 0, 0, 1);
+    InsectMotion_PlaceOf(&insect->position, (unsigned int) place);
+    InsectMotion_NextPlace(insect);
     insect->unk_50 = 0;
     if (MainRandom_Below(100) > 50) {
         insect->timer = 20 * ((int) MainRandom_Below(9) + 4);
@@ -257,7 +241,7 @@ CLEAN_AS(func_ov004_02240490, InsectKind_Init49)
 /* func_ov004_02240538 (kind 30's frame) */
 void InsectKind_Frame30(MuseumInsect *insect)
 {
-    func_ov004_022433c8(insect);
+    InsectMotion_UpdateBurrower(insect);
 }
 CLEAN_AS(func_ov004_02240538, InsectKind_Frame30)
 
@@ -265,11 +249,11 @@ CLEAN_AS(func_ov004_02240538, InsectKind_Frame30)
  * transparent, and its bounds. */
 void InsectKind_Init30(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0xc8, 0x3c, 0, 0, 0, 0);
+    InsectMotion_Start(insect, 0xc8, 0x3c, 0, 0, 0, 0);
     NNS_G3dMdlSetMdlAlpha(ModelPoolFiles_Model(&insect->files), 0, 0);
     int low[2] = {0xa6, 0x106};
     int high[2] = {0xfc, 0x150};
-    func_ov004_02241008(insect, low, high);
+    InsectMotion_SetBounds(insect, low, high);
 }
 CLEAN_AS(func_ov004_02240540, InsectKind_Init30)
 
@@ -284,15 +268,7 @@ static_assert(offsetof(MuseumInsect, timer) == 0x174, "insect timer");
 
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 /* More frame functions. */
-extern void func_ov004_02241350(MuseumInsect *insect);
-extern void func_ov004_02243bb0(MuseumInsect *insect);
 extern void func_ov004_022442b4(MuseumInsect *insect);
-extern void func_ov004_02241e88(MuseumInsect *insect);
-extern void func_ov004_02243e04(MuseumInsect *insect);
-extern void func_ov004_022414a8(MuseumInsect *insect);
-extern void func_ov004_02243948(MuseumInsect *insect);
-extern void func_ov004_0224379c(MuseumInsect *insect);
-extern void func_ov004_02242d84(MuseumInsect *insect);
 extern void func_ov004_02244620(MuseumInsect *insect);
 
 /* The ROM's signed division (_s32_div_f): a divisor of 0 gives the numerator back. */
@@ -319,8 +295,8 @@ static fx32 InsectKind_fx(int whole)
 static void InsectKind_start_boxed(MuseumInsect *insect, short a, int b, int f, int word_4c)
 {
     short yaw = func_ov004_02244f90();
-    func_ov004_02240f2c(insect, a, b, 0, yaw, 0, f);
-    func_ov004_02240fc0(insect);
+    InsectMotion_Start(insect, a, b, 0, yaw, 0, f);
+    InsectMotion_BoundAroundPosition(insect);
     insect->unk_4c = word_4c;
 }
 
@@ -355,14 +331,14 @@ CLEAN_AS(func_ov004_02240630, InsectKind_Init26)
 /* func_ov004_02240664 (kinds 14, 15, 26 and 32's frame) */
 void InsectKind_Frame14(MuseumInsect *insect)
 {
-    func_ov004_02241350(insect);
+    InsectMotion_UpdateDrifter(insect);
 }
 CLEAN_AS(func_ov004_02240664, InsectKind_Frame14)
 
 /* func_ov004_0224066c (kind 25's frame) */
 void InsectKind_Frame25(MuseumInsect *insect)
 {
-    func_ov004_02243bb0(insect);
+    InsectMotion_UpdateDasher(insect);
 }
 CLEAN_AS(func_ov004_0224066c, InsectKind_Frame25)
 
@@ -371,10 +347,10 @@ CLEAN_AS(func_ov004_0224066c, InsectKind_Frame25)
  * QUIRK: a product of two random numbers, not 20 times one. */
 void InsectKind_Init25(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x28, 0x50, 0, 0, 0, 1);
+    InsectMotion_Start(insect, 0x28, 0x50, 0, 0, 0, 1);
     int low[2] = {0x62, 0x11a};
     int high[2] = {0x92, 0x13e};
-    func_ov004_02241008(insect, low, high);
+    InsectMotion_SetBounds(insect, low, high);
     unsigned int first = MainRandom_Below(20);
     unsigned int second = MainRandom_Below(insect->awake ? 3 : 15);
     insect->unk_98 = (s16) (u16) (second * first);
@@ -423,7 +399,7 @@ CLEAN_AS(func_ov004_02240794, InsectKind_Init21)
 void InsectKind_StartAnchored(MuseumInsect *insect, int a, int b, int height, u8 divisor, u8 distance, int word_4c)
 {
     short yaw = func_ov004_02244f90();
-    func_ov004_02240f2c(insect, (short) a, b, 0, yaw, height, InsectKind_div(0x1000, divisor));
+    InsectMotion_Start(insect, (short) a, b, 0, yaw, height, InsectKind_div(0x1000, divisor));
     insect->distance = distance;
     insect->unk_4c = word_4c;
     insect->anchor = insect->position;
@@ -445,7 +421,7 @@ CLEAN_AS(func_ov004_0224086c, InsectKind_Frame21)
 /* func_ov004_02240874 (kind 52's frame) */
 void InsectKind_Frame52(MuseumInsect *insect)
 {
-    func_ov004_02241e88(insect);
+    InsectMotion_UpdateHopper(insect);
 }
 CLEAN_AS(func_ov004_02240874, InsectKind_Frame52)
 
@@ -453,7 +429,7 @@ CLEAN_AS(func_ov004_02240874, InsectKind_Frame52)
  * 60-240 frames, and 0x98 cleared. */
 void InsectKind_Init52(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x3c, 0x46, 0, func_ov004_02244f90(), 0, 0x26);
+    InsectMotion_Start(insect, 0x3c, 0x46, 0, func_ov004_02244f90(), 0, 0x26);
     insect->timer = 20 * ((int) MainRandom_Below(10) + 3);
     insect->unk_98 = 0;
 }
@@ -502,7 +478,7 @@ CLEAN_AS(func_ov004_022409cc, InsectKind_Init29)
 /* func_ov004_02240a10 (kinds 12, 13 and 27-29's frame) */
 void InsectKind_Frame12(MuseumInsect *insect)
 {
-    func_ov004_02243e04(insect);
+    InsectMotion_UpdateGlider(insect);
 }
 CLEAN_AS(func_ov004_02240a10, InsectKind_Frame12)
 
@@ -512,7 +488,7 @@ CLEAN_AS(func_ov004_02240a10, InsectKind_Frame12)
 void InsectKind_StartFacing(MuseumInsect *insect, int a, int b, int divisor, u8 distance)
 {
     short yaw = func_ov004_02244f90();
-    func_ov004_02240f2c(insect, (short) a, b, 0, yaw, 0, InsectKind_div(0x1000, divisor));
+    InsectMotion_Start(insect, (short) a, b, 0, yaw, 0, InsectKind_div(0x1000, divisor));
     insect->unk_98 = (s16) (20 * ((int) MainRandom_Below(9) + 2));
     insect->distance = distance;
 }
@@ -560,7 +536,7 @@ CLEAN_AS(func_ov004_02240aac, InsectKind_Init16)
 /* func_ov004_02240ab8 (kinds 16-20's frame) */
 void InsectKind_Frame16(MuseumInsect *insect)
 {
-    func_ov004_022414a8(insect);
+    InsectMotion_UpdateWatcher(insect);
 }
 CLEAN_AS(func_ov004_02240ab8, InsectKind_Frame16)
 
@@ -674,7 +650,7 @@ CLEAN_AS(func_ov004_02240b98, InsectKind_Init47)
 /* func_ov004_02240ba4 (the frame of kinds 9, 31 and 33-47 but 35 and 37) */
 void InsectKind_Frame9(MuseumInsect *insect)
 {
-    func_ov004_02241894(insect);
+    InsectMotion_UpdateHoverer(insect);
 }
 CLEAN_AS(func_ov004_02240ba4, InsectKind_Frame9)
 
@@ -682,7 +658,7 @@ CLEAN_AS(func_ov004_02240ba4, InsectKind_Frame9)
  * motion pitched 0x3556 (75 degrees) and turned half round (yaw 0x8000), and 0x50 cleared. 0. */
 int InsectKind_StartTilted(MuseumInsect *insect, int a, int b)
 {
-    func_ov004_02240f2c(insect, (short) a, b, 0x3556, -0x8000, 0, 0);
+    InsectMotion_Start(insect, (short) a, b, 0x3556, -0x8000, 0, 0);
     insect->unk_50 = 0;
     return 0;
 }
@@ -691,21 +667,21 @@ CLEAN_AS(func_ov004_02240bac, InsectKind_StartTilted)
 /* func_ov004_02240bd8 (kind 50's frame) */
 void InsectKind_Frame50(MuseumInsect *insect)
 {
-    func_ov004_02243948(insect);
+    InsectMotion_UpdateFollower(insect);
 }
 CLEAN_AS(func_ov004_02240bd8, InsectKind_Frame50)
 
 /* func_ov004_02240be0 (kind 50's initialiser): its motion started; its result. */
 int InsectKind_Init50(MuseumInsect *insect)
 {
-    return func_ov004_02240f2c(insect, 0, 0, 0, 0, 0, 0xb);
+    return InsectMotion_Start(insect, 0, 0, 0, 0, 0, 0xb);
 }
 CLEAN_AS(func_ov004_02240be0, InsectKind_Init50)
 
 /* func_ov004_02240bfc (kind 37's frame) */
 void InsectKind_Frame37(MuseumInsect *insect)
 {
-    func_ov004_0224379c(insect);
+    InsectMotion_UpdateFlutterer(insect);
 }
 CLEAN_AS(func_ov004_02240bfc, InsectKind_Frame37)
 
@@ -718,13 +694,13 @@ void InsectKind_Init37(MuseumInsect *insect)
         insect->position.x = 0x7a00;
         insect->position.y = 0x2d00;
         insect->position.z = 0x12c00;
-        func_ov004_02240f2c(insect, 0x5a, 0x50, 0, 0, 0, 4);
+        InsectMotion_Start(insect, 0x5a, 0x50, 0, 0, 0, 4);
         insect->unk_50 = 0x3c;
         int low[2] = {0, 0xac};
         int high[2] = {0x96, 0x1ac};
-        func_ov004_02241008(insect, low, high);
+        InsectMotion_SetBounds(insect, low, high);
     } else {
-        func_ov004_02240f2c(insect, 0x5a, 0x50, 0x3556, 0x6000, 0, 4);
+        InsectMotion_Start(insect, 0x5a, 0x50, 0x3556, 0x6000, 0, 4);
     }
 }
 CLEAN_AS(func_ov004_02240c04, InsectKind_Init37)
@@ -734,7 +710,7 @@ CLEAN_AS(func_ov004_02240c04, InsectKind_Init37)
  * cleared and its anchor at its position; asleep, its animation's 8 frames played once. */
 void InsectKind_Init8(MuseumInsect *insect)
 {
-    func_ov004_02240f2c(insect, 0x96, 0x28, 1, -0x8000, 0, 9);
+    InsectMotion_Start(insect, 0x96, 0x28, 1, -0x8000, 0, 9);
     if (!insect->awake) {
         insect->pitch = 0x2aa8;
     }
@@ -752,7 +728,7 @@ CLEAN_AS(func_ov004_02240c94, InsectKind_Init8)
 /* func_ov004_02240d34 (kind 8's frame) */
 void InsectKind_Frame8(MuseumInsect *insect)
 {
-    func_ov004_02242d84(insect);
+    InsectMotion_UpdateHovering(insect);
 }
 CLEAN_AS(func_ov004_02240d34, InsectKind_Frame8)
 
@@ -821,7 +797,7 @@ void InsectKind_StartAtHeight(MuseumInsect *insect, int a, int b, int height, in
 {
     fx32 level = FX_MulFunc(FX_MulFunc(InsectKind_fx(height + 8), 0x1000), 0x100);
     insect->anchor = insect->position;
-    func_ov004_02240f2c(insect, (short) a, b, 0, 0, 0, f);
+    InsectMotion_Start(insect, (short) a, b, 0, 0, 0, f);
     insect->unk_50 = 0x28;
     insect->timer = 20 * ((int) MainRandom_Below(10) + 16);
     insect->unk_16a = (u8) MainRandom_Below(18);

@@ -7,10 +7,12 @@
 #include "clean.h"
 #include "main/design.h"
 #include "main/design_sets.h"
+#include "main/event_queue.h"
 #include "main/group_params.h"
 #include "main/link_global.h"
 #include "main/main_random.h"
 #include "main/message_receiver.h"
+#include "main/pool_link.h"
 #include "main/player_actor_ops.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -18,7 +20,12 @@
 #include "main/recent_slots.h"
 #include "main/scene_action.h"
 #include "main/scene_command.h"
+#include "main/scene_object.h"
+#include "main/scene_object_members.h"
+#include "main/scene_probe.h"
+#include "main/scene_query.h"
 #include "main/scene_share.h"
+#include "main/scene_value_3aa.h"
 #include "main/session.h"
 #include "main/sound_emitter.h"
 #include "main/spawner.h"
@@ -28,6 +35,8 @@
 #include "main/talk_checks.h"
 #include "main/talk_object.h"
 #include "main/town_item_lists.h"
+#include "main/villager_move.h"
+#include "main/villager_move_record.h"
 
 static_assert(sizeof(SceneBase) == 0x80, "scene base");
 static_assert(offsetof(Gatekeeper2Talk, owner) == 0xb0, "owner");
@@ -114,10 +123,6 @@ extern const u32 data_ov004_02254794;
 /* The session of the multiplayer game. */
 extern NetSession *data_020ccf94;
 
-/* Its state set (the class's member function at 0x022256ec, by the table
- * data_ov004_02258190). */
-extern void func_ov004_022256ec(Gatekeeper2 *keeper, int state);
-
 static u8 *gk2_part(Gatekeeper2 *keeper, u32 offset)
 {
     return keeper->base + offset;
@@ -200,33 +205,33 @@ void Gatekeeper2_OnEvent(Gatekeeper2 *keeper, unsigned int code, int participant
             *gk2_part(keeper, GATEKEEPER2_PARTICIPANT) = (u8) participant;
             if (participant != GATEKEEPER2_PLAYER_ACTOR) {
                 gk2_set_slots(keeper, gk2_local_slot(), participant);
-                func_ov004_022256ec(keeper, GATEKEEPER2_PAUSED);
+                Gatekeeper2_SetState(keeper, GATEKEEPER2_PAUSED);
             } else if (SceneShare_IsOurs(keeper->base)) {
                 gk2_set_slots(keeper, gk2_local_slot(), gk2_local_slot());
-                func_ov004_022256ec(keeper, GATEKEEPER2_PAUSED);
+                Gatekeeper2_SetState(keeper, GATEKEEPER2_PAUSED);
             }
             break;
         case GATEKEEPER2_EVENT_1:
-            func_ov004_022256ec(keeper, GATEKEEPER2_TALK);
+            Gatekeeper2_SetState(keeper, GATEKEEPER2_TALK);
             break;
         case GATEKEEPER2_EVENT_TALK:
             *gk2_part(keeper, GATEKEEPER2_PARTICIPANT) = (u8) participant;
             if (participant != GATEKEEPER2_PLAYER_ACTOR && participant != gk2_local_slot()) {
                 gk2_set_slots(keeper, participant, participant);
-                func_ov004_022256ec(keeper, GATEKEEPER2_OTHER);
+                Gatekeeper2_SetState(keeper, GATEKEEPER2_OTHER);
             } else if (SceneShare_IsOurs(keeper->base)) {
                 gk2_set_slots(keeper, gk2_local_slot(), gk2_local_slot());
-                func_ov004_022256ec(keeper, GATEKEEPER2_TALK);
+                Gatekeeper2_SetState(keeper, GATEKEEPER2_TALK);
             }
             break;
         case GATEKEEPER2_EVENT_ENDED:
             if (participant == GATEKEEPER2_PLAYER_ACTOR) {
                 if (LinkGlobal_HoldsScene()) {
                     gk2_set_slots(keeper, gk2_local_slot(), SCENE_SHARE_NO_SLOT);
-                    func_ov004_022256ec(keeper, GATEKEEPER2_TURN_BACK);
+                    Gatekeeper2_SetState(keeper, GATEKEEPER2_TURN_BACK);
                 } else {
                     gk2_set_slots(keeper, SCENE_SHARE_NO_SLOT, gk2_local_slot());
-                    func_ov004_022256ec(keeper, GATEKEEPER2_AWAIT);
+                    Gatekeeper2_SetState(keeper, GATEKEEPER2_AWAIT);
                 }
             }
             break;
@@ -237,7 +242,7 @@ void Gatekeeper2_OnEvent(Gatekeeper2 *keeper, unsigned int code, int participant
                 if (SceneShare_ReadSlots(keeper->base, &owner, &holder) &&
                     (participant == GATEKEEPER2_PLAYER_ACTOR || participant == holder)) {
                     gk2_set_slots(keeper, gk2_local_slot(), SCENE_SHARE_NO_SLOT);
-                    func_ov004_022256ec(keeper, GATEKEEPER2_STAND);
+                    Gatekeeper2_SetState(keeper, GATEKEEPER2_STAND);
                 }
             }
             break;
@@ -574,3 +579,363 @@ int Gatekeeper2_UpdatePaused(void)
     return 1;
 }
 CLEAN_AS(func_ov004_022254dc, Gatekeeper2_UpdatePaused)
+
+/* ---- Its states, its frame and its life */
+
+static_assert(sizeof(Gatekeeper2Step) == 0x10, "a state's functions");
+
+/* The parts of the special character's scene object its life and states use, by place (main's
+ * scene_object.h and scene_object_members.h). */
+#define GATEKEEPER2_YAW 0x8e             /* s16: where it faces */
+#define GATEKEEPER2_PERSON 0xea          /* u16: its person code */
+#define GATEKEEPER2_MODEL 0xec           /* LayeredModel */
+#define GATEKEEPER2_STANDARD_ANIMS 0x2a0 /* SceneStandardAnims */
+#define GATEKEEPER2_FACE 0x2ac           /* SceneFace */
+#define GATEKEEPER2_ANIM 0x334           /* SpeakerAnim */
+#define GATEKEEPER2_MOVER 0x350          /* SceneMover */
+#define GATEKEEPER2_PROBE 0x3a8
+#define GATEKEEPER2_VALUE_3AA 0x3aa  /* SceneValue3aa */
+#define GATEKEEPER2_LOOK 0x3b0       /* SceneLook */
+#define GATEKEEPER2_TALK_STATE 0x418 /* SceneTalkState */
+#define GATEKEEPER2_EFFECTS 0x420    /* ActEffects */
+#define GATEKEEPER2_COLLIDER 0x49c   /* CollisionContacts */
+#define GATEKEEPER2_CARRIER 0x4cc    /* FieldOwnedBody */
+#define GATEKEEPER2_HELD_FLAGS 0x4e8 /* u32: the scene object's flags (2: held) */
+#define GATEKEEPER2_FOOTSTEPS 0x558  /* Footsteps */
+#define GATEKEEPER2_MOTION 0x564     /* SceneMotion */
+#define GATEKEEPER2_HEAP 0x640       /* PoolLink */
+
+#define GATEKEEPER2_NO_PERSON 0xfff1
+#define GATEKEEPER2_HELD 2
+
+/* Its motion's kinds (main's scene_motion_request.h). */
+#define GATEKEEPER2_MOTION_TURN 3
+
+/* Its collider's size and its standard animations. */
+#define GATEKEEPER2_COLLIDER_SIZE 0x100
+#define GATEKEEPER2_ANIM_FIRST 0xd8
+#define GATEKEEPER2_ANIM_SECOND 0xd9
+
+/* The scene in which it is shared with a session; elsewhere it is not shared (0x563). */
+#define GATEKEEPER2_SHARED_SCENE 0xb
+
+/* The functions of its states (filled at start-up by __sinit_ov004_0224e85c). */
+extern Gatekeeper2Step data_ov004_02258190[GATEKEEPER2_STATES];
+/* The addresses of its model's and texture's file names, "npc_sp/model/pla.nsbmd" and
+ * "npc_sp/model/pla_tex.nsbtx". */
+extern const u32 data_ov004_0225478c;
+extern const u32 data_ov004_02254790;
+/* The vtable of a class it derives from. */
+extern const u8 data_020da088[];
+/* The word its motion requests carry. */
+extern u16 data_020c80f8;
+/* The town's villagers (main's villager_town.h). */
+extern u8 data_021e5a2c[];
+
+static SceneMotion *gk2_motion_of(Gatekeeper2 *keeper)
+{
+    return (SceneMotion *) (void *) gk2_part(keeper, GATEKEEPER2_MOTION);
+}
+
+static SceneAction *gk2_action_of(Gatekeeper2 *keeper)
+{
+    return (SceneAction *) (void *) gk2_part(keeper, GATEKEEPER2_ACTION);
+}
+
+/* Its talk scene's vtable slot 0x08 (SceneBase_Reset). */
+static void gk2_reset_talk(Gatekeeper2Talk *talk)
+{
+    u32 vtable = *(const u32 *) (const void *) talk;
+    u32 code = *(const u32 *) (uintptr_t) (vtable + GATEKEEPER2_TALK_SLOT_08);
+    ((void (*)(Gatekeeper2Talk *))(uintptr_t) code)(talk);
+}
+
+/* func_ov004_022254e0 (state 6's entry): 1. */
+int Gatekeeper2_EnterPaused(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_022254e0, Gatekeeper2_EnterPaused)
+
+/* func_ov004_022254e4 (state 5's update): once the object, ours, is owned by no system and
+ * this one holds the scene, it is owned by this system and held by none, and it turns back
+ * (state 3). 1. */
+int Gatekeeper2_UpdateOther(Gatekeeper2 *keeper)
+{
+    if (SceneShare_IsOurs(keeper->base)) {
+        int owner = SCENE_SHARE_NO_SLOT;
+        int holder = SCENE_SHARE_NO_SLOT;
+        if (SceneShare_ReadSlots(keeper->base, &owner, &holder) && owner == SCENE_SHARE_NO_SLOT && LinkGlobal_HoldsScene()) {
+            gk2_set_slots(keeper, gk2_local_slot(), SCENE_SHARE_NO_SLOT);
+            Gatekeeper2_SetState(keeper, GATEKEEPER2_TURN_BACK);
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_022254e4, Gatekeeper2_UpdateOther)
+
+/* func_ov004_0222553c (state 5's entry): 1. */
+int Gatekeeper2_EnterOther(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_0222553c, Gatekeeper2_EnterOther)
+
+/* func_ov004_02225540 (state 4's update), with the object ours: once this system owns and
+ * holds it, it is set so again and it talks (state 1); else, once this system holds the scene
+ * and no system holds the object, it is owned by this system and held by none, and it
+ * stands. 1. */
+int Gatekeeper2_UpdateAwait(Gatekeeper2 *keeper)
+{
+    if (SceneShare_IsOurs(keeper->base)) {
+        int owner = SCENE_SHARE_NO_SLOT;
+        int holder = SCENE_SHARE_NO_SLOT;
+        if (SceneShare_ReadSlots(keeper->base, &owner, &holder) && owner == gk2_local_slot() && owner == holder) {
+            gk2_set_slots(keeper, gk2_local_slot(), gk2_local_slot());
+            Gatekeeper2_SetState(keeper, GATEKEEPER2_TALK);
+        } else if (LinkGlobal_HoldsScene() && holder == SCENE_SHARE_NO_SLOT) {
+            gk2_set_slots(keeper, gk2_local_slot(), SCENE_SHARE_NO_SLOT);
+            Gatekeeper2_SetState(keeper, GATEKEEPER2_STAND);
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02225540, Gatekeeper2_UpdateAwait)
+
+/* func_ov004_022255bc (state 4's entry): 1. */
+int Gatekeeper2_EnterAwait(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_022255bc, Gatekeeper2_EnterAwait)
+
+/* func_ov004_022255c0 (state 3's update): once its turn is done, it stands. 1. */
+int Gatekeeper2_UpdateTurnBack(Gatekeeper2 *keeper)
+{
+    if (SceneMotion_Kind(gk2_motion_of(keeper)) == GATEKEEPER2_MOTION_TURN && SceneMotion_IsDone(gk2_motion_of(keeper))) {
+        Gatekeeper2_SetState(keeper, GATEKEEPER2_STAND);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_022255c0, Gatekeeper2_UpdateTurnBack)
+
+/* func_ov004_022255f0 (state 3's entry): it turns (priority 1) to the angle it faced at its
+ * start. 1. */
+int Gatekeeper2_EnterTurnBack(Gatekeeper2 *keeper)
+{
+    SceneMotion_Request(gk2_motion_of(keeper), GATEKEEPER2_MOTION_TURN, 1, 0, 0, 0, keeper->home_yaw, 0, 0, data_020c80f8, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_022255f0, Gatekeeper2_EnterTurnBack)
+
+/* func_ov004_0222562c (state 2's update): nothing. 1. */
+int Gatekeeper2_UpdateTalked(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_0222562c, Gatekeeper2_UpdateTalked)
+
+/* func_ov004_02225630 (state 2's entry): 1. */
+int Gatekeeper2_EnterTalked(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_02225630, Gatekeeper2_EnterTalked)
+
+/* func_ov004_02225634 (state 1's update): once its action is idle, the object's event ends and
+ * state 2 follows. 1.
+ * QUIRK: the action is asked twice whether it is busy. */
+int Gatekeeper2_UpdateTalk(Gatekeeper2 *keeper)
+{
+    if (SceneAction_IsBusy(gk2_action_of(keeper))) {
+        return 1;
+    }
+    if (!SceneAction_IsBusy(gk2_action_of(keeper))) {
+        EventQueue_FinishObjectEvent(keeper);
+        Gatekeeper2_SetState(keeper, GATEKEEPER2_TALKED);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02225634, Gatekeeper2_UpdateTalk)
+
+/* func_ov004_02225670 (state 1's entry): its talk scene is reset (vtable slot 0x08) and given
+ * this console's player's object as its partner; it turns to the partner (none: angle 0) and
+ * talks. 1. */
+int Gatekeeper2_EnterTalk(Gatekeeper2 *keeper)
+{
+    gk2_reset_talk(&keeper->talk);
+    SceneBase_SetMotionArg(&keeper->talk.base, SceneObject_ActorObject(keeper->base, GATEKEEPER2_PLAYER_ACTOR));
+    int partner = SceneBase_MotionArg(&keeper->talk.base);
+    int angle = 0;
+    if (partner != 0) {
+        angle = SceneObject_YawTo(keeper->base, (u8 *) (uintptr_t) (u32) partner);
+    }
+    SceneAction_RequestTurnAndTalk(gk2_action_of(keeper), 0, angle, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_02225670, Gatekeeper2_EnterTalk)
+
+/* func_ov004_022256c4 (state 0's update): nothing. 1. */
+int Gatekeeper2_UpdateStand(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_022256c4, Gatekeeper2_UpdateStand)
+
+/* func_ov004_022256c8 (state 0's entry): it stands (priority 1). 1. */
+int Gatekeeper2_EnterStand(Gatekeeper2 *keeper)
+{
+    SceneMotion_RequestStand(gk2_motion_of(keeper), 1, data_020c80f8);
+    return 1;
+}
+CLEAN_AS(func_ov004_022256c8, Gatekeeper2_EnterStand)
+
+/* func_ov004_022256ec: state `state` taken when its entry function, if it has one, answers
+ * nonzero.
+ * REQUIRES: `state` is 0 to 6 (the table is not bounded). */
+void Gatekeeper2_SetState(Gatekeeper2 *keeper, int state)
+{
+    const Gatekeeper2Step *step = &data_ov004_02258190[state];
+    int taken = 1;
+    if (step->enter.function != 0) {
+        taken = MemberPointer_CallInt(&step->enter, keeper);
+    }
+    if (taken != 0) {
+        keeper->state = state;
+    }
+}
+CLEAN_AS(func_ov004_022256ec, Gatekeeper2_SetState)
+
+/* func_ov004_02225730 (vtable slot 0x68, each frame): its state's update when it has one (its
+ * answer), else 0.
+ * REQUIRES: its state is 0 to 6. */
+int Gatekeeper2_Update(Gatekeeper2 *keeper)
+{
+    const Gatekeeper2Step *step = &data_ov004_02258190[(u32) keeper->state];
+    if (step->update.function == 0) {
+        return 0;
+    }
+    return MemberPointer_CallInt(&step->update, keeper);
+}
+CLEAN_AS(func_ov004_02225730, Gatekeeper2_Update)
+
+/* func_ov004_0222577c (vtable slot 0x70): the address of its model's file name,
+ * "npc_sp/model/pla.nsbmd". */
+unsigned int Gatekeeper2_ModelName(void)
+{
+    return data_ov004_0225478c;
+}
+CLEAN_AS(func_ov004_0222577c, Gatekeeper2_ModelName)
+
+/* func_ov004_02225788 (vtable slot 0x6c): the address of its texture's file name,
+ * "npc_sp/model/pla_tex.nsbtx". */
+unsigned int Gatekeeper2_TextureName(void)
+{
+    return data_ov004_02254790;
+}
+CLEAN_AS(func_ov004_02225788, Gatekeeper2_TextureName)
+
+/* func_ov004_02225794 (vtable slot 0x0c): when the special character may leave and this
+ * console's slot is taken in a session that is not linked, the town's plan of a villager to
+ * move away is cleared (when a villager has one). Whether it may leave. */
+int Gatekeeper2_Leave(Gatekeeper2 *keeper)
+{
+    if (SpecialSceneObject_Leave(keeper) == 0) {
+        return 0;
+    }
+    NetSession *session = data_020ccf94;
+    if (Session_IsSlotTaken(session, session->local_slot) && !Session_IsLinked(session)) {
+        VillagerTown *town = (VillagerTown *) (void *) data_021e5a2c;
+        if (VillagerMove_VillagerIndex(town) != -1) {
+            VillagerMoveRecord_Clear(VillagerMove_Record(town));
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02225794, Gatekeeper2_Leave)
+
+/* func_ov004_022257e8 (vtable slot 0x00, its start): unless the special character refuses to
+ * start, it notes the angle it faces and is held (flag 2 at 0x4e8). Linked in scene 0xb it
+ * stands when the object is ours, else awaits the session (state 4); otherwise it stands.
+ * Whether it started. */
+int Gatekeeper2_Start(Gatekeeper2 *keeper)
+{
+    if (SpecialSceneObject_Start(keeper) == 0) {
+        return 0;
+    }
+    keeper->home_yaw = *(const s16 *) (const void *) gk2_part(keeper, GATEKEEPER2_YAW);
+    *(u32 *) (void *) gk2_part(keeper, GATEKEEPER2_HELD_FLAGS) |= GATEKEEPER2_HELD;
+    if (Session_IsLinked(data_020ccf94) && SceneQuery_Current() == GATEKEEPER2_SHARED_SCENE) {
+        if (SceneShare_IsOurs(keeper->base)) {
+            Gatekeeper2_SetState(keeper, GATEKEEPER2_STAND);
+        } else {
+            Gatekeeper2_SetState(keeper, GATEKEEPER2_AWAIT);
+        }
+    } else {
+        Gatekeeper2_SetState(keeper, GATEKEEPER2_STAND);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_022257e8, Gatekeeper2_Start)
+
+/* func_ov004_0222585c (vtable slot 0x04, its set-up): unless the special character refuses,
+ * its talk scene becomes its scene and gets it as its owner; its collider's size and its
+ * standard animations (second 0xd9, first 0xd8) are set, and outside scene 0xb it is not
+ * shared with a session. Whether it was set up. */
+int Gatekeeper2_Init(Gatekeeper2 *keeper)
+{
+    if (SpecialSceneObject_Init(keeper) == 0) {
+        return 0;
+    }
+    SceneObject_SetScene(keeper->base, &keeper->talk.base);
+    Gatekeeper2Talk_Begin(&keeper->talk, keeper);
+    SceneObject_SetColliderSize(keeper->base, GATEKEEPER2_COLLIDER_SIZE);
+    SceneStandardAnims *anims = (SceneStandardAnims *) (void *) gk2_part(keeper, GATEKEEPER2_STANDARD_ANIMS);
+    SceneStandardAnims_SetSecond(anims, GATEKEEPER2_ANIM_SECOND);
+    SceneStandardAnims_SetFirst(anims, GATEKEEPER2_ANIM_FIRST);
+    if (SceneQuery_Current() != GATEKEEPER2_SHARED_SCENE) {
+        *gk2_part(keeper, GATEKEEPER2_LOCAL) = 1;
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0222585c, Gatekeeper2_Init)
+
+/* func_ov004_022258c4: a zeroed block of 0x714 bytes from the auxiliary heap, constructed: the
+ * scene object base, the class 0x020d8c64's vtable and members in place order (no person yet,
+ * 0xfff1), the class 0x020da088's vtable and heap link, then the class's vtable and its talk
+ * scene. Null when there is no room. */
+Gatekeeper2 *Gatekeeper2_Create(void)
+{
+    Gatekeeper2 *keeper = (Gatekeeper2 *) Heap_AllocAuxZeroed(sizeof(Gatekeeper2));
+    if (keeper == NULL) {
+        return NULL;
+    }
+    u8 *object = keeper->base;
+    SceneObjectBase_Construct((SceneObjectBase *) (void *) object);
+    *(const u8 **) (void *) object = data_020d8c64;
+    *(u16 *) (void *) gk2_part(keeper, GATEKEEPER2_PERSON) = GATEKEEPER2_NO_PERSON;
+    LayeredModel_ConstructB((LayeredModel *) (void *) gk2_part(keeper, GATEKEEPER2_MODEL));
+    SceneStandardAnims_Init((SceneStandardAnims *) (void *) gk2_part(keeper, GATEKEEPER2_STANDARD_ANIMS));
+    SceneFace_Construct((SceneFace *) (void *) gk2_part(keeper, GATEKEEPER2_FACE));
+    /* func_020169a8, the animation player's constructor (registered under the destructor's
+     * name). */
+    SpeakerAnim_Destruct((SpeakerAnim *) (void *) gk2_part(keeper, GATEKEEPER2_ANIM));
+    SceneMover_Construct((SceneMover *) (void *) gk2_part(keeper, GATEKEEPER2_MOVER));
+    SceneProbe_Construct(gk2_part(keeper, GATEKEEPER2_PROBE));
+    SceneValue3aa_Clear((SceneValue3aa *) (void *) gk2_part(keeper, GATEKEEPER2_VALUE_3AA));
+    SceneLook_Construct((SceneLook *) (void *) gk2_part(keeper, GATEKEEPER2_LOOK));
+    SceneTalkState_Construct((SceneTalkState *) (void *) gk2_part(keeper, GATEKEEPER2_TALK_STATE));
+    ActEffects_Construct((ActEffects *) (void *) gk2_part(keeper, GATEKEEPER2_EFFECTS));
+    CollisionContacts_Construct((CollisionContacts *) (void *) gk2_part(keeper, GATEKEEPER2_COLLIDER));
+    FieldOwnedBody_Construct2((FieldOwnedBody *) (void *) gk2_part(keeper, GATEKEEPER2_CARRIER));
+    SoundEmitterClass_Construct1((SoundEmitterObject *) (void *) gk2_part(keeper, GATEKEEPER2_EMITTER));
+    Footsteps_Construct((Footsteps *) (void *) gk2_part(keeper, GATEKEEPER2_FOOTSTEPS));
+    SceneMotion_Construct(gk2_motion_of(keeper));
+    SceneAction_Construct(gk2_action_of(keeper));
+    *(const u8 **) (void *) object = data_020da088;
+    PoolLink_Heap4Construct((PoolLink *) (void *) gk2_part(keeper, GATEKEEPER2_HEAP));
+    *(const u8 **) (void *) object = data_ov004_02254918;
+    Gatekeeper2Talk_Construct(&keeper->talk);
+    return keeper;
+}
+CLEAN_AS(func_ov004_022258c4, Gatekeeper2_Create)

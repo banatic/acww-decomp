@@ -28,6 +28,7 @@
 #define CLEAN_OV048_GATEKEEPER_TALK_H
 
 #include "main/scene_base.h"
+#include "ov004/member_pointer.h"
 #include "ov066/local_search.h"
 #include "types.h"
 
@@ -58,6 +59,15 @@ struct Gatekeeper;
 #define GATEKEEPER_TALK_WAIT_MISSING_NPC 21
 #define GATEKEEPER_TALK_WAIT_JOB_13 22
 #define GATEKEEPER_TALK_STATES 23
+
+/* A state: its function and whether it runs before the scene's steps (the table is filled by
+ * __sinit_ov048_022639b0, Gatekeeper_InitTables). */
+typedef struct GatekeeperTalkState {
+    MemberPointer run;
+    u8 network; /* run by slot 0x80 when set, by slot 0x84 when not */
+    u8 unk_09[3];
+} GatekeeperTalkState;
+extern GatekeeperTalkState data_ov048_02264344[GATEKEEPER_TALK_STATES];
 
 /* The size of the data a parent of this game carries (Local_EntryData). */
 #define GATEKEEPER_PARENT_DATA_SIZE 0x1a
