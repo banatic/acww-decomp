@@ -2,7 +2,7 @@
 
 This project aims to run the game from its sources: every function can execute as the ROM's own
 code, as its matching source compiled for the PC, or as a readable rewrite, and all three must
-behave the same. This document is the plan. Nothing in it exists yet unless it says so.
+behave the same. This document describes the design; the milestones at the end say what is done.
 
 Performance work and changes to how the game plays (higher resolutions, frame interpolation,
 online services) belong to a separate port project that builds on this one. Here, the measure
@@ -144,10 +144,16 @@ callee takes, undefined behaviour, a source that relies on mwccarm's stack layou
 - The same recording run with Native for every function that has a source gives the same frames
   and the same RAM at chosen points as the Reference run.
 
-**M5: Clean, one subsystem at a time.** Done, and growing: eleven subsystems of `main` in
-`clean/main/` (180 functions) pass their function-level checks, and the M4 recording run with
-`--clean` (each Clean function in place of its Native one, `tools/run.py`) gives the
-Reference's frames and RAM on Windows and on Linux in CI. The recording found what random entry
+**M5: Clean, one subsystem at a time.** Done: every one of the 25,247 game functions has a Clean
+version in `clean/`. With all of them in place of their Native ones (`tools/run.py --clean`), the
+M4 recordings give the Reference's frames and RAM on Windows and on Linux in CI. So do eight
+scenes started from a town save (`tools/scenes.py`: fish-cast, fish-night, house-exit, tool-axe,
+tool-shovel, pockets, pockets-furni, able-sisters); the save is not part of the repository. The
+6,482 Clean functions that call nothing also pass the function-level check. Clean code that no
+recording reaches, most of the menu screens (overlays 90-147) among it, has been checked only by
+reading it against its matching source. Three scenes, house, shop-talk and villager-talk, still
+differ from the Reference with Native and with Clean alike; the cause is on the Native side. The
+first recording run found what random entry
 states had not: callers that ask the calendar about month 0 or 13, which the game's tables
 answer from their neighbouring bytes (`clean/main/calendar.c`), and a fifth argument that a
 check placed where the game does not (`diff_stack` in `runtime/diffcheck.h`). A Clean function

@@ -20,22 +20,28 @@ to build it.
 
 ![Progress](https://raw.githubusercontent.com/banatic/acww-decomp/progress/progress.svg)
 
-CI draws the map from each build of `main` (`tools/progress_map.py`).
-
-Every function moves through these levels:
+CI draws the map from each build of `main` (`tools/progress_map.py`). Each function is coloured
+by the highest level it has reached:
 
 - **Reference**: only the ROM's own code.
-- **Native**: a C or C++ source that compiles with the original compiler to the ROM's bytes.
-- **Native, linked**: the whole program, linked with the original linker, reproduces the module
-  byte for byte.
-- **Clean**: a readable implementation that behaves like the reference in a differential test.
+- **Matching**: a C or C++ source that compiles with the original compiler (mwccarm) to the
+  ROM's exact bytes, and whose calls and pointers resolve to the ROM's targets.
+- **Matching, linked**: the whole program, linked with the original linker, reproduces the
+  module byte for byte.
+- **Clean**: a readable rewrite, checked against the ROM's code.
 
-Each of the 25,247 game functions has a C or C++ source that compiles with the original
-compiler to the ROM's exact bytes, and whose calls and pointers resolve to the ROM's targets.
-The sources are still one file per function, and the data sections still come from the ROM.
-Work in progress: linking the whole program with the original linker, and regrouping the
-functions into their original source files. [docs/verification.md](docs/verification.md)
-describes what is checked and what is not yet.
+All 25,247 game functions have a matching source and a Clean version. The sources are still
+one file per function, and the data sections still come from the ROM. Linking the whole
+program with the original linker and regrouping the functions into their original source files
+are in progress. [docs/verification.md](docs/verification.md) describes what is checked and
+what is not yet.
+
+## Running the game from its sources
+
+The game also runs on a PC from this repository, with each function as the ROM's code in an
+interpreter (Reference), as its matching source compiled for the PC (Native), or as its Clean
+version. Runs are compared with the Reference frame by frame. See
+[docs/runtime.md](docs/runtime.md).
 
 The target ROM:
 

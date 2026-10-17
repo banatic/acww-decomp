@@ -28,7 +28,7 @@ OUT = C.ROOT / "docs" / "progress.svg"
 
 LEVELS = ("clean", "linked", "native", "reference")
 COLORS = {"clean": "#f0b429", "linked": "#2bb673", "native": "#3a86d4", "reference": "#323b46"}
-LABELS = {"clean": "Clean", "linked": "Native, linked", "native": "Native",
+LABELS = {"clean": "Clean", "linked": "Matching, linked", "native": "Matching",
           "reference": "Reference only"}
 BG, CARD, FG, MUTED = "#0d1117", "#161b22", "#e6edf3", "#8b949e"
 
