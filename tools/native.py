@@ -37,6 +37,7 @@ import protos  # noqa: E402
 import objrewrite  # noqa: E402
 import native_layout  # noqa: E402
 import native_pmf  # noqa: E402
+import native_virtual  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -182,6 +183,17 @@ def virtual_calls(objects: list[tuple[pathlib.Path, pathlib.Path]], nowhere: set
     return {PREFIX + m: next(iter(v)) for m, v in found.items() if len(v) == 1 and next(iter(v))[0] >= 0}
 
 
+def virtual_thunks(vcalls: dict[str, tuple[int, int]]) -> list[str]:
+    """Dispatch unresolved virtual calls with cdecl this on the stack."""
+    lines = []
+    for host, (offset, adjust) in sorted(vcalls.items()):
+        lines += ["\t.p2align 4", f"\t.globl {host}", f"{host}:", "\tmovl 4(%esp), %eax"]
+        if adjust:
+            lines += [f"\taddl ${adjust}, %eax", "\tmovl %eax, 4(%esp)"]
+        lines += ["\tmovl (%eax), %eax", f"\tjmp *{offset}(%eax)"]
+    return lines
+
+
 # The functions each source declares with a narrower result than their definitions
 # (protos.narrowed_results), filled by main(): the source is compiled from a copy with those
 # declarations returning int (protos.widen_declarations), so that the PC's caller goes on with
@@ -198,7 +210,8 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     relative = path.relative_to(C.SRC).as_posix()
     layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
     member = native_pmf.translate(relative, text.decode("utf-8")) if relative in native_pmf.paths() else None
-    copies = [copy for copy in (layout, member) if copy is not None]
+    virtual = native_virtual.translate(relative, text.decode("utf-8")) if relative in native_virtual.paths() else None
+    copies = [copy for copy in (layout, member, virtual) if copy is not None]
     if len(copies) > 1:
         raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
     if NARROWED.get(path) or copies:
@@ -703,11 +716,7 @@ def main() -> None:
     # the jumps the tables of member-function pointers hold (tools/objrewrite.py), at even
     # addresses: to the method's Native, or to its DS address (the ROM's code)
     # the virtual calls (virtual_calls): `this` is the first word on the stack (cdecl)
-    for host, (offset, adjust) in sorted(vcalls.items()):
-        lines += ["\t.p2align 4", f"\t.globl {host}", f"{host}:", "\tmovl 4(%esp), %eax"]
-        if adjust:
-            lines += [f"\taddl ${adjust}, %eax", "\tmovl %eax, 4(%esp)"]
-        lines += ["\tmovl (%eax), %eax", f"\tjmp *{offset}(%eax)"]
+    lines += virtual_thunks(vcalls)
     for thunk in thunks:
         method = thunk[len(objrewrite.PMF):]
         target = PREFIX + (objrewrite.NATIVE if method in native else "") + method
