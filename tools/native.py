@@ -35,6 +35,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 import protos  # noqa: E402
 import objrewrite  # noqa: E402
+import native_layout  # noqa: E402
+import native_pmf  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -180,18 +182,50 @@ def virtual_calls(objects: list[tuple[pathlib.Path, pathlib.Path]], nowhere: set
     return {PREFIX + m: next(iter(v)) for m, v in found.items() if len(v) == 1 and next(iter(v))[0] >= 0}
 
 
+# The functions each source declares with a narrower result than their definitions
+# (protos.narrowed_results), filled by main(): the source is compiled from a copy with those
+# declarations returning int (protos.widen_declarations), so that the PC's caller goes on with
+# the whole of eax as the ROM's goes on with the whole of r0.
+NARROWED: dict[pathlib.Path, set[str]] = {}
+WIDENED: dict[pathlib.Path, set[str]] = {}
+PMF_TRANSLATED: set[pathlib.Path] = set()
+
+
 def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, str]:
     flags = flags_for(path)
     obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
-    key = hashlib.sha1(path.read_bytes() + " ".join(compiler() + flags).encode())
+    source, text = path, path.read_bytes()
+    relative = path.relative_to(C.SRC).as_posix()
+    layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
+    member = native_pmf.translate(relative, text.decode("utf-8")) if relative in native_pmf.paths() else None
+    copies = [copy for copy in (layout, member) if copy is not None]
+    if len(copies) > 1:
+        raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
+    if NARROWED.get(path) or copies:
+        wide = copies[0] if copies else text.decode("utf-8")
+        if member is not None:
+            PMF_TRANSLATED.add(path)
+            flags = [*flags, "-I" + str(C.ROOT / "runtime")]
+        if NARROWED.get(path):
+            wide, done = protos.widen_declarations(wide, NARROWED[path])
+            WIDENED[path] = done
+        # the copy finds the original's neighbours (#include "...") and names the original
+        source = OUT / "wide" / path.relative_to(C.SRC)
+        text = f'#line 1 "{path.as_posix()}"\n{wide}'.encode()
+        flags = [*flags, "-iquote", str(path.parent)]
+        source.parent.mkdir(parents=True, exist_ok=True)
+        source.write_bytes(text)
+    key = hashlib.sha1(text + " ".join(compiler() + flags).encode())
     key.update((C.ROOT / "runtime" / "native.h").read_bytes())  # included first, by -include
+    if member is not None:
+        key.update((C.ROOT / "runtime" / "native_member.h").read_bytes())
     for inc in C.included_files(path):
         key.update(inc.read_bytes())
     stamp = obj.with_suffix(".key")
     if obj.exists() and stamp.exists() and stamp.read_text() == key.hexdigest():
         return path, obj, ""
     obj.parent.mkdir(parents=True, exist_ok=True)
-    p = subprocess.run([*compiler(), "-c", *flags, str(path), "-o", str(obj)], capture_output=True,
+    p = subprocess.run([*compiler(), "-c", *flags, str(source), "-o", str(obj)], capture_output=True,
                        text=True, errors="replace")
     if p.returncode != 0:
         first = next((line for line in p.stderr.splitlines() if "error" in line), p.stderr.strip()[-200:])
@@ -532,6 +566,11 @@ def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     workers = max(1, (os.cpu_count() or 4) - 2)
     objects, left_out = [], []
+    narrowed: dict[str, set[str]] = collections.defaultdict(set)
+    for rel, callee in protos.narrowed_results():
+        narrowed[rel].add(callee)
+    NARROWED.update({p: narrowed[p.relative_to(C.ROOT).as_posix()] for p in paths
+                     if p.relative_to(C.ROOT).as_posix() in narrowed})
     with cf.ThreadPoolExecutor(workers) as pool:
         for path, obj, why in pool.map(compile_one, paths):
             if obj is None:
@@ -590,7 +629,7 @@ def main() -> None:
     for path, _ in objects:
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
         if "::*" in text or "->*" in text or pmf_names(path, text):
-            pmf_why[path] = pmf_unsafe(path, text)
+            pmf_why[path] = None if path in PMF_TRANSLATED else pmf_unsafe(path, text)
     methods = {n for n in known if n.startswith("_ZN")
                and any(s.kind == "function" for s in syms.by_name.get(n, []))}
     to_ds: set[str] = set()
@@ -717,10 +756,9 @@ def main() -> None:
     # A caller that declares a function with a char or short result the definition does not
     # produce (protos.narrowed_results): mwccarm trusts the callee to have extended r0 as
     # declared, so the ROM's code goes on with the whole register (returns it, compares it, adds
-    # an offset to it); the PC's code extends the low bits itself.
-    narrowed: dict[str, list[str]] = collections.defaultdict(list)
-    for rel, callee in protos.narrowed_results():
-        narrowed[rel].append(callee)
+    # an offset to it). The source was compiled with those declarations returning int
+    # (compile_one), so the PC's code goes on with the whole of eax; one whose declaration
+    # protos.widen_declarations could not change stays Reference.
     keep = []
     for (path, _), names in zip(objects, per_object):
         name = C.parse_source(path).object_symbol
@@ -733,19 +771,20 @@ def main() -> None:
                         "is a rewrite, and passes registers on differently" + chr(10))
             continue
         inner = sorted(set(re.findall(r"\b(\w+_unk)\s*\(", text)) - {name})
-        narrow = sorted(set(narrowed.get(path.relative_to(C.ROOT).as_posix(), [])))
+        narrow = sorted(NARROWED.get(path, set()) - WIDENED.get(path, set()))
         if inner:
             keep.append(f"{name} calls {' '.join(inner)}, an entry into the middle of other code: the ROM's code "
                         "there goes on into a function whose Native would not start there" + chr(10))
         elif narrow:
-            keep.append(f"{name} declares {' '.join(narrow)} with a narrower result than the definition returns: "
-                        "the ROM's code uses the whole register the callee leaves, the PC's only the low bits\n")
+            keep.append(f"{name} declares {' '.join(narrow)} with a narrower result than the definition returns, in a "
+                        "declaration not widened for the PC: the ROM's code uses the whole register the callee "
+                        "leaves, the PC's only the low bits\n")
         elif by_value:
             keep.append(f"{name} calls {' '.join(by_value)}, which returns a structure by value: mwccarm passes "
                         "a pointer to the result in r0, the PC's compiler returns a small one in registers\n")
         elif pmf_why.get(path):
             keep.append(f"{name} shares member-function pointers with the ROM's code ({pmf_why[path]}), which "
-                        "mwccarm lays out in 12 bytes and the PC (Itanium C++ ABI) in 8\n")
+                        "uses a different encoding from the PC's Itanium C++ ABI\n")
         elif short.get(path.relative_to(C.ROOT).as_posix()):
             keep.append(f"{name} declares {' '.join(sorted(set(short[path.relative_to(C.ROOT).as_posix()])))} with "
                         "fewer parameters than their definitions or a result they do not return, which the DS "

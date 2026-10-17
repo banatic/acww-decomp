@@ -130,11 +130,15 @@ frames of `runtime/recordings/new-game.txt` (power-on to walking in the town). A
 in Native code gives the ROM's helpers' result (the dividend), not a trap (`runtime/native_os.c`).
 `runtime/native_run.c` dispatches between the two: Reference code calling a Native function, a
 Native function calling the ROM's code through the interpreter (`native_tramp.S`), and a trace of
-the Reference run's crossings that gives Native code the Reference's timing. About 870 functions
-stay Reference: those `tools/native.py` finds by reading the sources (member function pointers
-shared with the ROM's code, which lays them out in 12 bytes where the PC has 8; calls to a
-function's middle; a callee declared with a char or short result its definition does not
-produce, whose whole register the ROM's code goes on with), and those listed with a
+the Reference run's crossings that gives Native code the Reference's timing. A source that
+declares a callee with a char or short result its definition does not produce is compiled from
+a copy that declares it returning int: mwccarm trusts the callee to have extended r0 and goes on
+with the whole register, and so does the PC's code with eax (`tools/protos.py`,
+`widen_declarations`). Audited member-pointer callers use the ROM's two-word encoding in
+PC copies (`runtime/native_member.h`, `tools/native_pmf.py`); see
+[the supported boundary](native-member-pointers.md). Functions still kept Reference are
+those `tools/native.py` finds by reading the sources (unsupported shared member-pointer
+forms; calls to a function's middle), and those listed with a
 reason in `runtime/native-reference.txt` (hardware access, calls with fewer arguments than the
 callee takes, undefined behaviour, a source that relies on mwccarm's stack layout).
 - The same recording run with Native for every function that has a source gives the same frames

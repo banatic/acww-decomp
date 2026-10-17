@@ -90,7 +90,8 @@ def narrowed_results() -> list[tuple[str, str]]:
     short result that the definition does not produce: a word, or another width or sign.
     The DS's caller trusts the callee to have extended r0 as the declaration says, so it uses
     the whole register where it needs more than the narrow value; the PC's caller extends the
-    low bits itself."""
+    low bits itself. tools/native.py compiles such a source with the declarations widened
+    (widen_declarations)."""
     defs: dict[str, tuple[int, bool]] = {}
     decls: list[tuple[str, str, tuple[int, bool]]] = []
     for path in C.all_sources():
@@ -123,6 +124,33 @@ def narrowed_results() -> list[tuple[str, str]]:
             continue
         out.append((rel, name))
     return out
+
+
+def widen_declarations(text: str, names: set[str]) -> tuple[str, set[str]]:
+    """`text` (a source) with its declarations of `names` (narrowed_results) returning int,
+    and the names it changed. mwccarm trusts a char or short result to be extended already, so
+    the ROM's caller goes on with r0 as the callee left it, as an int (the narrow type's
+    promotion); the PC's caller, given int, goes on with eax as the callee left it, which the
+    Native, Clean and Reference callees all leave as the definition's result (extended as the
+    definition's type). For tools/native.py only: the DS build compiles the source as it is."""
+    plain = COMMENT.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)  # same offsets
+    members = class_bodies(plain)
+    edits, done = [], set()
+    for m in FUNC.finditer(plain):
+        ret, name, end = m.group(1), m.group(2), m.group(4)
+        if name not in names or end != ";" or STATEMENT & set(ret.replace("*", " ").split()):
+            continue
+        if any(start <= m.start(2) < stop for start, stop in members):
+            continue
+        width = result_width(ret)
+        if width is None or width[0] >= 4:
+            continue
+        keep = [w for w in ret.split() if w in ("extern", "static", "inline", "const", "volatile", "__arm", "__thumb")]
+        edits.append((m.start(1), m.end(1), " ".join([*keep, "int"]) + " "))
+        done.add(name)
+    for start, stop, new in reversed(edits):
+        text = text[:start] + new + text[stop:]
+    return text, done
 
 
 def disagreements() -> list[tuple[str, str, int | None, int | None, bool, bool, str]]:
