@@ -36,6 +36,7 @@ import common as C  # noqa: E402
 import protos  # noqa: E402
 import objrewrite  # noqa: E402
 import native_layout  # noqa: E402
+import native_pmf  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -187,6 +188,7 @@ def virtual_calls(objects: list[tuple[pathlib.Path, pathlib.Path]], nowhere: set
 # the whole of eax as the ROM's goes on with the whole of r0.
 NARROWED: dict[pathlib.Path, set[str]] = {}
 WIDENED: dict[pathlib.Path, set[str]] = {}
+PMF_TRANSLATED: set[pathlib.Path] = set()
 
 
 def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, str]:
@@ -195,8 +197,15 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     source, text = path, path.read_bytes()
     relative = path.relative_to(C.SRC).as_posix()
     layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
-    if NARROWED.get(path) or layout is not None:
-        wide = text.decode("utf-8") if layout is None else layout
+    member = native_pmf.translate(relative, text.decode("utf-8")) if relative in native_pmf.paths() else None
+    copies = [copy for copy in (layout, member) if copy is not None]
+    if len(copies) > 1:
+        raise ValueError(f"Overlapping Native source-copy transforms: {relative}")
+    if NARROWED.get(path) or copies:
+        wide = copies[0] if copies else text.decode("utf-8")
+        if member is not None:
+            PMF_TRANSLATED.add(path)
+            flags = [*flags, "-I" + str(C.ROOT / "runtime")]
         if NARROWED.get(path):
             wide, done = protos.widen_declarations(wide, NARROWED[path])
             WIDENED[path] = done
@@ -208,6 +217,8 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
         source.write_bytes(text)
     key = hashlib.sha1(text + " ".join(compiler() + flags).encode())
     key.update((C.ROOT / "runtime" / "native.h").read_bytes())  # included first, by -include
+    if member is not None:
+        key.update((C.ROOT / "runtime" / "native_member.h").read_bytes())
     for inc in C.included_files(path):
         key.update(inc.read_bytes())
     stamp = obj.with_suffix(".key")
@@ -618,7 +629,7 @@ def main() -> None:
     for path, _ in objects:
         text = COMMENT.sub(" ", path.read_text(encoding="utf-8", errors="replace"))
         if "::*" in text or "->*" in text or pmf_names(path, text):
-            pmf_why[path] = pmf_unsafe(path, text)
+            pmf_why[path] = None if path in PMF_TRANSLATED else pmf_unsafe(path, text)
     methods = {n for n in known if n.startswith("_ZN")
                and any(s.kind == "function" for s in syms.by_name.get(n, []))}
     to_ds: set[str] = set()
@@ -773,7 +784,7 @@ def main() -> None:
                         "a pointer to the result in r0, the PC's compiler returns a small one in registers\n")
         elif pmf_why.get(path):
             keep.append(f"{name} shares member-function pointers with the ROM's code ({pmf_why[path]}), which "
-                        "mwccarm lays out in 12 bytes and the PC (Itanium C++ ABI) in 8\n")
+                        "uses a different encoding from the PC's Itanium C++ ABI\n")
         elif short.get(path.relative_to(C.ROOT).as_posix()):
             keep.append(f"{name} declares {' '.join(sorted(set(short[path.relative_to(C.ROOT).as_posix()])))} with "
                         "fewer parameters than their definitions or a result they do not return, which the DS "
