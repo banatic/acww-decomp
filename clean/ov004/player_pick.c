@@ -26,6 +26,7 @@
 #include "member_pointer.h"
 #include "rmo_telephone.h"
 #include "room_camera.h" /* RoomCamera_ResetGoalNow */
+#include "ov004/room_player_actor.h"
 
 static_assert(sizeof(PlayerPick) == 0x358, "the process");
 static_assert(offsetof(PlayerPick, cursor) == 0x50, "the cursor");
@@ -112,8 +113,6 @@ extern u8 data_021fbddc;          /* the pen went down or up this frame */
 extern u8 data_021f6c38;          /* the pen was down (touch_history.c) */
 extern u8 data_021f6c34;          /* the pen went down or up */
 
-/* The scene's player actor told to take action 6 to the side `left` (func_ov004_0222b9d4). */
-extern int func_ov004_0222c110(int left, int arg);
 /* The name tags' destructor and constructor, as the game hands them to the array helpers. */
 extern void func_0208e408(void *tag);
 extern void func_0208e438(void *tag);
@@ -284,7 +283,7 @@ void PlayerPick_EnterPicked(PlayerPick *self)
     if (self->selection == 0 || self->selection == 2) {
         left = 1;
     }
-    func_ov004_0222c110(left, PLAYER_PICK_ACTION_ARG);
+    RoomPlayerActor_RequestPlaceOff(left, PLAYER_PICK_ACTION_ARG);
     CellLayerSprite_SetAnim(&self->cursor, PLAYER_PICK_CURSOR_OFF);
     for (u8 i = 0; i < PLAYER_PICK_TAGS; i++) {
         NameTag_Hide(&self->tags[i]);

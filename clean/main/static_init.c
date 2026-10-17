@@ -1312,14 +1312,15 @@ extern void func_02082bc0(void *table); /* ActorEntries_DestructTable */
 static_assert(sizeof(ActorEntry) == 8, "ActorEntry");
 
 /* __sinit___sinit_020c5e30.cpp (the initialiser of a C++ source file): the actors' table,
- * both arrays of entries constructed by __cxa_vec_ctor, then the table registered.
- * Not registered: CLEAN_AS takes a C name, and this function's symbol has a '.' in it. */
+ * both arrays of entries constructed by __cxa_vec_ctor, then the table registered. Its symbol
+ * has a '.' in it, so it is registered with CLEAN_AS_SYMBOL. */
 void StaticInit_ActorTable(void)
 {
     __cxa_vec_ctor(data_021d1d4c.kind_e, ACTOR_TABLE_KIND_E_ENTRIES, sizeof(ActorEntry), func_02082c00, func_02082bfc);
     __cxa_vec_ctor(data_021d1d4c.kind_d, ACTOR_TABLE_KIND_D_ENTRIES, sizeof(ActorEntry), func_02082bf0, func_02082bec);
     static_init_register(&data_021d1d4c, func_02082bc0, &data_021d1d40);
 }
+CLEAN_AS_SYMBOL("__sinit___sinit_020c5e30.cpp", StaticInit_ActorTable)
 
 /* The slot pools (slot_pool.h): speakers, 8-byte heaps, 4-byte heaps, clothes, blocks,
  * animation sets, parts and held items. */

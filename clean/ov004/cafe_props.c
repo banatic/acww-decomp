@@ -14,6 +14,9 @@
 #include "main/music_queue.h"
 #include "main/sound.h"
 #include "member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_slots.h"
+#include "rmo_object_base.h"
 
 static_assert(offsetof(Actor, angle) == 0x8c, "angle");
 static_assert(sizeof(Actor) == 0xd4, "Actor size");
@@ -108,17 +111,6 @@ extern const MemberPointer data_ov004_02254f08, data_ov004_02254fa0, data_ov004_
     data_ov004_02254f50;
 
 /* The RMO family's base class and holders (rmo_object.h). */
-extern int func_ov004_0222c600(RmoObject *object, const char *archive, const char *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index);
-extern int func_ov004_0222c3f4(RmoModel *model, const char *path);
-extern u8 *func_ov004_0222c3a0(RmoModel *model);
-extern void func_ov004_0222c3d4(RmoModel *model);
-extern int func_ov004_0222c348(RmoTexture *texture, const char *path);
-extern void *func_ov004_0222c33c(RmoTexture *texture);
-extern void func_ov004_0222c340(RmoTexture *texture);
 
 /* The constructors and destructors the array helpers are handed: the game's own. */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -175,8 +167,8 @@ void CafeProps_PlayAnim(CafeProps *unused, int anim, RmoAnimatedModel *model, Rm
 {
     (void) unused;
     const u8 *playing = AnimatedModel_AnimFile(animated(model));
-    if (playing != func_ov004_0222c3c4(source, anim)) {
-        AnimatedModel_Start(animated(model), func_ov004_0222c3c4(source, anim), flags, speed, start, frames);
+    if (playing != RmoModel_JointAnim(source, anim)) {
+        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, anim), flags, speed, start, frames);
     }
 }
 CLEAN_AS(func_ov004_0222db14, CafeProps_PlayAnim)
@@ -185,7 +177,7 @@ CLEAN_AS(func_ov004_0222db14, CafeProps_PlayAnim)
 static int plays(RmoAnimatedModel *model, RmoModel *source, int anim)
 {
     const u8 *playing = AnimatedModel_AnimFile(animated(model));
-    return playing == func_ov004_0222c3c4(source, anim);
+    return playing == RmoModel_JointAnim(source, anim);
 }
 
 /* Whether `model` plays joint animation `anim` of `source` and it has run out. */
@@ -310,8 +302,8 @@ CLEAN_AS(func_ov004_0222dd3c, CafeProps_EnterState0)
  * animation is asked for twice. */
 static void start_first_anim(RmoAnimatedModel *model, RmoModel *source)
 {
-    if (func_ov004_0222c3c4(source, 0) != NULL && AnimatedModel_LoadAnim(animated(model), data_021c9b24) != 0) {
-        AnimatedModel_Start(animated(model), func_ov004_0222c3c4(source, 0), PLAY_ONCE, ONE, 0, 0);
+    if (RmoModel_JointAnim(source, 0) != NULL && AnimatedModel_LoadAnim(animated(model), data_021c9b24) != 0) {
+        AnimatedModel_Start(animated(model), RmoModel_JointAnim(source, 0), PLAY_ONCE, ONE, 0, 0);
         AnimatedModel_Attach(animated(model));
         model->frames.speed = 0;
     }
@@ -327,8 +319,8 @@ CLEAN_AS(func_ov004_0222dd5c, CafeProps_StartPartAnim)
 /* func_ov004_0222dde0: the part's archive and textures released. */
 void CafeProps_ReleasePart(CafeProps *self, int part)
 {
-    func_ov004_0222c3d4(&self->part_models[part]);
-    func_ov004_0222c340(&self->part_textures[part]);
+    RmoModel_Release(&self->part_models[part]);
+    RmoTexture_Release(&self->part_textures[part]);
 }
 CLEAN_AS(func_ov004_0222dde0, CafeProps_ReleasePart)
 
@@ -340,13 +332,13 @@ void CafeProps_LoadPart(CafeProps *self, int part, const char *archive, const ch
     RmoTexture *textures = &self->part_textures[part];
     u8 *model;
 
-    func_ov004_0222c3f4(source, archive);
-    func_ov004_0222c348(textures, texture);
-    ModelObject_SetModel(&self->parts[part].object, func_ov004_0222c3a0(source), NULL);
-    model = func_ov004_0222c3a0(source);
-    NNS_G3dBindMdlTex(model, func_ov004_0222c33c(textures));
-    model = func_ov004_0222c3a0(source);
-    NNS_G3dBindMdlPltt(model, func_ov004_0222c33c(textures));
+    RmoModel_Load(source, archive);
+    RmoTexture_Load(textures, texture);
+    ModelObject_SetModel(&self->parts[part].object, RmoModel_Model(source), NULL);
+    model = RmoModel_Model(source);
+    NNS_G3dBindMdlTex(model, RmoTexture_Texture(textures));
+    model = RmoModel_Model(source);
+    NNS_G3dBindMdlPltt(model, RmoTexture_Texture(textures));
 }
 CLEAN_AS(func_ov004_0222de14, CafeProps_LoadPart)
 
@@ -467,7 +459,7 @@ CLEAN_AS(func_ov004_0222e1b8, CafeProps_UpdateState4)
 /* func_ov004_0222e220: part 3 plays its first animation once from the start. */
 int CafeProps_OnEnterState4(CafeProps *self)
 {
-    AnimatedModel_Start(animated(&self->parts[3]), func_ov004_0222c3c4(&self->part_models[3], 0), PLAY_ONCE, ONE, 0, 0);
+    AnimatedModel_Start(animated(&self->parts[3]), RmoModel_JointAnim(&self->part_models[3], 0), PLAY_ONCE, ONE, 0, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_0222e220, CafeProps_OnEnterState4)
@@ -623,7 +615,7 @@ CLEAN_AS(func_ov004_0222e73c, CafeProps_SetState)
  * props are no longer the current ones. */
 int CafeProps_Release(CafeProps *self)
 {
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     for (int i = 0; i < CAFE_PROPS_PARTS; i++) {
         CafeProps_ReleasePart(self, i);
     }
@@ -781,7 +773,7 @@ static fx32 last_frame(fx32 end)
 int CafeProps_Start(CafeProps *self)
 {
     data_ov004_02258310 = self;
-    func_ov004_0222c600(&self->base, data_ov004_02255030, data_ov004_02255048);
+    RmoObjectSlots_Load(&self->base, data_ov004_02255030, data_ov004_02255048);
     CafeProps_LoadPart(self, 0, data_ov004_02255064, data_ov004_0225507c);
     CafeProps_LoadPart(self, 1, data_ov004_02255098, data_ov004_022550b0);
     CafeProps_LoadPart(self, 2, data_ov004_022550cc, data_ov004_022550e4);
@@ -823,7 +815,7 @@ static void destruct(CafeProps *self)
     __cxa_vec_cleanup(self->part_textures, CAFE_PROPS_PARTS, sizeof(RmoTexture), func_ov004_0222c394);
     __cxa_vec_cleanup(self->part_models, CAFE_PROPS_PARTS, sizeof(RmoModel), func_ov004_0222c538);
     __cxa_vec_cleanup(self->parts, CAFE_PROPS_PARTS, sizeof(RmoAnimatedModel), func_020551e0);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
 }
 
 /* func_ov004_0222f028 (vtable slot 0x44): taken down and freed. */
@@ -846,7 +838,7 @@ CLEAN_AS(func_ov004_0222f08c, CafeProps_Destruct)
 /* func_ov004_0222f0e8 */
 CafeProps *CafeProps_Construct(CafeProps *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     self->base.actor.vtable = data_ov004_02254fc8;
     __cxa_vec_ctor(self->parts, CAFE_PROPS_PARTS, sizeof(RmoAnimatedModel), func_02055210, func_020551e0);
     __cxa_vec_ctor(self->part_models, CAFE_PROPS_PARTS, sizeof(RmoModel), func_ov004_0222c548, func_ov004_0222c538);

@@ -86,8 +86,9 @@ ROM = C.ROOT / "extract" / "adm-kr.nds"
 NATIVE = C.BUILD / "native" / ("windows" if WINDOWS else "linux")
 KEPT = RUNTIME / "native-reference.txt"
 HELPERS = RUNTIME / "compiler-helpers.txt"
-# CLEAN_AS(symbol, function) (clean/clean.h)
-CLEAN_AS = re.compile(r"^CLEAN_AS\((\w+),\s*(\w+)\)", re.M)
+# CLEAN_AS(symbol, function), or CLEAN_AS_SYMBOL("symbol", function) for a symbol that is not a C
+# name (clean/clean.h): the symbol is the first group that matched
+CLEAN_AS = re.compile(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),\s*(\w+)\)", re.M)
 # DIFF_CHECK(symbol, "module", address, bits, ... (runtime/diffcheck.h)
 CLEAN_CHECK = re.compile(r"^DIFF_CHECK\((\w+), \"(\w+)\", (0x[0-9a-fA-F]+(?: \| 1)?), (\d+),", re.M)
 SOURCES = ("arm.c", "memory.c", "io.c", "bios.c", "arm7.c", "boot.c", "gpu2d.c", "gpu3d.c", "frame.c", "input.c",
@@ -166,7 +167,8 @@ def clean_registrations(only: str | None = None) -> list[tuple[str, str, str, in
     syms = C.SymbolTable(C.modules())
     out = []
     for path in sorted((C.ROOT / "clean").rglob("*.c")):
-        for symbol, function in CLEAN_AS.findall(path.read_text(encoding="utf-8")):
+        for plain, quoted, function in CLEAN_AS.findall(path.read_text(encoding="utf-8")):
+            symbol = plain or quoted
             found = [s for s in syms.by_name.get(symbol, []) if s.kind == "function" and s.size]
             if len(found) != 1:
                 raise SystemExit(f"{path.relative_to(C.ROOT)}: CLEAN_AS({symbol}, ...) names no single function")

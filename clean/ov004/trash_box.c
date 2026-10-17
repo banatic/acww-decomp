@@ -16,6 +16,9 @@
 #include "main/scene_query.h"
 #include "main/talk_flow.h"
 #include "member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_slots.h"
+#include "rmo_object_base.h"
 
 static_assert(sizeof(RmoObject) == 0x290, "RmoObject size");
 static_assert(offsetof(TrashBox, receiver) == 0x290, "receiver");
@@ -104,17 +107,6 @@ extern MemberPointer data_ov004_022584b4[TRASH_BOX_LID_COUNT];
 extern const MemberPointer data_ov004_02255380, data_ov004_02255378, data_ov004_02255370, data_ov004_02255368;
 
 /* The RMO family's base class (rmo_object.h). */
-extern int func_ov004_0222c5c8(RmoObject *object, const char *name); /* loads /roomObj/<name> */
-extern void func_ov004_0222c598(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-/* The object's number among the shared values (byte 0xea), its value, and setting that. */
-extern void func_ov004_0222c590(RmoObject *object, u8 number);
-extern int func_ov004_0222c574(RmoObject *object);
-extern int func_ov004_0222c558(RmoObject *object, u32 value);
-/* Plays a sound at the object's sound source (at 0x250). */
-extern int func_ov004_0222c2dc(void *source, int sound);
 
 static AnimatedModel *TrashBox_body(TrashBox *self)
 {
@@ -357,9 +349,9 @@ CLEAN_AS(func_ov004_0222f7a0, TrashBox_UpdateClosing)
  * sound. */
 int TrashBox_EnterClosing(TrashBox *self)
 {
-    AnimatedModel_Start(TrashBox_body(self), func_ov004_0222c3c4(&self->base.body_model, TRASH_BOX_ANIM_CLOSING),
+    AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_CLOSING),
                         TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
-    func_ov004_0222c2dc(TrashBox_sound_source(self), TRASH_BOX_SOUND_CLOSING);
+    RmoSound_Play(TrashBox_sound_source(self), TRASH_BOX_SOUND_CLOSING);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f7d0, TrashBox_EnterClosing)
@@ -375,7 +367,7 @@ CLEAN_AS(func_ov004_0222f818, TrashBox_UpdateOpen)
  * (the lid open), without sound; nothing steps it in this state. */
 int TrashBox_EnterOpen(TrashBox *self)
 {
-    AnimatedModel_Start(TrashBox_body(self), func_ov004_0222c3c4(&self->base.body_model, TRASH_BOX_ANIM_CLOSING),
+    AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_CLOSING),
                         TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
     return 1;
 }
@@ -397,9 +389,9 @@ CLEAN_AS(func_ov004_0222f854, TrashBox_UpdateOpening)
  * sound. */
 int TrashBox_EnterOpening(TrashBox *self)
 {
-    AnimatedModel_Start(TrashBox_body(self), func_ov004_0222c3c4(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
+    AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
                         TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
-    func_ov004_0222c2dc(TrashBox_sound_source(self), TRASH_BOX_SOUND_OPENING);
+    RmoSound_Play(TrashBox_sound_source(self), TRASH_BOX_SOUND_OPENING);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f884, TrashBox_EnterOpening)
@@ -415,7 +407,7 @@ CLEAN_AS(func_ov004_0222f8cc, TrashBox_UpdateClosed)
  * frame (the lid closed), without sound. */
 int TrashBox_EnterClosed(TrashBox *self)
 {
-    AnimatedModel_Start(TrashBox_body(self), func_ov004_0222c3c4(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
+    AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
                         TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
     return 1;
 }
@@ -451,7 +443,7 @@ int TrashBox_SetLid(TrashBox *self, u32 lid)
     };
     MemberTable_InitOnce(&data_ov004_022584a8, data_ov004_022584b4, entries, TRASH_BOX_LID_COUNT);
     if (lid < TRASH_BOX_LID_COUNT && MemberPointer_CallInt(&data_ov004_022584b4[lid], self) != 0 &&
-        func_ov004_0222c558(&self->base, lid) != 0) {
+        RmoObjectSlots_SetSharedValue(&self->base, lid) != 0) {
         *TrashBox_lid(self) = (u8) lid;
         return 1;
     }
@@ -494,7 +486,7 @@ CLEAN_AS(func_ov004_0222fa60, TrashBox_MayAct)
 int TrashBox_Release(TrashBox *self)
 {
     TrashBox_RemoveBox(self);
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     data_ov004_02258490 = NULL;
     return 1;
 }
@@ -526,17 +518,17 @@ CLEAN_AS(_ZN18Obj_ov004_022553d819func_ov004_0222fae4Ev, TrashBox_Update)
 int TrashBox_Start(TrashBox *self)
 {
     data_ov004_02258490 = self;
-    func_ov004_0222c590(&self->base, TRASH_BOX_STATE_NUMBER);
-    func_ov004_0222c5c8(&self->base, data_ov004_022554cc);
+    RmoObjectSlots_SetValueNumber(&self->base, TRASH_BOX_STATE_NUMBER);
+    RmoObjectSlots_LoadNamed(&self->base, data_ov004_022554cc);
     TrashBox_AddBox(self);
-    if (func_ov004_0222c3c4(&self->base.body_model, TRASH_BOX_ANIM_OPENING) != NULL &&
+    if (RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING) != NULL &&
         AnimatedModel_LoadAnim(TrashBox_body(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(TrashBox_body(self), func_ov004_0222c3c4(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
+        AnimatedModel_Start(TrashBox_body(self), RmoModel_JointAnim(&self->base.body_model, TRASH_BOX_ANIM_OPENING),
                             TRASH_BOX_PLAY_ONCE, TRASH_BOX_ONE, 0, 0);
         AnimatedModel_Attach(TrashBox_body(self));
     }
     TrashBox_EnterState(self, TRASH_BOX_IDLE);
-    TrashBox_call_set_lid(self, (u32) func_ov004_0222c574(&self->base));
+    TrashBox_call_set_lid(self, (u32) RmoObjectSlots_SharedValue(&self->base));
     return 1;
 }
 CLEAN_AS(func_ov004_0222fb0c, TrashBox_Start)
@@ -554,7 +546,7 @@ TrashBox *TrashBox_Delete(TrashBox *self)
     TouchPickFaces_DestructBox(self->pick_faces);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     Heap_FreeAux(self);
     return self;
 }
@@ -567,7 +559,7 @@ TrashBox *TrashBox_Destruct(TrashBox *self)
     TouchPickFaces_DestructBox(self->pick_faces);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     return self;
 }
 CLEAN_AS(func_ov004_0222fbf4, TrashBox_Destruct)
@@ -575,7 +567,7 @@ CLEAN_AS(func_ov004_0222fbf4, TrashBox_Destruct)
 /* func_ov004_0222fc3c (the constructor). Its states are left as the allocation zeroed them. */
 TrashBox *TrashBox_Construct(TrashBox *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     TalkReceiver_ConstructBase(&self->receiver);
     TrashBox_set_vtables(self);
     CollisionBox_Construct(&self->box);

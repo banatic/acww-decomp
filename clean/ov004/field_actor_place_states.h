@@ -141,5 +141,6 @@ void FieldActorPlaceStates_StayMessage(struct FieldActor *actor, int arg);
 void FieldActorPlaceStates_EnterStay(struct FieldActor *actor, const struct StateRequest *request, int previous);
 void FieldActorPlaceStates_SetStayWork(u8 *work, u8 kind);
 int FieldActorPlaceStates_RequestStay(struct FieldActor *actor, int kind, int priority, int arg);
+void FieldActorPlaceStates_PutStayArgs(u8 *payload, u8 kind);
 
 #endif

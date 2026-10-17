@@ -10,6 +10,9 @@
 #include "main/frame_ctrl.h"
 #include "main/model_object.h"
 #include "member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_slots.h"
+#include "rmo_object_base.h"
 
 static_assert(sizeof(RmoAnimatedModel) == 0xb8, "RmoAnimatedModel size");
 static_assert(sizeof(RmoModel) == 0xa4, "RmoModel size");
@@ -63,18 +66,6 @@ extern MemberPointer data_ov004_0225889c[TAROT_OBJECT_STATE_COUNT];
 extern const MemberPointer data_ov004_02255614, data_ov004_0225564c, data_ov004_02255644, data_ov004_0225563c;
 
 /* The RMO family's base class and holders (rmo_object.h). */
-extern int func_ov004_0222c600(RmoObject *object, const char *archive, const char *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index); /* a joint animation */
-extern const u8 *func_ov004_0222c3a4(RmoModel *model, int index); /* a texture animation */
-extern int func_ov004_0222c3f4(RmoModel *model, const char *path);
-extern u8 *func_ov004_0222c3a0(RmoModel *model);
-extern void func_ov004_0222c3d4(RmoModel *model);
-extern int func_ov004_0222c348(RmoTexture *texture, const char *path);
-extern void *func_ov004_0222c33c(RmoTexture *texture);
-extern void func_ov004_0222c340(RmoTexture *texture);
 
 /* The constructors and destructors the array helpers are handed: the game's own. */
 extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
@@ -113,8 +104,8 @@ static fx32 TarotObject_whole(fx32 value)
 /* func_ov004_02230404: the part's archive and textures released. */
 void TarotObject_ReleasePart(TarotObject *self, int part)
 {
-    func_ov004_0222c3d4(&self->part_models[part]);
-    func_ov004_0222c340(&self->part_textures[part]);
+    RmoModel_Release(&self->part_models[part]);
+    RmoTexture_Release(&self->part_textures[part]);
 }
 CLEAN_AS(func_ov004_02230404, TarotObject_ReleasePart)
 
@@ -125,13 +116,13 @@ void TarotObject_LoadPart(TarotObject *self, int part, const char *archive, cons
     RmoModel *source = &self->part_models[part];
     RmoTexture *textures = &self->part_textures[part];
 
-    func_ov004_0222c3f4(source, archive);
-    func_ov004_0222c348(textures, texture);
-    ModelObject_SetModel(&self->parts[part].object, func_ov004_0222c3a0(source), NULL);
-    u8 *model = func_ov004_0222c3a0(source);
-    NNS_G3dBindMdlTex(model, func_ov004_0222c33c(textures));
-    model = func_ov004_0222c3a0(source);
-    NNS_G3dBindMdlPltt(model, func_ov004_0222c33c(textures));
+    RmoModel_Load(source, archive);
+    RmoTexture_Load(textures, texture);
+    ModelObject_SetModel(&self->parts[part].object, RmoModel_Model(source), NULL);
+    u8 *model = RmoModel_Model(source);
+    NNS_G3dBindMdlTex(model, RmoTexture_Texture(textures));
+    model = RmoModel_Model(source);
+    NNS_G3dBindMdlPltt(model, RmoTexture_Texture(textures));
 }
 CLEAN_AS(func_ov004_02230438, TarotObject_LoadPart)
 
@@ -208,9 +199,9 @@ int TarotObject_EnterState3(TarotObject *self)
     self->part_shown[0] = 1;
     self->part_shown[1] = 1;
     self->part_shown[2] = 1;
-    AnimatedModel_Start(TarotObject_animated(&self->parts[2]), func_ov004_0222c3c4(&self->part_models[2], 1),
-                        TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0, 0);
-    ModelAnim_Start(&self->part1_anim, func_ov004_0222c3a4(&self->part_models[1], 1), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0);
+    AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 1), TAROT_OBJECT_ONCE,
+                        TAROT_OBJECT_ONE, 0, 0);
+    ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 1), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022305a0, TarotObject_EnterState3)
@@ -270,9 +261,9 @@ int TarotObject_EnterState1(TarotObject *self)
     self->part_shown[0] = 0;
     self->part_shown[1] = 1;
     self->part_shown[2] = 0;
-    AnimatedModel_Start(TarotObject_animated(&self->parts[2]), func_ov004_0222c3c4(&self->part_models[2], 0),
-                        TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0, 0);
-    ModelAnim_Start(&self->part1_anim, func_ov004_0222c3a4(&self->part_models[1], 0), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0);
+    AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0), TAROT_OBJECT_ONCE,
+                        TAROT_OBJECT_ONE, 0, 0);
+    ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0);
     return 1;
 }
 CLEAN_AS(func_ov004_022306d0, TarotObject_EnterState1)
@@ -338,7 +329,7 @@ CLEAN_AS(func_ov004_0223080c, TarotObject_SetState)
  * the one that exists. */
 int TarotObject_Release(TarotObject *self)
 {
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     for (int i = 0; i < TAROT_OBJECT_PARTS; i++) {
         TarotObject_ReleasePart(self, i);
     }
@@ -398,19 +389,19 @@ CLEAN_AS(func_ov004_0223097c, TarotObject_Update)
 int TarotObject_Start(TarotObject *self)
 {
     data_ov004_02258870 = self;
-    func_ov004_0222c600(&self->base, data_ov004_022556dc, data_ov004_022556f4);
+    RmoObjectSlots_Load(&self->base, data_ov004_022556dc, data_ov004_022556f4);
     TarotObject_LoadPart(self, 0, data_ov004_02255710, data_ov004_02255728);
     TarotObject_LoadPart(self, 1, data_ov004_02255744, data_ov004_0225575c);
     TarotObject_LoadPart(self, 2, data_ov004_02255778, data_ov004_02255790);
-    if (func_ov004_0222c3c4(&self->part_models[2], 0) != NULL &&
+    if (RmoModel_JointAnim(&self->part_models[2], 0) != NULL &&
         AnimatedModel_LoadAnim(TarotObject_animated(&self->parts[2]), data_021c9b24) != 0) {
-        AnimatedModel_Start(TarotObject_animated(&self->parts[2]), func_ov004_0222c3c4(&self->part_models[2], 0),
+        AnimatedModel_Start(TarotObject_animated(&self->parts[2]), RmoModel_JointAnim(&self->part_models[2], 0),
                             TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE, 0, 0);
         AnimatedModel_Attach(TarotObject_animated(&self->parts[2]));
         self->parts[2].frames.speed = 0;
     }
     if (ModelAnim_AllocMaterialAnim(&self->part1_anim, self->parts[1].object.model, data_021c9b24) != 0) {
-        ModelAnim_Start(&self->part1_anim, func_ov004_0222c3a4(&self->part_models[1], 0), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE,
+        ModelAnim_Start(&self->part1_anim, RmoModel_TextureAnim(&self->part_models[1], 0), TAROT_OBJECT_ONCE, TAROT_OBJECT_ONE,
                         0);
         ModelAnim_Attach(&self->part1_anim, ModelObject_RenderObject(&self->parts[1].object));
         self->part1_anim.ctrl.speed = 0;
@@ -428,7 +419,7 @@ static void TarotObject_destruct(TarotObject *self)
     __cxa_vec_cleanup(self->part_textures, TAROT_OBJECT_PARTS, sizeof(RmoTexture), func_ov004_0222c394);
     __cxa_vec_cleanup(self->part_models, TAROT_OBJECT_PARTS, sizeof(RmoModel), func_ov004_0222c538);
     __cxa_vec_cleanup(self->parts, TAROT_OBJECT_PARTS, sizeof(RmoAnimatedModel), func_020551e0);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
 }
 
 /* func_ov004_02230b20 (the deleting destructor, vtable slot 0x44) */
@@ -451,7 +442,7 @@ CLEAN_AS(func_ov004_02230b90, TarotObject_Destruct)
 /* func_ov004_02230bf8 (the constructor). Its state is left as the allocation zeroed it. */
 TarotObject *TarotObject_Construct(TarotObject *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     self->base.actor.vtable = data_ov004_02255674;
     __cxa_vec_ctor(self->parts, TAROT_OBJECT_PARTS, sizeof(RmoAnimatedModel), func_02055210, func_020551e0);
     __cxa_vec_ctor(self->part_models, TAROT_OBJECT_PARTS, sizeof(RmoModel), func_ov004_0222c548, func_ov004_0222c538);

@@ -40,6 +40,7 @@
 #include "main/talk_checks.h"
 #include "main/talk_object.h"
 #include "ov068/cafe_guest.h"
+#include "ov004/room_player_actor.h"
 
 /* Its parts read here. */
 #define CAFE_MASTER_MODEL_FRAME 0x190 /* u32: its model's animation frame, 20.12 */
@@ -299,12 +300,7 @@ extern fx32 data_020c814c;
 /* The session of the multiplayer game. */
 extern NetSession *data_020ccf94;
 
-/* Animations of this console's player's field actor for the clearing up and the drink (both
- * answer whether the actor exists), and func_ov004_0222c070, which acts on it by `kind` and
- * answers 0. */
-extern int func_ov004_0222be34(void);
-extern int func_ov004_0222be58(void);
-extern int func_ov004_0222c070(int kind);
+/* What RoomPlayerActor_RequestSpotMove is asked for when the player is seated. */
 #define CAFE_MASTER_SEATED_KIND 2
 
 static u8 *cm_part(CafeMaster *master, u32 offset)
@@ -570,7 +566,7 @@ void CafeMasterTalk_ClearUp(CafeMasterTalk *talk)
             if (object->state != TALK_OBJECT_GONE) {
                 break;
             }
-            func_ov004_0222be34();
+            RoomPlayerActor_PlayAnimation98();
             CafeProps_EnterState9();
             talk->step = 1;
             master->talk_frames = 0;
@@ -677,7 +673,7 @@ void CafeMasterTalk_Drink(CafeMasterTalk *talk)
     }
     if (CafeProps_State() == 5) {
         CafeProps_EnterState8();
-        func_ov004_0222be58();
+        RoomPlayerActor_RequestSequence8A();
         talk->master->talk_frames = 0;
     }
     CafeMaster *master = talk->master;
@@ -1206,7 +1202,7 @@ int CafeMaster_UpdateTalk(CafeMaster *master)
     if (!cm_linked_or_variable(data_020ccf94)) {
         int value = PlayerActorOps_InState(CAFE_MASTER_PLAYER_SEATED, CAFE_MASTER_PLAYER_ACTOR);
         if (value != 0) {
-            value = func_ov004_0222c070(CAFE_MASTER_SEATED_KIND);
+            value = RoomPlayerActor_RequestSpotMove(CAFE_MASTER_SEATED_KIND);
         }
         ScreenPanels_ClearRequest((unsigned int) value);
     }

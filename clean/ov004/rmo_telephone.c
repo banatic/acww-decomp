@@ -27,6 +27,10 @@
 #include "main/talk_voice.h"
 #include "main/touch_pick_shapes.h"
 #include "member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_slots.h"
+#include "ov004/room_player_actor.h"
+#include "rmo_object_base.h"
 
 static_assert(sizeof(RmoObject) == 0x290, "RmoObject size");
 static_assert(offsetof(RmoTelephone, receiver) == 0x290, "receiver");
@@ -73,8 +77,6 @@ extern const char data_ov004_022558ac[];
 /* Enters a state: its entry from the table data_ov004_022588d8, then RmoTelephone.state. */
 extern void func_ov004_0223121c(RmoTelephone *self, int state);
 
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index); /* a joint animation */
-
 static AnimatedModel *RmoTelephone_body(RmoTelephone *self)
 {
     return (AnimatedModel *) (void *) &self->base.body;
@@ -89,7 +91,7 @@ static TalkReceiver *RmoTelephone_receiver(RmoTelephone *self)
 /* The body's first joint animation started played once with `flags` from whole frame `start`. */
 static void RmoTelephone_play(RmoTelephone *self, int flags, u16 start)
 {
-    AnimatedModel_Start(RmoTelephone_body(self), func_ov004_0222c3c4(&self->base.body_model, 0), flags, RMO_TELEPHONE_ONE,
+    AnimatedModel_Start(RmoTelephone_body(self), RmoModel_JointAnim(&self->base.body_model, 0), flags, RMO_TELEPHONE_ONE,
                         start, 0);
 }
 
@@ -379,17 +381,7 @@ extern u32 data_021dc7a8[]; /* the state block (state_block.h) */
 extern Heap *data_021c9b24;
 extern u8 data_021f43f8;
 
-/* The player's actions of states 1 and 5 (0x7d and 0x7f, of this system's player); their
- * answers. */
-extern int func_ov004_0222befc(void);
-extern int func_ov004_0222bed8(void);
-/* Plays a sound at the object's sound source (at 0x250). */
-extern int func_ov004_0222c2dc(void *source, int sound);
 /* The RMO family's base class (rmo_object.h). */
-extern int func_ov004_0222c600(RmoObject *object, const char *archive, const char *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
 
 static void *RmoTelephone_sound_source(RmoTelephone *self)
 {
@@ -518,8 +510,8 @@ CLEAN_AS(func_ov004_02231048, RmoTelephone_UpdateState5)
  * sound's answer. */
 int RmoTelephone_EnterState5(RmoTelephone *self)
 {
-    func_ov004_0222bed8();
-    return func_ov004_0222c2dc(RmoTelephone_sound_source(self), RMO_TELEPHONE_SOUND_5);
+    RoomPlayerActor_RequestHangUp();
+    return RmoSound_Play(RmoTelephone_sound_source(self), RMO_TELEPHONE_SOUND_5);
 }
 CLEAN_AS(func_ov004_02231084, RmoTelephone_EnterState5)
 
@@ -593,8 +585,8 @@ CLEAN_AS(func_ov004_02231178, RmoTelephone_UpdateState1)
  * sound's answer. */
 int RmoTelephone_EnterState1(RmoTelephone *self)
 {
-    func_ov004_0222befc();
-    return func_ov004_0222c2dc(RmoTelephone_sound_source(self), RMO_TELEPHONE_SOUND_1);
+    RoomPlayerActor_RequestPickUp();
+    return RmoSound_Play(RmoTelephone_sound_source(self), RMO_TELEPHONE_SOUND_1);
 }
 CLEAN_AS(func_ov004_0223119c, RmoTelephone_EnterState1)
 
@@ -856,7 +848,7 @@ CLEAN_AS(func_ov004_02231614, RmoTelephone_MayAct)
  * exists. */
 int RmoTelephone_Release(RmoTelephone *self)
 {
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     data_ov004_022588c8 = NULL;
     return 1;
 }
@@ -894,8 +886,8 @@ int RmoTelephone_Start(RmoTelephone *self)
     Vec3 position = data_ov004_022478d0;
     self->base.actor.position = position;
     SceneObjectBase_SetId((SceneObjectBase *) (void *) self, 0);
-    func_ov004_0222c600(&self->base, data_ov004_022559ec, data_ov004_02255a08);
-    if (func_ov004_0222c3c4(&self->base.body_model, 0) != NULL &&
+    RmoObjectSlots_Load(&self->base, data_ov004_022559ec, data_ov004_02255a08);
+    if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
         AnimatedModel_LoadAnim(RmoTelephone_body(self), data_021c9b24) != 0) {
         RmoTelephone_play(self, FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE, 0);
         AnimatedModel_Attach(RmoTelephone_body(self));
@@ -930,7 +922,7 @@ static void RmoTelephone_destruct_parts(RmoTelephone *self)
     TouchPickFaces_DestructBox(self->pick_faces);
     CollisionBox_Destruct(&self->box);
     TalkReceiver_Destruct(&self->receiver);
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
 }
 
 /* func_ov004_022317f4 (the deleting destructor, vtable slot 0x44) */
@@ -953,7 +945,7 @@ CLEAN_AS(func_ov004_02231850, RmoTelephone_Destruct)
 /* func_ov004_022318a4 (the constructor). Its state is left as the allocation zeroed it. */
 RmoTelephone *RmoTelephone_Construct(RmoTelephone *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     TalkReceiver_ConstructBase(&self->receiver);
     RmoTelephone_set_vtables(self);
     CollisionBox_Construct(&self->box);

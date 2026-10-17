@@ -237,8 +237,9 @@ def bisect(name: str, seed: pathlib.Path, native: str, skip: set[str]) -> None:
     functions in `skip` (ones already found) stay Native throughout."""
     files = {}
     for path in sorted((C.ROOT / "clean").rglob("*.c")):
-        names = [n for n in re.findall(r"^CLEAN_AS\((\w+),", path.read_text(encoding="utf-8"), re.M)
-                 if n not in skip]
+        names = [plain or quoted for plain, quoted in
+                 re.findall(r"^CLEAN_AS(?:\((\w+)|_SYMBOL\(\"([^\"]+)\"),", path.read_text(encoding="utf-8"), re.M)
+                 if (plain or quoted) not in skip]
         if names:
             files[path.relative_to(C.ROOT).as_posix()] = names
     listed = OUT / "bisect.txt"

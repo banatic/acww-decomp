@@ -15,6 +15,7 @@
 #include "room_object_map.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "ov004/room_player_actor.h"
 
 static_assert(offsetof(Chest, lid) == 0x860, "lid");
 static_assert(offsetof(Chest, talk_step) == 0x864, "talk step");
@@ -90,12 +91,6 @@ extern void *func_ov004_0223ca9c(void *entries, Chest *chest);
 extern s32 *func_ov004_0223cb24(void *entry);
 extern int func_ov004_0223cb18(void *entry);
 extern int func_ov004_0223cb20(void *entry);
-/* Messages 0x2d (with the chest's index as a byte, the words 0 and 2 at `words` and `value`) and
- * 0x2f (with the index) sent to actor 4 (func_02096718(4)); whether they were. */
-extern int func_ov004_0222c030(int *index, s32 *word0, s32 *word2, s16 *value);
-extern int func_ov004_0222c00c(int *index);
-/* func_0200f290 of actor 4 with 2. */
-extern int func_ov004_0222c2b0(void);
 /* Whether a cell holds something: func_ov004_0223c5b8 says so, or func_020308a4 finds one
  * (else -1). */
 extern int func_ov004_0223c5b8(int x, int y);
@@ -159,7 +154,7 @@ static int Chest_link_closed(Chest *chest)
 static int Chest_close(Chest *chest)
 {
     int index = Chest_Index(chest);
-    if (index != NO_CHEST && func_ov004_0222c00c(&index) == 0) {
+    if (index != NO_CHEST && RoomPlayerActor_RequestChestClose(&index) == 0) {
         return 0;
     }
     return Chest_request(chest, CHEST_LID_CLOSING);
@@ -179,7 +174,7 @@ static int Chest_announce(Chest *chest)
     }
     s16 value = (s16) func_ov004_0223cb18(entry);
     s32 *words = func_ov004_0223cb24(entry);
-    return func_ov004_0222c030(&index, words, func_ov004_0223cb24(entry) + 2, &value);
+    return RoomPlayerActor_RequestChestApproach(&index, words, func_ov004_0223cb24(entry) + 2, &value);
 }
 
 /* The common update of CHEST_MENU_ANNOUNCE and CHEST_TALK_ANNOUNCE: `next` for a chest without
@@ -188,7 +183,7 @@ static void Chest_wait_announce(Chest *chest, int next)
 {
     if (Chest_Index(chest) == NO_CHEST) {
         Chest_EnterTalkStep(chest, next);
-    } else if (func_ov004_0222c2b0() != 0) {
+    } else if (RoomPlayerActor_TestFlag2() != 0) {
         Chest_EnterTalkStep(chest, next);
     }
 }

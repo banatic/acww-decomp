@@ -10,6 +10,8 @@
 #include "main/g3d_resource.h"
 #include "main/model_object.h"
 #include "main/museum_record.h"
+#include "ov004/rmo_object_slots.h"
+#include "rmo_object_base.h"
 
 static_assert(offsetof(MuseumDisplay, nodes) == 0x290, "nodes");
 static_assert(offsetof(MuseumDisplayHookState, hooks) == 0x0c, "hooks");
@@ -36,10 +38,6 @@ extern void func_ov004_0222f2f4(MuseumDisplayHookState *state);  /* sets it */
 extern int func_02064328(char *buffer, const char *format, ...); /* sprintf */
 
 /* The RMO family's base class (rmo_object.h). */
-extern int func_ov004_0222c600(RmoObject *object, const char *archive, const char *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
 
 /* The kind: a word in the scene object's bytes 8 to 11. */
 static const MuseumDisplayKind *kind_of(const MuseumDisplay *self)
@@ -93,7 +91,7 @@ CLEAN_AS(func_ov004_0222f234, MuseumDisplay_SetNodeVisibility)
  * the room's heap's). */
 int MuseumDisplay_Release(MuseumDisplay *self)
 {
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f248, MuseumDisplay_Release)
@@ -118,7 +116,7 @@ CLEAN_AS(func_ov004_0222f26c, MuseumDisplay_Update)
 int MuseumDisplay_Start(MuseumDisplay *self)
 {
     const MuseumDisplayKind *kind = kind_of(self);
-    func_ov004_0222c600(&self->base, kind->archive, kind->texture);
+    RmoObjectSlots_Load(&self->base, kind->archive, kind->texture);
     ModelObject_SetInitHook(&self->base.body.object, (void *) func_ov004_0222f2f4, self);
     MuseumDisplay_FindNodes(self);
     return 1;
@@ -129,7 +127,7 @@ CLEAN_AS(func_ov004_0222f270, MuseumDisplay_Start)
 MuseumDisplay *MuseumDisplay_Delete(MuseumDisplay *self)
 {
     self->base.actor.vtable = data_ov004_02255200;
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     Heap_FreeAux(self);
     return self;
 }
@@ -139,7 +137,7 @@ CLEAN_AS(func_ov004_0222f2a4, MuseumDisplay_Delete)
 MuseumDisplay *MuseumDisplay_Destruct(MuseumDisplay *self)
 {
     self->base.actor.vtable = data_ov004_02255200;
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     return self;
 }
 CLEAN_AS(func_ov004_0222f2c4, MuseumDisplay_Destruct)
@@ -147,7 +145,7 @@ CLEAN_AS(func_ov004_0222f2c4, MuseumDisplay_Destruct)
 /* func_ov004_0222f2dc */
 MuseumDisplay *MuseumDisplay_Construct(MuseumDisplay *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     self->base.actor.vtable = data_ov004_02255200;
     return self;
 }

@@ -112,8 +112,6 @@ extern int FX_MulFunc(int a, int b);
 /* Whether the point 2.0 to side 0 or side 1 of `point` (at `yaw`) is free: 1 free, 2 not. */
 extern int func_ov004_0223c510(Vec3 *point, s16 yaw);
 extern int func_ov004_0223c4b8(Vec3 *point, s16 yaw);
-/* The byte of a request for state 8. */
-extern void func_ov004_0222be30(u8 *payload, u8 kind);
 
 /* The date the sun level was stored, as packed: bits 0-6, the month in bits 7-10, bits 11-15. */
 #define FAPS_DATE_MONTH(date) (((unsigned int) (date) >> 7) & 0xf)
@@ -947,9 +945,16 @@ int FieldActorPlaceStates_RequestStay(FieldActor *actor, int kind, int priority,
     StateRequest request;
     StateRequest_Construct(&request);
     StateRequest_Set(&request, FAPS_STAY, priority, arg);
-    func_ov004_0222be30(request.payload, (u8) kind);
+    FieldActorPlaceStates_PutStayArgs(request.payload, (u8) kind);
     int queued = FieldActor_QueueRequest(actor, &request);
     StateRequest_Destruct(&request);
     return queued;
 }
 CLEAN_AS(func_ov004_0222bdf0, FieldActorPlaceStates_RequestStay)
+
+/* func_ov004_0222be30: what a request for state 8 carries: the kind. */
+void FieldActorPlaceStates_PutStayArgs(u8 *payload, u8 kind)
+{
+    *payload = kind;
+}
+CLEAN_AS(func_ov004_0222be30, FieldActorPlaceStates_PutStayArgs)

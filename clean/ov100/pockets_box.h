@@ -21,6 +21,7 @@
 #define CLEAN_OV100_POCKETS_BOX_H
 
 #include "clean.h"
+#include "main/layer_load_task.h"
 #include "main/text_label.h"
 #include "ov002/error_message.h"
 #include "ov002/glide.h"
@@ -74,6 +75,45 @@ enum PocketsBoxMode {
     POCKETS_BOX_MODE_20 = 0x20  /* the box starts as list B */
 };
 
+/* The scene's states (MenuScene.state), run by PocketsBox_RunState in phase 1. */
+enum PocketsBoxState {
+    POCKETS_BOX_STATE_SETUP = 0,           /* PocketsBox_StartSetup */
+    POCKETS_BOX_STATE_LOAD = 1,            /* PocketsBox_LoadPockets */
+    POCKETS_BOX_STATE_LAYER6_WIPE_IN = 2,  /* PocketsBox_Layer6WipeIn */
+    POCKETS_BOX_STATE_LAYER4_WIPE_IN = 3,  /* PocketsBox_Layer4WipeIn */
+    POCKETS_BOX_STATE_LEAVE = 4,           /* PocketsBox_Leave */
+    POCKETS_BOX_STATE_LAYER4_WIPE_OUT = 5, /* PocketsBox_Layer4WipeOut */
+    POCKETS_BOX_STATE_LAYER6_WIPE_OUT = 6, /* PocketsBox_Layer6WipeOut */
+    POCKETS_BOX_STATES = 7
+};
+
+/* The sub states (MenuScene.sub_state), run by PocketsBox_RunSubState in phase 2. */
+enum PocketsBoxSubState {
+    POCKETS_BOX_SUB_TOUCH_IDLE = 0x00,     /* PocketsBox_TouchIdle */
+    POCKETS_BOX_SUB_TOUCH_HOLD = 0x01,     /* PocketsBox_TouchHold */
+    POCKETS_BOX_SUB_CHOICE_TOUCH = 0x02,   /* PocketsBox_ChoiceTouch */
+    POCKETS_BOX_SUB_DRAG = 0x03,           /* PocketsBox_Drag */
+    POCKETS_BOX_SUB_KEYS_IDLE = 0x04,      /* PocketsBox_KeysIdle */
+    POCKETS_BOX_SUB_KEYS_HELD = 0x05,      /* PocketsBox_KeysHeld */
+    POCKETS_BOX_SUB_CHOICE_KEYS = 0x06,    /* PocketsBox_ChoiceKeys */
+    POCKETS_BOX_SUB_CHOICE_PICK = 0x07,    /* PocketsBox_PickChoiceRow */
+    POCKETS_BOX_SUB_WAIT_SPRITE = 0x08,    /* PocketsBox_WaitSprite */
+    POCKETS_BOX_SUB_BUTTON = 0x09,         /* PocketsBox_PressButton */
+    POCKETS_BOX_SUB_BUTTON_DONE = 0x0a,    /* PocketsBox_ButtonDone */
+    POCKETS_BOX_SUB_PICK_UP = 0x0b,        /* PocketsBox_PickUp */
+    POCKETS_BOX_SUB_PICKED_UP = 0x0c,      /* PocketsBox_PickedUp */
+    POCKETS_BOX_SUB_PUT_DOWN = 0x0d,       /* PocketsBox_PutDown */
+    POCKETS_BOX_SUB_SWAP = 0x0e,           /* PocketsBox_Swap */
+    POCKETS_BOX_SUB_SWAPPED = 0x0f,        /* PocketsBox_Swapped */
+    POCKETS_BOX_SUB_GLIDE = 0x10,          /* PocketsBox_StepGlide */
+    POCKETS_BOX_SUB_CHOICE_OPEN = 0x11,    /* PocketsBox_WaitChoiceShown */
+    POCKETS_BOX_SUB_CHOICE_CLOSE = 0x12,   /* PocketsBox_CloseChoice */
+    POCKETS_BOX_SUB_CHOICE_CLOSING = 0x13, /* PocketsBox_WaitChoiceClosed */
+    POCKETS_BOX_SUB_ERROR = 0x14,          /* PocketsBox_WaitError */
+    POCKETS_BOX_SUB_CLOSED = 0x15,         /* PocketsBox_WaitClosed */
+    POCKETS_BOX_SUB_STATES = 0x16
+};
+
 #define POCKETS_BOX_COLUMNS 5
 #define POCKETS_BOX_ROWS 3
 #define POCKETS_BOX_SLOTS 15
@@ -81,8 +121,7 @@ enum PocketsBoxMode {
 
 typedef struct PocketsBox {
     MenuScene base;                       /* 0x00 */
-    u8 unk_94[0x38];                      /* 0x94: an object of main's (constructor func_020b9af4), updated by
-                            * func_020b9ccc */
+    LayerTaskPair layer_task;             /* 0x94: ended at the start of each frame */
     u8 grid[0xa60];                       /* 0xcc: ov094's object of the slots (destructor func_ov094_0229afe0) */
     u8 letters[0x28];                     /* 0xb2c: ov094's object of the letters (func_ov094_0229bc30) */
     u8 wallet[0x1638];                    /* 0xb54: ov094's object of the wallet's display (destructor
@@ -110,7 +149,8 @@ typedef struct PocketsBox {
     u8 held_kind;                         /* 0x291d: PocketsBoxHeldKind */
     u8 touch_place;                       /* 0x291e: the place touched (func_ov100_0229d824) */
     u8 popup_place;                       /* 0x291f: the place the popup tells of */
-    u8 held_place;                        /* 0x2920: the place the held item came from */
+    u8 held_place;                        /* 0x2920: the place the held item came from, then the one
+                                           * it glides to */
     u8 cursor;                            /* 0x2921: PocketsBoxPlace */
     u8 unk_2922;                          /* 0x2922 */
     u8 target;                            /* 0x2923: the place the held item is put down on or swapped at */
@@ -122,7 +162,9 @@ typedef struct PocketsBox {
     u8 pad_2929[3];
 } PocketsBox;
 
-static_assert(offsetof(PocketsBox, grid) == 0xcc && offsetof(PocketsBox, wallet) == 0xb54, "ov094 objects");
+static_assert(offsetof(PocketsBox, layer_task) == 0x94 && offsetof(PocketsBox, grid) == 0xcc &&
+                  offsetof(PocketsBox, wallet) == 0xb54,
+              "ov094 objects");
 static_assert(offsetof(PocketsBox, popup) == 0x218c && offsetof(PocketsBox, cursor_sprite) == 0x2274, "sprites");
 static_assert(offsetof(PocketsBox, entries) == 0x26c0 && offsetof(PocketsBox, error) == 0x26cc, "choice");
 static_assert(offsetof(PocketsBox, labels) == 0x27e8 && offsetof(PocketsBox, flags) == 0x28c0, "labels");
@@ -190,5 +232,75 @@ int PocketsBox_PlaceX(PocketsBox *self, int place);
 int PocketsBox_BoxPlaceOfSlot(PocketsBox *self, unsigned int slot);
 int PocketsBox_BoxSlot(PocketsBox *self, int place);
 void PocketsBox_SetSlotItem(PocketsBox *self, int place, int item, int state);
+int PocketsBox_DropHeld(PocketsBox *self, int place);
+int PocketsBox_PlaceAtTouch(PocketsBox *self, int x, int y, int items_only);
+unsigned char PocketsBox_PocketPlaceOfSlot(PocketsBox *self, unsigned int slot);
+int PocketsBox_SlotOfPlace(PocketsBox *self, int place);
+int PocketsBox_IsButtonPlace(PocketsBox *self, int place);
+int PocketsBox_IsBoxPlace(PocketsBox *self, unsigned int place);
+int PocketsBox_IsPocketPlace(PocketsBox *self, unsigned int place);
+void PocketsBox_EndLayerTask(PocketsBox *self);
+unsigned char PocketsBox_FirstEmptyBoxPlace(PocketsBox *self);
+int PocketsBox_FreePocketPlace(PocketsBox *self);
+
+/* pockets_box_scene.c */
+void PocketsBox_MoveItemTo(PocketsBox *self, int from, int to);
+void PocketsBox_GlideHeldBack(PocketsBox *self, int place, int y);
+void PocketsBox_GlideHeldTo(PocketsBox *self, int place, int steps);
+void PocketsBox_TakeItem(PocketsBox *self, int place);
+void PocketsBox_TakeItemByTouch(PocketsBox *self, int place);
+void PocketsBox_TouchPlace(PocketsBox *self, int place);
+void PocketsBox_EndAction(PocketsBox *self);
+void PocketsBox_ResumeKeys(PocketsBox *self);
+void PocketsBox_ResumeTouch(PocketsBox *self);
+void PocketsBox_WaitClosed(PocketsBox *self);
+void PocketsBox_WaitError(PocketsBox *self);
+void PocketsBox_WaitChoiceClosed(PocketsBox *self);
+int PocketsBox_CloseChoice(PocketsBox *self);
+void PocketsBox_WaitChoiceShown(PocketsBox *self);
+void PocketsBox_StepGlide(PocketsBox *self);
+void PocketsBox_Swapped(PocketsBox *self);
+void PocketsBox_Swap(PocketsBox *self);
+void PocketsBox_PutDown(PocketsBox *self);
+void PocketsBox_PickedUp(PocketsBox *self);
+void PocketsBox_PickUp(PocketsBox *self);
+void PocketsBox_ButtonDone(PocketsBox *self);
+void PocketsBox_PressButton(PocketsBox *self);
+void PocketsBox_WaitSprite(PocketsBox *self);
+void PocketsBox_PickChoiceRow(PocketsBox *self);
+void PocketsBox_ChoiceKeys(PocketsBox *self);
+void PocketsBox_KeysHeld(PocketsBox *self);
+void PocketsBox_KeysIdle(PocketsBox *self);
+void PocketsBox_Drag(PocketsBox *self);
+void PocketsBox_ChoiceTouch(PocketsBox *self);
+void PocketsBox_TouchHold(PocketsBox *self);
+void PocketsBox_TouchIdle(PocketsBox *self);
+int PocketsBox_LoadWalletFiles(PocketsBox *self);
+void PocketsBox_LoadLayers(PocketsBox *self);
+void PocketsBox_SetUpWallet(PocketsBox *self);
+void PocketsBox_SetUpLayers(void);
+void PocketsBox_EndFrame(PocketsBox *self);
+void PocketsBox_BeginFrame(PocketsBox *self);
+void PocketsBox_EndInteractiveFrame(PocketsBox *self);
+void PocketsBox_BeginInteractiveFrame(PocketsBox *self);
+void PocketsBox_Teardown(PocketsBox *self);
+void PocketsBox_Setup(PocketsBox *self);
+void PocketsBox_Layer6WipeOut(PocketsBox *self);
+void PocketsBox_Layer4WipeOut(PocketsBox *self);
+void PocketsBox_Leave(PocketsBox *self);
+void PocketsBox_Layer4WipeIn(PocketsBox *self);
+void PocketsBox_Layer6WipeIn(PocketsBox *self);
+void PocketsBox_LoadPockets(PocketsBox *self);
+void PocketsBox_StartSetup(PocketsBox *self);
+int PocketsBox_RequestDelete(PocketsBox *self);
+int PocketsBox_Phase4Idle(void);
+int PocketsBox_Phase3Idle(void);
+int PocketsBox_RunInteractive(PocketsBox *self);
+void PocketsBox_RunSubState(PocketsBox *self);
+int PocketsBox_RunState(PocketsBox *self);
+int PocketsBox_Draw(PocketsBox *self);
+int PocketsBox_Close(PocketsBox *self);
+int PocketsBox_Start(PocketsBox *self);
+PocketsBox *PocketsBox_New(void);
 
 #endif

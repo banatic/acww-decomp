@@ -4,6 +4,9 @@
 #include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/animated_model.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_slots.h"
+#include "rmo_object_base.h"
 
 static_assert(sizeof(BPole) == 0x290, "the size BPole_Create allocates");
 
@@ -19,11 +22,6 @@ extern const char data_ov004_022552f8[];
 extern Heap *data_021c9b24;
 
 /* The RMO family's base class (rmo_object.h). */
-extern int func_ov004_0222c5c8(RmoObject *object, const char *name); /* loads /roomObj/<name> */
-extern void func_ov004_0222c598(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
 
 static AnimatedModel *BPole_body(BPole *self)
 {
@@ -33,7 +31,7 @@ static AnimatedModel *BPole_body(BPole *self)
 /* func_ov004_0222f368 (vtable slot 0x0c): the archive released. */
 int BPole_Release(BPole *self)
 {
-    func_ov004_0222c598(&self->base);
+    RmoObjectSlots_ReleaseBody(&self->base);
     return 1;
 }
 CLEAN_AS(func_ov004_0222f368, BPole_Release)
@@ -58,10 +56,10 @@ CLEAN_AS(func_ov004_0222f38c, BPole_Update)
  * animation that the model can take, that animation looped from its start. */
 int BPole_Start(BPole *self)
 {
-    func_ov004_0222c5c8(&self->base, data_ov004_022552f8);
-    if (func_ov004_0222c3c4(&self->base.body_model, 0) != NULL &&
+    RmoObjectSlots_LoadNamed(&self->base, data_ov004_022552f8);
+    if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
         AnimatedModel_LoadAnim(BPole_body(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(BPole_body(self), func_ov004_0222c3c4(&self->base.body_model, 0), B_POLE_LOOP, B_POLE_ONE, 0, 0);
+        AnimatedModel_Start(BPole_body(self), RmoModel_JointAnim(&self->base.body_model, 0), B_POLE_LOOP, B_POLE_ONE, 0, 0);
         AnimatedModel_Attach(BPole_body(self));
     }
     return 1;
@@ -72,7 +70,7 @@ CLEAN_AS(func_ov004_0222f3a0, BPole_Start)
 BPole *BPole_Delete(BPole *self)
 {
     self->base.actor.vtable = data_ov004_02255290;
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     Heap_FreeAux(self);
     return self;
 }
@@ -82,7 +80,7 @@ CLEAN_AS(func_ov004_0222f408, BPole_Delete)
 BPole *BPole_Destruct(BPole *self)
 {
     self->base.actor.vtable = data_ov004_02255290;
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
     return self;
 }
 CLEAN_AS(func_ov004_0222f428, BPole_Destruct)
@@ -90,7 +88,7 @@ CLEAN_AS(func_ov004_0222f428, BPole_Destruct)
 /* func_ov004_0222f440 */
 BPole *BPole_Construct(BPole *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     self->base.actor.vtable = data_ov004_02255290;
     return self;
 }

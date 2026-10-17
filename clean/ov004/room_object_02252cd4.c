@@ -8,6 +8,7 @@
 #include "room_object_anims.h"
 #include "room_object_life.h"
 #include "room_object_map.h"
+#include "ov004/room_player_actor.h"
 
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
 static_assert(offsetof(RoomObject, angle) == 0x8e, "angle");
@@ -47,11 +48,6 @@ extern int func_ov004_0223cb30(void *entry);
 /* Whether the entry's push may start. */
 extern int func_ov004_0223c700(void);
 
-/* Where player `actor` stands when it is in state 0x28; whether it is. */
-extern int func_ov004_0222c268(Vec3 *point, int actor);
-/* The player (actor 4) sent to (`*x`, `*z`) facing away from `*angle`, with `*action`, unless it
- * is already in move 6 or later; whether it was. */
-extern int func_ov004_0222c0b8(s32 *x, s32 *z, s16 *angle, u8 *action);
 /* The cell of a point of the town's map. */
 extern void func_0204f818(s32 *x, s32 *y, const Vec3 *point);
 extern void VEC_Add(const Vec3 *a, const Vec3 *b, Vec3 *sum);
@@ -87,7 +83,7 @@ static void RoomObject02252cd4_update_stood_on(RoomObject02252cd4 *object)
     ByteSet_SetValue(&base->node_set, 0);
     for (int i = 0; i < PLAYER_COUNT; i++) {
         Vec3 point;
-        if (func_ov004_0222c268(&point, i) == 0) {
+        if (RoomPlayerActor_PointAtSpot(&point, i) == 0) {
             continue;
         }
         s32 x;
@@ -160,7 +156,7 @@ int RoomObject02252cd4_Update(RoomObject02252cd4 *object)
                     object->push_frames++;
                 }
                 if (func_ov004_0223cb30(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
-                    func_ov004_0222c0b8(&point.x, &point.z, &base->angle, &action);
+                    RoomPlayerActor_RequestSpotApproach(&point.x, &point.z, &base->angle, &action);
                     object->push_frames = 0;
                 }
             }

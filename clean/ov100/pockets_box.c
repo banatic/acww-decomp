@@ -2,6 +2,7 @@
 #include "pockets_box.h"
 
 #include "clean.h"
+#include "main/current_pockets.h"
 #include "main/group_params.h"
 #include "main/item_code.h"
 #include "main/player_messages.h"
@@ -11,6 +12,7 @@
 #include "main/sound.h"
 #include "main/text_label.h"
 #include "ov002/key_repeat.h"
+#include "ov094/pockets_grid.h"
 
 /* The class's vtable. */
 extern const u8 data_ov100_0229ecb8[];
@@ -39,15 +41,6 @@ extern void func_0208aa78(Popup *popup);               /* the window's byte 0x5a
 extern void func_0208aa80(Popup *popup);               /* the window's byte 0x5a = 1 */
 extern void func_0208e4c0(Glider *sprite, int anim);   /* starts `anim` at its last frame */
 extern int func_0209ded0(void);                        /* word 0xc of data_021dc744 */
-
-/* The places, by this overlay's own functions (not yet Clean). */
-extern int func_ov100_0229d630(PocketsBox *self, unsigned int place); /* a pocket slot (0-14) */
-extern int func_ov100_0229d620(PocketsBox *self, unsigned int place); /* a box slot (15-29) */
-extern int func_ov100_0229d60c(PocketsBox *self, int place);          /* place 0x1e or 0x1f, by
-                                                                       * its low byte */
-extern int func_ov100_0229d5d4(PocketsBox *self, int place);          /* the grid's slot of a
-                                                                       * place, else 0 */
-extern void func_ov100_0229d8b0(int self);                            /* the end of the action */
 
 /* ov094's object of the slots (`grid`). */
 extern int func_ov094_02299a54(u16 item);
@@ -143,12 +136,12 @@ static void update_cursor_sprite(PocketsBox *self)
  * not a pocket's). */
 static int is_slot(PocketsBox *self, int place)
 {
-    return func_ov100_0229d630(self, (unsigned int) place) || func_ov100_0229d620(self, (unsigned int) place);
+    return PocketsBox_IsPocketPlace(self, (unsigned int) place) || PocketsBox_IsBoxPlace(self, (unsigned int) place);
 }
 
 static int is_button(PocketsBox *self, int place)
 {
-    return func_ov100_0229d60c(self, place);
+    return PocketsBox_IsButtonPlace(self, place);
 }
 
 /* The row and column of an offset in a part of 5 columns, counted as the game does: an offset
@@ -410,9 +403,9 @@ int PocketsBox_MoveCursor(PocketsBox *self, int keys, int wrap_in_row)
         return 0;
     }
 
-    if (func_ov100_0229d630(self, self->cursor)) {
+    if (PocketsBox_IsPocketPlace(self, self->cursor)) {
         PocketsBox_MoveCursorInPockets(self, keys, wrap_in_row);
-    } else if (func_ov100_0229d620(self, self->cursor)) {
+    } else if (PocketsBox_IsBoxPlace(self, self->cursor)) {
         PocketsBox_MoveCursorInBox(self, keys, wrap_in_row);
     } else if (is_button(self, self->cursor)) {
         PocketsBox_MoveCursorAtButtons(self, keys);
@@ -585,7 +578,7 @@ void PocketsBox_RunAction(PocketsBox *self)
     if (self->action == ACTION_PICK_UP) {
         PocketsBox_StartPickUp(self);
     } else {
-        func_ov100_0229d8b0((int) (uintptr_t) self);
+        PocketsBox_EndAction(self);
     }
 }
 CLEAN_AS(func_ov100_0229c970, PocketsBox_RunAction)
@@ -784,7 +777,7 @@ void PocketsBox_PickUpItem(PocketsBox *self, int place)
     if (!is_slot(self, place)) {
         return;
     }
-    int slot = func_ov100_0229d5d4(self, place);
+    int slot = PocketsBox_SlotOfPlace(self, place);
     self->held_kind = POCKETS_BOX_HELD_ITEM;
     self->item = func_ov094_0229aaac(self->grid, slot);
     self->held_state = func_ov094_0229aa84(self->grid, slot);
@@ -861,7 +854,7 @@ void PocketsBox_PlacePopup(PocketsBox *self)
     }
     func_0208aa60(&self->popup, x, y);
     if (is_slot(self, self->popup_place)) {
-        func_ov094_0229abb8(self->grid, &self->popup, func_ov100_0229d5d4(self, self->popup_place));
+        func_ov094_0229abb8(self->grid, &self->popup, PocketsBox_SlotOfPlace(self, self->popup_place));
     }
 }
 CLEAN_AS(func_ov100_0229cf30, PocketsBox_PlacePopup)
@@ -885,7 +878,7 @@ CLEAN_AS(func_ov100_0229cfd0, PocketsBox_TouchMoved)
 void PocketsBox_HighlightPlace(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        func_ov094_0229aafc(self->grid, func_ov100_0229d5d4(self, place));
+        func_ov094_0229aafc(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
 }
 CLEAN_AS(func_ov100_0229d014, PocketsBox_HighlightPlace)
@@ -903,7 +896,7 @@ CLEAN_AS(func_ov100_0229d04c, PocketsBox_ClearHighlights)
 void PocketsBox_SelectPlace(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        func_ov094_0229ab1c(self->grid, func_ov100_0229d5d4(self, place));
+        func_ov094_0229ab1c(self->grid, PocketsBox_SlotOfPlace(self, place));
         func_ov094_0229b98c(self->letters);
     } else if (is_button(self, place)) {
         PocketsBox_ClearSelection(self);
@@ -923,7 +916,7 @@ CLEAN_AS(func_ov100_0229d0c0, PocketsBox_ClearSelection)
 int PocketsBox_PlaceItemState(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        return func_ov094_0229aa84(self->grid, func_ov100_0229d5d4(self, place));
+        return func_ov094_0229aa84(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
     return NO_ITEM_STATE;
 }
@@ -933,7 +926,7 @@ CLEAN_AS(func_ov100_0229d0dc, PocketsBox_PlaceItemState)
 int PocketsBox_PlaceItem(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        return func_ov094_0229aaac(self->grid, func_ov100_0229d5d4(self, place));
+        return func_ov094_0229aaac(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
     return ITEM_CODE_NONE;
 }
@@ -943,7 +936,7 @@ CLEAN_AS(func_ov100_0229d118, PocketsBox_PlaceItem)
 int PocketsBox_PlaceIsEmpty(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        return func_ov094_0229a69c(self->grid, func_ov100_0229d5d4(self, place));
+        return func_ov094_0229a69c(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
     return 1;
 }
@@ -954,7 +947,7 @@ CLEAN_AS(func_ov100_0229d158, PocketsBox_PlaceIsEmpty)
 int PocketsBox_PlaceIsLocked(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        return func_ov094_0229a8bc(self->grid, func_ov100_0229d5d4(self, place));
+        return func_ov094_0229a8bc(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
     return 0;
 }
@@ -965,7 +958,7 @@ void PocketsBox_LockSlots(PocketsBox *self)
 {
     for (u8 place = POCKETS_BOX_POCKETS_FIRST; place <= POCKETS_BOX_POCKETS_LAST; place++) {
         if (PocketsBox_SlotMustLock(self, place)) {
-            func_ov094_0229a888(self->grid, func_ov100_0229d5d4(self, place));
+            func_ov094_0229a888(self->grid, PocketsBox_SlotOfPlace(self, place));
         }
     }
 }
@@ -1035,7 +1028,7 @@ CLEAN_AS(func_ov100_0229d208, PocketsBox_SlotMustLock)
 int PocketsBox_PlaceY(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        return func_ov094_0229ab90(self->grid, func_ov100_0229d5d4(self, place));
+        return func_ov094_0229ab90(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
     if (is_button(self, place)) {
         return place == POCKETS_BOX_CONFIRM ? CONFIRM_Y : CANCEL_Y;
@@ -1049,7 +1042,7 @@ CLEAN_AS(func_ov100_0229d3d8, PocketsBox_PlaceY)
 int PocketsBox_PlaceX(PocketsBox *self, int place)
 {
     if (is_slot(self, place)) {
-        return func_ov094_0229aba4(self->grid, func_ov100_0229d5d4(self, place));
+        return func_ov094_0229aba4(self->grid, PocketsBox_SlotOfPlace(self, place));
     }
     return is_button(self, place) ? BUTTONS_X : 0;
 }
@@ -1071,7 +1064,7 @@ CLEAN_AS(func_ov100_0229d478, PocketsBox_BoxPlaceOfSlot)
  * else the box's first slot. */
 int PocketsBox_BoxSlot(PocketsBox *self, int place)
 {
-    if (func_ov100_0229d620(self, (unsigned int) place)) {
+    if (PocketsBox_IsBoxPlace(self, (unsigned int) place)) {
         return (u8) place;
     }
     return POCKETS_BOX_BOX_FIRST;
@@ -1085,8 +1078,137 @@ void PocketsBox_SetSlotItem(PocketsBox *self, int place, int item, int state)
     if (!is_slot(self, place)) {
         return;
     }
-    int slot = func_ov100_0229d5d4(self, place);
+    int slot = PocketsBox_SlotOfPlace(self, place);
     func_ov094_0229aa14(self->grid, slot, item, state);
     func_ov094_0229a9b4(self->grid, (unsigned int) slot);
 }
 CLEAN_AS(func_ov100_0229d4a8, PocketsBox_SetSlotItem)
+
+/* func_ov100_0229d4f4: the held item put down at slot place `place`, the item there (if any)
+ * moved to the place the held item came from; whether `place` is a slot. */
+int PocketsBox_DropHeld(PocketsBox *self, int place)
+{
+    if (!is_slot(self, place)) {
+        return 0;
+    }
+    int item = PocketsBox_PlaceItem(self, place);
+    if (item != ITEM_CODE_NONE) {
+        int state = PocketsBox_PlaceItemState(self, place);
+        PocketsBox_SetSlotItem(self, self->held_place, item, state);
+    }
+    PocketsBox_PutHeldAt(self, place);
+    return 1;
+}
+CLEAN_AS(func_ov100_0229d4f4, PocketsBox_DropHeld)
+
+/* The grid's answer for a slot found by its place (PocketsBox_PlaceAtTouch): with
+ * `items_only`, none for an empty slot. */
+static int pockets_box_touched(PocketsBox *self, int slot, int items_only)
+{
+    return items_only != 0 && PocketsGrid_IsEmpty((PocketsGrid *) (void *) self->grid, slot) != 0;
+}
+
+/* func_ov100_0229d550: the place at touch position (x, y): a pocket's, else the box's, else
+ * POCKETS_BOX_NO_PLACE; with `items_only`, an empty slot counts as none. */
+int PocketsBox_PlaceAtTouch(PocketsBox *self, int x, int y, int items_only)
+{
+    PocketsGrid *grid = (PocketsGrid *) (void *) self->grid;
+    int slot = PocketsGrid_PocketPlaceAtTouch(grid, x, y);
+    if (slot != POCKETS_GRID_NO_PLACE) {
+        if (pockets_box_touched(self, slot, items_only)) {
+            return POCKETS_BOX_NO_PLACE;
+        }
+        return PocketsBox_PocketPlaceOfSlot(self, (unsigned int) slot);
+    }
+    slot = PocketsGrid_BoxPlaceAtTouch(grid, x, y);
+    if (slot != POCKETS_GRID_NO_PLACE) {
+        if (pockets_box_touched(self, slot, items_only)) {
+            return POCKETS_BOX_NO_PLACE;
+        }
+        return PocketsBox_BoxPlaceOfSlot(self, (unsigned int) slot);
+    }
+    return POCKETS_BOX_NO_PLACE;
+}
+CLEAN_AS(func_ov100_0229d550, PocketsBox_PlaceAtTouch)
+
+/* func_ov100_0229d5c4: the place of the grid's pocket slot `slot` (0-14, the same number),
+ * else POCKETS_BOX_NO_PLACE. */
+unsigned char PocketsBox_PocketPlaceOfSlot(PocketsBox *self, unsigned int slot)
+{
+    (void) self;
+    if (slot <= POCKETS_BOX_POCKETS_LAST) {
+        return (unsigned char) slot;
+    }
+    return POCKETS_BOX_NO_PLACE;
+}
+CLEAN_AS(func_ov100_0229d5c4, PocketsBox_PocketPlaceOfSlot)
+
+/* func_ov100_0229d5d4: the grid's slot of a slot place (its low byte), else 0. */
+int PocketsBox_SlotOfPlace(PocketsBox *self, int place)
+{
+    if (PocketsBox_IsPocketPlace(self, (unsigned int) place)) {
+        return (u8) place;
+    }
+    if (PocketsBox_IsBoxPlace(self, (unsigned int) place)) {
+        return PocketsBox_BoxSlot(self, place);
+    }
+    return 0;
+}
+CLEAN_AS(func_ov100_0229d5d4, PocketsBox_SlotOfPlace)
+
+/* func_ov100_0229d60c: whether `place` is the confirm or the cancel place, by its low byte. */
+int PocketsBox_IsButtonPlace(PocketsBox *self, int place)
+{
+    (void) self;
+    u8 low = (u8) place;
+    return low == POCKETS_BOX_CONFIRM || low == POCKETS_BOX_CANCEL;
+}
+CLEAN_AS(func_ov100_0229d60c, PocketsBox_IsButtonPlace)
+
+/* func_ov100_0229d620 */
+int PocketsBox_IsBoxPlace(PocketsBox *self, unsigned int place)
+{
+    (void) self;
+    return place >= POCKETS_BOX_BOX_FIRST && place <= POCKETS_BOX_BOX_LAST;
+}
+CLEAN_AS(func_ov100_0229d620, PocketsBox_IsBoxPlace)
+
+/* func_ov100_0229d630 */
+int PocketsBox_IsPocketPlace(PocketsBox *self, unsigned int place)
+{
+    (void) self;
+    return place <= POCKETS_BOX_POCKETS_LAST;
+}
+CLEAN_AS(func_ov100_0229d630, PocketsBox_IsPocketPlace)
+
+/* func_ov100_0229d63c: the scene's layer load task taken off the main loop's queue and reset. */
+void PocketsBox_EndLayerTask(PocketsBox *self)
+{
+    LayerTask_End(&self->layer_task.first);
+}
+CLEAN_AS(func_ov100_0229d63c, PocketsBox_EndLayerTask)
+
+/* func_ov100_0229d648: the box's first empty place, else POCKETS_BOX_NO_PLACE. */
+unsigned char PocketsBox_FirstEmptyBoxPlace(PocketsBox *self)
+{
+    for (int i = 0; i < POCKETS_BOX_SLOTS; i++) {
+        if (self->box[i] == ITEM_CODE_NONE) {
+            return (unsigned char) (POCKETS_BOX_BOX_FIRST + i);
+        }
+    }
+    return POCKETS_BOX_NO_PLACE;
+}
+CLEAN_AS(func_ov100_0229d648, PocketsBox_FirstEmptyBoxPlace)
+
+/* func_ov100_0229d67c: the place of the current player's first free pocket slot, else
+ * POCKETS_BOX_NO_PLACE. */
+int PocketsBox_FreePocketPlace(PocketsBox *self)
+{
+    (void) self;
+    int slot = CurrentPockets_FreeSlot();
+    if (slot == -1) {
+        return POCKETS_BOX_NO_PLACE;
+    }
+    return (u8) slot;
+}
+CLEAN_AS(func_ov100_0229d67c, PocketsBox_FreePocketPlace)

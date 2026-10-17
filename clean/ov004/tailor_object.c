@@ -15,6 +15,9 @@
 #include "main/item_texture.h"
 #include "main/model_object.h"
 #include "member_pointer.h"
+#include "ov004/rmo_model.h"
+#include "ov004/rmo_object_slots.h"
+#include "rmo_object_base.h"
 
 static_assert(offsetof(TailorObject, part) == 0x290, "part");
 static_assert(offsetof(TailorObject, part_model) == 0x348, "part model");
@@ -124,24 +127,6 @@ extern MemberPointer data_ov004_0225858c[TAILOR_OBJECT_STATE_COUNT];
 extern const MemberPointer data_ov004_022554d8, data_ov004_02255510, data_ov004_02255508, data_ov004_02255500;
 
 /* The RMO family's base class and holders (rmo_object.h). */
-extern int func_ov004_0222c600(RmoObject *object, const char *archive, const char *texture);
-extern void func_ov004_0222c598(RmoObject *object);
-extern RmoObject *func_ov004_0222c87c(RmoObject *object);
-extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
-extern const u8 *func_ov004_0222c3c4(RmoModel *model, int index); /* a joint animation */
-extern const u8 *func_ov004_0222c3a4(RmoModel *model, int index); /* a texture animation */
-extern int func_ov004_0222c3f4(RmoModel *model, const char *path);
-extern u8 *func_ov004_0222c3a0(RmoModel *model);
-extern void func_ov004_0222c3d4(RmoModel *model);
-extern void func_ov004_0222c548(void *model); /* RmoModel's constructor */
-extern void func_ov004_0222c538(void *model); /* and destructor */
-extern int func_ov004_0222c348(RmoTexture *texture, const char *path);
-extern void *func_ov004_0222c33c(RmoTexture *texture);
-extern void func_ov004_0222c340(RmoTexture *texture);
-extern void func_ov004_0222c398(void *texture); /* RmoTexture's constructor */
-extern void func_ov004_0222c394(void *texture); /* and destructor */
-/* Plays a sound at the object's sound source (at 0x250). */
-extern int func_ov004_0222c2c8(void *source, int sound);
 
 /* Whether main's byte data_020df328 and word data_021cfca0 are both set. */
 extern int func_02070070(void);
@@ -240,7 +225,7 @@ void TailorObject_UpdateRunning(TailorObject *self)
     u32 frame = (u16) ((u32) self->part.frames.frame >> TAILOR_OBJECT_FRAME_SHIFT);
     int in_turn = (int) (frame % TAILOR_OBJECT_TURN_FRAMES);
     if (Math_IsBetween(in_turn, TAILOR_OBJECT_SOUND_FIRST, TAILOR_OBJECT_SOUND_LAST) && func_02070070() == 0) {
-        func_ov004_0222c2c8(TailorObject_sound_source(self), TAILOR_OBJECT_SOUND);
+        RmoSound_PlayEx(TailorObject_sound_source(self), TAILOR_OBJECT_SOUND);
     }
 }
 CLEAN_AS(func_ov004_0222fe50, TailorObject_UpdateRunning)
@@ -328,9 +313,9 @@ CLEAN_AS(func_ov004_0222ff84, TailorObject_SetState)
  * longer the one that exists. */
 int TailorObject_Release(TailorObject *self)
 {
-    func_ov004_0222c598(&self->base);
-    func_ov004_0222c3d4(&self->part_model);
-    func_ov004_0222c340(&self->part_texture);
+    RmoObjectSlots_ReleaseBody(&self->base);
+    RmoModel_Release(&self->part_model);
+    RmoTexture_Release(&self->part_texture);
     data_ov004_02258558 = NULL;
     return 1;
 }
@@ -378,31 +363,31 @@ int TailorObject_Start(TailorObject *self)
     u8 *model;
 
     data_ov004_02258558 = self;
-    func_ov004_0222c600(&self->base, data_ov004_022555a0, data_ov004_022555bc);
-    func_ov004_0222c3f4(&self->part_model, data_ov004_022555d8);
-    func_ov004_0222c348(&self->part_texture, data_ov004_022555f4);
-    ModelObject_SetModel(&self->part.object, func_ov004_0222c3a0(&self->part_model), NULL);
-    model = func_ov004_0222c3a0(&self->part_model);
-    NNS_G3dBindMdlTex(model, func_ov004_0222c33c(&self->part_texture));
-    model = func_ov004_0222c3a0(&self->part_model);
-    NNS_G3dBindMdlPltt(model, func_ov004_0222c33c(&self->part_texture));
+    RmoObjectSlots_Load(&self->base, data_ov004_022555a0, data_ov004_022555bc);
+    RmoModel_Load(&self->part_model, data_ov004_022555d8);
+    RmoTexture_Load(&self->part_texture, data_ov004_022555f4);
+    ModelObject_SetModel(&self->part.object, RmoModel_Model(&self->part_model), NULL);
+    model = RmoModel_Model(&self->part_model);
+    NNS_G3dBindMdlTex(model, RmoTexture_Texture(&self->part_texture));
+    model = RmoModel_Model(&self->part_model);
+    NNS_G3dBindMdlPltt(model, RmoTexture_Texture(&self->part_texture));
 
-    if (func_ov004_0222c3c4(&self->base.body_model, 0) != NULL &&
+    if (RmoModel_JointAnim(&self->base.body_model, 0) != NULL &&
         AnimatedModel_LoadAnim(TailorObject_body(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(TailorObject_body(self), func_ov004_0222c3c4(&self->base.body_model, 0), TAILOR_OBJECT_LOOP,
+        AnimatedModel_Start(TailorObject_body(self), RmoModel_JointAnim(&self->base.body_model, 0), TAILOR_OBJECT_LOOP,
                             TAILOR_OBJECT_ONE, 0, 0);
         AnimatedModel_Attach(TailorObject_body(self));
         self->base.body.frames.speed = 0;
     }
     if (ModelAnim_AllocMaterialAnim(&self->body_anim, self->base.body.object.model, data_021c9b24) != 0) {
-        ModelAnim_Start(&self->body_anim, func_ov004_0222c3a4(&self->base.body_model, 0), TAILOR_OBJECT_LOOP,
+        ModelAnim_Start(&self->body_anim, RmoModel_TextureAnim(&self->base.body_model, 0), TAILOR_OBJECT_LOOP,
                         TAILOR_OBJECT_ONE, 0);
         ModelAnim_Attach(&self->body_anim, ModelObject_RenderObject(&self->base.body.object));
         self->body_anim.ctrl.speed = 0;
     }
-    if (func_ov004_0222c3c4(&self->part_model, 0) != NULL &&
+    if (RmoModel_JointAnim(&self->part_model, 0) != NULL &&
         AnimatedModel_LoadAnim(TailorObject_part(self), data_021c9b24) != 0) {
-        AnimatedModel_Start(TailorObject_part(self), func_ov004_0222c3c4(&self->part_model, 0), TAILOR_OBJECT_LOOP,
+        AnimatedModel_Start(TailorObject_part(self), RmoModel_JointAnim(&self->part_model, 0), TAILOR_OBJECT_LOOP,
                             TAILOR_OBJECT_ONE, 0, 0);
         AnimatedModel_Attach(TailorObject_part(self));
         self->part.frames.speed = 0;
@@ -427,10 +412,10 @@ static void TailorObject_destruct(TailorObject *self)
 {
     self->base.actor.vtable = data_ov004_02255538;
     ModelAnim_DestructComplete(&self->body_anim);
-    func_ov004_0222c394(&self->part_texture);
-    func_ov004_0222c538(&self->part_model);
+    RmoTexture_Destruct(&self->part_texture);
+    RmoModel_Destruct(&self->part_model);
     AnimatedModel_DestructComplete(TailorObject_part(self));
-    func_ov004_0222c7a0(&self->base);
+    RmoObjectSlots_Destruct(&self->base);
 }
 
 /* func_ov004_022302f8 (the deleting destructor, vtable slot 0x44) */
@@ -453,11 +438,11 @@ CLEAN_AS(func_ov004_02230348, TailorObject_Destruct)
 /* func_ov004_02230394 (the constructor). Its state is left as the allocation zeroed it. */
 TailorObject *TailorObject_Construct(TailorObject *self)
 {
-    func_ov004_0222c87c(&self->base);
+    RmoObjectBase_Construct(&self->base);
     self->base.actor.vtable = data_ov004_02255538;
     AnimatedModel_Construct(TailorObject_part(self));
-    func_ov004_0222c548(&self->part_model);
-    func_ov004_0222c398(&self->part_texture);
+    RmoModel_Construct(&self->part_model);
+    RmoTexture_Construct(&self->part_texture);
     VramCopyMaterial_Construct(&self->cloth_copy);
     ModelAnim_Construct(&self->body_anim);
     return self;

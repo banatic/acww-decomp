@@ -21,6 +21,7 @@
 #include "room_object_map.h"
 #include "room_object_methods.h"
 #include "room_object_parts.h"
+#include "ov004/room_player_actor.h"
 
 static_assert(offsetof(RoomObject, unk_00C) == 0xc, "kind");
 static_assert(offsetof(RoomObject, position) == 0x5c, "position");
@@ -111,15 +112,10 @@ extern Vec3 *func_ov004_0223cb28(void *entry);
 extern int func_ov004_0223cb30(void *entry);
 
 /* The players: actor 4 (func_020961a8), this console's player's number (func_020984d4) and
- * record (func_020984e8), and where player `index` stands when in state 8. */
+ * record (func_020984e8). */
 extern MapActor *func_020961a8(int actor);
 extern int func_020984d4(void);
 extern void *func_020984e8(void);
-extern int func_ov004_0222c25c(Vec3 *point, int index);
-/* The player sent to a point, facing an angle (`mode` is not used), and told the side; whether
- * it was. */
-extern int func_ov004_0222c14c(fx32 *x, fx32 *z, s16 *angle, s16 facing, int mode);
-extern int func_ov004_0222c110(int a0, int a1);
 extern NetSession *data_020ccf94;
 /* The width the room's halves are taken from. */
 extern s32 data_020ca0ec;
@@ -500,7 +496,7 @@ CLEAN_AS(func_ov004_02217cb4, RoomObject02253058_EnterSequenceDone)
 void RoomObject02253058_UpdateSequenceEnd(RoomObject02253058 *object)
 {
     if (link_closed(object)) {
-        func_ov004_0222c110(object->left_half, 0);
+        RoomPlayerActor_RequestPlaceOff(object->left_half, 0);
         end_talk(object);
     }
 }
@@ -567,7 +563,7 @@ void RoomObject02253058_UpdateMovePlayer(RoomObject02253058 *object)
     void *entry = entry_of(object);
     s16 angle = (s16) func_ov004_0223cb18(entry);
     Vec3 *point = func_ov004_0223cb28(entry);
-    if (func_ov004_0222c14c(&point->x, &func_ov004_0223cb28(entry)->z, &angle, facing(object), 1) != 0) {
+    if (RoomPlayerActor_RequestPlaceApproach(&point->x, &func_ov004_0223cb28(entry)->z, &angle, facing(object), 1) != 0) {
         switch_to(object, ROOM_OBJECT_02253058_WAIT);
     }
 }
@@ -665,7 +661,7 @@ void RoomObject02253058_UpdatePushed(RoomObject02253058 *object)
                 if (func_ov004_0223cb30(entry) > MOVED_ENOUGH && object->push_frames >= PUSH_FRAMES) {
                     s16 angle = (s16) func_ov004_0223cb18(entry);
                     Vec3 *point = func_ov004_0223cb28(entry);
-                    func_ov004_0222c14c(&point->x, &func_ov004_0223cb28(entry)->z, &angle, facing(object), 0);
+                    RoomPlayerActor_RequestPlaceApproach(&point->x, &func_ov004_0223cb28(entry)->z, &angle, facing(object), 0);
                     object->push_frames = 0;
                 }
             }
@@ -947,7 +943,7 @@ int RoomObject02253058_Update(RoomObject02253058 *object)
         ByteSet_SetValue(&base->node_set, 0);
         for (int i = 0; i < PLAYER_COUNT; i++) {
             Vec3 point;
-            if (func_ov004_0222c25c(&point, i) == 0) {
+            if (RoomPlayerActor_PointAtPlace(&point, i) == 0) {
                 continue;
             }
             s32 x;

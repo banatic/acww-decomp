@@ -5,7 +5,7 @@
  *
  *     CLEAN_AS(func_0209de24, Calendar_DaysInMonth)
  *
- * after its definition, it runs in place of that function's Native version in
+ * after its definition (or with CLEAN_AS_SYMBOL, below, when the symbol is not a C name), it runs in place of that function's Native version in
  * `tools/run.py --native=... --clean`, and `tools/diffcheck.py --native --clean` checks it
  * against the ROM's code on generated states when it calls nothing. The tools read these lines;
  * the macro only makes the compiler check that the function exists.
@@ -21,5 +21,12 @@
 
 #define CLEAN_AS(symbol, function)                                                                                            \
     static const void *const clean_as_##symbol __attribute__((unused)) = (const void *) (function);
+
+/* CLEAN_AS for a game symbol that is not a C name (one with a '.' in it), given as a string:
+ *
+ *     CLEAN_AS_SYMBOL("__sinit___sinit_020c5e30.cpp", StaticInit_ActorTable)
+ */
+#define CLEAN_AS_SYMBOL(symbol, function)                                                                                     \
+    static const void *const clean_as_symbol_##function __attribute__((unused)) = (const void *) (function);
 
 #endif
