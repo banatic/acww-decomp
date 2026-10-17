@@ -9,5 +9,7 @@
 #include "types.h"
 
 CollisionPostSource *TownPostSource_Delete(CollisionPostSource *source);
+const u8 *TownPostSource_PostOfItem(const u16 *item);
+int TownPostSource_PostAt(CollisionPostSource *source, fx32 *radius, fx32 *height, int *kind, int x, int z);
 
 #endif

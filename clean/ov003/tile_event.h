@@ -150,4 +150,9 @@ void TileEvent_LetGoChange(TileEventEntry *entry);
 void TileEvent_SetTownItem(int x, int z, u16 item, int mark);
 void TileEvent_StartFromChanges(const TileChangesTile *tile);
 
+TileEventProcess *TileEvent_NewProcess(void);
+void *TileEvent_DestroyEntries(TileEventEntry *entries);
+TileEventEntry *TileEvent_DestructEntry(TileEventEntry *entry);
+TileEventEntry *TileEvent_ConstructEntry(TileEventEntry *entry);
+
 #endif

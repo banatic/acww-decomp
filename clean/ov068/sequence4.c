@@ -459,3 +459,568 @@ void Sequence4_UpdateState4(Sequence4 *actor)
     set_state(actor, 5);
 }
 CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022726c8Ev, Sequence4_UpdateState4)
+
+/* States 0 to 4, the state machine itself, its effects and the class's own slots. State 0 does
+ * nothing (its entry starts the animation of slot 0x64); state 1 (entry: that animation and
+ * event flag 1) waits for the player and moves to state 2; state 2 plays the animation of slot
+ * 0x64 with sound 0x888 and effect 0x41 over frames 0x2d-0x31, then state 3; state 3 (entry:
+ * field actor state 0x87 for the player, the animation of slot 0x68 and sound 0x88a) counts
+ * frames once that animation is done: at the 18th the player turns to the effect point, at the
+ * 28th state 4; state 4's entry starts its talk. */
+
+#include "autoload_2/fx_math.h" /* Math_Atan2 */
+#include "autoload_2/heap.h"
+#include "itcm/vector.h" /* Vec_Add */
+#include "main/block_020b220c.h"
+#include "main/effect_system.h"
+#include "main/message_receiver.h"
+#include "main/npc_lookup.h"
+#include "main/player_id.h"
+#include "main/talk_receiver.h"
+#include "ov004/member_pointer.h"
+
+static_assert(offsetof(Sequence4, frames_2dd) == 0x2dd, "frames 2dd");
+static_assert(offsetof(Sequence4, flag_2de) == 0x2de, "flag 2de");
+static_assert(offsetof(Sequence4, effect_b) == 0x2e0, "effect b");
+static_assert(offsetof(Sequence4, effect_a) == 0x2e4, "effect a");
+static_assert(sizeof(Sequence4) == 0x2e8, "the size Sequence4_New allocates");
+static_assert(offsetof(SceneActor, receiver_vtable) == 0xec, "receiver");
+static_assert(offsetof(SceneActor, message) == 0x10a, "message");
+static_assert(offsetof(AnimatedModelNodeState, joint) == 0xb4, "joint");
+static_assert(offsetof(AnimatedModelJoint, translation) == 0x4c, "translation");
+
+#define SEQUENCE4_STATES 17
+#define SEQUENCE4_RECEIVER_OFFSET 0xec
+#define SEQUENCE4_TALK 0          /* the talk object its talk runs on */
+#define SEQUENCE4_SPEAKER 0xd014  /* the speaker: special character 0x14 (npc_lookup.h) */
+#define SEQUENCE4_TURN_FRAME 0x12 /* state 3: the frame the player turns at */
+#define SEQUENCE4_TALK_FRAME 0x1c /* state 3: the frame state 4 follows at */
+#define SEQUENCE4_EFFECT_A 0x42   /* the effect over frames 0x25-0x32 of the animation */
+#define SEQUENCE4_EFFECT_A_FIRST 0x25
+#define SEQUENCE4_EFFECT_A_LAST 0x32
+#define SEQUENCE4_EFFECT_B 0x41 /* the effect over frames 0x2d-0x31 */
+#define SEQUENCE4_EFFECT_B_FIRST 0x2d
+#define SEQUENCE4_EFFECT_B_LAST 0x31
+#define SEQUENCE4_AHEAD_NUMERATOR 0x19000 /* the effect point ahead: 25.0 / 100.0 ... */
+#define SEQUENCE4_AHEAD_DENOMINATOR 0x64000
+#define SEQUENCE4_AHEAD_BACK 0xf6 /* ... less 0xf6, along x */
+#define SEQUENCE4_NO_ITEM 0xfff1  /* the item code of an empty hand */
+#define SEQUENCE4_ID_MESSAGE 1    /* the message when the player's id byte 0x1c is 1 */
+
+/* The vtables: the class's and its receiver part's. */
+extern const u8 data_ov068_02277750[];
+extern const u8 data_ov068_02277814[];
+/* "sp_etc_sequence4", its talk's message file. */
+extern const char data_ov068_02277890[];
+
+/* The state tables (ov004/member_pointer.h): the updates' guard, table and constants, then the
+ * entries'. */
+extern u32 data_ov068_022786cc;
+extern MemberPointer data_ov068_02278774[SEQUENCE4_STATES];
+extern const MemberPointer data_ov068_02277660, data_ov068_02277668, data_ov068_02277688, data_ov068_022776c8,
+    data_ov068_02277708, data_ov068_02277720, data_ov068_02277640, data_ov068_02277638, data_ov068_02277628,
+    data_ov068_02277648, data_ov068_02277680, data_ov068_02277678, data_ov068_022776d0, data_ov068_02277728,
+    data_ov068_02277620, data_ov068_02277650, data_ov068_02277658;
+extern u32 data_ov068_022786e8;
+extern MemberPointer data_ov068_022786ec[SEQUENCE4_STATES];
+extern const MemberPointer data_ov068_02277670, data_ov068_02277700, data_ov068_022776f8, data_ov068_022776f0,
+    data_ov068_022776e8, data_ov068_022776d8, data_ov068_022776e0, data_ov068_02277710, data_ov068_02277718,
+    data_ov068_022776c0, data_ov068_022776b8, data_ov068_022776b0, data_ov068_022776a8, data_ov068_022776a0,
+    data_ov068_02277698, data_ov068_02277690, data_ov068_02277630;
+
+/* Overlay 9's scene actor: its third animation, its destructor and its constructor. */
+extern int func_ov009_02264d18(Sequence4 *actor);
+extern void *func_ov009_0226539c(Sequence4 *actor);
+extern void *func_ov009_0226552c(Sequence4 *actor);
+
+extern fx32 FX_Div(fx32 numerator, fx32 denominator);
+
+static TalkReceiver *sequence4_receiver(Sequence4 *actor)
+{
+    return (TalkReceiver *) (void *) &actor->base.receiver_vtable;
+}
+
+/* The whole frame its animation is at. */
+static unsigned int sequence4_frame(Sequence4 *actor)
+{
+    return (u16) ((u32) sequence4_model(actor)->frames.frame >> 12);
+}
+
+/* func_ov068_022726d4 (entry of state 4): talk 0 takes its receiver, reset and named
+ * "sp_etc_sequence4", with message 1 when the current player's id byte 0x1c is 1, else
+ * message 0; the talk is asked to open, and the speaker is special character 0x14. */
+int Sequence4_EnterState4(Sequence4 *actor)
+{
+    TalkObject *talk = TalkObject_Get(SEQUENCE4_TALK);
+    TalkReceiver *receiver = sequence4_receiver(actor);
+    TalkReceiver_Reset(receiver);
+    MessageReceiver_SetName(&receiver->base, data_ov068_02277890);
+    u8 *record = PlayerRecords_Current();
+    int message = 0;
+    if (record != NULL && PlayerId_Byte1c((const s8 *) (void *) PlayerRecord_Player(record)) == SEQUENCE4_ID_MESSAGE) {
+        message = SEQUENCE4_ID_MESSAGE;
+    }
+    actor->base.message = (u8) message;
+    TalkObject_AttachReceiver(talk, receiver);
+    talk->next_state = TALK_OBJECT_OPENING;
+
+    PlayerIdText name;
+    PlayerIdText_Construct(&name);
+    ItemCode speaker = SEQUENCE4_SPEAKER;
+    NpcLookup_FormatPersonName(&name, &speaker);
+    /* the text's characters, through its vtable */
+    typedef const char *(*Sequence4TextChars)(PlayerIdText *text);
+    const char *chars = ((Sequence4TextChars) (uintptr_t) name.vtable->buffer)(&name);
+    TalkReceiver_SetSpeaker(receiver, chars, 0);
+    PlayerIdText_Destruct(&name);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022726d4Ev, Sequence4_EnterState4)
+
+/* func_ov068_0227276c (update of state 3): once the animation is done, its frames count (to
+ * 200): at the 18th the player's own flag 0x17 is set and the player turns to the effect point;
+ * at the 28th, state 4. Until then the animation steps. */
+void Sequence4_UpdateState3(Sequence4 *actor)
+{
+    if (!animation_done(actor)) {
+        step_animation(actor);
+        return;
+    }
+    switch (actor->frames_2dd) {
+        case SEQUENCE4_TURN_FRAME:
+            PlayerActorOps_SetOwnFlag17();
+            PlayerActorOps_Turn(Sequence4_YawToEffect(actor), SEQUENCE4_PLAYER);
+            break;
+        case SEQUENCE4_TALK_FRAME:
+            set_state(actor, 4);
+            break;
+        default:
+            break;
+    }
+    if (actor->frames_2dd < SEQUENCE4_FRAMES_MAX) {
+        actor->frames_2dd++;
+    }
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_0227276cEv, Sequence4_UpdateState3)
+
+/* func_ov068_022727d0 (entry of state 3): its frames from 0; taken when the player takes field
+ * actor state 0x87, then the animation of slot 0x68 and sound 0x88a. */
+int Sequence4_EnterState3(Sequence4 *actor)
+{
+    actor->frames_2dd = 0;
+    if (FieldActor_PlayerRequestState87() == NULL) {
+        return 0;
+    }
+    start_animation(actor, call_slot(actor, SEQUENCE4_SLOT_ANIM_B));
+    SceneActorSound_Play(&actor->base.sound, SEQUENCE4_SOUND_B);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022727d0Ev, Sequence4_EnterState3)
+
+/* func_ov068_0227282c (update of state 2): sound 0x888; at the animation's end, state 3; effect
+ * 0x41 follows (Sequence4_FollowEffectB) and the animation steps. */
+void Sequence4_UpdateState2(Sequence4 *actor)
+{
+    SceneActorSound_PlayEx(&actor->base.sound, SEQUENCE4_SOUND_A);
+    if (animation_done(actor)) {
+        set_state(actor, 3);
+    }
+    Sequence4_FollowEffectB(actor);
+    step_animation(actor);
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_0227282cEv, Sequence4_UpdateState2)
+
+/* func_ov068_02272874 (entry of state 2): the animation of slot 0x64. */
+int Sequence4_EnterState2(Sequence4 *actor)
+{
+    start_animation(actor, call_slot(actor, SEQUENCE4_SLOT_ANIM_A));
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272874Ev, Sequence4_EnterState2)
+
+/* func_ov068_022728a8 (update of state 1): once this console's player has an actor, state 2. */
+void Sequence4_UpdateState1(Sequence4 *actor)
+{
+    if (SessionPlayers_ActorOf(SEQUENCE4_PLAYER) != NULL) {
+        set_state(actor, 2);
+    }
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022728a8Ev, Sequence4_UpdateState1)
+
+/* func_ov068_022728c4 (entry of state 1): the animation of slot 0x64, and event flag 1 set. */
+int Sequence4_EnterState1(Sequence4 *actor)
+{
+    start_animation(actor, call_slot(actor, SEQUENCE4_SLOT_ANIM_A));
+    EventQueue_SetFlag1();
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_022728c4Ev, Sequence4_EnterState1)
+
+/* func_ov068_022728fc (update of state 0) */
+void Sequence4_UpdateState0(void *actor)
+{
+    (void) actor;
+}
+CLEAN_AS(func_ov068_022728fc, Sequence4_UpdateState0)
+
+/* func_ov068_02272900 (entry of state 0): the animation of slot 0x64. */
+int Sequence4_EnterState0(Sequence4 *actor)
+{
+    start_animation(actor, call_slot(actor, SEQUENCE4_SLOT_ANIM_A));
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272900Ev, Sequence4_EnterState0)
+
+/* func_ov068_02272934: the update of its state runs (through a table filled once). States 17
+ * and above do nothing. */
+void Sequence4_UpdateState(Sequence4 *actor)
+{
+    static const MemberPointer *const updates[SEQUENCE4_STATES] = {
+        &data_ov068_02277660, /* Sequence4_UpdateState0 */
+        &data_ov068_02277668, /* Sequence4_UpdateState1 */
+        &data_ov068_02277688, /* Sequence4_UpdateState2 */
+        &data_ov068_022776c8, /* Sequence4_UpdateState3 */
+        &data_ov068_02277708, /* Sequence4_UpdateState4 */
+        &data_ov068_02277720, /* Sequence4_UpdateState5 */
+        &data_ov068_02277640, /* Sequence4_UpdateState6 */
+        &data_ov068_02277638, /* Sequence4_UpdateState7 */
+        &data_ov068_02277628, /* Sequence4_UpdateState8 */
+        &data_ov068_02277648, /* Sequence4_UpdateState9 */
+        &data_ov068_02277680, /* Sequence4_UpdateState10 */
+        &data_ov068_02277678, /* Sequence4_UpdateState11 */
+        &data_ov068_022776d0, /* Sequence4_UpdateState12 */
+        &data_ov068_02277728, /* Sequence4_UpdateState13 */
+        &data_ov068_02277620, /* Sequence4_UpdateState14 */
+        &data_ov068_02277650, /* Sequence4_UpdateState15 */
+        &data_ov068_02277658, /* Sequence4_UpdateState16 */
+    };
+    MemberTable_InitOnce(&data_ov068_022786cc, data_ov068_02278774, updates, SEQUENCE4_STATES);
+    /* REQUIRES: state >= 0 (the entries set 0 to 16); the ROM's signed test lets a negative one
+     * index before the table */
+    if (actor->state >= 0 && actor->state < SEQUENCE4_STATES) {
+        MemberPointer_CallVoid(&data_ov068_02278774[actor->state], actor);
+    }
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272934Ev, Sequence4_UpdateState)
+
+/* func_ov068_02272a7c: enters `state` if its entry (through a table filled once) agrees;
+ * whether it did. States 17 and above do not exist. */
+int Sequence4_SetState(Sequence4 *actor, int state)
+{
+    static const MemberPointer *const entries[SEQUENCE4_STATES] = {
+        &data_ov068_02277670, /* Sequence4_EnterState0 */
+        &data_ov068_02277700, /* Sequence4_EnterState1 */
+        &data_ov068_022776f8, /* Sequence4_EnterState2 */
+        &data_ov068_022776f0, /* Sequence4_EnterState3 */
+        &data_ov068_022776e8, /* Sequence4_EnterState4 */
+        &data_ov068_022776d8, /* Sequence4_EnterState5 */
+        &data_ov068_022776e0, /* Sequence4_EnterState6 */
+        &data_ov068_02277710, /* Sequence4_EnterState7 */
+        &data_ov068_02277718, /* Sequence4_EnterState8 */
+        &data_ov068_022776c0, /* Sequence4_EnterState9 */
+        &data_ov068_022776b8, /* Sequence4_EnterState10 */
+        &data_ov068_022776b0, /* Sequence4_EnterState11 */
+        &data_ov068_022776a8, /* Sequence4_EnterState12 */
+        &data_ov068_022776a0, /* Sequence4_EnterState13 */
+        &data_ov068_02277698, /* Sequence4_EnterState14 */
+        &data_ov068_02277690, /* Sequence4_EnterState15 */
+        &data_ov068_02277630, /* Sequence4_EnterState16 */
+    };
+    MemberTable_InitOnce(&data_ov068_022786e8, data_ov068_022786ec, entries, SEQUENCE4_STATES);
+    /* REQUIRES: state >= 0 (the game passes 0 to 16); the ROM's signed test lets a negative one
+     * index before the table */
+    if (state >= 0 && state < SEQUENCE4_STATES && MemberPointer_CallInt(&data_ov068_022786ec[state], actor) != 0) {
+        actor->state = state;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272a7cEi, Sequence4_SetState)
+
+/* func_ov068_02272bd4: effect 0x42 ended. */
+void Sequence4_EndEffectA(Sequence4 *actor)
+{
+    EffectSystem_EndHandle(actor->effect_a);
+}
+CLEAN_AS(func_ov068_02272bd4, Sequence4_EndEffectA)
+
+/* func_ov068_02272be4: over frames 0x25-0x32 of its animation, effect 0x42 is at the effect
+ * point: started at the first, moved there each frame, ended after the move at the last. */
+void Sequence4_FollowEffectA(Sequence4 *actor)
+{
+    unsigned int frame = sequence4_frame(actor);
+    if (frame < SEQUENCE4_EFFECT_A_FIRST || frame > SEQUENCE4_EFFECT_A_LAST) {
+        return;
+    }
+    if (frame == SEQUENCE4_EFFECT_A_FIRST) {
+        Sequence4_StartEffectA(actor);
+    }
+    EffectSystem_MoveHandle(actor->effect_a, &actor->effect_point, NULL, NULL);
+    if (frame == SEQUENCE4_EFFECT_A_LAST) {
+        Sequence4_EndEffectA(actor);
+    }
+}
+CLEAN_AS(func_ov068_02272be4, Sequence4_FollowEffectA)
+
+/* func_ov068_02272c30: effect 0x42 started at the effect point. */
+void Sequence4_StartEffectA(Sequence4 *actor)
+{
+    actor->effect_a = EffectSystem_StartKind(SEQUENCE4_EFFECT_A, &actor->effect_point, NULL, NULL);
+}
+CLEAN_AS(func_ov068_02272c30, Sequence4_StartEffectA)
+
+/* func_ov068_02272c54: effect 0x41 ended. */
+void Sequence4_EndEffectB(Sequence4 *actor)
+{
+    EffectSystem_EndHandle(actor->effect_b);
+}
+CLEAN_AS(func_ov068_02272c54, Sequence4_EndEffectB)
+
+/* func_ov068_02272c64: as Sequence4_FollowEffectA, for effect 0x41 over frames 0x2d-0x31. */
+void Sequence4_FollowEffectB(Sequence4 *actor)
+{
+    unsigned int frame = sequence4_frame(actor);
+    if (frame < SEQUENCE4_EFFECT_B_FIRST || frame > SEQUENCE4_EFFECT_B_LAST) {
+        return;
+    }
+    if (frame == SEQUENCE4_EFFECT_B_FIRST) {
+        Sequence4_StartEffectB(actor);
+    }
+    EffectSystem_MoveHandle(actor->effect_b, &actor->effect_point, NULL, NULL);
+    if (frame == SEQUENCE4_EFFECT_B_LAST) {
+        Sequence4_EndEffectB(actor);
+    }
+}
+CLEAN_AS(func_ov068_02272c64, Sequence4_FollowEffectB)
+
+/* func_ov068_02272cb0: effect 0x41 started at the effect point. */
+void Sequence4_StartEffectB(Sequence4 *actor)
+{
+    actor->effect_b = EffectSystem_StartKind(SEQUENCE4_EFFECT_B, &actor->effect_point, NULL, NULL);
+}
+CLEAN_AS(func_ov068_02272cb0, Sequence4_StartEffectB)
+
+/* func_ov068_02272cd4: the yaw from where this console's player stood when its frame began to
+ * the effect point moved ahead (Sequence4_EffectPointAhead); 0 without the player. */
+int Sequence4_YawToEffect(Sequence4 *actor)
+{
+    if (PlayerActorOps_StartPosition(SEQUENCE4_PLAYER) == NULL) {
+        return 0;
+    }
+    Vec3 from = *PlayerActorOps_StartPosition(SEQUENCE4_PLAYER);
+    Vec3 to;
+    Vec3 delta;
+    Sequence4_EffectPointAhead(&to, actor);
+    Vec_Subtract(&delta, &to, &from);
+    return Math_Atan2(delta.x, delta.z);
+}
+CLEAN_AS(func_ov068_02272cd4, Sequence4_YawToEffect)
+
+/* func_ov068_02272d1c: the effect point moved along x by 25.0 / 100.0 less 0xf6 (0x30a). */
+void Sequence4_EffectPointAhead(Vec3 *out, const Sequence4 *actor)
+{
+    /* x, y, then z, as the ROM copies them (`out` may overlap the actor) */
+    out->x = actor->effect_point.x;
+    out->y = actor->effect_point.y;
+    out->z = actor->effect_point.z;
+    out->x += FX_Div(SEQUENCE4_AHEAD_NUMERATOR, SEQUENCE4_AHEAD_DENOMINATOR) - SEQUENCE4_AHEAD_BACK;
+}
+CLEAN_AS(func_ov068_02272d1c, Sequence4_EffectPointAhead)
+
+/* func_ov068_02272d5c (receiver slot 0x14, also vtable slot 0x88: a message ended): nothing. */
+void Sequence4_OnMessageEnd(void *actor)
+{
+    (void) actor;
+}
+CLEAN_AS(func_ov068_02272d5c, Sequence4_OnMessageEnd)
+
+/* func_ov068_02272d60 (receiver slot 0x6c, also the word after the receiver vtable): 0. */
+int Sequence4_ReceiverSlot6c(void *actor)
+{
+    (void) actor;
+    return 0;
+}
+CLEAN_AS(func_ov068_02272d60, Sequence4_ReceiverSlot6c)
+
+/* func_ov068_02272d64 (vtable slot 0x60, a joint of its model being described): at joint 0 the
+ * effect point becomes its position moved by the joint's translation. */
+void Sequence4_PlaceEffectPoint(Sequence4 *actor, int node, const AnimatedModelNodeState *state)
+{
+    if (node != 0) {
+        return;
+    }
+    Vec3 translation = state->joint->translation;
+    Vec3 point;
+    Vec_Add(&point, &actor->base.position, &translation);
+    actor->effect_point = point;
+}
+CLEAN_AS(func_ov068_02272d64, Sequence4_PlaceEffectPoint)
+
+/* func_ov068_02272db4 (vtable slot 0xb0): whether its drawing draws the model: in any state
+ * but 0. */
+int Sequence4_DrawsModel(const Sequence4 *actor)
+{
+    return actor->state != 0;
+}
+CLEAN_AS(func_ov068_02272db4, Sequence4_DrawsModel)
+
+/* func_ov068_02272dc8: its third animation (overlay 9's func_ov009_02264d18). */
+int Sequence4_ThirdAnimation(Sequence4 *actor)
+{
+    return func_ov009_02264d18(actor);
+}
+CLEAN_AS(func_ov068_02272dc8, Sequence4_ThirdAnimation)
+
+/* func_ov068_02272dd0 (vtable slot 0xb4, returning a Vec3): the effect point, where overlay 9's
+ * class gives its position. */
+void Sequence4_EffectPoint(Vec3 *out, const Sequence4 *actor)
+{
+    /* x, y, then z, as the ROM copies them (`out` may overlap the actor) */
+    out->x = actor->effect_point.x;
+    out->y = actor->effect_point.y;
+    out->z = actor->effect_point.z;
+}
+CLEAN_AS(func_ov068_02272dd0, Sequence4_EffectPoint)
+
+/* func_ov068_02272df0 (vtable slot 0x0c): out of state 0, event flag 1 cleared; when a
+ * sequence started, main's two flags that pick the first state are cleared. Always 1. */
+int Sequence4_Release(Sequence4 *actor)
+{
+    if (actor->state != 0) {
+        EventQueue_ClearFlag1();
+    }
+    if (actor->flag_2de != 0) {
+        actor->flag_2de = 0;
+        Block020b220c_ClearFlag4b18();
+        Block020b220c_ClearFlag4b1c();
+    }
+    return 1;
+}
+CLEAN_AS(func_ov068_02272df0, Sequence4_Release)
+
+/* func_ov068_02272e28 (vtable slot 0x24): nothing drawn here; 1. */
+int Sequence4_Draw(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov068_02272e28, Sequence4_Draw)
+
+/* func_ov068_02272e2c (vtable slot 0x18): its state's update; out of state 0 the player's own
+ * flag 0x0b is switched on. Always 1. */
+int Sequence4_Update(Sequence4 *actor)
+{
+    Sequence4_UpdateState(actor);
+    if (actor->state != 0) {
+        PlayerActorOps_SwitchOwnFlag0b(1);
+    }
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e2cEv, Sequence4_Update)
+
+/* func_ov068_02272e50 (vtable slot 0x70, setting it up): the effect point starts at its
+ * position. With main's flag 4b18 a sequence starts at state 1; with flag 4b1c, at state 10,
+ * the current player's hand emptied first; both reset the marked place. Otherwise state 0.
+ * Always 1. */
+int Sequence4_Setup(Sequence4 *actor)
+{
+    u8 *record = PlayerRecords_Current();
+    actor->effect_point = actor->base.position;
+    if (Block020b220c_Flag4b18() != 0) {
+        actor->flag_2de = 1;
+        (void) SceneTables_EntryRecord();
+        ScenePlace_ResetMarked();
+        set_state(actor, 1);
+    } else if (Block020b220c_Flag4b1c() != 0) {
+        actor->flag_2de = 1;
+        if (record != NULL) {
+            u16 item = SEQUENCE4_NO_ITEM;
+            PlayerRecord_SetHeldItem(record, &item);
+        }
+        (void) SceneTables_EntryRecord();
+        ScenePlace_ResetMarked();
+        set_state(actor, 10);
+    } else {
+        set_state(actor, 0);
+    }
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_0227775019func_ov068_02272e50Ev, Sequence4_Setup)
+
+/* func_ov068_02272ee8 (vtable slot 0x44, the deleting destructor): its vtables set back,
+ * overlay 9's destructor, and the memory freed. */
+Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor)
+{
+    actor->base.vtable = data_ov068_02277750;
+    actor->base.receiver_vtable = data_ov068_02277814;
+    func_ov009_0226539c(actor);
+    Heap_FreeAux(actor);
+    return actor;
+}
+CLEAN_AS(func_ov068_02272ee8, Sequence4_DestroyAndFree)
+
+/* func_ov068_02272f14 (vtable slot 0x40): the destructor, without freeing. */
+Sequence4 *Sequence4_Destroy(Sequence4 *actor)
+{
+    actor->base.vtable = data_ov068_02277750;
+    actor->base.receiver_vtable = data_ov068_02277814;
+    func_ov009_0226539c(actor);
+    return actor;
+}
+CLEAN_AS(func_ov068_02272f14, Sequence4_Destroy)
+
+/* func_ov068_02272f38: the constructor: overlay 9's, then its vtables. */
+Sequence4 *Sequence4_Construct(Sequence4 *actor)
+{
+    func_ov009_0226552c(actor);
+    actor->base.vtable = data_ov068_02277750;
+    actor->base.receiver_vtable = data_ov068_02277814;
+    return actor;
+}
+CLEAN_AS(func_ov068_02272f38, Sequence4_Construct)
+
+/* func_ov068_02272f5c (the class's entry in the overlay's table of profiles): allocates and
+ * constructs one; nothing keeps the pointer here. */
+void Sequence4_New(void)
+{
+    Sequence4 *actor = Heap_AllocAuxZeroed(sizeof(Sequence4));
+    if (actor != NULL) {
+        Sequence4_Construct(actor);
+    }
+}
+CLEAN_AS(func_ov068_02272f5c, Sequence4_New)
+
+/* The actor around its receiver part, as the receiver vtable's thunks find it. */
+static Sequence4 *sequence4_from_receiver(void *receiver)
+{
+    return (Sequence4 *) (void *) ((u8 *) receiver - SEQUENCE4_RECEIVER_OFFSET);
+}
+
+/* _ZThn236_N18Obj_ov068_02277750D0Ev (receiver slot 0x04): Sequence4_DestroyAndFree. */
+Sequence4 *Sequence4_ReceiverDestroyAndFree(void *receiver)
+{
+    return Sequence4_DestroyAndFree(sequence4_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov068_02277750D0Ev, Sequence4_ReceiverDestroyAndFree)
+
+/* _ZThn236_N18Obj_ov068_0227775017vfunc_02066994_6cEv (receiver slot 0x6c):
+ * Sequence4_ReceiverSlot6c. */
+int Sequence4_ReceiverThunk6c(void *receiver)
+{
+    return Sequence4_ReceiverSlot6c(sequence4_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov068_0227775017vfunc_02066994_6cEv, Sequence4_ReceiverThunk6c)
+
+/* _ZThn236_N18Obj_ov068_0227775017vfunc_02066994_14Ev (receiver slot 0x14):
+ * Sequence4_OnMessageEnd. */
+void Sequence4_ReceiverOnMessageEnd(void *receiver)
+{
+    Sequence4_OnMessageEnd(sequence4_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov068_0227775017vfunc_02066994_14Ev, Sequence4_ReceiverOnMessageEnd)
+
+/* _ZThn236_N18Obj_ov068_02277750D1Ev (receiver slot 0x00): Sequence4_Destroy. */
+Sequence4 *Sequence4_ReceiverDestroy(void *receiver)
+{
+    return Sequence4_Destroy(sequence4_from_receiver(receiver));
+}
+CLEAN_AS(_ZThn236_N18Obj_ov068_02277750D1Ev, Sequence4_ReceiverDestroy)

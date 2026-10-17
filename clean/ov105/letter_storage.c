@@ -8,18 +8,23 @@
 
 #include "autoload_2/heap.h"
 #include "autoload_2/input.h"
+#include "autoload_2/process.h"
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
 #include "main/current_pockets.h"
 #include "main/display_layers.h"
 #include "main/display_shadow.h"
+#include "main/group_params.h"
 #include "main/label_sprite.h"
 #include "main/layer_load_task.h"
 #include "main/oam_buffer.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
 #include "main/sliding_window.h"
 #include "main/sound.h"
 #include "main/state_flags.h"
 #include "ov002/key_repeat.h"
+#include "ov004/member_pointer.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterStorage, flags) == 0x94, "flags");
 static_assert(offsetof(LetterStorage, wipe_x) == 0xa0 && offsetof(LetterStorage, held_x) == 0xac, "places");
@@ -78,9 +83,6 @@ extern int func_ov094_0229b9b4(void *letters, Popup *popup, int index);
 extern void func_ov094_0229b938(void *letters, int index);
 extern void func_ov094_0229b944(void *letters);
 extern void func_ov094_0229b950(void *letters, int index);
-
-/* The scene's own, outside these functions. */
-extern void func_ov105_0229ed78(LetterStorage *self);
 
 static PagedChoice *choice_of(LetterStorage *self)
 {
@@ -259,7 +261,7 @@ void LetterStorage_StartPageWipeIn(LetterStorage *self)
     MenuScene_SetWipeExtent(scene_of(self), 0xc0);
     DisplayLayer_Show(4);
     LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE);
-    func_ov105_0229ed78(self);
+    LetterStorage_ScrollPageLayer(self);
 }
 CLEAN_AS(func_ov105_0229c4cc, LetterStorage_StartPageWipeIn)
 
@@ -321,7 +323,7 @@ void LetterStorage_PressPanelButton9(LetterStorage *self)
 }
 CLEAN_AS(func_ov105_0229c668, LetterStorage_PressPanelButton9)
 
-/* func_ov105_0229c694: nothing (called by the setup, func_ov105_0229eb54). */
+/* func_ov105_0229c694: nothing (called by the setup, LetterStorage_Setup). */
 void LetterStorage_DoNothing(LetterStorage *self)
 {
     (void) self;
@@ -1008,9 +1010,6 @@ extern void func_ov094_022999c0(void);
 extern void func_ov094_022999cc(void);
 extern void func_ov094_022999d8(void);
 
-/* The scene's sub state runner (func_ov105_0229f25c, a member function). */
-extern void _ZN18Obj_ov105_0229fad019func_ov105_0229f25cEv(LetterStorage *self);
-
 static CellLayerSprite *cursor_cells(LetterStorage *self)
 {
     /* The cursor sprite's base is main's cell layer sprite (glide.h). */
@@ -1077,7 +1076,7 @@ int LetterStorage_PlaceIsMarked(LetterStorage *self, int place)
 }
 CLEAN_AS(func_ov105_0229d468, LetterStorage_PlaceIsMarked)
 
-/* func_ov105_0229d49c (by the setup, func_ov105_0229f150): the grid's slots 0 to 14 set by
+/* func_ov105_0229d49c (by LetterStorage_StartWipeIn): the grid's slots 0 to 14 set by
  * func_ov094_0229a888, and the carried letters of states 7 and 8 marked (its states flag 4). */
 void LetterStorage_MarkCarriedLetters(LetterStorage *self)
 {
@@ -1234,7 +1233,7 @@ int LetterStorage_IsCarriedPlace(LetterStorage *self, unsigned int place)
 }
 CLEAN_AS(func_ov105_0229d76c, LetterStorage_IsCarriedPlace)
 
-/* func_ov105_0229d77c (by func_ov105_0229eaa4 and func_ov105_0229eb08): the layer load task at
+/* func_ov105_0229d77c (by LetterStorage_BeginFrame and LetterStorage_Teardown): the layer load task at
  * 0x2c4 (a LayerTaskPair by its size) taken off the main loop's queue and reset. */
 void LetterStorage_EndLayerTask(LetterStorage *self)
 {
@@ -1386,7 +1385,7 @@ void LetterStorage_TouchPlace(LetterStorage *self, int place)
 }
 CLEAN_AS(func_ov105_0229d9e0, LetterStorage_TouchPlace)
 
-/* func_ov105_0229da7c (by func_ov105_0229ecd8): the panel's buttons 3 and 4 offered, to the
+/* func_ov105_0229da7c (by LetterStorage_PromptWipeIn): the panel's buttons 3 and 4 offered, to the
  * touch while state flag 2 is clear, else to the keys. */
 void LetterStorage_OfferPanelButtons(LetterStorage *self)
 {
@@ -1786,7 +1785,7 @@ void LetterStorage_WaitCursorSprite(LetterStorage *self)
         if (self->return_state == LETTER_STORAGE_SUB_BROWSE) {
             LetterStorage_SelectPlace(self, self->cursor);
         }
-        _ZN18Obj_ov105_0229fad019func_ov105_0229f25cEv(self);
+        LetterStorage_RunSubState(self);
     }
     LetterStorage_FollowCursorSprite(self);
 }
@@ -2054,3 +2053,828 @@ void LetterStorage_OpenTouchedChoice(LetterStorage *self)
     }
 }
 CLEAN_AS(func_ov105_0229e7bc, LetterStorage_OpenTouchedChoice)
+
+/* The scene's layers: 6 the scene, 4 the page (and the letter's paper), 3 the letter's text. */
+#define LETTER_STORAGE_SCENE_LAYER 6
+#define LETTER_STORAGE_PAGE_LAYER 4
+#define LETTER_STORAGE_TEXT_LAYER 3
+#define LETTER_STORAGE_WIPE_MARGIN 0x30
+
+/* What the parent is told when the scene ends without a letter to show. */
+#define LETTER_STORAGE_PARENT_CODE_END 0x44
+
+/* The frames a popup stays after the pen leaves a place. */
+#define LETTER_STORAGE_POPUP_FRAMES 0x3c
+
+/* The panel's button that opens the prompt, and the messages of its two layouts. */
+#define LETTER_STORAGE_PANEL_BUTTON_9 9
+#define LETTER_STORAGE_PANEL_MESSAGE 0x21
+#define LETTER_STORAGE_PROMPT_MESSAGE 0x22
+
+/* The files of the page layer: its palettes, its screen and its characters. */
+extern const char data_ov105_0229fb30[]; /* "menu/inventory/b_itm_post.bpl" */
+extern const char data_ov105_0229fb50[]; /* "menu/inventory/b_itm_bg_ltr0.bsc" */
+extern const char data_ov105_0229fb74[]; /* "menu/inventory/b_itm_post.bch" */
+
+/* The parent process (ov092's): told the scene ends (code 0x44, with `flag`), and of the close. */
+extern void func_ov092_02299324(Process *parent, int code, int flag);
+extern void func_ov092_0229929c(Process *parent);
+
+/* The objects of ov094's: setup, the frame's updates, the draws at an offset, the teardown and
+ * the constructors. */
+extern void func_ov094_0229af40(void *grid, int value);
+extern void func_ov094_0229bbd8(void *letters, int value);
+extern void func_ov094_0229a2b0(void *wallet, int value);
+extern void func_ov094_0229a29c(void *wallet, int value);
+extern int func_ov094_0229a098(void *wallet);
+extern void func_ov094_0229ad20(void *grid);
+extern void func_ov094_0229b2b0(void *letters);
+extern void func_ov094_0229a084(void *wallet);
+extern void func_ov094_0229af20(void *grid);
+extern void func_ov094_0229bbc0(void *letters);
+extern void func_ov094_0229a05c(void *wallet);
+extern void func_ov094_0229a850(void *grid, int x, int offset_y);
+extern void func_ov094_0229a804(void *grid, int x, int offset_y, int offset_x);
+extern void func_ov094_0229b738(void *letters, int x, int offset_y);
+extern void func_ov094_0229b700(void *letters, int offset_x, int offset_y);
+extern void func_ov094_02299d84(void *wallet, int offset_y);
+extern void func_ov094_0229a038(void *wallet);
+extern void func_ov094_0229af18(void *grid);
+extern void *func_ov094_0229b000(void *grid);
+extern void func_ov094_0229bc3c(void *letters);
+extern void *func_ov094_0229a2ec(void *wallet);
+
+/* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void func_02066694(void *letter);
+
+/* The tables of member functions (member_pointer.h): the guards, the tables and their constants
+ * (the symbol table also names the second half of each table, at 0x0229fc28 and 0x0229fcd8). */
+extern u32 data_ov105_0229fba0; /* the sub states' guard */
+extern u32 data_ov105_0229fba4; /* the states' guard */
+extern MemberPointer data_ov105_0229fba8[LETTER_STORAGE_STATES];
+extern MemberPointer data_ov105_0229fc58[LETTER_STORAGE_SUB_STATES];
+extern const MemberPointer data_ov105_0229f880, data_ov105_0229f888, data_ov105_0229f898, data_ov105_0229f8a0,
+    data_ov105_0229f8a8, data_ov105_0229f8b0, data_ov105_0229f8b8, data_ov105_0229f8c0, data_ov105_0229f8c8,
+    data_ov105_0229f8d0, data_ov105_0229f8d8, data_ov105_0229f8e0, data_ov105_0229f8e8, data_ov105_0229f8f0,
+    data_ov105_0229f8f8, data_ov105_0229f900, data_ov105_0229f908, data_ov105_0229f910, data_ov105_0229f918,
+    data_ov105_0229f920, data_ov105_0229f928, data_ov105_0229f930, data_ov105_0229f938, data_ov105_0229f940,
+    data_ov105_0229f948, data_ov105_0229f950, data_ov105_0229f958, data_ov105_0229f960, data_ov105_0229f968,
+    data_ov105_0229f970, data_ov105_0229f978, data_ov105_0229f980, data_ov105_0229f988, data_ov105_0229f990,
+    data_ov105_0229f9a0, data_ov105_0229f9a8, data_ov105_0229f9b0, data_ov105_0229f9b8, data_ov105_0229f9c0,
+    data_ov105_0229f9c8, data_ov105_0229f9d0, data_ov105_0229f9d8, data_ov105_0229f9e0, data_ov105_0229f9e8,
+    data_ov105_0229f9f0, data_ov105_0229f9f8, data_ov105_0229fa00, data_ov105_0229fa08, data_ov105_0229fa10,
+    data_ov105_0229fa18, data_ov105_0229fa20, data_ov105_0229fa28, data_ov105_0229fa30, data_ov105_0229fa38;
+
+/* The parent process. */
+static Process *parent_of(LetterStorage *self)
+{
+    return Process_GetParent((Process *) (void *) self);
+}
+
+/* The pen went down this frame. */
+static int pen_pressed(void)
+{
+    return data_021fbdd8 != 0 && data_021fbddc != 0;
+}
+
+/* Calls the draw (vtable slot 2) of a member object through its own vtable, as the game does. */
+static void draw_member(void *object)
+{
+    const u32 *vtable = (const u32 *) (uintptr_t) *(const u32 *) object;
+    ((void (*)(void *))(uintptr_t) vtable[2])(object);
+}
+
+/* The cursor sprite's update through its class (vtable slot 3), with its answer. */
+static int update_cursor_sprite_answer(Glider *sprite)
+{
+    int (*const *vtable)(Glider *) = (int (*const *)(Glider *)) sprite->vtable;
+    return vtable[3](sprite);
+}
+
+/* func_ov105_0229e804 (sub state 2): a touched place's choice is open. The pen let go hands
+ * the choice to the touch (sub state 6); the pen moving off a letter that may be dragged picks
+ * it up (LetterStorage_PickUpWithTouch), closing the choice and hiding the popup. */
+void LetterStorage_WatchChoiceTouch(LetterStorage *self)
+{
+    if (data_021fbdd8 == 0) {
+        MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_CHOICE_BY_TOUCH);
+        return;
+    }
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE) != 0 && LetterStorage_TouchMoved(self) != 0) {
+        LetterStorage_PickUpWithTouch(self, self->touch_place);
+        PagedChoice_RequestClose(choice_of(self), 0);
+        Popup_Hide(&self->popup, 1);
+    }
+}
+CLEAN_AS(func_ov105_0229e804, LetterStorage_WatchChoiceTouch)
+
+/* Obj_ov105_0229fad0::func_ov105_0229e860 (sub state 1): a place is touched. Let go, a letter
+ * that may be dragged opens its choice (sub state 3, run at once), else the touch idles again
+ * (sub state 0) with the popup kept 60 frames. Held, a draggable letter the pen moves off is
+ * picked up; else once the popup is up and `open_delay` has run out, its choice opens above
+ * the popup (sub state 2). Otherwise a queued popup is shown. */
+void LetterStorage_HoldTouchOnPlace(LetterStorage *self)
+{
+    if (data_021fbdd8 == 0) {
+        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE) != 0) {
+            MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_OPEN_TOUCHED);
+            LetterStorage_RunSubState(self);
+        } else {
+            MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_TOUCH_IDLE);
+            Popup_SetTimer(&self->popup, LETTER_STORAGE_POPUP_FRAMES);
+        }
+        return;
+    }
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DRAGGABLE) != 0) {
+        if (LetterStorage_TouchMoved(self) != 0) {
+            LetterStorage_PickUpWithTouch(self, self->touch_place);
+            return;
+        }
+        if (Popup_IsUp(&self->popup) != 0) {
+            if (self->open_delay != 0) {
+                self->open_delay--;
+            } else {
+                LetterStorage_OpenLetterMenu(self, self->touch_place, 1);
+                MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_TOUCH_CHOICE);
+            }
+            return;
+        }
+    }
+    Popup_ShowQueued(&self->popup);
+}
+CLEAN_AS(_ZN18Obj_ov105_0229fad019func_ov105_0229e860Ev, LetterStorage_HoldTouchOnPlace)
+
+/* func_ov105_0229e90c (sub state 0): the touch is in use and the cursor sprite hidden. A button
+ * puts the cursor sprite back at the cursor (sub state 7). The pen going down touches the letter
+ * place under it (looked for 16 pixels lower) when it holds a letter; else presses panel button
+ * 9 when on it; else, on the tab of the page not shown, shows that page. */
+void LetterStorage_IdleByTouch(LetterStorage *self)
+{
+    if (MenuScene_TakeButtons(scene_of(self), 1) != 0) {
+        LetterStorage_EndActionAtCursor(self);
+        return;
+    }
+    if (!pen_pressed()) {
+        return;
+    }
+    int x = data_021f6c58;
+    int y = data_021f6c54 + 0x10;
+    int place = LetterStorage_LetterPlaceAtTouch(self, x, y, 1);
+    if (place != LETTER_STORAGE_NO_PLACE) {
+        LetterStorage_TouchPlace(self, place);
+        return;
+    }
+    if (ButtonPanel_IsTouched(&self->panel, LETTER_STORAGE_PANEL_BUTTON_9) != 0) {
+        LetterStorage_PressPanelButton9(self);
+        return;
+    }
+    if (LetterStorage_PageTabAtTouch(self, x, y) != 0) {
+        LetterStorage_ShowPage(self);
+    }
+}
+CLEAN_AS(func_ov105_0229e90c, LetterStorage_IdleByTouch)
+
+/* func_ov105_0229e9a4: a step of the wallet display's setup (its answer unused), the panel's
+ * text colours loaded and its layout 5 with message 0x21. */
+void LetterStorage_PreparePanel(LetterStorage *self)
+{
+    func_ov094_0229a098(self->wallet);
+    ButtonPanel_LoadTextColors(&self->panel);
+    ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_PANEL_MESSAGE);
+}
+CLEAN_AS(func_ov105_0229e9a4, LetterStorage_PreparePanel)
+
+/* func_ov105_0229e9d0: the page layer's palette 4, its screen and its characters 0x1e2-0x227
+ * loaded from their files. */
+void LetterStorage_LoadPageLayer(LetterStorage *self)
+{
+    (void) self;
+    Heap *heap = data_021fbe94;
+    DisplayLayer_LoadPalettesFromFile(data_ov105_0229fb30, heap, LETTER_STORAGE_PAGE_LAYER, 4, 4, 4);
+    DisplayLayer_LoadScreenFromFile(data_ov105_0229fb50, heap, LETTER_STORAGE_PAGE_LAYER);
+    DisplayLayer_LoadCharsFromFile(data_ov105_0229fb74, heap, LETTER_STORAGE_PAGE_LAYER, 0x1e2, 0x1e2, 0x227);
+}
+CLEAN_AS(func_ov105_0229e9d0, LetterStorage_LoadPageLayer)
+
+/* func_ov105_0229ea24: the wallet's display started with 0 and prepared. */
+void LetterStorage_PrepareWallet(LetterStorage *self)
+{
+    func_ov094_0229a29c(self->wallet, 0);
+}
+CLEAN_AS(func_ov105_0229ea24, LetterStorage_PrepareWallet)
+
+/* func_ov105_0229ea38: the scene layer at priority 2 and the page layer at priority 1, both
+ * with their plain background settings. */
+void LetterStorage_SetUpLayers(void)
+{
+    DisplayLayer_SetPriority(LETTER_STORAGE_SCENE_LAYER, 2);
+    DisplayLayer_SetBgControl(LETTER_STORAGE_SCENE_LAYER, 0, 0, 0);
+    DisplayLayer_SetPriority(LETTER_STORAGE_PAGE_LAYER, 1);
+    DisplayLayer_SetBgControl(LETTER_STORAGE_PAGE_LAYER, 0, 0, 0);
+}
+CLEAN_AS(func_ov105_0229ea38, LetterStorage_SetUpLayers)
+
+/* func_ov105_0229ea6c: the end of a frame: the choice and the wallet's display updated, and the
+ * popup placed when its update asks for it. */
+void LetterStorage_EndFrame(LetterStorage *self)
+{
+    PagedChoice_Update(choice_of(self));
+    func_ov094_0229a05c(self->wallet);
+    if (Popup_Update(&self->popup) != 0) {
+        LetterStorage_PlacePopup(self);
+    }
+}
+CLEAN_AS(func_ov105_0229ea6c, LetterStorage_EndFrame)
+
+/* func_ov105_0229eaa4: the start of a frame: the layer task ended, the three objects of ov094's
+ * updated and the panel's texts closed. */
+void LetterStorage_BeginFrame(LetterStorage *self)
+{
+    LetterStorage_EndLayerTask(self);
+    func_ov094_0229a084(self->wallet);
+    func_ov094_0229af20(self->grid);
+    func_ov094_0229bbc0(self->letters);
+    ButtonPanel_CloseTexts(&self->panel);
+}
+CLEAN_AS(func_ov105_0229eaa4, LetterStorage_BeginFrame)
+
+/* func_ov105_0229eae4 */
+void LetterStorage_EndInteractiveFrame(LetterStorage *self)
+{
+    LetterStorage_EndFrame(self);
+}
+CLEAN_AS(func_ov105_0229eae4, LetterStorage_EndInteractiveFrame)
+
+/* func_ov105_0229eaec: the start of a frame, then the cursor sprite's update through its class
+ * (vtable slot 3), whose answer it returns. */
+int LetterStorage_BeginInteractiveFrame(LetterStorage *self)
+{
+    LetterStorage_BeginFrame(self);
+    return update_cursor_sprite_answer(&self->cursor_sprite);
+}
+CLEAN_AS(func_ov105_0229eaec, LetterStorage_BeginInteractiveFrame)
+
+/* func_ov105_0229eb08: the members' teardown before the scene closes. */
+void LetterStorage_Teardown(LetterStorage *self)
+{
+    LetterStorage_EndLayerTask(self);
+    func_ov094_0229a038(self->wallet);
+    func_ov094_0229af18(self->grid);
+    PagedChoice_Dismiss(choice_of(self));
+    LetterView_ReleaseBoxes(&self->view);
+    ButtonPanel_CloseTexts(&self->panel);
+}
+CLEAN_AS(func_ov105_0229eb08, LetterStorage_Teardown)
+
+/* func_ov105_0229eb54: the scene's setup: no flags, the three objects of ov094's set up, no
+ * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
+ * choice and the letter view on layer 3, page 0; the 50 stored letters emptied, then copied from
+ * the letters the current player keeps (when they have them); no open delay. */
+void LetterStorage_Setup(LetterStorage *self)
+{
+    self->flags = 0;
+    func_ov094_0229af40(self->grid, 2);
+    func_ov094_0229bbd8(self->letters, 1);
+    func_ov094_0229a2b0(self->wallet, 6);
+    self->popup_place = LETTER_STORAGE_NO_PLACE;
+    Glide_Stop(&self->glide);
+    self->held_kind = LETTER_STORAGE_HELD_NONE;
+    self->cursor = LETTER_STORAGE_CARRIED_FIRST;
+    PagedChoice_Init(choice_of(self), LETTER_STORAGE_TEXT_LAYER, 0, NULL);
+    LetterView_Init(&self->view, LETTER_STORAGE_TEXT_LAYER);
+    self->page = 0;
+    for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
+        Letter_Clear(&self->stored[i]);
+    }
+    MailLetter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
+    if (kept != NULL) {
+        /* Page 0's first letter: all 50 follow it. */
+        const Letter *src = (const Letter *) (void *) LetterStore_Page(kept, 0);
+        for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
+            Letter_Assign(&self->stored[i], &src[i]);
+        }
+    }
+    LetterStorage_DoNothing(self);
+    self->open_delay = 0;
+}
+CLEAN_AS(func_ov105_0229eb54, LetterStorage_Setup)
+
+/* func_ov105_0229ec3c (state 0x15): the scene wipes back in; when done, phase 2 and the action
+ * ends. The panel's offset follows the wipe. */
+void LetterStorage_PanelWipeIn(LetterStorage *self)
+{
+    if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        LetterStorage_EndAction(self);
+    }
+    self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
+}
+CLEAN_AS(func_ov105_0229ec3c, LetterStorage_PanelWipeIn)
+
+/* func_ov105_0229ec68 (state 0x14): a covered wipe in, the panel's layout 5 with message 0x21
+ * back, state 0x15. */
+void LetterStorage_RestorePanel(LetterStorage *self)
+{
+    MenuScene_StartWipeCovered(scene_of(self), 0, 0);
+    ButtonPanel_SetLayout5(&self->panel, LETTER_STORAGE_PANEL_MESSAGE);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PANEL_WIPE_IN);
+}
+CLEAN_AS(func_ov105_0229ec68, LetterStorage_RestorePanel)
+
+/* func_ov105_0229ec90 (state 0x13): the prompt wipes out; when done, the panel is restored. The
+ * panel's offset follows the wipe. */
+void LetterStorage_PromptCloseWipe(LetterStorage *self)
+{
+    if (MenuScene_StepWipe(scene_of(self), -1) != 0) {
+        LetterStorage_RestorePanel(self);
+    }
+    self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
+}
+CLEAN_AS(func_ov105_0229ec90, LetterStorage_PromptCloseWipe)
+
+/* func_ov105_0229ecb8 (state 0x12, panel button 4): the sub screen back to normal, a wipe out,
+ * state 0x13. */
+void LetterStorage_ClosePrompt(LetterStorage *self)
+{
+    LetterStorage_EndPanelDim(self);
+    MenuScene_StartWipe(scene_of(self), 0, 0);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PROMPT_CLOSE_WIPE);
+}
+CLEAN_AS(func_ov105_0229ecb8, LetterStorage_ClosePrompt)
+
+/* func_ov105_0229ecd8 (state 0x11): the prompt wipes in; when done, phase 2 and the panel's
+ * buttons 3 and 4 offered. The panel's offset follows the wipe. */
+void LetterStorage_PromptWipeIn(LetterStorage *self)
+{
+    if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        LetterStorage_OfferPanelButtons(self);
+    }
+    self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
+}
+CLEAN_AS(func_ov105_0229ecd8, LetterStorage_PromptWipeIn)
+
+/* func_ov105_0229ed04 (state 0x10): the sub screen darkened, a covered wipe in, the panel's
+ * layout 11 with message 0x22 (the prompt), state 0x11. */
+void LetterStorage_ShowPrompt(LetterStorage *self)
+{
+    LetterStorage_BeginPanelDim(self);
+    MenuScene_StartWipeCovered(scene_of(self), 0, 0);
+    ButtonPanel_SetLayout11(&self->panel, LETTER_STORAGE_PROMPT_MESSAGE);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PROMPT_WIPE_IN);
+}
+CLEAN_AS(func_ov105_0229ed04, LetterStorage_ShowPrompt)
+
+/* func_ov105_0229ed34 (state 0x0f): the panel wipes out; when done, the prompt is shown. The
+ * panel's offset follows the wipe. */
+void LetterStorage_PromptWipeOut(LetterStorage *self)
+{
+    if (MenuScene_StepWipe(scene_of(self), -1) != 0) {
+        LetterStorage_ShowPrompt(self);
+    }
+    self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
+}
+CLEAN_AS(func_ov105_0229ed34, LetterStorage_PromptWipeOut)
+
+/* func_ov105_0229ed5c (state 0x0e, panel button 9): a wipe out, state 0x0f. */
+void LetterStorage_StartPrompt(LetterStorage *self)
+{
+    MenuScene_StartWipe(scene_of(self), 0, 0);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PROMPT_WIPE_OUT);
+}
+CLEAN_AS(func_ov105_0229ed5c, LetterStorage_StartPrompt)
+
+/* func_ov105_0229ed78: the page layer scrolled by the wipe (16 pixels up), the wipe's x kept for
+ * the tabs and the page's letters. */
+void LetterStorage_ScrollPageLayer(LetterStorage *self)
+{
+    MenuScene_ScrollWipe(scene_of(self), LETTER_STORAGE_PAGE_LAYER, 0, -0x10);
+    self->wipe_x = MenuScene_WipeOffsetX(scene_of(self));
+}
+CLEAN_AS(func_ov105_0229ed78, LetterStorage_ScrollPageLayer)
+
+/* func_ov105_0229ed98: the scene layer scrolled by the wipe (16 pixels up), the wipe's y kept for
+ * the objects and the panel. */
+void LetterStorage_ScrollSceneLayer(LetterStorage *self)
+{
+    MenuScene_ScrollWipe(scene_of(self), LETTER_STORAGE_SCENE_LAYER, 0, -0x10);
+    self->objects_y = MenuScene_WipeOffsetY(scene_of(self));
+    self->wipe_y = MenuScene_WipeOffsetY(scene_of(self));
+}
+CLEAN_AS(func_ov105_0229ed98, LetterStorage_ScrollSceneLayer)
+
+/* func_ov105_0229edc4: the letter's two layers (text and paper) scrolled by the wipe. */
+void LetterStorage_ScrollLetterLayers(LetterStorage *self)
+{
+    MenuScene_ScrollWipe(scene_of(self), LETTER_STORAGE_TEXT_LAYER, 0, 0);
+    MenuScene_ScrollWipe(scene_of(self), LETTER_STORAGE_PAGE_LAYER, 0, 0);
+}
+CLEAN_AS(func_ov105_0229edc4, LetterStorage_ScrollLetterLayers)
+
+/* func_ov105_0229ede4 (state 0x0d): the new page wipes in, as after the scene's wipe in. */
+void LetterStorage_PageTurnIn(LetterStorage *self)
+{
+    LetterStorage_PageWipeIn(self);
+}
+CLEAN_AS(func_ov105_0229ede4, LetterStorage_PageTurnIn)
+
+/* func_ov105_0229edec (state 0x0c): the shown page wipes out; once done, the page layer is
+ * hidden each frame until `unk_2c1` more frames have passed, then the new page wipes in (state
+ * 0x0d). While the wipe runs the page layer follows it. */
+void LetterStorage_PageTurnOut(LetterStorage *self)
+{
+    if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_STORAGE_PAGE_LAYER);
+        if (self->unk_2c1 != 0) {
+            self->unk_2c1--;
+        } else {
+            LetterStorage_StartPageWipeIn(self);
+            MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PAGE_TURN_IN);
+        }
+    } else {
+        LetterStorage_ScrollPageLayer(self);
+    }
+}
+CLEAN_AS(func_ov105_0229edec, LetterStorage_PageTurnOut)
+
+/* func_ov105_0229ee30 (state 0x0b, LetterStorage_ShowPage): the shown page starts to wipe out
+ * (state 0x0c, with 4 frames of pause after it), run at once. */
+void LetterStorage_StartPageTurn(LetterStorage *self)
+{
+    LetterStorage_StartPageWipeOut(self);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PAGE_TURN_OUT);
+    self->unk_2c1 = 4;
+    LetterStorage_PageTurnOut(self);
+}
+CLEAN_AS(func_ov105_0229ee30, LetterStorage_StartPageTurn)
+
+/* func_ov105_0229ee58 (state 0x0a): the letter wipes out; when done, its layers hidden, the label
+ * button no longer drawn and the scene set up again (LetterStorage_StartSetup). Else its layers
+ * follow the wipe. */
+void LetterStorage_LetterWipeOut(LetterStorage *self)
+{
+    if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_STORAGE_TEXT_LAYER);
+        DisplayLayer_HideAndResetScroll(LETTER_STORAGE_PAGE_LAYER);
+        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_80);
+        LetterStorage_StartSetup(self);
+    } else {
+        LetterStorage_ScrollLetterLayers(self);
+    }
+}
+CLEAN_AS(func_ov105_0229ee58, LetterStorage_LetterWipeOut)
+
+/* func_ov105_0229ee90 (state 9, after the label button's press): the letter starts to wipe out
+ * on window 2 (state 0x0a). */
+void LetterStorage_StartLetterWipeOut(LetterStorage *self)
+{
+    MenuScene_StartWipeOnWindow2(scene_of(self), 3, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
+    LetterStorage_ScrollLetterLayers(self);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_LETTER_WIPE_OUT);
+}
+CLEAN_AS(func_ov105_0229ee90, LetterStorage_StartLetterWipeOut)
+
+/* func_ov105_0229eebc (state 8): the letter wipes in; when done, phase 2 and its label button by
+ * the touch (sub state 5) while state flag 2 is clear, else by the keys (sub state 9). Else its
+ * layers follow the wipe. */
+void LetterStorage_LetterWipeIn(LetterStorage *self)
+{
+    if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        if (StateFlags_IsClear2()) {
+            MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_LABEL_BY_TOUCH);
+        } else {
+            MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_LABEL_BY_KEYS);
+        }
+    } else {
+        LetterStorage_ScrollLetterLayers(self);
+    }
+}
+CLEAN_AS(func_ov105_0229eebc, LetterStorage_LetterWipeIn)
+
+/* func_ov105_0229eefc (state 7): the letter of the place whose choice was open is shown: a
+ * letter in state 2, 5 or 7 marks the stored letters changed; Letter_AdvanceReceived moves its
+ * state on, the letter view shows it (layers 3 and 4, priority 1), the two layers wipe in on
+ * window 2 (state 8), and the label button is shown with message 0x88 and drawn. */
+void LetterStorage_ShowLetter(LetterStorage *self)
+{
+    Letter *letter = LetterStorage_PlaceLetter(self, self->slot);
+    int state = Letter_State(letter);
+    if (state == 2 || state == 5 || state == 7) {
+        LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_CHANGED);
+    }
+    Letter_AdvanceReceived(letter);
+    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, LETTER_STORAGE_TEXT_LAYER,
+                    LETTER_STORAGE_PAGE_LAYER, 1);
+    MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 3, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
+    DisplayLayer_Show(LETTER_STORAGE_TEXT_LAYER);
+    DisplayLayer_Show(LETTER_STORAGE_PAGE_LAYER);
+    LetterStorage_ScrollLetterLayers(self);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_LETTER_WIPE_IN);
+    LabelButton_ShowLowerRight(&self->button, 0x88);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_80);
+}
+CLEAN_AS(func_ov105_0229eefc, LetterStorage_ShowLetter)
+
+/* func_ov105_0229ef90 (state 6): the scene wipes out; when done, its layer hidden and its
+ * objects no longer drawn: with FLAG_100 the letter is shown (state 7, run at once), else the
+ * scene is no longer drawn and the run phase begins. Else the scene layer follows the wipe and
+ * the objects' offset with it. */
+void LetterStorage_SceneWipeOut(LetterStorage *self)
+{
+    if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_STORAGE_SCENE_LAYER);
+        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_OBJECTS_DRAWN);
+        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_100) != 0) {
+            MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_SHOW_LETTER);
+            LetterStorage_ShowLetter(self);
+        } else {
+            LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_DRAWN);
+            MenuScene_SetPhase(scene_of(self), MENU_SCENE_RUN);
+        }
+    } else {
+        MenuScene_ScrollWipe(scene_of(self), LETTER_STORAGE_SCENE_LAYER, 0, -0x10);
+        self->objects_y = MenuScene_WipeOffsetY(scene_of(self));
+    }
+}
+CLEAN_AS(func_ov105_0229ef90, LetterStorage_SceneWipeOut)
+
+/* func_ov105_0229effc (state 5): the page wipes out; when done, the page layer hidden, the tabs
+ * no longer drawn, the scene starts to wipe out on window 2 (state 6, run at once) and the
+ * panel's layout cleared. Else the page layer follows the wipe, and the panel with it (its
+ * offset the wipe's x, negated). */
+void LetterStorage_PageWipeOut(LetterStorage *self)
+{
+    if (MenuScene_StepWipe(scene_of(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_STORAGE_PAGE_LAYER);
+        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE);
+        MenuScene_StartWipeOnWindow2(scene_of(self), 8, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
+        MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_SCENE_WIPE_OUT);
+        LetterStorage_SceneWipeOut(self);
+        ButtonPanel_ClearLayout(&self->panel);
+    } else {
+        LetterStorage_ScrollPageLayer(self);
+        self->wipe_y = (s32) (0u - (u32) MenuScene_WipeOffsetX(scene_of(self)));
+    }
+}
+CLEAN_AS(func_ov105_0229effc, LetterStorage_PageWipeOut)
+
+/* func_ov105_0229f064 (state 4, panel button 3 or action 1): the sub screen back to normal; the
+ * parent told the scene ends (code 0x44) unless a letter is to be shown (FLAG_100); the page
+ * starts to wipe out (state 5). */
+void LetterStorage_StartWipeOut(LetterStorage *self)
+{
+    LetterStorage_EndPanelDim(self);
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_100) == 0) {
+        func_ov092_02299324(parent_of(self), LETTER_STORAGE_PARENT_CODE_END, 1);
+    }
+    LetterStorage_StartPageWipeOut(self);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PAGE_WIPE_OUT);
+}
+CLEAN_AS(func_ov105_0229f064, LetterStorage_StartWipeOut)
+
+/* func_ov105_0229f0a0 (states 3 and 0x0d): the page wipes in; when done, phase 2, the action
+ * ends and the held letter is drawn again. With a letter held and the keys in use, the cursor
+ * sprite shows animation 4 from its end (unless it is on a tab) and is updated, and the letter
+ * follows it, moved by the keys (sub state 8). The page layer follows the wipe. */
+void LetterStorage_PageWipeIn(LetterStorage *self)
+{
+    if (MenuScene_StepWipeBack(scene_of(self), 0) != 0) {
+        MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_2);
+        LetterStorage_EndAction(self);
+        LetterStorage_ClearFlags(self, LETTER_STORAGE_FLAG_HELD_HIDDEN);
+        if (self->held_kind != LETTER_STORAGE_HELD_NONE && StateFlags_Test2()) {
+            if (LetterStorage_IsTabPlace(self, self->cursor) == 0) {
+                CellLayerSprite_SetAnimAtEnd(cursor_cells(self), 4);
+            }
+            update_cursor_sprite(&self->cursor_sprite);
+            LetterStorage_FollowCursorSprite(self);
+            MenuScene_SetSubState(scene_of(self), LETTER_STORAGE_SUB_HOLD);
+        }
+    }
+    LetterStorage_ScrollPageLayer(self);
+}
+CLEAN_AS(func_ov105_0229f0a0, LetterStorage_PageWipeIn)
+
+/* func_ov105_0229f11c (state 2): the scene wipes in, its layer following; when done, the page
+ * layer loaded and the page wipes in (state 3). */
+void LetterStorage_SceneWipeIn(LetterStorage *self)
+{
+    int done = MenuScene_StepWipeBack(scene_of(self), 0);
+    LetterStorage_ScrollSceneLayer(self);
+    if (done != 0) {
+        LetterStorage_LoadPageLayer(self);
+        LetterStorage_StartPageWipeIn(self);
+        MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_PAGE_WIPE_IN);
+    }
+}
+CLEAN_AS(func_ov105_0229f11c, LetterStorage_SceneWipeIn)
+
+/* func_ov105_0229f150 (state 1): the panel prepared, the grid's and the letters' objects
+ * prepared, the carried letters marked, the scene layer shown and wiping in on window 2 (state
+ * 2); the scene and its objects drawn. */
+void LetterStorage_StartWipeIn(LetterStorage *self)
+{
+    LetterStorage_PreparePanel(self);
+    func_ov094_0229ad20(self->grid);
+    func_ov094_0229b2b0(self->letters);
+    LetterStorage_MarkCarriedLetters(self);
+    MenuScene_StartWipeCoveredOnWindow2(scene_of(self), 8, 0, 0, LETTER_STORAGE_WIPE_MARGIN);
+    DisplayLayer_Show(LETTER_STORAGE_SCENE_LAYER);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_SCENE_WIPE_IN);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_DRAWN);
+    LetterStorage_SetFlags(self, LETTER_STORAGE_FLAG_OBJECTS_DRAWN);
+    LetterStorage_ScrollSceneLayer(self);
+}
+CLEAN_AS(func_ov105_0229f150, LetterStorage_StartWipeIn)
+
+/* func_ov105_0229f1b4 (state 0): the layers set up and the wallet's display prepared, then
+ * state 1. */
+void LetterStorage_StartSetup(LetterStorage *self)
+{
+    LetterStorage_SetUpLayers();
+    LetterStorage_PrepareWallet(self);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_START_WIPE_IN);
+}
+CLEAN_AS(func_ov105_0229f1b4, LetterStorage_StartSetup)
+
+/* func_ov105_0229f1d0 (vtable slot 0x5c, phase 4): main told whether the stored letters changed
+ * (GroupParams_SetC4C); when they did, they are copied back to the letters the current player
+ * keeps (when they have them). Then the scene asks to be deleted. Answers 1. */
+int LetterStorage_End(LetterStorage *self)
+{
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_CHANGED) == 0) {
+        GroupParams_SetC4C(0);
+    } else {
+        GroupParams_SetC4C(1);
+        MailLetter *kept = PlayerRecord_KeptLetters(PlayerRecords_Current());
+        if (kept != NULL) {
+            Letter *dst = (Letter *) (void *) LetterStore_Page(kept, 0);
+            for (int i = 0; i < LETTER_STORE_LETTERS; i++) {
+                Letter_Assign(&dst[i], &self->stored[i]);
+            }
+        }
+    }
+    Process_RequestDelete((Process *) (void *) self);
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f1d0, LetterStorage_End)
+
+/* func_ov105_0229f238 (vtable slot 0x58, phase 1): nothing. */
+int LetterStorage_Phase1Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f238, LetterStorage_Phase1Idle)
+
+/* func_ov105_0229f23c (vtable slot 0x54, phase 0): nothing. */
+int LetterStorage_Phase0Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f23c, LetterStorage_Phase0Idle)
+
+/* Obj_ov105_0229fad0::func_ov105_0229f240 (vtable slot 0x50, phase 2): a frame of the scene in
+ * use: its start, its sub state, its end. Answers 1. */
+int LetterStorage_RunInteractive(LetterStorage *self)
+{
+    LetterStorage_BeginInteractiveFrame(self);
+    LetterStorage_RunSubState(self);
+    LetterStorage_EndInteractiveFrame(self);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov105_0229fad019func_ov105_0229f240Ev, LetterStorage_RunInteractive)
+
+/* Obj_ov105_0229fad0::func_ov105_0229f25c: the sub state's function (LetterStorageSubState)
+ * through the table of member functions, filled once from its constants.
+ * REQUIRES: the sub state is below 0x20; the game reads past the table for others. */
+void LetterStorage_RunSubState(LetterStorage *self)
+{
+    static const MemberPointer *const sub_states[LETTER_STORAGE_SUB_STATES] = {
+        &data_ov105_0229f990, &data_ov105_0229f988, &data_ov105_0229f980, &data_ov105_0229f978, &data_ov105_0229f970,
+        &data_ov105_0229f968, &data_ov105_0229f8e0, &data_ov105_0229f880, &data_ov105_0229f950, &data_ov105_0229f948,
+        &data_ov105_0229f940, &data_ov105_0229f938, &data_ov105_0229f930, &data_ov105_0229f928, &data_ov105_0229f920,
+        &data_ov105_0229f8b8, &data_ov105_0229f910, &data_ov105_0229f908, &data_ov105_0229f900, &data_ov105_0229f8f8,
+        &data_ov105_0229f8f0, &data_ov105_0229f8e8, &data_ov105_0229f8d8, &data_ov105_0229f958, &data_ov105_0229f8d0,
+        &data_ov105_0229f8c8, &data_ov105_0229f8c0, &data_ov105_0229f888, &data_ov105_0229f8b0, &data_ov105_0229f8a8,
+        &data_ov105_0229f8a0, &data_ov105_0229f960,
+    };
+    MemberTable_InitOnce(&data_ov105_0229fba0, data_ov105_0229fc58, sub_states, LETTER_STORAGE_SUB_STATES);
+    MemberPointer_CallVoid(&data_ov105_0229fc58[self->base.sub_state], self);
+}
+CLEAN_AS(_ZN18Obj_ov105_0229fad019func_ov105_0229f25cEv, LetterStorage_RunSubState)
+
+/* func_ov105_0229f470 (vtable slot 0x4c, the run phase): a frame of the scene's states
+ * (LetterStorageState) between the frame's start and end, through the table of member
+ * functions (filled once from its constants, before the frame's start). Answers 1.
+ * REQUIRES: the state is below 0x16; the game reads past the table for others. */
+int LetterStorage_RunState(LetterStorage *self)
+{
+    static const MemberPointer *const states[LETTER_STORAGE_STATES] = {
+        &data_ov105_0229f9a0, &data_ov105_0229f898, &data_ov105_0229f9d8, &data_ov105_0229fa38, &data_ov105_0229fa30,
+        &data_ov105_0229fa28, &data_ov105_0229fa20, &data_ov105_0229fa18, &data_ov105_0229fa10, &data_ov105_0229fa08,
+        &data_ov105_0229fa00, &data_ov105_0229f9f8, &data_ov105_0229f9f0, &data_ov105_0229f9e8, &data_ov105_0229f9e0,
+        &data_ov105_0229f918, &data_ov105_0229f9d0, &data_ov105_0229f9c8, &data_ov105_0229f9c0, &data_ov105_0229f9b8,
+        &data_ov105_0229f9b0, &data_ov105_0229f9a8,
+    };
+    MemberTable_InitOnce(&data_ov105_0229fba4, data_ov105_0229fba8, states, LETTER_STORAGE_STATES);
+    LetterStorage_BeginFrame(self);
+    MemberPointer_CallVoid(&data_ov105_0229fba8[self->base.state], self);
+    LetterStorage_EndFrame(self);
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f470, LetterStorage_RunState)
+
+/* func_ov105_0229f604 (vtable slot 0x24): the scene's draw, while it is drawn: the popup
+ * (through its class, slot 2), the cursor sprite (with the keys in use), the held letter. With
+ * the objects drawn: the panel at the wipe's y; the grid at the objects' y, or while the tabs
+ * are drawn only when the page is off its rest (then also at the page's x); the letters and the
+ * wallet at the objects' y. With the tabs drawn: the page's letters at the page's x, and the
+ * tabs. With a letter shown: the label button at the wipe's y (through its class, slot 2).
+ * Answers 1. */
+int LetterStorage_Draw(LetterStorage *self)
+{
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_DRAWN) == 0) {
+        return 1;
+    }
+    draw_member(&self->popup);
+    if (StateFlags_Test2()) {
+        Glider_DrawWrapped(&self->cursor_sprite);
+    }
+    LetterStorage_DrawHeld(self);
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_OBJECTS_DRAWN) != 0) {
+        ButtonPanel_Draw(&self->panel, self->wipe_y);
+        int y = (int) ((u32) self->objects_y - 0x10);
+        if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE) == 0) {
+            func_ov094_0229a850(self->grid, 0, y);
+        } else if (self->wipe_x != 0) {
+            func_ov094_0229a804(self->grid, 0, y, (int) ((u32) self->wipe_x + 0xc0));
+        }
+        func_ov094_0229b738(self->letters, 0, y);
+        func_ov094_02299d84(self->wallet, y);
+    }
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_PAGE_WIPE) != 0) {
+        func_ov094_0229b700(self->letters, self->wipe_x, -0x10);
+        LetterStorage_DrawPageTabs(self);
+    }
+    if (LetterStorage_TestFlags(self, LETTER_STORAGE_FLAG_80) != 0) {
+        int y = MenuScene_WipeOffsetY(scene_of(self));
+        /* The button's base is main's labelled sprite (label_button.h). */
+        LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
+        draw_member(&self->button);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f604, LetterStorage_Draw)
+
+/* func_ov105_0229f724 (vtable slot 0x0c): the scene closes: the parent told and the members
+ * torn down. Answers 1. */
+int LetterStorage_Close(LetterStorage *self)
+{
+    func_ov092_0229929c(parent_of(self));
+    LetterStorage_Teardown(self);
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f724, LetterStorage_Close)
+
+/* func_ov105_0229f740 (vtable slot 0x00): the scene starts: its setup, state 0 and phase 0.
+ * Answers 1. */
+int LetterStorage_Start(LetterStorage *self)
+{
+    LetterStorage_Setup(self);
+    MenuScene_SetState(scene_of(self), LETTER_STORAGE_STATE_START_SETUP);
+    MenuScene_SetPhase(scene_of(self), MENU_SCENE_PHASE_0);
+    return 1;
+}
+CLEAN_AS(func_ov105_0229f740, LetterStorage_Start)
+
+/* func_ov105_0229f760 (named by the profile at 0x0229f998): a new scene from the menu scenes'
+ * heap (NULL when it has no room): the base, the scene's vtable and its members constructed in
+ * order, the 50 stored letters by __cxa_vec_ctor. */
+LetterStorage *LetterStorage_New(void)
+{
+    LetterStorage *self = MenuScene_Alloc(sizeof(LetterStorage));
+    if (self == NULL) {
+        return NULL;
+    }
+    MenuScene_Construct(&self->base);
+    self->base.vtable = data_ov105_0229fad0;
+    Letter_Construct(&self->held);
+    Letter_Construct(&self->swapped);
+    LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_2c4);
+    func_ov094_0229b000(self->grid);
+    func_ov094_0229bc3c(self->letters);
+    func_ov094_0229a2ec(self->wallet);
+    Popup_Construct(&self->popup);
+    Glide_Construct(&self->glide);
+    Glider0_Construct(&self->cursor_sprite);
+    PagedChoice_Construct(choice_of(self));
+    ErrorMessage_Construct(&self->error);
+    LetterView_Construct(&self->view);
+    LabelButton0_Construct(&self->button);
+    __cxa_vec_ctor(self->stored, LETTER_STORE_LETTERS, sizeof(Letter), func_02066694, func_02066688);
+    ButtonPanel_Construct(&self->panel);
+    return self;
+}
+CLEAN_AS(func_ov105_0229f760, LetterStorage_New)

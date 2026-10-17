@@ -281,3 +281,715 @@ void AquariumFish_SetPassingWays(AquariumFish *fish, AquariumFish **other)
     }
 }
 CLEAN_AS(func_ov004_022359c8, AquariumFish_SetPassingWays)
+
+/* How the fish swim: their modes, their meetings and the stylus on the glass. */
+
+#include <stdint.h>
+
+#include "main/actor.h"
+#include "main/model_object.h"
+#include "main/scene_query.h"
+#include "main/touch_pick_shapes.h"
+#include "member_pointer.h"
+
+static_assert(offsetof(AquariumFish, timer) == 0x158, "fish timer");
+static_assert(offsetof(AquariumFish, turnbacks) == 0x1eb, "fish turnbacks");
+static_assert(offsetof(AquariumFish, glass_turning) == 0x1fc, "fish glass turning");
+static_assert(offsetof(AquariumFish, glass_step) == 0x200, "fish glass step");
+static_assert(offsetof(AquariumFish, cruise_frames) == 0x202, "fish cruise frames");
+static_assert(offsetof(AquariumFish, pitch_steps) == 0x23c, "fish pitch steps");
+static_assert(offsetof(AquariumFish, flee_yaw) == 0x24c, "fish flee yaw");
+static_assert(offsetof(AquariumFish, levelling) == 0x24e, "fish levelling");
+static_assert(offsetof(AquariumFish, last_focus) == 0x252, "fish last focus");
+static_assert(offsetof(AquariumFish, unk_255) == 0x255, "fish class bytes");
+static_assert(offsetof(AquariumFishHookState, hook_timings) == 0x8c, "hook timings");
+
+/* The member functions of the modes; and those of the room shown (data_ov004_022593a0): a
+ * plain fish's set-up and frame in each. */
+extern const MemberPointer data_ov004_0225949c[7];
+extern const MemberPointer data_ov004_02259424[4];
+extern u8 data_ov004_022593a0;
+/* With data_021f6c34: the pen came down this frame. */
+extern u8 data_021f6c38;
+extern u8 data_021f6c34;
+
+/* `low` plus a random number below `high - low`. */
+extern int func_ov004_02239460(int low, int high);
+/* A random angle of `low` up to `high` degrees, either way. */
+extern s16 func_ov004_02239474(int high, int low);
+/* `point` moved `distance` along `yaw` in the ground plane. */
+extern int func_ov004_02239bb4(Vec3 *point, fx32 distance, int yaw);
+/* The fish's turn from the glass made a turn round (glass_turn AQUARIUM_GLASS_ROUND). */
+extern int func_ov004_022397ec(AquariumFish *fish);
+/* The fish's turn from the glass ahead of it. */
+extern void func_ov004_02239b80(AquariumFish *fish);
+/* Its climb or dive towards its top or bottom. */
+extern void func_ov004_02239768(AquariumFish *fish);
+extern void func_ov004_02239700(AquariumFish *fish);
+/* Its pitch as it climbs or dives, kept within `most`. */
+extern void func_ov004_022395d0(AquariumFish *fish, int most, int rate);
+extern void func_ov004_022396a0(AquariumFish *fish);
+extern void func_ov004_02239524(AquariumFish *fish, int most);
+
+/* The model hooks handed to the game. */
+extern void func_ov004_0223653c(AquariumFishHookState *state);
+extern void func_ov004_0223655c(AnimatedModelNodeState *state);
+extern void func_ov004_02236578(AnimatedModelNodeState *state);
+
+/* NitroSystem's node description command, and when its hook runs (timings A and B). */
+#define G3D_COMMAND_NODE_DESC 6
+#define G3D_TIMING_BEFORE 1
+#define G3D_TIMING_AFTER 2
+
+#define QUARTER_TURN 0x4000
+#define HALF_TURN 0x8000
+
+/* The kinds with a way of their own in the plain fish's frames. */
+#define KIND_FISH_29 29
+#define KIND_FISH_41 41
+#define KIND_FISH_43 43
+#define KIND_FISH_45 45
+#define KIND_FISH_46 46
+#define KIND_FISH_55 55
+
+/* What a tank's glass is to the stylus (museum_aquarium.c). */
+#define GLASS_KIND 0x13
+
+/* How long a fish keeps paying attention to the same one before it is startled away from it:
+ * when it is no wider than the other, and else. */
+#define FOCUS_STARTLE_FRAMES 125
+#define FOCUS_STARTLE_FRAMES_WIDER 145
+
+/* The sizes that flee a random way rather than straight from what startled them. */
+static int AquariumFish_is_mid_size(u8 size)
+{
+    return size == 4 || size == 5;
+}
+
+/* The fish's position, by address (the fish may be missing, as the game's code allows). */
+static const Vec3 *AquariumFish_position_of(AquariumFish *fish)
+{
+    return (const Vec3 *) ((uintptr_t) fish + offsetof(AquariumFish, position));
+}
+
+static int AquariumFish_abs(int value)
+{
+    return value < 0 ? -value : value;
+}
+
+static int AquariumFish_mul(int a, int b)
+{
+    return (int) ((u32) a * (u32) b);
+}
+
+/* The member function of the fish's mode. */
+static void AquariumFish_run_mode(AquariumFish *fish)
+{
+    MemberPointer_CallVoid(&data_ov004_0225949c[fish->mode], fish);
+}
+
+/* A fish's way up or down when it sets off: down from its top (level), up from its bottom
+ * (swim_228), else either at random; not while it pays attention to another. */
+static void AquariumFish_choose_vertical(AquariumFish *fish)
+{
+    if (fish->focus != fish->index) {
+        return;
+    }
+    if (fish->position.y >= fish->level) {
+        fish->vertical = -1;
+    } else if (fish->position.y <= fish->swim_228) {
+        fish->vertical = 1;
+    } else {
+        fish->vertical = func_ov004_02239460(0, 2) > 0 ? 1 : -1;
+    }
+}
+
+/* func_ov004_02235a18: how the fish and the other it met swim from each other
+ * (AQUARIUM_MEET_*). Each heading is taken from the line at right angles to the line between
+ * them: the pair of flags says on which sides of that line the two headings lie, the second
+ * flag of the pair when both are turned to the same side of the line between them. */
+int AquariumFish_MeetingWay(AquariumFish *fish, AquariumFish **other)
+{
+    AquariumFish *them = *other;
+    int their_yaw = them->yaw;
+    s16 across = (s16) (Vec_YawTo(&fish->position, &them->position) - QUARTER_TURN);
+    int mine = (s16) (fish->yaw - across);
+    int theirs = (s16) (their_yaw - across);
+    int first, second;
+    if (mine * theirs < 0) {
+        first = AQUARIUM_MEET_FACING;
+        second = AQUARIUM_MEET_FACING_SAME;
+    } else if (mine < 0) {
+        first = AQUARIUM_MEET_CHASED;
+        second = AQUARIUM_MEET_CHASED_SAME;
+    } else {
+        first = AQUARIUM_MEET_CHASING;
+        second = AQUARIUM_MEET_CHASING_SAME;
+    }
+    mine = AquariumFish_abs(mine);
+    theirs = AquariumFish_abs(theirs);
+    return (mine - QUARTER_TURN) * (theirs - QUARTER_TURN) < 0 ? first : second;
+}
+CLEAN_AS(func_ov004_02235a18, AquariumFish_MeetingWay)
+
+/* func_ov004_02235ac4: the fish forgets how it met anyone and heads on its own way; the one it
+ * paid attention to stops making way, and it pays attention to and makes way for nobody. */
+void AquariumFish_ForgetFocus(AquariumFish *fish)
+{
+    fish->meeting = 0;
+    fish->yielding = 0;
+    fish->away_yaw = fish->yaw;
+    u8 focus = fish->focus;
+    if (focus != fish->index) {
+        AquariumFish *other = data_ov004_022594d4[focus];
+        if (other != NULL) {
+            other->yielding = 0;
+        }
+        fish->focus = (u8) fish->index;
+        fish->yield_to = (u8) fish->index;
+    }
+}
+CLEAN_AS(func_ov004_02235ac4, AquariumFish_ForgetFocus)
+
+/* The fish and the other head the same way along z: when this fish is `behind` it heads back
+ * from the other's way; else the other, unless it already makes way, makes way for this fish,
+ * heading back from it. Then they take their ways up and down to pass. */
+static void AquariumFish_give_way_along(AquariumFish *fish, AquariumFish **slot, int behind)
+{
+    AquariumFish *other = *slot;
+    if (behind) {
+        fish->away_yaw = (s16) (other->yaw + HALF_TURN);
+    } else if (!other->yielding) {
+        other->yielding = 1;
+        (*slot)->yield_to = (u8) fish->index;
+        (*slot)->away_yaw = (s16) (fish->yaw + HALF_TURN);
+    }
+    AquariumFish_SetPassingWays(fish, slot);
+}
+
+/* func_ov004_02235b28: the fish passes the one it pays attention to (when there is one). When
+ * both head towards -z (yaw a quarter turn or more either way), this fish is behind when its z
+ * is larger; when both head towards +z, when its z is smaller (AquariumFish_give_way_along).
+ * Otherwise it heads at right angles to the line from the other, on the side it faces. */
+void AquariumFish_GiveWay(AquariumFish *fish)
+{
+    AquariumFish **slot = &data_ov004_022594d4[fish->focus];
+    AquariumFish *other = *slot;
+    if (other == NULL) {
+        return;
+    }
+    int own = AquariumFish_abs(fish->yaw);
+    int theirs = AquariumFish_abs(other->yaw);
+    if (own >= QUARTER_TURN && theirs >= QUARTER_TURN) {
+        AquariumFish_give_way_along(fish, slot, fish->position.z > other->position.z);
+    } else if (own <= QUARTER_TURN && theirs <= QUARTER_TURN) {
+        AquariumFish_give_way_along(fish, slot, fish->position.z < other->position.z);
+    } else {
+        s16 from = Vec_YawTo(&other->position, &fish->position);
+        if ((s16) (from - fish->yaw) < 0) {
+            fish->away_yaw = (s16) (from - QUARTER_TURN);
+        } else {
+            fish->away_yaw = (s16) (from + QUARTER_TURN);
+        }
+    }
+}
+CLEAN_AS(func_ov004_02235b28, AquariumFish_GiveWay)
+
+/* The fish is startled away from the one it pays attention to, and counts afresh. */
+static void AquariumFish_startle_from(AquariumFish *fish, AquariumFish *other)
+{
+    AquariumFish_Startle(fish, &other->position);
+    fish->focus_frames = 0;
+}
+
+/* func_ov004_02235c54 (each frame but in mode 1): a fish that touched nothing forgets whom it
+ * paid attention to; one that met no fish forgets too, and goes up. Otherwise it counts the
+ * frames it keeps paying attention to the same one, and after FOCUS_STARTLE_FRAMES is startled
+ * away from it when the other's body is as wide or wider, else after
+ * FOCUS_STARTLE_FRAMES_WIDER. A fish resting (in the sea room also slowing down) sets off
+ * again; one chased by a fish no smaller cruises; one facing the other gives way unless it
+ * already makes way; one that touched a rock goes up, making way. Then it turns towards its
+ * way away. */
+void AquariumFish_ReactToFocus(AquariumFish *fish)
+{
+    if (fish->mode == AQUARIUM_MODE_FLEE) {
+        return;
+    }
+    if (!fish->body.base.body.touched) {
+        AquariumFish_ForgetFocus(fish);
+        return;
+    }
+    if (!fish->meetings) {
+        AquariumFish_ForgetFocus(fish);
+        fish->vertical = 1;
+        return;
+    }
+    if (fish->last_focus != fish->focus) {
+        fish->last_focus = fish->focus;
+        fish->focus_frames = 0;
+    } else {
+        fish->focus_frames++;
+        u8 frames = fish->focus_frames;
+        if (frames >= FOCUS_STARTLE_FRAMES) {
+            AquariumFish *other = data_ov004_022594d4[fish->focus];
+            if (other == NULL) {
+                return;
+            }
+            if (data_ov004_02247924[fish->index].body_radius <= data_ov004_02247924[other->index].body_radius) {
+                AquariumFish_startle_from(fish, other);
+                return;
+            }
+            if (frames >= FOCUS_STARTLE_FRAMES_WIDER) {
+                AquariumFish_startle_from(fish, other);
+                return;
+            }
+        }
+    }
+    if (fish->mode == AQUARIUM_MODE_REST || (fish->mode == AQUARIUM_MODE_SLOW_DOWN && fish->index >= AQUARIUM_RIVER_FISH)) {
+        fish->mode = AQUARIUM_MODE_NEW_COURSE;
+    }
+    if (fish->meeting & (AQUARIUM_MEET_CHASED | AQUARIUM_MEET_CHASED_SAME)) {
+        if (fish->mode != AQUARIUM_MODE_CRUISE &&
+            data_ov004_02247924[fish->index].size <= data_ov004_02247924[fish->focus].size) {
+            fish->mode = AQUARIUM_MODE_CRUISE;
+            fish->timer = 0;
+        }
+    }
+    if (fish->meeting >= AQUARIUM_MEET_FACING) {
+        if (!fish->yielding) {
+            AquariumFish_GiveWay(fish);
+        }
+    } else if (fish->meeting & AQUARIUM_MEET_ROCK) {
+        fish->vertical = 1;
+        fish->yielding = 1;
+    }
+    Approach_S16(&fish->yaw, fish->away_yaw, 0x38e);
+}
+CLEAN_AS(func_ov004_02235c54, AquariumFish_ReactToFocus)
+
+/* func_ov004_02235ddc: a fish at either end of the sea room's tank (by whole units of x: 0 or
+ * less and 34 or more for the fish of area 1, -2 and 36 for the others) faces back in along x
+ * and goes to its height.
+ * QUIRK: the height is the table's depth without the 1.0 below that placing a fish takes off
+ * (museum_aquarium.c). */
+void AquariumFish_TurnAtTankEnds(AquariumFish *fish)
+{
+    int low, high;
+    if (fish->area == 1) {
+        low = 0;
+        high = 34;
+    } else {
+        low = -2;
+        high = 36;
+    }
+    int x = fish->position.x >> 12;
+    if (x <= low) {
+        fish->yaw = QUARTER_TURN;
+        fish->position.y = (fx32) data_ov004_02247924[fish->index].depth << 6;
+    } else if (x >= high) {
+        fish->yaw = -QUARTER_TURN;
+        fish->position.y = (fx32) data_ov004_02247924[fish->index].depth << 6;
+    }
+}
+CLEAN_AS(func_ov004_02235ddc, AquariumFish_TurnAtTankEnds)
+
+/* func_ov004_02235e58: the fish's yaw kept 60 to 120 degrees (0x2aac to 0x5554) from yaw 0
+ * either way, so it swims across the room's length. */
+void AquariumFish_KeepYawAcross(AquariumFish *fish)
+{
+    s16 yaw = fish->yaw;
+    int size = AquariumFish_abs(yaw);
+    if (size > 0x5554) {
+        fish->yaw = yaw >= 0 ? 0x5554 : -0x5554;
+    } else if (size < 0x2aac) {
+        fish->yaw = yaw >= 0 ? 0x2aac : -0x2aac;
+    }
+}
+CLEAN_AS(func_ov004_02235e58, AquariumFish_KeepYawAcross)
+
+/* func_ov004_02235eac (mode 5 of the table data_ov004_0225946c): the fish slows down by its
+ * deceleration (swim_218) a frame, moving on at its speed; at 0xf6 or less it keeps that speed
+ * and sets off again, its timer at 3. */
+void AquariumFish_ModeEaseOff(AquariumFish *fish)
+{
+    fish->speed = (fx32) ((u32) fish->top_speed - (u32) AquariumFish_mul(fish->swim_218, fish->timer));
+    func_ov004_02239bb4(&fish->position, fish->speed, fish->yaw);
+    if (fish->speed <= 0xf6) {
+        fish->speed = 0xf6;
+        fish->timer = 3;
+        fish->mode = AQUARIUM_MODE_NEW_COURSE;
+    }
+}
+CLEAN_AS(func_ov004_02235eac, AquariumFish_ModeEaseOff)
+
+/* func_ov004_02235f10 (mode 2 of the table data_ov004_0225946c): the fish sets off, without
+ * stopping: a random time to cruise (swim_204[1] up to swim_204[0]), none to rest, level;
+ * after meeting others it turns 15 to 30 degrees either way; it takes its way up or down and
+ * speeds up. */
+void AquariumFish_ModeSetOff(AquariumFish *fish)
+{
+    fish->timer = 1;
+    fish->cruise_frames = (u8) func_ov004_02239460(fish->swim_204[1], fish->swim_204[0]);
+    fish->rest_frames = 0;
+    fish->pitch_steps = 0;
+    if (fish->meetings != 0) {
+        fish->target_yaw = (s16) (fish->target_yaw + func_ov004_02239474(30, 15));
+    }
+    AquariumFish_choose_vertical(fish);
+    fish->mode = AQUARIUM_MODE_SPEED_UP;
+}
+CLEAN_AS(func_ov004_02235f10, AquariumFish_ModeSetOff)
+
+/* func_ov004_02235fe0 (mode 0): nothing to do. */
+void AquariumFish_ModeNone(void) {}
+CLEAN_AS(func_ov004_02235fe0, AquariumFish_ModeNone)
+
+/* func_ov004_02235fe4 (mode 1): for 40 frames the fish flees at its top speed, turning to its
+ * way to flee (the sizes 4 and 5 by a third of what is left, at most 0xaaa a frame; the others
+ * by half); then it is no longer startled and sets off again. */
+void AquariumFish_ModeFlee(AquariumFish *fish)
+{
+    if (fish->timer <= 40) {
+        if (AquariumFish_is_mid_size(fish->size)) {
+            Approach_DivideS16(&fish->yaw, fish->flee_yaw, 3, 0xaaa);
+        } else {
+            Approach_DivideS16(&fish->yaw, fish->flee_yaw, 2, QUARTER_TURN);
+        }
+        fish->speed = fish->top_speed;
+        func_ov004_02239bb4(&fish->position, fish->speed, fish->yaw);
+    } else {
+        fish->startled = 0;
+        fish->mode = AQUARIUM_MODE_NEW_COURSE;
+    }
+}
+CLEAN_AS(func_ov004_02235fe4, AquariumFish_ModeFlee)
+
+/* func_ov004_02236078 (mode 6): the fish rests (speed 0) for its rest time, then sets off
+ * again. The fish. */
+AquariumFish *AquariumFish_ModeRest(AquariumFish *fish)
+{
+    fish->speed = 0;
+    if (fish->timer >= fish->rest_frames) {
+        fish->timer = 0;
+        fish->mode = AQUARIUM_MODE_NEW_COURSE;
+    }
+    return fish;
+}
+CLEAN_AS(func_ov004_02236078, AquariumFish_ModeRest)
+
+/* func_ov004_022360ac (mode 5): the fish slows down by its deceleration (swim_218) a frame,
+ * moving on at its speed; once stopped it rests. */
+void AquariumFish_ModeSlowDown(AquariumFish *fish)
+{
+    fish->speed = (fx32) ((u32) fish->top_speed - (u32) AquariumFish_mul(fish->swim_218, fish->timer));
+    func_ov004_02239bb4(&fish->position, fish->speed, fish->yaw);
+    if (fish->speed <= 0) {
+        fish->speed = 0;
+        fish->timer = 0;
+        fish->mode = AQUARIUM_MODE_REST;
+    }
+}
+CLEAN_AS(func_ov004_022360ac, AquariumFish_ModeSlowDown)
+
+/* func_ov004_02236110 (mode 4): the fish moves on at its top speed for its cruising time, then
+ * slows down. */
+void AquariumFish_ModeCruise(AquariumFish *fish)
+{
+    fish->speed = fish->top_speed;
+    func_ov004_02239bb4(&fish->position, fish->speed, fish->yaw);
+    if (fish->timer >= fish->cruise_frames) {
+        fish->timer = 0;
+        fish->mode = AQUARIUM_MODE_SLOW_DOWN;
+    }
+}
+CLEAN_AS(func_ov004_02236110, AquariumFish_ModeCruise)
+
+/* func_ov004_02236168 (mode 3): the fish speeds up by its acceleration (swim_214) a frame,
+ * moving on at its speed; at its top speed it cruises. */
+void AquariumFish_ModeSpeedUp(AquariumFish *fish)
+{
+    fish->speed = AquariumFish_mul(fish->swim_214, fish->timer);
+    func_ov004_02239bb4(&fish->position, fish->speed, fish->yaw);
+    if (fish->speed >= fish->top_speed) {
+        fish->timer = 0;
+        fish->mode = AQUARIUM_MODE_CRUISE;
+    }
+}
+CLEAN_AS(func_ov004_02236168, AquariumFish_ModeSpeedUp)
+
+/* func_ov004_022361c4 (mode 2): the fish stops and sets off on a new course: 150 to 180 degrees
+ * round either way when the glass is to turn it round (counting the times in a row), else up
+ * to swim_230 degrees either way; random times to cruise (swim_204[1] up to swim_204[0]) and
+ * to rest (swim_204[3] up to swim_204[2]); it takes its way up or down, tilts afresh, speeds
+ * up and turns to its course. */
+void AquariumFish_ModeNewCourse(AquariumFish *fish)
+{
+    fish->speed = 0;
+    if (fish->glass_turn == AQUARIUM_GLASS_ROUND) {
+        fish->target_yaw = (s16) (fish->target_yaw + func_ov004_02239474(180, 150));
+        fish->turnbacks++;
+    } else {
+        fish->target_yaw = (s16) (fish->target_yaw + func_ov004_02239474(fish->swim_230, 0));
+        fish->turnbacks = 0;
+    }
+    fish->timer = 0;
+    fish->cruise_frames = (u8) func_ov004_02239460(fish->swim_204[1], fish->swim_204[0]);
+    fish->rest_frames = (u8) func_ov004_02239460(fish->swim_204[3], fish->swim_204[2]);
+    fish->pitch_steps = 0;
+    AquariumFish_choose_vertical(fish);
+    fish->levelling = 0;
+    fish->mode = AQUARIUM_MODE_SPEED_UP;
+    fish->turning = 1;
+}
+CLEAN_AS(func_ov004_022361c4, AquariumFish_ModeNewCourse)
+
+/* func_ov004_022362ec (slot 1 of a plain fish's class): its frame in the room shown. */
+void AquariumFish_SwimByRoom(AquariumFish *fish)
+{
+    MemberPointer_CallVoid(&data_ov004_02259424[data_ov004_022593a0 * 2 + 1], fish);
+}
+CLEAN_AS(func_ov004_022362ec, AquariumFish_SwimByRoom)
+
+/* func_ov004_02236324 (slot 0 of a plain fish's class): its set-up in the room shown. */
+void AquariumFish_SetUpByRoom(AquariumFish *fish)
+{
+    MemberPointer_CallVoid(&data_ov004_02259424[data_ov004_022593a0 * 2], fish);
+}
+CLEAN_AS(func_ov004_02236324, AquariumFish_SetUpByRoom)
+
+/* func_ov004_0223635c: unless already startled, the fish flees from `from`, level, its timer at
+ * 0. The sizes 4 and 5 flee a random way 80 to 100 degrees from yaw 0 on the side they face
+ * (straight from `from` once they have paid attention to the same fish FOCUS_STARTLE_FRAMES).
+ * A fish turning from the glass has its turn made a turn round. */
+void AquariumFish_Startle(AquariumFish *fish, const Vec3 *from)
+{
+    if (fish->startled) {
+        return;
+    }
+    fish->pitch = 0;
+    fish->mode = AQUARIUM_MODE_FLEE;
+    fish->timer = 0;
+    if (AquariumFish_is_mid_size(fish->size)) {
+        if (fish->focus_frames >= FOCUS_STARTLE_FRAMES) {
+            fish->flee_yaw = Vec_YawTo(from, &fish->position);
+        } else if (fish->yaw >= 0) {
+            fish->flee_yaw = (s16) func_ov004_02239460(0x38e4, 0x471c);
+        } else {
+            fish->flee_yaw = (s16) -func_ov004_02239460(0x38e4, 0x471c);
+        }
+    } else {
+        fish->flee_yaw = Vec_YawTo(from, &fish->position);
+    }
+    if (fish->glass_turn == AQUARIUM_GLASS_TURN) {
+        func_ov004_022397ec(fish);
+    }
+}
+CLEAN_AS(func_ov004_0223635c, AquariumFish_Startle)
+
+/* func_ov004_02236418: a startled fish stays so while it flees; otherwise a tap on the glass
+ * near it startles it. Whether it was startled now. */
+int AquariumFish_CheckTapped(AquariumFish *fish)
+{
+    if (fish->startled) {
+        if (fish->mode != AQUARIUM_MODE_FLEE) {
+            fish->startled = 0;
+        }
+        return 0;
+    }
+    Vec3 tap;
+    if (AquariumFish_FindTap(fish, &tap)) {
+        AquariumFish_Startle(fish, &tap);
+        fish->startled = 1;
+        return 1;
+    }
+    return 0;
+}
+CLEAN_AS(func_ov004_02236418, AquariumFish_CheckTapped)
+
+/* func_ov004_02236464: whether the stylus touches the glass of either tank near the fish (not
+ * on the frame the pen came down): 0x9000 or less in the ground plane and 3.0 of its height;
+ * the point touched in `tap` then.
+ * QUIRK: the squared distance is compared with 0x9000 (about 9.6 units squared, 3.1 units). */
+int AquariumFish_FindTap(AquariumFish *fish, Vec3 *tap)
+{
+    Vec3 point;
+    u32 kind;
+    u8 tank;
+    if (!TouchPick_GetPick((TouchPick *) (uintptr_t) SceneQuery_FieldObject(), &point, &kind, &tank)) {
+        return 0;
+    }
+    int pen_came_down = data_021f6c38 != 0 && data_021f6c34 != 0;
+    if (pen_came_down || kind != GLASS_KIND || tank > 1) {
+        return 0;
+    }
+    if (Vec_DistanceSquaredXZ(&fish->position, &point) > 0x9000) {
+        return 0;
+    }
+    s32 height = (s32) ((u32) fish->position.y - (u32) point.y);
+    if (height < 0) {
+        height = (s32) (0u - (u32) height);
+    }
+    /* QUIRK: a difference of -2^31 counts as near (its size wraps) */
+    if (height > 0x3000) {
+        return 0;
+    }
+    *tap = point;
+    return 1;
+}
+CLEAN_AS(func_ov004_02236464, AquariumFish_FindTap)
+
+/* func_ov004_0223653c (run before the model of a fish of three animations is drawn): its node
+ * descriptions get the hook after them (the game's func_ov004_0223655c).
+ * QUIRK: the hook before them (func_ov004_02236578) is set first and replaced at once. */
+void AquariumFish_SetModelHooks(AquariumFishHookState *state)
+{
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_ov004_02236578;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_BEFORE;
+    state->hooks[G3D_COMMAND_NODE_DESC] = (u32) (uintptr_t) func_ov004_0223655c;
+    state->hook_timings[G3D_COMMAND_NODE_DESC] = G3D_TIMING_AFTER;
+}
+CLEAN_AS(func_ov004_0223653c, AquariumFish_SetModelHooks)
+
+/* The fish a model's hooks run for: the render object's user pointer (at 0x2c, set by
+ * ModelObject_SetInitHook). */
+static AquariumFish *AquariumFish_hooked(const AnimatedModelNodeState *state)
+{
+    AquariumFish *fish;
+    memcpy(&fish, (const u8 *) state->state.object + 0x2c, sizeof fish);
+    return fish;
+}
+
+/* func_ov004_0223655c: after a node's description, the fish's model's own hook. */
+void AquariumFish_NodeDescAfterHook(AnimatedModelNodeState *state)
+{
+    if (AquariumFish_hooked(state) != NULL) {
+        AnimatedModel_AfterNode(&AquariumFish_hooked(state)->model, state);
+    }
+}
+CLEAN_AS(func_ov004_0223655c, AquariumFish_NodeDescAfterHook)
+
+/* func_ov004_02236578: before a node's description, the fish's model's own hook. */
+void AquariumFish_NodeDescBeforeHook(AnimatedModelNodeState *state)
+{
+    if (AquariumFish_hooked(state) != NULL) {
+        AnimatedModel_BeforeNode(&AquariumFish_hooked(state)->model, state);
+    }
+}
+CLEAN_AS(func_ov004_02236578, AquariumFish_NodeDescBeforeHook)
+
+/* func_ov004_02236594 (a plain fish's frame in the river room): its mode runs; a fish of size 0
+ * paying attention to a new one is startled away from it (unless it flees already); it turns
+ * from the glass; unless resting or slowing down below 0x0cd, it climbs or dives with its
+ * pitch (kind 29 within 0xe38, the big kinds within 0x71c, size 0 its own way) and turns to
+ * its course; then its animation speed (at least 0.2), its timer, and the stylus. */
+void AquariumFish_SwimRiver(AquariumFish *fish)
+{
+    AquariumFish_run_mode(fish);
+    int kind = fish->index;
+    if (data_ov004_02247924[kind].size == 0) {
+        u8 focus = fish->focus;
+        if (fish->last_focus != focus && focus != kind) {
+            fish->last_focus = focus;
+            if (fish->mode != AQUARIUM_MODE_FLEE) {
+                AquariumFish_Startle(fish, AquariumFish_position_of(data_ov004_022594d4[fish->focus]));
+            }
+        }
+    }
+    func_ov004_02239b80(fish);
+    if (!(fish->mode == AQUARIUM_MODE_SLOW_DOWN && fish->speed < 205) && fish->mode != AQUARIUM_MODE_REST) {
+        func_ov004_02239768(fish);
+        kind = fish->index;
+        if (kind == KIND_FISH_29) {
+            func_ov004_022395d0(fish, 0xe38, 0x4b0);
+        } else {
+            u8 size = data_ov004_02247924[kind].size;
+            if (size == 0) {
+                func_ov004_022396a0(fish);
+            } else if (size >= BIG_SIZE) {
+                func_ov004_022395d0(fish, 0x71c, 0x384);
+            } else {
+                func_ov004_022395d0(fish, 0x1554, 0x384);
+            }
+        }
+        AquariumFish_Turn(fish);
+    }
+    AquariumFish_SetAnimSpeed(fish, 0x333);
+    fish->timer++;
+    AquariumFish_CheckTapped(fish);
+}
+CLEAN_AS(func_ov004_02236594, AquariumFish_SwimRiver)
+
+/* func_ov004_022366c8 (a plain fish's set-up in the river room): a fish of size 0 is its
+ * body's owner (so it meets others); it pays attention to nobody; its swimming values; the
+ * kinds of three animations get their model hooks. */
+void AquariumFish_SetUpRiver(AquariumFish *fish)
+{
+    if (data_ov004_02247924[fish->index].size == 0) {
+        fish->body.owner = fish;
+    }
+    fish->focus = (u8) fish->index;
+    AquariumFish_SetSwim(fish);
+    if (fish->unk_1c6 != 0) {
+        ModelObject_SetInitHook(&fish->model.object, (void *) (uintptr_t) func_ov004_0223653c, fish);
+    }
+}
+CLEAN_AS(func_ov004_022366c8, AquariumFish_SetUpRiver)
+
+/* func_ov004_0223671c (a plain fish's frame in the sea room): it turns from the glass, its mode
+ * runs; kinds 45 and 46 keep to z 0x13dc2 or less, the others turn back at the tank's ends and
+ * react to whom they pay attention to (kinds 41, 43 and 55 keeping their yaw across); unless
+ * setting off or resting it climbs or dives with its pitch (kinds 43 and 55 within 0x71c,
+ * others 0xe38) and turns to its course; then its animation speed (at least 0.2), the room's
+ * ends, its timer, and the stylus. */
+void AquariumFish_SwimSea(AquariumFish *fish)
+{
+    AquariumFish_TurnFromGlass(fish);
+    AquariumFish_run_mode(fish);
+    int kind = fish->index;
+    if (kind != KIND_FISH_46 && kind != KIND_FISH_45) {
+        if (kind == KIND_FISH_41 || kind == KIND_FISH_55 || kind == KIND_FISH_43) {
+            AquariumFish_KeepYawAcross(fish);
+        }
+        AquariumFish_TurnAtTankEnds(fish);
+        AquariumFish_ReactToFocus(fish);
+    } else if (fish->position.z > 0x13dc2) {
+        fish->position.z = 0x13dc2;
+    }
+    if (fish->mode != AQUARIUM_MODE_NEW_COURSE && fish->mode != AQUARIUM_MODE_REST) {
+        func_ov004_02239700(fish);
+        if (fish->index == KIND_FISH_43 || fish->index == KIND_FISH_55) {
+            func_ov004_02239524(fish, 0x71c);
+        } else {
+            func_ov004_02239524(fish, 0xe38);
+        }
+        AquariumFish_Turn(fish);
+    }
+    AquariumFish_SetAnimSpeed(fish, 0x333);
+    AquariumFish_KeepOffRoomEnds(fish);
+    fish->timer++;
+    AquariumFish_CheckTapped(fish);
+}
+CLEAN_AS(func_ov004_0223671c, AquariumFish_SwimSea)
+
+/* func_ov004_02236808 (a plain fish's set-up in the sea room): it is its body's owner; kinds 45
+ * and 46 keep to area 0, kind 55 to area 2, the others to area 1; it pays attention to and
+ * makes way for nobody; its swimming values; the kinds of three animations get their model
+ * hooks. */
+void AquariumFish_SetUpSea(AquariumFish *fish)
+{
+    fish->body.owner = fish;
+    if (fish->index == KIND_FISH_45 || fish->index == KIND_FISH_46) {
+        fish->area = 0;
+    } else if (fish->index == KIND_FISH_55) {
+        fish->area = 2;
+    } else {
+        fish->area = 1;
+    }
+    fish->focus = (u8) fish->index;
+    fish->yield_to = (u8) fish->index;
+    AquariumFish_SetSwim(fish);
+    if (fish->unk_1c6 != 0) {
+        ModelObject_SetInitHook(&fish->model.object, (void *) (uintptr_t) func_ov004_0223653c, fish);
+    }
+}
+CLEAN_AS(func_ov004_02236808, AquariumFish_SetUpSea)

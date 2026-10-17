@@ -37,6 +37,7 @@
 #define CLEAN_OV068_SEQUENCE4_H
 
 #include "autoload_2/vector.h"
+#include "main/animated_model.h" /* AnimatedModelNodeState */
 #include "ov009/scene_actor.h"
 #include "types.h"
 
@@ -53,6 +54,9 @@ typedef struct Sequence4 {
     u8 frames;         /* 0x2dc: state 6, counted up to 200 */
     u8 frames_2dd;     /* 0x2dd: state 3 */
     u8 flag_2de;       /* 0x2de: set when a sequence starts */
+    u8 pad_2df;
+    int effect_b; /* 0x2e0: the handle of effect 0x41 (EffectSystem_StartKind) */
+    int effect_a; /* 0x2e4: the handle of effect 0x42 */
 } Sequence4;
 
 void Sequence4_UpdateState16(Sequence4 *actor);
@@ -80,5 +84,42 @@ int Sequence4_EnterState6(Sequence4 *actor);
 void Sequence4_UpdateState5(Sequence4 *actor);
 int Sequence4_EnterState5(Sequence4 *actor);
 void Sequence4_UpdateState4(Sequence4 *actor);
+int Sequence4_EnterState4(Sequence4 *actor);
+void Sequence4_UpdateState3(Sequence4 *actor);
+int Sequence4_EnterState3(Sequence4 *actor);
+void Sequence4_UpdateState2(Sequence4 *actor);
+int Sequence4_EnterState2(Sequence4 *actor);
+void Sequence4_UpdateState1(Sequence4 *actor);
+int Sequence4_EnterState1(Sequence4 *actor);
+void Sequence4_UpdateState0(void *actor);
+int Sequence4_EnterState0(Sequence4 *actor);
+void Sequence4_UpdateState(Sequence4 *actor);
+int Sequence4_SetState(Sequence4 *actor, int state);
+void Sequence4_EndEffectA(Sequence4 *actor);
+void Sequence4_FollowEffectA(Sequence4 *actor);
+void Sequence4_StartEffectA(Sequence4 *actor);
+void Sequence4_EndEffectB(Sequence4 *actor);
+void Sequence4_FollowEffectB(Sequence4 *actor);
+void Sequence4_StartEffectB(Sequence4 *actor);
+int Sequence4_YawToEffect(Sequence4 *actor);
+void Sequence4_EffectPointAhead(Vec3 *out, const Sequence4 *actor);
+void Sequence4_OnMessageEnd(void *actor);
+int Sequence4_ReceiverSlot6c(void *actor);
+void Sequence4_PlaceEffectPoint(Sequence4 *actor, int node, const AnimatedModelNodeState *state);
+int Sequence4_DrawsModel(const Sequence4 *actor);
+int Sequence4_ThirdAnimation(Sequence4 *actor);
+void Sequence4_EffectPoint(Vec3 *out, const Sequence4 *actor);
+int Sequence4_Release(Sequence4 *actor);
+int Sequence4_Draw(void);
+int Sequence4_Update(Sequence4 *actor);
+int Sequence4_Setup(Sequence4 *actor);
+Sequence4 *Sequence4_DestroyAndFree(Sequence4 *actor);
+Sequence4 *Sequence4_Destroy(Sequence4 *actor);
+Sequence4 *Sequence4_Construct(Sequence4 *actor);
+void Sequence4_New(void);
+Sequence4 *Sequence4_ReceiverDestroyAndFree(void *receiver);
+int Sequence4_ReceiverThunk6c(void *receiver);
+void Sequence4_ReceiverOnMessageEnd(void *receiver);
+Sequence4 *Sequence4_ReceiverDestroy(void *receiver);
 
 #endif

@@ -134,4 +134,31 @@ int FleaMarketBuyer_EnterBrowse(FleaMarketBuyer *buyer);
 int FleaMarketBuyer_UpdateStepIn(FleaMarketBuyer *buyer);
 int FleaMarketBuyer_EnterStepIn(FleaMarketBuyer *buyer);
 
+/* Its states' functions (data_ov004_02257e90, states 0 to 7, then data_ov004_02257f10, state
+ * 8), each called with the villager and answering an int:
+ *   0  call:  it stands at the room's way in (stage 0); now and then, with the player away from
+ *             it, it knocks (sound 0x4ca) and asks for its event for 30 frames;
+ *   1  greet: it stands; once the talk is closed it faces into the room, plays its greeting's
+ *             sounds 40 frames before the end of its wait and is put in place at 8; then 2. */
+typedef struct FleaMarketBuyerStep {
+    MemberPointer enter;  /* 0x00: run when the state is entered; it is taken unless it answers 0 */
+    MemberPointer update; /* 0x08: run each frame */
+} FleaMarketBuyerStep;
+
+/* Its states: 0 to 8. */
+#define FLEA_MARKET_BUYER_STATES 9
+
+int FleaMarketBuyer_UpdateGreet(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_EnterGreet(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_UpdateCall(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_EnterCall(FleaMarketBuyer *buyer);
+void FleaMarketBuyer_PlayGreeting(FleaMarketBuyer *buyer);
+void FleaMarketBuyer_SetState(FleaMarketBuyer *buyer, int state);
+int FleaMarketBuyer_RunState(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_Draw(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_Leave(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_Start(FleaMarketBuyer *buyer);
+int FleaMarketBuyer_Init(FleaMarketBuyer *buyer);
+FleaMarketBuyer *FleaMarketBuyer_New(void);
+
 #endif

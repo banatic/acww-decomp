@@ -66,30 +66,30 @@ typedef struct AquariumFish {
     AquariumFishBody body; /* 0x004 */
     u8 *anims[4];          /* 0x054: its joint animation files */
     AnimatedModel model;   /* 0x064 */
-    u8 unk_158[4];
-    int index;            /* 0x15c: its kind; -1 once released */
-    int state;            /* 0x160: AQUARIUM_FISH_* */
-    u8 size;              /* 0x164: AquariumFishInfo.size */
-    u8 pad_165;           /* 0x165 */
-    u16 pool_slot;        /* 0x166: its entry of the aquarium's model pool */
-    ModelPoolFiles files; /* 0x168 */
-    Vec3 position;        /* 0x1a8 */
-    Vec3 previous;        /* 0x1b4: the position at the end of the last frame */
-    s16 yaw;              /* 0x1c0 */
-    s16 target_yaw;       /* 0x1c2 */
-    s16 pitch;            /* 0x1c4 */
-    u8 unk_1c6;           /* 0x1c6: set for the kinds with three animations */
-    u8 solid;             /* 0x1c7: its body is entered on the field */
-    u8 area;              /* 0x1c8: in the sea room, how wide a part of the tank it keeps to (0-2) */
-    u8 yielding;          /* 0x1c9: it makes way for another (yield_to) */
-    s8 vertical;          /* 0x1ca: the way it passes another: 1 up, -1 down */
+    int timer;             /* 0x158: frames in its mode (or its class's state) */
+    int index;             /* 0x15c: its kind; -1 once released */
+    int state;             /* 0x160: AQUARIUM_FISH_* */
+    u8 size;               /* 0x164: AquariumFishInfo.size */
+    u8 pad_165;            /* 0x165 */
+    u16 pool_slot;         /* 0x166: its entry of the aquarium's model pool */
+    ModelPoolFiles files;  /* 0x168 */
+    Vec3 position;         /* 0x1a8 */
+    Vec3 previous;         /* 0x1b4: the position at the end of the last frame */
+    s16 yaw;               /* 0x1c0 */
+    s16 target_yaw;        /* 0x1c2 */
+    s16 pitch;             /* 0x1c4 */
+    u8 unk_1c6;            /* 0x1c6: set for the kinds with three animations */
+    u8 solid;              /* 0x1c7: its body is entered on the field */
+    u8 area;               /* 0x1c8: in the sea room, how wide a part of the tank it keeps to (0-2) */
+    u8 yielding;           /* 0x1c9: it makes way for another (yield_to) */
+    s8 vertical;           /* 0x1ca: the way it passes another: 1 up, -1 down */
     u8 pad_1cb;
     fx32 level;   /* 0x1cc: the height it passes others at */
     Vec3 ends[2]; /* 0x1d0: its head and its tail */
     u8 focus;     /* 0x1e8: the kind it pays attention to; its own for none */
     u8 yield_to;  /* 0x1e9 */
     u8 meeting;   /* 0x1ea: how it met the one it pays attention to (bit flags) */
-    u8 unk_1eb;   /* 0x1eb */
+    u8 turnbacks; /* 0x1eb: new courses in a row that turned it round from the glass */
     s16 away_yaw; /* 0x1ec */
     u8 mode;      /* 0x1ee: AQUARIUM_FISH_MODE_* */
     u8 pad_1ef;
@@ -97,7 +97,13 @@ typedef struct AquariumFish {
     u8 meetings;  /* 0x1f1: the fish met this frame */
     u8 pad_1f2[2];
     u32 met[2];       /* 0x1f4: the kinds met this frame, by bit */
-    u8 unk_1fc[8];    /* 0x1fc */
+    u8 glass_turning; /* 0x1fc: its turn from the glass has begun */
+    u8 glass_turn;    /* 0x1fd: AQUARIUM_GLASS_* */
+    u8 unk_1fe;       /* 0x1fe */
+    u8 pad_1ff;
+    s16 glass_step;   /* 0x200: what it turns by each frame from the glass */
+    u8 cruise_frames; /* 0x202: how long it cruises (mode 4) */
+    u8 rest_frames;   /* 0x203: how long it rests (mode 6) */
     u8 swim_204[4];   /* 0x204 */
     u8 unk_208[4];    /* 0x208 */
     fx32 speed;       /* 0x20c */
@@ -110,7 +116,16 @@ typedef struct AquariumFish {
     u8 unk_22c[3];    /* 0x22c */
     u8 turning;       /* 0x22f: it turns to target_yaw */
     u16 swim_230;     /* 0x230 */
-    u8 unk_232[0x26]; /* 0x232 */
+    u8 unk_232[0xa];  /* 0x232 */
+    int pitch_steps;  /* 0x23c: how far its pitch has been tilted */
+    u8 unk_240[0xc];  /* 0x240 */
+    s16 flee_yaw;     /* 0x24c: the way it flees (mode 1) */
+    u8 levelling;     /* 0x24e: its pitch goes back to level */
+    u8 unk_24f[3];    /* 0x24f */
+    u8 last_focus;    /* 0x252: the focus it last reacted to */
+    u8 startled;      /* 0x253: it was startled by a tap on the glass */
+    u8 focus_frames;  /* 0x254: frames it has kept the same focus */
+    u8 unk_255[3];    /* 0x255: the class's own (aquarium_fish_kinds.h) */
 } AquariumFish;
 
 void AquariumFish_SetSwim(AquariumFish *fish);
@@ -124,5 +139,73 @@ void AquariumFish_SetUpNothing(void);
 void AquariumFish_SetAnimSpeed(AquariumFish *fish, fx32 least);
 void AquariumFish_Turn(AquariumFish *fish);
 void AquariumFish_SetPassingWays(AquariumFish *fish, AquariumFish **other);
+
+/* The modes a fish swims in (AquariumFish.mode), each a member function of the table
+ * data_ov004_0225949c run every frame: it sets off on a new course, speeds up, cruises, slows
+ * down and rests, then sets off again; a startled fish flees. */
+enum {
+    AQUARIUM_MODE_NONE = 0,
+    AQUARIUM_MODE_FLEE = 1,
+    AQUARIUM_MODE_NEW_COURSE = 2,
+    AQUARIUM_MODE_SPEED_UP = 3,
+    AQUARIUM_MODE_CRUISE = 4,
+    AQUARIUM_MODE_SLOW_DOWN = 5,
+    AQUARIUM_MODE_REST = 6,
+};
+
+/* AquariumFish.glass_turn: what a fish does about the glass ahead of it. */
+enum {
+    AQUARIUM_GLASS_NONE = 0,
+    AQUARIUM_GLASS_TURN = 1,  /* it turns away by glass_step each frame */
+    AQUARIUM_GLASS_ROUND = 2, /* its next course turns it round */
+};
+
+/* How it met the one it pays attention to (AquariumFish.meeting): each fish's heading is
+ * measured from the line at right angles to the line between them. */
+enum {
+    AQUARIUM_MEET_CHASING = 0x02,      /* it swims towards the other, which swims away */
+    AQUARIUM_MEET_CHASING_SAME = 0x04, /* the same, both turned to the same side */
+    AQUARIUM_MEET_CHASED = 0x08,       /* it swims away from the other, which swims towards it */
+    AQUARIUM_MEET_CHASED_SAME = 0x10,
+    AQUARIUM_MEET_ROCK = 0x20,   /* it touched a rock */
+    AQUARIUM_MEET_FACING = 0x40, /* both swim towards, or both away from, each other */
+    AQUARIUM_MEET_FACING_SAME = 0x80,
+};
+
+/* The state of a model being drawn (NitroSystem's NNSG3dRS), as far as the fish's hook set up
+ * before each draw writes it: the hook run for each kind of model command, and when. */
+typedef struct AquariumFishHookState {
+    u8 unk_00[0x0c];
+    u32 hooks[0x20];       /* 0x0c: the address of each command's hook */
+    u8 hook_timings[0x20]; /* 0x8c */
+} AquariumFishHookState;
+
+int AquariumFish_MeetingWay(AquariumFish *fish, AquariumFish **other);
+void AquariumFish_ForgetFocus(AquariumFish *fish);
+void AquariumFish_GiveWay(AquariumFish *fish);
+void AquariumFish_ReactToFocus(AquariumFish *fish);
+void AquariumFish_TurnAtTankEnds(AquariumFish *fish);
+void AquariumFish_KeepYawAcross(AquariumFish *fish);
+void AquariumFish_ModeEaseOff(AquariumFish *fish);
+void AquariumFish_ModeSetOff(AquariumFish *fish);
+void AquariumFish_ModeNone(void);
+void AquariumFish_ModeFlee(AquariumFish *fish);
+AquariumFish *AquariumFish_ModeRest(AquariumFish *fish);
+void AquariumFish_ModeSlowDown(AquariumFish *fish);
+void AquariumFish_ModeCruise(AquariumFish *fish);
+void AquariumFish_ModeSpeedUp(AquariumFish *fish);
+void AquariumFish_ModeNewCourse(AquariumFish *fish);
+void AquariumFish_SwimByRoom(AquariumFish *fish);
+void AquariumFish_SetUpByRoom(AquariumFish *fish);
+void AquariumFish_Startle(AquariumFish *fish, const Vec3 *from);
+int AquariumFish_CheckTapped(AquariumFish *fish);
+int AquariumFish_FindTap(AquariumFish *fish, Vec3 *tap);
+void AquariumFish_SetModelHooks(AquariumFishHookState *state);
+void AquariumFish_NodeDescAfterHook(AnimatedModelNodeState *state);
+void AquariumFish_NodeDescBeforeHook(AnimatedModelNodeState *state);
+void AquariumFish_SwimRiver(AquariumFish *fish);
+void AquariumFish_SetUpRiver(AquariumFish *fish);
+void AquariumFish_SwimSea(AquariumFish *fish);
+void AquariumFish_SetUpSea(AquariumFish *fish);
 
 #endif

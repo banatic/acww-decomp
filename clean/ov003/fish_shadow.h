@@ -308,4 +308,56 @@ int PlayerFish_EndForShadow(FishShadow *shadow);
 int PlayerFish_ArrivedForShadow(FishShadow *shadow);
 void PlayerFish_DestroyAll(void *object);
 
+/* fish_shadow_state.c */
+struct FishShadowAcre;
+FishShadow *FishShadow_Shown(int index);
+int FishShadow_ShownPosition(Vec3 *out, int index);
+int FishShadow_ShownKind(int index);
+int FishFin_Load(FishFin *fin, ModelPool *pool);
+int FishShadow_LoadModel(FishShadow *fish, void *file, ModelPool *pool);
+void FishShadow_SetAnimSpeed(FishShadow *fish, int speed);
+int PlayerFish_PlaceFromPockets(int player, int item, Vec3 *point);
+int PlayerFish_HookedStart(Vec3 *out, int player);
+int FishShadow_RandomSigned(int lo, int hi);
+int FishShadow_Random(int lo, int hi);
+int FishShadow_ReachedOnAxis(int value, int from, int to);
+int FishShadow_ReachedXZ(const Vec3 *position, const Vec3 *from, const Vec3 *to);
+int FishShadow_InBox(const Vec3 *a, const Vec3 *b, int dx, int dz_ahead, int dz_behind);
+void FishShadow_TickRespawn(FishShadow *fish);
+int FishShadow_SkyFalling(FishShadowProcess *self);
+int FishShadow_KindAllowed(FishShadowProcess *self, FishShadow *fish, int kind);
+int FishShadow_FindSpot(FishShadowProcess *self, int *unit_x, int *unit_z, int *acre_x, int *acre_z, unsigned int ground,
+                        int group, FishShadow *skip);
+int FishShadow_ListAcres(FishShadowProcess *self, struct FishShadowAcre *out, int *count, unsigned int ground);
+int FishShadow_Place(FishShadowProcess *self, FishShadow *fish, int group);
+int FishShadow_PlayerNear(FishShadowProcess *self, const Vec3 *point, int player);
+int FishShadow_PlayerRunning(int player);
+void FishShadow_Drift(Vec3 *position, int amount);
+void FishShadow_CheckInView(FishShadowProcess *self, FishShadow *fish, int index);
+int FishShadow_Flee(FishShadow *fish, const Vec3 *from);
+int FishShadow_TryFlee(FishShadow *fish, const Vec3 *from);
+int FishShadow_Startled(FishShadowProcess *self, int player, FishShadow *fish);
+int FishShadow_CheckPlayerScare(FishShadowProcess *self, FishShadow *fish);
+void FishShadow_StepFade(FishShadowProcess *self, FishShadow *fish, int index);
+void FishShadow_StepShownChecks(FishShadowProcess *self, FishShadow *fish, int index);
+int FishShadow_ScareNear(const Vec3 *point, int reach);
+void FishShadow_StopBottles(FishShadowProcess *self);
+void FishShadow_EndPlayerFish(FishShadowProcess *self);
+void FishShadow_ReleaseShadows(FishShadowProcess *self);
+int FishShadow_Destroy(FishShadowProcess *self);
+int FishShadow_Draw(void);
+void FishShadow_StepPlayers(FishShadowProcess *self);
+int FishShadow_Step(FishShadowProcess *self);
+void FishShadow_PlaceModel(FishShadowProcess *self, const Vec3 *at, ModelObject *object, int yaw);
+void FishShadow_MoveFin(FishShadowProcess *self, FishShadow *fish);
+void FishShadow_UpdateShown(FishShadowProcess *self, FishShadow *fish, int index);
+void FishShadow_EnterShown(void);
+void FishShadow_UpdateAway(FishShadowProcess *self, FishShadow *fish, int index);
+void FishShadow_EnterAway(void);
+void FishShadow_UpdateAppearing(FishShadowProcess *self, FishShadow *fish);
+void FishShadow_EnterAppearing(void);
+void FishShadow_UpdatePlaced(FishShadowProcess *self, FishShadow *fish, int index);
+void FishShadow_EnterPlaced(void);
+void FishShadow_UpdateNone(FishShadowProcess *self, FishShadow *fish, int index);
+
 #endif

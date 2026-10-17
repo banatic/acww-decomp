@@ -106,5 +106,13 @@ const char *TownItemLoad_TreeGrowthPath(TileEventProcess *process, int variant, 
 const char *TownItemLoad_TreeModelPath(TileEventProcess *process, int variant, int stage);
 int TownItemLoad_TreeLook(TileEventProcess *process, int variant);
 int TownItemLoad_LoadStamps(void);
+int TownItemLoad_LoadStampModels(TileEventProcess *process);
+int TownItemLoad_LoadStones(void);
+int TownItemLoad_LoadStoneModels(TileEventProcess *process);
+int TownItemLoad_LoadIcons(TileEventProcess *process);
+int TownItemLoad_LoadPaletteFiles(TileEventProcess *process, void **resources, void **files, const char *const *paths,
+                                  int count);
+int TownItemLoad_LoadTextureFiles(TileEventProcess *process, void **resources, void **files, const char *const *paths,
+                                  int count);
 
 #endif

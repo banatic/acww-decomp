@@ -24,6 +24,8 @@
 #include "main/tile_effects.h"
 #include "main/tile_requests.h"
 #include "town_insect.h"
+#include "autoload_2/sound_emitter_class.h"
+#include "growth_model.h" /* GrowthModels_Construct */
 
 static_assert(sizeof(ModelObject) == 0x9c, "model object");
 static_assert(sizeof(ModelSet) == 0x10, "model set");
@@ -1514,3 +1516,74 @@ void TileEvent_StartFromChanges(const TileChangesTile *tile)
     }
 }
 CLEAN_AS(func_ov003_022241a4, TileEvent_StartFromChanges)
+
+/* ---- The process's creation, and the table's entries' constructor and destructor. */
+
+/* The array helpers and what they are handed: the game's own model object constructor and
+ * destructor, and an entry's destructor (TileEvent_DestructEntry). */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void func_0205577c(void *model);
+extern void func_ov003_022275d8(void *entry);
+
+/* The model holder arrays of the process: where, and how many. */
+static void tile_event_construct_models(ModelObject *models, int count)
+{
+    __cxa_vec_ctor(models, count, sizeof(ModelObject), func_0205577c, func_02055764);
+}
+
+/* func_ov003_02227454: a new process (0x6a70 bytes, cleared): the process class's constructor,
+ * its vtable (the class's, then its own), its model holders, its four model sets and its
+ * growth models (the member at 0x4b20); NULL when there is no memory. */
+TileEventProcess *TileEvent_NewProcess(void)
+{
+    TileEventProcess *process = Heap_AllocAuxZeroed(sizeof(TileEventProcess));
+    if (process != NULL) {
+        Process_Construct(&process->process);
+        process->process.vtable = data_020da13c;
+        process->process.vtable = data_ov003_0223bc7c;
+        tile_event_construct_models(process->models_0174, 0x12);
+        tile_event_construct_models(process->models_0c6c, 6);
+        tile_event_construct_models(process->models_1014, 3);
+        tile_event_construct_models(process->models_11e8, 6);
+        tile_event_construct_models(process->models_1590, 0x28);
+        tile_event_construct_models(process->models_2df0, 4);
+        tile_event_construct_models(process->models_3068, 0x20);
+        tile_event_construct_models(process->models_43e8, 5);
+        tile_event_construct_models(process->models_4708, 2);
+        tile_event_construct_models(process->models_4840, 2);
+        tile_event_construct_models(process->models_49a8, 2);
+        for (int i = 0; i < 4; i++) {
+            ModelSet_Construct(&process->sets[i]);
+        }
+        GrowthModels_Construct((GrowthModels *) (void *) process->member_4b20);
+    }
+    return process;
+}
+CLEAN_AS(func_ov003_02227454, TileEvent_NewProcess)
+
+/* func_ov003_022275bc (registered at the overlay's start for the table): the twenty entries
+ * destroyed (TileEvent_DestructEntry); returns `entries`. */
+void *TileEvent_DestroyEntries(TileEventEntry *entries)
+{
+    __cxa_vec_cleanup(entries, TILE_EVENT_ENTRIES, sizeof(TileEventEntry), func_ov003_022275d8);
+    return entries;
+}
+CLEAN_AS(func_ov003_022275bc, TileEvent_DestroyEntries)
+
+/* func_ov003_022275d8: an entry's destructor: its sound emitter's. */
+TileEventEntry *TileEvent_DestructEntry(TileEventEntry *entry)
+{
+    SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) entry->sound);
+    return entry;
+}
+CLEAN_AS(func_ov003_022275d8, TileEvent_DestructEntry)
+
+/* func_ov003_022275ec: an entry's constructor: its tile (0, 0) and its sound emitter. */
+TileEventEntry *TileEvent_ConstructEntry(TileEventEntry *entry)
+{
+    entry->tile.x = 0;
+    entry->tile.z = 0;
+    SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) entry->sound);
+    return entry;
+}
+CLEAN_AS(func_ov003_022275ec, TileEvent_ConstructEntry)

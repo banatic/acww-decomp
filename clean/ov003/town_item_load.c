@@ -8,6 +8,9 @@
 #include "main/animated_model.h"
 #include "main/town_day.h"
 #include "main/town_record.h"
+#include "main/vram_region.h"
+#include "main/rom_file.h"
+#include "main/item_info.h"
 
 static_assert(sizeof(ModelObject) == 0x9c, "model object");
 static_assert(offsetof(TileEventProcess, models_0174) == 0x174, "models_0174");
@@ -112,16 +115,6 @@ extern const char *const data_ov003_02239c88;
 extern const char *const data_ov003_02239dc8[2];
 extern const char data_ov003_0223bd44[];
 
-/* The icon set and the item holders at 0x50; the stamps. */
-extern int func_ov003_0222726c(TileEventProcess *process);
-extern int func_ov003_022271a0(TileEventProcess *process);
-/* `count` texture files of `paths` read into the scene's heap (`files`), their texture blocks
- * (`resources`) with the palettes placed in VRAM; 0 when one could not be read. */
-extern int func_ov003_022272c0(TileEventProcess *process, void **resources, void **files, const char *const *paths, int count);
-/* The same with the textures (not the palettes) placed in VRAM; a NULL path gives a NULL
- * resource and leaves its file alone. */
-extern int func_ov003_02227324(TileEventProcess *process, void **resources, void **files, const char *const *paths, int count);
-
 /* The process's words outside the parts tile_event.h names. */
 #define TOWN_ITEM_LOAD_CLOCK 0x6a6c /* the draw's frames, 0-59 */
 
@@ -176,7 +169,7 @@ int TownItemLoad_InitProcess(TileEventProcess *process)
     if (data_ov003_0223cf78 == NULL) {
         data_ov003_0223cf78 = ExpHeap_Create(0x8c00, data_021fbe94);
     }
-    if (func_ov003_0222726c(process)) {
+    if (TownItemLoad_LoadIcons(process)) {
         data_ov003_0223cf70 = process;
         if (TownItemLoad_RunLoaders(process)) {
             *(int *) (void *) ((u8 *) process + TOWN_ITEM_LOAD_CLOCK) = 0;
@@ -292,7 +285,7 @@ CLEAN_AS(func_ov003_02226094, TownItemLoad_LoadCrackModels)
 /* func_ov003_02226108: the cracks' palette file read (func_ov003_022272c0). */
 int TownItemLoad_LoadCrackPalettes(TileEventProcess *process, void **palettes, void **file)
 {
-    return func_ov003_022272c0(process, palettes, file, &data_ov003_02239c70, 1);
+    return TownItemLoad_LoadPaletteFiles(process, palettes, file, &data_ov003_02239c70, 1);
 }
 CLEAN_AS(func_ov003_02226108, TownItemLoad_LoadCrackPalettes)
 
@@ -336,7 +329,7 @@ CLEAN_AS(func_ov003_0222616c, TownItemLoad_LoadHoleModels)
 /* func_ov003_022261e0: the holes' palette file read (func_ov003_022272c0). */
 int TownItemLoad_LoadHolePalettes(TileEventProcess *process, void **palettes, void **file)
 {
-    return func_ov003_022272c0(process, palettes, file, &data_ov003_02239c94, 1);
+    return TownItemLoad_LoadPaletteFiles(process, palettes, file, &data_ov003_02239c94, 1);
 }
 CLEAN_AS(func_ov003_022261e0, TownItemLoad_LoadHolePalettes)
 
@@ -386,7 +379,7 @@ CLEAN_AS(func_ov003_0222625c, TownItemLoad_LoadGrassModels)
 /* func_ov003_022262c0: the grass palette file read (func_ov003_022272c0). */
 int TownItemLoad_LoadGrassPalettes(TileEventProcess *process, void **palettes, void **file)
 {
-    return func_ov003_022272c0(process, palettes, file, &data_ov003_02239c90, 1);
+    return TownItemLoad_LoadPaletteFiles(process, palettes, file, &data_ov003_02239c90, 1);
 }
 CLEAN_AS(func_ov003_022262c0, TownItemLoad_LoadGrassPalettes)
 
@@ -476,14 +469,14 @@ CLEAN_AS(func_ov003_02226490, TownItemLoad_LoadFlowerPairModels)
 /* func_ov003_02226514: the pair's two palette files read (func_ov003_022272c0). */
 int TownItemLoad_LoadFlowerPairPalettes(TileEventProcess *process, void **palettes, void **files)
 {
-    return func_ov003_022272c0(process, palettes, files, data_ov003_0223a088, TOWN_ITEM_LOAD_PAIRS);
+    return TownItemLoad_LoadPaletteFiles(process, palettes, files, data_ov003_0223a088, TOWN_ITEM_LOAD_PAIRS);
 }
 CLEAN_AS(func_ov003_02226514, TownItemLoad_LoadFlowerPairPalettes)
 
 /* func_ov003_0222652c: the pair's two texture files read (func_ov003_02227324). */
 int TownItemLoad_LoadFlowerPairTextures(TileEventProcess *process, void **textures, void **files)
 {
-    return func_ov003_02227324(process, textures, files, data_ov003_02239db8, TOWN_ITEM_LOAD_PAIRS);
+    return TownItemLoad_LoadTextureFiles(process, textures, files, data_ov003_02239db8, TOWN_ITEM_LOAD_PAIRS);
 }
 CLEAN_AS(func_ov003_0222652c, TownItemLoad_LoadFlowerPairTextures)
 
@@ -508,14 +501,14 @@ CLEAN_AS(func_ov003_02226544, TownItemLoad_LoadFlowerFamilyModels)
 /* func_ov003_022265d4: the families' four palette files read (func_ov003_022272c0). */
 int TownItemLoad_LoadFlowerFamilyPalettes(TileEventProcess *process, void **palettes, void **files)
 {
-    return func_ov003_022272c0(process, palettes, files, data_ov003_0223a058, TOWN_ITEM_LOAD_FAMILIES);
+    return TownItemLoad_LoadPaletteFiles(process, palettes, files, data_ov003_0223a058, TOWN_ITEM_LOAD_FAMILIES);
 }
 CLEAN_AS(func_ov003_022265d4, TownItemLoad_LoadFlowerFamilyPalettes)
 
 /* func_ov003_022265ec: the families' four texture files read (func_ov003_02227324). */
 int TownItemLoad_LoadFlowerFamilyTextures(TileEventProcess *process, void **textures, void **files)
 {
-    return func_ov003_02227324(process, textures, files, data_ov003_0223a208, TOWN_ITEM_LOAD_FAMILIES);
+    return TownItemLoad_LoadTextureFiles(process, textures, files, data_ov003_0223a208, TOWN_ITEM_LOAD_FAMILIES);
 }
 CLEAN_AS(func_ov003_022265ec, TownItemLoad_LoadFlowerFamilyTextures)
 
@@ -872,7 +865,7 @@ CLEAN_AS(func_ov003_02226e78, TownItemLoad_LoadTreeSaplingModels)
 /* func_ov003_02226ef4: the cedar with lights' palette file read (func_ov003_022272c0). */
 int TownItemLoad_LoadXCedarPalette(TileEventProcess *process, void **palette, void **file)
 {
-    return func_ov003_022272c0(process, palette, file, &data_ov003_02239c7c, 1) != 0;
+    return TownItemLoad_LoadPaletteFiles(process, palette, file, &data_ov003_02239c7c, 1) != 0;
 }
 CLEAN_AS(func_ov003_02226ef4, TownItemLoad_LoadXCedarPalette)
 
@@ -881,10 +874,10 @@ CLEAN_AS(func_ov003_02226ef4, TownItemLoad_LoadXCedarPalette)
 int TownItemLoad_LoadCedarPalettes(TileEventProcess *process, void **palette, void **palette_file, void **sapling_palette,
                                    void **sapling_palette_file)
 {
-    if (func_ov003_022272c0(process, palette, palette_file, &data_ov003_02239c78, 1) == 0) {
+    if (TownItemLoad_LoadPaletteFiles(process, palette, palette_file, &data_ov003_02239c78, 1) == 0) {
         return 0;
     }
-    return func_ov003_022272c0(process, sapling_palette, sapling_palette_file, &data_ov003_02239c84, 1) != 0;
+    return TownItemLoad_LoadPaletteFiles(process, sapling_palette, sapling_palette_file, &data_ov003_02239c84, 1) != 0;
 }
 CLEAN_AS(func_ov003_02226f18, TownItemLoad_LoadCedarPalettes)
 
@@ -893,11 +886,11 @@ CLEAN_AS(func_ov003_02226f18, TownItemLoad_LoadCedarPalettes)
 int TownItemLoad_LoadTreePalettes(TileEventProcess *process, void **palettes, void **palette_files, void **sapling_palettes,
                                   void **sapling_palette_files)
 {
-    if (func_ov003_022272c0(process, palettes, palette_files, data_ov003_02239f80, TOWN_ITEM_LOAD_VARIANTS) == 0) {
+    if (TownItemLoad_LoadPaletteFiles(process, palettes, palette_files, data_ov003_02239f80, TOWN_ITEM_LOAD_VARIANTS) == 0) {
         return 0;
     }
-    return func_ov003_022272c0(process, sapling_palettes, sapling_palette_files, data_ov003_02239f08,
-                               TOWN_ITEM_LOAD_VARIANTS) != 0;
+    return TownItemLoad_LoadPaletteFiles(process, sapling_palettes, sapling_palette_files, data_ov003_02239f08,
+                                         TOWN_ITEM_LOAD_VARIANTS) != 0;
 }
 CLEAN_AS(func_ov003_02226f5c, TownItemLoad_LoadTreePalettes)
 
@@ -906,14 +899,14 @@ CLEAN_AS(func_ov003_02226f5c, TownItemLoad_LoadTreePalettes)
 int TownItemLoad_LoadPalmTextures(TileEventProcess *process, void **textures, void **files)
 {
     int look = TownItemLoad_TreeLook(process, 2);
-    return func_ov003_02227324(process, textures, files, data_ov003_02239f74[look], TOWN_ITEM_LOAD_STAGES) != 0;
+    return TownItemLoad_LoadTextureFiles(process, textures, files, data_ov003_02239f74[look], TOWN_ITEM_LOAD_STAGES) != 0;
 }
 CLEAN_AS(func_ov003_02226fa0, TownItemLoad_LoadPalmTextures)
 
 /* func_ov003_02226fdc: the cedar with lights' texture file read (func_ov003_02227324). */
 int TownItemLoad_LoadXCedarTexture(TileEventProcess *process, void **texture, void **file)
 {
-    return func_ov003_02227324(process, texture, file, &data_ov003_02239c80, 1) != 0;
+    return TownItemLoad_LoadTextureFiles(process, texture, file, &data_ov003_02239c80, 1) != 0;
 }
 CLEAN_AS(func_ov003_02226fdc, TownItemLoad_LoadXCedarTexture)
 
@@ -922,7 +915,7 @@ CLEAN_AS(func_ov003_02226fdc, TownItemLoad_LoadXCedarTexture)
 int TownItemLoad_LoadCedarTextures(TileEventProcess *process, void **textures, void **files)
 {
     int look = TownItemLoad_TreeLook(process, 2);
-    return func_ov003_02227324(process, textures, files, data_ov003_02239f14[look], TOWN_ITEM_LOAD_STAGES) != 0;
+    return TownItemLoad_LoadTextureFiles(process, textures, files, data_ov003_02239f14[look], TOWN_ITEM_LOAD_STAGES) != 0;
 }
 CLEAN_AS(func_ov003_02227000, TownItemLoad_LoadCedarTextures)
 
@@ -934,8 +927,9 @@ int TownItemLoad_LoadTreeTextures(TileEventProcess *process, void **textures, vo
     for (int variant = 0; variant < TOWN_ITEM_LOAD_VARIANTS; variant++) {
         int look = TownItemLoad_TreeLook(process, variant);
         if (done[look] == 0) {
-            if (!func_ov003_02227324(process, &textures[look * TOWN_ITEM_LOAD_STAGES], &files[look * TOWN_ITEM_LOAD_STAGES],
-                                     TownItemLoad_TreeTexturePaths(process, look), TOWN_ITEM_LOAD_STAGES)) {
+            if (!TownItemLoad_LoadTextureFiles(process, &textures[look * TOWN_ITEM_LOAD_STAGES],
+                                               &files[look * TOWN_ITEM_LOAD_STAGES],
+                                               TownItemLoad_TreeTexturePaths(process, look), TOWN_ITEM_LOAD_STAGES)) {
                 return 0;
             }
             done[look] = 1;
@@ -1012,6 +1006,117 @@ CLEAN_AS(func_ov003_02227170, TownItemLoad_TreeLook)
 /* func_ov003_02227190: the stamps loaded into the current process (func_ov003_022271a0). */
 int TownItemLoad_LoadStamps(void)
 {
-    return func_ov003_022271a0(data_ov003_0223cf70);
+    return TownItemLoad_LoadStampModels(data_ov003_0223cf70);
 }
 CLEAN_AS(func_ov003_02227190, TownItemLoad_LoadStamps)
+
+/* The stumps' model set file ('/fg/tree/stamp/stamp.nsbmd') and the names of its twelve models
+ * (tree, cedar and palm stumps, four each); the stones' model set files by look (one 'w', two
+ * 's') and the names of each one's five models; the icons' model set file. */
+#define TOWN_ITEM_LOAD_STAMPS 12
+#define TOWN_ITEM_LOAD_STONES 5
+#define TOWN_ITEM_LOAD_ICONS 0x49
+extern const char data_ov003_0223bd74[];
+extern const char *const data_ov003_0223bc44[TOWN_ITEM_LOAD_STAMPS];
+extern const char *const data_ov003_02239ef0[3];
+extern const char *const *const data_ov003_02239f2c[3];
+extern const char data_ov003_0223bd90[];
+/* A texture file's texture block (NNS_G3dGetTex). */
+extern void *func_021077e8(void *file);
+
+/* func_ov003_022271a0: model set 3 loaded from the stumps' file into the first heap, and the
+ * twelve pointers at 0x4978 set to its models by name; 0 when the set could not be loaded. */
+int TownItemLoad_LoadStampModels(TileEventProcess *process)
+{
+    if (ModelSet_Load(&process->sets[3], data_ov003_0223bd74, data_ov003_0223cf74) == 0) {
+        return 0;
+    }
+    ModelObject **stamps = (ModelObject **) (void *) process->unk_4978;
+    for (int i = 0; i < TOWN_ITEM_LOAD_STAMPS; i++) {
+        stamps[i] = ModelSet_Find(&process->sets[3], data_ov003_0223bc44[i]);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_022271a0, TownItemLoad_LoadStampModels)
+
+/* func_ov003_022271f8: the stones loaded into the current process. */
+int TownItemLoad_LoadStones(void)
+{
+    return TownItemLoad_LoadStoneModels(data_ov003_0223cf70);
+}
+CLEAN_AS(func_ov003_022271f8, TownItemLoad_LoadStones)
+
+/* func_ov003_02227208: model set 2 loaded from the stones' file of the look of variant 2 into
+ * the second heap, and the five pointers at 0x46f4 set to its models by name; 0 when the set
+ * could not be loaded. */
+int TownItemLoad_LoadStoneModels(TileEventProcess *process)
+{
+    int look = TownItemLoad_TreeLook(process, 2);
+    if (ModelSet_Load(&process->sets[2], data_ov003_02239ef0[look], data_ov003_0223cf78) == 0) {
+        return 0;
+    }
+    const char *const *names = data_ov003_02239f2c[look];
+    ModelObject **stones = (ModelObject **) (void *) process->unk_46f4;
+    for (int i = 0; i < TOWN_ITEM_LOAD_STONES; i++) {
+        stones[i] = ModelSet_Find(&process->sets[2], names[i]);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_02227208, TownItemLoad_LoadStoneModels)
+
+/* func_ov003_0222726c: model set 0 loaded from the icons' file into the first heap, and the
+ * item holders' 0x49 pointers at 0x50 set to its models by the name of each look outdoors
+ * (ItemInfo_LookModelName); 0 when the set could not be loaded. */
+int TownItemLoad_LoadIcons(TileEventProcess *process)
+{
+    if (ModelSet_Load(&process->sets[0], data_ov003_0223bd90, data_ov003_0223cf74) == 0) {
+        return 0;
+    }
+    ModelObject **holders = (ModelObject **) (void *) process->unk_0050;
+    for (int i = 0; i < TOWN_ITEM_LOAD_ICONS; i++) {
+        holders[i] = ModelSet_Find(&process->sets[0], ItemInfo_LookModelName(i, 1));
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_0222726c, TownItemLoad_LoadIcons)
+
+/* func_ov003_022272c0: `count` texture files of `paths` read into the scene's heap (`files`),
+ * their texture blocks (`resources`) with the palettes placed in VRAM; 0 when one could not be
+ * read (those before it stay). */
+int TownItemLoad_LoadPaletteFiles(TileEventProcess *process, void **resources, void **files, const char *const *paths,
+                                  int count)
+{
+    (void) process;
+    for (int i = 0; i < count; i++) {
+        files[i] = RomFile_Load(paths[i], data_021fbe94, -4, NULL);
+        if (files[i] == NULL) {
+            return 0;
+        }
+        resources[i] = func_021077e8(files[i]);
+        VramRegion_LoadPalettes(resources[i], NULL);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_022272c0, TownItemLoad_LoadPaletteFiles)
+
+/* func_ov003_02227324: the same with the textures (not the palettes) placed in VRAM; a NULL
+ * path gives a NULL resource and leaves its file alone. */
+int TownItemLoad_LoadTextureFiles(TileEventProcess *process, void **resources, void **files, const char *const *paths,
+                                  int count)
+{
+    (void) process;
+    for (int i = 0; i < count; i++) {
+        if (paths[i] == NULL) {
+            resources[i] = NULL;
+            continue;
+        }
+        files[i] = RomFile_Load(paths[i], data_021fbe94, -4, NULL);
+        if (files[i] == NULL) {
+            return 0;
+        }
+        resources[i] = func_021077e8(files[i]);
+        VramRegion_LoadImages(resources[i], NULL);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov003_02227324, TownItemLoad_LoadTextureFiles)

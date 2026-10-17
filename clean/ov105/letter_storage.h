@@ -3,7 +3,7 @@
  * (ov002/menu_scene.h) that shows the letters the current player keeps (main/letter_store.h)
  * beside the ten letters they carry, as the evidence says:
  *
- * - its setup (func_ov105_0229eb54) copies the 50 letters of PlayerRecord_KeptLetters for the
+ * - its setup (LetterStorage_Setup) copies the 50 letters of PlayerRecord_KeptLetters for the
  *   current player into `stored`, and on delete (func_ov105_0229f1d0) copies them back when
  *   LETTER_STORAGE_FLAG_CHANGED is set (telling main so with GroupParams_SetC4C);
  * - the stored letters are seen as two pages of 25 (LETTER_STORE_PAGES, `page`), each with a
@@ -47,8 +47,8 @@ enum LetterStorageFlag {
     LETTER_STORAGE_FLAG_PAGE_WIPE = 0x200,  /* a page's wipe in is running (LetterStorage_StartPageWipeIn) */
     LETTER_STORAGE_FLAG_FIXED_MENU = 0x800, /* the choice is LetterStorage_OpenFixedMenu's: its first
                                                * row is set apart */
-    LETTER_STORAGE_FLAG_CHANGED = 0x1000    /* the stored letters are written back on delete
-                                               * (func_ov105_0229f1d0) */
+    LETTER_STORAGE_FLAG_CHANGED = 0x1000    /* the stored letters are written back at the end
+                                               * (LetterStorage_End) */
 };
 
 #define LETTER_STORAGE_FLAGS_WRAPPED (LETTER_STORAGE_FLAG_WRAPPED_LEFT | LETTER_STORAGE_FLAG_WRAPPED_RIGHT)
@@ -63,7 +63,7 @@ enum LetterStoragePlace {
     LETTER_STORAGE_BELOW = 0x3d,     /* below the carried letters and the page (at 0xbc, 0xb6) */
     LETTER_STORAGE_TAB_FIRST = 0x3e, /* 0x3e-0x3f: the tabs of pages 0 and 1 */
     LETTER_STORAGE_TAB_LAST = 0x3f,
-    LETTER_STORAGE_NO_PLACE = 0x40 /* `popup_place` before any (func_ov105_0229eb54) */
+    LETTER_STORAGE_NO_PLACE = 0x40 /* `popup_place` before any (LetterStorage_Setup) */
 };
 
 #define LETTER_STORAGE_CARRIED_COLUMNS 2
@@ -89,9 +89,9 @@ enum LetterStorageAction {
 typedef struct LetterStorage {
     MenuScene base;                      /* 0x00 */
     u32 flags;                           /* 0x94: LetterStorageFlag */
-    s32 unk_98;                          /* 0x98 */
+    s32 objects_y;                       /* 0x98: the offset the ov094 objects are drawn at (LetterStorage_Draw) */
     s32 wipe_y;                          /* 0x9c: MenuScene_WipeOffsetY's */
-    s32 wipe_x;                          /* 0xa0: MenuScene_WipeOffsetX's (func_ov105_0229ed78); the tabs are
+    s32 wipe_x;                          /* 0xa0: MenuScene_WipeOffsetX's (LetterStorage_ScrollPageLayer); the tabs are
                                * drawn 0x80 right of it */
     s32 grab_dx;                         /* 0xa4: from the touch to the held letter */
     s32 grab_dy;                         /* 0xa8 */
@@ -198,12 +198,12 @@ void LetterStorage_SelectPlace(LetterStorage *self, int place);
 #define LETTER_STORAGE_FLAG_DRAGGABLE 0x04
 #define LETTER_STORAGE_FLAG_GLIDE_TO_TAB 0x2000
 
-/* The sub states, run from the table of func_ov105_0229f25c; the ones handled here are named
+/* The sub states, run from the table of LetterStorage_RunSubState; the ones handled here are named
  * by what their handler does. */
 enum LetterStorageSubState {
-    LETTER_STORAGE_SUB_TOUCH_IDLE = 0x00,      /* func_ov105_0229e90c: waiting for a touch */
-    LETTER_STORAGE_SUB_TOUCH_HOLD = 0x01,      /* func_ov105_0229e860: a place is touched */
-    LETTER_STORAGE_SUB_TOUCH_CHOICE = 0x02,    /* func_ov105_0229e804: its choice is open, pen down */
+    LETTER_STORAGE_SUB_TOUCH_IDLE = 0x00,      /* LetterStorage_IdleByTouch */
+    LETTER_STORAGE_SUB_TOUCH_HOLD = 0x01,      /* LetterStorage_HoldTouchOnPlace */
+    LETTER_STORAGE_SUB_TOUCH_CHOICE = 0x02,    /* LetterStorage_WatchChoiceTouch */
     LETTER_STORAGE_SUB_OPEN_TOUCHED = 0x03,    /* LetterStorage_OpenTouchedChoice */
     LETTER_STORAGE_SUB_DRAG = 0x04,            /* LetterStorage_DragHeld */
     LETTER_STORAGE_SUB_LABEL_BY_TOUCH = 0x05,  /* LetterStorage_LabelByTouch */
@@ -295,5 +295,90 @@ void LetterStorage_ChooseByTouch(LetterStorage *self);
 void LetterStorage_LabelByTouch(LetterStorage *self);
 void LetterStorage_DragHeld(LetterStorage *self);
 void LetterStorage_OpenTouchedChoice(LetterStorage *self);
+
+/* Still more of `flags`: the scene is drawn (LetterStorage_Draw), and with it the panel and the
+ * objects of ov094's at their offsets; FLAG_80 draws the label button over a letter shown
+ * (LetterStorage_ShowLetter); FLAG_100 (action 1) shows the letter instead of ending the scene
+ * once the scene has wiped out (LetterStorage_SceneWipeOut). */
+#define LETTER_STORAGE_FLAG_DRAWN 0x01
+#define LETTER_STORAGE_FLAG_OBJECTS_DRAWN 0x02
+
+/* The states, run from the table of LetterStorage_RunState (MenuScene_SetState). */
+enum LetterStorageState {
+    LETTER_STORAGE_STATE_START_SETUP = 0x00,           /* LetterStorage_StartSetup */
+    LETTER_STORAGE_STATE_START_WIPE_IN = 0x01,         /* LetterStorage_StartWipeIn */
+    LETTER_STORAGE_STATE_SCENE_WIPE_IN = 0x02,         /* LetterStorage_SceneWipeIn */
+    LETTER_STORAGE_STATE_PAGE_WIPE_IN = 0x03,          /* LetterStorage_PageWipeIn */
+    LETTER_STORAGE_STATE_START_WIPE_OUT = 0x04,        /* LetterStorage_StartWipeOut */
+    LETTER_STORAGE_STATE_PAGE_WIPE_OUT = 0x05,         /* LetterStorage_PageWipeOut */
+    LETTER_STORAGE_STATE_SCENE_WIPE_OUT = 0x06,        /* LetterStorage_SceneWipeOut */
+    LETTER_STORAGE_STATE_SHOW_LETTER = 0x07,           /* LetterStorage_ShowLetter */
+    LETTER_STORAGE_STATE_LETTER_WIPE_IN = 0x08,        /* LetterStorage_LetterWipeIn */
+    LETTER_STORAGE_STATE_START_LETTER_WIPE_OUT = 0x09, /* LetterStorage_StartLetterWipeOut */
+    LETTER_STORAGE_STATE_LETTER_WIPE_OUT = 0x0a,       /* LetterStorage_LetterWipeOut */
+    LETTER_STORAGE_STATE_START_PAGE_TURN = 0x0b,       /* LetterStorage_StartPageTurn */
+    LETTER_STORAGE_STATE_PAGE_TURN_OUT = 0x0c,         /* LetterStorage_PageTurnOut */
+    LETTER_STORAGE_STATE_PAGE_TURN_IN = 0x0d,          /* LetterStorage_PageTurnIn */
+    LETTER_STORAGE_STATE_START_PROMPT = 0x0e,          /* LetterStorage_StartPrompt */
+    LETTER_STORAGE_STATE_PROMPT_WIPE_OUT = 0x0f,       /* LetterStorage_PromptWipeOut */
+    LETTER_STORAGE_STATE_SHOW_PROMPT = 0x10,           /* LetterStorage_ShowPrompt */
+    LETTER_STORAGE_STATE_PROMPT_WIPE_IN = 0x11,        /* LetterStorage_PromptWipeIn */
+    LETTER_STORAGE_STATE_CLOSE_PROMPT = 0x12,          /* LetterStorage_ClosePrompt */
+    LETTER_STORAGE_STATE_PROMPT_CLOSE_WIPE = 0x13,     /* LetterStorage_PromptCloseWipe */
+    LETTER_STORAGE_STATE_RESTORE_PANEL = 0x14,         /* LetterStorage_RestorePanel */
+    LETTER_STORAGE_STATE_PANEL_WIPE_IN = 0x15,         /* LetterStorage_PanelWipeIn */
+    LETTER_STORAGE_STATES = 0x16
+};
+
+#define LETTER_STORAGE_SUB_STATES 0x20
+
+void LetterStorage_WatchChoiceTouch(LetterStorage *self);
+void LetterStorage_HoldTouchOnPlace(LetterStorage *self);
+void LetterStorage_IdleByTouch(LetterStorage *self);
+void LetterStorage_PreparePanel(LetterStorage *self);
+void LetterStorage_LoadPageLayer(LetterStorage *self);
+void LetterStorage_PrepareWallet(LetterStorage *self);
+void LetterStorage_SetUpLayers(void);
+void LetterStorage_EndFrame(LetterStorage *self);
+void LetterStorage_BeginFrame(LetterStorage *self);
+void LetterStorage_EndInteractiveFrame(LetterStorage *self);
+int LetterStorage_BeginInteractiveFrame(LetterStorage *self);
+void LetterStorage_Teardown(LetterStorage *self);
+void LetterStorage_Setup(LetterStorage *self);
+void LetterStorage_PanelWipeIn(LetterStorage *self);
+void LetterStorage_RestorePanel(LetterStorage *self);
+void LetterStorage_PromptCloseWipe(LetterStorage *self);
+void LetterStorage_ClosePrompt(LetterStorage *self);
+void LetterStorage_PromptWipeIn(LetterStorage *self);
+void LetterStorage_ShowPrompt(LetterStorage *self);
+void LetterStorage_PromptWipeOut(LetterStorage *self);
+void LetterStorage_StartPrompt(LetterStorage *self);
+void LetterStorage_ScrollPageLayer(LetterStorage *self);
+void LetterStorage_ScrollSceneLayer(LetterStorage *self);
+void LetterStorage_ScrollLetterLayers(LetterStorage *self);
+void LetterStorage_PageTurnIn(LetterStorage *self);
+void LetterStorage_PageTurnOut(LetterStorage *self);
+void LetterStorage_StartPageTurn(LetterStorage *self);
+void LetterStorage_LetterWipeOut(LetterStorage *self);
+void LetterStorage_StartLetterWipeOut(LetterStorage *self);
+void LetterStorage_LetterWipeIn(LetterStorage *self);
+void LetterStorage_ShowLetter(LetterStorage *self);
+void LetterStorage_SceneWipeOut(LetterStorage *self);
+void LetterStorage_PageWipeOut(LetterStorage *self);
+void LetterStorage_StartWipeOut(LetterStorage *self);
+void LetterStorage_PageWipeIn(LetterStorage *self);
+void LetterStorage_SceneWipeIn(LetterStorage *self);
+void LetterStorage_StartWipeIn(LetterStorage *self);
+void LetterStorage_StartSetup(LetterStorage *self);
+int LetterStorage_End(LetterStorage *self);
+int LetterStorage_Phase1Idle(void);
+int LetterStorage_Phase0Idle(void);
+int LetterStorage_RunInteractive(LetterStorage *self);
+void LetterStorage_RunSubState(LetterStorage *self);
+int LetterStorage_RunState(LetterStorage *self);
+int LetterStorage_Draw(LetterStorage *self);
+int LetterStorage_Close(LetterStorage *self);
+int LetterStorage_Start(LetterStorage *self);
+LetterStorage *LetterStorage_New(void);
 
 #endif

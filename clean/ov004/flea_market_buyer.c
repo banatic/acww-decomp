@@ -9,9 +9,11 @@
 #include "clean.h"
 #include "main/actor.h"
 #include "main/actor_table.h"
+#include "main/block_020b220c.h"
 #include "main/collision_map.h"
 #include "main/date_time.h"
 #include "main/event_queue.h"
+#include "main/footsteps.h"
 #include "main/furniture_info.h"
 #include "main/group_params.h"
 #include "main/item_code.h"
@@ -20,6 +22,7 @@
 #include "main/message_receiver.h"
 #include "main/npc_id.h"
 #include "main/player_actor_ops.h"
+#include "main/player_id.h"
 #include "main/player_pockets.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -28,13 +31,17 @@
 #include "main/scene_bells.h"
 #include "main/scene_command.h"
 #include "main/scene_exit.h"
+#include "main/scene_look.h"
 #include "main/scene_motion_request.h"
 #include "main/scene_mover.h"
 #include "main/scene_object.h"
 #include "main/scene_path_step.h"
 #include "main/scene_place.h"
+#include "main/scene_query.h"
 #include "main/scene_tables.h"
 #include "main/screen_panels.h"
+#include "main/session_players.h"
+#include "main/sound_emitter.h"
 #include "main/talk_answers.h"
 #include "main/talk_object.h"
 #include "main/town_objects.h"
@@ -42,8 +49,11 @@
 #include "main/villager_entry.h"
 #include "main/villager_items.h"
 #include "main/villager_memories.h"
+#include "main/villager_memory_bits.h"
 #include "main/villager_memory_entry.h"
 #include "main/villager_scene_slots.h"
+#include "main/villager_state.h"
+#include "main/villager_status.h"
 #include "main/villager_talk_scene.h"
 #include "room_object_body.h"
 
@@ -206,9 +216,7 @@ extern const char data_ov004_02253ed0[], data_ov004_02253edc[], data_ov004_02253
 extern fx32 FX_MulFunc(fx32 a, fx32 b);
 extern fx32 FX_Div(fx32 numerator, fx32 denominator);
 
-/* The class's functions kept as the game's. */
-/* Its state: taken when the state's entry function (if any) agrees, the state before kept. */
-extern void func_ov004_02221550(FleaMarketBuyer *buyer, int state);
+/* The functions of the room kept as the game's. */
 /* The room's list of objects, its object of a number (NULL for none) and how many it holds. */
 extern void *func_ov004_0223ce84(void);
 extern RoomObject *func_ov004_0223cd58(void *objects, int index);
@@ -508,9 +516,9 @@ void FleaMarketBuyer_OnEvent(FleaMarketBuyer *buyer, int code)
         case FMB_EVENT_1:
             fmb_ready_talk(buyer);
             if (buyer->stage == FMB_STAGE_PLAYER_AT_EXIT || buyer->stage == FMB_STAGE_TIME_UP) {
-                func_ov004_02221550(buyer, FMB_STATE_BYE);
+                FleaMarketBuyer_SetState(buyer, FMB_STATE_BYE);
             } else {
-                func_ov004_02221550(buyer, FMB_STATE_TALK);
+                FleaMarketBuyer_SetState(buyer, FMB_STATE_TALK);
             }
             if (buyer->stage == FMB_STAGE_CALL) {
                 buyer->object_count = func_ov004_0223cdc0(func_ov004_0223ce84());
@@ -522,7 +530,7 @@ void FleaMarketBuyer_OnEvent(FleaMarketBuyer *buyer, int code)
             break;
         case FMB_EVENT_TALK:
             fmb_ready_talk(buyer);
-            func_ov004_02221550(buyer, FMB_STATE_TALK);
+            FleaMarketBuyer_SetState(buyer, FMB_STATE_TALK);
             break;
         case FMB_EVENT_ENDED:
             if (buyer->stage == FMB_STAGE_PLAYER_AT_EXIT_BYE) {
@@ -532,7 +540,7 @@ void FleaMarketBuyer_OnEvent(FleaMarketBuyer *buyer, int code)
                     break;
                 }
             }
-            func_ov004_02221550(buyer, FMB_STATE_BROWSE);
+            FleaMarketBuyer_SetState(buyer, FMB_STATE_BROWSE);
             break;
         default:
             break;
@@ -674,7 +682,7 @@ void FleaMarketBuyerTalk_OnMessageEnded(FleaMarketBuyerTalk *talk)
                 talk->buyer->stage = FMB_STAGE_GREETED;
                 talk->buyer->step_wait = FMB_GREETED_WAIT;
                 TalkObject_SetMessage(fmb_talk_object(talk), &data_021f43e8, NULL);
-                func_ov004_02221550(talk->buyer, FMB_STATE_GREET);
+                FleaMarketBuyer_SetState(talk->buyer, FMB_STATE_GREET);
             }
             break;
         case 8:
@@ -964,7 +972,7 @@ int FleaMarketBuyer_UpdateTalk(FleaMarketBuyer *buyer)
             buyer->stage = FMB_STAGE_BROWSE;
             buyer->browse_frames = 0;
         }
-        func_ov004_02221550(buyer, FMB_STATE_DONE);
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_DONE);
     }
     return 1;
 }
@@ -1002,7 +1010,7 @@ int FleaMarketBuyer_UpdateBye(FleaMarketBuyer *buyer)
             ScenePlace_SavePlayer(SceneTables_EntryRecord(), 0);
             SceneExit_Take((SceneExit *) (uintptr_t) SceneTables_EntryRecord(), FMB_EXIT_ALONE);
         }
-        func_ov004_02221550(buyer, FMB_STATE_DONE);
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_DONE);
     }
     return 1;
 }
@@ -1040,7 +1048,7 @@ int FleaMarketBuyer_UpdateGo(FleaMarketBuyer *buyer)
     }
     SceneMover_SetStart(fmb_mover_of(buyer), &step);
     if (distance <= buyer->reach || Vec_Equal(&step, &actor->position)) {
-        func_ov004_02221550(buyer, FMB_STATE_BROWSE);
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_BROWSE);
     }
 
     Vec3 ahead = actor->position;
@@ -1077,7 +1085,7 @@ int FleaMarketBuyer_UpdateFace(FleaMarketBuyer *buyer)
         return 1;
     }
     if (SceneMotion_Kind(fmb_motion_of(buyer)) == FMB_MOTION_TURN && SceneMotion_IsDone(fmb_motion_of(buyer))) {
-        func_ov004_02221550(buyer, FMB_STATE_BROWSE);
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_BROWSE);
     }
     return 1;
 }
@@ -1116,9 +1124,9 @@ int FleaMarketBuyer_UpdateBrowse(FleaMarketBuyer *buyer)
         int yaw = actor->angle[1];
         int away = Math_AbsDiff16(yaw, Vec_YawTo(&actor->position, &buyer->target));
         if (distance > buyer->reach && Vec_Differ(&step, &actor->position)) {
-            func_ov004_02221550(buyer, FMB_STATE_GO);
+            FleaMarketBuyer_SetState(buyer, FMB_STATE_GO);
         } else if (away > FMB_TURN_ANGLE) {
-            func_ov004_02221550(buyer, FMB_STATE_FACE);
+            FleaMarketBuyer_SetState(buyer, FMB_STATE_FACE);
         }
     }
     return 1;
@@ -1151,7 +1159,7 @@ int FleaMarketBuyer_UpdateStepIn(FleaMarketBuyer *buyer)
     if (wait == 1) {
         SceneMotion_Request(fmb_motion_of(buyer), FMB_MOTION_STAND, 2, 0, 0, 0, 0, 0, 0, data_020c80f8, 0);
         EventQueue_FinishObjectEvent(buyer);
-        func_ov004_02221550(buyer, FMB_STATE_DONE);
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_DONE);
         return 1;
     }
     if (wait == 0) {
@@ -1174,3 +1182,307 @@ int FleaMarketBuyer_EnterStepIn(FleaMarketBuyer *buyer)
     return 1;
 }
 CLEAN_AS(func_ov004_0222136c, FleaMarketBuyer_EnterStepIn)
+
+/* The parts of the town villager scene object used by its start, greeting and set-up. */
+#define FMB_LOOK 0x3b0      /* SceneLook */
+#define FMB_SOUND 0x514     /* SoundEmitter */
+#define FMB_FOOTSTEPS 0x558 /* Footsteps */
+/* Its vtable slot giving its town record. */
+#define FMB_SLOT_RECORD 0x64
+
+/* State 0: the frames between its tries to knock, the chance of a try (it knocks when a draw
+ * below 101 is 25 or less), how far from it the player must be, its knock's sound, and the
+ * frames it asks for its event after a knock. */
+#define FMB_CALL_WAIT 100
+#define FMB_CALL_DRAWS 0x65
+#define FMB_CALL_CHANCE 0x19
+#define FMB_CALL_DISTANCE 0x8000
+#define FMB_KNOCK_SOUND 0x4ca
+#define FMB_KNOCK_FRAMES 0x1e
+/* Its sounds' volume. */
+#define FMB_SOUND_VOLUME 0x7f
+/* State 1: the sound of its greeting, the frame of its wait it is put in place at, and where. */
+#define FMB_GREETING_SOUND 0x4cb
+#define FMB_PLACE_FRAME 8
+#define FMB_PLACE_X 0x10000
+#define FMB_PLACE_Z 0x1f000
+/* Where it waits to call the player, at the room's way in. */
+#define FMB_DOOR_X 0x10000
+#define FMB_DOOR_Z 0x23000
+/* The state of the villager's state entry set when it starts (VillagerState_SetState), and
+ * the index VillagerState_SetIndex164 is given when it leaves in stage 4 or 6 (none). */
+#define FMB_VILLAGER_STATE_VISITING 2
+#define FMB_NO_INDEX 0xff
+/* Its states 0 and 2 (FleaMarketBuyer_SetState). */
+#define FMB_STATE_CALL 0
+#define FMB_STATE_STEP_IN 2
+/* The talk FleaMarketBuyer_UpdateGreet waits on. */
+#define FMB_TALK_INDEX 0
+
+/* The functions of its states (filled at start-up by __sinit_ov004_0224e484): 0 to 7, and 8
+ * right after them (data_ov004_02257f10). */
+extern FleaMarketBuyerStep data_ov004_02257e90[FLEA_MARKET_BUYER_STATES];
+
+/* Its town record, through its vtable slot 0x64. */
+static u8 *fmb_record_virtual(FleaMarketBuyer *buyer)
+{
+    u32 vtable = *(const u32 *) (const void *) buyer->base;
+    u32 code = *(const u32 *) (uintptr_t) (vtable + FMB_SLOT_RECORD);
+    return (u8 *) (uintptr_t) ((u32 (*)(u8 *))(uintptr_t) code)(buyer->base);
+}
+
+/* Its position and the one at the start of the frame set to (x, z), the height kept. */
+static void fmb_place(FleaMarketBuyer *buyer, fx32 x, fx32 z)
+{
+    Actor *actor = fmb_actor_of(buyer);
+    actor->position.x = x;
+    actor->last_position.x = x;
+    actor->position.z = z;
+    actor->last_position.z = z;
+}
+
+/* func_ov004_0222137c (state 1's update): nothing while talk 0 is open. With 40 frames of its
+ * wait left it plays its greeting (FleaMarketBuyer_PlayGreeting). It faces into the room (its
+ * angles and its movement's angles (0, 0x8000, 0)) and its wait counts down: at 8 it is put at
+ * (0x10000, 0x1f000); at 0 it steps in (state 2). 1. */
+int FleaMarketBuyer_UpdateGreet(FleaMarketBuyer *buyer)
+{
+    TalkObject *talk = TalkObject_Get(FMB_TALK_INDEX);
+    if (talk != NULL && talk->state != TALK_OBJECT_CLOSED) {
+        return 1;
+    }
+    if (buyer->step_wait == FMB_GREETED_WAIT) {
+        FleaMarketBuyer_PlayGreeting(buyer);
+    }
+    Actor *actor = fmb_actor_of(buyer);
+    actor->angle[0] = 0;
+    actor->angle[1] = FMB_INTO_ROOM_YAW;
+    actor->angle[2] = 0;
+    actor->move_angle[0] = 0;
+    actor->move_angle[1] = FMB_INTO_ROOM_YAW;
+    actor->move_angle[2] = 0;
+    if (Countdown_Tick8(&buyer->step_wait) != 0) {
+        if (buyer->step_wait == FMB_PLACE_FRAME) {
+            fmb_place(buyer, FMB_PLACE_X, FMB_PLACE_Z);
+        }
+        return 1;
+    }
+    FleaMarketBuyer_SetState(buyer, FMB_STATE_STEP_IN);
+    return 1;
+}
+CLEAN_AS(func_ov004_0222137c, FleaMarketBuyer_UpdateGreet)
+
+/* func_ov004_02221410 (state 1's entry): it stands. 1. */
+int FleaMarketBuyer_EnterGreet(FleaMarketBuyer *buyer)
+{
+    fmb_request_motion(buyer, FMB_MOTION_STAND, 0, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_02221410, FleaMarketBuyer_EnterGreet)
+
+/* func_ov004_02221444 (state 0's update): while it is not knocking, the wait between its tries
+ * (byte 0xadf) counts down; at 0, three draws in four (above 25 of 0 to 100) wait another 100
+ * frames; else, with this console's player's field actor farther than 0x8000 from it, it knocks
+ * (sound 0x4ca) and knocks for 30 frames. While it knocks, its event (kind 6) is asked for each
+ * frame and the count goes down to 1 (it stays there). 1.
+ * QUIRK: with no field actor of the player, or the player near, the wait stays 0 and the next
+ * frame draws again. */
+int FleaMarketBuyer_UpdateCall(FleaMarketBuyer *buyer)
+{
+    if (buyer->talk_wait == 0) {
+        if (Countdown_Tick8(&buyer->unk_adf) != 0) {
+            return 1;
+        }
+        if (MainRandom_Below(FMB_CALL_DRAWS) > FMB_CALL_CHANCE) {
+            buyer->unk_adf = FMB_CALL_WAIT;
+            return 1;
+        }
+        const Actor *player = SessionPlayers_ActorOf(FMB_PLAYER_ACTOR);
+        if (player != NULL) {
+            Vec3 at = player->position;
+            if (Vec_DistanceXZ(&at, &fmb_actor_of(buyer)->position) > FMB_CALL_DISTANCE) {
+                SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_KNOCK_SOUND, FMB_SOUND_VOLUME, 0);
+                buyer->talk_wait = FMB_KNOCK_FRAMES;
+            }
+        }
+    }
+    if (buyer->talk_wait != 0) {
+        EventQueue_RequestKind6(buyer, 0);
+        if (buyer->talk_wait > 1) {
+            Countdown_Tick8(&buyer->talk_wait);
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02221444, FleaMarketBuyer_UpdateCall)
+
+/* func_ov004_022214f0 (state 0's entry): its visit at stage 0, and it stands. 1. */
+int FleaMarketBuyer_EnterCall(FleaMarketBuyer *buyer)
+{
+    buyer->stage = FMB_STAGE_CALL;
+    fmb_request_motion(buyer, FMB_MOTION_STAND, 0, 0);
+    return 1;
+}
+CLEAN_AS(func_ov004_022214f0, FleaMarketBuyer_EnterCall)
+
+/* func_ov004_0222152c: its greeting: the sound 0x4cb, then the scene's sound
+ * (Block020b220c_PlaySceneSound). */
+void FleaMarketBuyer_PlayGreeting(FleaMarketBuyer *buyer)
+{
+    SoundEmitter_PlayB((SoundEmitter *) (void *) fmb_part(buyer, FMB_SOUND), FMB_GREETING_SOUND, FMB_SOUND_VOLUME, 0);
+    Block020b220c_PlaySceneSound();
+}
+CLEAN_AS(func_ov004_0222152c, FleaMarketBuyer_PlayGreeting)
+
+/* func_ov004_02221550: state `state` taken when its entry function, if it has one, answers
+ * nonzero; the state before is kept.
+ * REQUIRES: `state` is 0 to 8 (the table is not bounded). */
+void FleaMarketBuyer_SetState(FleaMarketBuyer *buyer, int state)
+{
+    const FleaMarketBuyerStep *step = &data_ov004_02257e90[state];
+    int taken = 1;
+    if (step->enter.function != 0) {
+        taken = MemberPointer_CallInt(&step->enter, buyer);
+    }
+    if (taken != 0) {
+        buyer->previous_state = buyer->state;
+        buyer->state = state;
+    }
+}
+CLEAN_AS(func_ov004_02221550, FleaMarketBuyer_SetState)
+
+/* func_ov004_022215a0 (vtable slot 0x68, its update): its state's update when it has one, and
+ * its answer; else 0.
+ * REQUIRES: its state is 0 to 8. */
+int FleaMarketBuyer_RunState(FleaMarketBuyer *buyer)
+{
+    const FleaMarketBuyerStep *step = &data_ov004_02257e90[(u32) buyer->state];
+    if (step->update.function == 0) {
+        return 0;
+    }
+    return MemberPointer_CallInt(&step->update, buyer);
+}
+CLEAN_AS(func_ov004_022215a0, FleaMarketBuyer_RunState)
+
+/* func_ov004_022215ec (vtable slot 0x24, the drawing): drawn once past stage 0 (calling at the
+ * way in it is not seen). 1. */
+int FleaMarketBuyer_Draw(FleaMarketBuyer *buyer)
+{
+    if (buyer->stage != FMB_STAGE_CALL) {
+        SceneObject_Draw(buyer->base);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_022215ec, FleaMarketBuyer_Draw)
+
+/* func_ov004_02221608 (vtable slot 0x0c): the town villager's leaving; when it agrees: leaving
+ * after its goodbye (stage 4 or 6) the town's extra visitors are cleared and the index of
+ * VillagerState_SetIndex164 set to none; with a town record (asked twice), its state entry is
+ * settled. Whether it agreed. */
+int FleaMarketBuyer_Leave(FleaMarketBuyer *buyer)
+{
+    if (VillagerSceneObject_Leave(buyer->base) == 0) {
+        return 0;
+    }
+    if (buyer->stage == FMB_STAGE_PLAYER_AT_EXIT_BYE || buyer->stage == FMB_STAGE_TIME_UP_BYE) {
+        TownObjects_ClearExtraVisitors();
+        VillagerState_SetIndex164(FMB_NO_INDEX);
+    }
+    if (fmb_record_virtual(buyer) != NULL) {
+        VillagerState_SettleState(VillagerStatus_StateEntry(fmb_record_virtual(buyer)));
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02221608, FleaMarketBuyer_Leave)
+
+/* Whether `player` (the current player's, NULL without one) is set and known to the villager
+ * with bit 14 of its memory of them. Its town record is asked of its vtable at each step. */
+static int fmb_player_known(FleaMarketBuyer *buyer, DesignCreator *player)
+{
+    if (fmb_record_virtual(buyer) == NULL || player == NULL || PlayerId_IsSet(player) == 0) {
+        return 0;
+    }
+    if (VillagerMemory_Of(fmb_record_virtual(buyer), player) == NULL) {
+        return 0;
+    }
+    return VillagerMemoryBits_Bit14(VillagerMemory_Of(fmb_record_virtual(buyer), player)) != 0;
+}
+
+/* func_ov004_02221658 (vtable slot 0x00, its start): the town villager's start; then no item is
+ * wanted, its footsteps are on, the item's centre is its position, its reach 0x3000, its recent
+ * objects cleared and its look locked. When the previous scene is one SceneQuery_Is31 names, or
+ * the current player is known to it (fmb_player_known), it is in the room already: the room's
+ * objects are counted, the town's extra visitors set, the collision map's claim set to 0, the
+ * room notes a villager of the flea market (func_ov004_0223d33c), the time is its last talk's
+ * and it browses (stage 2, state 3). Else it waits at the way in, (0x10000, 0x23000), to call
+ * (its first try in 100 frames, its frames of looking about counted, state 0). With a town
+ * record, its state entry is set to state 2. Whether the start was done. */
+int FleaMarketBuyer_Start(FleaMarketBuyer *buyer)
+{
+    if (VillagerSceneObject_Start(buyer->base) == 0) {
+        return 0;
+    }
+    buyer->item = FMB_NO_ITEM;
+    Footsteps_Enable((Footsteps *) (void *) fmb_part(buyer, FMB_FOOTSTEPS));
+    buyer->target = fmb_actor_of(buyer)->position;
+    buyer->reach = FMB_REACH_SMALL;
+    for (int i = 0; i < FLEA_MARKET_BUYER_RECENT; i++) {
+        buyer->recent[i] = FMB_NO_RECENT;
+    }
+    SceneLook_Lock((SceneLook *) (void *) fmb_part(buyer, FMB_LOOK));
+
+    DesignCreator *player = NULL;
+    if (PlayerRecords_Current() != NULL) {
+        player = PlayerRecord_Player(PlayerRecords_Current());
+    }
+    if (SceneQuery_Is31(SceneQuery_Previous()) != 0 || fmb_player_known(buyer, player)) {
+        buyer->object_count = func_ov004_0223cdc0(func_ov004_0223ce84());
+        TownObjects_SetExtraVisitors();
+        CollisionMap_Claim(0);
+        func_ov004_0223d33c();
+        DateTime_Now(&buyer->talk_time);
+        buyer->stage = FMB_STAGE_BROWSE;
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_BROWSE);
+    } else {
+        fmb_place(buyer, FMB_DOOR_X, FMB_DOOR_Z);
+        buyer->unk_adf = FMB_CALL_WAIT;
+        buyer->browse_frames = 1;
+        FleaMarketBuyer_SetState(buyer, FMB_STATE_CALL);
+    }
+    if (fmb_record_virtual(buyer) != NULL) {
+        VillagerState_SetState(VillagerStatus_StateEntry(fmb_record_virtual(buyer)), FMB_VILLAGER_STATE_VISITING);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_02221658, FleaMarketBuyer_Start)
+
+/* func_ov004_022217cc (vtable slot 0x04, its set-up): the town villager's set-up; then its talk
+ * scene becomes its scene and is started (FleaMarketBuyerTalk_Start). Whether the set-up was
+ * done. */
+int FleaMarketBuyer_Init(FleaMarketBuyer *buyer)
+{
+    if (VillagerSceneObject_Init(buyer->base) == 0) {
+        return 0;
+    }
+    SceneObject_SetScene(buyer->base, fmb_scene_of(&buyer->talk));
+    FleaMarketBuyerTalk_Start(&buyer->talk, buyer);
+    return 1;
+}
+CLEAN_AS(func_ov004_022217cc, FleaMarketBuyer_Init)
+
+/* func_ov004_022217fc (its entry in the overlay's table of profiles, data_ov004_02253d60):
+ * allocates (zeroed) and builds a villager: the town villager scene object, no item wanted, its talk
+ * scene, and no last talk. */
+FleaMarketBuyer *FleaMarketBuyer_New(void)
+{
+    FleaMarketBuyer *buyer = Heap_AllocAuxZeroed(sizeof(FleaMarketBuyer));
+    if (buyer != NULL) {
+        VillagerSceneObject_Construct(buyer->base);
+        *(const u8 **) (void *) buyer->base = data_ov004_02253e10;
+        buyer->item = FMB_NO_ITEM;
+        FleaMarketBuyerTalk_Construct(&buyer->talk);
+        buyer->talk_time = (DateTime){0};
+    }
+    return buyer;
+}
+CLEAN_AS(func_ov004_022217fc, FleaMarketBuyer_New)
