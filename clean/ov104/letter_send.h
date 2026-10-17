@@ -1,5 +1,5 @@
 /* The scene of overlay 104 (vtable 0x0229f6d0, include/cpp/ov104/Obj_ov104_0229f6d0.h; constructor
- * func_ov104_0229f460, 0x4380 bytes): the post office's screen for posting letters. It is the
+ * LetterSend_New, 0x4380 bytes): the post office's screen for posting letters. It is the
  * screen of group 9's mode 0x25 (GroupParams_OpenLetter, main/group_params.h), which the post
  * office clerk's overlay (54, the pelicans' models) opens and whose result flags it reads back.
  * As the evidence says:
@@ -12,7 +12,7 @@
  * - the cursor walks the carried letters (2 columns of 5), the letters to post (`outbox`, 2
  *   columns of 5) and one place below each (LetterSendPlace); letters are picked up, held and
  *   put down as in overlay 106;
- * - its setup (func_ov104_0229eaa8) empties `outbox` and copies the carried letters into
+ * - its setup (LetterSend_Setup) empties `outbox` and copies the carried letters into
  *   `carried_copy` (LetterSend_SaveCarried); cancelling (panel button 7, LetterSend_Cancel)
  *   puts that copy back (LetterSend_RestoreCarried);
  * - posting (panel button 9, LetterSend_Post) hands the letters of `outbox` on: to the post
@@ -222,7 +222,7 @@ void LetterSend_SelectPlace(LetterSendScene *self, int place);
  * `unk_b7` the place the held letter was taken from (or glides to), `unk_bf` the frames before
  * a touched place's choice opens. */
 
-/* The sub states, run from the table of func_ov104_0229f05c and named by what their handler
+/* The sub states, run from the table of LetterSend_RunSubState and named by what their handler
  * does. */
 enum LetterSendSubState {
     LETTER_SEND_SUB_TOUCH_IDLE = 0x00,      /* LetterSend_IdleByTouch */
@@ -316,5 +316,62 @@ void LetterSend_PreparePanel(LetterSendScene *self);
 void LetterSend_LoadPageLayer(LetterSendScene *self);
 void LetterSend_PrepareWallet(LetterSendScene *self);
 void LetterSend_SetUpLayers(void);
+
+/* More of `flags`, as the states and the draw use them. */
+#define LETTER_SEND_FLAG_LETTER_SHOWN 0x080 /* a letter is shown with the label button below it */
+#define LETTER_SEND_FLAG_OUTBOX_SHOWN 0x200 /* the page of the letters to post is shown */
+
+/* `unk_98` is the wipe's y the panel and the objects are drawn at (LETTER_SEND_FLAG_SCROLLED),
+ * `unk_9c` the wipe's x the letters to post are drawn at (LETTER_SEND_FLAG_OUTBOX_SHOWN). */
+
+/* The scene's states (MenuScene.state), run from the table of func_ov104_0229f248. */
+enum LetterSendState {
+    LETTER_SEND_STATE_START_SETUP = 0x00,           /* LetterSend_StartSetup */
+    LETTER_SEND_STATE_START_WIPE_IN = 0x01,         /* LetterSend_StartWipeIn */
+    LETTER_SEND_STATE_SCENE_WIPE_IN = 0x02,         /* LetterSend_SceneWipeIn */
+    LETTER_SEND_STATE_OUTBOX_WIPE_IN = 0x03,        /* LetterSend_OutboxWipeIn */
+    LETTER_SEND_STATE_START_WIPE_OUT = 0x04,        /* LetterSend_StartWipeOut */
+    LETTER_SEND_STATE_OUTBOX_WIPE_OUT = 0x05,       /* LetterSend_OutboxWipeOut */
+    LETTER_SEND_STATE_SCENE_WIPE_OUT = 0x06,        /* LetterSend_SceneWipeOut */
+    LETTER_SEND_STATE_SHOW_LETTER = 0x07,           /* LetterSend_ShowLetter */
+    LETTER_SEND_STATE_LETTER_WIPE_IN = 0x08,        /* LetterSend_LetterWipeIn */
+    LETTER_SEND_STATE_START_LETTER_WIPE_OUT = 0x09, /* LetterSend_StartLetterWipeOut */
+    LETTER_SEND_STATE_LETTER_WIPE_OUT = 0x0a,       /* LetterSend_LetterWipeOut */
+    LETTER_SEND_STATES = 0x0b
+};
+
+#define LETTER_SEND_SUB_STATES 0x1d
+
+void LetterSend_EndFrame(LetterSendScene *self);
+void LetterSend_BeginFrame(LetterSendScene *self);
+void LetterSend_EndInteractiveFrame(LetterSendScene *self);
+void LetterSend_BeginInteractiveFrame(LetterSendScene *self);
+void LetterSend_Teardown(LetterSendScene *self);
+void LetterSend_Setup(LetterSendScene *self);
+void LetterSend_ScrollOutboxLayer(LetterSendScene *self);
+void LetterSend_ScrollSceneLayer(LetterSendScene *self);
+void LetterSend_ScrollLetterLayers(LetterSendScene *self);
+void LetterSend_LetterWipeOut(LetterSendScene *self);
+void LetterSend_StartLetterWipeOut(LetterSendScene *self);
+void LetterSend_LetterWipeIn(LetterSendScene *self);
+void LetterSend_ShowLetter(LetterSendScene *self);
+void LetterSend_SceneWipeOut(LetterSendScene *self);
+void LetterSend_OutboxWipeOut(LetterSendScene *self);
+void LetterSend_StartWipeOut(LetterSendScene *self);
+void LetterSend_OutboxWipeIn(LetterSendScene *self);
+void LetterSend_SceneWipeIn(LetterSendScene *self);
+void LetterSend_StartWipeIn(LetterSendScene *self);
+void LetterSend_StartSetup(LetterSendScene *self);
+int LetterSend_Update(LetterSendScene *self);
+int LetterSend_End(LetterSendScene *self);
+int LetterSend_Phase1Idle(void);
+int LetterSend_Phase0Idle(void);
+int LetterSend_RunInteractive(LetterSendScene *self);
+void LetterSend_RunSubState(LetterSendScene *self);
+int LetterSend_RunState(LetterSendScene *self);
+int LetterSend_Draw(LetterSendScene *self);
+int LetterSend_Close(LetterSendScene *self);
+int LetterSend_Start(LetterSendScene *self);
+LetterSendScene *LetterSend_New(void);
 
 #endif

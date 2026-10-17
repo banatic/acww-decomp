@@ -12,6 +12,14 @@
 #include "room_objects.h"
 #include "tv.h"
 
+#include "autoload_2/heap.h"
+#include "main/backup_card.h"
+#include "main/model_pool.h"
+#include "main/scene_kinds.h"
+#include "main/scene_query.h"
+#include "room_preview.h"
+#include "room_pushes.h"
+
 static_assert(offsetof(RoomManager, tv) == 0x064, "TV broadcast");
 static_assert(offsetof(RoomManager, mover) == 0x1c4, "furniture mover");
 static_assert(offsetof(RoomManager, broadcast_changed) == 0x2b0, "broadcast changed");
@@ -313,3 +321,203 @@ unsigned short RoomManager_FrameCounter(void)
     return data_ov004_022595bc;
 }
 CLEAN_AS(func_ov004_0223c1e0, RoomManager_FrameCounter)
+
+/* ---- The room's process: its start, frame, end, and its construction */
+
+static_assert(sizeof(Process) == 0x50, "room's process");
+static_assert(offsetof(RoomManager, sounds) == 0x050, "room's sounds");
+static_assert(sizeof(RoomManager) == 0x2b4, "room");
+
+#define ROOM_MANAGER_SIZE 0x2b4
+/* The frame counter counts 0 to this less one. */
+#define ROOM_MANAGER_FRAME_PERIOD 0x28
+/* The model pool's VRAM of each entry, and its heap (smaller in scenes of kind 20). */
+#define ROOM_MANAGER_POOL_TEXTURE 0x2000
+#define ROOM_MANAGER_POOL_PALETTE 0x80
+#define ROOM_MANAGER_POOL_HEAP 0x1cc4
+#define ROOM_MANAGER_POOL_HEAP_SMALL 0x1c00
+
+/* Set in Nook's shops and scenes 0xa and 0xf (RoomObjects_InNookOrScene0AOr0F) by the room's
+ * start, and when a villager of the flea market is in the room (flea_market_villager.c); the
+ * room's objects read it (room_object_body.c, room_pushes.c). */
+extern u8 data_ov004_022595b4;
+/* The heap of the room's objects (room_objects.h). */
+extern Heap *data_ov004_022595c4;
+/* The model pool of the room's objects, and the name it is given. */
+extern ModelPool data_ov004_02259698;
+extern const char data_ov004_02256188[];
+/* The game card's save memory. */
+extern BackupCard data_021c8188;
+
+/* The vtables: the process base's and the room's. */
+extern const u32 data_020da13c[];
+extern const u32 data_ov004_02256018[];
+
+/* The model pool's heap hooks, handed to the pool: the game's (SceneHeaps_CreateOv004PoolC and
+ * SceneHeaps_DestroyOv004PoolC in Clean). */
+extern int func_0205ca98(int size, int parent);
+extern void func_0205ca7c(void);
+
+/* func_ov004_0223d028: the room's list of point sounds, NULL without a room. */
+RoomSoundList *RoomManager_SoundList(void)
+{
+    if (data_ov004_022595c0 != NULL) {
+        return &data_ov004_022595c0->sounds;
+    }
+    return NULL;
+}
+CLEAN_AS(func_ov004_0223d028, RoomManager_SoundList)
+
+/* func_ov004_0223d33c: sets data_ov004_022595b4 (a villager of the flea market is in). */
+void RoomManager_SetShopMode(void)
+{
+    data_ov004_022595b4 = 1;
+}
+CLEAN_AS(func_ov004_0223d33c, RoomManager_SetShopMode)
+
+/* func_ov004_0223d348 */
+unsigned char RoomManager_ShopMode(void)
+{
+    return data_ov004_022595b4;
+}
+CLEAN_AS(func_ov004_0223d348, RoomManager_ShopMode)
+
+/* func_ov004_0223d354 (vtable slot 3): the room's end: its sounds, furniture mover, TVs (where
+ * the scene has room for more than one object), the item shown's files and the model pool are
+ * released, the room is gone, the pushes are reset and the objects' heap deleted; 1. */
+int RoomManager_Release(RoomManager *room)
+{
+    RoomSoundList_Release(&room->sounds);
+    FurnitureMover_Release((FurnitureMover *) (void *) room->mover);
+    if (RoomObjects_Capacity() > 1) {
+        TvBroadcast_Release(&room->tv);
+    }
+    RoomPreview_FreeFiles(RoomPreview_Get());
+    ModelPool_Destroy(&data_ov004_02259698);
+    data_ov004_022595c0 = NULL;
+    RoomPushes_Reset(RoomPushes_Records());
+    RoomObjects_HeapDelete(&data_ov004_022595c4);
+    return 1;
+}
+CLEAN_AS(func_ov004_0223d354, RoomManager_Release)
+
+/* func_ov004_0223d3b0 (vtable slot 9): the draw; nothing to do. */
+int RoomManager_Draw(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov004_0223d3b0, RoomManager_Draw)
+
+/* func_ov004_0223d3b4 (vtable slot 6): the room's frame: its sound list is started (once it
+ * can be) and flushed, the frame counter goes on, the TVs follow their schedule and their sound
+ * (where the scene has room for more than one object, the save memory is idle, and the scene
+ * is neither of kinds 6 to 8 nor a session with other players), the nearest clocks are marked
+ * and the pushes reset; 1. */
+int RoomManager_Update(RoomManager *room)
+{
+    RoomSoundList_Start(&room->sounds);
+    RoomSoundList_Flush(&room->sounds);
+    data_ov004_022595bc = (u16) ((data_ov004_022595bc + 1) % ROOM_MANAGER_FRAME_PERIOD);
+    if (RoomObjects_Capacity() > 1 && BackupCard_Status(&data_021c8188) == BACKUP_CARD_IDLE &&
+        SceneKinds_CurrentIn6To8() == 0 && SceneKinds_CurrentIsSession() == 0) {
+        TvBroadcast_FollowSchedule(&room->tv);
+        RoomManager_UpdateTvSound(room);
+        TvBroadcast_UpdateScreen(&room->tv);
+    }
+    RoomManager_MarkNearestClock(room);
+    RoomManager_MarkNearestStriker(room);
+    RoomPushes_Reset(RoomPushes_Records());
+    return 1;
+}
+CLEAN_AS(func_ov004_0223d3b4, RoomManager_Update)
+
+/* func_ov004_0223d434 (vtable slot 0): the room's start: the TV is heard in a house's room and
+ * in scenes of kind 11; the TV's sound state and the broadcast's flag are cleared; the shop
+ * mode is set by the scene; the objects' heap is made for the scene's number of objects; this
+ * is the room; the objects' grid and the pushes are cleared; the model pool is made (one entry
+ * per object); then the TVs (with room for more than one object), the furniture mover, the item
+ * shown's files and the furniture of the room's map; 1. */
+int RoomManager_Init(RoomManager *room)
+{
+    if (SceneKinds_CurrentIsHouseRoom() != 0 || SceneQuery_CurrentIn11() != 0) {
+        data_ov004_022595b8 = 1;
+    }
+    RoomTvSoundState *state = (RoomTvSoundState *) (void *) room->unk_2a8;
+    state->silent = 1;
+    state->told = 0;
+    state->channel = 0;
+    room->broadcast_changed = 0;
+    data_ov004_022595b4 = (u8) RoomObjects_InNookOrScene0AOr0F();
+    RoomObjects_HeapCreate(&data_ov004_022595c4, RoomObjects_Capacity());
+    data_ov004_022595c0 = room;
+    RoomObjects_GridClear(RoomObjects_Grid());
+    RoomPushes_Reset(RoomPushes_Records());
+    int heap_size = ROOM_MANAGER_POOL_HEAP;
+    if (SceneQuery_CurrentIn20() != 0) {
+        heap_size = ROOM_MANAGER_POOL_HEAP_SMALL;
+    }
+    u32 count = (u32) RoomObjects_Capacity();
+    ModelPool_Create(&data_ov004_02259698, count, ROOM_MANAGER_POOL_TEXTURE, ROOM_MANAGER_POOL_PALETTE, heap_size,
+                     func_0205ca98, func_0205ca7c, (void *) (uintptr_t) data_ov004_02256188);
+    RoomManager_StartStub(room);
+    if (RoomObjects_Capacity() > 1) {
+        TvBroadcast_Init(&room->tv);
+    }
+    FurnitureMover_Load((FurnitureMover *) (void *) room->mover);
+    RoomPreview_AllocFiles(RoomPreview_Get());
+    RoomManager_PlaceMapFurniture(room);
+    return 1;
+}
+CLEAN_AS(func_ov004_0223d434, RoomManager_Init)
+
+/* The destructor: the members in the reverse order, then the process. */
+static void RoomManager_destruct(RoomManager *room)
+{
+    room->process.vtable = data_ov004_02256018;
+    FurnitureMover_Destruct((FurnitureMover *) (void *) room->mover);
+    TvBroadcast_Destruct(&room->tv);
+    RoomSoundList_Destruct(&room->sounds);
+    room->process.vtable = data_020da13c;
+    Process_Destruct(&room->process);
+}
+
+/* func_ov004_0223d52c: the destructor that frees the room. */
+RoomManager *RoomManager_Delete(RoomManager *room)
+{
+    RoomManager_destruct(room);
+    Heap_FreeAux(room);
+    return room;
+}
+CLEAN_AS(func_ov004_0223d52c, RoomManager_Delete)
+
+/* func_ov004_0223d570 */
+RoomManager *RoomManager_Destruct(RoomManager *room)
+{
+    RoomManager_destruct(room);
+    return room;
+}
+CLEAN_AS(func_ov004_0223d570, RoomManager_Destruct)
+
+/* func_ov004_0223d5b0: the constructor: the process, then the members. */
+RoomManager *RoomManager_Construct(RoomManager *room)
+{
+    Process_Construct(&room->process);
+    room->process.vtable = data_020da13c;
+    room->process.vtable = data_ov004_02256018;
+    RoomSoundList_Construct(&room->sounds);
+    TvBroadcast_Construct(&room->tv);
+    FurnitureMover_Construct((FurnitureMover *) (void *) room->mover);
+    return room;
+}
+CLEAN_AS(func_ov004_0223d5b0, RoomManager_Construct)
+
+/* func_ov004_0223d5ec: the class's create function: a zeroed room from the aux heap,
+ * constructed. */
+void RoomManager_New(void)
+{
+    RoomManager *room = Heap_AllocAuxZeroed(ROOM_MANAGER_SIZE);
+    if (room != NULL) {
+        RoomManager_Construct(room);
+    }
+}
+CLEAN_AS(func_ov004_0223d5ec, RoomManager_New)

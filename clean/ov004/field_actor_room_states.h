@@ -209,5 +209,130 @@ void FieldActorRoomStates_UpdateAtChest(struct FieldActor *actor);
 void FieldActorRoomStates_AtChestMessage(struct FieldActor *actor, int arg);
 void FieldActorRoomStates_EnterAtChest(struct FieldActor *actor, const struct StateRequest *request, int previous);
 void FieldActorRoomStates_GetAtChestSaved(const u8 *saved, u8 *index);
+void FieldActorRoomStates_PutAtChestSaved(u8 *saved, u8 index);
+void FieldActorRoomStates_PutAtChestWork(u32 *work, u32 index);
+int FieldActorRoomStates_RequestAtChest(struct FieldActor *actor, int index, int priority, int arg);
+void FieldActorRoomStates_PutAtChestArgs(u8 *payload, u8 index);
+
+/* The state before a chest, and the states of a spot the actor is set at (each message
+ * handler asks for its state again with priority 6; that of 0x2b does nothing):
+ *   0x2d  to a chest: the actor eases to the request's point and yaw; while it stands
+ *         (animation 0 or 0x1a) animation 0x3b, 0x3c or 0x3d (the chest's index, 0 to 2)
+ *         starts once; at that animation's end state 0x2e is asked for with the index;
+ *   0x27  the actor set at the request's point and yaw: animation 0x23 and sound 0x4c5; at
+ *         its end state 0x28;
+ *   0x28  at the spot: animation 0x24 loops; while one of the musics 0x63 to 0xab plays, the
+ *         body follows the music's beat. This console's actor pushed ahead or a quarter turn
+ *         either side, where the room is free there, asks for state 0x2b that way;
+ *   0x2b  the place 2.0 ahead that way (straight, yaw + 0x4000 or yaw - 0x4000) is claimed
+ *         (main's place_claim.h); given, state 0x2c (straight) or a turn first (0x2a, 0x29);
+ *         refused, or with an object met, state 0x28 again;
+ *   0x2a  a quarter turn to yaw + 0x4000: animation 0x25 and sound 0x4c9; then state 0x2c;
+ *   0x29  a quarter turn to yaw - 0x4000: animation 0x26 and sound 0x4c9; then state 0x2c;
+ *   0x2c  off the spot to the point 2.0 ahead: animation 0x27, sound 0x4c6 at frame 13; at its
+ *         end state 2. On leaving it this console's actor lets its claim go, and the actor
+ *         stands at the point.
+ * In a room (data_020e54a8 1) the room object at the actor's position plays its sounds
+ * (ov004/room_point_sound.h): sound 2 on entering 0x2c, sound 0 each frame of 0x2b and 0x28,
+ * sound 1 at frame 12 of 0x27 (at the work's point). */
+
+/* State 0x2d's work at 0x7d4, and a request's arguments for it. */
+typedef struct FieldActorChestApproach {
+    fx32 x;   /* 0x00: where the actor stands before the chest */
+    fx32 z;   /* 0x04 */
+    s16 yaw;  /* 0x08 */
+    u8 index; /* 0x0a: the chest's index, 0 to 2 */
+} FieldActorChestApproach;
+
+/* State 0x2b's work: the place claimed and the way (FieldActorSpotWay). */
+typedef struct FieldActorSpotClaim {
+    Vec3 point;
+    u8 way;
+} FieldActorSpotClaim;
+
+/* The ways off a spot: the index into data_ov004_0224776c (the yaw subtracted). */
+enum FieldActorSpotWay {
+    FIELD_ACTOR_SPOT_STRAIGHT = 0,
+    FIELD_ACTOR_SPOT_PLUS = 1,  /* yaw + 0x4000, state 0x2a first */
+    FIELD_ACTOR_SPOT_MINUS = 2, /* yaw - 0x4000, state 0x29 first */
+};
+
+/* State 0x28's work: the actor's cull flags on entering it (main/actor.h), and whether the
+ * body has met the music's beat. */
+typedef struct FieldActorSpotStay {
+    u32 cull_flags;
+    u8 on_beat;
+} FieldActorSpotStay;
+
+/* State 0x27's work, and a request's arguments for it: the point and the yaw. */
+typedef struct FieldActorSpotEnter {
+    fx32 x;
+    fx32 z;
+    s16 yaw;
+} FieldActorSpotEnter;
+
+void FieldActorRoomStates_UpdateChestApproach(struct FieldActor *actor);
+void FieldActorRoomStates_EndChestApproach(struct FieldActor *actor);
+void FieldActorRoomStates_AnimateChestApproach(struct FieldActor *actor);
+void FieldActorRoomStates_StandChestApproach(struct FieldActor *actor);
+void FieldActorRoomStates_ChestApproachMessage(struct FieldActor *actor, s16 arg);
+void FieldActorRoomStates_EnterChestApproach(struct FieldActor *actor, const struct StateRequest *request, int previous);
+u16 FieldActorRoomStates_GetChestApproachSaved(const u8 *saved, u8 *index, u32 *x, u32 *z, u16 *yaw);
+void FieldActorRoomStates_PutChestApproachSaved(u8 *saved, char index, int x, int z, s16 yaw);
+void FieldActorRoomStates_SetChestApproachWork(FieldActorChestApproach *work, char index, int x, int z, s16 yaw);
+int FieldActorRoomStates_RequestChestApproach(struct FieldActor *actor, int index, int x, int z, s16 yaw, int priority,
+                                              s16 arg);
+void FieldActorRoomStates_PutChestApproachArgs(FieldActorChestApproach *args, char index, int x, int z, s16 yaw);
+
+void FieldActorRoomStates_UpdateSpotStepOff(struct FieldActor *actor);
+void FieldActorRoomStates_EndSpotStepOff(struct FieldActor *actor);
+void FieldActorRoomStates_ContactSpotStepOff(struct FieldActor *actor);
+int FieldActorRoomStates_StepSpotStepOff(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotStepOff(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotStepOffMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotStepOff(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void *FieldActorRoomStates_PutSpotStepOffWork(Vec3 *work, const Vec3 *point);
+int FieldActorRoomStates_RequestSpotStepOff(struct FieldActor *actor, int priority, int arg);
+
+void FieldActorRoomStates_UpdateSpotClaim(struct FieldActor *actor);
+void FieldActorRoomStates_RunSpotClaim(struct FieldActor *actor);
+void FieldActorRoomStates_ContactSpotClaim(struct FieldActor *actor);
+void FieldActorRoomStates_SpotClaimMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotClaim(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void *FieldActorRoomStates_SetSpotClaimWork(FieldActorSpotClaim *work, const Vec3 *point, int way);
+int FieldActorRoomStates_RequestSpotClaim(struct FieldActor *actor, int way, int priority, int arg);
+void FieldActorRoomStates_PutSpotClaimArgs(u8 *payload, u8 way);
+
+void FieldActorRoomStates_UpdateSpotTurnPlus(struct FieldActor *actor);
+void FieldActorRoomStates_EndSpotTurnPlus(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotTurnPlus(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotTurnPlusMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotTurnPlus(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActorRoomStates_RequestSpotTurnPlus(struct FieldActor *actor, int priority, int arg);
+
+void FieldActorRoomStates_UpdateSpotTurnMinus(struct FieldActor *actor);
+void FieldActorRoomStates_EndSpotTurnMinus(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotTurnMinus(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotTurnMinusMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotTurnMinus(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActorRoomStates_RequestSpotTurnMinus(struct FieldActor *actor, int priority, int arg);
+
+void FieldActorRoomStates_UpdateSpotStay(struct FieldActor *actor);
+void FieldActorRoomStates_TryLeaveSpotStay(struct FieldActor *actor);
+void FieldActorRoomStates_BeatSpotStay(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotStay(struct FieldActor *actor);
+void FieldActorRoomStates_SpotStayMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotStay(struct FieldActor *actor, const struct StateRequest *request, int previous);
+int FieldActorRoomStates_RequestSpotStay(struct FieldActor *actor, u16 blend, int priority, int arg);
+
+void FieldActorRoomStates_UpdateSpotEnter(struct FieldActor *actor);
+void FieldActorRoomStates_EndSpotEnter(struct FieldActor *actor);
+void FieldActorRoomStates_StepSpotEnter(struct FieldActor *actor);
+void FieldActorRoomStates_LeaveSpotEnter(struct FieldActor *actor, int next);
+void FieldActorRoomStates_SpotEnterMessage(struct FieldActor *actor, int arg);
+void FieldActorRoomStates_EnterSpotEnter(struct FieldActor *actor, const struct StateRequest *request, int previous);
+void FieldActorRoomStates_GetSpotEnterSaved(const u8 *saved, u32 *x, u32 *z, s16 *yaw);
+void FieldActorRoomStates_PutSpotEnterSaved(u8 *saved, int x, int z, int yaw);
+void FieldActorRoomStates_SetSpotEnterWork(FieldActorSpotEnter *work, int x, int z, int yaw);
 
 #endif

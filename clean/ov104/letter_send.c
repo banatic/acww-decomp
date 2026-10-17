@@ -8,6 +8,7 @@
 
 #include "autoload_2/heap.h"
 #include "autoload_2/input.h"
+#include "autoload_2/process.h"
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
 #include "main/current_pockets.h"
@@ -25,7 +26,9 @@
 #include "main/sound.h"
 #include "main/state_flags.h"
 #include "main/talk_object.h"
+#include "main/villager_part.h"
 #include "ov002/key_repeat.h"
+#include "ov004/member_pointer.h"
 #include "ov094/pockets_common.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterSendScene, flags) == 0x94, "flags");
@@ -202,7 +205,7 @@ int LetterSend_SendToHost(LetterSendScene *self, const Letter *letter)
 }
 CLEAN_AS(func_ov104_0229c378, LetterSend_SendToHost)
 
-/* func_ov104_0229c3dc (each frame, from the sub state func_ov104_0229eee4): while sending to the
+/* func_ov104_0229c3dc (each frame, from LetterSend_Update): while sending to the
  * host, the host's reply to the last letter taken in, then the next written letter to someone
  * else sent. Reply 8 (none yet) waits; 11 (no room) stops with LETTER_SEND_RESULT_NOT_ALL_SENT;
  * 9 and 10 (stored) mark the letter posted. After reply 10 (stored, and now no room) the next
@@ -1752,9 +1755,6 @@ void LetterSend_PressPlace(LetterSendScene *self)
 }
 CLEAN_AS(func_ov104_0229e0f4, LetterSend_PressPlace)
 
-/* The sub state runner (the table of member functions, Obj_ov104_0229f6d0::func_ov104_0229f05c). */
-extern void _ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv(LetterSendScene *self);
-
 /* Obj_ov104_0229f6d0::func_ov104_0229e128 (sub state 0x0d): once the cursor sprite stops moving,
  * back to the sub state kept (the cursor's place selected for sub state 7), which runs at once;
  * the held letter follows the sprite. */
@@ -1765,7 +1765,7 @@ void LetterSend_WaitCursorSprite(LetterSendScene *self)
         if (self->return_state == LETTER_SEND_SUB_BROWSE) {
             LetterSend_SelectPlace(self, self->cursor);
         }
-        _ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv(self);
+        LetterSend_RunSubState(self);
     }
     LetterSend_FollowCursorSprite(self);
 }
@@ -2109,7 +2109,7 @@ void LetterSend_HoldTouchOnPlace(LetterSendScene *self)
     if (data_021fbdd8 == 0) {
         if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_DRAGGABLE) != 0) {
             MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_OPEN_TOUCHED);
-            _ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv(self);
+            LetterSend_RunSubState(self);
         } else {
             MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_TOUCH_IDLE);
             Popup_SetTimer(&self->popup, LETTER_SEND_POPUP_FRAMES);
@@ -2211,3 +2211,556 @@ void LetterSend_SetUpLayers(void)
     DisplayLayer_SetBgControl(LETTER_SEND_PAGE_LAYER, 0, 0, 0);
 }
 CLEAN_AS(func_ov104_0229e98c, LetterSend_SetUpLayers)
+
+/* The letter's text layer (the letter view's, and the choice's). */
+#define LETTER_SEND_TEXT_LAYER 3
+
+/* The margin of the wipes on window 2. */
+#define LETTER_SEND_WIPE_MARGIN 0x30
+
+/* What the parent (overlay 92's) is told (func_ov092_02299324) when the scene ends without a
+ * letter to show, and what it is told when the scene closes. */
+#define LETTER_SEND_PARENT_CODE_END 0x44
+extern void func_ov092_02299324(Process *parent, int code, int flag);
+extern void func_ov092_0229929c(Process *parent);
+
+/* A letter's constructor, handed to __cxa_vec_ctor with its destructor (so the game's symbols). */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void func_02066694(void *letter);
+
+/* The tables of member functions (ov004/member_pointer.h): the guards, the tables and their
+ * constants (the symbol table names the sub states' table's second part, from sub state 0x10,
+ * data_ov104_0229f880). */
+extern u32 data_ov104_0229f7a0; /* the sub states' guard */
+extern u32 data_ov104_0229f7a4; /* the states' guard */
+extern MemberPointer data_ov104_0229f7a8[LETTER_SEND_STATES];
+extern MemberPointer data_ov104_0229f800[LETTER_SEND_SUB_STATES];
+extern const MemberPointer data_ov104_0229f588, data_ov104_0229f590, data_ov104_0229f598, data_ov104_0229f5a0,
+    data_ov104_0229f5a8, data_ov104_0229f5b0, data_ov104_0229f5b8, data_ov104_0229f5c0, data_ov104_0229f5c8,
+    data_ov104_0229f5d0, data_ov104_0229f5d8, data_ov104_0229f5e0, data_ov104_0229f5e8, data_ov104_0229f5f0,
+    data_ov104_0229f5f8, data_ov104_0229f600, data_ov104_0229f608, data_ov104_0229f610, data_ov104_0229f618,
+    data_ov104_0229f620, data_ov104_0229f628, data_ov104_0229f630, data_ov104_0229f638, data_ov104_0229f640,
+    data_ov104_0229f648, data_ov104_0229f650, data_ov104_0229f658, data_ov104_0229f660, data_ov104_0229f668,
+    data_ov104_0229f670, data_ov104_0229f678, data_ov104_0229f680, data_ov104_0229f688, data_ov104_0229f690,
+    data_ov104_0229f698, data_ov104_0229f6a0, data_ov104_0229f6a8, data_ov104_0229f6b0, data_ov104_0229f6b8,
+    data_ov104_0229f6c0;
+
+/* The parent process. */
+static Process *lsend_parent(LetterSendScene *self)
+{
+    return Process_GetParent((Process *) (void *) self);
+}
+
+/* A member drawn through its class (vtable slot 2). */
+static void lsend_draw_member(void *object)
+{
+    const u32 *vtable = (const u32 *) (uintptr_t) *(const u32 *) object;
+    ((void (*)(void *))(uintptr_t) vtable[2])(object);
+}
+
+/* func_ov104_0229e9c0: the end of a frame: the choice and the wallet's display updated, and the
+ * popup placed when its update asks for it. */
+void LetterSend_EndFrame(LetterSendScene *self)
+{
+    PagedChoice_Update(lsend_choice(self));
+    PocketsWallet_Update(&self->wallet);
+    if (Popup_Update(&self->popup) != 0) {
+        LetterSend_PlacePopup(self);
+    }
+}
+CLEAN_AS(func_ov104_0229e9c0, LetterSend_EndFrame)
+
+/* func_ov104_0229e9f8: the start of a frame: the layer task ended, the three objects of ov094's
+ * updated and the panel's texts closed. */
+void LetterSend_BeginFrame(LetterSendScene *self)
+{
+    LetterSend_EndLayerTask(self);
+    PocketsWallet_BeginFrame(&self->wallet);
+    PocketsGrid_BeginFrame(&self->grid);
+    PocketsLetters_BeginFrame(&self->letters);
+    ButtonPanel_CloseTexts(&self->panel);
+}
+CLEAN_AS(func_ov104_0229e9f8, LetterSend_BeginFrame)
+
+/* func_ov104_0229ea38 */
+void LetterSend_EndInteractiveFrame(LetterSendScene *self)
+{
+    LetterSend_EndFrame(self);
+}
+CLEAN_AS(func_ov104_0229ea38, LetterSend_EndInteractiveFrame)
+
+/* func_ov104_0229ea40: the start of a frame, then the cursor sprite's update through its class
+ * (vtable slot 3). */
+void LetterSend_BeginInteractiveFrame(LetterSendScene *self)
+{
+    LetterSend_BeginFrame(self);
+    lsend_update_cursor_sprite(&self->cursor_sprite);
+}
+CLEAN_AS(func_ov104_0229ea40, LetterSend_BeginInteractiveFrame)
+
+/* func_ov104_0229ea5c: the members' teardown before the scene closes. */
+void LetterSend_Teardown(LetterSendScene *self)
+{
+    LetterSend_EndLayerTask(self);
+    PocketsWallet_Teardown(&self->wallet);
+    PocketsGrid_Teardown(&self->grid);
+    PagedChoice_Dismiss(lsend_choice(self));
+    LetterView_ReleaseBoxes(&self->view);
+    ButtonPanel_CloseTexts(&self->panel);
+}
+CLEAN_AS(func_ov104_0229ea5c, LetterSend_Teardown)
+
+/* func_ov104_0229eaa8: the scene's setup: no flags, the three objects of ov094's set up, no
+ * popup place, the glide stopped, nothing held, the cursor on the first carried letter, the
+ * choice and the letter view on layer 3; the ten letters to post emptied, the carried letters
+ * saved for a cancel; no open delay. */
+void LetterSend_Setup(LetterSendScene *self)
+{
+    self->flags = 0;
+    PocketsGrid_Init(&self->grid, 2);
+    PocketsLetters_Init(&self->letters, 1);
+    PocketsWallet_Init(&self->wallet, 6);
+    self->popup_place = LETTER_SEND_NO_PLACE;
+    Glide_Stop(&self->glide);
+    self->held_kind = LETTER_SEND_HELD_NONE;
+    self->cursor = LETTER_SEND_CARRIED_FIRST;
+    PagedChoice_Init(lsend_choice(self), LETTER_SEND_TEXT_LAYER, 0, NULL);
+    LetterView_Init(&self->view, LETTER_SEND_TEXT_LAYER);
+    for (int i = 0; i < LETTER_SEND_LETTERS; i++) {
+        Letter_Clear(&self->outbox[i]);
+    }
+    LetterSend_SaveCarried(self);
+    self->unk_bf = 0;
+}
+CLEAN_AS(func_ov104_0229eaa8, LetterSend_Setup)
+
+/* func_ov104_0229eb48: the page layer scrolled by the wipe (16 pixels up), the wipe's x kept for
+ * the letters to post. */
+void LetterSend_ScrollOutboxLayer(LetterSendScene *self)
+{
+    MenuScene_ScrollWipe(lsend_scene(self), LETTER_SEND_PAGE_LAYER, 0, -0x10);
+    self->unk_9c = MenuScene_WipeOffsetX(lsend_scene(self));
+}
+CLEAN_AS(func_ov104_0229eb48, LetterSend_ScrollOutboxLayer)
+
+/* func_ov104_0229eb68: the scene layer scrolled by the wipe (16 pixels up), the wipe's y kept
+ * for the objects and the panel. */
+void LetterSend_ScrollSceneLayer(LetterSendScene *self)
+{
+    MenuScene_ScrollWipe(lsend_scene(self), LETTER_SEND_SCENE_LAYER, 0, -0x10);
+    self->unk_98 = MenuScene_WipeOffsetY(lsend_scene(self));
+}
+CLEAN_AS(func_ov104_0229eb68, LetterSend_ScrollSceneLayer)
+
+/* func_ov104_0229eb88: the letter's two layers (text and paper) scrolled by the wipe. */
+void LetterSend_ScrollLetterLayers(LetterSendScene *self)
+{
+    MenuScene_ScrollWipe(lsend_scene(self), LETTER_SEND_TEXT_LAYER, 0, 0);
+    MenuScene_ScrollWipe(lsend_scene(self), LETTER_SEND_PAGE_LAYER, 0, 0);
+}
+CLEAN_AS(func_ov104_0229eb88, LetterSend_ScrollLetterLayers)
+
+/* func_ov104_0229eba8 (state 0x0a): the letter wipes out; when done, its layers hidden, the
+ * label button no longer drawn and the scene set up again (state 0, run at once). Else its
+ * layers follow the wipe. */
+void LetterSend_LetterWipeOut(LetterSendScene *self)
+{
+    if (MenuScene_StepWipe(lsend_scene(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_SEND_TEXT_LAYER);
+        DisplayLayer_HideAndResetScroll(LETTER_SEND_PAGE_LAYER);
+        LetterSend_ClearFlags(self, LETTER_SEND_FLAG_LETTER_SHOWN);
+        LetterSend_StartSetup(self);
+    } else {
+        LetterSend_ScrollLetterLayers(self);
+    }
+}
+CLEAN_AS(func_ov104_0229eba8, LetterSend_LetterWipeOut)
+
+/* func_ov104_0229ebe0 (state 9, after the label button's press): the letter starts to wipe out
+ * on window 2 (state 0x0a). */
+void LetterSend_StartLetterWipeOut(LetterSendScene *self)
+{
+    MenuScene_StartWipeOnWindow2(lsend_scene(self), 3, 0, 0, LETTER_SEND_WIPE_MARGIN);
+    LetterSend_ScrollLetterLayers(self);
+    MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_LETTER_WIPE_OUT);
+}
+CLEAN_AS(func_ov104_0229ebe0, LetterSend_StartLetterWipeOut)
+
+/* func_ov104_0229ec0c (state 8): the letter wipes in; when done, phase 2 and its label button by
+ * the touch (sub state 5) while state flag 2 is clear, else by the keys (sub state 9). Else its
+ * layers follow the wipe. */
+void LetterSend_LetterWipeIn(LetterSendScene *self)
+{
+    if (MenuScene_StepWipeBack(lsend_scene(self), 0) != 0) {
+        MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_2);
+        if (StateFlags_IsClear2()) {
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_LABEL_BY_TOUCH);
+        } else {
+            MenuScene_SetSubState(lsend_scene(self), LETTER_SEND_SUB_LABEL_BY_KEYS);
+        }
+    } else {
+        LetterSend_ScrollLetterLayers(self);
+    }
+}
+CLEAN_AS(func_ov104_0229ec0c, LetterSend_LetterWipeIn)
+
+/* func_ov104_0229ec4c (state 7): the letter of the place whose choice was open is shown:
+ * Letter_AdvanceReceived moves its state on, the letter view shows it (layers 3 and 4, priority
+ * 1), the two layers shown and wiping in on window 2 (state 8), and the label button is shown
+ * with message 0x88 and drawn. */
+void LetterSend_ShowLetter(LetterSendScene *self)
+{
+    Letter *letter = LetterSend_PlaceLetter(self, self->slot);
+    Letter_AdvanceReceived(letter);
+    LetterView_Show(&self->view, (const LetterViewLetter *) (const void *) letter, LETTER_SEND_TEXT_LAYER,
+                    LETTER_SEND_PAGE_LAYER, 1);
+    MenuScene_StartWipeCoveredOnWindow2(lsend_scene(self), 3, 0, 0, LETTER_SEND_WIPE_MARGIN);
+    DisplayLayer_Show(LETTER_SEND_TEXT_LAYER);
+    DisplayLayer_Show(LETTER_SEND_PAGE_LAYER);
+    LetterSend_ScrollLetterLayers(self);
+    MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_LETTER_WIPE_IN);
+    LabelButton_ShowLowerRight(&self->button, 0x88);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_LETTER_SHOWN);
+}
+CLEAN_AS(func_ov104_0229ec4c, LetterSend_ShowLetter)
+
+/* func_ov104_0229ecc0 (state 6): the scene wipes out; when done, its layer hidden and its
+ * objects no longer drawn: with LETTER_SEND_FLAG_ACTION_1 the letter is shown (state 7, run at
+ * once), else the scene is no longer drawn and the run phase begins. Else the scene layer follows
+ * the wipe. */
+void LetterSend_SceneWipeOut(LetterSendScene *self)
+{
+    if (MenuScene_StepWipe(lsend_scene(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_SEND_SCENE_LAYER);
+        LetterSend_ClearFlags(self, LETTER_SEND_FLAG_SCROLLED);
+        if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_ACTION_1) != 0) {
+            MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_SHOW_LETTER);
+            LetterSend_ShowLetter(self);
+        } else {
+            LetterSend_ClearFlags(self, LETTER_SEND_FLAG_SHOWN);
+            MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_RUN);
+        }
+    } else {
+        LetterSend_ScrollSceneLayer(self);
+    }
+}
+CLEAN_AS(func_ov104_0229ecc0, LetterSend_SceneWipeOut)
+
+/* func_ov104_0229ed1c (state 5): the letters to post wipe out; when done, the page layer hidden,
+ * its letters no longer drawn, and the scene starts to wipe out on window 2 (state 6, run at
+ * once). Else the page layer follows the wipe. */
+void LetterSend_OutboxWipeOut(LetterSendScene *self)
+{
+    if (MenuScene_StepWipe(lsend_scene(self), 0) != 0) {
+        DisplayLayer_HideAndResetScroll(LETTER_SEND_PAGE_LAYER);
+        LetterSend_ClearFlags(self, LETTER_SEND_FLAG_OUTBOX_SHOWN);
+        MenuScene_StartWipeOnWindow2(lsend_scene(self), 8, 0, 0, LETTER_SEND_WIPE_MARGIN);
+        MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_SCENE_WIPE_OUT);
+        LetterSend_SceneWipeOut(self);
+    } else {
+        LetterSend_ScrollOutboxLayer(self);
+    }
+}
+CLEAN_AS(func_ov104_0229ed1c, LetterSend_OutboxWipeOut)
+
+/* func_ov104_0229ed6c (state 4, set by LetterSend_Post and LetterSend_Cancel): the popup hidden
+ * (its queue dropped) and the cursor sprite hidden; the parent told the scene ends (code 0x44)
+ * unless a letter is to be shown (LETTER_SEND_FLAG_ACTION_1); the letters to post start to wipe
+ * out on window 2 over 0xc0 pixels (state 5). */
+void LetterSend_StartWipeOut(LetterSendScene *self)
+{
+    Popup_Hide(&self->popup, 1);
+    LetterSend_HideCursorSprite(self);
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_ACTION_1) == 0) {
+        func_ov092_02299324(lsend_parent(self), LETTER_SEND_PARENT_CODE_END, 1);
+    }
+    MenuScene_StartWipeOnWindow2(lsend_scene(self), 2, 0, 2, LETTER_SEND_WIPE_MARGIN);
+    MenuScene_SetWipeExtent(lsend_scene(self), 0xc0);
+    MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_OUTBOX_WIPE_OUT);
+}
+CLEAN_AS(func_ov104_0229ed6c, LetterSend_StartWipeOut)
+
+/* func_ov104_0229edcc (state 3): the letters to post wipe in; when done, phase 2 and the action
+ * ends. The page layer follows the wipe. */
+void LetterSend_OutboxWipeIn(LetterSendScene *self)
+{
+    if (MenuScene_StepWipeBack(lsend_scene(self), 0) != 0) {
+        MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_2);
+        LetterSend_EndAction(self);
+    }
+    LetterSend_ScrollOutboxLayer(self);
+}
+CLEAN_AS(func_ov104_0229edcc, LetterSend_OutboxWipeIn)
+
+/* func_ov104_0229edf4 (state 2): the scene wipes in, its layer following; when done, the page
+ * layer loaded and shown, the letters to post drawn and wiping in on window 2 over 0xc0 pixels
+ * (state 3). */
+void LetterSend_SceneWipeIn(LetterSendScene *self)
+{
+    int done = MenuScene_StepWipeBack(lsend_scene(self), 0);
+    LetterSend_ScrollSceneLayer(self);
+    if (done != 0) {
+        LetterSend_LoadPageLayer(self);
+        MenuScene_StartWipeCoveredOnWindow2(lsend_scene(self), 2, 0, 2, LETTER_SEND_WIPE_MARGIN);
+        MenuScene_SetWipeExtent(lsend_scene(self), 0xc0);
+        DisplayLayer_Show(LETTER_SEND_PAGE_LAYER);
+        LetterSend_SetFlags(self, LETTER_SEND_FLAG_OUTBOX_SHOWN);
+        LetterSend_ScrollOutboxLayer(self);
+        MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_OUTBOX_WIPE_IN);
+    }
+}
+CLEAN_AS(func_ov104_0229edf4, LetterSend_SceneWipeIn)
+
+/* func_ov104_0229ee54 (state 1): the panel prepared, the grid's and the letters' objects
+ * prepared, the ten letters to post given to the letters object at its places 0x2d-0x36, the
+ * letters that cannot be posted dimmed, the scene layer shown and wiping in on window 2 (state
+ * 2); the scene and its objects drawn. */
+void LetterSend_StartWipeIn(LetterSendScene *self)
+{
+    LetterSend_PreparePanel(self);
+    PocketsGrid_LoadPockets(&self->grid);
+    PocketsLetters_LoadPockets(&self->letters);
+    PocketsLetters_SetTenAt2d(&self->letters, self->outbox);
+    LetterSend_DimUnpostable(self);
+    MenuScene_StartWipeCoveredOnWindow2(lsend_scene(self), 8, 0, 0, LETTER_SEND_WIPE_MARGIN);
+    DisplayLayer_Show(LETTER_SEND_SCENE_LAYER);
+    MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_SCENE_WIPE_IN);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_SHOWN);
+    LetterSend_SetFlags(self, LETTER_SEND_FLAG_SCROLLED);
+    LetterSend_ScrollSceneLayer(self);
+}
+CLEAN_AS(func_ov104_0229ee54, LetterSend_StartWipeIn)
+
+/* func_ov104_0229eec8 (state 0): the layers set up and the wallet's display prepared, then
+ * state 1. */
+void LetterSend_StartSetup(LetterSendScene *self)
+{
+    LetterSend_SetUpLayers();
+    LetterSend_PrepareWallet(self);
+    MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_START_WIPE_IN);
+}
+CLEAN_AS(func_ov104_0229eec8, LetterSend_StartSetup)
+
+/* func_ov104_0229eee4 (vtable slot 0x18): the scene's frame: the letters sent to the linked host
+ * one at a time (LetterSend_ContinueLinkedPost), then the base's frame (MenuScene_Update), whose
+ * answer it gives. */
+int LetterSend_Update(LetterSendScene *self)
+{
+    LetterSend_ContinueLinkedPost(self);
+    return MenuScene_Update(lsend_scene(self));
+}
+CLEAN_AS(func_ov104_0229eee4, LetterSend_Update)
+
+/* func_ov104_0229eef8 (vtable slot 0x5c, phase 4): the scene's end, by how it ended. Answers 1.
+ *
+ * - Cancelled: the carried letters as they were (LetterSend_RestoreCarried), main told nothing
+ *   changed (GroupParams_SetC4C(0)).
+ * - Linked: while letters are still being sent nothing happens (and the scene is not deleted);
+ *   after, main told whether anything was posted, the letters not taken back with the carried
+ *   ones and `result` kept as the letter screen's result flags.
+ * - Else the letters are posted here: main told the letters changed; the ten letters to post
+ *   compacted (none: LETTER_SEND_RESULT_NOTHING), handed to the villagers when the current
+ *   player's record has flag 1, then the one to the player themself taken and the rest posted.
+ *   With nothing to post main is told nothing changed; when the post office was full, its held
+ *   letters are delivered (Mail_DeliverHeld) and the letters tried once more, then delivered
+ *   directly when still full. The letters not posted go back to the carried ones and the result
+ *   is kept as the letter screen's result flags; when the letter screen's kind is 1 or its flag
+ *   0x200 is set, VillagerPart_CurrentMarkSecondPick.
+ *
+ * Then (but for the linked wait) Mail_DoNothing and the scene asks to be deleted. */
+int LetterSend_End(LetterSendScene *self)
+{
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_CANCELLED) != 0) {
+        LetterSend_RestoreCarried(self);
+        GroupParams_SetC4C(0);
+    } else if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_LINKED) != 0) {
+        if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_SENDING) != 0) {
+            return 1;
+        }
+        if (self->result & LETTER_SEND_RESULT_NOTHING) {
+            GroupParams_SetC4C(0);
+        } else {
+            GroupParams_SetC4C(1);
+        }
+        LetterSend_ReturnUnsent(self, 1);
+        GroupParams_SetLetterFlags(self->result);
+    } else {
+        GroupParams_SetC4C(1);
+        int result = 0;
+        if (Mail_Compact(lsend_mail(self->outbox), LETTER_SEND_LETTERS) <= 0) {
+            result = LETTER_SEND_RESULT_NOTHING;
+        }
+        if (PlayerRecord_TestFlag(PlayerRecords_Current(), 1) != 0) {
+            result |= LetterSend_GiveToVillagers(self, self->outbox);
+        }
+        result |= LetterSend_TakeLetterToSelf(self, self->outbox);
+        result |= LetterSend_PostAll(self, self->outbox, 0);
+        if (result & LETTER_SEND_RESULT_NOTHING) {
+            GroupParams_SetC4C(0);
+        } else if (result & LETTER_SEND_RESULT_POST_OFFICE_FULL) {
+            Mail_DeliverHeld();
+            result |= LetterSend_RetryHold(self, self->outbox);
+            if (result & LETTER_SEND_RESULT_STILL_FULL) {
+                result |= LetterSend_DeliverDirectly(self, self->outbox);
+            }
+        }
+        LetterSend_ReturnUnsent(self, 0);
+        GroupParams_SetLetterFlags((u16) result);
+        if (GroupParams_LetterKind() == 1 || GroupParams_LetterFlag200()) {
+            VillagerPart_CurrentMarkSecondPick();
+        }
+    }
+    Mail_DoNothing();
+    Process_RequestDelete((Process *) (void *) self);
+    return 1;
+}
+CLEAN_AS(func_ov104_0229eef8, LetterSend_End)
+
+/* func_ov104_0229f038 (vtable slot 0x58, phase 1): nothing. */
+int LetterSend_Phase1Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov104_0229f038, LetterSend_Phase1Idle)
+
+/* func_ov104_0229f03c (vtable slot 0x54, phase 0): nothing. */
+int LetterSend_Phase0Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov104_0229f03c, LetterSend_Phase0Idle)
+
+/* Obj_ov104_0229f6d0::func_ov104_0229f040 (vtable slot 0x50, phase 2): a frame of the scene in
+ * use: the frame's start, its sub state and its end. Answers 1. */
+int LetterSend_RunInteractive(LetterSendScene *self)
+{
+    LetterSend_BeginInteractiveFrame(self);
+    LetterSend_RunSubState(self);
+    LetterSend_EndInteractiveFrame(self);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229f040Ev, LetterSend_RunInteractive)
+
+/* Obj_ov104_0229f6d0::func_ov104_0229f05c: the sub state's function (LetterSendSubState)
+ * through the table of member functions, filled once from its constants.
+ * REQUIRES: the sub state is below 0x1d; the game reads past the table for others. */
+void LetterSend_RunSubState(LetterSendScene *self)
+{
+    static const MemberPointer *const sub_states[LETTER_SEND_SUB_STATES] = {
+        &data_ov104_0229f5e0, &data_ov104_0229f658, &data_ov104_0229f650, &data_ov104_0229f648, &data_ov104_0229f640,
+        &data_ov104_0229f638, &data_ov104_0229f630, &data_ov104_0229f628, &data_ov104_0229f620, &data_ov104_0229f618,
+        &data_ov104_0229f610, &data_ov104_0229f608, &data_ov104_0229f600, &data_ov104_0229f5f8, &data_ov104_0229f5f0,
+        &data_ov104_0229f670, &data_ov104_0229f5e8, &data_ov104_0229f5d8, &data_ov104_0229f5d0, &data_ov104_0229f5c8,
+        &data_ov104_0229f5c0, &data_ov104_0229f5b8, &data_ov104_0229f5b0, &data_ov104_0229f5a0, &data_ov104_0229f5a8,
+        &data_ov104_0229f598, &data_ov104_0229f590, &data_ov104_0229f588, &data_ov104_0229f660,
+    };
+    MemberTable_InitOnce(&data_ov104_0229f7a0, data_ov104_0229f800, sub_states, LETTER_SEND_SUB_STATES);
+    MemberPointer_CallVoid(&data_ov104_0229f800[self->base.sub_state], self);
+}
+CLEAN_AS(_ZN18Obj_ov104_0229f6d019func_ov104_0229f05cEv, LetterSend_RunSubState)
+
+/* func_ov104_0229f248 (vtable slot 0x4c, the run phase): a frame of the scene's states
+ * (LetterSendState) between the frame's start and end, through the table of member functions
+ * (filled once from its constants, before the frame's start). Answers 1.
+ * REQUIRES: the state is below 0x0b; the game reads past the table for others. */
+int LetterSend_RunState(LetterSendScene *self)
+{
+    static const MemberPointer *const states[LETTER_SEND_STATES] = {
+        &data_ov104_0229f668, &data_ov104_0229f6c0, &data_ov104_0229f6b8, &data_ov104_0229f6b0,
+        &data_ov104_0229f6a8, &data_ov104_0229f6a0, &data_ov104_0229f698, &data_ov104_0229f690,
+        &data_ov104_0229f688, &data_ov104_0229f680, &data_ov104_0229f678,
+    };
+    MemberTable_InitOnce(&data_ov104_0229f7a4, data_ov104_0229f7a8, states, LETTER_SEND_STATES);
+    LetterSend_BeginFrame(self);
+    MemberPointer_CallVoid(&data_ov104_0229f7a8[self->base.state], self);
+    LetterSend_EndFrame(self);
+    return 1;
+}
+CLEAN_AS(func_ov104_0229f248, LetterSend_RunState)
+
+/* func_ov104_0229f33c (vtable slot 0x24): the scene's draw, while it is drawn: the popup
+ * (through its class, slot 2), the cursor sprite (with the keys in use), the held letter. With
+ * the objects drawn: the panel at the wipe's y, and the grid, the carried letters and the wallet
+ * 16 pixels above it. With the page shown: the letters to post at the wipe's x. With a letter
+ * shown: the label button at the wipe's y (through its class, slot 2). Answers 1. */
+int LetterSend_Draw(LetterSendScene *self)
+{
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_SHOWN) == 0) {
+        return 1;
+    }
+    lsend_draw_member(&self->popup);
+    if (StateFlags_Test2()) {
+        Glider_DrawWrapped(&self->cursor_sprite);
+    }
+    LetterSend_DrawHeld(self);
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_SCROLLED) != 0) {
+        ButtonPanel_Draw(&self->panel, self->unk_98);
+        int y = (int) ((u32) self->unk_98 - 0x10);
+        PocketsGrid_DrawPockets(&self->grid, 0, y);
+        PocketsLetters_DrawPockets(&self->letters, 0, y);
+        PocketsWallet_Draw(&self->wallet, y);
+    }
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_OUTBOX_SHOWN) != 0) {
+        PocketsLetters_DrawTenAt2d(&self->letters, self->unk_9c, -0x10);
+    }
+    if (LetterSend_TestFlags(self, LETTER_SEND_FLAG_LETTER_SHOWN) != 0) {
+        int y = MenuScene_WipeOffsetY(lsend_scene(self));
+        /* The button's base is main's labelled sprite (label_button.h). */
+        LabelSprite_SetOffset((LabelSprite *) (void *) &self->button, 0, y);
+        lsend_draw_member(&self->button);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov104_0229f33c, LetterSend_Draw)
+
+/* func_ov104_0229f424 (vtable slot 0x0c): the scene closes: the parent told and the members
+ * torn down. Answers 1. */
+int LetterSend_Close(LetterSendScene *self)
+{
+    func_ov092_0229929c(lsend_parent(self));
+    LetterSend_Teardown(self);
+    return 1;
+}
+CLEAN_AS(func_ov104_0229f424, LetterSend_Close)
+
+/* func_ov104_0229f440 (vtable slot 0x00): the scene starts: its setup, state 0 and phase 0.
+ * Answers 1. */
+int LetterSend_Start(LetterSendScene *self)
+{
+    LetterSend_Setup(self);
+    MenuScene_SetState(lsend_scene(self), LETTER_SEND_STATE_START_SETUP);
+    MenuScene_SetPhase(lsend_scene(self), MENU_SCENE_PHASE_0);
+    return 1;
+}
+CLEAN_AS(func_ov104_0229f440, LetterSend_Start)
+
+/* func_ov104_0229f460 (named by the profile at 0x0229f580): a new scene from the menu scenes'
+ * heap (NULL when it has no room): the base, the scene's vtable and its members constructed in
+ * order, the two arrays of ten letters by __cxa_vec_ctor. */
+LetterSendScene *LetterSend_New(void)
+{
+    LetterSendScene *self = MenuScene_Alloc(sizeof(LetterSendScene));
+    if (self == NULL) {
+        return NULL;
+    }
+    MenuScene_Construct(&self->base);
+    self->base.vtable = data_ov104_0229f6d0;
+    Letter_Construct(&self->held);
+    Letter_Construct(&self->swapped);
+    LayerTask_ConstructPair((LayerTaskPair *) (void *) self->unk_2c0);
+    PocketsGrid_Construct(&self->grid);
+    PocketsLetters_Construct(&self->letters);
+    PocketsWallet_Construct(&self->wallet);
+    Popup_Construct(&self->popup);
+    Glide_Construct(&self->glide);
+    Glider0_Construct(&self->cursor_sprite);
+    PagedChoice_Construct(lsend_choice(self));
+    ErrorMessage_Construct(&self->error);
+    LetterView_Construct(&self->view);
+    LabelButton0_Construct(&self->button);
+    __cxa_vec_ctor(self->outbox, LETTER_SEND_LETTERS, sizeof(Letter), func_02066694, func_02066688);
+    __cxa_vec_ctor(self->carried_copy, LETTER_SEND_LETTERS, sizeof(Letter), func_02066694, func_02066688);
+    ButtonPanel_Construct(&self->panel);
+    return self;
+}
+CLEAN_AS(func_ov104_0229f460, LetterSend_New)

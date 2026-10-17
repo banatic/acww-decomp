@@ -31,7 +31,13 @@
  *                  sets SCENE_ACTOR_FLAG_GONE.
  *   7 leave again: as state 4, but moves to state 8.
  *   8 walk again:  asks the player to stand at the stand point (player state 0x39, kind 2)
- *                  and moves to state 6 when the player agrees. */
+ *                  and moves to state 6 when the player agrees.
+ *
+ * The codes 0x5000 to 0x5021 are the town's buildings and the like (main/town_objects.h, whose
+ * shapes are main/building_shapes.h): overlay 9 is loaded with the town's scenes (scenes 0 and
+ * 49, through the SceneInfo of overlay 5). Its files (scene_actor_files.h), its doors and the
+ * pen's faces (scene_actor_area.h), its modes (scene_actor_mode.h) and its life as a process
+ * (scene_actor_life.h) are in the files next to this one. */
 #ifndef CLEAN_OV009_SCENE_ACTOR_H
 #define CLEAN_OV009_SCENE_ACTOR_H
 
@@ -56,7 +62,9 @@ enum SceneActorState {
 
 /* Bits of SceneActor.flags_235. */
 #define SCENE_ACTOR_FLAG_OUT_OF_VIEW 0x01 /* outside the camera's box (SceneActor_UpdateOutOfView) */
-#define SCENE_ACTOR_FLAG_TALKABLE 0x08    /* actors of a nonzero kind can be talked to */
+#define SCENE_ACTOR_FLAG_AT_DOOR 0x02     /* this console's player touched an area facing it this frame */
+#define SCENE_ACTOR_FLAG_RUN_IN 0x04      /* ... moving at a speed of 0x200 or more */
+#define SCENE_ACTOR_FLAG_TALKABLE 0x08    /* actors of a nonzero kind can be talked to (AT_DOOR last frame) */
 
 /* Bits of SceneActor.flags. */
 #define SCENE_ACTOR_FLAG_GONE 0x01    /* set at the end of SCENE_ACTOR_GONE */
@@ -92,7 +100,9 @@ typedef struct SceneActorArea {
     fx32 facing_z;
     u8 unk_34[0x3c - 0x34];
     Vec3 origin; /* what func_02032754 gives */
-    u8 unk_48[0x54 - 0x48];
+    u8 unk_48[0x4c - 0x48];
+    struct SceneActor *owner; /* the actor whose door it is (SceneActorDoor_Construct's caller) */
+    int kind;                 /* the owner's kind (SceneActor_Kind) */
 } SceneActorArea;
 
 /* A record of main's table data_020d1f24 (ten bytes), copied by func_020b2a68. */
@@ -107,7 +117,10 @@ typedef struct SceneActor {
     Vec3 position;
     u8 unk_68[0x8e - 0x68];
     s16 yaw; /* the direction it faces */
-    u8 unk_90[0xec - 0x90];
+    u8 unk_90[0xc4 - 0x90];
+    Vec3 pivot; /* the position bent onto the drawn world (SceneActor_UpdateModelMatrix) */
+    s16 pitch;  /* the angle about x it is drawn at there */
+    u8 unk_D2[0xec - 0xd2];
     /* The message receiver (Base_02066994) */
     const void *receiver_vtable; /* data_ov009_022659a0 */
     char receiver_name[25];      /* written by func_020a8164 */
@@ -116,11 +129,11 @@ typedef struct SceneActor {
     u8 unk_10B[0x12c - 0x10b];
     SceneActorLink *link; /* Base_02066994's word at 0x40 */
     u8 unk_130[0x132 - 0x130];
-    u16 unk_132;
-    u8 mode; /* the mode machine's state */
+    u16 close_wait; /* mode 4: the frames before the door closes */
+    u8 mode;        /* the mode machine's state */
     u8 unk_135;
-    u16 code; /* the special character's code (0x5000 to 0x5021) */
-    u8 unk_138[0x13c - 0x138];
+    u16 code;                       /* the special character's code (0x5000 to 0x5021) */
+    u32 index;                      /* the code's low 12 bits: the building's number in its files' names */
     u8 model_object[0x198 - 0x13c]; /* main's model object (Obj_020dd05c) ... */
     void *model;                    /* ... its model, */
     u8 unk_19C[0x1a0 - 0x19c];
@@ -129,7 +142,7 @@ typedef struct SceneActor {
     u8 member_1f4[0x22c - 0x1f4]; /* a member object of main's (Member_020b33b8, parts up to 0x34) */
     int tile_x;                   /* the position's x and z over 0x2000 */
     int tile_z;
-    u8 unk_234; /* set to 1 by scene event 6 */
+    u8 exit_step; /* set to 1 by scene event 6, counts to 3 (SceneActor_UpdateExit) */
     u8 flags_235;
     u8 flags;
     u8 visit_3; /* the visit record said 3 */
@@ -137,11 +150,16 @@ typedef struct SceneActor {
     int state;     /* enum SceneActorState */
     u8 skip_visit; /* the talk starts without asking for the visit record */
     u8 unk_281;
-    u16 frames; /* counted in SCENE_ACTOR_GONE */
-    u8 unk_284[0x28c - 0x284];
+    u16 frames;                  /* counted in SCENE_ACTOR_GONE */
+    struct ObjShadow *shadows;   /* its long shadows (SceneActor_InitShadows) */
+    struct TouchPickFace *faces; /* one per area, for the pen (SceneActor_BuildAreas) */
     SceneActorArea *areas;
     u8 area_count;
-    u8 unk_291[0x2a8 - 0x291];
+    u8 unk_291;
+    u16 model_slot;     /* main's model pool slot (model_pool.h) */
+    Vec3 bounds_centre; /* the centre of its shape (SceneActor_SetBounds) */
+    fx32 bounds_width;
+    fx32 bounds_depth;
     Vec3 talk_point; /* the stand point moved back by 4.0 along z (vtable slot 0x50) */
 } SceneActor;
 

@@ -1,10 +1,20 @@
 /* The indoor room's own object (data_ov004_022595c0 while a room is set up: set by its start,
- * func_ov004_0223d434, and cleared by its end, func_ov004_0223d354), as far as it is known
- * here: what its televisions show, its furniture mover, and a flag the TV's sound reads. */
+ * RoomManager_Init, and cleared by its end, RoomManager_Release), as far as it is known
+ * here: what its televisions show, its furniture mover, and a flag the TV's sound reads.
+ *
+ * It is a process (vtable data_ov004_02256018 on the Process base, 0x2b4 bytes; created by
+ * RoomManager_New): slot 0 starts the room (RoomManager_Init), slot 3 ends it
+ * (RoomManager_Release), slot 6 is its frame (RoomManager_Update) and slot 9 its draw, which
+ * does nothing. The room's start also sets up the table of its objects and their heap
+ * (room_objects.h), the record of pushes (room_pushes.h), the model pool of its objects
+ * (data_ov004_02259698, given the Shift-JIS name "kagu manager", furniture manager) and the
+ * files of the item shown (room_preview.h). */
 #ifndef CLEAN_OV004_ROOM_MANAGER_H
 #define CLEAN_OV004_ROOM_MANAGER_H
 
+#include "autoload_2/process.h"
 #include "furniture_mover.h"
+#include "room_sound.h"
 #include "tv_broadcast.h"
 #include "types.h"
 
@@ -13,7 +23,8 @@
 #define ROOM_MANAGER_MOVER_SIZE 0xe4
 
 typedef struct RoomManager {
-    u8 unk_000[0x64];
+    Process process;                   /* 0x000 */
+    RoomSoundList sounds;              /* 0x050 */
     TvBroadcast tv;                    /* 0x064 */
     u8 mover[ROOM_MANAGER_MOVER_SIZE]; /* 0x1c4: a FurnitureMover */
     u8 unk_2a8[8];                     /* 0x2a8 */
@@ -44,5 +55,17 @@ void RoomManager_MarkNearestStriker(RoomManager *room);
 void RoomManager_PlaceMapFurniture(RoomManager *room);
 void RoomManager_StartStub(RoomManager *room);
 unsigned short RoomManager_FrameCounter(void);
+
+RoomSoundList *RoomManager_SoundList(void);
+void RoomManager_SetShopMode(void);
+unsigned char RoomManager_ShopMode(void);
+int RoomManager_Release(RoomManager *room);
+int RoomManager_Draw(void);
+int RoomManager_Update(RoomManager *room);
+int RoomManager_Init(RoomManager *room);
+RoomManager *RoomManager_Delete(RoomManager *room);
+RoomManager *RoomManager_Destruct(RoomManager *room);
+RoomManager *RoomManager_Construct(RoomManager *room);
+void RoomManager_New(void);
 
 #endif

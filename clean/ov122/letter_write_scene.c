@@ -4,12 +4,16 @@
 #include "letter_write_scene.h"
 
 #include "autoload_2/input.h"
+#include "autoload_2/process.h"
 #include "clean.h"
 #include "main/cell_layer_sprite.h"
 #include "main/display_layers.h"
+#include "main/display_shadow.h"
 #include "main/dual_cell_sprite.h"
 #include "main/group_params.h"
+#include "main/layer_load_task.h"
 #include "main/message_reader.h"
+#include "main/oam_buffer.h"
 #include "main/player_pockets.h"
 #include "main/player_record.h"
 #include "main/player_records.h"
@@ -19,6 +23,7 @@
 #include "main/text_string.h"
 #include "ov002/key_repeat.h"
 #include "ov002/paper.h"
+#include "ov004/member_pointer.h"
 
 static_assert(sizeof(MenuScene) == 0x94 && offsetof(LetterWriteScene, cursor_x) == 0x9c, "cursor");
 static_assert(offsetof(LetterWriteScene, flags) == 0xa8 && offsetof(LetterWriteScene, position) == 0xac, "flags");
@@ -1137,11 +1142,6 @@ extern const char data_ov122_022a27c8[]; /* "menu/chat2/b_cht.bch" */
 /* The panel's buttons at the panel cursor's two places ({3, 4}). */
 extern const u8 data_ov122_022a2580[];
 
-/* The scene's own functions without a Clean version. */
-extern void _ZN18Obj_ov122_022a273819func_ov122_022a1f40Ev(LetterWriteScene *self); /* runs the sub state */
-extern void func_ov122_022a1e00(void *self);                                        /* leaves for main's menu (ov090, 7) */
-extern int func_ov122_022a1e40(void *self, int mode);                               /* leaves for main's menu (ov090, mode) */
-
 /* The keyboard (overlay 95; no Clean version yet). Its keys are numbered; a key has a code
  * (func_ov095_0229c448) and can be disabled (a bit of its word 0x20). */
 extern void func_ov095_022999e8(void *keyboard); /* sound 23 */
@@ -1385,7 +1385,7 @@ void LetterWrite_RunButton(LetterWriteScene *self)
             LetterWrite_Leave(self);
             break;
         case 3:
-            func_ov122_022a1e40(self, 0);
+            LetterWrite_SwitchTab(self, 0);
             break;
         case 4:
             self->base.state = LETTER_WRITE_STATE_08;
@@ -1422,7 +1422,7 @@ void LetterWrite_RunChoiceClosing(LetterWriteScene *self)
             break;
         case 3:
             if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_CLOSE_ASKED)) {
-                func_ov122_022a1e00(self);
+                LetterWrite_ExitMenu(self);
             } else {
                 self->base.state = LETTER_WRITE_STATE_BACK;
                 MenuScene_SetPhase(letter_write_scene(self), 1);
@@ -1776,7 +1776,7 @@ void LetterWrite_RunPointerGlide(LetterWriteScene *self)
 {
     if (Glider_IsMoving(&self->pointer) == 0) {
         MenuScene_SetSubState(letter_write_scene(self), self->return_sub_state);
-        _ZN18Obj_ov122_022a273819func_ov122_022a1f40Ev(self);
+        LetterWrite_RunSubState(self);
     }
 }
 CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a0ad0Ev, LetterWrite_RunPointerGlide)
@@ -2486,14 +2486,14 @@ void LetterWrite_SetLayers(void)
 }
 CLEAN_AS(func_ov122_022a1808, LetterWrite_SetLayers)
 
-/* func_ov122_022a1850: run after each frame's state (func_ov122_022a2110); does nothing. */
+/* func_ov122_022a1850: run after each frame's state (LetterWrite_RunState); does nothing. */
 void LetterWrite_Idle(LetterWriteScene *self)
 {
     (void) self;
 }
 CLEAN_AS(func_ov122_022a1850, LetterWrite_Idle)
 
-/* func_ov122_022a1854: run before each frame's state (func_ov122_022a2110). */
+/* func_ov122_022a1854: run before each frame's state (LetterWrite_RunState). */
 void LetterWrite_ClosePanelTexts(LetterWriteScene *self)
 {
     ButtonPanel_CloseTexts(&self->panel);
@@ -2591,3 +2591,543 @@ void LetterWrite_StartWipeOut(LetterWriteScene *self)
     }
 }
 CLEAN_AS(func_ov122_022a1a04, LetterWrite_StartWipeOut)
+
+/* --- The states, the vtable's slots and the constructor --- */
+
+/* The margin of the wipes on window 2. */
+#define LETTER_WRITE_WIPE_MARGIN 0x30
+
+/* The keyboard of overlay 95: set up again in its current mode and drawn on a layer, set up in
+ * the mode main keeps (GroupParams) on a layer, its mode tabs drawn at (x, y), its two frame
+ * cells drawn at (x, y), the place it keeps for the scroll button's face (its words 0xd and
+ * 0xe), and the text cursor's cell drawn at (x, y) (its first argument unused). */
+extern void func_ov095_0229c208(void *keyboard, unsigned int layer);
+extern void func_ov095_0229c420(void *keyboard, int layer);
+extern void func_ov095_0229b1c8(void *keyboard, int x, int y, int priority);
+extern void func_ov095_0229ae84(void *keyboard, void *x, void *y);
+extern void func_ov095_02299b30(int *keyboard, int x, int y);
+extern int func_ov095_0229af58(int unused, int x, int y, int priority);
+
+/* The parent, overlay 90's menu (as ov096's pockets_screen.c calls it): switched to a tab (7 closes
+ * the menu), and told the scene closes. */
+#define LETTER_WRITE_TAB_NONE (-1)
+#define LETTER_WRITE_TAB_CLOSE 7
+#define LETTER_WRITE_TAB_8 8 /* never switched to */
+extern void func_ov090_022993cc(Process *parent, u32 tab);
+extern u8 func_ov090_0229936c(Process *parent);
+extern void func_ov090_022990d0(Process *parent); /* its bytes 0x94 and 0x91 = 1 */
+
+/* The cells drawn by the draw: one above the keyboard and one over it while the keys are in use. */
+extern const OamEntry data_ov122_022a2700[];
+extern const OamEntry data_ov122_022a25b0[];
+
+/* The labels' constructor, handed to __cxa_vec_ctor with their destructor (the game's symbols). */
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+extern void *func_02070c08(void *label);
+
+/* The tables of member functions (ov004/member_pointer.h): the guards, the tables and their
+ * constants (the symbol table names the sub states' table's second part, from sub state 0x10,
+ * data_ov122_022a28e0). */
+extern u32 data_ov122_022a27e0; /* the sub states' guard */
+extern u32 data_ov122_022a27e4; /* the states' guard */
+extern MemberPointer data_ov122_022a27e8[LETTER_WRITE_STATES];
+extern MemberPointer data_ov122_022a2860[LETTER_WRITE_SUB_STATES];
+extern const MemberPointer data_ov122_022a25a0, data_ov122_022a25a8, data_ov122_022a25b8, data_ov122_022a25c0,
+    data_ov122_022a25c8, data_ov122_022a25d0, data_ov122_022a25d8, data_ov122_022a25e0, data_ov122_022a25e8,
+    data_ov122_022a25f0, data_ov122_022a25f8, data_ov122_022a2600, data_ov122_022a2608, data_ov122_022a2610,
+    data_ov122_022a2618, data_ov122_022a2620, data_ov122_022a2628, data_ov122_022a2630, data_ov122_022a2638,
+    data_ov122_022a2640, data_ov122_022a2648, data_ov122_022a2650, data_ov122_022a2658, data_ov122_022a2660,
+    data_ov122_022a2668, data_ov122_022a2670, data_ov122_022a2678, data_ov122_022a2680, data_ov122_022a2688,
+    data_ov122_022a2690, data_ov122_022a2698, data_ov122_022a26a0, data_ov122_022a26a8, data_ov122_022a26b8,
+    data_ov122_022a26c0, data_ov122_022a26c8, data_ov122_022a26d0, data_ov122_022a26d8, data_ov122_022a26e0,
+    data_ov122_022a26e8, data_ov122_022a26f0, data_ov122_022a26f8;
+
+static Process *letter_write_parent(LetterWriteScene *self)
+{
+    return Process_GetParent((Process *) (void *) self);
+}
+
+/* An object drawn through its class (vtable slot 2). */
+static void letter_write_draw_object(void *object)
+{
+    const u32 *vtable = (const u32 *) (uintptr_t) *(const u32 *) object;
+    ((void (*)(void *))(uintptr_t) vtable[2])(object);
+}
+
+/* func_ov122_022a1a58 (LETTER_WRITE_STATE_CHOICE): the choice's first page opened, its graphics
+ * loaded and wiping in; phase 2. */
+void LetterWrite_OpenChoice(LetterWriteScene *self)
+{
+    self->choice_page = 0;
+    PagedChoice_LoadChoiceGraphics(letter_write_choice(self));
+    LetterWrite_OpenChoicePage(self, 1);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+}
+CLEAN_AS(func_ov122_022a1a58, LetterWrite_OpenChoice)
+
+/* func_ov122_022a1a84 (state 11): the keyboard wipes in; when done, the input starts again
+ * (LetterWrite_Start, phase 2, LetterWrite_BeginInput). The keyboard's layer follows the wipe,
+ * whose y is kept and given. */
+int LetterWrite_KeyboardWipeIn(LetterWriteScene *self)
+{
+    if (MenuScene_StepWipeBack(letter_write_scene(self), 0) != 0) {
+        LetterWrite_Start(self);
+        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+        LetterWrite_BeginInput(self);
+    }
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+    self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
+    return self->unk_94;
+}
+CLEAN_AS(func_ov122_022a1a84, LetterWrite_KeyboardWipeIn)
+
+/* func_ov122_022a1ac4 (LETTER_WRITE_STATE_BACK): the keyboard back: set up again in its mode on
+ * background 3 (priority 1), shown and wiping in on window 2, the panel's layout set and the
+ * panel following the wipe (state 11). */
+void LetterWrite_StartKeyboardWipeIn(LetterWriteScene *self)
+{
+    func_ov095_0229c208(self->keyboard, LAYER_SUB_BG3);
+    DisplayLayer_SetPriority(LAYER_SUB_BG3, 1);
+    MenuScene_StartWipeCoveredOnWindow2(letter_write_scene(self), 8, 0, 0, LETTER_WRITE_WIPE_MARGIN);
+    DisplayLayer_Show(LAYER_SUB_BG3);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+    LetterWrite_SetPanelLayout(self);
+    LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_01);
+    self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
+    self->base.state = LETTER_WRITE_STATE_KEYBOARD_WIPE_IN;
+}
+CLEAN_AS(func_ov122_022a1ac4, LetterWrite_StartKeyboardWipeIn)
+
+/* func_ov122_022a1b24 (state 9): the panel slides down 0x20 pixels a frame; from 0xa0 on it is
+ * no longer drawn by `unk_98` and the keyboard comes back (LETTER_WRITE_STATE_BACK). */
+void LetterWrite_SlidePanelOut(LetterWriteScene *self)
+{
+    if (self->unk_98 < 0xa0) {
+        self->unk_98 += 0x20;
+    } else {
+        LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_02);
+        self->base.state = LETTER_WRITE_STATE_BACK;
+    }
+}
+CLEAN_AS(func_ov122_022a1b24, LetterWrite_SlidePanelOut)
+
+/* func_ov122_022a1b50 (LETTER_WRITE_STATE_08): the panel at 0, then it slides out (state 9). */
+void LetterWrite_StartPanelSlideOut(LetterWriteScene *self)
+{
+    self->unk_98 = 0;
+    self->base.state = LETTER_WRITE_STATE_PANEL_SLIDE_OUT;
+}
+CLEAN_AS(func_ov122_022a1b50, LetterWrite_StartPanelSlideOut)
+
+/* func_ov122_022a1b60 (state 7): the panel slides up 0x20 pixels a frame; once at 0, phase 2 and
+ * its buttons by the pen (LetterWrite_BeginSub04) while state flag 2 is clear, else by the
+ * buttons (LetterWrite_BeginPanelKeys). */
+void LetterWrite_SlidePanelIn(LetterWriteScene *self)
+{
+    if (self->unk_98 > 0x20) {
+        self->unk_98 -= 0x20;
+        return;
+    }
+    self->unk_98 = 0;
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+    if (StateFlags_IsClear2()) {
+        LetterWrite_BeginSub04(self);
+    } else {
+        LetterWrite_BeginPanelKeys(self);
+    }
+}
+CLEAN_AS(func_ov122_022a1b60, LetterWrite_SlidePanelIn)
+
+/* func_ov122_022a1ba4 (LETTER_WRITE_STATE_PANEL_MESSAGE): once the scroll has stopped, the
+ * panel's message 0x22 shown and drawn by `unk_98` from 0xc0, sliding in (state 7). */
+void LetterWrite_StartPanelMessage(LetterWriteScene *self)
+{
+    if (LetterWrite_IsScrolling(self) == 0) {
+        LetterWrite_ShowPanelMessage(self);
+        LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_02);
+        self->unk_98 = 0xc0;
+        self->base.state = LETTER_WRITE_STATE_PANEL_SLIDE_IN;
+    }
+}
+CLEAN_AS(func_ov122_022a1ba4, LetterWrite_StartPanelMessage)
+
+/* func_ov122_022a1bd4 (state 5): the keyboard wipes out; when done, its layer hidden and its
+ * scroll reset, the panel no longer drawn by `unk_94`, and the state is `next_state`. Else the
+ * keyboard's layer follows the wipe, whose y is kept. */
+void LetterWrite_KeyboardWipeOut(LetterWriteScene *self)
+{
+    if (MenuScene_StepWipe(letter_write_scene(self), 0) != 0) {
+        DisplayLayer_Hide(LAYER_SUB_BG3);
+        DisplayLayer_SetScroll(LAYER_SUB_BG3, 0, 0);
+        LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_01);
+        self->base.state = self->next_state;
+    } else {
+        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+        self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
+    }
+}
+CLEAN_AS(func_ov122_022a1bd4, LetterWrite_KeyboardWipeOut)
+
+/* func_ov122_022a1c24 (LETTER_WRITE_STATE_LEAVE): while the screen is dimmed the letter scrolls
+ * back to the top; else the keyboard starts to wipe out on window 2 (state 5). */
+void LetterWrite_LeaveKeyboard(LetterWriteScene *self)
+{
+    if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_DIMMED) == 0) {
+        MenuScene_StartWipeOnWindow2(letter_write_scene(self), 8, 0, 0, LETTER_WRITE_WIPE_MARGIN);
+        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+        self->base.state = LETTER_WRITE_STATE_KEYBOARD_WIPE_OUT;
+    } else {
+        LetterWrite_ScrollTo(self, 0);
+    }
+}
+CLEAN_AS(func_ov122_022a1c24, LetterWrite_LeaveKeyboard)
+
+/* func_ov122_022a1c68 (state 3): the letter wipes out; when done, its two backgrounds hidden and
+ * their scroll reset, phase 5. Else they follow the wipe, whose y is kept for the panel. */
+void LetterWrite_LetterWipeOut(LetterWriteScene *self)
+{
+    if (MenuScene_StepWipe(letter_write_scene(self), 0) != 0) {
+        DisplayLayer_Hide(LAYER_SUB_BG1);
+        DisplayLayer_Hide(LAYER_SUB_BG0);
+        DisplayLayer_SetScroll(LAYER_SUB_BG1, 0, 0);
+        DisplayLayer_SetScroll(LAYER_SUB_BG0, 0, 0);
+        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_RUN);
+    } else {
+        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
+        MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
+        self->unk_98 = MenuScene_WipeOffsetY(letter_write_scene(self));
+    }
+}
+CLEAN_AS(func_ov122_022a1c68, LetterWrite_LetterWipeOut)
+
+/* func_ov122_022a1cc8 (LETTER_WRITE_STATE_TAB_SWITCH): the letter starts to wipe out on window
+ * 2 (state 3). */
+void LetterWrite_StartLetterWipeOut(LetterWriteScene *self)
+{
+    MenuScene_StartWipeOnWindow2(letter_write_scene(self), 3, 0, 0, LETTER_WRITE_WIPE_MARGIN);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, 0);
+    MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_LETTER_WIPE_OUT);
+}
+CLEAN_AS(func_ov122_022a1cc8, LetterWrite_StartLetterWipeOut)
+
+/* func_ov122_022a1d04 (state 1): the scene wipes in; when done, phase 2 and the input starts
+ * (LetterWrite_Start, LetterWrite_BeginInput). The keyboard follows the wipe, the letter 16
+ * pixels above it; the wipe's y kept. */
+void LetterWrite_WipeIn(LetterWriteScene *self)
+{
+    if (MenuScene_StepWipeBack(letter_write_scene(self), 0) != 0) {
+        MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_2);
+        LetterWrite_Start(self);
+        LetterWrite_BeginInput(self);
+    }
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, -0x10);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, -0x10);
+    self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
+}
+CLEAN_AS(func_ov122_022a1d04, LetterWrite_WipeIn)
+
+/* func_ov122_022a1d60 (state 0): the backgrounds set up and the screens loaded, the keyboard set
+ * up in the mode main keeps and drawn on background 3, the three backgrounds shown and wiping in
+ * on window 2 (the letter 16 pixels above the keyboard), the keyboard's screen loaded, the
+ * panel's layout set and the panel following the wipe (state 1). */
+void LetterWrite_StartWipeIn(LetterWriteScene *self)
+{
+    LetterWrite_SetLayers();
+    LetterWrite_LoadScreens(self);
+    func_ov095_0229c420(self->keyboard, LAYER_SUB_BG3);
+    func_ov095_0229bf7c(self->keyboard, LAYER_SUB_BG3);
+    MenuScene_StartWipeCoveredOnWindow2(letter_write_scene(self), 0xb, 0, 0, LETTER_WRITE_WIPE_MARGIN);
+    DisplayLayer_Show(LAYER_SUB_BG3);
+    DisplayLayer_Show(LAYER_SUB_BG1);
+    DisplayLayer_Show(LAYER_SUB_BG0);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG3, 0, 0);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG1, 0, -0x10);
+    MenuScene_ScrollWipe(letter_write_scene(self), LAYER_SUB_BG0, 0, -0x10);
+    LetterWrite_LoadKeyboardScreen(self);
+    LetterWrite_SetPanelLayout(self);
+    LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_01);
+    self->unk_94 = MenuScene_WipeOffsetY(letter_write_scene(self));
+    MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_WIPE_IN);
+}
+CLEAN_AS(func_ov122_022a1d60, LetterWrite_StartWipeIn)
+
+/* func_ov122_022a1e00: the menu closes (the parent switched to tab 7), the letter scrolled back
+ * to the top without its text cursor, the scene wipes out (state 13) after phase 1; the pointer
+ * hidden and the taboo words filtered out. */
+void LetterWrite_ExitMenu(LetterWriteScene *self)
+{
+    func_ov090_022993cc(letter_write_parent(self), LETTER_WRITE_TAB_CLOSE);
+    LetterWrite_ScrollTo(self, 0);
+    LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_CURSOR_SHOWN);
+    self->base.state = LETTER_WRITE_STATE_EXIT;
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
+    LetterWrite_HidePointer(self);
+    LetterWrite_FilterTaboo(self);
+}
+CLEAN_AS(func_ov122_022a1e00, LetterWrite_ExitMenu)
+
+/* func_ov122_022a1e40: the menu switches to `tab`: the parent told, main's value C50 kept across
+ * it, the letter wipes out (state 2) after phase 1. Whether it switched: not for no tab or tab
+ * 8.
+ * QUIRK: the parent is asked for before the tab is checked, and gets the tab's low byte. */
+int LetterWrite_SwitchTab(LetterWriteScene *self, int tab)
+{
+    Process *parent = letter_write_parent(self);
+    if (tab == LETTER_WRITE_TAB_NONE || tab == LETTER_WRITE_TAB_8) {
+        return 0;
+    }
+    u8 kept = GroupParams_C50();
+    func_ov090_022993cc(parent, (u8) tab);
+    GroupParams_SetC50((char) kept);
+    self->base.state = LETTER_WRITE_STATE_TAB_SWITCH;
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
+    return 1;
+}
+CLEAN_AS(func_ov122_022a1e40, LetterWrite_SwitchTab)
+
+/* func_ov122_022a1e90: the menu close's delay counted; when main asked the menu to close in a
+ * sub state that may be left (0-4, 6, 9 and 0x0b-0x13), the menu closes (LetterWrite_ExitMenu)
+ * and the answer is 1, else 0. */
+int LetterWrite_CloseOnRequest(LetterWriteScene *self)
+{
+    StateFlags_CountMenuCloseDelay();
+    if (!StateFlags_MenuCloseAsked()) {
+        return 0;
+    }
+    switch (self->base.sub_state) {
+        case LETTER_WRITE_SUB_TOUCH:
+        case LETTER_WRITE_SUB_KEY_TOUCH_HELD:
+        case LETTER_WRITE_SUB_SCROLL_DRAG:
+        case LETTER_WRITE_SUB_MARK_DRAG:
+        case LETTER_WRITE_SUB_04:
+        case LETTER_WRITE_SUB_KEYS:
+        case LETTER_WRITE_SUB_KEY_REPEAT:
+        case LETTER_WRITE_SUB_BACKSPACE_REPEAT:
+        case LETTER_WRITE_SUB_0C:
+        case LETTER_WRITE_SUB_MARK_KEYS:
+        case LETTER_WRITE_SUB_WHILE_L:
+        case LETTER_WRITE_SUB_WHILE_R:
+        case LETTER_WRITE_SUB_SCROLL_PRESS:
+        case LETTER_WRITE_SUB_SCROLL_HELD:
+        case LETTER_WRITE_SUB_SCROLL_RELEASE:
+        case LETTER_WRITE_SUB_PANEL_KEYS:
+            LetterWrite_ExitMenu(self);
+            return 1;
+        default:
+            return 0;
+    }
+}
+CLEAN_AS(func_ov122_022a1e90, LetterWrite_CloseOnRequest)
+
+/* func_ov122_022a1ef4 (vtable slot 0x5c, phase 4): the header and the footer kept as the
+ * player's defaults, then the scene asks to be deleted. Answers 1. */
+int LetterWrite_End(LetterWriteScene *self)
+{
+    LetterWrite_SaveDefaults(self);
+    Process_RequestDelete((Process *) (void *) self);
+    return 1;
+}
+CLEAN_AS(func_ov122_022a1ef4, LetterWrite_End)
+
+/* func_ov122_022a1f0c (vtable slot 0x58, phase 1): nothing. */
+int LetterWrite_Phase1Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov122_022a1f0c, LetterWrite_Phase1Idle)
+
+/* func_ov122_022a1f10 (vtable slot 0x54, phase 0): nothing. */
+int LetterWrite_Phase0Idle(void)
+{
+    return 1;
+}
+CLEAN_AS(func_ov122_022a1f10, LetterWrite_Phase0Idle)
+
+/* Obj_ov122_022a2738::func_ov122_022a1f14 (vtable slot 0x50, phase 2): a frame of the scene in
+ * use, unless the menu closes on main's request: the sprites updated, the sub state, then the
+ * view, the keyboard and the choice drawn. Answers 1. */
+int LetterWrite_RunInteractive(LetterWriteScene *self)
+{
+    if (LetterWrite_CloseOnRequest(self) != 0) {
+        return 1;
+    }
+    LetterWrite_UpdateSprites(self);
+    LetterWrite_RunSubState(self);
+    LetterWrite_Draw(self);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a1f14Ev, LetterWrite_RunInteractive)
+
+/* Obj_ov122_022a2738::func_ov122_022a1f40: the sub state's function (LetterWriteSubState)
+ * through the table of member functions, filled once from its constants.
+ * REQUIRES: the sub state is below 0x1b; the game reads past the table for others. */
+void LetterWrite_RunSubState(LetterWriteScene *self)
+{
+    static const MemberPointer *const sub_states[LETTER_WRITE_SUB_STATES] = {
+        &data_ov122_022a2670, &data_ov122_022a2678, &data_ov122_022a2668, &data_ov122_022a2660, &data_ov122_022a2658,
+        &data_ov122_022a25e0, &data_ov122_022a2648, &data_ov122_022a25d8, &data_ov122_022a2638, &data_ov122_022a25d0,
+        &data_ov122_022a2628, &data_ov122_022a2620, &data_ov122_022a2618, &data_ov122_022a25b8, &data_ov122_022a2608,
+        &data_ov122_022a25f0, &data_ov122_022a2688, &data_ov122_022a2680, &data_ov122_022a25e8, &data_ov122_022a25a8,
+        &data_ov122_022a2640, &data_ov122_022a25a0, &data_ov122_022a25c8, &data_ov122_022a25c0, &data_ov122_022a25f8,
+        &data_ov122_022a2600, &data_ov122_022a2650,
+    };
+    MemberTable_InitOnce(&data_ov122_022a27e0, data_ov122_022a2860, sub_states, LETTER_WRITE_SUB_STATES);
+    MemberPointer_CallVoid(&data_ov122_022a2860[self->base.sub_state], self);
+}
+CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a1f40Ev, LetterWrite_RunSubState)
+
+/* Obj_ov122_022a2738::func_ov122_022a2110 (vtable slot 0x4c, the run phase): a frame of the
+ * scene's states (LetterWriteState) through the table of member functions (filled once from
+ * its constants), after the panel's texts are closed and before LetterWrite_Idle. Answers 1.
+ * REQUIRES: the state is below 0x0f; the game reads past the table for others. */
+int LetterWrite_RunState(LetterWriteScene *self)
+{
+    static const MemberPointer *const states[LETTER_WRITE_STATES] = {
+        &data_ov122_022a26f0, &data_ov122_022a26f8, &data_ov122_022a2630, &data_ov122_022a26e8, &data_ov122_022a26e0,
+        &data_ov122_022a26d8, &data_ov122_022a26d0, &data_ov122_022a26c8, &data_ov122_022a26c0, &data_ov122_022a26b8,
+        &data_ov122_022a2610, &data_ov122_022a26a8, &data_ov122_022a26a0, &data_ov122_022a2698, &data_ov122_022a2690,
+    };
+    MemberTable_InitOnce(&data_ov122_022a27e4, data_ov122_022a27e8, states, LETTER_WRITE_STATES);
+    LetterWrite_ClosePanelTexts(self);
+    MemberPointer_CallVoid(&data_ov122_022a27e8[self->base.state], self);
+    LetterWrite_Idle(self);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov122_022a273819func_ov122_022a2110Ev, LetterWrite_RunState)
+
+/* func_ov122_022a223c (vtable slot 0x24): the scene's draw.
+ *
+ * - The choice drawn.
+ * - With the keyboard drawn (LETTER_WRITE_FLAG_01), at 0x60 below the wipe's y (`unk_94`): a
+ *   cell above it, its mode tabs and its frame, and, with the keys in use, a cell over it.
+ * - While the letter scrolls, a step of the scroll and the letter's two backgrounds scrolled by
+ *   it; past 0x40 the screen is dimmed outside window 0 of the sub screen (once), else no longer.
+ * - With the keyboard drawn, the scroll button placed by the wipe and the scroll (its face kept
+ *   by the keyboard) and drawn through its class (slot 2).
+ * - With the keys in use, the pointer (following the scroll button's face with
+ *   LETTER_WRITE_FLAG_POINTER_ON_BUTTON) drawn.
+ * - The panel at `unk_94` with LETTER_WRITE_FLAG_01 and at `unk_98` with LETTER_WRITE_FLAG_02.
+ * - With the text cursor shown, the blink counted and the cursor drawn at its place in the
+ *   letter, less the scroll, while bit 4 of the count is set.
+ *
+ * Answers 1. */
+int LetterWrite_DrawScene(LetterWriteScene *self)
+{
+    PagedChoice_Draw(letter_write_choice(self));
+
+    if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_01) != 0) {
+        int y = (int) ((u32) self->unk_94 + 0x60);
+        OamBuffer_DrawCell(1, data_ov122_022a2700, 0x80, (int) ((u32) y - 0x10), -1, 2, 0x1000, 0x1000, 0, -1, 0, 0);
+        func_ov095_0229b1c8(self->keyboard, 0x80, y, 1);
+        func_ov095_0229ae84(self->keyboard, (void *) (uintptr_t) 0x80, (void *) (uintptr_t) (u32) y);
+        if (StateFlags_Test2()) {
+            OamBuffer_DrawObjAffine(1, data_ov122_022a25b0, 0x80, y, -1, 1, NULL);
+        }
+    }
+
+    if (LetterWrite_IsScrolling(self) != 0) {
+        LetterWrite_StepScroll(self);
+        DisplayLayer_SetScroll(LAYER_SUB_BG1, 0, self->scroll);
+        DisplayLayer_SetScroll(LAYER_SUB_BG0, 0, self->scroll);
+        if (self->scroll > 0x40) {
+            if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_DIMMED) == 0) {
+                LetterWrite_SetFlags(self, LETTER_WRITE_FLAG_DIMMED);
+                DisplayShadow_EnableSubWindows(1);
+                DisplayShadow_SetSubWindow0Planes(0x1d, 1);
+                DisplayShadow_SetSubOutsidePlanes(0x1f);
+                DisplayShadow_SetWindow(2, 0, 0xb0, 0xfe, 0xc0);
+            }
+        } else if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_DIMMED) != 0) {
+            LetterWrite_ClearFlags(self, LETTER_WRITE_FLAG_DIMMED);
+            DisplayShadow_DisableSubWindows(1);
+        }
+    }
+
+    if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_01) != 0) {
+        int y = (int) ((u32) self->unk_94 - 0x58) + (self->scroll >> 1);
+        DualCellSprite_SetOffset(letter_write_button_cells(self), 100, y);
+        int face_x = PushButton_FaceX(&self->scroll_button);
+        int face_y = PushButton_FaceY(&self->scroll_button);
+        func_ov095_02299b30((int *) (void *) self->keyboard, face_x, face_y);
+        letter_write_draw_object(&self->scroll_button);
+    }
+
+    if (StateFlags_Test2()) {
+        if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_POINTER_ON_BUTTON) != 0) {
+            int face_x = PushButton_FaceX(&self->scroll_button);
+            int face_y = PushButton_FaceY(&self->scroll_button);
+            Glider_PlaceAt(&self->pointer, face_x, face_y);
+        }
+        Glider_DrawWrapped(&self->pointer);
+    }
+
+    if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_01) != 0) {
+        ButtonPanel_Draw(&self->panel, self->unk_94);
+    }
+    if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_02) != 0) {
+        ButtonPanel_Draw(&self->panel, self->unk_98);
+    }
+    if (LetterWrite_TestFlags(self, LETTER_WRITE_FLAG_CURSOR_SHOWN) != 0) {
+        int x = self->cursor_x;
+        int y = (int) ((u32) self->cursor_y - self->scroll);
+        self->blink = (u8) (self->blink + 1);
+        if (self->blink & 0x10) {
+            func_ov095_0229af58(letter_write_keyboard_arg(self), x, y, 3);
+        }
+    }
+    return 1;
+}
+CLEAN_AS(func_ov122_022a223c, LetterWrite_DrawScene)
+
+/* func_ov122_022a2474 (vtable slot 0x0c): the scene closes: the parent told (both ways), then
+ * what the scene's members hold let go. Answers 1. */
+int LetterWrite_Close(LetterWriteScene *self)
+{
+    Process *parent = letter_write_parent(self);
+    func_ov090_0229936c(parent);
+    func_ov090_022990d0(parent);
+    LetterWrite_Release(self);
+    return 1;
+}
+CLEAN_AS(func_ov122_022a2474, LetterWrite_Close)
+
+/* func_ov122_022a249c (vtable slot 0x00): the scene starts: its setup, state 0 and phase 1.
+ * Answers 1. */
+int LetterWrite_Begin(LetterWriteScene *self)
+{
+    LetterWrite_Setup(self);
+    MenuScene_SetState(letter_write_scene(self), LETTER_WRITE_STATE_START);
+    MenuScene_SetPhase(letter_write_scene(self), MENU_SCENE_PHASE_1);
+    return 1;
+}
+CLEAN_AS(func_ov122_022a249c, LetterWrite_Begin)
+
+/* func_ov122_022a24bc (named by the profile at 0x022a26b0): a new scene from the menu scenes'
+ * heap (NULL when it has no room): the base, the scene's vtable and its members constructed in
+ * order, the two labels by __cxa_vec_ctor. The keyboard at 0xc0 has no constructor. */
+LetterWriteScene *LetterWrite_New(void)
+{
+    LetterWriteScene *self = MenuScene_Alloc(sizeof(LetterWriteScene));
+    if (self == NULL) {
+        return NULL;
+    }
+    MenuScene_Construct(&self->base);
+    self->base.vtable = data_ov122_022a2738;
+    for (int i = 0; i < 2; i++) {
+        LayerTask_Construct((LayerTask *) (void *) self->unk_23c8[i]);
+    }
+    __cxa_vec_ctor(self->labels, 2, sizeof(TextLabel), (void (*)(void *))(uintptr_t) func_02070c08,
+                   (void (*)(void *))(uintptr_t) func_02070be8);
+    LetterView_Construct(&self->view);
+    PushButton_Construct(&self->scroll_button);
+    Glider0_Construct(&self->pointer);
+    MailMsgText_Construct(&self->filter_text);
+    LetterBodyText_Construct(&self->filter_wide);
+    PagedChoice_Construct(letter_write_choice(self));
+    ButtonPanel_Construct(&self->panel);
+    ErrorMessage_Construct(&self->error);
+    return self;
+}
+CLEAN_AS(func_ov122_022a24bc, LetterWrite_New)

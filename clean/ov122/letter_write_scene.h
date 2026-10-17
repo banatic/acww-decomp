@@ -1,5 +1,5 @@
 /* The scene of overlay 122 (vtable 0x022a2738, include/cpp/ov122/Obj_ov122_022a2738.h; its
- * profile at 0x022a26b0, class 0xa5, names the constructor func_ov122_022a24bc, 0x4980 bytes):
+ * profile at 0x022a26b0, class 0xa5, names the constructor LetterWrite_New, 0x4980 bytes):
  * a menu scene (ov002/menu_scene.h) in which a player writes a letter, as the evidence says:
  *
  * - it is loaded with overlay 95 (overlay group 8, main/overlay_groups.h), whose keyboard
@@ -37,9 +37,9 @@
 
 /* In `flags`. */
 enum LetterWriteFlag {
-    LETTER_WRITE_FLAG_01 = 0x0001,                /* the panel and keyboard follow `unk_94` (func_ov122_022a223c) */
-    LETTER_WRITE_FLAG_02 = 0x0002,                /* the panel follows `unk_98` (func_ov122_022a223c) */
-    LETTER_WRITE_FLAG_CURSOR_SHOWN = 0x0004,      /* the text cursor is drawn, blinking (func_ov122_022a223c) */
+    LETTER_WRITE_FLAG_01 = 0x0001,                /* the panel and keyboard follow `unk_94` (LetterWrite_DrawScene) */
+    LETTER_WRITE_FLAG_02 = 0x0002,                /* the panel follows `unk_98` (LetterWrite_DrawScene) */
+    LETTER_WRITE_FLAG_CURSOR_SHOWN = 0x0004,      /* the text cursor is drawn, blinking (LetterWrite_DrawScene) */
     LETTER_WRITE_FLAG_MARKING = 0x0008,           /* the pen marks from `mark_from` to `mark_to` */
     LETTER_WRITE_FLAG_NO_HEADER = 0x0010,         /* the header cannot be entered */
     LETTER_WRITE_FLAG_DIMMED = 0x0020,            /* the screen is dimmed: scrolled past 0x40 */
@@ -62,7 +62,7 @@ enum LetterWritePart {
 };
 
 /* The scene's sub states (MenuScene.sub_state), each run by its handler of the table of
- * func_ov122_022a1f40. Only those set here are named. */
+ * LetterWrite_RunSubState. Only those set here are named. */
 enum LetterWriteSubState {
     LETTER_WRITE_SUB_TOUCH = 0,               /* func_ov122_022a1380: the pen on the keyboard and the letter */
     LETTER_WRITE_SUB_KEY_TOUCH_HELD = 1,      /* func_ov122_022a132c: a key held down by the pen repeats */
@@ -96,16 +96,29 @@ enum LetterWriteSubState {
 };
 
 /* The scene's states (MenuScene.state), each run by its handler of the table of
- * func_ov122_022a2110. Only those set here are named. */
+ * LetterWrite_RunState. */
 enum LetterWriteState {
-    LETTER_WRITE_STATE_LEAVE = 4,         /* func_ov122_022a1c24: the keyboard wiped out, then 5 and
-                                           * `next_state` */
-    LETTER_WRITE_STATE_PANEL_MESSAGE = 6, /* func_ov122_022a1ba4: the panel's message 0x22 */
-    LETTER_WRITE_STATE_08 = 8,            /* func_ov122_022a1b50 */
-    LETTER_WRITE_STATE_BACK = 10,         /* func_ov122_022a1ac4: the keyboard back */
-    LETTER_WRITE_STATE_CHOICE = 12,       /* func_ov122_022a1a58: the choice opened */
-    LETTER_WRITE_STATE_WIPE_OUT = 14      /* func_ov122_022a1998: the scene wiped out */
+    LETTER_WRITE_STATE_START = 0,             /* LetterWrite_StartWipeIn: the screens loaded, the wipe in */
+    LETTER_WRITE_STATE_WIPE_IN = 1,           /* LetterWrite_WipeIn: then the input */
+    LETTER_WRITE_STATE_TAB_SWITCH = 2,        /* LetterWrite_StartLetterWipeOut: the letter wipes out for
+                                               * the menu's tab switch (LetterWrite_SwitchTab) */
+    LETTER_WRITE_STATE_LETTER_WIPE_OUT = 3,   /* LetterWrite_LetterWipeOut: then phase 5 */
+    LETTER_WRITE_STATE_LEAVE = 4,             /* LetterWrite_LeaveKeyboard: the keyboard wiped out, then 5
+                                               * and `next_state` */
+    LETTER_WRITE_STATE_KEYBOARD_WIPE_OUT = 5, /* LetterWrite_KeyboardWipeOut */
+    LETTER_WRITE_STATE_PANEL_MESSAGE = 6,     /* LetterWrite_StartPanelMessage: the panel's message 0x22 */
+    LETTER_WRITE_STATE_PANEL_SLIDE_IN = 7,    /* LetterWrite_SlidePanelIn */
+    LETTER_WRITE_STATE_08 = 8,                /* LetterWrite_StartPanelSlideOut */
+    LETTER_WRITE_STATE_PANEL_SLIDE_OUT = 9,   /* LetterWrite_SlidePanelOut */
+    LETTER_WRITE_STATE_BACK = 10,             /* LetterWrite_StartKeyboardWipeIn: the keyboard back */
+    LETTER_WRITE_STATE_KEYBOARD_WIPE_IN = 11, /* LetterWrite_KeyboardWipeIn: then the input */
+    LETTER_WRITE_STATE_CHOICE = 12,           /* LetterWrite_OpenChoice: the choice opened */
+    LETTER_WRITE_STATE_EXIT = 13,             /* LetterWrite_StartWipeOut (LetterWrite_ExitMenu) */
+    LETTER_WRITE_STATE_WIPE_OUT = 14,         /* LetterWrite_StepWipeOut: the scene wiped out */
+    LETTER_WRITE_STATES = 15
 };
+
+#define LETTER_WRITE_SUB_STATES 0x1b
 
 /* The codes of the keyboard's keys (func_ov095_0229c448) the scene acts on; others are
  * characters or the keyboard's own (func_ov095_0229ba44). */
@@ -127,7 +140,7 @@ enum LetterWriteCode {
 
 typedef struct LetterWriteScene {
     MenuScene base;                                    /* 0x00 */
-    s32 unk_94;                                        /* 0x94: func_ov002_02207f60's (func_ov122_022a1998) */
+    s32 unk_94;                                        /* 0x94: func_ov002_02207f60's (LetterWrite_StepWipeOut) */
     s32 unk_98;                                        /* 0x98 */
     s32 cursor_x;                                      /* 0x9c: in pixels of the letter */
     s32 cursor_y;                                      /* 0xa0 */
@@ -287,5 +300,31 @@ void LetterWrite_Release(LetterWriteScene *self);
 void LetterWrite_Setup(LetterWriteScene *self);
 void LetterWrite_StepWipeOut(LetterWriteScene *self);
 void LetterWrite_StartWipeOut(LetterWriteScene *self);
+void LetterWrite_OpenChoice(LetterWriteScene *self);
+int LetterWrite_KeyboardWipeIn(LetterWriteScene *self);
+void LetterWrite_StartKeyboardWipeIn(LetterWriteScene *self);
+void LetterWrite_SlidePanelOut(LetterWriteScene *self);
+void LetterWrite_StartPanelSlideOut(LetterWriteScene *self);
+void LetterWrite_SlidePanelIn(LetterWriteScene *self);
+void LetterWrite_StartPanelMessage(LetterWriteScene *self);
+void LetterWrite_KeyboardWipeOut(LetterWriteScene *self);
+void LetterWrite_LeaveKeyboard(LetterWriteScene *self);
+void LetterWrite_LetterWipeOut(LetterWriteScene *self);
+void LetterWrite_StartLetterWipeOut(LetterWriteScene *self);
+void LetterWrite_WipeIn(LetterWriteScene *self);
+void LetterWrite_StartWipeIn(LetterWriteScene *self);
+void LetterWrite_ExitMenu(LetterWriteScene *self);
+int LetterWrite_SwitchTab(LetterWriteScene *self, int tab);
+int LetterWrite_CloseOnRequest(LetterWriteScene *self);
+int LetterWrite_End(LetterWriteScene *self);
+int LetterWrite_Phase1Idle(void);
+int LetterWrite_Phase0Idle(void);
+int LetterWrite_RunInteractive(LetterWriteScene *self);
+void LetterWrite_RunSubState(LetterWriteScene *self);
+int LetterWrite_RunState(LetterWriteScene *self);
+int LetterWrite_DrawScene(LetterWriteScene *self);
+int LetterWrite_Close(LetterWriteScene *self);
+int LetterWrite_Begin(LetterWriteScene *self);
+LetterWriteScene *LetterWrite_New(void);
 
 #endif

@@ -9,6 +9,8 @@
 #include "clean.h"
 #include "itcm/vector.h" /* Vec_Add */
 #include "ov004/member_pointer.h"
+#include "scene_actor_files.h" /* SceneActor_DrawShadows */
+#include "scene_actor_life.h"  /* SceneActor_Kind, SceneActor_UpdateModelMatrix, SceneActor_ViewRange* */
 
 static_assert(offsetof(SceneActorSound, state.on) == 0x40, "sound on flag");
 static_assert(sizeof(SceneActorSound) == 0x44, "sound size");
@@ -31,7 +33,7 @@ static_assert(offsetof(SceneActor, model_matrix) == 0x1a0, "model matrix");
 static_assert(offsetof(SceneActor, member_1f4) == 0x1f4, "member 0x1f4");
 static_assert(offsetof(SceneActor, tile_x) == 0x22c, "tile x");
 static_assert(offsetof(SceneActor, tile_z) == 0x230, "tile z");
-static_assert(offsetof(SceneActor, unk_234) == 0x234, "byte 0x234");
+static_assert(offsetof(SceneActor, exit_step) == 0x234, "exit step");
 static_assert(offsetof(SceneActor, flags_235) == 0x235, "flags 0x235");
 static_assert(offsetof(SceneActor, flags) == 0x236, "flags");
 static_assert(offsetof(SceneActor, visit_3) == 0x237, "visit 3");
@@ -64,7 +66,7 @@ static_assert(sizeof(SceneActor) == 0x2b4, "size");
 
 /* Vtable slots it calls. */
 #define SLOT_TALK_POINT 0x50   /* SceneActor_TalkPointAddress */
-#define SLOT_SET_MODE 0x6c     /* func_ov009_0226418c */
+#define SLOT_SET_MODE 0x6c     /* SceneActor_SetMode */
 #define SLOT_PREPARE_TALK 0x78 /* SceneActor_PrepareTalk */
 #define SLOT_TALK_OPEN 0x7c    /* SceneActor_OnTalkOpen */
 #define SLOT_TALK_WAIT 0x80    /* SceneActor_OnTalkWait */
@@ -116,15 +118,6 @@ extern MemberPointer data_ov009_02265c24[SCENE_ACTOR_STATES];
 extern const MemberPointer data_ov009_022657c0, data_ov009_022657f8, data_ov009_022657f0, data_ov009_02265898,
     data_ov009_02265808, data_ov009_02265820, data_ov009_02265828, data_ov009_02265848, data_ov009_02265888;
 
-/* The rest of overlay 9's actor: its kind (from the character's record), the record's
- * half-width and its depth before and behind (each times 0x2000), and the steps that draw its
- * model. */
-extern int func_ov009_02264c90(SceneActor *actor);
-extern int func_ov009_02264e30(SceneActor *actor);
-extern int func_ov009_02264d60(SceneActor *actor);
-extern int func_ov009_02264dc8(SceneActor *actor);
-extern void func_ov009_022646b8(SceneActor *actor, int arg);
-extern void func_ov009_022645b8(SceneActor *actor, Mtx43 *matrix);
 extern void func_0205510c(void *model_object, int arg);
 /* The field actor asking a player to stand at a point (overlay 3, field_actor.h). */
 int FieldActor_PlayerRequestState39(u32 kind, int *x, int *z, int yaw);
@@ -352,7 +345,7 @@ CLEAN_AS(func_ov009_02262fd8, SceneActor_IdleSetModeByKindA)
  * vtable slot 0x6c, and gives its answer; 0 for other kinds. */
 int SceneActor_SetModeByKindA(SceneActor *actor)
 {
-    switch (func_ov009_02264c90(actor)) {
+    switch (SceneActor_Kind(actor)) {
         case 2:
             return scene_actor_set_mode(actor, 2);
         case 3:
@@ -379,7 +372,7 @@ CLEAN_AS(func_ov009_0226303c, SceneActor_IdleSetModeByKindB)
  * vtable slot 0x6c, and gives its answer; 0 for other kinds. */
 int SceneActor_SetModeByKindB(SceneActor *actor)
 {
-    switch (func_ov009_02264c90(actor)) {
+    switch (SceneActor_Kind(actor)) {
         case 2:
             return scene_actor_set_mode(actor, 1);
         case 3:
@@ -423,13 +416,13 @@ int SceneActor_IsOutOfView(SceneActor *actor)
         dx = -dx;
     }
     int dz = actor->position.z - data_021c67d0.z;
-    if (dx > func_ov009_02264e30(actor)) {
+    if (dx > SceneActor_ViewRangeX(actor)) {
         return 1;
     }
-    if (dz > func_ov009_02264d60(actor)) {
+    if (dz > SceneActor_ViewRangeZAhead(actor)) {
         return 1;
     }
-    if (dz < -func_ov009_02264dc8(actor)) {
+    if (dz < -SceneActor_ViewRangeZBehind(actor)) {
         return 1;
     }
     return 0;
@@ -532,10 +525,10 @@ void SceneActor_DrawModel(SceneActor *actor)
     if (actor->model == NULL) {
         return;
     }
-    func_ov009_022646b8(actor, 0);
+    SceneActor_UpdateModelMatrix(actor, NULL);
     func_0205510c(actor->model_object, 0);
     Mtx43 matrix = actor->model_matrix;
-    func_ov009_022645b8(actor, &matrix);
+    SceneActor_DrawShadows(actor, &matrix);
 }
 CLEAN_AS(func_ov009_022632c8, SceneActor_DrawModel)
 
@@ -596,7 +589,7 @@ void SceneActor_OnSceneEvent(SceneActor *actor, unsigned int event, int arg)
             func_020b23c8();
             func_020b5e10();
             func_020b5e90();
-            actor->unk_234 = 1;
+            actor->exit_step = 1;
             break;
         case SCENE_ACTOR_EVENT_TALK:
         case SCENE_ACTOR_EVENT_TALK_AGAIN:
@@ -626,8 +619,8 @@ int SceneActor_CanTalkTo(SceneActor *actor, SceneActor *other)
     if (Math_AbsDiff16((s16) (actor->yaw + 0x8000), other->yaw) > SCENE_ACTOR_TALK_ANGLE) {
         return 0;
     }
-    if (func_ov009_02264c90(actor) != 0) {
-        if (!(actor->flags_235 & SCENE_ACTOR_FLAG_TALKABLE) || func_ov009_02264c90(actor) != 2) {
+    if (SceneActor_Kind(actor) != 0) {
+        if (!(actor->flags_235 & SCENE_ACTOR_FLAG_TALKABLE) || SceneActor_Kind(actor) != 2) {
             return 0;
         }
         int slot_8c = scene_actor_call_int(actor, SLOT_8C);
@@ -715,9 +708,9 @@ CLEAN_AS(func_ov009_02263568, SceneActor_EnterLeaveAgain)
 void SceneActor_UpdateGone(SceneActor *actor)
 {
     actor->frames++;
-    func_ov009_02264c90(actor);
+    SceneActor_Kind(actor);
     int wait = SCENE_ACTOR_GONE_WAIT;
-    if (func_ov009_02264c90(actor) == 1) {
+    if (SceneActor_Kind(actor) == 1) {
         wait += SCENE_ACTOR_GONE_WAIT_KIND_1;
     }
     if (actor->frames < wait) {
@@ -737,7 +730,7 @@ void SceneActor_UpdateGone(SceneActor *actor)
     void *table = func_020b5e10();
     int scene = func_020b65c4();
     func_020b5ea0(table, scene, &point, SCENE_ACTOR_GONE_ARG, (short) (angle + 0x8000), actor->tile_x, actor->tile_z);
-    func_020b22ac(func_ov009_02264c90(actor));
+    func_020b22ac(SceneActor_Kind(actor));
     actor->flags |= SCENE_ACTOR_FLAG_GONE;
 }
 CLEAN_AS(func_ov009_0226357c, SceneActor_UpdateGone)
@@ -759,7 +752,7 @@ void SceneActor_UpdateWalk(SceneActor *actor)
     if (!func_02096168()) {
         return;
     }
-    switch (func_ov009_02264c90(actor)) {
+    switch (SceneActor_Kind(actor)) {
         case 2:
         case 3:
             func_0203aec4();
@@ -793,7 +786,7 @@ int SceneActor_EnterWalk(SceneActor *actor)
     if (scene_actor_call_int(actor, SLOT_STATE_38) != 0) {
         return FieldActor_PlayerRequestState38(&x, &z, &angle) != 0;
     }
-    u32 kind = func_ov009_02264c90(actor) == 2;
+    u32 kind = SceneActor_Kind(actor) == 2;
     return FieldActor_PlayerRequestState39(kind, &x, &z, angle) != 0;
 }
 CLEAN_AS(_ZN18Obj_ov009_022658dc19func_ov009_02263694Ev, SceneActor_EnterWalk)
@@ -882,7 +875,7 @@ void SceneActor_UpdateVisit(SceneActor *actor)
     actor->visit_3 = answer == 3;
     if ((actor->flags & SCENE_ACTOR_FLAG_VISIT_2) || actor->visit_3) {
         SceneActor_SetState(actor, SCENE_ACTOR_TALK);
-    } else if (func_ov009_02264c90(actor) == 1) {
+    } else if (SceneActor_Kind(actor) == 1) {
         SceneActor_SetState(actor, SCENE_ACTOR_LEAVE_AGAIN);
     } else {
         SceneActor_SetState(actor, SCENE_ACTOR_LEAVE);

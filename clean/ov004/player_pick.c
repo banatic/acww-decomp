@@ -25,6 +25,7 @@
 #include "main/touch_pick_shapes.h"
 #include "member_pointer.h"
 #include "rmo_telephone.h"
+#include "room_camera.h" /* RoomCamera_ResetGoalNow */
 
 static_assert(sizeof(PlayerPick) == 0x358, "the process");
 static_assert(offsetof(PlayerPick, cursor) == 0x50, "the cursor");
@@ -113,9 +114,6 @@ extern u8 data_021f6c34;          /* the pen went down or up */
 
 /* The scene's player actor told to take action 6 to the side `left` (func_ov004_0222b9d4). */
 extern int func_ov004_0222c110(int left, int arg);
-/* Overlay 4's camera follows the field camera again (func_ov004_022473a8). */
-extern int func_ov004_02246a74(void);
-
 /* The name tags' destructor and constructor, as the game hands them to the array helpers. */
 extern void func_0208e408(void *tag);
 extern void func_0208e438(void *tag);
@@ -254,13 +252,13 @@ void PlayerPick_UpdateTurn(PlayerPick *self)
 }
 CLEAN_AS(func_ov004_02245874, PlayerPick_UpdateTurn)
 
-/* func_ov004_02245898 (entry of PLAYER_PICK_TURN): overlay 4's camera follows the field camera
- * again, this system's player turns to yaw 0, and 5 frames.
+/* func_ov004_02245898 (entry of PLAYER_PICK_TURN): the field camera's goal reset to the
+ * player, this system's player turns to yaw 0, and 5 frames.
  * QUIRK: it answers 0x324 (the timer's offset, left in the result register); nothing reads
  * it. */
 int PlayerPick_EnterTurn(PlayerPick *self)
 {
-    func_ov004_02246a74();
+    RoomCamera_ResetGoalNow();
     PlayerActorOps_Turn(0, PLAYER_PICK_LOCAL);
     self->timer = PLAYER_PICK_TURN_FRAMES;
     return (int) offsetof(PlayerPick, timer);
