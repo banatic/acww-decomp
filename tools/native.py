@@ -35,6 +35,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import common as C  # noqa: E402
 import protos  # noqa: E402
 import objrewrite  # noqa: E402
+import native_layout  # noqa: E402
 
 OUT = C.BUILD / "native" / ("windows" if os.name == "nt" else "linux")
 WINDOWS = os.name == "nt"
@@ -192,9 +193,13 @@ def compile_one(path: pathlib.Path) -> tuple[pathlib.Path, pathlib.Path | None, 
     flags = flags_for(path)
     obj = OUT / "obj" / path.relative_to(C.SRC).with_suffix(".o")
     source, text = path, path.read_bytes()
-    if NARROWED.get(path):
-        wide, done = protos.widen_declarations(text.decode("utf-8"), NARROWED[path])
-        WIDENED[path] = done
+    relative = path.relative_to(C.SRC).as_posix()
+    layout = native_layout.translate(relative, text.decode("utf-8")) if relative in native_layout.paths() else None
+    if NARROWED.get(path) or layout is not None:
+        wide = text.decode("utf-8") if layout is None else layout
+        if NARROWED.get(path):
+            wide, done = protos.widen_declarations(wide, NARROWED[path])
+            WIDENED[path] = done
         # the copy finds the original's neighbours (#include "...") and names the original
         source = OUT / "wide" / path.relative_to(C.SRC)
         text = f'#line 1 "{path.as_posix()}"\n{wide}'.encode()
