@@ -4,8 +4,7 @@
 #ifndef RUNTIME_NATIVE_MEMBER_H
 #define RUNTIME_NATIVE_MEMBER_H
 
-template<class Class, class Result, class... Args>
-struct NativeMember {
+template <class Class, class Result, class... Args> struct NativeMember {
     unsigned int function;
     int adjustment; /* twice the signed this offset, plus the virtual flag */
 
@@ -21,9 +20,18 @@ struct NativeMember {
 
     /* The verified mwccarm call sites test the first word alone, including for a
      * virtual pointer with slot zero. Do not substitute the host ABI's null test. */
-    explicit operator bool() const { return function != 0; }
-    bool operator==(decltype(nullptr)) const { return function == 0; }
-    bool operator!=(decltype(nullptr)) const { return function != 0; }
+    explicit operator bool() const
+    {
+        return function != 0;
+    }
+    bool operator==(decltype(nullptr)) const
+    {
+        return function == 0;
+    }
+    bool operator!=(decltype(nullptr)) const
+    {
+        return function != 0;
+    }
 
     Bound bind(Class *object) const
     {
@@ -41,9 +49,8 @@ struct NativeMember {
     }
 };
 
-template<class Class, class Result, class... Args>
-typename NativeMember<Class, Result, Args...>::Bound
-operator->*(Class *object, NativeMember<Class, Result, Args...> member)
+template <class Class, class Result, class... Args>
+typename NativeMember<Class, Result, Args...>::Bound operator->*(Class *object, NativeMember<Class, Result, Args...> member)
 {
     return member.bind(object);
 }
