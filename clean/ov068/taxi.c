@@ -476,3 +476,16 @@ const Taxi *Taxi_MaterialHook(TaxiRenderState *state)
     return self;
 }
 CLEAN_AS(func_ov068_022738e8, Taxi_MaterialHook)
+
+/* func_ov068_02273904 (its record's create function): a zeroed block of 0x5a4 bytes from the
+ * auxiliary heap, constructed when there was room.
+ * QUIRK: the ROM leaves the taxi (or NULL) in its result register; the function returns
+ * nothing. */
+void Taxi_Create(void)
+{
+    Taxi *self = (Taxi *) Heap_AllocAuxZeroed(sizeof(Taxi));
+    if (self != NULL) {
+        Taxi_Construct(self);
+    }
+}
+CLEAN_AS(func_ov068_02273904, Taxi_Create)

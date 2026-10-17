@@ -7,22 +7,35 @@
 #include "autoload_2/vector.h"
 #include "birthday_guest.h"
 #include "clean.h"
+#include "main/acre_map.h"
+#include "main/acre_record.h"
+#include "main/collision_map.h"
+#include "main/current_pockets.h"
 #include "main/event_queue.h"
+#include "main/footsteps.h"
 #include "main/group_params.h"
+#include "main/item_code.h"
 #include "main/main_random.h"
 #include "main/npc_id.h"
+#include "main/player_record.h"
+#include "main/player_records.h"
 #include "main/pockets.h"
 #include "main/scene_action.h"
 #include "main/scene_base.h"
+#include "main/scene_command.h"
+#include "main/scene_look.h"
 #include "main/scene_motion_request.h"
 #include "main/scene_mover.h"
 #include "main/scene_object.h"
+#include "main/scene_standard_anims.h"
 #include "main/session_players.h"
 #include "main/sound.h"
 #include "main/spawner.h"
 #include "main/talk_answers.h"
 #include "main/talk_object.h"
 #include "main/town_villager.h"
+#include "main/villager_memories.h"
+#include "main/villager_memory_entry.h"
 #include "main/villager_mood.h"
 #include "main/villager_move.h"
 #include "main/villager_move_record.h"
@@ -658,3 +671,361 @@ void SickVillagerTalk_OnMessageBegun(SickVillagerTalk *talk)
     }
 }
 CLEAN_AS(func_ov004_0222251c, SickVillagerTalk_OnMessageBegun)
+
+/* The town villager scene object's parts used by its set-up, start and events. */
+#define SICK_VILLAGER_STANDARD_ANIMS 0x2a0 /* SceneStandardAnims */
+#define SICK_VILLAGER_LOOK 0x3b0           /* SceneLook */
+#define SICK_VILLAGER_FOOTSTEPS 0x558      /* Footsteps */
+#define SICK_VILLAGER_PARTICIPANT 0x560    /* u8: whose system the last event came from */
+
+/* The codes of its vtable slot 0x4c (main's event_kinds.h). */
+#define SICK_VILLAGER_EVENT_TALK 0
+#define SICK_VILLAGER_EVENT_STARTS 3
+#define SICK_VILLAGER_EVENT_REFUSED 4
+#define SICK_VILLAGER_EVENT_ENDED 8
+
+/* The lines table VillagerTalkScene_Start is given: 17 and above leave the line members as they
+ * are (the talk scene's own vtable slot 0x78 says the line). */
+#define SICK_VILLAGER_TALK_OWN_LINES 0x11
+
+/* The first line's messages: 0 to 2, or 3 to 5 when the record's current stage names a
+ * player. */
+#define SICK_VILLAGER_FIRST_LINES 3
+#define SICK_VILLAGER_NAMED_LINES_FIRST 3
+/* After the pockets: nothing picked gives 13 to 15, the item handed 16 to 18. */
+#define SICK_VILLAGER_NOTHING_PICKED_FIRST 0xd
+#define SICK_VILLAGER_HANDED_FIRST 0x10
+/* The value the scene's command 4 hands the item over with. */
+#define SICK_VILLAGER_HAND_MOTION_ARG 6
+/* The item it asks for. */
+#define SICK_VILLAGER_ASKED_ITEM 0x155e
+
+/* Above stage 1: its first and second standard animations and its walking pace (index 1:
+ * speed, speed-up, slow-down); else the pace of a well villager. */
+#define SICK_VILLAGER_BADLY_ANIM_FIRST 0xe9
+#define SICK_VILLAGER_BADLY_ANIM_SECOND 0xea
+#define SICK_VILLAGER_PACE 1
+#define SICK_VILLAGER_BADLY_SPEED 0xa4
+#define SICK_VILLAGER_BADLY_SPEED_CHANGE 0x10
+#define SICK_VILLAGER_SPEED 0xcd
+#define SICK_VILLAGER_SPEED_CHANGE 0x14
+/* The look asked for above stage 1: none (straight ahead), priority 0. */
+#define SICK_VILLAGER_LOOK_AHEAD 0
+
+/* The side of an acre in tiles. */
+#define SICK_VILLAGER_ACRE_TILES 0x10
+
+/* The villager of this class that is set up, cleared when it may be deleted. */
+extern SickVillager *data_ov004_02257f7c;
+/* The text its first line's message file name is written in, and those files ("q12_ask1_2",
+ * above stage 1 "q12_ask3_5"). */
+extern char data_ov004_02257f9c[SICK_VILLAGER_FILE_NAME_SIZE];
+extern const char data_ov004_022542b0[], data_ov004_022542bc[];
+/* Its draw member (SickVillager_DrawModel), copied in at its start. */
+extern const MemberPointer data_ov004_022540a8;
+/* The map of the scene. */
+extern AcreMap *data_021c80bc;
+/* The look's point and range when it names neither. */
+extern Vec3 data_021fbee8;
+extern fx32 data_020c814c;
+
+/* func_ov004_02222554 (the talk scene's vtable slot 0x78, the line to say): the file
+ * "q12_ask1_2" (above stage 1 "q12_ask3_5") for the villager, written into
+ * data_ov004_02257f9c, the player's answer forgotten, and a message 0 to 2, or 3 to 5 when the
+ * current stage of the town's villager move record names a player (which is noted).
+ * QUIRK: the talk's stage is asked for first and not used. */
+void SickVillagerTalk_Line(SickVillagerTalk *talk, VillagerTalkLine *out)
+{
+    out->text = (u32) (uintptr_t) data_ov004_02257f9c;
+    (void) SickVillagerTalk_Stage(talk);
+    SickVillager *villager = talk->villager;
+    u8 *record = *(u8 **) (void *) sk_part(villager, SICK_VILLAGER_RECORD);
+    const char *file = sk_badly(villager) ? data_ov004_022542bc : data_ov004_022542b0;
+    NpcId_FormatResourceName(TownVillager_NpcId(record), data_ov004_02257f9c, SICK_VILLAGER_FILE_NAME_SIZE, file);
+    villager->answered = 0;
+    if (SickVillagerTalk_StageNamesPlayer(talk)) {
+        out->message = (u8) (MainRandom_Below(SICK_VILLAGER_FIRST_LINES) + SICK_VILLAGER_NAMED_LINES_FIRST);
+        villager->stage_named = 1;
+    } else {
+        out->message = (u8) MainRandom_Below(SICK_VILLAGER_FIRST_LINES);
+        villager->stage_named = 0;
+    }
+}
+CLEAN_AS(func_ov004_02222554, SickVillagerTalk_Line)
+
+/* func_ov004_022225fc (the talk scene's vtable slot 0x80, each step): in state 6, once the
+ * pockets screen has closed: when nothing was picked the talk window opens again on message 13
+ * to 15 and the villager talks (state 4); else the picked pocket is emptied, the message is 16
+ * to 18, the scene's command 4 hands over the item 0x155e and the villager goes back (state
+ * 7). */
+void SickVillagerTalk_TakeItem(SickVillagerTalk *talk)
+{
+    u8 message;
+
+    if (talk->villager->state != SICK_VILLAGER_POCKETS || !GroupParams_CanOpen()) {
+        return;
+    }
+    TalkObject *window = (TalkObject *) (void *) talk->base.scene.talk;
+    if (!GroupParams_C4CIs1()) {
+        window->next_state = TALK_OBJECT_OPENING;
+        message = (u8) (MainRandom_Below(3) + SICK_VILLAGER_NOTHING_PICKED_FIRST);
+        TalkObject_SetMessage(window, &message, NULL);
+        SickVillager_SetState(talk->villager, SICK_VILLAGER_TALK);
+    } else {
+        CurrentPockets_Empty(GroupParams_Arg());
+        message = (u8) (MainRandom_Below(3) + SICK_VILLAGER_HANDED_FIRST);
+        TalkObject_SetMessage(window, &message, NULL);
+        u16 item = SICK_VILLAGER_ASKED_ITEM;
+        SceneCommand_RequestMotion14(&talk->base.scene, &item, 0, SICK_VILLAGER_HAND_MOTION_ARG, 0);
+        SickVillager_SetState(talk->villager, SICK_VILLAGER_BACK);
+    }
+}
+CLEAN_AS(func_ov004_022225fc, SickVillagerTalk_TakeItem)
+
+/* func_ov004_0222269c (the talk scene's vtable slot 0x84, told which command ended): after
+ * command 4 (the item handed) the current stage of the town's villager move record names the
+ * current player and the talk window opens again. */
+void SickVillagerTalk_OnCommandEnd(SickVillagerTalk *talk, int command)
+{
+    if (command == SCENE_COMMAND_MOTION_14) {
+        SickVillagerTalk_NameStagePlayer();
+        ((TalkObject *) (void *) talk->base.scene.talk)->next_state = TALK_OBJECT_OPENING;
+    }
+}
+CLEAN_AS(func_ov004_0222269c, SickVillagerTalk_OnCommandEnd)
+
+/* func_ov004_022226b4: its talk scene started for `villager` (with its own lines) and kept
+ * pointing back at it. */
+void SickVillagerTalk_Start(SickVillagerTalk *talk, SickVillager *villager)
+{
+    VillagerTalkScene_Start(&talk->base, villager->base, SICK_VILLAGER_TALK_OWN_LINES);
+    talk->villager = villager;
+}
+CLEAN_AS(func_ov004_022226b4, SickVillagerTalk_Start)
+
+/* func_ov004_022226d4: the current stage of the town's villager move record names the current
+ * player. */
+void SickVillagerTalk_NameStagePlayer(void)
+{
+    VillagerMove *move = VillagerMove_Record(&data_021e5a2c);
+    VillagerMoveRecord_SetStagePlayer(move, PlayerRecord_Player(PlayerRecords_Current()));
+}
+CLEAN_AS(func_ov004_022226d4, SickVillagerTalk_NameStagePlayer)
+
+/* func_ov004_022226f8: whether the current stage of the town's villager move record names a
+ * player. The talk is not used. */
+int SickVillagerTalk_StageNamesPlayer(SickVillagerTalk *talk)
+{
+    (void) talk;
+    return VillagerMoveRecord_HasStagePlayer(VillagerMove_Record(&data_021e5a2c)) != 0;
+}
+CLEAN_AS(func_ov004_022226f8, SickVillagerTalk_StageNamesPlayer)
+
+/* func_ov004_0222271c: the stage of the town's villager move record at its set-up. */
+int SickVillagerTalk_Stage(SickVillagerTalk *talk)
+{
+    return talk->stage;
+}
+CLEAN_AS(func_ov004_0222271c, SickVillagerTalk_Stage)
+
+/* func_ov004_02222728 (vtable slot 0x4c, told of an event by `participant`'s system, 4 for this
+ * one): 3, an event starts: the participant kept, its act ends (state 2); 0, the player talks
+ * to it: the participant kept, the talk's partner this console's player's field actor, it turns
+ * to talk (state 3); 8, the event ended: it has met the current player
+ * (SickVillager_MeetPlayer) and wanders (state 0); 4, refused: it wanders. */
+void SickVillager_OnEvent(SickVillager *villager, unsigned int code, int participant)
+{
+    switch (code) {
+        case SICK_VILLAGER_EVENT_STARTS:
+            *sk_part(villager, SICK_VILLAGER_PARTICIPANT) = (u8) participant;
+            SickVillager_SetState(villager, SICK_VILLAGER_HALT);
+            break;
+        case SICK_VILLAGER_EVENT_TALK:
+            *sk_part(villager, SICK_VILLAGER_PARTICIPANT) = (u8) participant;
+            SceneBase_SetMotionArg((SceneBase *) (void *) &villager->talk,
+                                   SceneObject_ActorObject(villager->base, SICK_VILLAGER_PLAYER_ACTOR));
+            SickVillager_SetState(villager, SICK_VILLAGER_TURN);
+            break;
+        case SICK_VILLAGER_EVENT_ENDED:
+            SickVillager_MeetPlayer(villager);
+            SickVillager_SetState(villager, SICK_VILLAGER_WANDER);
+            break;
+        case SICK_VILLAGER_EVENT_REFUSED:
+            SickVillager_SetState(villager, SICK_VILLAGER_WANDER);
+            break;
+        default:
+            break;
+    }
+}
+CLEAN_AS(func_ov004_02222728, SickVillager_OnEvent)
+
+/* func_ov004_022227b8 (vtable slot 0x48): whether the player may talk to it: its action idle,
+ * and wandering or acting (states 0 and 1). */
+int SickVillager_MayAct(SickVillager *villager)
+{
+    if (SceneAction_IsBusy(sk_action_of(villager))) {
+        return 0;
+    }
+    return (u32) villager->state <= (u32) SICK_VILLAGER_ACT;
+}
+CLEAN_AS(func_ov004_022227b8, SickVillager_MayAct)
+
+/* func_ov004_022227e8: with a current player and a town record, the villager's memory of the
+ * player is found or taken (VillagerMemory_Meet) and updated for a meeting now.
+ * QUIRK: the memory is updated without a check that one was found. */
+void SickVillager_MeetPlayer(SickVillager *villager)
+{
+    u8 *player_record = PlayerRecords_Current();
+    if (player_record == NULL) {
+        return;
+    }
+    u8 *record = *(u8 **) (void *) sk_part(villager, SICK_VILLAGER_RECORD);
+    if (record == NULL) {
+        return;
+    }
+    VillagerMemory *memory = VillagerMemory_Meet(record, PlayerRecord_Player(player_record));
+    VillagerMemoryEntry_Update(memory, NULL, NULL, NULL);
+}
+CLEAN_AS(func_ov004_022227e8, SickVillager_MeetPlayer)
+
+/* func_ov004_02222820: in the first acre of the scene's map (none when the map is empty), every
+ * tile whose item code is 0xf031 or of a kind with variants (ItemCode_IsF031OrVariant) has its
+ * path unit unlinked, row by row. The villager is not used. */
+void SickVillager_UnlinkItemTiles(SickVillager *villager)
+{
+    (void) villager;
+    AcreMap *map = data_021c80bc;
+    AcreRecord *acre = NULL;
+    if (map->acres_wide != 0 && map->acres_high != 0 && map->acres != NULL) {
+        acre = (AcreRecord *) (void *) map->acres;
+    }
+    for (int z = 0; z < SICK_VILLAGER_ACRE_TILES; z++) {
+        for (int x = 0; x < SICK_VILLAGER_ACRE_TILES; x++) {
+            u16 *tile = AcreRecord_Tile(acre, (unsigned int) x, (unsigned int) z, 0);
+            if (tile != NULL && ItemCode_IsF031OrVariant(tile)) {
+                CollisionMap_UnlinkPathUnit(x, z);
+            }
+        }
+    }
+}
+CLEAN_AS(func_ov004_02222820, SickVillager_UnlinkItemTiles)
+
+/* _ZN18Obj_ov004_022541d819func_ov004_0222287cEv (vtable slot 0x68, each frame): its state's
+ * update, then its mood follows it. 1. */
+int SickVillager_Frame(SickVillager *villager)
+{
+    SickVillager_Update(villager);
+    VillagerMood_FollowVillager((VillagerMood *) (void *) sk_part(villager, SICK_VILLAGER_MOOD), villager->base);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_022541d819func_ov004_0222287cEv, SickVillager_Frame)
+
+/* func_ov004_0222289c (vtable slot 0x10): whether it may be deleted (the town villager's
+ * answer); when it may, it is no longer the villager set up. */
+int SickVillager_CanDelete(SickVillager *villager)
+{
+    if (VillagerSceneObject_CanDelete(villager->base) == 0) {
+        return 0;
+    }
+    data_ov004_02257f7c = NULL;
+    return 1;
+}
+CLEAN_AS(func_ov004_0222289c, SickVillager_CanDelete)
+
+/* func_ov004_022228c0 (vtable slot 0x24, its draw): its draw member when it has one, and its
+ * answer; else 1. */
+int SickVillager_Draw(SickVillager *villager)
+{
+    if (villager->draw.function != 0) {
+        return MemberPointer_CallInt(&villager->draw, villager);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_022228c0, SickVillager_Draw)
+
+/* func_ov004_022228f4 (its draw member): the scene object drawn; whether it was. */
+int SickVillager_DrawModel(SickVillager *villager)
+{
+    return SceneObject_Draw(villager->base) != 0;
+}
+CLEAN_AS(func_ov004_022228f4, SickVillager_DrawModel)
+
+/* func_ov004_0222290c (vtable slot 0x00, its start): the town villager's start; then its draw
+ * member is SickVillager_DrawModel, the room's item tiles are unlinked from the paths
+ * (SickVillager_UnlinkItemTiles) and its footsteps are on. Whether the start was done. */
+int SickVillager_Start(SickVillager *villager)
+{
+    if (VillagerSceneObject_Start(villager->base) == 0) {
+        return 0;
+    }
+    villager->draw = data_ov004_022540a8;
+    SickVillager_UnlinkItemTiles(villager);
+    Footsteps_Enable((Footsteps *) (void *) sk_part(villager, SICK_VILLAGER_FOOTSTEPS));
+    return 1;
+}
+CLEAN_AS(func_ov004_0222290c, SickVillager_Start)
+
+/* func_ov004_02222950 (vtable slot 0x04, its set-up): the town villager's set-up; then it is the
+ * villager set up (data_ov004_02257f7c), its talk scene becomes its scene and is started, and
+ * the talk keeps the stage of the town's villager move record. Above stage 1 its standard
+ * animations are 0xe9 and 0xea, it walks slower, looks straight ahead and 0x897 is set; else it
+ * walks at a well villager's pace. Then it wanders (state 0). Whether the set-up was done. */
+int SickVillager_Init(SickVillager *villager)
+{
+    if (VillagerSceneObject_Init(villager->base) == 0) {
+        return 0;
+    }
+    data_ov004_02257f7c = villager;
+    SceneObject_SetScene(villager->base, (SceneBase *) (void *) &villager->talk);
+    SickVillagerTalk_Start(&villager->talk, villager);
+    villager->talk.stage = VillagerMove_Record(&data_021e5a2c)->stage;
+    if ((unsigned int) SickVillagerTalk_Stage(&villager->talk) > 1) {
+        SceneStandardAnims *anims = (SceneStandardAnims *) (void *) sk_part(villager, SICK_VILLAGER_STANDARD_ANIMS);
+        SceneStandardAnims_SetSecond(anims, SICK_VILLAGER_BADLY_ANIM_SECOND);
+        SceneStandardAnims_SetFirst(anims, SICK_VILLAGER_BADLY_ANIM_FIRST);
+        SceneMover_SetPace(sk_mover_of(villager), SICK_VILLAGER_PACE, SICK_VILLAGER_BADLY_SPEED,
+                           SICK_VILLAGER_BADLY_SPEED_CHANGE, SICK_VILLAGER_BADLY_SPEED_CHANGE);
+        SceneLook_Request((SceneLook *) (void *) sk_part(villager, SICK_VILLAGER_LOOK), SICK_VILLAGER_LOOK_AHEAD, 0, 0,
+                          &data_021fbee8, SICK_VILLAGER_PLAYER_ACTOR, data_020c814c, 1);
+        *sk_part(villager, SICK_VILLAGER_BADLY) = 1;
+    } else {
+        SceneMover_SetPace(sk_mover_of(villager), SICK_VILLAGER_PACE, SICK_VILLAGER_SPEED, SICK_VILLAGER_SPEED_CHANGE,
+                           SICK_VILLAGER_SPEED_CHANGE);
+        *sk_part(villager, SICK_VILLAGER_BADLY) = 0;
+    }
+    SickVillager_SetState(villager, SICK_VILLAGER_WANDER);
+    return 1;
+}
+CLEAN_AS(func_ov004_02222950, SickVillager_Init)
+
+/* func_ov004_02222a30 (the pockets' predicate, handed to Pockets_Select by its symbol): whether a
+ * slot in the state 0 holds the item 0x155e, of any variant when the code has variants. */
+int SickVillager_IsAskedItem(u16 *item, int state)
+{
+    if (state != 0) {
+        return 0;
+    }
+    if (ItemCode_HasVariant(item)) {
+        u16 asked = SICK_VILLAGER_ASKED_ITEM;
+        int variant = ItemCode_VariantItem(item);
+        return variant == ItemCode_VariantItem(&asked);
+    }
+    return *item == SICK_VILLAGER_ASKED_ITEM;
+}
+CLEAN_AS(func_ov004_02222a30, SickVillager_IsAskedItem)
+
+/* func_ov004_02222a88 (its create function): allocates (zeroed) and builds a villager: the town
+ * villager scene object, its talk scene and its spawner part. */
+SickVillager *SickVillager_New(void)
+{
+    SickVillager *villager = Heap_AllocAuxZeroed(sizeof(SickVillager));
+    if (villager != NULL) {
+        VillagerSceneObject_Construct(villager->base);
+        *(const u8 **) (void *) villager->base = data_ov004_022541d8;
+        VillagerTalkScene_ConstructAlt(&villager->talk.base);
+        sk_set_talk_vtable(&villager->talk);
+        Spawner_PartConstruct(villager->spawner);
+    }
+    return villager;
+}
+CLEAN_AS(func_ov004_02222a88, SickVillager_New)

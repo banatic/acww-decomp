@@ -106,4 +106,24 @@ void SickVillagerTalk_OnAnswer(SickVillagerTalk *talk);
 void SickVillagerTalk_OnMessageEnded(SickVillagerTalk *talk);
 void SickVillagerTalk_OnMessageBegun(SickVillagerTalk *talk);
 
+void SickVillagerTalk_Line(SickVillagerTalk *talk, VillagerTalkLine *out);
+void SickVillagerTalk_TakeItem(SickVillagerTalk *talk);
+void SickVillagerTalk_OnCommandEnd(SickVillagerTalk *talk, int command);
+void SickVillagerTalk_Start(SickVillagerTalk *talk, SickVillager *villager);
+void SickVillagerTalk_NameStagePlayer(void);
+int SickVillagerTalk_StageNamesPlayer(SickVillagerTalk *talk);
+int SickVillagerTalk_Stage(SickVillagerTalk *talk);
+void SickVillager_OnEvent(SickVillager *villager, unsigned int code, int participant);
+int SickVillager_MayAct(SickVillager *villager);
+void SickVillager_MeetPlayer(SickVillager *villager);
+void SickVillager_UnlinkItemTiles(SickVillager *villager);
+int SickVillager_Frame(SickVillager *villager);
+int SickVillager_CanDelete(SickVillager *villager);
+int SickVillager_Draw(SickVillager *villager);
+int SickVillager_DrawModel(SickVillager *villager);
+int SickVillager_Start(SickVillager *villager);
+int SickVillager_Init(SickVillager *villager);
+int SickVillager_IsAskedItem(u16 *item, int state);
+SickVillager *SickVillager_New(void);
+
 #endif

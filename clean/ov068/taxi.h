@@ -66,5 +66,6 @@ Taxi *Taxi_Construct(Taxi *self);
 struct TaxiRenderState;
 void Taxi_SetModelHooks(struct TaxiRenderState *state);
 const Taxi *Taxi_MaterialHook(struct TaxiRenderState *state);
+void Taxi_Create(void);
 
 #endif
