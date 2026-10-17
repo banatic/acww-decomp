@@ -1,4 +1,4 @@
-"""Exercise ROM-observable fishing layouts using the actual copied functions."""
+"""Exercise ROM-observable local layouts using the actual copied functions."""
 from __future__ import annotations
 
 import subprocess
@@ -30,8 +30,9 @@ def main() -> None:
         subprocess.run([*native.compiler(), *native.flags_for(source), "-iquote", str(source.parent),
                         "-c", str(copied), "-o", str(obj)], check=True)
         objects.append(str(obj))
-    # Use the game's actual vector consumer and request payload writer.
-    for relative in ("main/func_0200322c.c", "ov003/func_ov003_02215f4c.c"):
+    # Use the game's actual vector consumer and fishing/tool payload writers.
+    for relative in ("main/func_0200322c.c", "ov003/func_ov003_02215f4c.c",
+                     "ov003/func_ov003_02211da0.c", "ov003/func_ov003_022119d8.c"):
         source = C.SRC / relative
         obj = folder / (source.stem + ".o")
         subprocess.run([*native.compiler(), *native.flags_for(source),
@@ -42,7 +43,7 @@ def main() -> None:
     flags = [str(C.ROOT / 'runtime/native_rt.c'), *(["-Wl,/SAFESEH:NO"] if native.WINDOWS else ["-no-pie"])]
     subprocess.run([*diffcheck.compiler(), str(source), *objects, *flags, "-o", str(exe)], check=True)
     subprocess.run([str(exe)], check=True)
-    print("2 copied game functions pass runtime fixtures; source audit guards pass")
+    print(f"{len(native_layout.paths())} copied game functions pass runtime fixtures; source audit guards pass")
 
 
 if __name__ == "__main__":
