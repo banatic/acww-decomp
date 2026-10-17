@@ -567,3 +567,457 @@ void GrowthModel_Update(GrowthModel *model)
     animated->frames.flags = FRAME_CTRL_ONCE;
 }
 CLEAN_AS(func_ov003_02223274, GrowthModel_Update)
+
+/* ---- The models' lifetime and the requests the field's players leave. */
+
+#include "autoload_2/sound_emitter_class.h"
+#include "main/camera_control.h"
+#include "main/tile_changes.h"
+#include "main/town_lines.h"
+
+/* The words from 0x120 a model's constructor clears. */
+#define GROWTH_MODEL_CLEARED_WORDS 6
+/* The requests: one per session slot. */
+#define GROWTH_MODEL_REQUESTS 5
+
+/* The node hook of every model, and the element functions of the arrays (as the array helpers
+ * call them; they return the model), as the game's symbols. */
+extern void func_ov003_02222c34(void *state);
+extern void func_ov003_02223b18(void *model);
+extern void func_ov003_02223c14(void *model);
+/* The array helpers of the C++ runtime. */
+extern void __cxa_vec_cleanup(void *array, int count, int size, void (*destruct)(void *));
+extern void __cxa_vec_ctor(void *array, int count, int size, void (*construct)(void *), void (*destruct)(void *));
+
+/* The town's map, or NULL. */
+static AcreMap *growth_model_town(void)
+{
+    return (AcreMap *) (uintptr_t) AcreMap_Town();
+}
+
+/* Codes a model shows: the growth lines and the codes 0x66-0x6d. */
+static int growth_model_shown_code(u16 code)
+{
+    return (code >= 0x26 && code <= 0x2a) || (code >= 0x5d && code <= 0x61) || (code >= 0x2f && code <= 0x5b) ||
+           (code >= 0x66 && code <= 0x6d) || (code >= 0xc8 && code <= 0xcf);
+}
+
+/* The tile changes of session slot `slot` tagged 0 to `tags` - 1 finished. */
+static void growth_model_finish_tagged(int slot, int tags)
+{
+    for (int tag = 0; tag < tags; tag++) {
+        int index = TileChanges_FindByTag((u8) slot, (u8) tag);
+        if (index >= 0) {
+            TileChanges_Finish((TileChange *) (uintptr_t) TileChanges_At(index));
+        }
+    }
+}
+
+/* func_ov003_02223580: a model made ready: its joints' results and its animation in the files'
+ * heap, released (mode 8), with the node hook (GrowthModel_NodeHook) at node command 2, its
+ * sound stopped, and reset. */
+void GrowthModel_Setup(GrowthModel *model)
+{
+    AnimatedModel *animated = growth_model_animated(model);
+    ModelObject_AllocJointResults(&animated->object, data_ov003_0223cf78);
+    AnimatedModel_LoadAnim(animated, data_ov003_0223cf78);
+    model->mode = GROWTH_MODEL_RELEASED;
+    ModelObject_SetNodeCallback(&animated->object, (void *) (uintptr_t) func_ov003_02222c34, 2, 2, model, NULL);
+    SoundEmitter_StopB(&model->sound);
+    GrowthModel_Reset(model);
+}
+CLEAN_AS(func_ov003_02223580, GrowthModel_Setup)
+
+/* func_ov003_022235d8: on the town's map, when the model of the code at `tile` (at a stage
+ * 1-4) plays at that tile for `player` (0 unless the session is linked), its animation is made
+ * to loop (until GrowthModel_Update makes it stop at its end again). */
+void GrowthModel_Loop(int player, const TileChangesTile *tile)
+{
+    AcreMap *map = growth_model_town();
+    if (map == NULL) {
+        return;
+    }
+    u16 *item = growth_model_item(map, tile->x, tile->z);
+    if (item == NULL) {
+        return;
+    }
+    if (!Session_IsLinked(data_020ccf94)) {
+        player = 0;
+    }
+    int stage = MapItem_GrowthStage(item);
+    if (stage <= 0 || stage > GROWTH_MODEL_STAGES) {
+        return;
+    }
+    GrowthModel *model = GrowthModels_Pick(growth_models(), item, stage - 1, (tile->x ^ tile->z) & 1);
+    if (model == NULL) {
+        return;
+    }
+    if (tile->x != model->tile.x || tile->z != model->tile.z || player != model->player) {
+        return;
+    }
+    growth_model_animated(model)->frames.flags = 0;
+}
+CLEAN_AS(func_ov003_022235d8, GrowthModel_Loop)
+
+/* Whether a request pending for a player gives way to a new one at `tile` (holding `item`):
+ * when the code is grown, a code 0x67 or 0x6b that may drop, a code of 0x66-0x68 or
+ * 0x6a-0x6c, or of line 0x57-0x5b. Otherwise the tile change at `tile` is finished (unless it
+ * is the pending request's own tile).
+ * QUIRK: whether the code is grown is asked for every code but those of 0xc8-0xcf. */
+static int growth_model_request_gives_way(const GrowthModelRequest *request, u16 *item, const TileChangesTile *tile)
+{
+    u16 code = *item;
+    if (!(code >= 0xc8 && code <= 0xcf) && MapItem_IsGrown(item)) {
+        return 1;
+    }
+    if ((code == 0x67 || code == 0x6b) && TileRequests_ItemDropAllowed() != 0) {
+        return 1;
+    }
+    if ((code >= 0x66 && code <= 0x68) || (code >= 0x6a && code <= 0x6c) || (code >= 0x57 && code <= 0x5b)) {
+        return 1;
+    }
+    if (tile->x == request->tile.x && tile->z == request->tile.z) {
+        return 0;
+    }
+    TileChangesTile at = *tile;
+    TileChanges_FinishAtTile(&at, 0);
+    return 0;
+}
+
+/* func_ov003_02223680: on the town's map with an item at `tile`, the request of `player` (0
+ * unless the session is linked) becomes pending for `tile` with `mode` and `quiet`, unless one
+ * is pending already and does not give way (growth_model_request_gives_way). */
+void GrowthModels_Request(GrowthModels *models, int player, const TileChangesTile *tile, int mode, int quiet)
+{
+    AcreMap *map = growth_model_town();
+    if (map == NULL) {
+        return;
+    }
+    u16 *item = growth_model_item(map, tile->x, tile->z);
+    if (item == NULL) {
+        return;
+    }
+    if (!Session_IsLinked(data_020ccf94)) {
+        player = 0;
+    }
+    GrowthModelRequest *request = &models->requests[player];
+    if (request->pending != 0 && !growth_model_request_gives_way(request, item, tile)) {
+        return;
+    }
+    request->pending = 1;
+    request->player = player;
+    request->tile = *tile;
+    request->mode = mode;
+    request->quiet = quiet;
+}
+CLEAN_AS(func_ov003_02223680, GrowthModels_Request)
+
+/* func_ov003_0222378c: a pending request run: the model of the code at its tile (at a stage
+ * 1-4) starts there (GrowthModel_Start) and the request is done, unless that model is playing
+ * in modes 4-7; without a town map, an item at the tile, a stage or a model, or when the model
+ * is busy so, the request is skipped (GrowthModel_SkipRequest). */
+void GrowthModels_RunRequest(GrowthModels *models, GrowthModelRequest *request)
+{
+    AcreMap *map = growth_model_town();
+    if (map == NULL) {
+        GrowthModel_SkipRequest(request);
+        return;
+    }
+    u16 *item = growth_model_item(map, request->tile.x, request->tile.z);
+    if (item == NULL) {
+        GrowthModel_SkipRequest(request);
+        return;
+    }
+    int stage = MapItem_GrowthStage(item);
+    if (stage <= 0 || stage > GROWTH_MODEL_STAGES) {
+        GrowthModel_SkipRequest(request);
+        return;
+    }
+    GrowthModel *model = GrowthModels_Pick(models, item, stage - 1, (request->tile.x ^ request->tile.z) & 1);
+    if (model == NULL) {
+        GrowthModel_SkipRequest(request);
+        return;
+    }
+    if (model->state == 1 && model->mode >= 4 && model->mode <= 7) {
+        GrowthModel_SkipRequest(request);
+        return;
+    }
+    TileChangesTile at = request->tile;
+    GrowthModel_Start(model, request->player, &at, request->mode, stage - 1, request->quiet);
+    request->pending = 0;
+}
+CLEAN_AS(func_ov003_0222378c, GrowthModels_RunRequest)
+
+/* func_ov003_02223870: the model of the code `item` at `stage`: set 2 for the lines 0x2f-0x56
+ * and code 0x69, line_5d for the codes 0x5d-0x61 and 0x6a-0x6d, line_c8 for 0xc8-0xcf, else set
+ * `parity` (also for line 0x57-0x5b). */
+GrowthModel *GrowthModels_Pick(GrowthModels *models, u16 *item, int stage, int parity)
+{
+    u16 code = *item;
+    if ((code >= 0x2f && code <= 0x56) || code == 0x69) {
+        return &models->sets[2][stage];
+    }
+    if (code >= 0x57 && code <= 0x5b) {
+        return &models->sets[parity][stage];
+    }
+    if ((code >= 0x6a && code <= 0x6d) || (code >= 0x5d && code <= 0x61)) {
+        return &models->line_5d[stage];
+    }
+    if (code >= 0xc8 && code <= 0xcf) {
+        return &models->line_c8[stage];
+    }
+    return &models->sets[parity][stage];
+}
+CLEAN_AS(func_ov003_02223870, GrowthModels_Pick)
+
+/* func_ov003_02223928: the files freed and every model released (GrowthModel_Release): the
+ * three sets, then line_5d and line_c8 model by model (unk_14c0 is left alone). */
+void GrowthModels_ReleaseAll(GrowthModels *models)
+{
+    GrowthModel_FreeFiles(&models->files);
+    for (int set = 0; set < 3; set++) {
+        for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+            GrowthModel_Release(&models->sets[set][stage]);
+        }
+    }
+    for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+        GrowthModel_Release(&models->line_5d[stage]);
+        GrowthModel_Release(&models->line_c8[stage]);
+    }
+}
+CLEAN_AS(func_ov003_02223928, GrowthModels_ReleaseAll)
+
+/* func_ov003_0222399c: every model drawn (GrowthModel_Draw), in the order of
+ * GrowthModels_ReleaseAll. */
+void GrowthModels_DrawAll(GrowthModels *models)
+{
+    for (int set = 0; set < 3; set++) {
+        for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+            GrowthModel_Draw(&models->sets[set][stage]);
+        }
+    }
+    for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+        GrowthModel_Draw(&models->line_5d[stage]);
+        GrowthModel_Draw(&models->line_c8[stage]);
+    }
+}
+CLEAN_AS(func_ov003_0222399c, GrowthModels_DrawAll)
+
+/* func_ov003_02223a04: the pending requests run (GrowthModels_RunRequest), then every model
+ * updated (GrowthModel_Update), in the order of GrowthModels_ReleaseAll. */
+void GrowthModels_UpdateAll(GrowthModels *models)
+{
+    for (int i = 0; i < GROWTH_MODEL_REQUESTS; i++) {
+        if (models->requests[i].pending != 0) {
+            GrowthModels_RunRequest(models, &models->requests[i]);
+        }
+    }
+    for (int set = 0; set < 3; set++) {
+        for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+            GrowthModel_Update(&models->sets[set][stage]);
+        }
+    }
+    for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+        GrowthModel_Update(&models->line_5d[stage]);
+        GrowthModel_Update(&models->line_c8[stage]);
+    }
+}
+CLEAN_AS(func_ov003_02223a04, GrowthModels_UpdateAll)
+
+/* func_ov003_02223a90: the files loaded, no request pending, every model made ready
+ * (GrowthModel_Setup), in the order of GrowthModels_ReleaseAll. */
+void GrowthModels_SetupAll(GrowthModels *models)
+{
+    GrowthModel_LoadFiles(&models->files);
+    for (int i = 0; i < GROWTH_MODEL_REQUESTS; i++) {
+        models->requests[i].pending = 0;
+    }
+    for (int set = 0; set < 3; set++) {
+        for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+            GrowthModel_Setup(&models->sets[set][stage]);
+        }
+    }
+    for (int stage = 0; stage < GROWTH_MODEL_STAGES; stage++) {
+        GrowthModel_Setup(&models->line_5d[stage]);
+        GrowthModel_Setup(&models->line_c8[stage]);
+    }
+}
+CLEAN_AS(func_ov003_02223a90, GrowthModels_SetupAll)
+
+/* func_ov003_02223b18: a model's destructor: its sound emitter's, then its animated model's;
+ * returns it. */
+GrowthModel *GrowthModel_Destruct(GrowthModel *model)
+{
+    SoundEmitterClass_DestructBaseB((SoundEmitterObject *) (void *) &model->sound);
+    AnimatedModel_DestructComplete(growth_model_animated(model));
+    return model;
+}
+CLEAN_AS(func_ov003_02223b18, GrowthModel_Destruct)
+
+/* func_ov003_02223b34: the models' destructor: each array of models destroyed with
+ * func_ov003_02223b18, from the last array to the first; returns them. */
+GrowthModels *GrowthModels_Destruct(GrowthModels *models)
+{
+    void (*destruct)(void *) = func_ov003_02223b18;
+    __cxa_vec_cleanup(models->line_c8, 4, sizeof(GrowthModel), destruct);
+    __cxa_vec_cleanup(models->unk_14c0, 3, sizeof(GrowthModel), destruct);
+    __cxa_vec_cleanup(models->line_5d, 4, sizeof(GrowthModel), destruct);
+    __cxa_vec_cleanup(models->sets, 12, sizeof(GrowthModel), destruct);
+    return models;
+}
+CLEAN_AS(func_ov003_02223b34, GrowthModels_Destruct)
+
+/* func_ov003_02223b8c: the models' constructor: each array of models constructed with
+ * func_ov003_02223c14 (destroyed with func_ov003_02223b18 should one fail), then the requests'
+ * tiles cleared; returns them. */
+GrowthModels *GrowthModels_Construct(GrowthModels *models)
+{
+    void (*construct)(void *) = func_ov003_02223c14;
+    void (*destruct)(void *) = func_ov003_02223b18;
+    __cxa_vec_ctor(models->sets, 12, sizeof(GrowthModel), construct, destruct);
+    __cxa_vec_ctor(models->line_5d, 4, sizeof(GrowthModel), construct, destruct);
+    __cxa_vec_ctor(models->unk_14c0, 3, sizeof(GrowthModel), construct, destruct);
+    __cxa_vec_ctor(models->line_c8, 4, sizeof(GrowthModel), construct, destruct);
+    for (int i = 0; i < GROWTH_MODEL_REQUESTS; i++) {
+        models->requests[i].tile.x = 0;
+        models->requests[i].tile.z = 0;
+    }
+    return models;
+}
+CLEAN_AS(func_ov003_02223b8c, GrowthModels_Construct)
+
+/* func_ov003_02223c14: a model's constructor: its animated model's, the tile cleared, its sound
+ * emitter's, then the six words from 0x120 cleared; returns it. */
+GrowthModel *GrowthModel_Construct(GrowthModel *model)
+{
+    AnimatedModel_Construct(growth_model_animated(model));
+    model->tile.x = 0;
+    model->tile.z = 0;
+    SoundEmitterClass_ConstructBaseB((SoundEmitterObject *) (void *) &model->sound);
+    u32 *words = (u32 *) (void *) ((u8 *) model + 0x120);
+    for (int i = 0; i < GROWTH_MODEL_CLEARED_WORDS; i++) {
+        words[i] = 0;
+    }
+    return model;
+}
+CLEAN_AS(func_ov003_02223c14, GrowthModel_Construct)
+
+/* Whether the code at tile (x, z) of `map` stops a model falling that way: an item that is
+ * grown or occupied (TownLines_IsGrownOrOccupied). */
+static int growth_model_blocks_fall(AcreMap *map, int x, int z)
+{
+    u16 *item = growth_model_item(map, x, z);
+    return item != NULL && TownLines_IsGrownOrOccupied(item) != 0;
+}
+
+/* func_ov003_02224234: a chop at `tile` by `player` (the axe's act, `mode` 4 when the tile is
+ * at a smaller x than the player, 5 otherwise): when a model can show (GrowthModel_CanShow), a
+ * request of the mode, quiet, at the tile (GrowthModels_Request). Modes 4 and 5 hold only when
+ * the player's tile change there puts a short-line code (GrowthModel_ChangesToShortLine) and
+ * is found again, else they become 0; they become 6 and 7 when the tile two over that way is
+ * grown or occupied or past the town's edge (x below 16, or 80 and more).
+ * QUIRK: the code at the tile is looked up once and not used. */
+void GrowthModel_RequestChop(int player, const TileChangesTile *tile, int mode)
+{
+    TileChangesTile at = *tile;
+    if (GrowthModel_CanShow(player, &at) == 0) {
+        return;
+    }
+    AcreMap *map = growth_model_town();
+    growth_model_item(map, tile->x, tile->z);
+    if (mode == 4 || mode == 5) {
+        at = *tile;
+        if (GrowthModel_ChangesToShortLine(player, &at) == 0) {
+            mode = 0;
+        } else {
+            at = *tile;
+            if (TileChanges_FindOwnAtFor((u32) player, &at, 0) < 0) {
+                mode = 0;
+            } else if (mode == 4) {
+                int x = tile->x - 2;
+                if (growth_model_blocks_fall(map, x, tile->z) || x < 0x10) {
+                    mode = 6;
+                }
+            } else {
+                int x = tile->x + 2;
+                if (growth_model_blocks_fall(map, x, tile->z) || x >= 0x50) {
+                    mode = 7;
+                }
+            }
+        }
+    }
+    at = *tile;
+    GrowthModels_Request(growth_models(), player, &at, mode, 1);
+}
+CLEAN_AS(func_ov003_02224234, GrowthModel_RequestChop)
+
+/* func_ov003_02224384: when a model can show at `tile` (GrowthModel_CanShow), a request of
+ * `mode` for `player` there (GrowthModels_Request). */
+void GrowthModel_RequestHit(int player, const TileChangesTile *tile, int mode)
+{
+    TileChangesTile at = *tile;
+    if (GrowthModel_CanShow(player, &at) != 0) {
+        TileChangesTile on = *tile;
+        GrowthModels_Request(growth_models(), player, &on, mode, 0);
+    }
+}
+CLEAN_AS(func_ov003_02224384, GrowthModel_RequestHit)
+
+/* func_ov003_022243d0: 1 when a model can show at `tile`: the process lives, the town's map
+ * has a code there that a model shows (not at stage 0) and the tile's centre is not past the
+ * camera's goal (CameraControl_IsPastGoalZ). Otherwise 0, and what the player's tile changes
+ * meant happens without a model: on the town's map, for a grown code of the lines 0x2f-0x5b
+ * and 0xc8-0xcf the slot's tile changes tagged 0-2 are finished, for the codes 0x66-0x68 and
+ * 0x6a-0x6c the one tagged 0; then the slot's tile change at the tile is finished. */
+int GrowthModel_CanShow(int player, const TileChangesTile *tile)
+{
+    int shown = 0;
+    if (data_ov003_0223cf70 != NULL) {
+        AcreMap *map = growth_model_town();
+        if (map != NULL) {
+            u16 *item = growth_model_item(map, tile->x, tile->z);
+            if (item != NULL && growth_model_shown_code(*item) && !MapItem_IsStage0(item)) {
+                Vec3 centre;
+                AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+                if (CameraControl_IsPastGoalZ(&centre, 0x2000, 0x2000) == 0) {
+                    shown = 1;
+                }
+            }
+        }
+    }
+    if (shown == 0) {
+        AcreMap *map = growth_model_town();
+        if (map != NULL) {
+            u16 *item = growth_model_item(map, tile->x, tile->z);
+            if (item != NULL) {
+                int slot = TileRequests_SlotOf(player);
+                u16 code = *item;
+                if ((code >= 0x2f && code <= 0x5b) || (code >= 0xc8 && code <= 0xcf)) {
+                    if (MapItem_IsGrown(item)) {
+                        growth_model_finish_tagged(slot, 3);
+                    }
+                } else if ((code >= 0x66 && code <= 0x68) || (code >= 0x6a && code <= 0x6c)) {
+                    growth_model_finish_tagged(slot, 1);
+                }
+            }
+        }
+        TileChangesTile at = *tile;
+        TileChanges_FinishOwnAt(&at, TileRequests_SlotOf(player), 0);
+    }
+    return shown;
+}
+CLEAN_AS(func_ov003_022243d0, GrowthModel_CanShow)
+
+/* func_ov003_022245a8: 1 when `player`'s tile change at `tile` (layer 0) puts a code of one of
+ * the four short lines, else 0. */
+int GrowthModel_ChangesToShortLine(int player, const TileChangesTile *tile)
+{
+    TileChangesTile at = *tile;
+    int index = TileChanges_FindOwnAtFor((u32) player, &at, 0);
+    if (index < 0) {
+        return 0;
+    }
+    u16 code = ((const TileChange *) (uintptr_t) TileChanges_At(index))->item;
+    return growth_model_short_line(code);
+}
+CLEAN_AS(func_ov003_022245a8, GrowthModel_ChangesToShortLine)

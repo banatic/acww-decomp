@@ -8,8 +8,15 @@
 #include "autoload_2/heap.h"
 #include "birthday_villager.h"
 #include "clean.h"
+#include "main/acre_map.h"
+#include "main/acre_record.h"
+#include "main/acre_tile.h"
+#include "main/actor_table.h"
 #include "main/camera_modes.h"
+#include "main/collision_map.h"
 #include "main/event_queue.h"
+#include "main/footsteps.h"
+#include "main/item_code.h"
 #include "main/main_random.h"
 #include "main/npc_id.h"
 #include "main/player_id.h"
@@ -99,9 +106,6 @@ extern const MemberPointer data_ov004_02253768, data_ov004_02253778, data_ov004_
  * written in. */
 extern const char data_ov004_02253928[];
 extern char data_ov004_02257be0[0x28];
-
-/* A point of the room to walk to (into `goal`) from `from`, and the direction to it. */
-extern int func_ov004_0221e1e0(Vec3 *goal, Vec3 *from, int yaw);
 
 static u8 *bg_part(BirthdayGuest *guest, u32 offset)
 {
@@ -410,7 +414,7 @@ CLEAN_AS(func_ov004_0221d868, BirthdayGuest_EnterFace)
  * - While byte 0x508 of the object is set, a walk is turned into a stand (when that can be
  *   asked for, nothing more this frame).
  * - Within 0x3334 of the birthday villager it faces it (state 1) when it can.
- * - Standing: the wait runs down; at 0 it picks a goal (func_ov004_0221e1e0); from 0x6000 away
+ * - Standing: the wait runs down; at 0 it picks a goal (BirthdayGuest_PickGoal); from 0x6000 away
  *   from the birthday villager, one time in two the goal is the birthday villager's position
  *   instead, and its direction becomes the direction to it when that is 0x2000 or more off its
  *   own. When the direction is not its own it turns (then waits 20 to 89 frames), else walks to
@@ -453,7 +457,7 @@ void BirthdayGuest_UpdateWander(BirthdayGuest *guest)
             }
             return;
         }
-        guest->turn_yaw = (s16) func_ov004_0221e1e0(&guest->goal, position, bg_yaw_of(guest->base));
+        guest->turn_yaw = (s16) BirthdayGuest_PickGoal(&guest->goal, position, bg_yaw_of(guest->base));
         guest->walk_point = guest->goal;
         if (villager != NULL && distance >= BIRTHDAY_GUEST_FAR_DISTANCE && MainRandom_Below(2) == 0) {
             const Vec3 *at = bg_position_of(villager->base);
@@ -728,3 +732,190 @@ void BirthdayGuest_UpdatePlayerMemory(BirthdayGuest *guest)
     VillagerMemoryEntry_Update(VillagerMemory_Meet(bg_record_of(guest->base), PlayerRecord_Player(player)), NULL, NULL, NULL);
 }
 CLEAN_AS(func_ov004_0221e048, BirthdayGuest_UpdatePlayerMemory)
+
+/* The room's guest while there is one (set by its set-up, cleared once it may be deleted). */
+extern BirthdayGuest *data_ov004_02257bc4;
+/* The town map: the room is its one acre (acre_map.h). */
+extern AcreMap *data_021c80bc;
+/* The member pointer to BirthdayGuest_Draw. */
+extern const MemberPointer data_ov004_02253798;
+
+/* Its footsteps, in the town villager scene object. */
+#define BIRTHDAY_GUEST_FOOTSTEPS 0x558
+/* The room's tiles each way. */
+#define BIRTHDAY_GUEST_ROOM_TILES 16
+
+/* func_ov004_0221e080: every tile of the room whose code (layer 0) is furniture or a cell a piece
+ * of furniture covers (ItemCode_IsF031OrVariant) loses its path directions, and its neighbours
+ * their way to it. With no acre in the map (no width, no height or no records) the tiles are
+ * asked of a null acre. The guest is not read. */
+void BirthdayGuest_UnlinkFurnitureTiles(BirthdayGuest *guest)
+{
+    (void) guest;
+    AcreMap *map = data_021c80bc;
+    AcreRecord *acre = NULL;
+    if (map->acres_wide != 0 && map->acres_high != 0 && map->acres != NULL) {
+        acre = (AcreRecord *) (void *) map->acres;
+    }
+    for (int z = 0; z < BIRTHDAY_GUEST_ROOM_TILES; z++) {
+        for (int x = 0; x < BIRTHDAY_GUEST_ROOM_TILES; x++) {
+            u16 *code = AcreRecord_Tile(acre, (unsigned int) x, (unsigned int) z, 0);
+            if (code != NULL && ItemCode_IsF031OrVariant(code)) {
+                CollisionMap_UnlinkPathUnit(x, z);
+            }
+        }
+    }
+}
+CLEAN_AS(func_ov004_0221e080, BirthdayGuest_UnlinkFurnitureTiles)
+
+/* _ZN18Obj_ov004_0225386819func_ov004_0221e0dcEv (vtable slot 0x68, its update): the current
+ * state's update; always 1. */
+int BirthdayGuest_RunState(BirthdayGuest *guest)
+{
+    BirthdayGuest_Update(guest);
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov004_0225386819func_ov004_0221e0dcEv, BirthdayGuest_RunState)
+
+/* func_ov004_0221e0ec (vtable slot 0x10, the deletion check): the town villager's; once it may
+ * be deleted, the room's guest is forgotten. */
+int BirthdayGuest_CanDelete(BirthdayGuest *guest)
+{
+    if (VillagerSceneObject_CanDelete(guest->base) == 0) {
+        return 0;
+    }
+    data_ov004_02257bc4 = NULL;
+    return 1;
+}
+CLEAN_AS(func_ov004_0221e0ec, BirthdayGuest_CanDelete)
+
+/* func_ov004_0221e110 (vtable slot 0x24, the drawing): its drawing member run
+ * (BirthdayGuest_Draw once started); 1 while its function is not set. */
+int BirthdayGuest_RunDraw(BirthdayGuest *guest)
+{
+    if (guest->draw.function != 0) {
+        return MemberPointer_CallInt(&guest->draw, guest);
+    }
+    return 1;
+}
+CLEAN_AS(func_ov004_0221e110, BirthdayGuest_RunDraw)
+
+/* func_ov004_0221e144 (the member data_ov004_02253798 names): the scene object drawn; whether it
+ * was. */
+int BirthdayGuest_Draw(BirthdayGuest *guest)
+{
+    return SceneObject_Draw(guest->base) != 0;
+}
+CLEAN_AS(func_ov004_0221e144, BirthdayGuest_Draw)
+
+/* func_ov004_0221e15c (vtable slot 0x00, its start): the town villager's start; then its drawing
+ * member is BirthdayGuest_Draw, the furnished tiles leave the room's paths and its footsteps
+ * are on. */
+int BirthdayGuest_Start(BirthdayGuest *guest)
+{
+    if (VillagerSceneObject_Start(guest->base) == 0) {
+        return 0;
+    }
+    guest->draw = data_ov004_02253798;
+    BirthdayGuest_UnlinkFurnitureTiles(guest);
+    Footsteps_Enable((Footsteps *) (void *) bg_part(guest, BIRTHDAY_GUEST_FOOTSTEPS));
+    return 1;
+}
+CLEAN_AS(func_ov004_0221e15c, BirthdayGuest_Start)
+
+/* func_ov004_0221e1a0 (vtable slot 0x04, its set-up): the town villager's set-up; it becomes the
+ * room's guest, its talk scene becomes its scene and is started, and it wanders (state 0). */
+int BirthdayGuest_Init(BirthdayGuest *guest)
+{
+    if (VillagerSceneObject_Init(guest->base) == 0) {
+        return 0;
+    }
+    data_ov004_02257bc4 = guest;
+    SceneObject_SetScene(guest->base, (struct SceneBase *) (void *) &guest->talk);
+    BirthdayGuestTalk_Start(&guest->talk, guest);
+    BirthdayGuest_SetState(guest, BIRTHDAY_GUEST_WANDER);
+    return 1;
+}
+CLEAN_AS(func_ov004_0221e1a0, BirthdayGuest_Init)
+
+/* The rows of the room's tiles a goal may be in, and how far off `yaw` the direction to the goal
+ * must be to be taken. */
+#define BIRTHDAY_GUEST_GOAL_ROWS 14
+#define BIRTHDAY_GUEST_GOAL_ANGLE 0x2000
+
+/* Whether tile (x, z) may be a goal from tile (from_x, from_z): a tile with path directions
+ * outside the row and the column of the start.
+ * QUIRK: the whole row and column of the start are left out, not only its tile. */
+static int bg_goal_tile(int x, int z, int from_x, int from_z)
+{
+    return x != from_x && z != from_z && CollisionMap_PathDirections(x, z) != 0;
+}
+
+/* func_ov004_0221e1e0 (also the birthday villager's): a goal for a walk from `from`: `goal` is
+ * the centre of a tile drawn at random (MainRandom_Below) among the tiles of rows 0-13 that may
+ * be one (bg_goal_tile), counted first and then walked to again in the same order; the
+ * direction to it is given back, or `yaw` when that is less than 0x2000 off. With no such tile
+ * `goal` is `from` and `yaw` is given back. */
+int BirthdayGuest_PickGoal(Vec3 *goal, Vec3 *from, int yaw)
+{
+    int from_x;
+    int from_z;
+    int count = 0;
+
+    Position_Tile(&from_x, &from_z, (const Position *) (const void *) from);
+    for (int z = 0; z < BIRTHDAY_GUEST_GOAL_ROWS; z++) {
+        for (int x = 0; x < BIRTHDAY_GUEST_ROOM_TILES; x++) {
+            if (bg_goal_tile(x, z, from_x, from_z)) {
+                count++;
+            }
+        }
+    }
+    goal->x = from->x;
+    goal->y = from->y;
+    goal->z = from->z;
+    if (count == 0) {
+        return yaw;
+    }
+    int target = (int) MainRandom_Below(count);
+    int seen = 0;
+    for (int z = 0; z < BIRTHDAY_GUEST_GOAL_ROWS; z++) {
+        for (int x = 0; x < BIRTHDAY_GUEST_ROOM_TILES; x++) {
+            if (!bg_goal_tile(x, z, from_x, from_z)) {
+                continue;
+            }
+            if (seen == target) {
+                AcreTile_TileCentre(goal, (u32) x, (u32) z);
+                int to_goal = Math_Atan2(goal->x - from->x, goal->z - from->z);
+                if (Math_AbsDiff16(yaw, to_goal) < BIRTHDAY_GUEST_GOAL_ANGLE) {
+                    return yaw;
+                }
+                return to_goal;
+            }
+            seen++;
+        }
+    }
+    return yaw;
+}
+CLEAN_AS(func_ov004_0221e1e0, BirthdayGuest_PickGoal)
+
+/* func_ov004_0221e2c0: the room's guest, or NULL (the object the birthday villager faces). */
+BirthdayGuest *BirthdayGuest_Current(void)
+{
+    return data_ov004_02257bc4;
+}
+CLEAN_AS(func_ov004_0221e2c0, BirthdayGuest_Current)
+
+/* func_ov004_0221e2cc (its entry in the overlay's table of profiles): allocates (zeroed) and
+ * builds a guest: the town villager scene object and its talk scene. */
+BirthdayGuest *BirthdayGuest_New(void)
+{
+    BirthdayGuest *guest = Heap_AllocAuxZeroed(sizeof(BirthdayGuest));
+    if (guest != NULL) {
+        VillagerSceneObject_Construct(guest->base);
+        *(const u8 **) (void *) guest->base = data_ov004_02253868;
+        VillagerTalkScene_ConstructAlt(&guest->talk.base);
+        guest->talk.base.scene.vtable = data_ov004_022537d8;
+    }
+    return guest;
+}
+CLEAN_AS(func_ov004_0221e2cc, BirthdayGuest_New)

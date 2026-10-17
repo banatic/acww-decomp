@@ -11,9 +11,9 @@
  *
  * The states:
  *   0  wander:   it stands, then turns to and walks to points of the room picked at random
- *                (func_ov004_0221e1e0), waiting 20 to 89 frames after a turn and 20 to 99
+ *                (BirthdayGuest_PickGoal), waiting 20 to 89 frames after a turn and 20 to 99
  *                after a walk, stepping aside when something is ahead;
- *   1  face:     it turns to and looks at the object func_ov004_0221e2c0 gives;
+ *   1  face:     it turns to and looks at the room's guest (BirthdayGuest_Current);
  *   2, 3 acts:   a countdown of 30 or 50 frames: at 20 (or 40) frames left it shows an act
  *                (3; 10 or 23 at random), at 1 act 0, at 0 it goes back to state 0;
  *   4  halt:     entered from states 1 to 3, its act ends;

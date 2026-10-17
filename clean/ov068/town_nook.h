@@ -64,4 +64,43 @@ TownNookScene *TownNookScene_DestructDelete(TownNookScene *scene);
 TownNookScene *TownNookScene_Destruct(TownNookScene *scene);
 TownNookScene *TownNookScene_Construct(TownNookScene *scene);
 
+/* The character's states (each with a start and an update in data_ov068_02278658):
+ *   0 waits: each frame it asks main's event queue for an event of kind 6 about it and, once
+ *     given one, sets the player's flag 0x0e back on;
+ *   1 turns to the scene's other speaker and talks (its scene action); once that ends the
+ *     camera's mode is reset, music 0x47 dropped and state 3 follows;
+ *   2 (after event 1) the player walks to 2.0 south of its starting point; once the player is
+ *     free the talk scene is reset, given the player's object, and state 1 follows;
+ *   3 turns (motion kind 3), then state 4;
+ *   4 walks off to 2.0 west and 10.0 south of where it stands; once there, or after 60
+ *     frames, its event is finished;
+ *   5 (after event 8) 10 frames later the music is set back and it is deleted. */
+#define TOWN_NOOK_WAIT 0
+#define TOWN_NOOK_TALK 1
+#define TOWN_NOOK_CALL_PLAYER 2
+#define TOWN_NOOK_TURN 3
+#define TOWN_NOOK_LEAVE 4
+#define TOWN_NOOK_END 5
+#define TOWN_NOOK_STATES 6
+
+int TownNook_UpdateEnd(u8 *object);
+int TownNook_StartEnd(u8 *object);
+int TownNook_UpdateLeave(u8 *object);
+int TownNook_StartLeave(u8 *object);
+int TownNook_UpdateTurn(u8 *object);
+int TownNook_StartTurn(u8 *object);
+int TownNook_UpdateCallPlayer(u8 *object);
+int TownNook_StartCallPlayer(void);
+int TownNook_UpdateTalk(u8 *object);
+int TownNook_StartTalk(u8 *object);
+int TownNook_UpdateWait(u8 *object);
+int TownNook_StartWait(void);
+void TownNook_SetState(u8 *object, int state);
+int TownNook_Update(u8 *object);
+int TownNook_ModelName(void);
+int TownNook_TextureName(void);
+int TownNook_Start(u8 *object);
+int TownNook_Init(u8 *object);
+u8 *TownNook_Create(void);
+
 #endif

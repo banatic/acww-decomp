@@ -1461,3 +1461,56 @@ void TileEvent_LetGoChange(TileEventEntry *entry)
     }
 }
 CLEAN_AS(func_ov003_02222aa4, TileEvent_LetGoChange)
+
+/* ---- Writing the town's map, and the events that tile changes leave. */
+
+#include "main/scene_query.h"
+
+/* The town's map the process draws. */
+extern AcreMap *data_021c80bc;
+
+/* func_ov003_02224140: `item` written to tile (x, z) of the town's map (data_021c80bc, layer 0)
+ * when there is one, then the tile marked (AcreTile_Mark) when the item is not 0xfff1 and
+ * `mark` is set, else unmarked.
+ * QUIRK: whether the current scene is 0 is asked first and not used. */
+void TileEvent_SetTownItem(int x, int z, u16 item, int mark)
+{
+    SceneQuery_CurrentIs0();
+    AcreMap *map = data_021c80bc;
+    if (map == NULL) {
+        return;
+    }
+    u16 code = item;
+    AcreTile_SetItem(map, &code, x, z, 0);
+    if (item != TILE_EVENT_EMPTY && mark != 0) {
+        AcreTile_Mark(map, x, z);
+    } else {
+        AcreTile_Unmark(map, x, z);
+    }
+}
+CLEAN_AS(func_ov003_02224140, TileEvent_SetTownItem)
+
+/* func_ov003_022241a4: for this console's session slot: with a tile change tagged 4, kind 0xb
+ * with its item at `tile` (TileEvent_StartKindB); with one tagged 3, kind 0xd with its item at
+ * its own tile, from the centre of `tile` (TileEvent_StartKindD). */
+void TileEvent_StartFromChanges(const TileChangesTile *tile)
+{
+    int slot = data_020ccf94->local_slot;
+    int index = TileChanges_FindByTag((u8) slot, 4);
+    if (index >= 0) {
+        const TileChange *change = (const TileChange *) (uintptr_t) TileChanges_At(index);
+        TileChangesTile at = *tile;
+        TileEvent_StartKindB(slot, change->item, &at);
+    }
+    index = TileChanges_FindByTag((u8) slot, 3);
+    if (index >= 0) {
+        const TileChange *change = (const TileChange *) (uintptr_t) TileChanges_At(index);
+        Vec3 centre;
+        AcreTile_TileCentre(&centre, (u32) tile->x, (u32) tile->z);
+        u16 packed = change->tile;
+        TileChangesTile to = {packed >> 8, packed & 0xff};
+        Vec3 from = centre;
+        TileEvent_StartKindD(slot, change->item, &to, &from);
+    }
+}
+CLEAN_AS(func_ov003_022241a4, TileEvent_StartFromChanges)

@@ -6,6 +6,7 @@
 #include "autoload_2/approach.h" /* Math_AbsDiff16 */
 #include "autoload_2/fx_math.h"  /* Math_Atan2 */
 #include "autoload_2/heap.h"
+#include "birthday_guest.h"
 #include "clean.h"
 #include "itcm/vector.h" /* Vec_Add */
 #include "main/actor.h"  /* Vec_YawTo */
@@ -127,10 +128,6 @@ extern char data_ov004_02257a6c[0x28];
 /* The class's functions kept as the game's. */
 /* Whether a pocket's item is one to offer (the predicate of the pockets screen). */
 extern int func_ov004_0221d468(u16 *item, int state);
-/* The object state 1 faces, or null. */
-extern u8 *func_ov004_0221e2c0(void);
-/* A point of the room to walk to (into `goal`) from `from`, and the direction to it. */
-extern int func_ov004_0221e1e0(Vec3 *goal, Vec3 *from, int yaw);
 
 static u8 *part(BirthdayVillager *villager, u32 offset)
 {
@@ -544,11 +541,11 @@ void BirthdayVillager_UpdateFace(BirthdayVillager *villager)
 }
 CLEAN_AS(func_ov004_0221c40c, BirthdayVillager_UpdateFace)
 
-/* func_ov004_0221c410: entering state 1: it turns to the object func_ov004_0221e2c0 gives and
+/* func_ov004_0221c410: entering state 1: it turns to the room's guest (BirthdayGuest_Current) and
  * looks at it; fails when there is none. */
 int BirthdayVillager_EnterFace(BirthdayVillager *villager)
 {
-    u8 *object = func_ov004_0221e2c0();
+    u8 *object = (u8 *) BirthdayGuest_Current();
     if (object == NULL) {
         return 0;
     }
@@ -570,7 +567,7 @@ CLEAN_AS(func_ov004_0221c410, BirthdayVillager_EnterFace)
 
 /* func_ov004_0221c494: state 0's update: its walk about the room.
  * - While byte 0x508 of the object is set, a walk is turned into a stand.
- * - Standing: the wait runs down; at 0 it picks a goal (func_ov004_0221e1e0) and, when the
+ * - Standing: the wait runs down; at 0 it picks a goal (BirthdayGuest_PickGoal) and, when the
  *   goal's direction is not its own, turns to it (then waits 20 to 89 frames), else walks to it
  *   (then waits 20 to 99 frames); a motion that cannot be asked for leaves the wait at 0, to try
  *   again. Before that, a finished motion turns into a stand.
@@ -591,7 +588,7 @@ void BirthdayVillager_UpdateWander(BirthdayVillager *villager)
             villager->wander_wait--;
         }
         if (villager->wander_wait == 0) {
-            villager->turn_yaw = (s16) func_ov004_0221e1e0(&villager->goal, position_of(villager), yaw_of(villager));
+            villager->turn_yaw = (s16) BirthdayGuest_PickGoal(&villager->goal, position_of(villager), yaw_of(villager));
             villager->walk_point = villager->goal;
             if (villager->turn_yaw != yaw_of(villager)) {
                 if (SceneMotion_Request(motion, BIRTHDAY_VILLAGER_MOTION_TURN, 1, 0, 0, 0, villager->turn_yaw, 0, 0,

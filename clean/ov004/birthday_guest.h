@@ -100,5 +100,15 @@ VillagerMemory *BirthdayGuestTalk_PlayerMemory(BirthdayGuestTalk *talk);
 void BirthdayGuest_OnEvent(BirthdayGuest *guest, unsigned int code, int participant);
 int BirthdayGuest_MayAct(BirthdayGuest *guest);
 void BirthdayGuest_UpdatePlayerMemory(BirthdayGuest *guest);
+void BirthdayGuest_UnlinkFurnitureTiles(BirthdayGuest *guest);
+int BirthdayGuest_RunState(BirthdayGuest *guest);
+int BirthdayGuest_CanDelete(BirthdayGuest *guest);
+int BirthdayGuest_RunDraw(BirthdayGuest *guest);
+int BirthdayGuest_Draw(BirthdayGuest *guest);
+int BirthdayGuest_Start(BirthdayGuest *guest);
+int BirthdayGuest_Init(BirthdayGuest *guest);
+int BirthdayGuest_PickGoal(Vec3 *goal, Vec3 *from, int yaw);
+BirthdayGuest *BirthdayGuest_Current(void);
+BirthdayGuest *BirthdayGuest_New(void);
 
 #endif

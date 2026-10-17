@@ -147,4 +147,7 @@ void TileEvent_Begin(TileEventEntry *entry, int player, const int *tile, const i
                      struct AcreMap *map, s16 angle, int extra);
 void TileEvent_LetGoChange(TileEventEntry *entry);
 
+void TileEvent_SetTownItem(int x, int z, u16 item, int mark);
+void TileEvent_StartFromChanges(const TileChangesTile *tile);
+
 #endif
