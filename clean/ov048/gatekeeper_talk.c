@@ -7,6 +7,7 @@
 #include "autoload_2/network.h"
 #include "clean.h"
 #include "gatekeeper.h"
+#include "gatekeeper_talk_lines.h"
 #include "main/activity_job.h"
 #include "main/activity_vars.h"
 #include "main/block_021d27ac.h"
@@ -115,13 +116,7 @@ extern const MemberPointer data_ov048_02263edc, data_ov048_02263f44, data_ov048_
     data_ov048_02263d3c, data_ov048_02263d2c, data_ov048_02263d44, data_ov048_02263e4c, data_ov048_02263e34,
     data_ov048_02263d74, data_ov048_02263dec, data_ov048_02263ecc, data_ov048_02263d34, data_ov048_02263e44;
 
-/* The talk released (its spinner stopped and its hold let go); the session ended and overlay
- * 68 switched in; the talk's topic; the friend code shown in the talk's parts 5, 8 and 9; the
- * gatekeeper's state; the scene that leaves for the next line (overlay 4); the talk ended. */
-extern void func_ov048_02262378(void *self);
-extern int func_ov048_02262658(void *receiver);
-extern void func_ov048_02262678(GatekeeperTalk *talk, u32 topic);
-extern void func_ov048_02262588(int talk, unsigned long long key);
+/* The gatekeeper's state; the scene that leaves for the next line (overlay 4). */
 extern void func_ov048_022635f4(Gatekeeper *self, int state);
 extern int func_ov004_0222d4f4(void);
 extern void MI_CpuCopy8(const void *src, void *dst, u32 size);
@@ -276,7 +271,7 @@ int GatekeeperTalk_LineOfChoice(GatekeeperTalk *talk)
             LibraryOverlay_Switch65();
             line = 0x26;
             key = Wfc_GetUserKey(WifiAccount_GetUserData(PlayerRecord_WifiAccount(PlayerRecords_Current())));
-            func_ov048_02262588((int) (intptr_t) talk, key);
+            GatekeeperTalk_PutFriendCode(talk, key);
             LibraryOverlay_Switch68();
             break;
         }
@@ -345,8 +340,8 @@ void GatekeeperTalk_EndWithLine(GatekeeperTalk *talk, int line, int unused)
     if (is_wfc_mode()) {
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_END_WFC);
     } else {
-        func_ov048_02262378(talk);
-        func_ov048_02262658(talk);
+        GatekeeperTalk_Release(talk);
+        GatekeeperTalk_EndSession(talk);
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
     }
 }
@@ -504,7 +499,7 @@ void GatekeeperTalk_FindParent(GatekeeperTalk *talk)
         TalkObject_SetPart(object, GATEKEEPER_PART_TOWN, (TextBase *) (void *) &town);
         TalkObject_SetPart(object, GATEKEEPER_PART_PLAYER, (TextBase *) (void *) &player);
         say_on(object, 0x57);
-        func_ov048_02262378(talk);
+        GatekeeperTalk_Release(talk);
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
         break;
     }
@@ -542,7 +537,7 @@ void GatekeeperTalk_GroupCheck(GatekeeperTalk *talk)
         say(talk, 0x59);
     } else {
         say(talk, 0x58);
-        func_ov048_02262658(talk);
+        GatekeeperTalk_EndSession(talk);
     }
     GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
 }
@@ -684,7 +679,7 @@ void GatekeeperTalk_WaitStatus0(GatekeeperTalk *talk)
             ActivityVars_SetSlot3C1C((u32) Net_GetMyAid());
             Session_FinishLocalStatus();
             talk_object(talk)->mode = GATEKEEPER_TALK_MODE_DONE;
-            func_ov048_02262378(talk);
+            GatekeeperTalk_Release(talk);
             GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
             func_ov048_022635f4(talk->owner, GATEKEEPER_STATE_C);
         }
@@ -724,7 +719,7 @@ void GatekeeperTalk_WaitStatus1(GatekeeperTalk *talk)
     if (status != GATEKEEPER_STATUS_ACCEPTED && status != GATEKEEPER_STATUS_REFUSED) {
         return;
     }
-    func_ov048_02262378(talk);
+    GatekeeperTalk_Release(talk);
     GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
     if (status == GATEKEEPER_STATUS_ACCEPTED) {
         object->mode = GATEKEEPER_TALK_MODE_DONE;
@@ -901,7 +896,7 @@ void GatekeeperTalk_AfterDownloads(GatekeeperTalk *talk)
     if (talk->choice == 0 || talk->unk_810 != 0) {
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_END_WFC);
     } else {
-        func_ov048_02262378(talk);
+        GatekeeperTalk_Release(talk);
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
     }
 }
@@ -925,7 +920,7 @@ void GatekeeperTalk_EndWfc(GatekeeperTalk *talk)
         return;
     }
     if (object != NULL) {
-        func_ov048_02262378(talk);
+        GatekeeperTalk_Release(talk);
     }
     record = PlayerRecords_Current();
     if (record != NULL) {
@@ -934,7 +929,7 @@ void GatekeeperTalk_EndWfc(GatekeeperTalk *talk)
             WfcSession_ApplyStats();
             WfcSession_ApplyLetter();
             WfcSession_ApplyNotice();
-            func_ov048_02262658(talk);
+            GatekeeperTalk_EndSession(talk);
             WfcSession_KeepFriendData();
             if (CardSave_WriteFriendRoster()) {
                 say(talk, 2);
@@ -971,12 +966,12 @@ void GatekeeperTalk_WaitJob13(GatekeeperTalk *talk)
 
     if (ActivityJob_Is13AtStep3()) {
         u8 message = 10;
-        func_ov048_02262378(talk);
+        GatekeeperTalk_Release(talk);
         TalkObject_SetMessage(object, &message, data_ov048_02264704);
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
     } else if (ActivityJob_IsIdleForOv048()) {
         talk->job_idle_seen = 1;
-        func_ov048_02262378(talk);
+        GatekeeperTalk_Release(talk);
         say_on(object, talk->saved_message);
         MissingNpc1_StartFollowing();
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_IDLE);
@@ -1032,11 +1027,11 @@ void GatekeeperTalk_OnAnswer(GatekeeperTalk *talk)
         &data_ov048_02263dbc, /* 0x7f: GatekeeperTalk_OnAnswer7f */
         &data_ov048_02263db4, /* 0x24: GatekeeperTalk_OnAnswerTo21Or22 */
         &data_ov048_02263dac, /* 0x56: GatekeeperTalk_OnAnswerTo21Or22 */
-        &data_ov048_02263da4, /* 0x0a: func_ov048_02261ce4 */
+        &data_ov048_02263da4, /* 0x0a: GatekeeperTalk_OnAnswer0a */
         &data_ov048_02263d9c, /* 0x10: GatekeeperTalk_OnAnswerSession */
         &data_ov048_02263d94, /* 0x21: GatekeeperTalk_OnAnswerSession */
-        &data_ov048_02263d8c, /* 0x0f: func_ov048_02261be8 */
-        &data_ov048_02263fd4, /* 0x22: func_ov048_02261be8 */
+        &data_ov048_02263d8c, /* 0x0f: GatekeeperTalk_OnAnswerSessionOrCode */
+        &data_ov048_02263fd4, /* 0x22: GatekeeperTalk_OnAnswerSessionOrCode */
         &data_ov048_02263fac, /* 0x51: GatekeeperTalk_OnAnswer51 */
         &data_ov048_02263d64, /* 0x63: GatekeeperTalk_OnAnswerTo59 */
         &data_ov048_02263e14, /* 0x65: GatekeeperTalk_OnAnswerTo59 */
@@ -1047,14 +1042,14 @@ void GatekeeperTalk_OnAnswer(GatekeeperTalk *talk)
         &data_ov048_02263f54, /* 0x2c: GatekeeperTalk_OnAnswer2c */
         &data_ov048_02263d3c, /* 0x6b: GatekeeperTalk_OnAnswer6b */
         &data_ov048_02263d2c, /* 0x5f: GatekeeperTalk_OnAnswer5f */
-        &data_ov048_02263d44, /* 0x23: func_ov048_02261e5c */
-        &data_ov048_02263e4c, /* 0x28: func_ov048_02261e5c */
-        &data_ov048_02263e34, /* 0x2f: func_ov048_02261e5c */
-        &data_ov048_02263d74, /* 0x52: func_ov048_02261e1c */
-        &data_ov048_02263dec, /* 0x3d: func_ov048_02261ddc */
-        &data_ov048_02263ecc, /* 0x71: func_ov048_02261e78 */
-        &data_ov048_02263d34, /* 0x74: func_ov048_02261ee4 */
-        &data_ov048_02263e44, /* 0x57: func_ov048_02261ed0 */
+        &data_ov048_02263d44, /* 0x23: GatekeeperTalk_OnAnswerChoice0 */
+        &data_ov048_02263e4c, /* 0x28: GatekeeperTalk_OnAnswerChoice0 */
+        &data_ov048_02263e34, /* 0x2f: GatekeeperTalk_OnAnswerChoice0 */
+        &data_ov048_02263d74, /* 0x52: GatekeeperTalk_OnAnswer52 */
+        &data_ov048_02263dec, /* 0x3d: GatekeeperTalk_OnAnswer3d */
+        &data_ov048_02263ecc, /* 0x71: GatekeeperTalk_OnAnswer71 */
+        &data_ov048_02263d34, /* 0x74: GatekeeperTalk_OnAnswer74 */
+        &data_ov048_02263e44, /* 0x57: GatekeeperTalk_OnAnswer57 */
     };
 
     if (StartKind_IsSet()) {
@@ -1154,7 +1149,7 @@ void GatekeeperTalk_OnAnswer51(GatekeeperTalk *talk, int answer)
     if (is_wfc_mode()) {
         GatekeeperTalk_SetState(talk, GATEKEEPER_TALK_END_WFC);
     } else {
-        func_ov048_02262658(talk);
+        GatekeeperTalk_EndSession(talk);
     }
 }
 CLEAN_AS(func_ov048_02261a38, GatekeeperTalk_OnAnswer51)

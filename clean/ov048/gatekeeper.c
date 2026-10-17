@@ -6,6 +6,7 @@
 #include "autoload_2/heap.h"
 #include "autoload_2/vector.h"
 #include "clean.h"
+#include "gatekeeper_talk_lines.h"
 #include "main/event_queue.h"
 #include "main/link_global.h"
 #include "main/missing_npc1.h"
@@ -51,7 +52,7 @@ static_assert(offsetof(Gatekeeper, countdown) == 0xe6e && sizeof(Gatekeeper) == 
 /* The second animation of its face, and of the missing character's, while both wait. */
 #define GATEKEEPER_POSE_BA 0xba
 
-/* The talk's topics func_ov048_02262678 sets when it calls the player. */
+/* The talk's topics GatekeeperTalk_SetTopic sets when it calls the player. */
 #define GATEKEEPER_TOPIC_LINKED 9
 #define GATEKEEPER_TOPIC_ALONE 0xa
 
@@ -64,9 +65,7 @@ extern const u8 data_ov048_02264298[];
  * point's (1.0). */
 extern const Vec3 data_ov048_02263968;
 
-/* The talk scene's destructor; its topic; the gatekeeper's state. */
-extern GatekeeperTalk *func_ov048_022626f0(GatekeeperTalk *talk);
-extern void func_ov048_02262678(GatekeeperTalk *talk, u32 topic);
+/* The gatekeeper's state. */
 extern void func_ov048_022635f4(Gatekeeper *self, int state);
 
 static SceneAction *gatekeeper_action(Gatekeeper *self)
@@ -101,7 +100,7 @@ static void gatekeeper_reset_talk(Gatekeeper *self)
 Gatekeeper *Gatekeeper_Destruct(Gatekeeper *self)
 {
     *(const u8 **) (void *) self = data_ov048_02264298;
-    func_ov048_022626f0(&self->talk);
+    GatekeeperTalk_Destruct(&self->talk);
     SpecialSceneObject_DestructBody(self);
     return self;
 }
@@ -111,7 +110,7 @@ CLEAN_AS(func_ov048_02260420, Gatekeeper_Destruct)
 Gatekeeper *Gatekeeper_DestructDelete(Gatekeeper *self)
 {
     *(const u8 **) (void *) self = data_ov048_02264298;
-    func_ov048_022626f0(&self->talk);
+    GatekeeperTalk_Destruct(&self->talk);
     SpecialSceneObject_DestructBody(self);
     Heap_FreeAux(self);
     return self;
@@ -173,9 +172,9 @@ int Gatekeeper_CallPlayer(Gatekeeper *self)
     }
     PlayerRecords_Current();
     if (Session_IsLinked(session)) {
-        func_ov048_02262678(&self->talk, GATEKEEPER_TOPIC_LINKED);
+        GatekeeperTalk_SetTopic(&self->talk, GATEKEEPER_TOPIC_LINKED);
     } else {
-        func_ov048_02262678(&self->talk, GATEKEEPER_TOPIC_ALONE);
+        GatekeeperTalk_SetTopic(&self->talk, GATEKEEPER_TOPIC_ALONE);
     }
     EventQueue_RequestKind6(self, 0);
     return 1;
@@ -238,7 +237,7 @@ void Gatekeeper_OnEvent(Gatekeeper *self, int code, int participant)
                     func_ov048_022635f4(self, GATEKEEPER_STATE_F);
                 }
             }
-            func_ov048_02262678(&self->talk, 0xb);
+            GatekeeperTalk_SetTopic(&self->talk, 0xb);
             break;
         case GATEKEEPER_EVENT_REFUSED: {
             int owner = SCENE_SHARE_NO_SLOT;

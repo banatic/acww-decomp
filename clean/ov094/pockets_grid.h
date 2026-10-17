@@ -17,6 +17,7 @@
 
 #include "main/layer_load_task.h"
 #include "main/oam_buffer.h"
+#include "ov002/popup.h"
 #include "types.h"
 
 #define POCKETS_GRID_TASKS 3
@@ -65,5 +66,48 @@ void PocketsGrid_DrawPlace(PocketsGrid *grid, const OamEntry *obj, int place, in
 int PocketsGrid_DrawLowered(PocketsGrid *grid, int x, int y);
 void PocketsGrid_DrawSurround(PocketsGrid *grid, int x, int y, int palette);
 int PocketsGrid_DrawMark(PocketsGrid *grid, int x, int y);
+
+int PocketsGrid_IsEmpty(PocketsGrid *grid, int place);
+void PocketsGrid_DrawHeld(PocketsGrid *grid, int x, int y);
+void PocketsGrid_DrawSideMarks(PocketsGrid *grid, int x, int y);
+void PocketsGrid_DrawBox(PocketsGrid *grid, int x, int y);
+void PocketsGrid_DrawPocketsRightOf(PocketsGrid *grid, int x, int y, int left);
+void PocketsGrid_DrawPockets(PocketsGrid *grid, int x, int y);
+void PocketsGrid_DimPlace(PocketsGrid *grid, int place);
+void PocketsGrid_DimPlaces(PocketsGrid *grid, u8 first, u8 last);
+int PocketsGrid_IsDimmed(PocketsGrid *grid, int place);
+void PocketsGrid_SetObjChars(PocketsGrid *grid, OamEntry *obj, const u8 *chars, int palette);
+void PocketsGrid_SetObjIcon(PocketsGrid *grid, OamEntry *obj, u16 item, int state);
+void PocketsGrid_SetHeldIcon(PocketsGrid *grid, int item, int state);
+void PocketsGrid_RefreshPlace(PocketsGrid *grid, unsigned int place);
+void PocketsGrid_SetItem(PocketsGrid *grid, int place, int item, int state);
+void PocketsGrid_EmptyPlace(PocketsGrid *grid, int place);
+u8 PocketsGrid_ItemState(PocketsGrid *grid, int place);
+u16 PocketsGrid_Item(PocketsGrid *grid, int place);
+void PocketsGrid_MarkPlace(PocketsGrid *grid, int place);
+void PocketsGrid_ClearMarks(PocketsGrid *grid);
+void PocketsGrid_Lift(PocketsGrid *grid, int place);
+void PocketsGrid_Unlift(PocketsGrid *grid);
+int PocketsGrid_LiftOffset(PocketsGrid *grid);
+int PocketsGrid_IsLifted(PocketsGrid *grid, u8 place);
+int PocketsGrid_PlaceY(PocketsGrid *grid, int place);
+int PocketsGrid_PlaceX(PocketsGrid *grid, int place);
+void PocketsGrid_ShowItemText(PocketsGrid *grid, Popup *popup, int place);
+void PocketsGrid_SetPopupText(PocketsGrid *grid, Popup *popup, u16 *item, int state);
+int PocketsGrid_IconOf(PocketsGrid *grid, u16 *item, int state);
+void PocketsGrid_SetBox(PocketsGrid *grid, u16 *box);
+void PocketsGrid_LoadPockets(PocketsGrid *grid);
+void PocketsGrid_LoadPlace(PocketsGrid *grid, int place, u16 *item, int state);
+int PocketsGrid_TouchOnPlace(PocketsGrid *grid, int x, int y, int place);
+u8 PocketsGrid_PlaceInside(PocketsGrid *grid, int min_x, int min_y, int max_x, int max_y, u8 first, u8 last);
+int PocketsGrid_TouchOnBells(PocketsGrid *grid, int x, int y);
+int PocketsGrid_BoxPlaceAtTouch(PocketsGrid *grid, int x, int y);
+int PocketsGrid_PocketPlaceAtTouch(PocketsGrid *grid, int x, int y);
+void PocketsGrid_Teardown(PocketsGrid *grid);
+void PocketsGrid_BeginFrame(PocketsGrid *grid);
+void PocketsGrid_Init(PocketsGrid *grid, int priority);
+PocketsGrid *PocketsGrid_DestructDelete(PocketsGrid *grid);
+PocketsGrid *PocketsGrid_Destruct(PocketsGrid *grid);
+PocketsGrid *PocketsGrid_Construct(PocketsGrid *grid);
 
 #endif

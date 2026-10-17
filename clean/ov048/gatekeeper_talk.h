@@ -68,14 +68,14 @@ typedef struct GatekeeperTalk {
     u8 unk_080[0x2e];         /* 0x080 */
     u8 saved_message;         /* 0x0ae: a line kept to show once the activity has no job */
     u8 unk_0af;               /* 0x0af */
-    u32 topic;                /* 0x0b0: func_ov048_02262678 sets it */
+    u32 topic;                /* 0x0b0: GatekeeperTalk_SetTopic sets it */
     s32 state;                /* 0x0b4: GATEKEEPER_TALK_* */
     struct Gatekeeper *owner; /* 0x0b8 */
     u8 unk_0bc[0x250];        /* 0x0bc */
     LocalParent parent;       /* 0x30c: the parent found by GATEKEEPER_TALK_FIND_PARENT */
     s32 profile_id;           /* 0x3ec: the friend whose game is joined (Wfc_ProfileIdAt) */
     u8 unk_3f0[0x420];        /* 0x3f0 */
-    u8 unk_810;               /* 0x810: cleared by func_ov048_02262444 */
+    u8 unk_810;               /* 0x810: cleared by GatekeeperTalk_StartLine */
     u8 job_idle_seen;         /* 0x811: set once the activity was seen with no job */
     u8 chunks_sent;           /* 0x812: SystemPacket_SendSenderBlock's count */
     u8 choice;                /* 0x813: 0, 1 or 2, from the answers to lines 0x23, 0x28, 0x2f, 0x52 */

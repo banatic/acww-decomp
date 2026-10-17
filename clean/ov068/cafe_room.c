@@ -1,6 +1,10 @@
 /* The room object of "obj_ms_cafe" and "obj_cf_chr" (cafe_room.h). */
 #include "cafe_room.h"
 
+#include <stdint.h>
+
+#include "autoload_2/approach.h"
+#include "autoload_2/heap.h"
 #include "clean.h"
 #include "main/animated_model.h"
 #include "ov004/member_pointer.h"
@@ -12,6 +16,7 @@ static_assert(offsetof(CafeRoom, has_chr) == 0x298, "has chr");
 static_assert(offsetof(CafeRoom, chr) == 0x29c, "chr");
 static_assert(offsetof(CafeRoom, chr_model) == 0x354, "chr model");
 static_assert(offsetof(CafeRoom, chr_texture) == 0x3f8, "chr texture");
+static_assert(sizeof(CafeRoom) == 0x3fc, "the size CafeRoom_New allocates");
 
 #define CAFE_ROOM_MODE 0x24c /* u8, in the RMO object's unk_24c */
 
@@ -126,3 +131,122 @@ int CafeRoom_Draw(CafeRoom *self)
     return 1;
 }
 CLEAN_AS(func_ov068_0227504c, CafeRoom_Draw)
+
+/* The archives' names ("obj_ms_cafe", "obj_cf_chr"). */
+extern const char data_ov068_02277fa4[];
+extern const char data_ov068_02277fb0[];
+/* The class's vtable. */
+extern const u8 data_ov068_02277f3c[];
+
+/* The RMO family's base class and its parts (rmo_object.h): the object's number among the
+ * shared values, the loads of the body's and another part's archive, and the constructors and
+ * destructors. */
+extern void func_ov004_0222c590(RmoObject *object, u8 number);
+extern int func_ov004_0222c5c8(RmoObject *object, const char *name);
+extern int func_ov004_0222c62c(const char *name, RmoAnimatedModel *model, RmoModel *source, RmoTexture *texture);
+extern RmoObject *func_ov004_0222c87c(RmoObject *object);
+extern RmoObject *func_ov004_0222c7a0(RmoObject *object);
+extern RmoModel *func_ov004_0222c548(RmoModel *model);
+extern RmoModel *func_ov004_0222c538(RmoModel *model);
+extern void func_ov004_0222c398(RmoTexture *texture);
+extern void func_ov004_0222c394(RmoTexture *texture);
+/* A NitroSystem routine: the alpha of one material of a model resource. */
+extern void NNS_G3dMdlSetMdlAlpha(u8 *model, unsigned int material, u8 alpha);
+
+/* The shared value the room object takes, the frames' step of its alpha and the vtable slot of
+ * its mode (CafeRoom_SetMode), called virtually. */
+#define CAFE_ROOM_VALUE_NUMBER 1
+#define CAFE_ROOM_ALPHA_STEP 2
+#define CAFE_ROOM_SLOT_SET_MODE 0x60
+/* The byte of a model resource that counts its materials. */
+#define CAFE_ROOM_MODEL_MATERIALS 0x18
+
+/* _ZN18Obj_ov068_02277f3c19func_ov068_0227507cEv (vtable slot 0x18, its update): its mode's
+ * update, the alpha moved 2 towards its target, and every material of the body's model given
+ * that alpha (the count read once). Always 1. */
+int CafeRoom_Update(CafeRoom *self)
+{
+    CafeRoom_UpdateMode(self);
+    if (self->alpha != self->target_alpha) {
+        Approach_S32Again((int *) (void *) &self->alpha, self->target_alpha, CAFE_ROOM_ALPHA_STEP);
+    }
+    u8 *model = self->base.body.object.model;
+    unsigned int materials = model[CAFE_ROOM_MODEL_MATERIALS];
+    for (unsigned int i = 0; i < materials; i++) {
+        NNS_G3dMdlSetMdlAlpha(self->base.body.object.model, i, (u8) self->alpha);
+    }
+    return 1;
+}
+CLEAN_AS(_ZN18Obj_ov068_02277f3c19func_ov068_0227507cEv, CafeRoom_Update)
+
+/* func_ov068_022750d0 (vtable slot 0x00, its start): it becomes the room object, takes shared
+ * value 1, loads "obj_ms_cafe", starts faded (alpha and target 1), loads "obj_cf_chr" into its
+ * second part and enters mode 1 (through its vtable); chr then counts as loaded whatever the
+ * load said. Always 1. */
+int CafeRoom_Start(CafeRoom *self)
+{
+    data_ov068_022788b0 = self;
+    func_ov004_0222c590(&self->base, CAFE_ROOM_VALUE_NUMBER);
+    func_ov004_0222c5c8(&self->base, data_ov068_02277fa4);
+    self->target_alpha = CAFE_ROOM_ALPHA_FADED;
+    self->alpha = self->target_alpha;
+    func_ov004_0222c62c(data_ov068_02277fb0, &self->chr, &self->chr_model, &self->chr_texture);
+    u32 vtable = *(const u32 *) (const void *) self;
+    ((void (*)(CafeRoom *, int))(uintptr_t) *(const u32 *) (uintptr_t) (vtable + CAFE_ROOM_SLOT_SET_MODE))(self, 1);
+    self->has_chr = 1;
+    return 1;
+}
+CLEAN_AS(func_ov068_022750d0, CafeRoom_Start)
+
+/* func_ov068_02275140 (vtable slot 0x44): CafeRoom_Destruct, then the object freed. */
+CafeRoom *CafeRoom_DestructDelete(CafeRoom *self)
+{
+    *(const u8 **) (void *) self = data_ov068_02277f3c;
+    func_ov004_0222c394(&self->chr_texture);
+    func_ov004_0222c538(&self->chr_model);
+    AnimatedModel_DestructComplete((AnimatedModel *) (void *) &self->chr);
+    func_ov004_0222c7a0(&self->base);
+    Heap_FreeAux(self);
+    return self;
+}
+CLEAN_AS(func_ov068_02275140, CafeRoom_DestructDelete)
+
+/* func_ov068_02275184 (vtable slot 0x40): the destructor: its members in the reverse order of
+ * their making, then the RMO base. */
+CafeRoom *CafeRoom_Destruct(CafeRoom *self)
+{
+    *(const u8 **) (void *) self = data_ov068_02277f3c;
+    func_ov004_0222c394(&self->chr_texture);
+    func_ov004_0222c538(&self->chr_model);
+    AnimatedModel_DestructComplete((AnimatedModel *) (void *) &self->chr);
+    func_ov004_0222c7a0(&self->base);
+    return self;
+}
+CLEAN_AS(func_ov068_02275184, CafeRoom_Destruct)
+
+/* func_ov068_022751c4: the constructor: the RMO base, the class's vtable, its second part's
+ * model, archive and texture; no room object yet. */
+CafeRoom *CafeRoom_Construct(CafeRoom *self)
+{
+    func_ov004_0222c87c(&self->base);
+    *(const u8 **) (void *) self = data_ov068_02277f3c;
+    AnimatedModel_Construct((AnimatedModel *) (void *) &self->chr);
+    func_ov004_0222c548(&self->chr_model);
+    func_ov004_0222c398(&self->chr_texture);
+    data_ov068_022788b0 = NULL;
+    return self;
+}
+CLEAN_AS(func_ov068_022751c4, CafeRoom_Construct)
+
+/* func_ov068_0227520c (its entry in the overlay's table of profiles): allocates (zeroed) and
+ * constructs a room object.
+ * QUIRK: declared void, the original leaves the object (or 0 when there was no room) as its
+ * result, and its caller reads it; here the constructor's call comes last for the same. */
+void CafeRoom_New(void)
+{
+    CafeRoom *self = Heap_AllocAuxZeroed(sizeof(CafeRoom));
+    if (self != NULL) {
+        CafeRoom_Construct(self);
+    }
+}
+CLEAN_AS(func_ov068_0227520c, CafeRoom_New)

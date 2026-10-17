@@ -37,5 +37,11 @@ void CafeRoom_UpdateMode(CafeRoom *self);
 int CafeRoom_SetMode(CafeRoom *self, unsigned int mode);
 int CafeRoom_Release(CafeRoom *self);
 int CafeRoom_Draw(CafeRoom *self);
+int CafeRoom_Update(CafeRoom *self);
+int CafeRoom_Start(CafeRoom *self);
+CafeRoom *CafeRoom_DestructDelete(CafeRoom *self);
+CafeRoom *CafeRoom_Destruct(CafeRoom *self);
+CafeRoom *CafeRoom_Construct(CafeRoom *self);
+void CafeRoom_New(void);
 
 #endif

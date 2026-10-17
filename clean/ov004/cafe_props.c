@@ -4,6 +4,7 @@
 #include "autoload_2/approach.h"
 #include "autoload_2/heap.h"
 #include "autoload_2/matrix.h"
+#include "cafe_master.h"
 #include "clean.h"
 #include "main/animated_model.h"
 #include "main/camera_control.h"
@@ -46,7 +47,7 @@ static_assert(sizeof(CafeProps) == 0xf44, "the size CafeProps_Create allocates")
 #define PLAY_ONCE FRAME_CTRL_ONCE
 #define PLAY_BACKWARDS (FRAME_CTRL_ONCE | FRAME_CTRL_REVERSE)
 
-/* The master's animations (func_ov004_022236a8). */
+/* The master's animations (CafeMaster_AnimNumber). */
 #define MASTER_ANIM_F2 0xf2
 #define MASTER_ANIM_F3 0xf3
 #define MASTER_ANIM_F4 0xf4
@@ -128,12 +129,6 @@ extern void func_ov004_0222c548(void *model);   /* RmoModel's constructor */
 extern void func_ov004_0222c538(void *model);   /* and destructor */
 extern void func_ov004_0222c398(void *texture); /* RmoTexture's constructor */
 extern void func_ov004_0222c394(void *texture); /* and destructor */
-
-/* The cafe's master: his animation's number and frame, and two of his matrices. */
-extern int func_ov004_022236a8(void);
-extern u16 func_ov004_022236c4(void);
-extern const Mtx43 *func_ov004_022236dc(void);
-extern const Mtx43 *func_ov004_022236f0(void);
 
 extern int NNS_G3dBindMdlTex(u8 *model, void *texture);
 extern int NNS_G3dBindMdlPltt(u8 *model, void *texture);
@@ -423,8 +418,8 @@ CLEAN_AS(func_ov004_0222e0a0, CafeProps_OnEnterState8)
 /* func_ov004_0222e0b8 */
 void CafeProps_UpdateState6(CafeProps *self)
 {
-    u16 frame = func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F8) {
+    u16 frame = CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F8) {
         play_parts_1_2(self, 7, 5, PLAY_BACKWARDS, frame);
     }
 }
@@ -441,8 +436,8 @@ CLEAN_AS(func_ov004_0222e124, CafeProps_OnEnterState6)
 /* func_ov004_0222e128 */
 void CafeProps_UpdateState5(CafeProps *self)
 {
-    u16 frame = func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F8) {
+    u16 frame = CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F8) {
         play_parts_1_2(self, 6, 4, PLAY_ONCE, 0);
         if (frame == EFFECT_FRAME) {
             self->effect = EffectSystem_StartKeptSetNumber(EFFECT_SET, &self->effect_point, &self->base.actor.angle[1], NULL);
@@ -462,8 +457,8 @@ CLEAN_AS(func_ov004_0222e1b4, CafeProps_OnEnterState5)
 /* func_ov004_0222e1b8 */
 void CafeProps_UpdateState4(CafeProps *self)
 {
-    func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F7) {
+    CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F7) {
         play_parts_1_2(self, 5, 3, PLAY_LOOP, 0);
     }
 }
@@ -481,12 +476,12 @@ CLEAN_AS(func_ov004_0222e220, CafeProps_OnEnterState4)
  * each number it is compared with. */
 void CafeProps_UpdateState3(CafeProps *self)
 {
-    unsigned int frame = func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F2) {
+    unsigned int frame = CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F2) {
         play_body_part_0(self, 0);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F4) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F4) {
         play_body_part_0(self, 1);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F6) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F6) {
         u8 early = frame <= SHOW_BODY_LAST;
         u8 late = frame >= SHOW_PARTS_FIRST;
         self->body_shown = early;
@@ -496,9 +491,9 @@ void CafeProps_UpdateState3(CafeProps *self)
         play_body_part_0(self, 2);
         CafeProps_PlayAnim(self, 2, &self->parts[1], &self->part_models[1], PLAY_LOOP, ONE, 0, 0);
         CafeProps_PlayAnim(self, 2, &self->parts[2], &self->part_models[2], PLAY_LOOP, ONE, 0, 0);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F3) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F3) {
         play_parts_1_2(self, 0, 0, PLAY_LOOP, 0);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F5) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F5) {
         play_parts_1_2(self, 1, 1, PLAY_LOOP, 0);
     }
 }
@@ -516,10 +511,10 @@ CLEAN_AS(func_ov004_0222e44c, CafeProps_OnEnterState3)
  * number. */
 void CafeProps_UpdateState2(CafeProps *self)
 {
-    func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F3) {
+    CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F3) {
         play_parts_1_2(self, 3, 0, PLAY_LOOP, 0);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F5) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F5) {
         play_parts_1_2(self, 4, 1, PLAY_LOOP, 0);
     }
 }
@@ -536,10 +531,10 @@ CLEAN_AS(func_ov004_0222e4f8, CafeProps_OnEnterState2)
 /* func_ov004_0222e4fc. QUIRK: as in state 2. */
 void CafeProps_UpdateState1(CafeProps *self)
 {
-    func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F3) {
+    CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F3) {
         play_parts_1_2(self, 0, 0, PLAY_LOOP, 0);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F5) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F5) {
         play_parts_1_2(self, 1, 1, PLAY_LOOP, 0);
     }
 }
@@ -556,10 +551,10 @@ CLEAN_AS(func_ov004_0222e5a0, CafeProps_OnEnterState1)
 /* func_ov004_0222e5a4. QUIRK: as in state 2. */
 void CafeProps_UpdateState0(CafeProps *self)
 {
-    func_ov004_022236c4();
-    if (func_ov004_022236a8() == MASTER_ANIM_F2) {
+    CafeMaster_AnimFrame();
+    if (CafeMaster_AnimNumber() == MASTER_ANIM_F2) {
         play_body_part_0(self, 0);
-    } else if (func_ov004_022236a8() == MASTER_ANIM_F4) {
+    } else if (CafeMaster_AnimNumber() == MASTER_ANIM_F4) {
         play_body_part_0(self, 1);
     }
 }
@@ -646,7 +641,7 @@ static void translate_to(const Vec3 *point)
 /* The scratch matrix: the master's first matrix. */
 static void take_master_matrix(void)
 {
-    data_021fbe48 = *func_ov004_022236dc();
+    data_021fbe48 = *CafeMaster_Matrix748();
 }
 
 /* Whether part 1 or 2 is at its fixed point in state 5 or 6 (else at the master's first
@@ -666,9 +661,9 @@ static int placed(const CafeProps *self, int part)
  * translation. */
 void CafeProps_Draw(CafeProps *self)
 {
-    data_021fbe48 = *func_ov004_022236dc();
+    data_021fbe48 = *CafeMaster_Matrix748();
     *model_matrix(&self->base.body) = data_021fbe48;
-    data_021fbe48 = *func_ov004_022236f0();
+    data_021fbe48 = *CafeMaster_Matrix718();
     *model_matrix(&self->parts[0]) = data_021fbe48;
 
     if (self->state == 8 || self->state == 9) {
@@ -698,7 +693,7 @@ void CafeProps_Draw(CafeProps *self)
 
     int frame = whole_frames(self->parts[3].frames.frame);
     if (frame >= PART3_HELD_FIRST && frame <= PART3_HELD_LAST) {
-        data_021fbe48 = *func_ov004_022236f0();
+        data_021fbe48 = *CafeMaster_Matrix718();
     } else {
         translate_to(&data_ov004_0225839c);
     }

@@ -81,11 +81,23 @@ typedef struct MuseumInsect {
     Vec3 anchor;       /* 0x040 */
     int unk_4c;        /* 0x04c */
     u8 unk_50;         /* 0x050 */
-    u8 unk_51[7];
+    u8 unk_51[3];
+    fx32 unk_54;                /* 0x054: a height, set with unk_a8 */
     fx32 low[2];                /* 0x058: the x and z it is kept within (InsectRoom_KeepInBounds) */
     fx32 high[2];               /* 0x060 */
     CollisionContacts contacts; /* 0x068 */
-    u8 unk_98[0x18];            /* 0x098: its motion's (func_ov004_02240f2c) */
+    s16 unk_98;                 /* 0x098: frames; 0x098-0x0af are its motion's (func_ov004_02240f2c) */
+    u8 unk_9a;                  /* 0x09a */
+    u8 pad_9b;                  /* 0x09b */
+    s16 unk_9c;                 /* 0x09c */
+    s16 unk_9e;                 /* 0x09e */
+    fx32 unk_a0;                /* 0x0a0 */
+    u8 distance;                /* 0x0a4: a distance it moves, in whole units */
+    u8 pad_a5[3];               /* 0x0a5 */
+    fx32 unk_a8;                /* 0x0a8: the height it moves at */
+    s16 unk_ac;                 /* 0x0ac */
+    u8 unk_ae;                  /* 0x0ae */
+    u8 pad_af;                  /* 0x0af */
     RmoAnimatedModel model;     /* 0x0b0 */
     s16 unk_168;                /* 0x168 */
     s16 unk_16a;                /* 0x16a */
