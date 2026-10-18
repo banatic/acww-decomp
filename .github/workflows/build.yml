@@ -104,7 +104,7 @@ jobs:
         run: |
           python3 tools/run.py 0 1300 --input runtime/recordings/title-start.txt --rtc "2005-11-23 12:00:00" \
             --native=all --clean --ram-hash 100,390,500,700,1000,1299 --expect runtime/recordings/title-start.sha1 \
-            --clean-ran build/adm-kr/clean-ran-title.json > build/adm-kr/native-clean.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -40; exit 1; }
+            > build/adm-kr/native-clean.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -40; exit 1; }
           grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-clean.log | tail -12
 
       # The same for a new game, from power-on to walking in the town and opening the pockets.
@@ -112,9 +112,17 @@ jobs:
         run: |
           python3 tools/run.py 0 13760 --input runtime/recordings/new-game.txt --rtc "2005-11-23 12:00:00" \
             --native=all --clean --ram-hash 1299,2600,7200,9750,12100,13300,13759 \
-            --expect runtime/recordings/new-game.sha1 --clean-ran build/adm-kr/clean-ran-new-game.json \
+            --expect runtime/recordings/new-game.sha1 \
             > build/adm-kr/native-new-game.log 2>&1 || { grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-new-game.log | tail -40; exit 1; }
           grep -v "VALUE at\|OFF-STEP" build/adm-kr/native-new-game.log | tail -12
+
+      # Which Clean functions ran, for the Clean map (tools/run.py --clean-ran builds the Clean code
+      # instrumented). Not a check: the runs above are; if this fails, the map shows no runs.
+      - name: Record which Clean functions run
+        continue-on-error: true
+        run: |
+          python3 tools/run.py 0 1300 --input runtime/recordings/title-start.txt --rtc "2005-11-23 12:00:00"             --native=all --clean --clean-ran build/adm-kr/clean-ran-title.json > build/adm-kr/clean-ran-title.log 2>&1             || tail -20 build/adm-kr/clean-ran-title.log
+          python3 tools/run.py 0 13760 --input runtime/recordings/new-game.txt --rtc "2005-11-23 12:00:00"             --native=all --clean --clean-ran build/adm-kr/clean-ran-new-game.json > build/adm-kr/clean-ran-new-game.log 2>&1             || tail -20 build/adm-kr/clean-ran-new-game.log
 
       - name: Upload the Native run logs
         if: failure()
